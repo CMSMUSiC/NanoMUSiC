@@ -1,0 +1,35 @@
+<use   name="EgammaAnalysis/ElectronTools"/>
+<use   name="DataFormats/DetId"/>
+<use   name="DataFormats/Candidate"/>
+<use   name="DataFormats/EgammaCandidates"/>
+<use   name="DataFormats/EgammaReco"/>
+<use   name="DataFormats/EcalRecHit"/>
+<use   name="DataFormats/JetReco"/>
+<use   name="DataFormats/METReco"/>
+<use   name="DataFormats/MuonReco"/>
+<use   name="DataFormats/TrackReco"/>
+<use   name="DataFormats/VertexReco"/>
+<use   name="DataFormats/PatCandidates"/>
+<use   name="DataFormats/L1GlobalTrigger"/>
+<use   name="DataFormats/Common"/>
+<use   name="SimDataFormats/JetMatching"/>
+<use   name="FWCore/Framework"/>
+<use   name="FWCore/MessageLogger"/>
+<use   name="FWCore/ParameterSet"/>
+<use   name="FWCore/Utilities"/>
+<use   name="Geometry/CaloGeometry"/>
+<use   name="RecoEcal/EgammaCoreTools"/>
+<use   name="HLTrigger/HLTcore"/>
+<use   name="RecoEgamma/EgammaElectronAlgos"/>
+<use   name="RecoVertex/KalmanVertexFit"/>
+<use   name="TrackingTools/TransientTrack"/>
+<use   name="TrackingTools/Records"/>
+<use   name="Pxl/Pxl"/>
+<!--
+<use   name="PxlSkimmer/Pxl"/>
+-->
+<use   name="root"/>
+<use   name="lhapdf"/>
+<flags   EDM_PLUGIN="1"/>
+<flags   CXXFLAGS="-Wfatal-errors"/>
+<Flags   CXXFLAGS="-g"/>

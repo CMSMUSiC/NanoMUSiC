@@ -1,0 +1,5 @@
+generator = AMCATNLO
+CME = 13
+config = mc_miniAOD_UL2017_cfg.py
+
+DYJetsToLL_Pt-250To400_MatchEWPDG20_13TeV_AM:/DYJetsToLL_Pt-250To400_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL17MiniAODv2-106X_mc2017_realistic_v9-v1/MINIAODSIM 

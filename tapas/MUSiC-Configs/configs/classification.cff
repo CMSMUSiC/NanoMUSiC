@@ -1,0 +1,142 @@
+# Load standard PxlAnalyzer settings
+import "$PXLANA/ConfigFiles/general.cff"
+
+# overload trigger config with MUSiC needs
+import "$MUSIC_CONFIG/configs/trigger.cff"
+
+General.usePDF = 1
+General.selectGen=1
+
+EventClass.GenOnly = 0
+EventClass.RecOnly = 1
+# Generate lepton charge aware event classes
+EventClass.charge.use = 0
+# Artificial cut on the kinematic variables.
+# If any of these fail, the event is not filled at all.
+EventClass.SumPt.min = 0
+EventClass.Minv.min = 0
+EventClass.MET.min = 0
+# Store only ~100 events per class and distribution.
+# Should make about ~MB for all classes.
+EventClass.num.ListedEvents.max = 100
+EventClass.Jets.max = 6
+
+# Artificial fudge factors to be applied on the calculated resolution of the
+# different kinematic variables.
+Resolution.fudge.sumpt = 1
+Resolution.fudge.minv = 1
+Resolution.fudge.met = 1
+# Minimal bin width in GeV.
+Resolution.Bin.size.min = 10
+
+Matching.DeltaR.particles = 0.2
+Matching.DeltaR.met = 0.5
+Matching.DeltaPtOverPt = 1000000.0      # off
+Matching.DeltaCharge = 10.0             # off
+
+General.UseTriggers = 1
+Trigger.IgnoreL1 = 0
+Trigger.IgnoreHL = 0
+
+FilterSet.FillBookkeepingVector = 1
+
+####################
+#  Cleaning
+####################
+General.IgnoreOverlaps = 0
+
+####################
+#  Systematics
+####################
+
+# We want no empty shifted
+General.useSYST = 1
+General.Syst.emptyShift = 0
+
+General.Syst.Orders = LO, NLO, NNLO , NNNLO, NLO_W, N3LO
+# systematics weights for all orders
+General.Syst.LO     = 0.5
+#General.Syst.NLO    = 0.10
+#General.Syst.NNLO   = 0.05
+#General.Syst.NNNLO  = 0.025
+#General.Syst.NLO_W  = 0.3
+General.Syst.NLO    = 0.0
+General.Syst.NNLO   = 0.0
+General.Syst.NNNLO  = 0.0
+General.Syst.NLO_W  = 0.1
+General.Syst.N3LO  = 0.0
+
+#Tau.Error.Fakes = 1.0
+Ele.Error.Fakes = 0.5
+Muon.Error.Fakes = 0.5
+#Jet.Error.Fakes = 0.5
+Gamma.Error.Fakes = 0.5
+#MET.Error.Fakes = 1.0
+
+
+############
+# objects
+############
+#We want to filter not tag
+import "$PXLANA/ConfigFiles/Objects/EleID/Ele_CBID_tight_r20.cff"
+Ele.use = 1
+Ele.CBID.usebool = 1
+Ele.HEEPID.usebool = 0
+Ele.regions.use = 0
+Ele.ID.Tag = 0
+Ele.ID.Type = "switch"
+Ele.eta.Barrel.max = 1.4442
+Ele.eta.Endcap.min = 1.566
+Ele.ScaleFactors = ID.HEEP, ID.TightID, RECO
+
+
+Muon.use = 1
+Muon.ID.Tag = 0
+Muon.TightID.UseBool = 1
+Muon.ID.Type = "CombinedID"
+Muon.Iso.Type = "CombinedIso"
+Muon.eta.max = 2.4
+Muon.UseCocktail = 1
+Muon.Syst.Scale = 0.05
+Muon.ScaleFactors = ID.HighPtID, ID.TightID, Iso.HighPtID, Iso.TightID
+
+import "$PXLANA/ConfigFiles/Objects/GammaID/CBTight.cff"
+Gamma.use = 1
+Gamma.CB.usebool = 1
+Gamma.ID.Tag = 0
+Gamma.ID.Type = "CB"
+Gamma.regions.use = 1  # Check if we want to split in barrel / endcap
+Gamma.eta.Barrel.max = 1.4442
+Gamma.eta.Endcap.min = 1.566
+Gamma.pt.min = 25
+Gamma.barrel.only = 0
+Gamma.UseConverted = 0
+Gamma.UseElectronVeto = 0
+Gamma.UsePixelSeed = 1
+Gamma.ScaleFactors = ID, ID.SeedVeto
+
+Jet.use = 1
+Jet.ID.Tag = 0
+Jet.ID.Type = "TIGHT"
+Jet.Resolutions.Corr.use = 1
+Jet.ScaleFactors =
+Jet.DeltaR.max = 0.4
+
+Jet.BJets.use = 1
+Jet.BJets.SF.Method = "2A"
+Jet.Syst.Types = Resolution, Scale, BJetsSF2A
+MET.pt.min = 100
+MET.ID.Tag = 0
+#MET.ScaleFactors =
+
+#Tau.ScaleFactors =
+
+Prefire.check.use = 0
+
+##########
+# PileUp
+##########
+
+Pileup.UsePileupReWeighting = 1
+Pileup.QuietMode = 1
+

@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+BASE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PARENT="$( dirname $BASE )"
+echo "cleanup in directory $PARENT"
+
+rm -rf "$PARENT/src"
+rm -rf "$PARENT/interface"
+
+echo "done"

@@ -1,0 +1,11 @@
+Lumi = 59830.							#41480.
+LumiUnit = pb-1
+# Lumi error (CMS PAS LUM-13-001):
+Global.ScalefactorError = 0.026
+
+###powheg###
+#TT_13TeV_PH.aix3adbID = 489
+#TT_13TeV_PH.XSec = 730
+#TT_13TeV_PH.FilterEff = 1
+#TT_13TeV_PH.kFactor = 1
+#TT_13TeV_PH.ErrorMapping = LO.CrosssectionError
