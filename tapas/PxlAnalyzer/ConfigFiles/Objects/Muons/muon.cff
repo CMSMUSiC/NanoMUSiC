@@ -1,0 +1,88 @@
+# General file for muon ID and isolation requirements
+# https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideMuonIdRun2
+# NOT UPDATED TO UL17
+## General Settings
+Muon.use = 1
+Muon.UseCocktail = 0
+Muon.ID.Tag = 1
+Muon.Type.Gen = "gen"
+Muon.Type.Rec = "Muon"
+Muon.Rho.Label = "fixedGridRhoFastjetAll"
+
+Muon.pt.min = 25
+Muon.eta.max = 2.1
+Muon.DeltaR.max = 0.4
+Muon.InvertIsolation = 0
+
+
+## IDs
+# Supported ID types:
+#   - "CombinedID" --> "TightID" until PtSwitch is reached, then "HighPtID"
+#   - "HighPtID" --> Official HighPtID, useful after 200 GeV
+#   - "TightID"
+#   - "MediumID"
+#   - "SoftID"
+#	- "TrackerID" --> Modified HighPtID for boosted topology
+#   - "None" --> No ID criteria are applied, all muons pass
+# References:
+#   - https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideMuonIdRun2
+Muon.ID.Type = "TightID"
+Muon.ID.PtSwitch = 200
+
+
+## Isolation
+# Supported relative isolation types:
+#   - "TrackerIso" --> Subdetector based
+#   - "PFIso" --> PF based, cone of 0.4
+#   - "MiniIso" -- > PF based, cone size depends on pT
+#   - "CombinedIso" -- > PF based for low pT and track Iso for high pT
+#   - "None" -- > No isolation criteria are applied, all muons pass the isolation
+# References:
+#   - https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId?rev=60
+#   - https://twiki.cern.ch/twiki/bin/view/CMS/MuonIsolationForRun2?rev=13
+Muon.Iso.Type = "PFIso"
+
+# Parameter values
+# Algo       Tight cut   Loose cut
+# TrackerIso 0.05        0.10
+# PFIso      0.15        0.25
+#https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideMuonIdRun2#Muon_Isolation
+Muon.Iso.max = 0.15
+# For CombinedIso
+Muon.Iso.PF.max = 0.15
+Muon.Iso.Tracker.max = 0.10
+
+# Supported methods for PU subtraction
+# for TrackerIso:
+#   - nothing supported --> value will be ignored
+# for PFIso
+#   - "None" --> no PU correction
+#   - "DB" --> deltaBeta correction (standard for 8 TeV)
+#   - "EA" --> effective Area correction
+# for MiniIso
+#   - "DB" --> deltaBeta correction (standard for 8 TeV)
+#   - "EA" --> effective Area correction
+#   - "PFWeighted" --> neutral PF candidates are weighted corresponding to their likeliness to come from PU
+# References:
+#   - https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId?rev=60
+#   - https://twiki.cern.ch/twiki/bin/view/CMS/MuonIsolationForRun2?rev=13
+Muon.Iso.PUCorrection = "DB"
+
+# More info: https://twiki.cern.ch/twiki/bin/view/CMS/MuonReferenceEffsRun2
+Muon.ScaleFactors = ID, Iso
+#In case of combinedID use:
+# Once HighPt numbers are updated: Muon.ScaleFactors = ID.TightID, ID.HighPtID, Iso.TightID, Iso.HighPtID
+
+# import all infos for scale factors
+import "$PXLANA/ConfigFiles/Objects/ScaleFactors/muon_sf.cff"
+
+## Imports for the different requirements and isolations
+import "$PXLANA/ConfigFiles/Objects/Muons/soft.cff"
+import "$PXLANA/ConfigFiles/Objects/Muons/loose.cff"
+import "$PXLANA/ConfigFiles/Objects/Muons/medium.cff"
+import "$PXLANA/ConfigFiles/Objects/Muons/tight.cff"
+import "$PXLANA/ConfigFiles/Objects/Muons/highpt.cff"
+import "$PXLANA/ConfigFiles/Objects/Muons/tracker.cff"
+
+import "$PXLANA/ConfigFiles/Objects/Muons/effectivearea.cff"
+import "$PXLANA/ConfigFiles/Objects/Muons/systematics.cff"

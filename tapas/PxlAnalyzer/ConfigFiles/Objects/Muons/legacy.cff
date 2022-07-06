@@ -1,0 +1,92 @@
+# Muon cuts and isolation.
+# See also:
+# https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId
+# NOT UPDATED TO UL17
+Muon.use = 1
+# Filter muons or tag them?
+Muon.IdTag = 1
+Muon.Type.Gen = "Muon"
+Muon.Type.Rec = "Muon"
+Muon.pt.min = 25
+Muon.eta.max = 2.1
+# If true (1), muons are cleaned against muons in Delta R.
+Muon.cleanDuplicates = 0
+Muon.DeltaR.max = 0.4
+Muon.InvertIsolation = 0
+# Different id types supported:
+#   'musicID.bool','isTightMuon.bool','isHighPtMuon.bool','isTightMuon.Cut','isHighPtMuon.Cut'
+# - "musicID.bool" with a switch at for high pt ID
+# the .bool ids cut on one bool, where the cut based use the cuts provided below
+
+Muon.ID.Type="musicID.bool"
+Muon.ID.HighPtSwitchPt=200
+# Three different isolation types supported (all relative):
+# - "Tracker" (Subdetector based)
+# - "PF" (PF based, cone of 0.4) (suggested)
+# - "PFCombined03" (PF based, cone of 0.3)
+# - "Combined" (old not PU corrected or anything don't use)
+Muon.Iso.Type = "PF"
+#https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId
+#Algo    Tight cut   Loose cut
+#tracker  0.05        0.10
+#PF       0.12        0.20
+Muon.Iso.max = 0.12
+Muon.Iso.UseRhoCorr = 0
+Muon.Iso.UseDeltaBetaCorr = 1
+
+Muon.UseCocktail= 1
+
+#for cut based IDs this is what we need:
+Muon.NPixelHits.min = 1
+Muon.NMuonHits.min = 1 ##corresponds to more than 0
+Muon.NMatchedStations.min = 2  ##corresponds to more than 1
+Muon.NTrackerLayersWithMeas.min = 6
+Muon.XYImpactParameter.max = 0.2        # = dB
+Muon.ZImpactParameter.max = 0.5
+Muon.GlobalChi2.max = 10
+# Use High Pt Muon ID for muons with pt > 200?
+# If true, 'UseCocktail' should also be set to true.
+# See also:
+# https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId?rev=48#HighPT_Muon
+Muon.HighPtMuonID.use = 1
+# Relative error on cocktail track pt (only for High Pt muons).
+Muon.dPtRelTrack.max = 0.3
+
+# Errors:
+# Muon fake rate difference between data and MC found in:
+# CMS PAS MUO-10-004, Fig. 14, Fig. 15.
+Muon.Error.Fakes = 1.0
+# Same-sign studies in AN2011/256, Sec. 6.2, Fig. 9 show a scale factor for data
+# to MC 1.2 with 20 % uncertainty.
+Muon.Error.Charge = 0.5
+
+############################################################
+## Effective area based Iso correction aka rho correction ##
+############################################################
+
+# See the documentation of BinnedMapping to understand the following config options.
+#
+# All values from:
+# https://indico.cern.ch/getFile.py/access?contribId=1&resId=0&materialId=slides&confId=188494
+# (2014-09-17)
+
+# If true, the given eta values are considered abolute.
+# No negative values allowed!
+Muon.EffArea.abs_eta = 1
+
+Muon.EffArea.eta_edges = 0.0, 1.0, 1.479, 2.0, 2.2, 2.3
+
+#this makes no sence dummy values:
+Muon.EffArea.EA_charged_hadrons = 0.,       0.,       0.,     , 0.      , 0.
+
+Muon.EffArea.EA_neutral_hadrons = 0.16580, 0.25904, 0.24695, 0.22021, 0.34045, 0.21592
+
+Muon.EffArea.EA_photons         = 0.50419, 0.30582, 0.19765, 0.28723, 0.52529, 0.48818
+
+#################
+## Sytematics  ##
+#################
+Syst.Muo.Scale = 0.05
+Muon.Syst.Scale = 0.05
+Muon.Syst.Res   = 0.032
+

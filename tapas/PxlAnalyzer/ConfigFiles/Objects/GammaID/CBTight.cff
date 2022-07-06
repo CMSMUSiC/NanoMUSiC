@@ -1,0 +1,21 @@
+# https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedPhotonIdentificationRun2
+Gamma.CB.boolname = cutBasedPhotonID-Fall17-94X-V2-tight
+
+#Updated to UL2017 (94X)
+Gamma.CB.Barrel.HoEm.max = 0.02148
+Gamma.CB.Barrel.sigmaIetaIeta.max = 0.00996
+Gamma.CB.Barrel.PFIsoChargedHadron.max = 0.65
+Gamma.CB.Barrel.PFIsoNeutralHadron.Offset = 0.317
+Gamma.CB.Barrel.PFIsoNeutralHadron.Linscale =  0.01512
+Gamma.CB.Barrel.PFIsoNeutralHadron.Quadscale = 0.00002259
+Gamma.CB.Barrel.PFIsoPhoton.Offset = 2.044
+Gamma.CB.Barrel.PFIsoPhoton.Linscale = 0.004017
+
+Gamma.CB.Endcap.HoEm.max = 0.0321
+Gamma.CB.Endcap.sigmaIetaIeta.max = 0.0271
+Gamma.CB.Endcap.PFIsoChargedHadron.max = 0.517
+Gamma.CB.Endcap.PFIsoNeutralHadron.Offset = 2.716
+Gamma.CB.Endcap.PFIsoNeutralHadron.Linscale = 0.0117
+Gamma.CB.Endcap.PFIsoNeutralHadron.Quadscale = 0.000023
+Gamma.CB.Endcap.PFIsoPhoton.Offset = 3.032
+Gamma.CB.Endcap.PFIsoPhoton.Linscale = 0.0037

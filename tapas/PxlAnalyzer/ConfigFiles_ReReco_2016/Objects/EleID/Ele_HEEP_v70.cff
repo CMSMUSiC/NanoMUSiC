@@ -1,0 +1,36 @@
+# HEEP v7.0 tag and 6.1 cuts:
+# See also:
+# https://twiki.cern.ch/twiki/bin/view/CMS/HEEPElectronIdentificationRun2?rev=14
+Ele.HEEPID.usebool = 0
+# Don't use this bool, the track isolation is broken!!!
+Ele.HEEPID.boolname = heepElectronID-HEEPV70
+# HEEPID = High Energy Electron Pairs IDentification
+Ele.HEEPID.RequireEcalDriven = 1
+# Barrel values:
+Ele.HEEPID.Barrel.DEta.max = 0.004
+Ele.HEEPID.Barrel.DPhi.max = 0.06
+Ele.HEEPID.Barrel.HoEM.Slope = 1
+Ele.HEEPID.Barrel.HoEM.max = 0.05
+Ele.HEEPID.Barrel.TrkIso.max = 5
+Ele.HEEPID.Barrel.HcnalD1.Offset = 2
+Ele.HEEPID.Barrel.HcalD1.Slope = 0.03
+Ele.HEEPID.Barrel.HcalD1.RhoSlope = 0.28
+Ele.HEEPID.Barrel.TrkIso.RhoSlope = 1.5
+Ele.HEEPID.Barrel.NInnerLayerLostHits.max = 1
+Ele.HEEPID.Barrel.dxy.max = 0.02
+Ele.HEEPID.Barrel.E1x5.min = 0.83
+Ele.HEEPID.Barrel.E2x5.min = 0.94
+# Endcap values:
+Ele.HEEPID.Endcap.DEta.max = 0.006
+Ele.HEEPID.Endcap.DPhi.max = 0.06
+Ele.HEEPID.Endcap.HoEM.Slope = 5
+Ele.HEEPID.Endcap.HoEM.max = 0.05
+Ele.HEEPID.Endcap.TrkIso.max = 5
+Ele.HEEPID.Endcap.HcalD1.Offset = 2.5
+Ele.HEEPID.Endcap.HcalD1.Slope = 0.03
+Ele.HEEPID.Endcap.HcalD1.RhoSlope = 0.28
+Ele.HEEPID.Endcap.TrkIso.RhoSlope = 0.5
+Ele.HEEPID.Endcap.NInnerLayerLostHits.max = 1
+Ele.HEEPID.Endcap.dxy.max = 0.05
+Ele.HEEPID.Endcap.SigmaIetaIeta.max = 0.03
+# end HEEP v6.1

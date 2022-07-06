@@ -1,0 +1,20 @@
+# Several runs (approx. 215 pb-1 of pixel luminosity) have outliers in the HF
+# lumi vs. pixel lumi distribution.
+# For details see: https://hypernews.cern.ch/HyperNews/CMS/get/jes/462.html
+#
+191411
+198049
+198050
+198063
+201727
+203830
+203832
+203833
+203834
+203835
+203987
+203992
+203994
+204100
+204101
+208509

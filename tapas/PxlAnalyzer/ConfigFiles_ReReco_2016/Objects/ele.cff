@@ -1,0 +1,73 @@
+Ele.use = 1
+Ele.Type.Gen = "gen"
+Ele.Type.Rec = "Ele"
+Ele.pt.min = 25
+Ele.eta.Barrel.max = 1.4442
+Ele.eta.Endcap.min = 1.566
+Ele.eta.Endcap.max = 2.5
+Ele.barrel.only = 0
+Ele.endcap.only = 0
+
+Ele.DeltaR.max = 0.4
+Ele.InvertIsolation = 0
+Ele.Rho.Label = "fixedGridRhoFastjetAll"
+
+# ID method to use. Supported:
+# - "CB"
+# - "HEEP"
+Ele.ID.Type = "HEEP"
+Ele.ID.Tag = 1
+
+# Switch to decide if electron 4 vectors are adapted to use Et Eta from
+# super cluster instead PF
+Ele.UseHEEP = 1
+# Pt thrshold to switch between PF eles and HEEP ( also relevant for swith ID Type)
+Ele.ID.switchpt=100
+
+import "$PXLANA/ConfigFiles/Objects/EleID/Ele_CBID_veto_r20.cff"
+import "$PXLANA/ConfigFiles/Objects/EleID/Ele_HEEP_v70.cff"
+
+# Errors:
+# Electron fake rate difference between MC and data: AN2012/415, Fig.21.
+Ele.Error.Fakes = 0.5
+# Same-sign studies in AN2011/256, Sec. 6.2, Fig. 9 show a scale factor for data
+# to MC 1.2 with 20 % uncertainty.
+Ele.Error.Charge = 0.3
+
+
+#https://indico.cern.ch/event/369239/contribution/4/attachments/1134761/1623262/talk_effective_areas_25ns.pdf
+
+Ele.EffArea.abs_eta = 1
+
+Ele.EffArea.eta_edges = 0.0, 1.0, 1.479, 2.0, 2.2, 2.3, 2.4, 5.
+
+Ele.EffArea.EA_charged_hadrons = 0.1752, 0.1862, 0.1411, 0.1534, 0.1903, 0.2243, 0.2687
+
+Ele.EffArea.EA_neutral_hadrons = 0.1752, 0.1862, 0.1411, 0.1534, 0.1903, 0.2243, 0.2687
+
+Ele.EffArea.EA_photons = 0.1752, 0.1862, 0.1411, 0.1534, 0.1903, 0.2243, 0.2687
+
+Ele.ScaleFactors = ID, RECO
+
+# import all infos for scale factors
+import "$PXLANA/ConfigFiles/Objects/ScaleFactors/ele_sf.cff"
+
+#################
+## Sytematics  ##
+#################
+
+# lowered kinematics cuts for systematics used to allow particles to
+# shift from unselected to selected after the shift
+Ele.Syst.pt.min = 15
+Ele.Syst.eta.Barrel.max = 1.5
+Ele.Syst.eta.Endcap.min = 1.5
+Ele.Syst.eta.Endcap.max = 2.8
+
+# configuration for systematic uncertainties
+#possible systematic options: Scale, Resolution
+Ele.Syst.Types = Scale
+
+#Based on 2015 JINST 10 P06005
+Ele.Syst.Scale.Barrel = 0.002
+Ele.Syst.Scale.Endcap = 0.003
+Ele.Syst.Scale.HEEP = 0.02

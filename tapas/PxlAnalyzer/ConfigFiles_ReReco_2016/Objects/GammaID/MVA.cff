@@ -1,0 +1,8 @@
+# https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedPhotonIdentificationRun2
+Gamma.MVA.boolname = mvaPhoID-Spring16-nonTrig-V1-wp90
+
+Gamma.MVA.Categories = 0, 1
+
+
+Gamma.MVA.Barrel.min = 0.374
+Gamma.MVA.Endcap.min = 0.336

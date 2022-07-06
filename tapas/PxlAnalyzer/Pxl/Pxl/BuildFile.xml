@@ -1,0 +1,10 @@
+<flags CXXFLAGS="-Wno-sign-compare" />
+<flags LDFLAGS="-ldl" />
+
+<include_path path="src" />
+
+<use name="zlib" />
+
+<export>
+  <lib name="1" />
+</export>

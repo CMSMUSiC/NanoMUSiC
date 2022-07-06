@@ -1,0 +1,65 @@
+# CutBasedID (medium) :
+# See also:
+# https://twiki.cern.ch/twiki/bin/view/CMS/EgammaIDRecipesRun2
+# https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Working_points_for_94X_and_later
+# https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Spring15_selection_25ns
+# CBID = Cut Based IDentification
+##next option new in miniAOD
+Ele.CBID.usebool = 1
+Ele.CBID.boolname = cutBasedElectronID-Fall17-94X-V2-medium
+##########unset#####################
+Ele.CBID.fBrem.min = 0.0           # Only for 2011!
+Ele.CBID.lowEta.fBrem.min = 0.0     # Only for 2011!
+Ele.CBID.lowEta.EoverPin.min = 0.0 # Only for 2011!
+Ele.CBID.Use.fBrem = 0
+#########end unset###############################
+
+# Barrel vaules:
+#Updated to UL2017 (94X)
+Ele.CBID.Barrel.sigmaIetaIeta.max = 0.0106
+Ele.CBID.Barrel.DEtaIn.max = 0.0032
+Ele.CBID.Barrel.DPhiIn.max = 0.0547
+#### The two lines below are commented out to use UL receipes ####
+#Ele.CBID.Barrel.HoE.max = 0.253 #NOT UPDATED TO UL17
+#Ele.CBID.Barrel.PFIsoRel.max = 0.0695 #NOT UPDATED TO UL17
+
+###These lines are added to use UL receipes ####
+Ele.CBID.Barrel.HoEIterm.max = 0.046
+Ele.CBID.Barrel.HoEIIterm.max = 1.16
+Ele.CBID.Barrel.HoEIIIterm.max = 0.0324
+Ele.CBID.Barrel.ItermPFIsoRel.max= 0.0478
+Ele.CBID.Barrel.IItermPFIsoRel.max= 0.506
+
+Ele.CBID.Barrel.RelInvEpDiff.max = 0.184
+Ele.CBID.Barrel.NInnerLayerLostHits.max = 1
+Ele.CBID.Barrel.Conversion.reject = 1
+
+# Impact parameters are not part of the standard ID anymore and should
+# be set per analysis. Recommendations in ID Twiki
+Ele.CBID.Barrel.Dxy.max = 99. #???
+Ele.CBID.Barrel.Dz.max = 99. #???
+
+# Endcap values:
+#Updated to UL2017 (94X)
+Ele.CBID.Endcap.sigmaIetaIeta.max = 0.0387
+Ele.CBID.Endcap.DEtaIn.max = 0.00632
+Ele.CBID.Endcap.DPhiIn.max = 0.0394
+#### The two lines below are commented out to use UL receipes ####
+#Ele.CBID.Endcap.HoE.max = 0.0 #NOT UPDATED TO UL17
+#Ele.CBID.Endcap.PFIsoRel.max = 0.0821 #NOT UPDATED TO UL17
+###These lines are added to use UL receipes ####
+Ele.CBID.Endcap.HoEIterm.max = 0.0275
+Ele.CBID.Endcap.HoEIIterm.max = 2.52
+Ele.CBID.Endcap.HoEIIIterm.max = 0.183
+Ele.CBID.Endcap.ItermPFIsoRel.max= 0.0658
+Ele.CBID.Endcap.IItermPFIsoRel.max= 0.963
+
+Ele.CBID.Endcap.RelInvEpDiff.max = 0.0721
+Ele.CBID.Endcap.NInnerLayerLostHits.max = 1
+Ele.CBID.Endcap.Conversion.reject = 1
+
+# Impact parameters are not part of the standard ID anymore and should
+# be set per analysis. Recommendations in ID Twiki
+Ele.CBID.Endcap.Dxy.max = 99. #??
+Ele.CBID.Endcap.Dz.max = 99. #???
+# end CutBasedID

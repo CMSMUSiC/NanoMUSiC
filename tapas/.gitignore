@@ -1,8 +1,2 @@
-setenv_tapas.sh
-/doc/
-/tools/
-/PxlSkimmer/
-/PxlAnalyzer/
-/PlotLib/
 /lib/
 .vscode/

@@ -1,0 +1,66 @@
+# List of all available default scale factors
+# This ID is matches the default ID in ele.cff and shows how a single ID
+# my be used
+Muon.ScaleFactor.ID.type = PtEta
+Muon.ScaleFactor.ID.file = $PXLANA/ConfigFiles/ConfigInputs/ScaleFactors/2016/SF_Muon_ID_total.root
+Muon.ScaleFactor.ID.dir = MC_NUM_TightID_DEN_genTracks_PAR_pt_eta
+Muon.ScaleFactor.ID.hist = pt_abseta_ratio
+Muon.ScaleFactor.ID.abseta = 1
+Muon.ScaleFactor.ID.syst = 0.01
+
+Muon.ScaleFactor.Iso.type = PtEta
+Muon.ScaleFactor.Iso.file = $PXLANA/ConfigFiles/ConfigInputs/ScaleFactors/2016/SF_Muon_Iso_total.root
+Muon.ScaleFactor.Iso.dir = TightISO_TightID_pt_eta
+Muon.ScaleFactor.Iso.hist = pt_abseta_ratio
+Muon.ScaleFactor.Iso.abseta = 1
+Muon.ScaleFactor.Iso.syst = 0.01
+
+Muon.ScaleFactor.Tracker.type = PtEta
+Muon.ScaleFactor.Tracker.file = $PXLANA/ConfigFiles/ConfigInputs/ScaleFactors/2016/SF_Muon_Tracker_total.root
+Muon.ScaleFactor.Tracker.dir = Tracking
+Muon.ScaleFactor.Tracker.hist = eta
+Muon.ScaleFactor.Tracker.abseta = 0
+Muon.ScaleFactor.Tracker.syst = 0.01
+
+Muon.ScaleFactor.Trigger.Data.type = PtEta
+Muon.ScaleFactor.Trigger.Data.file = $PXLANA/ConfigFiles/ConfigInputs/ScaleFactors/2016/SF_Muon_Trigger_total.root
+Muon.ScaleFactor.Trigger.Data.dir = Mu50_OR_TkMu50_PtEtaBins/efficienciesDATA
+Muon.ScaleFactor.Trigger.Data.hist = pt_abseta_PLOT_pair_dPhiPrimeDeg_bin0_&_pair_deltaR_bin0_&_relTkIso_bin0_&_tag_pt_bin0_&_HighPt_pass_&_tag_IsoMu24_pass
+Muon.ScaleFactor.Trigger.Data.abseta = 1
+Muon.ScaleFactor.Trigger.Data.syst = 0.005
+
+Muon.ScaleFactor.Trigger.MC.type = PtEta
+Muon.ScaleFactor.Trigger.MC.file = $PXLANA/ConfigFiles/ConfigInputs/ScaleFactors/2016/SF_Muon_Trigger_total.root
+Muon.ScaleFactor.Trigger.MC.dir = Mu50_OR_TkMu50_PtEtaBins/efficienciesMC
+Muon.ScaleFactor.Trigger.MC.hist = histo2D_MC;2
+Muon.ScaleFactor.Trigger.MC.abseta = 1
+Muon.ScaleFactor.Trigger.MC.syst = 0.005
+
+# The following IDs are used for combined ID
+Muon.ScaleFactor.ID.TightID.type = PtEta
+Muon.ScaleFactor.ID.TightID.file = $PXLANA/ConfigFiles/ConfigInputs/ScaleFactors/2016/SF_Muon_ID_total.root
+Muon.ScaleFactor.ID.TightID.dir = MC_NUM_TightID_DEN_genTracks_PAR_pt_eta
+Muon.ScaleFactor.ID.TightID.hist = pt_abseta_ratio
+Muon.ScaleFactor.ID.TightID.abseta = 1
+Muon.ScaleFactor.ID.TightID.syst = 0.01
+
+Muon.ScaleFactor.Iso.TightID.type = PtEta
+Muon.ScaleFactor.Iso.TightID.file = $PXLANA/ConfigFiles/ConfigInputs/ScaleFactors/2016/SF_Muon_Iso_total.root
+Muon.ScaleFactor.Iso.TightID.dir = TightISO_TightID_pt_eta
+Muon.ScaleFactor.Iso.TightID.hist = pt_abseta_ratio
+Muon.ScaleFactor.Iso.TightID.abseta = 1
+Muon.ScaleFactor.Iso.TightID.syst = 0.01
+
+Muon.ScaleFactor.ID.HighPtID.type = PtEta
+Muon.ScaleFactor.ID.HighPtID.file = $PXLANA/ConfigFiles/ConfigInputs/ScaleFactors/2016/SF_Muon_ID_total.root
+Muon.ScaleFactor.ID.HighPtID.dir = MC_NUM_HighPtID_DEN_genTracks_PAR_newpt_eta
+Muon.ScaleFactor.ID.HighPtID.hist = pair_ne_ratio
+Muon.ScaleFactor.ID.HighPtID.abseta = 1
+Muon.ScaleFactor.ID.HighPtID.syst = 0.01
+
+Muon.ScaleFactor.Iso.HighPtID.type = PtEta
+Muon.ScaleFactor.Iso.HighPtID.file = $PXLANA/ConfigFiles/ConfigInputs/ScaleFactors/2016/SF_Muon_Iso_total.root
+Muon.ScaleFactor.Iso.HighPtID.dir = tkLooseISO_highptID_newpt_eta
+Muon.ScaleFactor.Iso.HighPtID.hist = pair_ne_ratio
+Muon.ScaleFactor.Iso.HighPtID.abseta = 1
+Muon.ScaleFactor.Iso.HighPtID.syst = 0.01

@@ -1,0 +1,77 @@
+# List of all available default scale factors
+# This ID is matches the default ID in ele.cff and shows how a single ID
+# my be used
+
+#https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonUL2017
+
+###
+#All the UL17 should be checked again
+# I did not find anything for Tracking for UL17
+###
+
+##This ID ScaleFactor histogram is the same to the Tight one below 
+Muon.ScaleFactor.ID.type = EtaPt
+Muon.ScaleFactor.ID.file = $PXLANA/ConfigFiles/ConfigInputs/ScaleFactors/UL2017/Efficiencies_muon_generalTracks_Z_Run2017_UL_ID.root 
+Muon.ScaleFactor.ID.dir = 
+Muon.ScaleFactor.ID.hist = NUM_TightID_DEN_TrackerMuons_abseta_pt
+Muon.ScaleFactor.ID.abseta = 1
+Muon.ScaleFactor.ID.syst = 0.01
+
+##This Iso ScaleFactor histogram is the same to the Tight one below 
+Muon.ScaleFactor.Iso.type = EtaPt
+Muon.ScaleFactor.Iso.file = $PXLANA/ConfigFiles/ConfigInputs/ScaleFactors/UL2017/Efficiencies_muon_generalTracks_Z_Run2017_UL_ISO.root
+Muon.ScaleFactor.Iso.dir = 
+Muon.ScaleFactor.Iso.hist = NUM_TightRelIso_DEN_TightIDandIPCut_abseta_pt
+Muon.ScaleFactor.Iso.abseta = 1
+Muon.ScaleFactor.Iso.syst = 0.01
+
+Muon.ScaleFactor.Tracker.type = PtEta 
+Muon.ScaleFactor.Tracker.file = $PXLANA/ConfigFiles/ConfigInputs/ScaleFactors/UL2017/Muon_Track_UL17_SF.root
+Muon.ScaleFactor.Tracker.dir =  
+Muon.ScaleFactor.Tracker.hist = Track_SF_pt_abseta
+Muon.ScaleFactor.Tracker.abseta = 1
+Muon.ScaleFactor.Tracker.syst = 0.01
+
+Muon.ScaleFactor.Trigger.Data.type = EtaPt
+Muon.ScaleFactor.Trigger.Data.file = $PXLANA/ConfigFiles/ConfigInputs/ScaleFactors/UL2017/Efficiencies_muon_generalTracks_Z_Run2017_UL_SingleMuonTriggers.root
+Muon.ScaleFactor.Trigger.Data.dir =
+Muon.ScaleFactor.Trigger.Data.hist = NUM_Mu50_or_OldMu100_or_TkMu100_DEN_CutBasedIdGlobalHighPt_and_TkIsoLoose_abseta_pt_efficiencyData
+Muon.ScaleFactor.Trigger.Data.abseta = 1
+Muon.ScaleFactor.Trigger.Data.syst = 0.005
+
+Muon.ScaleFactor.Trigger.MC.type = EtaPt
+Muon.ScaleFactor.Trigger.MC.file = $PXLANA/ConfigFiles/ConfigInputs/ScaleFactors/UL2017/Efficiencies_muon_generalTracks_Z_Run2017_UL_SingleMuonTriggers.root 
+Muon.ScaleFactor.Trigger.MC.dir = 
+Muon.ScaleFactor.Trigger.MC.hist = NUM_Mu50_or_OldMu100_or_TkMu100_DEN_CutBasedIdGlobalHighPt_and_TkIsoLoose_abseta_pt_efficiencyMC
+Muon.ScaleFactor.Trigger.MC.abseta = 1
+Muon.ScaleFactor.Trigger.MC.syst = 0.005
+
+# The following IDs are used for combined ID
+Muon.ScaleFactor.ID.TightID.type = EtaPt
+Muon.ScaleFactor.ID.TightID.file = $PXLANA/ConfigFiles/ConfigInputs/ScaleFactors/UL2017/Efficiencies_muon_generalTracks_Z_Run2017_UL_ID.root 
+Muon.ScaleFactor.ID.TightID.dir = 
+Muon.ScaleFactor.ID.TightID.hist = NUM_TightID_DEN_TrackerMuons_abseta_pt 
+Muon.ScaleFactor.ID.TightID.abseta = 1
+Muon.ScaleFactor.ID.TightID.syst = 0.01
+
+Muon.ScaleFactor.Iso.TightID.type = EtaPt
+Muon.ScaleFactor.Iso.TightID.file = $PXLANA/ConfigFiles/ConfigInputs/ScaleFactors/UL2017/Efficiencies_muon_generalTracks_Z_Run2017_UL_ISO.root
+Muon.ScaleFactor.Iso.TightID.dir = 
+Muon.ScaleFactor.Iso.TightID.hist = NUM_TightRelIso_DEN_TightIDandIPCut_abseta_pt
+Muon.ScaleFactor.Iso.TightID.abseta = 1
+Muon.ScaleFactor.Iso.TightID.syst = 0.01
+
+Muon.ScaleFactor.ID.HighPtID.type = EtaPt
+Muon.ScaleFactor.ID.HighPtID.file = $PXLANA/ConfigFiles/ConfigInputs/ScaleFactors/UL2017/Muon_HighPt_Scale_UL17_SF_TuneP.root 
+Muon.ScaleFactor.ID.HighPtID.dir = 
+Muon.ScaleFactor.ID.HighPtID.hist = HighPt_Scale_SF_TuneP
+Muon.ScaleFactor.ID.HighPtID.abseta = 1
+Muon.ScaleFactor.ID.HighPtID.syst = 0.01
+
+#Iso for UL17 HighPtID is the same for the MediumID(TightID). See the reference on top! 
+Muon.ScaleFactor.Iso.HighPtID.type = EtaPt
+Muon.ScaleFactor.Iso.HighPtID.file = $PXLANA/ConfigFiles/ConfigInputs/ScaleFactors/UL2017/Efficiencies_muon_generalTracks_Z_Run2017_UL_ISO.root
+Muon.ScaleFactor.Iso.HighPtID.dir = 
+Muon.ScaleFactor.Iso.HighPtID.hist = NUM_TightRelIso_DEN_TightIDandIPCut_abseta_pt
+Muon.ScaleFactor.Iso.HighPtID.abseta = 1
+Muon.ScaleFactor.Iso.HighPtID.syst = 0.01

@@ -1,0 +1,15 @@
+# Medium ID (2015)
+# https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2?rev=15 (10.07.2015)
+# 
+Muon.MediumID.UseBool = 0
+Muon.MediumID.BoolName = isMediumMuon
+Muon.MediumID.IsLooseMuon = 1
+Muon.MediumID.ValidFraction.min = 0.8
+Muon.MediumID.IsGlobalMuon = 1
+Muon.MediumID.NormalizedChi2.max = 3.
+Muon.MediumID.Chi2LocalPosition.max = 12
+Muon.MediumID.TrkKink.max = 20.
+Muon.MediumID.SegCompGlobal.min = 0.303
+Muon.MediumID.SegCompTight.min = 0.451
+#
+# End Medium ID

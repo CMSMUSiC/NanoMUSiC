@@ -1,0 +1,92 @@
+# Default config file for the remote analysis manager (ram)
+#
+# Use tar.bz2 for compression, instead of tar.gz.
+# The latter has different checksums for two archives with identical contents.
+--- # Settings
+## Analysis files
+# executable denotes the executable file which will be run on the grid
+# outputfiles are copied back to the user after job completion
+# outputfilesdcache are copied to the dcache
+executable: gridwrapper.sh
+outputfiles: [AnalysisOutput.tar.bz2]
+outputfilesdcache: []
+
+## Gridpack settings
+# gridpackbase is the base directory from which the gridpackfiles are read
+# gridpackfiles are the files of the gridpack, relative to gridpackhome or absolute
+#
+# gridpacklocal is the name of the local gridpack file
+# gridpackremote is the name/path of the remote gridpack file
+gridpackbase: $PXLANA
+gridpackfiles: [set_env.sh, bin/music, ConfigFiles/, LEDge/cfg/, /home/home1/institut_3a/radziej/LED/ram/gridwrapper.sh]
+
+gridpacklocal: gridpack.tar.bz2
+gridpackremote: gridpacks/gridpack.tar.bz2
+
+## Analysis Options
+# cmssw can specify a CMSSW version, defaults to $CMSSW_BASE if left empty
+# maxeventsoption denotes the command line option for limiting the processed number of events
+# skipeventsoption denotes the command line option for skipping a number of events
+#
+# eventsperjob defines the maximum number of events per job, leave empty to use filesperjob
+# filesperjob defines the files processed per job, leave empty to use eventsperjob
+cmssw:
+maxeventsoption: -N
+skipeventsoption: --skip
+
+eventsperjob:
+filesperjob: 5
+
+## Database query criteria for skims and samples
+# (Almost) all fields of the database can be used to select skims/samples
+# Skimids, datasetpaths and sample names are reserved for sample/skim identification
+# The % sign serves as a wildcard
+skim_criteria:
+ skimmer_version: CMSSW_7%
+sample_criteria:
+ crosssection_oder: NLO
+
+
+--- # Samples
+# &name defines an anchor
+# *name references an anchor
+# One cannot redefine anchor names
+#
+# Samples can be defined by:
+#  (sample name) ZToMuMu_M_50_120_13TeV_PH
+#      (skim id) 3510
+# (dataset path) /ZToMuMu_NNPDF30_13TeV-powheg_M_120_200/.../MINIAODSIM
+#
+# Dicts containing data samples have 'data' in their name:
+# data, Data, Data2015, PromptData
+data:
+  Data_Run2015D-16Dec2015_258159_260627_SingleMuon: &dataargs LEDge/cfg/data.cfg
+background:
+  # Drell Yan
+  ZToMuMu_M_50_120_13TeV_PH: &mcargs LEDge/cfg/mc.cfg
+  ZToMuMu_M_120_200_13TeV_PH: *mcargs
+  ZToMuMu_M_200_400_13TeV_PH: *mcargs
+  ZToMuMu_M_400_800_13TeV_PH: *mcargs
+  ZToMuMu_M_800_1400_13TeV_PH: *mcargs
+  ZToMuMu_M_1400_2300_13TeV_PH: *mcargs
+  ZToMuMu_M_2300_3500_13TeV_PH: *mcargs
+  ZToMuMu_M_3500_4500_13TeV_PH: *mcargs
+  ZToMuMu_M_4500_6000_13TeV_PH: *mcargs
+  ZToMuMu_M_6000_Inf_13TeV_PH: *mcargs
+  # Top
+  TT_13TeV_ext3_PH: *mcargs
+  ST_tW_top_5f_DS_inclusiveDecays_13TeV_PH: *mcargs
+  ST_tW_antitop_5f_DS_inclusiveDecays_13TeV_PH: *mcargs
+  # Diboson
+  ZZ_13TeV_P8: *mcargs
+  WW_13TeV_P8: *mcargs
+  WZ_13TeV_P8: *mcargs
+  # W
+  # WJetsToLNu_13TeVMLM_MG: *mcargs
+# signal:
+#   ADDGravToLL_LambdaT-4500_M-1700_13TeV_P8:
+
+--- # Queryoptions
+skim:
+  skimmer_version: CMSSW_8%
+... # End of file

@@ -1,0 +1,15 @@
+# Tracker ID (2015)
+# Based on the High Pt ID, but without global muon (replaced with tracker muon) and VHitsMuonSys. 
+# https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideMuonId2015
+# 
+Muon.TrackerID.UseBool = 0
+Muon.TrackerID.BoolName = isTrackerMuon
+Muon.TrackerID.IsTrackerMuon = 1
+Muon.TrackerID.NMatchedStations.min = 1
+Muon.TrackerID.PtRelativeError.max = 0.3
+Muon.TrackerID.Dxy.max = 0.2
+Muon.TrackerID.Dz.max = 0.5
+Muon.TrackerID.VHitsPixel.min = 0
+Muon.TrackerID.TrackerLayersWithMeas.min = 5
+#
+# End Tracker ID

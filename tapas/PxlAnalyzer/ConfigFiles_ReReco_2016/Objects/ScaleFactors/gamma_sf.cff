@@ -1,0 +1,25 @@
+# default scale factors
+
+Gamma.ScaleFactor.ID.type = EtaPt
+Gamma.ScaleFactor.ID.file = $PXLANA/ConfigFiles/ConfigInputs/ScaleFactors/2016/sf_gamma_tight_80X.root
+Gamma.ScaleFactor.ID.dir =
+Gamma.ScaleFactor.ID.hist = EGamma_SF2D
+Gamma.ScaleFactor.ID.abseta = 0
+
+Gamma.ScaleFactor.ID.SeedVeto.type = EtaPt
+Gamma.ScaleFactor.ID.SeedVeto.file = $PXLANA/ConfigFiles/ConfigInputs/ScaleFactors/2016/sf_gamma_seed_veto_ScalingFactors_80X_Summer16.root
+Gamma.ScaleFactor.ID.SeedVeto.dir =
+Gamma.ScaleFactor.ID.SeedVeto.hist = "Scaling_Factors_CSEV_R9 Inclusive"
+Gamma.ScaleFactor.ID.SeedVeto.abseta = 0
+
+Gamma.ScaleFactor.ID.MVAID.type = EtaPt
+Gamma.ScaleFactor.ID.MVAID.file = $PXLANA/ConfigFiles/ConfigInputs/ScaleFactors/2016/sf_gamma_MVA_80X.root
+Gamma.ScaleFactor.ID.MVAID.dir =
+Gamma.ScaleFactor.ID.MVAID.hist = EGamma_SF2D
+Gamma.ScaleFactor.ID.MVAID.abseta = 0
+
+Gamma.ScaleFactor.ID.Spring15Tight25ns.type = EtaPt
+Gamma.ScaleFactor.ID.Spring15Tight25ns.file = $PXLANA/ConfigFiles/ConfigInputs/ScaleFactors/2015/gamma_tight_mva.root
+Gamma.ScaleFactor.ID.Spring15Tight25ns.dir = ID_tight
+Gamma.ScaleFactor.ID.Spring15Tight25ns.hist = Gamma_ID_tight
+Gamma.ScaleFactor.ID.Spring15Tight25ns.abseta = 0

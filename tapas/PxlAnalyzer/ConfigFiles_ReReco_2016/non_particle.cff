@@ -1,0 +1,27 @@
+FilterSet.Name = AllFilters
+FilterSet.GenList = ""
+FilterSet.RecList = ""
+#scrapingFilter,cschalofilter,hcallasereventfilter,ecaldeadcellfilter,trackingfailurefilter,eebadscfilter,muonpfcandidatefilter,ecallasercorrfilter,coherentnoiserelativefilter,coherentnoiseabsolutefilter
+# Filter flag recommendations taken from: https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2
+FilterSet.RecList_HLT=Flag_HBHENoiseFilter,Flag_HBHENoiseIsoFilter,Flag_CSCTightHalo2015Filter,Flag_EcalDeadCellTriggerPrimitiveFilter,Flag_goodVertices,Flag_eeBadScFilter
+FilterSet.FillBookkeepingVector = 0
+
+Pileup.UsePileupReWeighting = 0
+Pileup.UseRecoVertices = 0
+Pileup.UseSampleName = 0
+
+Pileup.GenHistFile  = "$PXLANA/ConfigFiles/ConfigInputs/mc_pileup_Summer16.root"
+Pileup.GenHistName = "pileup"
+Pileup.GenHistFileUp  = "$PXLANA/ConfigFiles/ConfigInputs/mc_pileup_Summer16.root"
+Pileup.GenHistNameUp = "pileup"
+Pileup.GenHistFileDown  = "$PXLANA/ConfigFiles/ConfigInputs/mc_pileup_Summer16.root"
+Pileup.GenHistNameDown = "pileup"
+
+Pileup.DataHistFile = "$PXLANA/ConfigFiles/ConfigInputs/data_pileup_2016_69p2.root"
+Pileup.DataHistName = "pileup"
+Pileup.DataHistFileDown = "$PXLANA/ConfigFiles/ConfigInputs/data_pileup_2016_69p2.root"
+Pileup.DataHistNameDown = "pileupDown"
+Pileup.DataHistFileUp = "$PXLANA/ConfigFiles/ConfigInputs/data_pileup_2016_69p2.root"
+Pileup.DataHistNameUp = "pileupUp"
+
+Pileup.QuietMode = 0

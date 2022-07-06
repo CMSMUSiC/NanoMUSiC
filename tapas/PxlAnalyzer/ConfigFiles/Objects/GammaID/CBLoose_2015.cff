@@ -1,0 +1,20 @@
+# https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedPhotonIdentificationRun2
+Gamma.CB.boolname = cutBasedPhotonID-Spring15-50ns-V1-standalone-loose
+
+Gamma.CB.Barrel.HoEm.max = 0.05
+Gamma.CB.Barrel.sigmaIetaIeta.max = 0.0102
+Gamma.CB.Barrel.PFIsoChargedHadron.max = 3.32
+Gamma.CB.Barrel.PFIsoNeutralHadron.Offset = 1.92
+Gamma.CB.Barrel.PFIsoNeutralHadron.Linscale = 0.014
+Gamma.CB.Barrel.PFIsoNeutralHadron.Quadscale = 0.000019
+Gamma.CB.Barrel.PFIsoPhoton.Offset = 0.81
+Gamma.CB.Barrel.PFIsoPhoton.Linscale = 0.0053
+
+Gamma.CB.Endcap.HoEm.max = 0.05
+Gamma.CB.Endcap.sigmaIetaIeta.max = 0.0274
+Gamma.CB.Endcap.PFIsoChargedHadron.max = 1.97
+Gamma.CB.Endcap.PFIsoNeutralHadron.Offset = 11.86
+Gamma.CB.Endcap.PFIsoNeutralHadron.Linscale = 0.0139
+Gamma.CB.Endcap.PFIsoNeutralHadron.Quadscale = 0.000025
+Gamma.CB.Endcap.PFIsoPhoton.Offset = 0.83
+Gamma.CB.Endcap.PFIsoPhoton.Linscale = 0.0034

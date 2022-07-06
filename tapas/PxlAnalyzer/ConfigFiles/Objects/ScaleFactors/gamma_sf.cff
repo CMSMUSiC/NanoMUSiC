@@ -1,0 +1,27 @@
+# default scale factors
+#Those values are for TightID
+
+
+Gamma.ScaleFactor.ID.type = EtaPt
+Gamma.ScaleFactor.ID.file = $PXLANA/ConfigFiles/ConfigInputs/ScaleFactors/UL2017/egammaEffi.txt_EGM2D_PHO_Tight_UL17.root
+Gamma.ScaleFactor.ID.dir =
+Gamma.ScaleFactor.ID.hist = EGamma_SF2D
+Gamma.ScaleFactor.ID.abseta = 0					#The histogram contains Eta
+
+Gamma.ScaleFactor.ID.SeedVeto.type = EtaPt
+Gamma.ScaleFactor.ID.SeedVeto.file = $PXLANA/ConfigFiles/ConfigInputs/ScaleFactors/UL2017/sf_gamma_seed_veto_ScalingFactors_106X_Summer19_RunUL17.root #UPDATED TO UL17
+Gamma.ScaleFactor.ID.SeedVeto.dir =
+Gamma.ScaleFactor.ID.SeedVeto.hist = Scaling_Factors_CSEV_R9_Inclusive
+Gamma.ScaleFactor.ID.SeedVeto.abseta = 1       #The histogram contains	AbsEta
+
+Gamma.ScaleFactor.ID.MVAID.type = EtaPt
+Gamma.ScaleFactor.ID.MVAID.file = $PXLANA/ConfigFiles/ConfigInputs/ScaleFactors/UL2017/egammaEffi.txt_EGM2D_PHO_MVA80_UL17.root
+Gamma.ScaleFactor.ID.MVAID.dir =
+Gamma.ScaleFactor.ID.MVAID.hist = EGamma_SF2D
+Gamma.ScaleFactor.ID.MVAID.abseta = 0
+
+Gamma.ScaleFactor.ID.Spring15Tight25ns.type = EtaPt
+Gamma.ScaleFactor.ID.Spring15Tight25ns.file = $PXLANA/ConfigFiles/ConfigInputs/ScaleFactors/2015/gamma_tight_mva.root
+Gamma.ScaleFactor.ID.Spring15Tight25ns.dir = ID_tight
+Gamma.ScaleFactor.ID.Spring15Tight25ns.hist = Gamma_ID_tight
+Gamma.ScaleFactor.ID.Spring15Tight25ns.abseta = 0
