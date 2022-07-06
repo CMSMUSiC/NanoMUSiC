@@ -36,19 +36,13 @@ echo "--> TODO: Fix the PxlSkimmer tag mechanism!!!"
 
 # Compiles
 scram build -j 8
+scram build
 
 #Redo the cmsenv
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 cmsenv
 
 cd $SCRIPT_DIR
-
-# Setup TAPAS and PxlAnalyzer
-
-# load user configuration parameters
-source music.config
-
-# setup TAPAS
 
 # create links for libaries
 mkdir -p lib/python
