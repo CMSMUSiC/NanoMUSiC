@@ -2,7 +2,6 @@
 
 # This is a set_env script
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-echo $SCRIPT_DIR/tapas/tools/
 # load user configs
 source music_env.config
 
@@ -12,10 +11,6 @@ cd $SCRIPT_DIR/$CMSSW_VER/src/PxlSkimmer
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 cmsenv
 source set_env.sh
-
-# Set up the TAPAS environment
-cd $SCRIPT_DIR/tapas
-source setenv_tapas.sh
 
 # This is a TAPAS set_env script. Source it before usage of TAPAS.
 export LD_LIBRARY_PATH=$SCRIPT_DIR/tapas/lib:$LD_LIBRARY_PATH
@@ -27,7 +22,6 @@ export MYPXLANA=EventClassFactory
 source /cvmfs/cms.cern.ch/crab3/crab.sh
 
 # Source all the needed set_env
-echo $SCRIPT_DIR/tapas/tools/
 cd $SCRIPT_DIR/tapas/tools/
 source set_env.sh
 
