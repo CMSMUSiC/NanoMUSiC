@@ -3,8 +3,12 @@
 # This is a set_env script
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
+# load user configs
+source music_env.config
+
+
 # Set up the CMSSW environment
-cd $SCRIPT_DIR/CMSSW_*/src/PxlSkimmer
+cd $SCRIPT_DIR/$CMSSW_VER/src/PxlSkimmer
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 cmsenv
 source set_env.sh
@@ -17,7 +21,6 @@ source setenv_tapas.sh
 export LD_LIBRARY_PATH=$SCRIPT_DIR/tapas/lib:$LD_LIBRARY_PATH
 export PYTHONPATH=$SCRIPT_DIR/tapas/lib/python:$PYTHONPATH
 export MYPXLANA=EventClassFactory
-source music_env.config
 
 
 # Set up CRAB3

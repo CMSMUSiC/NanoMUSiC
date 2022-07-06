@@ -29,7 +29,7 @@ rm EgammaAnalysis/ElectronTools/data -rf
 git clone git@github.com:cms-data/EgammaAnalysis-ElectronTools.git EgammaAnalysis/ElectronTools/data
 
 
-echo "--> Fix the PxlSkimmer tag mechanism!!!"
+echo "--> TODO: Fix the PxlSkimmer tag mechanism!!!"
 # cd PxlSkimmer
 # git checkout CMSSW_10_6_v5p9_2017
 # cd ..
@@ -58,6 +58,7 @@ ln -s /cvmfs/cms.cern.ch/slc6_amd64_gcc493/external/py2-pycurl/7.19.0-kpegke/lib
 
 
 # Create music_env.config
+touch music_env.config
 echo "" > music_env.config
 echo "export CERNUSERNAME=$2" >> music_env.config
 echo "export CMSSW_VER=$CMSSW_VER" >> music_env.config
