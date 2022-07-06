@@ -1,39 +1,18 @@
 #!/bin/bash
 
+# This is a set_env script
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-# This is a set_env script
 # Set up the CMSSW environment
-
-while getopts ":-cmssw-ver:" opt; do
-  case $opt in
-    a)
-      CMSSW_VER=$OPTARG
-      ;;
-    \?)
-      echo "Invalid option: -$OPTARG" >&2
-      exit 1
-      ;;
-    :)
-      echo "Option -$OPTARG requires an argument." >&2
-      exit 1
-      ;;
-  esac
-done
-
-
-cd $SCRIPT_DIR/skimmer/$CMSSW_VER/src/PxlSkimmer
+cd $SCRIPT_DIR/CMSSW_*/src/PxlSkimmer
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 cmsenv
 source set_env.sh
 
 # Set up the TAPAS environment
-
-cd
 cd $SCRIPT_DIR/tapas
 
 source setenv_tapas.sh
-
 
 # Set up CRAB3
 source /cvmfs/cms.cern.ch/crab3/crab.sh
@@ -61,21 +40,5 @@ source set_env.sh
 cd $SCRIPT_DIR
 
 
-while getopts ":-init-proxy:" opt; do
-  case $opt in
-    a)
-      echo "Authenticate your grid certificate..."
-      voms-proxy-init --voms cms:/cms --valid 192:0
-      ;;
-    \?)
-      echo "Invalid option: -$OPTARG" >&2
-      exit 1
-      ;;
-    :)
-    #   echo "Option -$OPTARG requires an argument." >&2
-    #   exit 1
-    #   ;;
-  esac
-done
-
-
+echo "Initialize your grid certificate..."
+voms-proxy-init --voms cms:/cms --valid 192:0
