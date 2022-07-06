@@ -1,8 +1,6 @@
 ##### CUSTOM #####
 *CMSSW_*
-tapas/bootstrap_tapas.sh
-skimmer/PxlSkimmer/setup.sh
-skimmer/PxlSkimmer/set_env.sh
+music_env.config
 
 ##### PYTHON #####
 

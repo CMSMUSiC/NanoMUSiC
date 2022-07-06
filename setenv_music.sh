@@ -11,8 +11,14 @@ source set_env.sh
 
 # Set up the TAPAS environment
 cd $SCRIPT_DIR/tapas
-
 source setenv_tapas.sh
+
+# This is a TAPAS set_env script. Source it before usage of TAPAS.
+export LD_LIBRARY_PATH=$SCRIPT_DIR/tapas/lib:$LD_LIBRARY_PATH
+export PYTHONPATH=$SCRIPT_DIR/tapas/lib/python:$PYTHONPATH
+export MYPXLANA=EventClassFactory
+source music_env.config
+
 
 # Set up CRAB3
 source /cvmfs/cms.cern.ch/crab3/crab.sh
@@ -22,6 +28,9 @@ cd $SCRIPT_DIR/tapas/tools/
 source set_env.sh
 
 cd $SCRIPT_DIR/tapas/PxlAnalyzer/
+source set_env.sh
+
+cd $SCRIPT_DIR/tapas/PlotLib/
 source set_env.sh
 
 cd $SCRIPT_DIR/tapas/PxlAnalyzer/EventClassFactory/
@@ -36,9 +45,7 @@ source set_env.sh
 cd $SCRIPT_DIR/tapas/MUSiC-RoIScanner/
 source set_env.sh
 
-
 cd $SCRIPT_DIR
-
 
 echo "Initialize your grid certificate..."
 voms-proxy-init --voms cms:/cms --valid 192:0

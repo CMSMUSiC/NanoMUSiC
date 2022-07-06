@@ -3,8 +3,8 @@
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # Set up the CMSSW environment
-echo "Always check the latest recommendations for CMSSW version." 
-echo "https://twiki.cern.ch/twiki/bin/view/CMS/PdmVRun2LegacyAnalysis" 
+echo "!!! Always check the latest recommendations for CMSSW version. !!!" 
+echo "!!! https://twiki.cern.ch/twiki/bin/view/CMS/PdmVRun2LegacyAnalysis !!!" 
 echo ""
 
 # Set CMSSW version
@@ -42,3 +42,22 @@ source /cvmfs/cms.cern.ch/cmsset_default.sh
 cmsenv
 
 cd $SCRIPT_DIR
+
+# Setup TAPAS and PxlAnalyzer
+
+# load user configuration parameters
+source music.config
+
+# setup TAPAS
+
+# create links for libaries
+mkdir -p lib/python
+ln -s /usr/lib64/libdavix.so.0 lib/libdavix.so.0
+ln -s /usr/lib64/python2.6/lib-dynload/_curses.so lib/python/_curses.so
+ln -s /cvmfs/cms.cern.ch/slc6_amd64_gcc493/external/py2-pycurl/7.19.0-kpegke/lib/python2.7/site-packages/pycurl.so lib/python/pycurl.so
+
+
+# Create music_env.config
+echo "" > music_env.config
+echo "export CERNUSERNAME=$2" >> music_env.config
+echo "export CMSSW_VER=$CMSSW_VER" >> music_env.config
