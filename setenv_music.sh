@@ -2,7 +2,7 @@
 
 # This is a set_env script
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-
+echo $SCRIPT_DIR/tapas/tools/
 # load user configs
 source music_env.config
 
@@ -27,6 +27,7 @@ export MYPXLANA=EventClassFactory
 source /cvmfs/cms.cern.ch/crab3/crab.sh
 
 # Source all the needed set_env
+echo $SCRIPT_DIR/tapas/tools/
 cd $SCRIPT_DIR/tapas/tools/
 source set_env.sh
 
