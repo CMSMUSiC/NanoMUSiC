@@ -19,10 +19,9 @@ export LD_LIBRARY_PATH=$SCRIPTDIR/tapas/lib:$LD_LIBRARY_PATH
 export PYTHONPATH=$SCRIPTDIR/tapas/lib/python:$PYTHONPATH
 export MYPXLANA=EventClassFactory
 
-echo $SCRIPTDIR
 # Set up CRAB3
 source /cvmfs/cms.cern.ch/crab3/crab.sh
-echo $SCRIPTDIR
+
 # Source all the needed set_env
 cd $SCRIPTDIR/tapas/tools/
 source set_env.sh

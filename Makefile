@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 DIR := ${CURDIR}
 
 all: skimmer utils roi pxlanalyzer 
