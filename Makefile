@@ -9,7 +9,7 @@ MAKEFILE_DIR := ${CURDIR}
 all: skimmer utils roi pxlanalyzer 
 
 skimmer: 
-	cd $(MAKEFILE_DIR)/CMSSW_10_6_29/src ; cmsenv ; scram build -j 8 ; scram build
+	cd $(MAKEFILE_DIR)/CMSSW_10_6_29/src ; source /cvmfs/cms.cern.ch/cmsset_default.sh ; cmsenv ; scram build -j 8 ; scram build
 
 utils: 
 	cd $(MAKEFILE_DIR)/tapas/MUSiC-Utils/ ; make
