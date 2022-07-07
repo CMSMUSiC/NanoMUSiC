@@ -23,23 +23,23 @@ pxlanalyzer: setenv
 
 clean: skimmer_clean utils_clean roi_clean pxlanalyzer_clean
 
-skimmer: setenv
+skimmer_clean: setenv
 	cd $(DIR)/CMSSW_10_6_29/src
 	cmsenv
 	scram build clean
 
-utils: setenv
+utils_clean: setenv
 	cd $(DIR)/tapas/MUSiC-Utils/
 	make clean
 
-roi: setenv
+roi_clean: setenv
 	cd $DIR/tapas/MUSiC-RoIScanner/
 	make  clean
 
 
-pxlanalyzer: setenv
+pxlanalyzer_clean: setenv
 	cd $DIR/tapas/PxlAnalyzer/
-	make
+	make clean
 
 setenv:
 	source setenv_music.sh

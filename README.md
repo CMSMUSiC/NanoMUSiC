@@ -20,3 +20,25 @@ https://twiki.cern.ch/twiki/bin/view/CMS/PdmVRun2LegacyAnalysis
 ```
 source setenv_music.sh
 ```
+
+# Compile the code
+
+```
+make clean
+make
+```
+
+Other options are:
+
+- `make skimmer`  
+- `make utils`  
+- `make rio`  
+- `make pxlanalyzer`  
+
+and
+
+- `make skimmer_clean`  
+- `make utils_clean`  
+- `make rio_clean`  
+- `make pxlanalyzer_clean`  
+
