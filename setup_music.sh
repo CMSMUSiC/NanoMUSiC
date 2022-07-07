@@ -50,6 +50,20 @@ ln -s /usr/lib64/libdavix.so.0 lib/libdavix.so.0
 ln -s /usr/lib64/python2.6/lib-dynload/_curses.so lib/python/_curses.so
 ln -s /cvmfs/cms.cern.ch/slc6_amd64_gcc493/external/py2-pycurl/7.19.0-kpegke/lib/python2.7/site-packages/pycurl.so lib/python/pycurl.so
 
+# TODO: Install LUIGI
+# ref: https://twiki.cern.ch/twiki/bin/viewauth/CMS/MUSiCBasicSetupRunII#MUSiC_RoIScanner
+echo "-->>> Install LUIGI <<<--"
+
+# setup table2latex
+cd $SCRIPT_DIR/tapas/MUSiC-RoIScanner
+git clone git@github.com:tobias-pook/table2latex.git
+cd table2latex
+pip  install --user -e .
+
+# clone Condor_utils
+cd $SCRIPT_DIR
+git clone git@github.com:CMSMUSiC/Condor_utils.git
+
 
 # Create music_env.config
 touch music_env.config
