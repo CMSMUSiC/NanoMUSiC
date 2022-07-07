@@ -46,6 +46,9 @@ source set_env.sh
 
 cd $SCRIPTDIR
 
+# control whether MUSiC anvs are set
+# to be used by Makefile
+export MUSIC_IS_SET_ENV=1
 
-# echo "Initialize your grid certificate..."
-# voms-proxy-init --voms cms:/cms --valid 192:0
+echo "Initialize your grid certificate..."
+voms-proxy-init --voms cms:/cms --valid 192:0

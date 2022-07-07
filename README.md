@@ -32,13 +32,14 @@ Other options are:
 
 - `make skimmer`  
 - `make utils`  
-- `make rio`  
+- `make roi`  
+- `make roi_lut`  --> this one only creates the LUTs. Usually takes some time to run, but always needed (only one per setup).
 - `make pxlanalyzer`  
 
 and
 
 - `make skimmer_clean`  
 - `make utils_clean`  
-- `make rio_clean`  
+- `make roi_clean`  
 - `make pxlanalyzer_clean`  
 
