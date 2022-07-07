@@ -47,10 +47,5 @@ source set_env.sh
 cd $SCRIPTDIR
 
 
-if [ -z "$1" ]
-then
-      echo "Initialize your grid certificate..."
-    voms-proxy-init --voms cms:/cms --valid 192:0
-fi
-
-
+# echo "Initialize your grid certificate..."
+# voms-proxy-init --voms cms:/cms --valid 192:0

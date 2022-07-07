@@ -26,6 +26,5 @@ utils_clean:
 roi_clean: 
 	source setenv_music.sh no_proxy ; cd $DIR/tapas/MUSiC-RoIScanner/ ; make  clean
 
-
 pxlanalyzer_clean: 
 	source setenv_music.sh no_proxy ; cd $DIR/tapas/PxlAnalyzer/ ; make clean
