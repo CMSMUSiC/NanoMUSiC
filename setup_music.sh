@@ -1,10 +1,24 @@
 #!/bin/bash
 
+if [ -z "$1" ]
+then
+      echo "ERROR: Please, set the CMSSW version and your CERN username."
+      echo "ERROR: Example: ./setup_music.sh CMSSW_10_6_29 your_CERN_username"
+      exit 1
+fi
+
+if [ -z "$2" ]
+then
+      echo "ERROR: Please, set the CMSSW version and your CERN username."
+      echo "ERROR: Example: ./setup_music.sh CMSSW_10_6_29 your_CERN_username"
+      exit 1
+fi
+
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # Set up the CMSSW environment
-echo "!!! Always check the latest recommendations for CMSSW version. !!!" 
-echo "!!! https://twiki.cern.ch/twiki/bin/view/CMS/PdmVRun2LegacyAnalysis !!!" 
+echo "INFO: Always check the latest recommendations for CMSSW version." 
+echo "INFO: https://twiki.cern.ch/twiki/bin/view/CMS/PdmVRun2LegacyAnalysis" 
 echo ""
 
 # Set CMSSW version
@@ -52,7 +66,7 @@ ln -s /cvmfs/cms.cern.ch/slc6_amd64_gcc493/external/py2-pycurl/7.19.0-kpegke/lib
 
 # TODO: Install LUIGI
 # ref: https://twiki.cern.ch/twiki/bin/viewauth/CMS/MUSiCBasicSetupRunII#MUSiC_RoIScanner
-echo "-->>> Install LUIGI <<<--"
+echo "TODO: Install LUIGI <<<--"
 
 # setup table2latex
 cd $SCRIPT_DIR/tapas/MUSiC-RoIScanner

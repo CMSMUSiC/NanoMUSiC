@@ -5,9 +5,6 @@ SCRIPTDIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 # load user configs
 source music_env.config
 
-echo $SCRIPTDIR
-
-
 # Set up the CMSSW environment
 cd $SCRIPTDIR/$CMSSW_VER/src/PxlSkimmer
 source /cvmfs/cms.cern.ch/cmsset_default.sh
@@ -49,6 +46,3 @@ cd $SCRIPTDIR
 # control whether MUSiC anvs are set
 # to be used by Makefile
 export MUSIC_IS_SET_ENV=1
-
-echo "Initialize your grid certificate..."
-voms-proxy-init --voms cms:/cms --valid 192:0
