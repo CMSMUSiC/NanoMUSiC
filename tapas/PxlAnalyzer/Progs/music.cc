@@ -79,6 +79,7 @@ int main(int argc, char *argv[])
    std::string outputDirectory = "./AnalysisOutput";
    int numberOfEvents = -1;
    int numberOfSkipEvents = 0;
+   std::string year = "9999";
    std::string FinalCutsFile;
    std::vector<std::string> input_files;
 
@@ -105,15 +106,7 @@ int main(int argc, char *argv[])
    std::vector<std::string> arguments;
 
    po::options_description genericOptions("Generic options");
-   genericOptions.add_options()("help", "produce help message")("Output,o", po::value<std::string>(&outputDirectory), "Output directory")("CONFIG", po::value<std::string>(&FinalCutsFile)->required(),
-                                                                                                                                          "The main config file")("PXLIO_FILE(S)", po::value<std::vector<std::string>>(&input_files)->required(),
-                                                                                                                                                                  "A list of pxlio files to run on")("Num,N", po::value<int>(&numberOfEvents),
-                                                                                                                                                                                                     "Number of events to analyze.")("skip", po::value<int>(&numberOfSkipEvents),
-                                                                                                                                                                                                                                     "Number of events to skip.")("debug", po::value<int>(&debug), "Set the debug level.\n"
-                                                                                                                                                                                                                                                                                                   "0 = ERRORS,"
-                                                                                                                                                                                                                                                                                                   "1 = WARNINGS,"
-                                                                                                                                                                                                                                                                                                   "2 = INFO, 3 = DEBUG,"
-                                                                                                                                                                                                                                                                                                   "4 = EVEN MORE DEBUG");
+   genericOptions.add_options()("help", "produce help message")("Output,o", po::value<std::string>(&outputDirectory), "Output directory")("CONFIG", po::value<std::string>(&FinalCutsFile)->required(), "4 = EVEN MORE DEBUG")("year,y", po::value<std::string>(&year)->required(), "Year of samples");
 
    // add positional arguments
    po::positional_options_description pos;
@@ -156,7 +149,6 @@ int main(int argc, char *argv[])
    Tools::MConfig config(FinalCutsFile);
 
    // Get the run config file from config file.
-   //
    std::string RunConfigFile;
 
    bool const muoCocktailUse = config.GetItem<bool>("Muon.UseCocktail");
@@ -200,7 +192,6 @@ int main(int argc, char *argv[])
       system("mkdir -p Event-lists");
 
    // Init the run config
-   //
    lumi::RunLumiRanges runcfg(RunConfigFile);
    SkipEvents skipEvents(config);
 
@@ -438,7 +429,8 @@ int main(int argc, char *argv[])
             reweighterdown.ReWeightEvent(event_ptr);
             pxl::EventView *GenEvtView = event_ptr->getObjectOwner().findObject<pxl::EventView>("Gen");
 
-            // Sometimes events have missing PDF information (mainly POWHEG). This is checked in the skimmer and if PDF weights are missing, the event is tagged
+            // Sometimes events have missing PDF information (mainly POWHEG). 
+            // This is checked in the skimmer and if PDF weights are missing, the event is tagged
             if (config.GetItem<bool>("General.usePDF") and config.GetItem<bool>("PDF.SkipIncomplete") and GenEvtView->hasUserRecord("Incomplete_PDF_weights") and GenEvtView->getUserRecord("Incomplete_PDF_weights"))
             {
                skipped++;
