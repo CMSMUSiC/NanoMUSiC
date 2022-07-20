@@ -24,6 +24,8 @@
 #include "Main/RunLumiRanges.hh"
 #include "Main/SkipEvents.hh"
 
+#include "buildPxlEvent.hh"
+
 // Include user defined Analysis or use Validator as default
 // Implement your own analysis composer and use export to define the
 // header file as environment variable MYPXLANA.
