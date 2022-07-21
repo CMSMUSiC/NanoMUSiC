@@ -24,7 +24,12 @@
 #include "Main/RunLumiRanges.hh"
 #include "Main/SkipEvents.hh"
 
+// this will build pxl::Events from NanoAOD TTree's.
 #include "buildPxlEvent.hh"
+
+// ROOT Stuff
+#include "TFile.h"
+#include "TTree.h"
 
 // Include user defined Analysis or use Validator as default
 // Implement your own analysis composer and use export to define the
@@ -58,6 +63,11 @@ void KeyboardInterrupt_endJob(int signum)
 {
    do_break = true;
 }
+// int main2(int argc, char *argv[]) {
+//    Tools::MConfig config("foo.cfg");
+//    EventSelector Selector(config);
+//    // SkipEvents skipEvents(config);
+// }
 
 int main(int argc, char *argv[])
 {
@@ -108,12 +118,12 @@ int main(int argc, char *argv[])
    std::vector<std::string> arguments;
 
    po::options_description genericOptions("Generic options");
-   genericOptions.add_options()("help", "produce help message")("Output,o", po::value<std::string>(&outputDirectory), "Output directory")("CONFIG", po::value<std::string>(&FinalCutsFile)->required(), "The main config file")("PXLIO_FILE(S)", po::value<std::vector<std::string>>(&input_files)->required(), "A list of pxlio files to run on")("Num,N", po::value<int>(&numberOfEvents), "Number of events to analyze.")("skip", po::value<int>(&numberOfSkipEvents), "Number of events to skip.")("debug", po::value<int>(&debug), "Set the debug level.\n0 = ERRORS,\n1 = WARNINGS,\n2 = INFO, 3 = DEBUG,\n4 = EVEN MORE DEBUG");
+   genericOptions.add_options()("help", "produce help message")("Output,o", po::value<std::string>(&outputDirectory), "Output directory")("CONFIG", po::value<std::string>(&FinalCutsFile)->required(), "The main config file")("NANOAOD_FILE(S)", po::value<std::vector<std::string>>(&input_files)->required(), "A list of NanoAOD (.root) files to run on")("Num,N", po::value<int>(&numberOfEvents), "Number of events to analyze.")("skip", po::value<int>(&numberOfSkipEvents), "Number of events to skip.")("debug", po::value<int>(&debug), "Set the debug level.\n0 = ERRORS,\n1 = WARNINGS,\n2 = INFO, 3 = DEBUG,\n4 = EVEN MORE DEBUG");
 
    // add positional arguments
    po::positional_options_description pos;
    pos.add("CONFIG", 1);
-   pos.add("PXLIO_FILE(S)", -1);
+   pos.add("NANOAOD_FILE(S)", -1);
 
    // get user defined command line arguments
    po::options_description analysisOptions = thisAnalysis.getCmdArguments();
@@ -142,11 +152,10 @@ int main(int argc, char *argv[])
       return ERROR_IN_COMMAND_LINE;
    }
 
-   // if( not fs::exists( FinalCutsFile ) ) {
-   //    std::cout<<"Yan DEBUG : : in FinalCutsFile flag ERROR block"<<std::endl; //Yannik change
-   //    throw Tools::file_not_found( FinalCutsFile, "Config file" );
-   // }
-   // else std::cout << "INFO: Using Config file: " << FinalCutsFile << std::endl;
+   if( not fs::exists( FinalCutsFile ) ) {
+      throw Tools::file_not_found( FinalCutsFile, "Config file" );
+   }
+   else std::cout << "INFO: Using Config file: " << FinalCutsFile << std::endl;
 
    Tools::MConfig config(FinalCutsFile);
 
@@ -195,13 +204,17 @@ int main(int argc, char *argv[])
 
    // Init the run config
    lumi::RunLumiRanges runcfg(RunConfigFile);
+
    SkipEvents skipEvents(config);
 
    pxl::Core::initialize();
+
    pxl::Hep::initialize();
 
    // initialize the EventSelector
+   std::cout << "FOO" << std::endl;
    EventSelector Selector(config);
+   std::cout << "FOO" << std::endl;
 
    // Initialize the EventAdaptor.
    EventAdaptor Adaptor(config, debug);
@@ -230,7 +243,9 @@ int main(int argc, char *argv[])
    int pre_run_skipped = 0;           // number of events skipped due to skipped option
 
    if (config.GetItem<bool>("Pileup.UseSampleName", false))
+   {
       ReWeighter::adaptConfig(config, input_files[0]);
+   }
    ReWeighter reweighter = ReWeighter(config, 0);
    ReWeighter reweighterup = ReWeighter(config, 1);
    ReWeighter reweighterdown = ReWeighter(config, -1);
@@ -238,312 +253,285 @@ int main(int argc, char *argv[])
    unsigned int analyzed_files = 0;
    unsigned int lost_files = 0;
 
-   // loop over all files
-   std::vector<std::string>::const_iterator file_iter = input_files.begin();
-
    // initialize process info object
    ProcInfo_t info;
-   // Get file handler to access files.
-   // New PXL version knows how to handle dcap protocol.
-   // std::auto_prt< pxl::InputFile > inFile = pxl::InputFile();
-   pxl::InputFile inFile;
-   for (unsigned int f = 0; f < input_files.size() && (numberOfEvents == -1 || e < numberOfEvents); f++)
+
+   // loop over files
+   for (auto const &file_iter : input_files)
    {
-      std::string const fileName = *file_iter;
-      // Open File:
-      // open file(s):
-      // pxl::InputHandler* input =
-      // if( filename.substr(0,7)  == "dcap://" || filename.substr(0,6) == "/pnfs/") {
-      // input = new pxl::dCacheInputFile();
-      //} else {
-      // if( filename.substr(0,1) != "/" ) {
-      // filename = startDir + "/" + filename;
-      //}
-      // input = new pxl::InputFile();
-      //}
+      std::string const fileName = file_iter;
 
       std::cout << "Opening file " << fileName << std::endl;
-      unsigned int numTrials = 0;
-      // we need to get done in 3 days, so don't wait too long
-      // unsigned int timeout = 3*24*60*60/input_files.size();
-      // cout << "Opening file (timeout " << timeout << " seconds) " << filename << endl;
-      while (true)
+      
+      TFile::SetCacheFileDir("/tmp");
+      std::unique_ptr<TFile> inFile(TFile::Open(fileName.c_str(), "CACHEREAD"));
+      
+      if (!inFile)
       {
-         numTrials++;
-         try
-         {
-            time_t rawtime;
-            time(&rawtime);
-            std::cout << "Opening time: " << ctime(&rawtime);
-            inFile.open(fileName);
-         }
-         catch (std::runtime_error &e)
-         {
-            // Wait for ( 10^numTrials - 1 ) seconds before retrying.
-            // double const sleep = std::pow( 10, numTrials ) - 1.0;
-            // boost::this_thread::sleep( boost::posix_time::seconds( sleep ) );
-            std::cout << "Did you use an absolute path to the .pxlio file?" << std::endl;
-            if (numTrials < 3)
-            {
-               numTrials++;
-               // Retry!
-               continue;
-            }
-
-            if (not runOnData)
-            {
-               // increase lost files counter, but don't try again
-               lost_files++;
-               std::cerr << "Failed to open file '" << fileName
-                         << "', skipping..." << std::endl;
-            }
-            else
-            {
-               std::cerr << "Failed to open file '" << fileName
-                         << "' three times. Aborting!" << std::endl;
-               throw e;
-            }
-         }
-         // increase successful files counter
-         analyzed_files++;
-         break;
+         std::cout << "ERROR: could not open data file" << std::endl;
+         exit(1);
       }
 
+      time_t rawtime;
+      time(&rawtime);
+      std::cout << "Opening time: " << ctime(&rawtime);
+
+      analyzed_files++;
       int event_counter_per_file = 0;
-      // run event loop:
-      while (inFile.good())
+
+      // get "Events" TTree from file
+      auto events_tree = (TTree *)inFile->Get("Events");
+
+
+      // loop over events
+      for (unsigned int iEntry = 0; iEntry < events_tree->GetEntries(); ++iEntry)
       {
-         pxl::Event *event_ptr = 0;
-         try
-         {
-            event_ptr = dynamic_cast<pxl::Event *>(inFile.readNextObject());
-         }
-         catch (std::runtime_error &e)
-         {
-            std::cout << "end of file or unreadable event.    " << std::endl;
-            break;
-         }
-         event_counter_per_file++;
-         if (!event_ptr)
-            continue;
-         // pxl::Event event = *event_ptr;
-
-         if (numberOfSkipEvents > pre_run_skipped)
-         {
-            delete event_ptr;
-            pre_run_skipped++;
-            continue;
-         }
-         if (numberOfEvents > -1 and e >= numberOfEvents)
-            break;
-         // Break the event loop if the current event is not sensible (formatted correctly).
-         // if( event_ptr->getUserRecords().size() == 0 ) {
-         // std::cout << "WARNING: Found corrupt pxlio event with User Record size 0 in file " << fileName << "." << std::endl;
-         // std::cout << "WARNING: Continue with next event." << std::endl;
-         // delete event_ptr;
-         // continue;
-         //}
-
-         if (event_ptr->getObjectOwner().findObject<pxl::EventView>("Rec") == 0)
-         {
-            fork.analyseEvent(event_ptr);
-            delete event_ptr;
-            e++;
-            continue;
-         }
-
-         // check if we shall analyze this event
-         lumi::ID run = event_ptr->getUserRecord("Run");
-         lumi::ID LS = event_ptr->getUserRecord("LumiSection");
-         lumi::ID eventNum = event_ptr->getUserRecord("EventNum");
-         if (!runcfg.check(run, LS))
-         {
-            ++skipped;
-            if (debug > 1)
-            {
-               std::cerr << "[INFO] (SkipEvents): " << std::endl;
-               std::cerr << "Skipping Run/LS/Event: ";
-               std::cerr << run << ":" << LS << ":" << eventNum << std::endl;
-            }
-            delete event_ptr;
-            continue;
-         }
-
-         if (runOnData && skipEvents.skip(run, LS, eventNum))
-         {
-            ++skipped;
-
-            if (debug > 1)
-            {
-               std::cerr << "[INFO] (SkipEvents): " << std::endl;
-               std::cerr << "Skipping Run/LS/Event (file Veto): ";
-               std::cerr << run << ":" << LS << ":" << eventNum << std::endl;
-            }
-            delete event_ptr;
-            continue;
-         }
-
-         pxl::EventView *RecEvtView = event_ptr->getObjectOwner().findObject<pxl::EventView>("Rec");
-         pxl::EventView *TrigEvtView = event_ptr->getObjectOwner().findObject<pxl::EventView>("Trig");
-         pxl::EventView *FilterView = event_ptr->getObjectOwner().findObject<pxl::EventView>("Filter");
-
-         // intialize event for adaption
-         if (initAdaptor)
-            Adaptor.initEvent(RecEvtView);
-
-         if (muoCocktailUse)
-         {
-            // Switch to cocktail muons (use the four momentum from
-            // TeV-optimised reconstructors.)
-            Adaptor.applyCocktailMuons();
-         }
-
-         if (eleHEEPUse)
-         {
-            // Switch to HEEP ele kinematic for eles above switch pt
-            Adaptor.applyHEEPElectrons();
-         }
-
-         if (fatjetPUPPIUse)
-         {
-            // Switch to puppi kniemtaics for fat jets
-            Adaptor.applyPUPPIFatJets();
-         }
-
-         if (runOnData)
-         {
-            // Only needed for 2016 data //LOR COMM IT OUT
-            // Adaptor.adaptDoubleEleTrigger( run, TrigEvtView );
-            // for data we just need to run the selection
-            Selector.performSelection(RecEvtView, 0, TrigEvtView, FilterView);
-            Selector.removeOverlaps(RecEvtView);
-            Selector.performOfflineTriggerSelection(RecEvtView, TrigEvtView);
-         }
-         else
-         {
-            RecEvtView->setUserRecord("EventSeed", event_ptr->getUserRecord("Run").toInt32() +
-                                                       event_ptr->getUserRecord("LumiSection").toInt32() +
-                                                       event_ptr->getUserRecord("EventNum").toInt32());
-
-            // Don't do this on data, haha! And also not for special Ana hoho
-            reweighter.ReWeightEvent(event_ptr);
-            reweighterup.ReWeightEvent(event_ptr);
-            reweighterdown.ReWeightEvent(event_ptr);
-            pxl::EventView *GenEvtView = event_ptr->getObjectOwner().findObject<pxl::EventView>("Gen");
-
-            // Sometimes events have missing PDF information (mainly POWHEG).
-            // This is checked in the skimmer and if PDF weights are missing, the event is tagged
-            if (config.GetItem<bool>("General.usePDF") and config.GetItem<bool>("PDF.SkipIncomplete") and GenEvtView->hasUserRecord("Incomplete_PDF_weights") and GenEvtView->getUserRecord("Incomplete_PDF_weights"))
-            {
-               skipped++;
-               delete event_ptr;
-               continue;
-            }
-
-            // (Pre)Matching must be done before selection, because the matches
-            // will be used to adapt the event. We only need the jets matched,
-            // so no "custom" matching.
-            // We use a different link name here, so the "normal" matching after
-            // all selection cuts can go ahead without changes.
-            // This link name is only used for the matching before cuts and to
-            // adapt the events (jet/met smearing).
-            std::string const linkName = "pre-priv-gen-rec";
-            Matcher.matchObjects(GenEvtView, RecEvtView, linkName, false);
-
-            if (jetResCorrUse)
-            {
-               // Change event properties according to official recommendations.
-               // Don't do this on data!
-               Adaptor.applyJETMETSmearing(GenEvtView, RecEvtView, linkName);
-            }
-            try
-            {
-               if (useSYST)
-               {
-                  // perform systematic pre. selection on all selected event views
-                  //  with loosened kinematic cuts
-                  Selector.performSelection(RecEvtView, GenEvtView, TrigEvtView, FilterView, true);
-                  // use the config files to activate systematics for some objects
-                  syst_shifter.init(event_ptr);
-                  // create new event views with systematic shifts
-                  syst_shifter.createShiftedViews();
-                  // Check if particles fullfill standard kinematic cuts after shifting
-                  for (auto &systInfo : syst_shifter.m_activeSystematics)
-                  {
-                     for (auto &evtView : systInfo->eventViewPointers)
-                     {
-                        Selector.performKinematicsSelection(evtView, false);
-                        Selector.removeOverlaps(evtView);
-                        Selector.performOfflineTriggerSelection(evtView, TrigEvtView);
-                     }
-                  }
-                  // we need to check if normal rec view also survives
-                  // cuts with standard kinematics cuts
-                  Selector.performKinematicsSelection(RecEvtView, false);
-                  Selector.removeOverlaps(RecEvtView);
-                  // Now finally check triggering ( if active ) after view is fully selected
-                  Selector.performOfflineTriggerSelection(RecEvtView, TrigEvtView);
-               }
-               else
-               {
-                  Selector.performSelection(RecEvtView, GenEvtView, TrigEvtView, FilterView);
-                  Selector.removeOverlaps(RecEvtView);
-                  Selector.performOfflineTriggerSelection(RecEvtView, TrigEvtView);
-               }
-
-               // Sometimes a particle is unsorted in an event, where it should be
-               // sorted by pt. This seems to be a PXL problem.
-               // Best idea until now is to skip the whole event.
-               // Do this only for MC at the moment. If this ever happens for data,
-               // you should investigate!
-            }
-            catch (Tools::unsorted_error &exc)
-            {
-               std::cerr << "[WARNING] (main): ";
-               std::cerr << "Found unsorted particle in event no. " << e << ". ";
-               std::cerr << "Skipping this event!" << std::endl;
-               delete event_ptr;
-               if (runOnData)
-                  exit(1);
-               else
-                  continue;
-            }
-         }
-         // set user record for file name and event number in this file for further use in analysis
-         if (fileName.rfind('/') != std::string::npos)
-            event_ptr->setUserRecord("Filename", fileName.substr(fileName.rfind('/') + 1));
-         else
-            event_ptr->setUserRecord("Filename", fileName);
-         event_ptr->setUserRecord("EventNumPxlio", event_counter_per_file);
-         // run the fork ..
-         fork.analyseEvent(event_ptr);
-         fork.finishEvent(event_ptr);
-         delete event_ptr;
+         pxl::Event *event_ptr = buildPxlEvent(iEntry, events_tree, runOnData);
+         
          e++;
-         std::cout << e << " <--- Event number " << std::endl;
-         if (e < 10 || (e < 100 && e % 10 == 0) ||
-             (e < 1000 && e % 100 == 0) ||
-             (e < 10000 && e % 1000 == 0) ||
-             (e >= 10000 && e % 10000 == 0))
+         if (e % 10000 == 0)
          {
-            if (pre_run_skipped == 0)
-            {
-               std::cout << e << " Events analyzed (" << skipped << " skipped)" << std::endl;
-            }
-            else
-            {
-               std::cout << e << " Events analyzed (" << pre_run_skipped << " + " << skipped << " skipped)" << std::endl;
-            }
+            PrintProcessInfo(info);
          }
-
-         // if( e % 100000 == 0 ) PrintProcessInfo( info );
-         if (do_break)
-            break;
       }
-      inFile.close();
-      ++file_iter;
-      if (do_break)
+
+      // loop over events
+      // while (inFile->IsOpen() && inFile) // must become a for over entries (events)
+      // {
+      //    pxl::Event *event_ptr = 0;
+      //    try
+      //    {
+      //       event_ptr = dynamic_cast<pxl::Event *>(inFile->readNextObject());
+      //    }
+      //    catch (std::runtime_error &e)
+      //    {
+      //       std::cout << "end of file or unreadable event.    " << std::endl;
+      //       break;
+      //    }
+      //    event_counter_per_file++;
+      //    if (!event_ptr)
+      //       continue;
+      //    // pxl::Event event = *event_ptr;
+
+      //    if (numberOfSkipEvents > pre_run_skipped)
+      //    {
+      //       delete event_ptr;
+      //       pre_run_skipped++;
+      //       continue;
+      //    }
+      //    if (numberOfEvents > -1 and e >= numberOfEvents)
+      //       break;
+      //    // Break the event loop if the current event is not sensible (formatted correctly).
+      //    // if( event_ptr->getUserRecords().size() == 0 ) {
+      //    // std::cout << "WARNING: Found corrupt pxlio event with User Record size 0 in file " << fileName << "." << std::endl;
+      //    // std::cout << "WARNING: Continue with next event." << std::endl;
+      //    // delete event_ptr;
+      //    // continue;
+      //    //}
+
+      //    if (event_ptr->getObjectOwner().findObject<pxl::EventView>("Rec") == 0)
+      //    {
+      //       fork.analyseEvent(event_ptr);
+      //       delete event_ptr;
+      //       e++;
+      //       continue;
+      //    }
+
+      //    // check if we shall analyze this event
+      //    lumi::ID run = event_ptr->getUserRecord("Run");
+      //    lumi::ID LS = event_ptr->getUserRecord("LumiSection");
+      //    lumi::ID eventNum = event_ptr->getUserRecord("EventNum");
+      //    if (!runcfg.check(run, LS))
+      //    {
+      //       ++skipped;
+      //       if (debug > 1)
+      //       {
+      //          std::cerr << "[INFO] (SkipEvents): " << std::endl;
+      //          std::cerr << "Skipping Run/LS/Event: ";
+      //          std::cerr << run << ":" << LS << ":" << eventNum << std::endl;
+      //       }
+      //       delete event_ptr;
+      //       continue;
+      //    }
+
+      //    if (runOnData && skipEvents.skip(run, LS, eventNum))
+      //    {
+      //       ++skipped;
+
+      //       if (debug > 1)
+      //       {
+      //          std::cerr << "[INFO] (SkipEvents): " << std::endl;
+      //          std::cerr << "Skipping Run/LS/Event (file Veto): ";
+      //          std::cerr << run << ":" << LS << ":" << eventNum << std::endl;
+      //       }
+      //       delete event_ptr;
+      //       continue;
+      //    }
+
+      //    pxl::EventView *RecEvtView = event_ptr->getObjectOwner().findObject<pxl::EventView>("Rec");
+      //    pxl::EventView *TrigEvtView = event_ptr->getObjectOwner().findObject<pxl::EventView>("Trig");
+      //    pxl::EventView *FilterView = event_ptr->getObjectOwner().findObject<pxl::EventView>("Filter");
+
+      //    // intialize event for adaption
+      //    if (initAdaptor)
+      //       Adaptor.initEvent(RecEvtView);
+
+      //    if (muoCocktailUse)
+      //    {
+      //       // Switch to cocktail muons (use the four momentum from
+      //       // TeV-optimised reconstructors.)
+      //       Adaptor.applyCocktailMuons();
+      //    }
+
+      //    if (eleHEEPUse)
+      //    {
+      //       // Switch to HEEP ele kinematic for eles above switch pt
+      //       Adaptor.applyHEEPElectrons();
+      //    }
+
+      //    if (fatjetPUPPIUse)
+      //    {
+      //       // Switch to puppi kniemtaics for fat jets
+      //       Adaptor.applyPUPPIFatJets();
+      //    }
+
+      //    if (runOnData)
+      //    {
+      //       // Only needed for 2016 data //LOR COMM IT OUT
+      //       // Adaptor.adaptDoubleEleTrigger( run, TrigEvtView );
+      //       // for data we just need to run the selection
+      //       Selector.performSelection(RecEvtView, 0, TrigEvtView, FilterView);
+      //       Selector.removeOverlaps(RecEvtView);
+      //       Selector.performOfflineTriggerSelection(RecEvtView, TrigEvtView);
+      //    }
+      //    else
+      //    {
+      //       RecEvtView->setUserRecord("EventSeed", event_ptr->getUserRecord("Run").toInt32() +
+      //                                                  event_ptr->getUserRecord("LumiSection").toInt32() +
+      //                                                  event_ptr->getUserRecord("EventNum").toInt32());
+
+      //       // Don't do this on data, haha! And also not for special Ana hoho
+      //       reweighter.ReWeightEvent(event_ptr);
+      //       reweighterup.ReWeightEvent(event_ptr);
+      //       reweighterdown.ReWeightEvent(event_ptr);
+      //       pxl::EventView *GenEvtView = event_ptr->getObjectOwner().findObject<pxl::EventView>("Gen");
+
+      //       // Sometimes events have missing PDF information (mainly POWHEG).
+      //       // This is checked in the skimmer and if PDF weights are missing, the event is tagged
+      //       if (config.GetItem<bool>("General.usePDF") and config.GetItem<bool>("PDF.SkipIncomplete") and GenEvtView->hasUserRecord("Incomplete_PDF_weights") and GenEvtView->getUserRecord("Incomplete_PDF_weights"))
+      //       {
+      //          skipped++;
+      //          delete event_ptr;
+      //          continue;
+      //       }
+
+      //       // (Pre)Matching must be done before selection, because the matches
+      //       // will be used to adapt the event. We only need the jets matched,
+      //       // so no "custom" matching.
+      //       // We use a different link name here, so the "normal" matching after
+      //       // all selection cuts can go ahead without changes.
+      //       // This link name is only used for the matching before cuts and to
+      //       // adapt the events (jet/met smearing).
+      //       std::string const linkName = "pre-priv-gen-rec";
+      //       Matcher.matchObjects(GenEvtView, RecEvtView, linkName, false);
+
+      //       if (jetResCorrUse)
+      //       {
+      //          // Change event properties according to official recommendations.
+      //          // Don't do this on data!
+      //          Adaptor.applyJETMETSmearing(GenEvtView, RecEvtView, linkName);
+      //       }
+      //       try
+      //       {
+      //          if (useSYST)
+      //          {
+      //             // perform systematic pre. selection on all selected event views
+      //             //  with loosened kinematic cuts
+      //             Selector.performSelection(RecEvtView, GenEvtView, TrigEvtView, FilterView, true);
+      //             // use the config files to activate systematics for some objects
+      //             syst_shifter.init(event_ptr);
+      //             // create new event views with systematic shifts
+      //             syst_shifter.createShiftedViews();
+      //             // Check if particles fullfill standard kinematic cuts after shifting
+      //             for (auto &systInfo : syst_shifter.m_activeSystematics)
+      //             {
+      //                for (auto &evtView : systInfo->eventViewPointers)
+      //                {
+      //                   Selector.performKinematicsSelection(evtView, false);
+      //                   Selector.removeOverlaps(evtView);
+      //                   Selector.performOfflineTriggerSelection(evtView, TrigEvtView);
+      //                }
+      //             }
+      //             // we need to check if normal rec view also survives
+      //             // cuts with standard kinematics cuts
+      //             Selector.performKinematicsSelection(RecEvtView, false);
+      //             Selector.removeOverlaps(RecEvtView);
+      //             // Now finally check triggering ( if active ) after view is fully selected
+      //             Selector.performOfflineTriggerSelection(RecEvtView, TrigEvtView);
+      //          }
+      //          else
+      //          {
+      //             Selector.performSelection(RecEvtView, GenEvtView, TrigEvtView, FilterView);
+      //             Selector.removeOverlaps(RecEvtView);
+      //             Selector.performOfflineTriggerSelection(RecEvtView, TrigEvtView);
+      //          }
+
+      //          // Sometimes a particle is unsorted in an event, where it should be
+      //          // sorted by pt. This seems to be a PXL problem.
+      //          // Best idea until now is to skip the whole event.
+      //          // Do this only for MC at the moment. If this ever happens for data,
+      //          // you should investigate!
+      //       }
+      //       catch (Tools::unsorted_error &exc)
+      //       {
+      //          std::cerr << "[WARNING] (main): ";
+      //          std::cerr << "Found unsorted particle in event no. " << e << ". ";
+      //          std::cerr << "Skipping this event!" << std::endl;
+      //          delete event_ptr;
+      //          if (runOnData)
+      //             exit(1);
+      //          else
+      //             continue;
+      //       }
+      //    }
+      //    // set user record for file name and event number in this file for further use in analysis
+      //    if (fileName.rfind('/') != std::string::npos)
+      //       event_ptr->setUserRecord("Filename", fileName.substr(fileName.rfind('/') + 1));
+      //    else
+      //       event_ptr->setUserRecord("Filename", fileName);
+      //    event_ptr->setUserRecord("EventNumPxlio", event_counter_per_file);
+      //    // run the fork ..
+      //    fork.analyseEvent(event_ptr);
+      //    fork.finishEvent(event_ptr);
+      //    delete event_ptr;
+      //    e++;
+      //    std::cout << e << " <--- Event number " << std::endl;
+      //    if (e < 10 || (e < 100 && e % 10 == 0) ||
+      //        (e < 1000 && e % 100 == 0) ||
+      //        (e < 10000 && e % 1000 == 0) ||
+      //        (e >= 10000 && e % 10000 == 0))
+      //    {
+      //       if (pre_run_skipped == 0)
+      //       {
+      //          std::cout << e << " Events analyzed (" << skipped << " skipped)" << std::endl;
+      //       }
+      //       else
+      //       {
+      //          std::cout << e << " Events analyzed (" << pre_run_skipped << " + " << skipped << " skipped)" << std::endl;
+      //       }
+      //    }
+
+      //    // if( e % 100000 == 0 ) PrintProcessInfo( info );
+      //    if (do_break)
+      //       break;
+      // }
+
+      inFile->Close();
+
+      if (do_break || (numberOfEvents != -1 && e > numberOfEvents))
+      {
          break;
+      }
    }
 
    double dTime2 = pxl::getCpuTime();

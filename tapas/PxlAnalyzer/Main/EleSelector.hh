@@ -61,6 +61,7 @@ private:
    double const m_ele_cbid_fBrem_min;
    bool const m_use_fBrem;
 
+
    double const m_ele_cbid_barrel_DEtaIn_max;
    double const m_ele_cbid_barrel_DPhiIn_max;
    double const m_ele_cbid_barrel_sigmaIetaIeta_max;
