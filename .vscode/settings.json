@@ -1,6 +1,8 @@
 {
     "C_Cpp.intelliSenseEngineFallback": "Disabled",
     "files.associations": {
-        "cwchar": "cpp"
+        "cwchar": "cpp",
+        "myselect.C": "cpp",
+        "myclass.C": "cpp"
     }
 }

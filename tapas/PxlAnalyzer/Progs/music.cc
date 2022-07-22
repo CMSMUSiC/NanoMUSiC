@@ -1,5 +1,7 @@
 #include <time.h>
 #include <string>
+#include <unordered_set>
+#include <numeric>
 
 #include "Pxl/Pxl/interface/pxl/hep.hh"
 #include "Pxl/Pxl/interface/pxl/core.hh"
@@ -26,6 +28,7 @@
 
 // this will build pxl::Events from NanoAOD TTree's.
 #include "buildPxlEvent.hh"
+// #include "NanoAODReader.hh"
 
 // ROOT Stuff
 #include "TFile.h"
@@ -255,14 +258,21 @@ int main(int argc, char *argv[])
    // initialize process info object
    ProcInfo_t info;
 
+   // temp cache dir
+   std::cout << "Preparing cache dir: " << std::endl;
+   string process_hash = std::to_string(std::hash<std::string>{}(std::accumulate(input_files.begin(), input_files.end(), std::string(""))));
+   std::string cache_dir = "/tmp/music/proc_" + process_hash;
+   system(("rm -rf " + cache_dir).c_str());
+   std::cout << cache_dir << std::endl;
+
    // loop over files
    for (auto const &file_iter : input_files)
    {
       std::string const fileName = file_iter;
 
       std::cout << "Opening file " << fileName << std::endl;
-      
-      TFile::SetCacheFileDir("/tmp");
+
+      TFile::SetCacheFileDir(cache_dir);
       std::unique_ptr<TFile> inFile(TFile::Open(fileName.c_str(), "CACHEREAD"));
       
       if (!inFile)
@@ -281,11 +291,13 @@ int main(int argc, char *argv[])
       // get "Events" TTree from file
       auto events_tree = (TTree *)inFile->Get("Events");
 
+      // get NanoAODReader
+      auto nano_reader = new NanoAODReader(events_tree, runOnData);
 
       // loop over events
       for (unsigned int iEntry = 0; iEntry < events_tree->GetEntries(); ++iEntry)
       {
-         pxl::Event *event_ptr = buildPxlEvent(iEntry, events_tree, runOnData);
+         pxl::Event *event_ptr = buildPxlEvent(iEntry, nano_reader, runOnData);
          
          e++;
          if (e % 10000 == 0)
@@ -447,7 +459,7 @@ int main(int argc, char *argv[])
       //             // perform systematic pre. selection on all selected event views
       //             //  with loosened kinematic cuts
       //             Selector.performSelection(RecEvtView, GenEvtView, TrigEvtView, FilterView, true);
-      //             // use the config files to activate systematics for some objects
+      //             // use the    system(("rm -rf " + outputDirectory).c_str());config files to activate systematics for some objects
       //             syst_shifter.init(event_ptr);
       //             // create new event views with systematic shifts
       //             syst_shifter.createShiftedViews();
@@ -531,6 +543,10 @@ int main(int argc, char *argv[])
       {
          break;
       }
+
+      // clear cache dir
+      std::cout << "Cleaning cache dir..." << std::endl;
+      system(("rm -rf " + cache_dir + "/*").c_str());
    }
 
    double dTime2 = pxl::getCpuTime();

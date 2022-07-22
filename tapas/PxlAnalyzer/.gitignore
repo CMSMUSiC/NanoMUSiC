@@ -32,5 +32,5 @@ doc/latex/
 doc/man
 AnalysisOutput/
 foo/
-
+myselect.h
 foo.cfg
