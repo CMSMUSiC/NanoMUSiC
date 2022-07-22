@@ -72,11 +72,18 @@ echo "TODO: Install LUIGI <<<--"
 cd $SCRIPT_DIR/tapas/MUSiC-RoIScanner
 git clone git@github.com:tobias-pook/table2latex.git
 cd table2latex
-pip  install --user -e .
+pip install --user -e .
 
 # clone Condor_utils
 cd $SCRIPT_DIR
 git clone git@github.com:CMSMUSiC/Condor_utils.git
+
+# clone and compile correctionlib
+cd $SCRIPT_DIR
+git clone --recursive git@github.com:cms-nanoAOD/correctionlib.git
+cd correctionlib
+make PYTHON=python
+make install
 
 
 # Create music_env.config

@@ -24,10 +24,10 @@ PROGSDIR = Progs
 #EventClassFactory/TEventClassDict.cc
 #= EventClassFactory/TEventClassDict.cc
 #~ MUSIC_CFLAGS := -isystem$(MUSIC_BASE)/Tools/ -isystem$(MUSIC_BASE)/Tools/PXL/ -isystem$(MUSIC_BASE)/Main
-MUSIC_CFLAGS := -I$(MUSIC_BASE)/Tools/ -I$(MUSIC_BASE)/Tools/PXL/ -I$(MUSIC_BASE)/Main -I$(MUSIC_UTILS)/include
+MUSIC_CFLAGS := -I$(MUSIC_BASE)/Tools/ -I$(MUSIC_BASE)/Tools/PXL/ -I$(MUSIC_BASE)/Main -I$(MUSIC_UTILS)/include -I$(CORRECTIONLIB)/include 
 CFLAGS	+= $(MUSIC_CFLAGS)
 
-MUSIC_LDFLAGS := -L$(MUSIC_UTILS)/lib -lTEventClass
+MUSIC_LDFLAGS := -L$(MUSIC_UTILS)/lib -lTEventClass -L$(CORRECTIONLIB)/lib  -lcorrectionlib
 LDFLAGS += $(MUSIC_LDFLAGS)
 
 BUILDSHARED:= g++ -o $@ -shared $(LDFLAGS) -O $^

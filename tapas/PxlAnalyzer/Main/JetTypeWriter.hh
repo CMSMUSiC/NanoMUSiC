@@ -15,11 +15,18 @@
 //for BTag SFs :
 //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BTagCalibration
 // with CMSSW:
-#include "CondFormats/BTauObjects/interface/BTagCalibration.h"
-#include "CondTools/BTau/interface/BTagCalibrationReader.h"
+// #include "CondFormats/BTauObjects/interface/BTagCalibration.h"
+// #include "CondTools/BTau/interface/BTagCalibrationReader.h"
 // without CMSSW / standalone:
 //#include "Main/BTagCalibrationStandalone.h"
 //#include "Main/BTagCalibrationStandalone.cpp"
+
+// add correctionlib 
+// More info: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BTagCalibration
+// More info: https://github.com/cms-nanoAOD/correctionlib
+// More info: https://cms-nanoaod.github.io/correctionlib/index.html
+// Instructions: https://indico.cern.ch/event/1096988/contributions/4615134/attachments/2346047/4000529/Nov21_btaggingSFjsons.pdf
+#include "correction.h"
 
 ///////////////////////////////////////////////////////
 // Class used to write tagging information into jets //
@@ -54,8 +61,8 @@ class JetTypeWriter {
       double getBTagMCEfficiencyHadflavNjet( const pxl::Particle *object , int numjet) const;
       double getBTagMCEfficiencyHadflavPt( const pxl::Particle *object ) const;
       double getBTagMCEfficiencyFromHist(const int& x, const int& y) const;
-      BTagEntry::JetFlavor getJetFlavourEnum(const int& hadronflavour) const;
-      BTagEntry::OperatingPoint getOperatingPointEnum(const std::string& wp) const;
+      // BTagEntry::JetFlavor getJetFlavourEnum(const int& hadronflavour) const;
+      // BTagEntry::OperatingPoint getOperatingPointEnum(const std::string& wp) const;
 
       bool const m_data;
       // bJet specific
@@ -83,8 +90,9 @@ class JetTypeWriter {
       float const m_wJet_mass_max;
       float const m_wJet_tau_threshold;
 
-      BTagCalibration m_calib;
-      BTagCalibrationReader m_reader;
+      // BTagCalibration m_calib;
+      std::unique_ptr<correction::CorrectionSet>  m_correction_set;
+      std::map<int, correction::Correction::Ref > m_corrector;
 
       // For BTag ScaleFactors
       TRandom3 m_rand;

@@ -147,7 +147,7 @@ EXTRA_CFLAGS  := -ffloat-store $(PXL_INC_PATH) $(TOOLS_INC_PATH) $(CMSSW_INC_PAT
 EXTRA_LDFLAGS := $(CMSSW_LIB_PATHS) $(CMSSW_LIBS) $(LHAPDF_LIB_PATH) $(LHAPDF_LIB)
 
 CC := g++
-CFLAGS	:= -O3 -Wall -std=gnu++11
+CFLAGS	:= -O3 -Wall -std=gnu++17
 
 LD := g++
 LDFLAGS := -O3fast -lz

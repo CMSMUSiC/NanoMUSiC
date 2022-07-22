@@ -78,31 +78,19 @@ EventSelector::EventSelector(const Tools::MConfig &cfg) : // initialize config o
                                                           m_triggerSelector(cfg),
                                                           m_typeWriter(cfg)
 {
-   std::cout << "BAR" << std::endl;
    selector_map.emplace("Ele", &m_ele_selector);
-   std::cout << "BAR" << std::endl;
    selector_map.emplace("Muon", &m_muo_selector);
-   std::cout << "BAR" << std::endl;
    selector_map.emplace("Tau", &m_tau_selector);
-   std::cout << "BAR" << std::endl;
    selector_map.emplace("Gamma", &m_gamma_selector);
-   std::cout << "BAR" << std::endl;
    selector_map.emplace("Jet", &m_jet_selector);
-   std::cout << "BAR" << std::endl;
    selector_map.emplace("FatJet", &m_fatjet_selector);
-   std::cout << "BAR" << std::endl;
    selector_map.emplace("MET", &m_met_selector);
-   std::cout << "BAR" << std::endl;
    // we save all filters in filter event view. Add all selected filters into one vector and loop
    std::vector<std::string> all_filters = std::vector<std::string>(m_filterHLT_recList);
-   std::cout << "BAR" << std::endl;
    all_filters.insert(all_filters.end(), m_filterSet_recList.begin(), m_filterSet_recList.end());
-   std::cout << "BAR" << std::endl;
    all_filters.insert(all_filters.end(), m_filterSet_genList.begin(), m_filterSet_genList.end());
-   std::cout << "BAR" << std::endl;
    for (std::string filter : all_filters)
    {
-      std::cout << "aii" << std::endl;
       m_all_filters_map.insert(std::pair<std::string, int>(filter, 0));
    }
 }

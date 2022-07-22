@@ -159,6 +159,7 @@ int main(int argc, char *argv[])
 
    Tools::MConfig config(FinalCutsFile);
 
+
    // Get the run config file from config file.
    std::string RunConfigFile;
 
@@ -212,9 +213,7 @@ int main(int argc, char *argv[])
    pxl::Hep::initialize();
 
    // initialize the EventSelector
-   std::cout << "FOO" << std::endl;
    EventSelector Selector(config);
-   std::cout << "FOO" << std::endl;
 
    // Initialize the EventAdaptor.
    EventAdaptor Adaptor(config, debug);

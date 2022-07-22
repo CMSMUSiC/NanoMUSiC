@@ -44,10 +44,10 @@ EleSelector::EleSelector( const Tools::MConfig &cfg, OldNameMapper *globalOldNam
    m_ele_cbid_endcap_DPhiIn_max(              cfg.GetItem< double >( "Ele.CBID.Endcap.DPhiIn.max" , 0.02 ) ),
    m_ele_cbid_endcap_sigmaIetaIeta_max(       cfg.GetItem< double >( "Ele.CBID.Endcap.sigmaIetaIeta.max" , 0.03 ) ),
    m_ele_cbid_endcap_HoE_max(                 cfg.GetItem< double >( "Ele.CBID.Endcap.HoE.max" , 0.1 ) ),
+   m_ele_cbid_endcap_Dxy_max(                 cfg.GetItem< double >( "Ele.CBID.Endcap.Dxy.max" , 0.02 ) ),
    m_ele_cbid_endcap_HoEIterm_max(            cfg.GetItem< double >( "Ele.CBID.Endcap.HoEIterm.max" , 0.026 ) ), //UL
    m_ele_cbid_endcap_HoEIIterm_max(           cfg.GetItem< double >( "Ele.CBID.Endcap.HoEIIterm.max" , 0.026 ) ), //UL
    m_ele_cbid_endcap_HoEIIIterm_max(          cfg.GetItem< double >( "Ele.CBID.Endcap.HoEIIIterm.max" , 0.026 ) ), //UL
-   m_ele_cbid_endcap_Dxy_max(                 cfg.GetItem< double >( "Ele.CBID.Endcap.Dxy.max" , 0.02 ) ),
    m_ele_cbid_endcap_Dz_max(                  cfg.GetItem< double >( "Ele.CBID.Endcap.Dz.max" , 0.1 ) ),
    m_ele_cbid_endcap_RelInvEpDiff_max(        cfg.GetItem< double >( "Ele.CBID.Endcap.RelInvEpDiff.max" , 0.05 ) ),
    m_ele_cbid_endcap_PFIsoRel_max(            cfg.GetItem< double >( "Ele.CBID.Endcap.PFIsoRel.max" , 0.1 ) ),
