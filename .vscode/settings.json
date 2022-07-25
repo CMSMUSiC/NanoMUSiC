@@ -3,6 +3,7 @@
     "files.associations": {
         "cwchar": "cpp",
         "myselect.C": "cpp",
-        "myclass.C": "cpp"
+        "myclass.C": "cpp",
+        "hsimpleReader.C": "cpp"
     }
 }

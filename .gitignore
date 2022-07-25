@@ -203,3 +203,4 @@ cython_debug/
 *.out
 *.app
 
+hsimpleReader.C
