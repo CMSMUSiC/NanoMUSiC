@@ -6,10 +6,9 @@ SCRIPTDIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 source music_env.config
 
 # Set up the CMSSW environment
-cd $SCRIPTDIR/$CMSSW_VER/src/PxlSkimmer
 source /cvmfs/cms.cern.ch/cmsset_default.sh
+cd /cvmfs/cms.cern.ch/$MY_SCRAM_ARCH/cms/cmssw/$CMSSW_VER/ 
 cmsenv
-source set_env.sh
 
 # This is a TAPAS set_env script. Source it before usage of TAPAS.
 export LD_LIBRARY_PATH=$SCRIPTDIR/tapas/lib:$LD_LIBRARY_PATH
@@ -42,6 +41,9 @@ cd $SCRIPTDIR/tapas/MUSiC-RoIScanner/
 source set_env.sh
 
 cd $SCRIPTDIR
+
+export CORRECTIONLIB=$SCRIPTDIR/correctionlib/correctionlib
+export LD_LIBRARY_PATH=$CORRECTIONLIB/lib/:$LD_LIBRARY_PATH
 
 # control whether MUSiC anvs are set
 # to be used by Makefile

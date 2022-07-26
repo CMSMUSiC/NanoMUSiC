@@ -1,13 +1,13 @@
 # MUSiC - Pxl
 
-Run2 UL     condensed analysis code.
+Run2 UL analysis, running on NanoAOD.
 
 # Setup the environment (only once)
 
 ```
 git clone git@github.com:CMSMUSiC/MUSiCPxl.git
 cd MUSiCPxl
-./setup_music.sh CMSSW_10_6_29 <your_CERN_username>
+./setup_music.sh CMSSW_10_6_29 slc7_amd64_gcc700 <your_CERN_username>
 ```
 
 **Don't forget the set the proper CMSSW version. Could be that the one above is not updated.**
@@ -30,15 +30,13 @@ make
 
 Other options are:
 
-- `make skimmer`  
 - `make utils`  
 - `make roi`  
-- `make roi_lut`  --> this one only creates the LUTs. Usually takes some time to run, but always needed (only one per setup).
+- `make lut`  --> this one only creates the LUTs. Usually takes some time to run, but always needed (only one per setup).
 - `make pxlanalyzer`  
 
 and
 
-- `make skimmer_clean`  
 - `make utils_clean`  
 - `make roi_clean`  
 - `make pxlanalyzer_clean`  

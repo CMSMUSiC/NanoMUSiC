@@ -86,7 +86,12 @@ Jet.BJets.Algo = "pfDeepFlavourJetTags:probb" # "pfDeepFlavourJetTags:probbb", "
 Jet.BJets.Algo1 = "pfDeepFlavourJetTags:probbb"
 Jet.BJets.Algo2 = "pfDeepFlavourJetTags:problepb"
 Jet.BJets.AlgoName = "DeepJet=DeepFlavour" #UPDATED TO UL17
-Jet.BJets.Discr.WP = "Tight" #UPDATED TO UL17
+
+# L - Loose
+# M - Medium
+# T - Tight
+Jet.BJets.Discr.WP = "T" #UPDATED TO UL17
+
 Jet.BJets.Discr.min = 0.7476 #UPDATED TO UL17
 
 
@@ -94,13 +99,17 @@ Jet.BJets.SF.Method = ""
 #Jet.BJets.SF.file = "$MUSIC_BASE/ConfigFiles/ConfigInputs/ScaleFactors/2016/CSVv2_Moriond17_B_H.csv" #NOT UPDATED TO UL17#SWITCH TOUL2017/DeepCSV_106XUL17SF_V2.csv"
 
 #Jet.BJets.SF.file = "$MUSIC_BASE/ConfigFiles/ConfigInputs/ScaleFactors/UL2017/DeepCSV_106XUL17SF_V2p1.csv" #UPDATED TO UL17
-Jet.BJets.SF.file = "$MUSIC_BASE/ConfigFiles/ConfigInputs/ScaleFactors/UL2017/DeepJet_106XUL17SF_V2p1.csv" #UPDATED TO UL17
+# Jet.BJets.SF.file = "$MUSIC_BASE/ConfigFiles/ConfigInputs/ScaleFactors/UL2017/DeepJet_106XUL17SF_V2p1.csv" #UPDATED TO UL17
+# Jet.BJets.SF.file = "$MUSIC_BASE/ConfigFiles/ConfigInputs/ScaleFactors/UL2017/DeepJet_106XUL17SF_V2p1.csv" #UPDATED TO UL17
+Jet.BJets.SF.file = "$MUSIC_BASE/ConfigFiles/ConfigInputs/ScaleFactors/UL2017/btagging_UL17.json" #UPDATED TO UL17 ## updated to correctionlib
 
 #for Jet.BJets.SF.file : put path after : $MUSIC_BASE
-Jet.BJets.Efficiency.file = "$MUSIC_BASE/ConfigFiles/ConfigInputs/ScaleFactors/2016/BTagEfficiency_HadflavourNjet.root"#NOT UPDATED TO UL17
-Jet.BJets.Efficiency.type = "HadflavNjet"#NOT UPDATED TO UL17
-Jet.BJets.Efficiency.dir = "BTagEfficiency_HadflavourNjet"#NOT UPDATED TO UL17
-Jet.BJets.Efficiency.hist = "eff_BTag_HadflavNjet"#NOT UPDATED TO UL17
+
+
+Jet.BJets.Efficiency.file = "$MUSIC_BASE/ConfigFiles/ConfigInputs/ScaleFactors/2016/BTagEfficiency_HadflavourNjet.root" #NOT UPDATED TO UL17
+Jet.BJets.Efficiency.type = "HadflavNjet" #NOT UPDATED TO UL17
+Jet.BJets.Efficiency.dir = "BTagEfficiency_HadflavourNjet" #NOT UPDATED TO UL17
+Jet.BJets.Efficiency.hist = "eff_BTag_HadflavNjet" #NOT UPDATED TO UL17
 # Tight WP for 2017 data : https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco
 Jet.BJets.Type.Gen = "b"
 Jet.BJets.Type.Rec = "b"

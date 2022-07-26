@@ -229,8 +229,8 @@ std::map< size_t, float > MCBin::leadingBackgroundsFractions(const double thresh
 }
 
 double MCBin::symmetrizeError( const std::pair<double, double> error ) {
-    double version1 = std::abs( error.first + error.second ) / 2.;
-    double version2 = (std::abs( error.first) + std::abs(error.second )) / 2.;
+    // double version1 = std::abs( error.first + error.second ) / 2.;
+    // double version2 = (std::abs( error.first) + std::abs(error.second )) / 2.;
     //~ std::cout <<"symmetrize error" << std::endl;
     //~ if(error.first < 0.){
         //~ std::cout << "error.first " << error.first << std::endl;

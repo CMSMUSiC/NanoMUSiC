@@ -1,3 +1,9 @@
 {
-    "C_Cpp.intelliSenseEngineFallback": "Disabled"
+    "C_Cpp.intelliSenseEngineFallback": "Disabled",
+    "files.associations": {
+        "cwchar": "cpp",
+        "myselect.C": "cpp",
+        "myclass.C": "cpp",
+        "hsimpleReader.C": "cpp"
+    }
 }

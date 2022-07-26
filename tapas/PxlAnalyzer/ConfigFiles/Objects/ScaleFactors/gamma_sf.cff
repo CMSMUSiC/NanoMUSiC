@@ -11,7 +11,7 @@ Gamma.ScaleFactor.ID.abseta = 0					#The histogram contains Eta
 Gamma.ScaleFactor.ID.SeedVeto.type = EtaPt
 Gamma.ScaleFactor.ID.SeedVeto.file = $PXLANA/ConfigFiles/ConfigInputs/ScaleFactors/UL2017/sf_gamma_seed_veto_ScalingFactors_106X_Summer19_RunUL17.root #UPDATED TO UL17
 Gamma.ScaleFactor.ID.SeedVeto.dir =
-Gamma.ScaleFactor.ID.SeedVeto.hist = Scaling_Factors_CSEV_R9_Inclusive
+Gamma.ScaleFactor.ID.SeedVeto.hist = "Scaling_Factors_TightID_CSEV_R9_Inclusive"
 Gamma.ScaleFactor.ID.SeedVeto.abseta = 1       #The histogram contains	AbsEta
 
 Gamma.ScaleFactor.ID.MVAID.type = EtaPt

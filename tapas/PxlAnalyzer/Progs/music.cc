@@ -1,5 +1,7 @@
 #include <time.h>
 #include <string>
+#include <unordered_set>
+#include <numeric>
 
 #include "Pxl/Pxl/interface/pxl/hep.hh"
 #include "Pxl/Pxl/interface/pxl/core.hh"
@@ -23,6 +25,14 @@
 #include "Main/ReWeighter.hh"
 #include "Main/RunLumiRanges.hh"
 #include "Main/SkipEvents.hh"
+
+// this will build pxl::Events from NanoAOD TTree's.
+#include "buildPxlEvent.hh"
+// #include "NanoAODReader.hh"
+
+// ROOT Stuff
+#include "TFile.h"
+#include "TTree.h"
 
 // Include user defined Analysis or use Validator as default
 // Implement your own analysis composer and use export to define the
@@ -56,6 +66,11 @@ void KeyboardInterrupt_endJob(int signum)
 {
    do_break = true;
 }
+// int main2(int argc, char *argv[]) {
+//    Tools::MConfig config("foo.cfg");
+//    EventSelector Selector(config);
+//    // SkipEvents skipEvents(config);
+// }
 
 int main(int argc, char *argv[])
 {
@@ -106,12 +121,12 @@ int main(int argc, char *argv[])
    std::vector<std::string> arguments;
 
    po::options_description genericOptions("Generic options");
-   genericOptions.add_options()("help", "produce help message")("Output,o", po::value<std::string>(&outputDirectory), "Output directory")("CONFIG", po::value<std::string>(&FinalCutsFile)->required(), "The main config file")("PXLIO_FILE(S)", po::value<std::vector<std::string>>(&input_files)->required(), "A list of pxlio files to run on")("Num,N", po::value<int>(&numberOfEvents), "Number of events to analyze.")("skip", po::value<int>(&numberOfSkipEvents), "Number of events to skip.")("debug", po::value<int>(&debug), "Set the debug level.\n0 = ERRORS,\n1 = WARNINGS,\n2 = INFO, 3 = DEBUG,\n4 = EVEN MORE DEBUG");
+   genericOptions.add_options()("help", "produce help message")("Output,o", po::value<std::string>(&outputDirectory), "Output directory")("CONFIG", po::value<std::string>(&FinalCutsFile)->required(), "The main config file")("NANOAOD_FILE(S)", po::value<std::vector<std::string>>(&input_files)->required(), "A list of NanoAOD (.root) files to run on")("Num,N", po::value<int>(&numberOfEvents), "Number of events to analyze.")("skip", po::value<int>(&numberOfSkipEvents), "Number of events to skip.")("debug", po::value<int>(&debug), "Set the debug level.\n0 = ERRORS,\n1 = WARNINGS,\n2 = INFO, 3 = DEBUG,\n4 = EVEN MORE DEBUG");
 
    // add positional arguments
    po::positional_options_description pos;
    pos.add("CONFIG", 1);
-   pos.add("PXLIO_FILE(S)", -1);
+   pos.add("NANOAOD_FILE(S)", -1);
 
    // get user defined command line arguments
    po::options_description analysisOptions = thisAnalysis.getCmdArguments();
@@ -140,11 +155,12 @@ int main(int argc, char *argv[])
       return ERROR_IN_COMMAND_LINE;
    }
 
-   // if( not fs::exists( FinalCutsFile ) ) {
-   //    std::cout<<"Yan DEBUG : : in FinalCutsFile flag ERROR block"<<std::endl; //Yannik change
-   //    throw Tools::file_not_found( FinalCutsFile, "Config file" );
-   // }
-   // else std::cout << "INFO: Using Config file: " << FinalCutsFile << std::endl;
+   if (not fs::exists(FinalCutsFile))
+   {
+      throw Tools::file_not_found(FinalCutsFile, "Config file");
+   }
+   else
+      std::cout << "INFO: Using Config file: " << FinalCutsFile << std::endl;
 
    Tools::MConfig config(FinalCutsFile);
 
@@ -193,9 +209,11 @@ int main(int argc, char *argv[])
 
    // Init the run config
    lumi::RunLumiRanges runcfg(RunConfigFile);
+
    SkipEvents skipEvents(config);
 
    pxl::Core::initialize();
+
    pxl::Hep::initialize();
 
    // initialize the EventSelector
@@ -223,12 +241,14 @@ int main(int argc, char *argv[])
 
    // performance monitoring
    double dTime1 = pxl::getCpuTime(); // Start Time
-   int e = 0;                         // Event counter
+   int e = 0;                // Event counter
    unsigned int skipped = 0;          // number of events skipped from run/LS config
    int pre_run_skipped = 0;           // number of events skipped due to skipped option
 
    if (config.GetItem<bool>("Pileup.UseSampleName", false))
+   {
       ReWeighter::adaptConfig(config, input_files[0]);
+   }
    ReWeighter reweighter = ReWeighter(config, 0);
    ReWeighter reweighterup = ReWeighter(config, 1);
    ReWeighter reweighterdown = ReWeighter(config, -1);
@@ -236,111 +256,71 @@ int main(int argc, char *argv[])
    unsigned int analyzed_files = 0;
    unsigned int lost_files = 0;
 
-   // loop over all files
-   std::vector<std::string>::const_iterator file_iter = input_files.begin();
-
    // initialize process info object
    ProcInfo_t info;
-   // Get file handler to access files.
-   // New PXL version knows how to handle dcap protocol.
-   // std::auto_prt< pxl::InputFile > inFile = pxl::InputFile();
-   pxl::InputFile inFile;
-   for (unsigned int f = 0; f < input_files.size() && (numberOfEvents == -1 || e < numberOfEvents); f++)
+
+   // temp cache dir
+   std::cout << "Preparing cache dir: " << std::endl;
+   string process_hash = std::to_string(std::hash<std::string>{}(std::accumulate(input_files.begin(), input_files.end(), std::string(""))));
+   std::string cache_dir = "/tmp/music/proc_" + process_hash;
+   system(("rm -rf " + cache_dir).c_str());
+   std::cout << cache_dir << std::endl;
+
+   // loop over files
+   for (auto const &file_iter : input_files)
    {
-      std::string const fileName = *file_iter;
-      // Open File:
-      // open file(s):
-      // pxl::InputHandler* input =
-      // if( filename.substr(0,7)  == "dcap://" || filename.substr(0,6) == "/pnfs/") {
-      // input = new pxl::dCacheInputFile();
-      //} else {
-      // if( filename.substr(0,1) != "/" ) {
-      // filename = startDir + "/" + filename;
-      //}
-      // input = new pxl::InputFile();
-      //}
+      std::string const fileName = file_iter;
 
       std::cout << "Opening file " << fileName << std::endl;
-      unsigned int numTrials = 0;
-      // we need to get done in 3 days, so don't wait too long
-      // unsigned int timeout = 3*24*60*60/input_files.size();
-      // cout << "Opening file (timeout " << timeout << " seconds) " << filename << endl;
-      while (true)
-      {
-         numTrials++;
-         try
-         {
-            time_t rawtime;
-            time(&rawtime);
-            std::cout << "Opening time: " << ctime(&rawtime);
-            inFile.open(fileName);
-         }
-         catch (std::runtime_error &e)
-         {
-            // Wait for ( 10^numTrials - 1 ) seconds before retrying.
-            // double const sleep = std::pow( 10, numTrials ) - 1.0;
-            // boost::this_thread::sleep( boost::posix_time::seconds( sleep ) );
-            std::cout << "Did you use an absolute path to the .pxlio file?" << std::endl;
-            if (numTrials < 3)
-            {
-               numTrials++;
-               // Retry!
-               continue;
-            }
 
-            if (not runOnData)
-            {
-               // increase lost files counter, but don't try again
-               lost_files++;
-               std::cerr << "Failed to open file '" << fileName
-                         << "', skipping..." << std::endl;
-            }
-            else
-            {
-               std::cerr << "Failed to open file '" << fileName
-                         << "' three times. Aborting!" << std::endl;
-               throw e;
-            }
-         }
-         // increase successful files counter
-         analyzed_files++;
-         break;
+      TFile::SetCacheFileDir(cache_dir);
+      std::unique_ptr<TFile> inFile(TFile::Open(fileName.c_str(), "CACHEREAD"));
+
+      if (!inFile)
+      {
+         std::cout << "ERROR: could not open data file" << std::endl;
+         exit(1);
       }
 
+      time_t rawtime;
+      time(&rawtime);
+      std::cout << "Opening time: " << ctime(&rawtime);
+
+      analyzed_files++;
       int event_counter_per_file = 0;
-      // run event loop:
-      while (inFile.good())
+
+      // get "Events" TTree from file
+      auto events_tree = (TTree *)inFile->Get("Events");
+
+      // get NanoAODReader
+      auto nano_reader = new NanoAODReader(events_tree);
+
+      // loop over events
+      while (nano_reader->next())
       {
-         pxl::Event *event_ptr = 0;
+         pxl::Event *event_ptr = NULL;
+         // create new pxl::Event
          try
          {
-            event_ptr = dynamic_cast<pxl::Event *>(inFile.readNextObject());
+            event_ptr = buildPxlEvent(e, nano_reader, runOnData);
          }
          catch (std::runtime_error &e)
          {
-            std::cout << "end of file or unreadable event.    " << std::endl;
+            std::cout << "Could not create pxl::Event." << std::endl;
             break;
          }
+
          event_counter_per_file++;
          if (!event_ptr)
             continue;
-         // pxl::Event event = *event_ptr;
 
+         // if set, skip first events
          if (numberOfSkipEvents > pre_run_skipped)
          {
             delete event_ptr;
             pre_run_skipped++;
             continue;
          }
-         if (numberOfEvents > -1 and e >= numberOfEvents)
-            break;
-         // Break the event loop if the current event is not sensible (formatted correctly).
-         // if( event_ptr->getUserRecords().size() == 0 ) {
-         // std::cout << "WARNING: Found corrupt pxlio event with User Record size 0 in file " << fileName << "." << std::endl;
-         // std::cout << "WARNING: Continue with next event." << std::endl;
-         // delete event_ptr;
-         // continue;
-         //}
 
          if (event_ptr->getObjectOwner().findObject<pxl::EventView>("Rec") == 0)
          {
@@ -350,7 +330,7 @@ int main(int argc, char *argv[])
             continue;
          }
 
-         // check if we shall analyze this event
+         // check if shall analyze this event
          lumi::ID run = event_ptr->getUserRecord("Run");
          lumi::ID LS = event_ptr->getUserRecord("LumiSection");
          lumi::ID eventNum = event_ptr->getUserRecord("EventNum");
@@ -404,7 +384,7 @@ int main(int argc, char *argv[])
 
          if (fatjetPUPPIUse)
          {
-            // Switch to puppi kniemtaics for fat jets
+            // Switch to puppi kinematics for fat jets
             Adaptor.applyPUPPIFatJets();
          }
 
@@ -461,7 +441,7 @@ int main(int argc, char *argv[])
                   // perform systematic pre. selection on all selected event views
                   //  with loosened kinematic cuts
                   Selector.performSelection(RecEvtView, GenEvtView, TrigEvtView, FilterView, true);
-                  // use the config files to activate systematics for some objects
+                  // use the    system(("rm -rf " + outputDirectory).c_str());config files to activate systematics for some objects
                   syst_shifter.init(event_ptr);
                   // create new event views with systematic shifts
                   syst_shifter.createShiftedViews();
@@ -534,14 +514,24 @@ int main(int argc, char *argv[])
             }
          }
 
-         // if( e % 100000 == 0 ) PrintProcessInfo( info );
-         if (do_break)
-            break;
+         // end of file
+         e++;
+         if (e % 10000 == 0)
+         {
+            PrintProcessInfo(info);
+         }
       }
-      inFile.close();
-      ++file_iter;
-      if (do_break)
+
+      inFile->Close();
+
+      if (do_break || (numberOfEvents != -1 && e > numberOfEvents))
+      {
          break;
+      }
+
+      // clear cache dir
+      std::cout << "Cleaning cache dir..." << std::endl;
+      system(("rm -rf " + cache_dir + "/*").c_str());
    }
 
    double dTime2 = pxl::getCpuTime();

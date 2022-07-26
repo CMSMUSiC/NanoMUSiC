@@ -102,11 +102,13 @@ public:
 	
 	/// get auto_ptr to helper class which enables using setters
 	template<class objecttype>
-	std::auto_ptr<ParticleHelper<objecttype> > getAs()
+	// std::auto_ptr<ParticleHelper<objecttype> > getAs()
+	std::unique_ptr<ParticleHelper<objecttype> > getAs()
 	{
 		ParticleHelper<objecttype>* temp = new ParticleHelper<objecttype>;
 		temp->connect(*this);
-		return std::auto_ptr<ParticleHelper<objecttype> >(temp);
+		// return std::auto_ptr<ParticleHelper<objecttype> >(temp);
+		return std::unique_ptr<ParticleHelper<objecttype> >(temp);
 	}
 
 };
