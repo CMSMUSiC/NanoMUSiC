@@ -24,6 +24,8 @@ public:
   template <typename T>
   RVec<T> getRVec(std::string vectorName);
 
+  ~NanoAODReader();
+
 private:
   TTreeReader *fReader; // the tree reader
   TTree *fTree;         // the tree read by fReader
@@ -361,3 +363,5 @@ RVec<T> NanoAODReader::getRVec(std::string vectorName)
   auto array_temp_ = (TTreeReaderArray<T> *)(fData[vectorName]);
   return RVec<T>(std::vector<T>(array_temp_->begin(), array_temp_->end()));
 }
+
+NanoAODReader::~NanoAODReader() {}

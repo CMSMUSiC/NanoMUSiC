@@ -9,132 +9,130 @@
 namespace pxl
 {
 
-dCapFileImpl::dCapFileImpl() : _file(0), _mode(0)
-{
+	dCapFileImpl::dCapFileImpl() : _file(0), _mode(0)
+	{
+	}
 
-}
+	dCapFileImpl::dCapFileImpl(const std::string &filename, int32_t mode)
+	{
+		open(filename, mode);
+	}
 
-dCapFileImpl::dCapFileImpl(const std::string &filename, int32_t mode)
-{
-	open(filename, mode);
-}
+	dCapFileImpl::~dCapFileImpl()
+	{
+		close();
+	}
 
-dCapFileImpl::~dCapFileImpl()
-{
-	close();
-}
+	bool dCapFileImpl::open(const std::string &filename, int32_t mode)
+	{
+		close();
+		if (mode & OpenRead)
+			_file = dc_fopen64(filename.c_str(), "rb");
+		else if (mode & OpenWrite)
+			_file = dc_fopen64(filename.c_str(), "wb");
 
-bool dCapFileImpl::open(const std::string &filename, int32_t mode)
-{
-	close();
-	if (mode & OpenRead)
-		_file = dc_fopen64(filename.c_str(), "rb");
-	else if (mode & OpenWrite)
-		_file = dc_fopen64(filename.c_str(), "wb");
+		_mode = mode;
 
-	_mode = mode;
+		return isOpen();
+	}
 
-	return isOpen();
-}
+	void dCapFileImpl::close()
+	{
+		if (_file == 0)
+			return;
+		dc_fclose(_file);
+		_file = 0;
+	}
 
-void dCapFileImpl::close()
-{
-	if (_file == 0)
-		return;
-	dc_fclose(_file);
-	_file = 0;
-}
+	bool dCapFileImpl::isEof()
+	{
+		if (_file == 0)
+			return true;
 
-bool dCapFileImpl::isEof()
-{
-	if (_file == 0)
-		return true;
+		return dc_feof(_file);
+	}
 
-	return dc_feof(_file);
-}
+	bool dCapFileImpl::isOpen()
+	{
+		return (_file);
+	}
 
-bool dCapFileImpl::isOpen()
-{
-	return (_file);
-}
+	bool dCapFileImpl::isBad()
+	{
+		if (_file == 0)
+			return true;
 
-bool dCapFileImpl::isBad()
-{
-	if (_file == 0)
-		return true;
+		if (dc_feof(_file))
+			return true;
 
-	if (dc_feof(_file))
-		return true;
-
-	return false;
-}
-
-void dCapFileImpl::clear()
-{
-
-}
-
-bool dCapFileImpl::isGood()
-{
-	if (_file == 0)
 		return false;
+	}
 
-	if (dc_feof(_file))
-		return false;
+	void dCapFileImpl::clear()
+	{
+	}
 
-	return true;
-}
+	bool dCapFileImpl::isGood()
+	{
+		if (_file == 0)
+			return false;
 
-int64_t dCapFileImpl::tell()
-{
-	if (_file == 0)
-		return 0;
+		if (dc_feof(_file))
+			return false;
 
-	return dc_ftell(_file);
-}
+		return true;
+	}
 
-void dCapFileImpl::seek(int64_t pos, int32_t d)
-{
-	int whence;
-	if (d == SeekBegin)
-		whence = SEEK_SET;
-	else if (d == SeekCurrent)
-		whence = SEEK_CUR;
-	else if (d == SeekEnd)
-		whence = SEEK_END;
+	int64_t dCapFileImpl::tell()
+	{
+		if (_file == 0)
+			return 0;
 
-	dc_fseeko64(_file, pos, whence);
-}
+		return dc_ftell(_file);
+	}
 
-int32_t dCapFileImpl::peek()
-{
-	int32_t c;
+	void dCapFileImpl::seek(int64_t pos, int32_t d)
+	{
+		int whence = -99;
+		if (d == SeekBegin)
+			whence = SEEK_SET;
+		else if (d == SeekCurrent)
+			whence = SEEK_CUR;
+		else if (d == SeekEnd)
+			whence = SEEK_END;
 
-	c = dc_fgetc(_file);
-	dc_fseeko64(_file, -1, SEEK_CUR);
+		dc_fseeko64(_file, pos, whence);
+	}
 
-	return c;
-}
+	int32_t dCapFileImpl::peek()
+	{
+		int32_t c;
 
-int64_t dCapFileImpl::read(char *s, size_t count)
-{
-	return dc_fread(s, sizeof(char), count, _file);
-}
+		c = dc_fgetc(_file);
+		dc_fseeko64(_file, -1, SEEK_CUR);
 
-int64_t dCapFileImpl::write(const char *s, size_t count)
-{
-	return dc_fwrite(s, sizeof(char), count, _file);
-}
+		return c;
+	}
 
-void dCapFileImpl::ignore(int64_t count)
-{
-	dc_fseeko64(_file, count, SEEK_CUR);
-}
+	int64_t dCapFileImpl::read(char *s, size_t count)
+	{
+		return dc_fread(s, sizeof(char), count, _file);
+	}
 
-void dCapFileImpl::destroy()
-{
-	delete this;
-}
+	int64_t dCapFileImpl::write(const char *s, size_t count)
+	{
+		return dc_fwrite(s, sizeof(char), count, _file);
+	}
+
+	void dCapFileImpl::ignore(int64_t count)
+	{
+		dc_fseeko64(_file, count, SEEK_CUR);
+	}
+
+	void dCapFileImpl::destroy()
+	{
+		delete this;
+	}
 
 }
 

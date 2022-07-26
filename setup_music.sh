@@ -85,7 +85,6 @@ cd correctionlib
 make PYTHON=python
 make install
 
-
 # Create music_env.config
 touch music_env.config
 echo "" > music_env.config

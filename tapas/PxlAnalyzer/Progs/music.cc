@@ -384,7 +384,7 @@ int main(int argc, char *argv[])
 
          if (fatjetPUPPIUse)
          {
-            // Switch to puppi kniemtaics for fat jets
+            // Switch to puppi kinematics for fat jets
             Adaptor.applyPUPPIFatJets();
          }
 

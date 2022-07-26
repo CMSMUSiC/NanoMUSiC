@@ -17,7 +17,7 @@ utils:
 roi: 
 	cd $(MAKEFILE_DIR)/tapas/MUSiC-RoIScanner/ ; make 
 
-roi_lut: 
+lut: 
 	cd $(MAKEFILE_DIR)/tapas/MUSiC-RoIScanner/ ; make ; make lut
 
 pxlanalyzer: 
@@ -32,7 +32,7 @@ utils_clean:
 	cd $(MAKEFILE_DIR)/tapas/MUSiC-Utils/ ; make clean
 
 roi_clean: 
-	cd $(MAKEFILE_DIR)/tapas/MUSiC-RoIScanner/ ; make  clean
+	cd $(MAKEFILE_DIR)/tapas/MUSiC-RoIScanner/ ; make clean
 
 pxlanalyzer_clean: 
 	cd $(MAKEFILE_DIR)/tapas/PxlAnalyzer/ ; make clean
