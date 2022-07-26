@@ -27,12 +27,12 @@ echo ""
 
 # Set CMSSW version
 CMSSW_VER=$1
-SCRAM_ARCH=$2
+MY_SCRAM_ARCH=$2
 
 # Set up the skimmer
 cd $SCRIPT_DIR
 source /cvmfs/cms.cern.ch/cmsset_default.sh
-cd /cvmfs/cms.cern.ch/$SCRAM_ARCH/cms/cmssw/$CMSSW_VER/ ## Need CMSSW, version does not matter.
+cd /cvmfs/cms.cern.ch/$MY_SCRAM_ARCH/cms/cmssw/$CMSSW_VER/ 
 cmsenv
 cd $SCRIPT_DIR
 
@@ -62,5 +62,6 @@ make install
 # Create music_env.config
 touch music_env.config
 echo "" > music_env.config
-echo "export CERNUSERNAME=$3" >>music_env.config
-echo "export CMSSW_VER=$CMSSW_VER" >>music_env.config
+echo "export CERNUSERNAME=$3" >> music_env.config
+echo "export CMSSW_VER=$CMSSW_VER" >> music_env.config
+echo "export MY_SCRAM_ARCH=$MY_SCRAM_ARCH" >> music_env.config
