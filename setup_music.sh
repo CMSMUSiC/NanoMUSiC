@@ -34,6 +34,7 @@ cd $SCRIPT_DIR
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 cd /cvmfs/cms.cern.ch/$MY_SCRAM_ARCH/cms/cmssw/$CMSSW_VER/ 
 cmsenv
+CMSSW_RELEASE_BASE=/cvmfs/cms.cern.ch/$MY_SCRAM_ARCH/cms/cmssw/$CMSSW_VER/
 cd $SCRIPT_DIR
 
 # create links for libaries
@@ -60,8 +61,10 @@ make PYTHON=python
 make install
 
 # Create music_env.config
+cd $SCRIPT_DIR
 touch music_env.config
 echo "" > music_env.config
 echo "export CERNUSERNAME=$3" >> music_env.config
 echo "export CMSSW_VER=$CMSSW_VER" >> music_env.config
 echo "export MY_SCRAM_ARCH=$MY_SCRAM_ARCH" >> music_env.config
+echo "export CMSSW_RELEASE_BASE=/cvmfs/cms.cern.ch/$MY_SCRAM_ARCH/cms/cmssw/$CMSSW_VER/" >> music_env.config

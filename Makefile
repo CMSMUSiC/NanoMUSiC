@@ -2,11 +2,10 @@ ifndef MUSIC_IS_SET_ENV
 $(error MUSiC envs are not set. First run: source setenv_music.sh)
 endif
 
-
 SHELL := /bin/bash
 MAKEFILE_DIR := ${CURDIR}
 
-all:  utils roi pxlanalyzer 
+all: utils roi pxlanalyzer 
 
 utils: 
 	cd $(MAKEFILE_DIR)/tapas/MUSiC-Utils/ ; make

@@ -48,3 +48,6 @@ export LD_LIBRARY_PATH=$CORRECTIONLIB/lib/:$LD_LIBRARY_PATH
 # control whether MUSiC anvs are set
 # to be used by Makefile
 export MUSIC_IS_SET_ENV=1
+
+# reload user configs
+source music_env.config
