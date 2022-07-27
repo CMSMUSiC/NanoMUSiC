@@ -1,4 +1,5 @@
 
+
 #include "TLeaf.h"
 #include "TTree.h"
 #include "TTreeReader.h"
@@ -6,34 +7,11 @@
 #include "TTreeReaderArray.h"
 #include "ROOT/RVec.hxx"
 
-using namespace ROOT::VecOps;
-class NanoAODReader
-{
-public:
-  NanoAODReader(TTree *);
+#include "NanoAODReader.hh"
 
-  TTreeReader *getReader();
-
-  std::vector<std::string> getListOfBranches();
-
-  bool next();
-
-  template <typename T>
-  T getVal(std::string value_name);
-
-  template <typename T>
-  RVec<T> getRVec(std::string vectorName);
-
-  ~NanoAODReader();
-
-private:
-  TTreeReader *fReader; // the tree reader
-  TTree *fTree;         // the tree read by fReader
-
-  std::vector<std::string> fListOfBranches;
-
-  std::map<std::string, void *> fData; // data  held by fTree
-};
+#include <string>
+#include <sstream>
+#include <iostream>
 
 // Constructor
 NanoAODReader::NanoAODReader(TTree *tree_ptr)
@@ -336,6 +314,8 @@ NanoAODReader::NanoAODReader(TTree *tree_ptr)
   }
 }
 
+NanoAODReader::~NanoAODReader() {}
+
 TTreeReader *NanoAODReader::getReader()
 {
   return fReader;
@@ -351,17 +331,41 @@ bool NanoAODReader::next()
   return fReader->Next();
 }
 
-template <typename T>
-T NanoAODReader::getVal(std::string valueName)
+void NanoAODReader::printContent()
 {
-  return *(*((TTreeReaderValue<T> *)(fData[valueName])));
-}
+  std::cout << "\n\n\n\n\n"
+            << std::endl;
+  std::cout << "NanoAOD File Content:" << std::endl;
 
-template <typename T>
-RVec<T> NanoAODReader::getRVec(std::string vectorName)
-{
-  auto array_temp_ = (TTreeReaderArray<T> *)(fData[vectorName]);
-  return RVec<T>(std::vector<T>(array_temp_->begin(), array_temp_->end()));
-}
+  // fill map with values readers
+  for (auto const &leaf : *(fTree->GetListOfLeaves()))
+  {
+    auto leaf_temp = dynamic_cast<TLeaf *>(leaf);
+    std::string leaf_name = (std::string)(leaf_temp->GetName());
+    std::string leaf_type = (std::string)(leaf_temp->GetTypeName());
 
-NanoAODReader::~NanoAODReader() {}
+    auto longest_leaf_name = std::max_element(fListOfBranches.begin(), fListOfBranches.end(),
+                                                 [](const auto &a, const auto &b)
+                                                 {
+                                                   return a.size() < b.size();
+                                                 });
+    int length_diff = (*longest_leaf_name).size() - leaf_name.size();
+
+    std::cout << std::string((*longest_leaf_name).size() + 25, '-') << std::endl;
+
+    // check if data is array or single value
+    if (leaf_temp->GetLeafCount() != nullptr || leaf_temp->GetLenStatic() > 1)
+    {
+      std::cout << leaf_name << std::string(length_diff, ' ') << " - "
+                << "Vec< " << leaf_type << " >" << std::endl;
+    }
+    else
+    {
+      std::cout << leaf_name << std::string(length_diff, ' ') << " - "
+                << "Val< " << leaf_type << " >" << std::endl;
+    }
+  }
+
+  std::cout << "\n\n\n\n\n"
+            << std::endl;
+}

@@ -4,6 +4,7 @@
         "cwchar": "cpp",
         "myselect.C": "cpp",
         "myclass.C": "cpp",
-        "hsimpleReader.C": "cpp"
+        "hsimpleReader.C": "cpp",
+        "unordered_set": "cpp"
     }
 }

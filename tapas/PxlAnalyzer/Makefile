@@ -32,6 +32,8 @@
 
 PROGRAM:=Progs/music
 
+PRINTER:=Progs/nanoaod_content_printer
+
 ########################################
 # directories
 # by default, the validator is compiled.
@@ -176,7 +178,9 @@ NORMAL=$(shell tput sgr0)
 ########################################
 # define all targets
 
-TARGETS := $(PROGRAM)
+TARGETS := $(PROGRAM) $(PRINTER)
+TARGETS += $(PRINTER)
+
 
 
 ########################################
@@ -196,17 +200,26 @@ endif
 #	@shellcommand
 #	command
 
+TEMP_OBJS := $(OBJECTS)
+
 all: $(TARGETS)
 
 clean:
 	@rm -f $(PROGRAM) $(OBJECTS) $(DEPENDS)
 
-$(PROGRAM): $(OBJECTS)
+$(PROGRAM): $(filter-out $(PRINTER).o, $(TEMP_OBJS))
 	@echo "Building $@ ..."
-	$(LD) $(LDFLAGS) $^ -o $@
+	$(LD) $^ $(LDFLAGS)  -o $@
 	@echo "$@ done"
 	@mkdir -p bin
 	@cp $(PROGRAM) bin/
+
+$(PRINTER): $(filter-out $(PROGRAM).o, $(TEMP_OBJS))
+	@echo "Building $@ ..."
+	$(LD) $^ $(LDFLAGS)  -o $@
+	@echo "$@ done"
+	@mkdir -p bin
+	@cp $(PRINTER) bin/
 
 
 ########################################

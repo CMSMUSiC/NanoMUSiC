@@ -3,7 +3,7 @@
 
 /*
 
-This class contains all the muon selections
+This class contains all the electron selections
 
 */
 
@@ -18,8 +18,10 @@ class EleSelector : public ObjectSelector
 public:
    // Constructor
    EleSelector(const Tools::MConfig &config, OldNameMapper *globalOldNameMap);
-   // Destruktor
+
+   // Destructor
    ~EleSelector();
+   
    //~ int passObjectSelection(pxl::Particle *object,
    int passObjectSelection(pxl::Particle *ele,
                            double const objectRho,

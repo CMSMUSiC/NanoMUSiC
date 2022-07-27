@@ -2,6 +2,7 @@
 #include <string>
 #include <unordered_set>
 #include <numeric>
+#include <sstream>
 
 #include "Pxl/Pxl/interface/pxl/hep.hh"
 #include "Pxl/Pxl/interface/pxl/core.hh"
@@ -28,7 +29,6 @@
 
 // this will build pxl::Events from NanoAOD TTree's.
 #include "buildPxlEvent.hh"
-// #include "NanoAODReader.hh"
 
 // ROOT Stuff
 #include "TFile.h"
@@ -66,16 +66,13 @@ void KeyboardInterrupt_endJob(int signum)
 {
    do_break = true;
 }
-// int main2(int argc, char *argv[]) {
-//    Tools::MConfig config("foo.cfg");
-//    EventSelector Selector(config);
-//    // SkipEvents skipEvents(config);
-// }
 
 int main(int argc, char *argv[])
 {
    if (getenv("MUSIC_BASE") == NULL)
+   {
       throw std::runtime_error("MUSIC_BASE not set!");
+   }
 
    std::cout << "Running Analysis '" QUOTE(MYPXLANA) "'..." << std::endl;
 
@@ -241,7 +238,7 @@ int main(int argc, char *argv[])
 
    // performance monitoring
    double dTime1 = pxl::getCpuTime(); // Start Time
-   int e = 0;                // Event counter
+   int e = 0;                         // Event counter
    unsigned int skipped = 0;          // number of events skipped from run/LS config
    int pre_run_skipped = 0;           // number of events skipped due to skipped option
 

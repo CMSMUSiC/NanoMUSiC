@@ -1,3 +1,5 @@
+Progs/nanoaod_content_printer
+Progs/nanoaod_content_MC.txt
 *.[oaP]
 *.so
 *.pyc

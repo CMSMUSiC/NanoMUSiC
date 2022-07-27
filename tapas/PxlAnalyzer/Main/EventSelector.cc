@@ -31,7 +31,7 @@ EventSelector::EventSelector(const Tools::MConfig &cfg) : // initialize config o
 
                                                           m_data(cfg.GetItem<bool>("General.RunOnData")),
                                                           m_ignoreOverlaps(cfg.GetItem<bool>("General.IgnoreOverlaps")),
-                                                          
+
                                                           // When running on data, FastSim is always false!
                                                           m_runOnFastSim(not m_data and cfg.GetItem<bool>("General.FastSim")),
                                                           m_useTrigger(cfg.GetItem<bool>("General.UseTriggers")),
