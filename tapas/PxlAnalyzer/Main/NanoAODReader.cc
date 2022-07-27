@@ -357,12 +357,12 @@ void NanoAODReader::printContent()
     if (leaf_temp->GetLeafCount() != nullptr || leaf_temp->GetLenStatic() > 1)
     {
       std::cout << leaf_name << std::string(length_diff, ' ') << " - "
-                << "Vec< " << leaf_type << " >" << std::endl;
+                << "Vector < " << leaf_type << " >" << std::endl;
     }
     else
     {
-      std::cout << leaf_name << std::string(length_diff, ' ') << " - "
-                << "Val< " << leaf_type << " >" << std::endl;
+      std::cout << leaf_name << std::string(length_diff+1, ' ') << " - "
+                << "Value < " << leaf_type << " >" << std::endl;
     }
   }
 

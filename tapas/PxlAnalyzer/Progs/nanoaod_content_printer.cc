@@ -88,8 +88,6 @@ int main(int argc, char *argv[])
       exit(1);
    }
 
-   std::cout << "Opening time: " << std::endl;
-
    // get "Events" TTree from file
    auto events_tree = (TTree *)inFile->Get("Events");
 
