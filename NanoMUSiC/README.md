@@ -40,7 +40,7 @@ If something does not work please [create an issue](https://its.cern.ch/jira/sec
 A component lead will be informed and will organize a fix.
 
 ## Contributing to TAPAS
-Please follow the [contribution guide for TAPAS](https://gitlab.cern.ch/aachen-3a/tapas/blob/master/CONTRIBUTING.md). If you have questions
+Please follow the [contribution guide for TAPAS](https://gitlab.cern.ch/aachen-3a/NanoMUSiC/blob/master/CONTRIBUTING.md). If you have questions
 or experience issues when following the guide, please ask an experienced developer before you proceed ! 
 
 ## Godperson System

@@ -28,7 +28,7 @@ def write_cache(config, directory):
     }
 
     # write cache
-    cachedirectory = os.path.expanduser('~/.cache/tapas/')
+    cachedirectory = os.path.expanduser('~/.cache/NanoMUSiC/')
     if not os.path.exists(cachedirectory):
         os.makedirs(cachedirectory)
     with open(cachedirectory + 'ram.yaml', 'w') as cachefile:
@@ -39,7 +39,7 @@ def write_cache(config, directory):
 #
 # @param option Option to be retrieved from the cache file
 def get_cached_option(option):
-    cachefile = os.path.expanduser('~/.cache/tapas/ram.yaml')
+    cachefile = os.path.expanduser('~/.cache/NanoMUSiC/ram.yaml')
     if not os.path.isfile(cachefile):
         return 'No cache exists yet'
 

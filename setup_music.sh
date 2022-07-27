@@ -44,7 +44,7 @@ ln -s /usr/lib64/python2.6/lib-dynload/_curses.so lib/python/_curses.so
 ln -s /cvmfs/cms.cern.ch/slc6_amd64_gcc493/external/py2-pycurl/7.19.0-kpegke/lib/python2.7/site-packages/pycurl.so lib/python/pycurl.so
 
 # setup table2latex
-cd $SCRIPT_DIR/tapas/MUSiC-RoIScanner
+cd $SCRIPT_DIR/NanoMUSiC/MUSiC-RoIScanner
 git clone git@github.com:tobias-pook/table2latex.git
 cd table2latex
 pip install --user -e .

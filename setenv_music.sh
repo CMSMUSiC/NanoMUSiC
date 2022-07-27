@@ -11,33 +11,33 @@ cd /cvmfs/cms.cern.ch/$MY_SCRAM_ARCH/cms/cmssw/$CMSSW_VER/
 cmsenv
 
 # This is a TAPAS set_env script. Source it before usage of TAPAS.
-export LD_LIBRARY_PATH=$SCRIPTDIR/tapas/lib:$LD_LIBRARY_PATH
-export PYTHONPATH=$SCRIPTDIR/tapas/lib/python:$PYTHONPATH
+export LD_LIBRARY_PATH=$SCRIPTDIR/NanoMUSiC/lib:$LD_LIBRARY_PATH
+export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/lib/python:$PYTHONPATH
 export MYPXLANA=EventClassFactory
 
 # Set up CRAB3
 source /cvmfs/cms.cern.ch/crab3/crab.sh
 
 # Source all the needed set_env
-cd $SCRIPTDIR/tapas/tools/
+cd $SCRIPTDIR/NanoMUSiC/tools/
 source set_env.sh
 
-cd $SCRIPTDIR/tapas/PxlAnalyzer/
+cd $SCRIPTDIR/NanoMUSiC/PxlAnalyzer/
 source set_env.sh
 
-cd $SCRIPTDIR/tapas/PlotLib/
+cd $SCRIPTDIR/NanoMUSiC/PlotLib/
 source set_env.sh
 
-cd $SCRIPTDIR/tapas/PxlAnalyzer/EventClassFactory/
+cd $SCRIPTDIR/NanoMUSiC/PxlAnalyzer/EventClassFactory/
 source set_env.sh
 
-cd $SCRIPTDIR/tapas/MUSiC-Utils/
+cd $SCRIPTDIR/NanoMUSiC/MUSiC-Utils/
 source set_env.sh
 
-cd $SCRIPTDIR/tapas/MUSiC-Configs/
+cd $SCRIPTDIR/NanoMUSiC/MUSiC-Configs/
 source set_env.sh
 
-cd $SCRIPTDIR/tapas/MUSiC-RoIScanner/
+cd $SCRIPTDIR/NanoMUSiC/MUSiC-RoIScanner/
 source set_env.sh
 
 cd $SCRIPTDIR

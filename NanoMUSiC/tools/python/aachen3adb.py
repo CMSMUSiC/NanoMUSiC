@@ -371,7 +371,7 @@ class DatabaseConnection():
                  username=None,
                  certificate='~/private/CERN_UserCertificate.pem',
                  key='~/private/CERN_UserCertificate.key',
-                 cookies_path='~/.cache/tapas/sso-cookies.txt'):
+                 cookies_path='~/.cache/NanoMUSiC/sso-cookies.txt'):
         # CERN URL
         self.url = url
         self.username = username

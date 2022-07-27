@@ -8,24 +8,24 @@ MAKEFILE_DIR := ${CURDIR}
 all: utils roi pxlanalyzer 
 
 utils: 
-	cd $(MAKEFILE_DIR)/tapas/MUSiC-Utils/ ; make
+	cd $(MAKEFILE_DIR)/NanoMUSiC/MUSiC-Utils/ ; make
 
 roi: 
-	cd $(MAKEFILE_DIR)/tapas/MUSiC-RoIScanner/ ; make 
+	cd $(MAKEFILE_DIR)/NanoMUSiC/MUSiC-RoIScanner/ ; make 
 
 lut: 
-	cd $(MAKEFILE_DIR)/tapas/MUSiC-RoIScanner/ ; make ; make lut
+	cd $(MAKEFILE_DIR)/NanoMUSiC/MUSiC-RoIScanner/ ; make ; make lut
 
 pxlanalyzer: 
-	cd $(MAKEFILE_DIR)/tapas/PxlAnalyzer/ ; make
+	cd $(MAKEFILE_DIR)/NanoMUSiC/PxlAnalyzer/ ; make
 
 clean: utils_clean roi_clean pxlanalyzer_clean
 
 utils_clean: 
-	cd $(MAKEFILE_DIR)/tapas/MUSiC-Utils/ ; make clean
+	cd $(MAKEFILE_DIR)/NanoMUSiC/MUSiC-Utils/ ; make clean
 
 roi_clean: 
-	cd $(MAKEFILE_DIR)/tapas/MUSiC-RoIScanner/ ; make clean
+	cd $(MAKEFILE_DIR)/NanoMUSiC/MUSiC-RoIScanner/ ; make clean
 
 pxlanalyzer_clean: 
-	cd $(MAKEFILE_DIR)/tapas/PxlAnalyzer/ ; make clean
+	cd $(MAKEFILE_DIR)/NanoMUSiC/PxlAnalyzer/ ; make clean

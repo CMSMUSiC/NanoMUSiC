@@ -1,7 +1,7 @@
 ##### CUSTOM #####
 *CMSSW_*
 music_env.config
-tapas/MUSiC-RoIScanner/table2latex/
+NanoMUSiC/MUSiC-RoIScanner/table2latex/
 Condor_utils/
 correctionlib/
 
