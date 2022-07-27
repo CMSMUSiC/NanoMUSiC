@@ -178,7 +178,7 @@ def opt_parser():
     parser.add_option( '--debug', metavar = 'LEVEL', default = 'INFO',
                        help= 'Set the debug level. Allowed values: ERROR, WARNING, INFO, DEBUG. [default = %default]' )
 
-    parser.add_option( '--executable', metavar = 'EXECUTABLE' , default = '$MUSIC_BASE/Progs/music',
+    parser.add_option( '--executable', metavar = 'EXECUTABLE' , default = '$MUSIC_BASE/MUSiC/music',
                             help = 'Name of the executable. [default = %default]')
     parser.add_option( '--exeoption', metavar = 'EXEOPTION' , default = '',
                             help = 'Options that should be passed to the executable. [default = %default]' )

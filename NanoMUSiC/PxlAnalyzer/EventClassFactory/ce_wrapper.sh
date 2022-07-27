@@ -8,8 +8,8 @@ echo 'do we find PXLANA ?'
 echo $PXLANA
 echo 'do we find PWD'
 echo $PWD
-#ldd Progs/music
+#ldd MUSiC/music
 echo $@
-Progs/music "$@" || { echo 'running music failed' ; exit 1; }
+MUSiC/music "$@" || { echo 'running music failed' ; exit 1; }
 
 tar czf MusicOutDir.tar.gz AnalysisOutput

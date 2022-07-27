@@ -18,7 +18,7 @@ outputfilesdcache: []
 # gridpacklocal is the name of the local gridpack file
 # gridpackremote is the name/path of the remote gridpack file
 gridpackbase: $PXLANA
-gridpackfiles: [ConfigFiles, Progs, Main, $PXLANA/$MYPXLANA/, Progs/music, $PXLANA/$MYPXLANA, $PXLANA/$MYPXLANA/ce_wrapper.sh, set_env.sh, $MUSIC_UTILS/lib, $MUSIC_CONFIG/configs, $MUSIC_CONFIG/MC/scales.txt]
+gridpackfiles: [ConfigFiles, MUSiC, Main, $PXLANA/$MYPXLANA/, MUSiC/music, $PXLANA/$MYPXLANA, $PXLANA/$MYPXLANA/ce_wrapper.sh, set_env.sh, $MUSIC_UTILS/lib, $MUSIC_CONFIG/configs, $MUSIC_CONFIG/MC/scales.txt]
 
 gridpacklocal: gridpack_classification.tar.bz2
 gridpackremote: gridpacks/gridpack_classification.tar.bz2

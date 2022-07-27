@@ -6,7 +6,7 @@ DEPDIR = dep
 # Where to copy binaries?
 BINDIR = bin
 # Where are the .cc files for the executables?
-PROGSDIR = Progs
+PROGSDIR = MUSiC
 
 
 

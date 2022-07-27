@@ -30,9 +30,9 @@
 #        $<     = anotherdir/source.suf2
 #
 
-PROGRAM:=Progs/music
+MUSIC:=MUSiC/music
 
-PRINTER:=Progs/nanoaod_content_printer
+PRINTER:=MUSiC/nanoaod_content_printer
 
 ########################################
 # directories
@@ -47,7 +47,7 @@ endif
 DIRS := $(MYPXLANA)
 DIRS += Main
 DIRS += Tools
-DIRS += Progs
+DIRS += MUSiC
 
 # define PXL library directories
 ifeq ($(wildcard Pxl/*),)
@@ -178,7 +178,7 @@ NORMAL=$(shell tput sgr0)
 ########################################
 # define all targets
 
-TARGETS := $(PROGRAM) $(PRINTER)
+TARGETS := $(MUSIC) $(PRINTER)
 TARGETS += $(PRINTER)
 
 
@@ -205,16 +205,16 @@ TEMP_OBJS := $(OBJECTS)
 all: $(TARGETS)
 
 clean:
-	@rm -f $(PROGRAM) $(OBJECTS) $(DEPENDS)
+	@rm -f $(MUSIC) $(OBJECTS) $(DEPENDS)
 
-$(PROGRAM): $(filter-out $(PRINTER).o, $(TEMP_OBJS))
+$(MUSIC): $(filter-out $(PRINTER).o, $(TEMP_OBJS))
 	@echo "Building $@ ..."
 	$(LD) $^ $(LDFLAGS)  -o $@
 	@echo "$@ done"
 	@mkdir -p bin
-	@cp $(PROGRAM) bin/
+	@cp $(MUSIC) bin/
 
-$(PRINTER): $(filter-out $(PROGRAM).o, $(TEMP_OBJS))
+$(PRINTER): $(filter-out $(MUSIC).o, $(TEMP_OBJS))
 	@echo "Building $@ ..."
 	$(LD) $^ $(LDFLAGS)  -o $@
 	@echo "$@ done"

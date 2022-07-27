@@ -11,7 +11,7 @@
 // How to access data:
 // nano_reader->getVal<UInt_t>("nMuon")
 // nano_reader->getRVec<Float_t>("Muon_pt")
-// nano_reader->getVal<Bool_t>("HLT_Mu18_Mu9") 
+// nano_reader->getVal<Bool_t>("HLT_Mu18_Mu9")
 pxl::Event *buildPxlEvent(unsigned int i_evt, NanoAODReader *nano_reader, bool isData)
 {
   pxl::Core::initialize();

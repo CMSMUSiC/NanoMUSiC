@@ -78,10 +78,10 @@ CMSSW_LIBS += -lgsl
 CMSSW_LIBS += -lgslcblas
 
 CC	:= g++
-CFLAGS	:= -Wall -Wextra -std=c++11 -g
+CFLAGS	:= -Wall -Wextra -std=c++17 -g
 
 LD	:= g++
-LDFLAGS	:= -std=c++11 -g
+LDFLAGS	:= -std=c++17 -g
 
 # Debug flags?
 ifdef DEBUG

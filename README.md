@@ -1,6 +1,6 @@
 # MUSiC - Pxl
 
-Run2 UL analysis, running on NanoAOD.
+Run2 UL analysis, using NanoAOD.
 
 # Setup the environment (only once)
 
@@ -25,7 +25,7 @@ source setenv_music.sh
 
 ```
 make clean
-make
+make -j
 ```
 
 Other options are:
