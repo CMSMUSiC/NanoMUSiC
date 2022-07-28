@@ -314,7 +314,15 @@ NanoAODReader::NanoAODReader(TTree *tree_ptr)
   }
 }
 
-NanoAODReader::~NanoAODReader() {}
+NanoAODReader::~NanoAODReader()
+{
+  delete fReader;
+
+  for ( auto &[key, value] : fData)
+  {
+    delete static_cast<ROOT::Internal::TTreeReaderValueBase>(value);
+  }
+}
 
 TTreeReader *NanoAODReader::getReader()
 {
@@ -345,10 +353,10 @@ void NanoAODReader::printContent()
     std::string leaf_type = (std::string)(leaf_temp->GetTypeName());
 
     auto longest_leaf_name = std::max_element(fListOfBranches.begin(), fListOfBranches.end(),
-                                                 [](const auto &a, const auto &b)
-                                                 {
-                                                   return a.size() < b.size();
-                                                 });
+                                              [](const auto &a, const auto &b)
+                                              {
+                                                return a.size() < b.size();
+                                              });
     int length_diff = (*longest_leaf_name).size() - leaf_name.size();
 
     std::cout << std::string((*longest_leaf_name).size() + 25, '-') << std::endl;
@@ -361,7 +369,7 @@ void NanoAODReader::printContent()
     }
     else
     {
-      std::cout << leaf_name << std::string(length_diff+1, ' ') << " - "
+      std::cout << leaf_name << std::string(length_diff + 1, ' ') << " - "
                 << "Value < " << leaf_type << " >" << std::endl;
     }
   }

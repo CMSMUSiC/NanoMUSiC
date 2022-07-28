@@ -22,10 +22,10 @@ AnalysisComposer::AnalysisComposer() : m_analysisName("MUSiC Classification"),
 po::options_description AnalysisComposer::getCmdArguments()
 {
    po::options_description myoptions("Analysis options");
-   myoptions.add_options()("XSections,x", po::value<string>(&m_XSectionsFile),
-                           "Path to cross-sections file.")("outfilename,e", po::value<string>(&m_outfilename), "Name of the outpufile.\
-                         Constructed from process if omitted")("hash", po::value<string>(&m_RunHash),
-                                                               "Path to cross-sections file.");
+   myoptions.add_options()("xsections,x", po::value<string>(&m_XSectionsFile), "Path to cross-sections file.")
+                          ("outputfile,e", po::value<string>(&m_outfilename), "Name of the outpufile.\
+                         Constructed from process if omitted")
+                         ("hash", po::value<string>(&m_RunHash), "Path to cross-sections file.");
    return myoptions;
 }
 
