@@ -316,12 +316,12 @@ NanoAODReader::NanoAODReader(TTree *tree_ptr)
 
 NanoAODReader::~NanoAODReader()
 {
-  delete fReader;
+  // delete fReader;
 
-  for ( auto &[key, value] : fData)
-  {
-    delete static_cast<ROOT::Internal::TTreeReaderValueBase>(value);
-  }
+  // for ( auto &[key, value] : fData)
+  // {
+  //   delete static_cast<ROOT::Internal::TTreeReaderValueBase>(value);
+  // }
 }
 
 TTreeReader *NanoAODReader::getReader()
