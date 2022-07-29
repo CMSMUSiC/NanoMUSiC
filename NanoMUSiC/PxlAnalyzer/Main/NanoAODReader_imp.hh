@@ -1,12 +1,12 @@
-template<typename T>
+template <typename T>
 T NanoAODReader::getVal(std::string valueName)
 {
-  return *(*((TTreeReaderValue<T> *)(fData[valueName])));
+  return *(*(dynamic_cast<TTreeReaderValue<T> *>(fData[valueName].get())));
 }
 
-template<typename T>
+template <typename T>
 RVec<T> NanoAODReader::getRVec(std::string vectorName)
 {
-  auto array_temp_ = (TTreeReaderArray<T> *)(fData[vectorName]);
+  auto array_temp_ = dynamic_cast<TTreeReaderArray<T> *>(fData[vectorName].get());
   return RVec<T>(std::vector<T>(array_temp_->begin(), array_temp_->end()));
 }

@@ -39,9 +39,9 @@ void fillParticle(
 // nano_reader->getVal<UInt_t>("nMuon")
 // nano_reader->getRVec<Float_t>("Muon_pt")
 // nano_reader->getVal<Bool_t>("HLT_Mu18_Mu9")
-pxl::Event *buildPxlEvent(
+std::unique_ptr<pxl::Event> buildPxlEvent(
     unsigned int i_evt,
-    NanoAODReader *nano_reader,
+    NanoAODReader &nano_reader,
     std::string year,
     std::string process,
     std::string dataset,
@@ -49,9 +49,7 @@ pxl::Event *buildPxlEvent(
     int debug)
 {
 
-  std::cout << "aaaa" << std::endl;
-
-  if (debug > 0)
+  if (debug > 3)
   {
     std::cout << std::string(25, '-') << std::endl;
     std::cout << "Build pxl:Event..." << std::endl;
@@ -67,80 +65,75 @@ pxl::Event *buildPxlEvent(
   pxl::Core::initialize();
 
   // create a new pxl::Event
-  pxl::Event *event = new pxl::Event();
-  std::cout << "aaaa" << std::endl;
+  std::unique_ptr<pxl::Event> event = std::make_unique<pxl::Event>();
 
-  std::cout << nano_reader->getVal<UInt_t>("nMuon") << std::endl;
-  std::cout << "aaaa" << std::endl;
+  // std::cout << nano_reader.getVal<UInt_t>("nPhoton") << std::endl;
+  // std::cout << nano_reader.getRVec<Float_t>("Photon_pt") << std::endl;
+  // std::cout << nano_reader.getVal<Bool_t>("HLT_Mu18_Mu9") << std::endl;
 
-  // std::cout << nano_reader->getRVec<Float_t>("Muon_pt") << std::endl;
-  // std::cout << nano_reader->getVal<Bool_t>("HLT_Mu18_Mu9") << std::endl;
+  // setup base variables
+  bool IsMC = !isData;
+  std::string Process_ = process; // is it really used somewhere?
+  std::string Dataset_ = dataset; // is it rally used somewhere?
+  bool GenOnly_ = false;          // for now, it will be only false. Is it ever true?
+  // in the past, it was used to find converted photons from SIM event content.
+  bool UseSIM_ = false;                             // for now, it will be only false. Is it ever true?
+  std::string PdfSetFileName_ = "data/pdfsets.txt"; // is it really used somewhere?
+  unsigned int Year_ = getIntYear(year);            // is it really used somewhere?
 
-  /*
-    // setup base variables
-    bool IsMC = !isData;
-    std::string Process_ = process; // is it really used somewhere?
-    std::string Dataset_ = dataset; // is it rally used somewhere?
-    bool GenOnly_ = false;          // for now, it will be only false. Is it ever true?
-    // in the past, it was used to find converted photons from SIM event content.
-    bool UseSIM_ = false;                             // for now, it will be only false. Is it ever true?
-    std::string PdfSetFileName_ = "data/pdfsets.txt"; // is it really used somewhere?
-    unsigned int Year_ = getIntYear(year);            // is it really used somewhere?
+  event->setUserRecord("MC", IsMC); // distinguish between MC and data
+  event->setUserRecord("Run", nano_reader.getVal<UInt_t>("run"));
+  event->setUserRecord("LumiSection", nano_reader.getVal<UInt_t>("luminosityBlock"));
+  event->setUserRecord("EventNum", static_cast<uint64_t>(nano_reader.getVal<ULong64_t>("event")));
+  // event->setUserRecord("BX", 0); // really needed? I don't thik so...
+  // event->setUserRecord("Orbit", 0);// really needed? I don't thik so...
+  event->setUserRecord("Dataset", Dataset_);
 
-    event->setUserRecord("MC", IsMC); // distinguish between MC and data
-    event->setUserRecord("Run", nano_reader->getVal<Int_t>("run"));
-    event->setUserRecord("LumiSection", nano_reader->getVal<Int_t>("luminosityBlock"));
-    event->setUserRecord("EventNum", static_cast<uint64_t>(nano_reader->getVal<Int_t>("event")));
-    // event->setUserRecord("BX", 0); // really needed? I don't thik so...
-    // event->setUserRecord("Orbit", 0);// really needed? I don't thik so...
-    event->setUserRecord("Dataset", Dataset_);
+  pxl::EventView *RecEvtView = event->create<pxl::EventView>();
+  event->setIndex("Rec", RecEvtView);
+  pxl::EventView *GenEvtView = event->create<pxl::EventView>();
+  event->setIndex("Gen", GenEvtView);
+  pxl::EventView *TrigEvtView = event->create<pxl::EventView>();
+  event->setIndex("Trig", TrigEvtView);
+  pxl::EventView *FilterEvtView = event->create<pxl::EventView>();
+  event->setIndex("Filter", FilterEvtView);
+  GenEvtView->setName("Gen");
+  RecEvtView->setName("Rec");
+  TrigEvtView->setName("Trig");
+  FilterEvtView->setName("Filter");
 
-    pxl::EventView *RecEvtView = event->create<pxl::EventView>();
-    event->setIndex("Rec", RecEvtView);
-    pxl::EventView *GenEvtView = event->create<pxl::EventView>();
-    event->setIndex("Gen", GenEvtView);
-    pxl::EventView *TrigEvtView = event->create<pxl::EventView>();
-    event->setIndex("Trig", TrigEvtView);
-    pxl::EventView *FilterEvtView = event->create<pxl::EventView>();
-    event->setIndex("Filter", FilterEvtView);
-    GenEvtView->setName("Gen");
-    RecEvtView->setName("Rec");
-    TrigEvtView->setName("Trig");
-    FilterEvtView->setName("Filter");
+  GenEvtView->setUserRecord("Type", (std::string) "Gen");
+  RecEvtView->setUserRecord("Type", (std::string) "Rec");
+  TrigEvtView->setUserRecord("Type", (std::string) "Trig");
+  FilterEvtView->setUserRecord("Type", (std::string) "Filter");
 
-    GenEvtView->setUserRecord("Type", (std::string) "Gen");
-    RecEvtView->setUserRecord("Type", (std::string) "Rec");
-    TrigEvtView->setUserRecord("Type", (std::string) "Trig");
-    FilterEvtView->setUserRecord("Type", (std::string) "Filter");
+  // define maps for matching
+  // TODO!
+  // std::map<const reco::Candidate *, pxl::Particle *> genmap;
+  // TODO!
+  // std::map<const reco::Candidate *, pxl::Particle *> genjetmap;
 
-    // define maps for matching
-    // TODO!
-    // std::map<const reco::Candidate *, pxl::Particle *> genmap;
-    // TODO!
-    // std::map<const reco::Candidate *, pxl::Particle *> genjetmap;
+  // set process name
+  GenEvtView->setUserRecord("Process", Process_);
+  RecEvtView->setUserRecord("Process", Process_);
 
-    // set process name
-    GenEvtView->setUserRecord("Process", Process_);
-    RecEvtView->setUserRecord("Process", Process_);
+  // Generator stuff
+  // if (IsMC)
+  // {
+  //   // PDFInfo, Process ID, scale, pthat
+  //   analyzeGenRelatedInfo(nano_reader, GenEvtView);
+  //   analyzeGenInfo(nano_reader, GenEvtView, genmap);
 
-    // Generator stuff
-    // if (IsMC)
-    // {
-    //   // PDFInfo, Process ID, scale, pthat
-    //   analyzeGenRelatedInfo(nano_reader, GenEvtView);
-    //   analyzeGenInfo(nano_reader, GenEvtView, genmap);
+  //   for (std::vector<string>::const_iterator jet_info = jet_infos.begin(); jet_info != jet_infos.end(); ++jet_info)
+  //   {
+  //     if (not jet_info->recoOnly)
+  //     {
+  //       analyzeGenJets(nano_reader, GenEvtView, genjetmap, *jet_info);
+  //     }
+  //   }
+  //   analyzeGenMET(nano_reader, GenEvtView);
+  // }
 
-    //   for (std::vector<string>::const_iterator jet_info = jet_infos.begin(); jet_info != jet_infos.end(); ++jet_info)
-    //   {
-    //     if (not jet_info->recoOnly)
-    //     {
-    //       analyzeGenJets(nano_reader, GenEvtView, genjetmap, *jet_info);
-    //     }
-    //   }
-    //   analyzeGenMET(nano_reader, GenEvtView);
-    // }
-
-  */
   // dummy stuff
   if (i_evt % 100 == 0)
   {

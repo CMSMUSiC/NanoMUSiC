@@ -68,7 +68,7 @@ void KeyboardInterrupt_endJob(int signum)
 }
 
 int main(int argc, char *argv[])
-{
+{   
    if (getenv("MUSIC_BASE") == NULL)
    {
       throw std::runtime_error("MUSIC_BASE not set!");
@@ -304,27 +304,16 @@ int main(int argc, char *argv[])
       int event_counter_per_file = 0;
 
       // get "Events" TTree from file
-      auto events_tree = (TTree *)inFile->Get("Events");
+      TTree* events_tree = dynamic_cast<TTree*>(inFile->Get("Events"));
 
       // get NanoAODReader
-      auto nano_reader = new NanoAODReader(events_tree);
+      NanoAODReader nano_reader(*events_tree);
 
       // loop over events
-      while (nano_reader->next())
+      while (nano_reader.next())
       {
-         pxl::Event *event_ptr = NULL;
-         // create new pxl::Event
-         try
-         {
-            std::cout << "GGsssGG" << std::endl;
-            event_ptr = buildPxlEvent(e, nano_reader, year, process, dataset, runOnData, debug);
-            std::cout << "tttttttt" << std::endl;
-         }
-         catch (std::runtime_error &e)
-         {
-            std::cout << "Could not create pxl::Event." << std::endl;
-            break;
-         }
+         // pxl::Event *event_ptr = NULL;
+         std::unique_ptr<pxl::Event> event_ptr = buildPxlEvent(e, nano_reader, year, process, dataset, runOnData, debug);;
 
          event_counter_per_file++;
          if (!event_ptr)
@@ -333,15 +322,15 @@ int main(int argc, char *argv[])
          // if set, skip first events
          if (numberOfSkipEvents > pre_run_skipped)
          {
-            delete event_ptr;
+            // delete event_ptr;
             pre_run_skipped++;
             continue;
          }
 
          if (event_ptr->getObjectOwner().findObject<pxl::EventView>("Rec") == 0)
          {
-            fork.analyseEvent(event_ptr);
-            delete event_ptr;
+            fork.analyseEvent(event_ptr.get());
+            // delete event_ptr;
             e++;
             continue;
          }
@@ -359,7 +348,7 @@ int main(int argc, char *argv[])
                std::cerr << "Skipping Run/LS/Event: ";
                std::cerr << run << ":" << LS << ":" << eventNum << std::endl;
             }
-            delete event_ptr;
+            // delete event_ptr;
             continue;
          }
 
@@ -373,7 +362,7 @@ int main(int argc, char *argv[])
                std::cerr << "Skipping Run/LS/Event (file Veto): ";
                std::cerr << run << ":" << LS << ":" << eventNum << std::endl;
             }
-            delete event_ptr;
+            // delete event_ptr;
             continue;
          }
 
@@ -420,9 +409,9 @@ int main(int argc, char *argv[])
                                                        event_ptr->getUserRecord("EventNum").toInt32());
 
             // Don't do this on data, haha! And also not for special Ana hoho
-            reweighter.ReWeightEvent(event_ptr);
-            reweighterup.ReWeightEvent(event_ptr);
-            reweighterdown.ReWeightEvent(event_ptr);
+            reweighter.ReWeightEvent(event_ptr.get());
+            reweighterup.ReWeightEvent(event_ptr.get());
+            reweighterdown.ReWeightEvent(event_ptr.get());
             pxl::EventView *GenEvtView = event_ptr->getObjectOwner().findObject<pxl::EventView>("Gen");
 
             // Sometimes events have missing PDF information (mainly POWHEG).
@@ -430,7 +419,7 @@ int main(int argc, char *argv[])
             if (config.GetItem<bool>("General.usePDF") and config.GetItem<bool>("PDF.SkipIncomplete") and GenEvtView->hasUserRecord("Incomplete_PDF_weights") and GenEvtView->getUserRecord("Incomplete_PDF_weights"))
             {
                skipped++;
-               delete event_ptr;
+               // delete event_ptr;
                continue;
             }
 
@@ -458,7 +447,7 @@ int main(int argc, char *argv[])
                   //  with loosened kinematic cuts
                   Selector.performSelection(RecEvtView, GenEvtView, TrigEvtView, FilterView, true);
                   // use the    system(("rm -rf " + outputDirectory).c_str());config files to activate systematics for some objects
-                  syst_shifter.init(event_ptr);
+                  syst_shifter.init(event_ptr.get());
                   // create new event views with systematic shifts
                   syst_shifter.createShiftedViews();
                   // Check if particles fullfill standard kinematic cuts after shifting
@@ -496,7 +485,7 @@ int main(int argc, char *argv[])
                std::cerr << "[WARNING] (main): ";
                std::cerr << "Found unsorted particle in event no. " << e << ". ";
                std::cerr << "Skipping this event!" << std::endl;
-               delete event_ptr;
+               // delete event_ptr;
                if (runOnData)
                   exit(1);
                else
@@ -510,9 +499,11 @@ int main(int argc, char *argv[])
             event_ptr->setUserRecord("Filename", fileName);
          event_ptr->setUserRecord("EventNumPxlio", event_counter_per_file);
          // run the fork ..
-         fork.analyseEvent(event_ptr);
-         fork.finishEvent(event_ptr);
-         delete event_ptr;
+         fork.analyseEvent(event_ptr.get());
+         fork.finishEvent(event_ptr.get());
+
+
+         // delete event_ptr;
          e++;
          std::cout << e << " <--- Event number " << std::endl;
          if (e < 10 || (e < 100 && e % 10 == 0) ||
@@ -531,13 +522,13 @@ int main(int argc, char *argv[])
          }
 
          // end of file
-         e++;
          if (e % 10000 == 0)
          {
             PrintProcessInfo(info);
          }
       }
 
+      delete events_tree;
       inFile->Close();
 
       if (do_break || (numberOfEvents != -1 && e > numberOfEvents))

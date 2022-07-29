@@ -89,15 +89,15 @@ int main(int argc, char *argv[])
    }
 
    // get "Events" TTree from file
-   auto events_tree = (TTree *)inFile->Get("Events");
+   std::unique_ptr<TTree> events_tree = std::unique_ptr<TTree>(dynamic_cast<TTree*>(inFile->Get("Events")));
 
    // get NanoAODReader
-   auto nano_reader = new NanoAODReader(events_tree);
+   NanoAODReader nano_reader(*events_tree);
 
    // loop over events
-   while (nano_reader->next())
+   while (nano_reader.next())
    {
-      nano_reader->printContent();
+      nano_reader.printContent();
       break;
    }
 

@@ -16,7 +16,7 @@ using namespace ROOT::VecOps;
 class NanoAODReader
 {
 public:
-  NanoAODReader(TTree *);
+  NanoAODReader(TTree& tree );
 
   ~NanoAODReader();
 
@@ -35,12 +35,11 @@ public:
   RVec<T> getRVec(std::string vectorName);
 
 private:
-  TTreeReader *fReader; // the tree reader
-  TTree *fTree;         // the tree read by fReader
-
+  TTreeReader fReader; // the tree reader
+  TObjArray  fListOfLeaves;
   std::vector<std::string> fListOfBranches;
 
-  std::map<std::string, void *> fData; // data  held by fTree
+  std::map< std::string, std::unique_ptr<ROOT::Internal::TTreeReaderValueBase> > fData; // data  held by fTree
 };
 
 #include "NanoAODReader_imp.hh"
