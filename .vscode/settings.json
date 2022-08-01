@@ -7,6 +7,9 @@
         "hsimpleReader.C": "cpp",
         "unordered_set": "cpp",
         "string": "cpp",
-        "iostream": "cpp"
-    }
+        "iostream": "cpp",
+        "foo.C": "cpp"
+    },
+    "clang-format.executable": "/cvmfs/cms.cern.ch/slc7_amd64_gcc700/external/llvm/7.1.0-pafccj/bin/clang-format",
+    "C_Cpp.loggingLevel": "Error"
 }

@@ -37,10 +37,13 @@ int main(int argc, char *argv[])
    std::cout << "-->> NanoAOD Printer <<--" << std::endl;
 
    std::string input_file;
+   std::string particle = "";
    std::vector<std::string> arguments;
 
    po::options_description genericOptions("Generic options");
-   genericOptions.add_options()("help", "produce help message")("input ", po::value<std::string>(&input_file)->required(), "A NanoAOD file to print content.");
+   genericOptions.add_options()("help", "produce help message");
+   genericOptions.add_options()("particle", po::value<std::string>(&particle), "Get a template of how to get information on a given particle. Example: \"--particle Tau_\"");
+   genericOptions.add_options()("input", po::value<std::string>(&input_file)->required(), "A NanoAOD file to print content.");
 
    // add positional arguments
    po::positional_options_description pos;
@@ -79,8 +82,7 @@ int main(int argc, char *argv[])
 
    std::cout << "Opening file " << input_file << std::endl;
 
-   TFile::SetCacheFileDir(cache_dir);
-   std::unique_ptr<TFile> inFile(TFile::Open(input_file.c_str(), "CACHEREAD"));
+   std::unique_ptr<TFile> inFile(TFile::Open(input_file.c_str()));
 
    if (!inFile)
    {
@@ -89,23 +91,19 @@ int main(int argc, char *argv[])
    }
 
    // get "Events" TTree from file
-   std::unique_ptr<TTree> events_tree = std::unique_ptr<TTree>(dynamic_cast<TTree*>(inFile->Get("Events")));
+   std::unique_ptr<TTree> events_tree = std::unique_ptr<TTree>(dynamic_cast<TTree *>(inFile->Get("Events")));
 
    // get NanoAODReader
    NanoAODReader nano_reader(*events_tree);
 
-   // loop over events
-   while (nano_reader.next())
+   nano_reader.next();
+   nano_reader.printContent();
+
+   if (particle != "")
    {
-      nano_reader.printContent();
-      break;
+      nano_reader.next();
+      nano_reader.getTemplate(particle);
    }
-
-   inFile->Close();
-
-   // clear cache dir
-   std::cout << "Cleaning cache dir..." << std::endl;
-   system(("rm -rf " + cache_dir + "/*").c_str());
 
    return 0;
 }

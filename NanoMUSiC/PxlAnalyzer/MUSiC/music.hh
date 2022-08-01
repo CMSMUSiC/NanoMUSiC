@@ -1,3 +1,5 @@
+
+
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -6,6 +8,8 @@
 #include "Pxl/Pxl/interface/pxl/core.hh"
 
 #include "Main/NanoAODReader.hh"
+
+#include "nano2pxl_utils.hh"
 
 unsigned int getIntYear(std::string year)
 {
@@ -24,20 +28,20 @@ unsigned int getIntYear(std::string year)
   return 1; // dummy
 }
 
-void fillParticle(
-    pxl::Particle *particle_ptr,
-    std::string particle_type,
-    std::string year,
-    bool isData,
-    int debug)
-{
-  // fill pxl::Particle
-}
+// void fillPxlParticle(
+//     pxl::Particle &particle_ptr,
+//     std::string particle_type,
+//     std::string year,
+//     bool isData,
+//     int debug)
+// {
+//   // fill pxl::Particle
+// }
 
 // This function will read a NanoAOD event from a tree and return a pxl::Event
 // How to access data:
 // nano_reader->getVal<UInt_t>("nMuon")
-// nano_reader->getRVec<Float_t>("Muon_pt")
+// nano_reader->getVec<Float_t>("Muon_pt")
 // nano_reader->getVal<Bool_t>("HLT_Mu18_Mu9")
 std::unique_ptr<pxl::Event> buildPxlEvent(
     unsigned int i_evt,
@@ -68,7 +72,7 @@ std::unique_ptr<pxl::Event> buildPxlEvent(
   std::unique_ptr<pxl::Event> event = std::make_unique<pxl::Event>();
 
   // std::cout << nano_reader.getVal<UInt_t>("nPhoton") << std::endl;
-  // std::cout << nano_reader.getRVec<Float_t>("Photon_pt") << std::endl;
+  // std::cout << nano_reader.getVec<Float_t>("Photon_pt") << std::endl;
   // std::cout << nano_reader.getVal<Bool_t>("HLT_Mu18_Mu9") << std::endl;
 
   // setup base variables
@@ -117,7 +121,9 @@ std::unique_ptr<pxl::Event> buildPxlEvent(
   GenEvtView->setUserRecord("Process", Process_);
   RecEvtView->setUserRecord("Process", Process_);
 
-  // Generator stuff
+  /////////////////////////////
+  /// Store Gen information ///
+  /////////////////////////////
   // if (IsMC)
   // {
   //   // PDFInfo, Process ID, scale, pthat
@@ -134,11 +140,70 @@ std::unique_ptr<pxl::Event> buildPxlEvent(
   //   analyzeGenMET(nano_reader, GenEvtView);
   // }
 
-  // dummy stuff
-  if (i_evt % 100 == 0)
-  {
-    // printf("nMuon: %d\n", nano_reader->nMuon);
-  }
+  /////////////////////////////
+  /// Store Rec information ///
+  /////////////////////////////
+
+  // rho
+  std::vector<double> rhos;
+  rhos.push_back(nano_reader.getVal<Float_t>("fixedGridRhoFastjetAll"));
+  // rhos.push_back(nano_reader.getVal<Float_t>("fixedGridRhoFastjetAllCalo"));
+  rhos.push_back(nano_reader.getVal<Float_t>("fixedGridRhoFastjetCentralCalo"));
+  rhos.push_back(nano_reader.getVal<Float_t>("fixedGridRhoFastjetCentralChargedPileUp"));
+  rhos.push_back(nano_reader.getVal<Float_t>("fixedGridRhoFastjetCentralNeutral"));
+  double rhoFixedGrid = nano_reader.getVal<Float_t>("fixedGridRhoFastjetAll");
+
+  // Trigger bits
+  analyzeTrigger(nano_reader, TrigEvtView);
+
+  // Filters bits
+  ////////////////////////////////////
+  // is it really needed???
+  // ignoring for now....
+  // for (vector<trigger_group>::iterator filt = filters.begin(); filt != filters.end(); ++filt)
+  // {
+  //   analyzeFilter(nano_reader, FilterEvtView, *filt);
+  // }
+  /////////////////////////////////////
+  analyseMETFilter(nano_reader, FilterEvtView);
+
+  //////////////////////
+  // Reconstructed stuff
+  //////////////////////
+
+  // Primary Vertex - not needed...
+  // analyzeRecVertices(nano_reader, RecEvtView);
+
+  // taus
+  analyzeRecTaus(nano_reader, RecEvtView);
+  analyzeRecBoostedTaus(nano_reader, RecEvtView);
+
+  // analyzeRecMuons(iEvent, iSetup, RecEvtView, IsMC, genmap, vertices->at(0));
+  // analyzeRecElectrons(iEvent, RecEvtView, IsMC, genmap, vertices, pfCandidates, rhoFixedGrid);
+  // for (vector<jet_def>::const_iterator jet_info = jet_infos.begin(); jet_info != jet_infos.end(); ++jet_info)
+  // {
+  //   analyzeRecJets(iEvent, RecEvtView, IsMC, genjetmap, *jet_info);
+  // }
+
+  // analyzeRecMETs(iEvent, RecEvtView);
+
+  // analyzeRecGammas(iEvent, RecEvtView, IsMC, genmap, vertices, pfCandidates, rho25);
+
+  // L1 Prefiring weights
+  analyzePrefiringWeights(nano_reader, RecEvtView);
+
+  ///////////////////////////////
+  /// Store match information ///
+  ///////////////////////////////
+  // if (IsMC) {
+  //   const string met_name = "MET";
+  //   Matcher->matchObjects(GenEvtView, RecEvtView, jet_infos, met_name);
+  // }
+
+  ///////////////////////////////
+  /// Print event information ///
+  ///////////////////////////////
+  // printEventContent(GenEvtView, RecEvtView, IsMC);
 
   // return the produced pxl::Event
   return event;

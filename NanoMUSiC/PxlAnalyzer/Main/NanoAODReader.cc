@@ -5,7 +5,6 @@
 #include "TTreeReader.h"
 #include "TTreeReaderValue.h"
 #include "TTreeReaderArray.h"
-#include "ROOT/RVec.hxx"
 
 #include "NanoAODReader.hh"
 
@@ -21,8 +20,8 @@ NanoAODReader::NanoAODReader(TTree &tree) : fReader(TTreeReader(&tree)),
   for (auto const &leaf : fListOfLeaves)
   {
     auto leaf_temp = dynamic_cast<TLeaf *>(leaf);
-    std::string leaf_name = (std::string)(leaf_temp->GetName());
-    std::string leaf_type = (std::string)(leaf_temp->GetTypeName());
+    auto leaf_name = (std::string)(leaf_temp->GetName());
+    auto leaf_type = (std::string)(leaf_temp->GetTypeName());
 
     fListOfBranches.push_back(leaf_name);
 
@@ -337,15 +336,15 @@ void NanoAODReader::printContent()
   for (auto const &leaf : fListOfLeaves)
   {
     auto leaf_temp = dynamic_cast<TLeaf *>(leaf);
-    std::string leaf_name = (std::string)(leaf_temp->GetName());
-    std::string leaf_type = (std::string)(leaf_temp->GetTypeName());
+    auto leaf_name = (std::string)(leaf_temp->GetName());
+    auto leaf_type = (std::string)(leaf_temp->GetTypeName());
 
     auto longest_leaf_name = std::max_element(fListOfBranches.begin(), fListOfBranches.end(),
                                               [](const auto &a, const auto &b)
                                               {
                                                 return a.size() < b.size();
                                               });
-    int length_diff = (*longest_leaf_name).size() - leaf_name.size();
+    auto length_diff = (*longest_leaf_name).size() - leaf_name.size();
 
     std::cout << std::string((*longest_leaf_name).size() + 25, '-') << std::endl;
 
@@ -364,4 +363,85 @@ void NanoAODReader::printContent()
 
   std::cout << "\n\n\n\n\n"
             << std::endl;
+}
+
+void NanoAODReader::getTemplate(std::string &particle)
+{
+  std::cout << "Template for :" << particle << std::endl;
+
+  std::cout << "\n\n\n\n\n"
+            << std::endl;
+
+  for (auto const &leaf : fListOfLeaves)
+  {
+    auto leaf_temp = dynamic_cast<TLeaf *>(leaf);
+    auto leaf_name = (std::string)(leaf_temp->GetName());
+    auto leaf_type = (std::string)(leaf_temp->GetTypeName());
+
+    if (leaf_name.rfind(particle, 0) == 0)
+    {
+      if (leaf_type == "Bool_t")
+      { // check if data is array or single value
+        if (leaf_temp->GetLeafCount() != nullptr || leaf_temp->GetLenStatic() > 1)
+        {
+          std::cout << "auto " << leaf_name << " = nano_reader.getVec<" << leaf_type << ", unsigned int>(\"" << leaf_name << "\");" << std::endl;
+        }
+        else
+        {
+          std::cout << "auto " << leaf_name << " = nano_reader.getVal<" << leaf_type << ", unsigned int>(" << leaf_name << ");" << std::endl;
+        }
+      }
+      else
+      {
+        if (leaf_temp->GetLeafCount() != nullptr || leaf_temp->GetLenStatic() > 1)
+        {
+          std::cout << "auto " << leaf_name << " = nano_reader.getVec<" << leaf_type << ">(\"" << leaf_name << "\");" << std::endl;
+        }
+        else
+        {
+          std::cout << "auto " << leaf_name << " = nano_reader.getVal<" << leaf_type << ">(" << leaf_name << ");" << std::endl;
+        }
+      }
+    }
+  }
+
+  std::cout << "\n\n\n\n\n"
+            << std::endl;
+
+  for (auto const &leaf : fListOfLeaves)
+  {
+    auto leaf_temp = dynamic_cast<TLeaf *>(leaf);
+    auto leaf_name = (std::string)(leaf_temp->GetName());
+    auto leaf_type = (std::string)(leaf_temp->GetTypeName());
+
+    if (leaf_name.rfind(particle, 0) == 0)
+    {
+      if (leaf_temp->GetLeafCount() != nullptr || leaf_temp->GetLenStatic() > 1)
+      {
+        std::cout << "part->setUserRecord(\"" << eraseSubString(leaf_name, particle) << "\", " << leaf_name << "[idx_part]);" << std::endl;
+      }
+      else
+      {
+        std::cout << "part->setUserRecord(\"" << eraseSubString(leaf_name, particle) << "\", " << leaf_name << ");" << std::endl;
+      }
+    }
+  }
+
+  std::cout << "\n\n\n\n\n"
+            << std::endl;
+}
+
+/*
+ * Erase First Occurrence of given  substring from main string.
+ */
+std::string NanoAODReader::eraseSubString(std::string mainStr, const std::string &toErase)
+{
+  // Search for the substring in string
+  size_t pos = mainStr.find(toErase);
+  if (pos != std::string::npos)
+  {
+    // If found then erase it from string
+    mainStr.erase(pos, toErase.length());
+  }
+  return mainStr;
 }
