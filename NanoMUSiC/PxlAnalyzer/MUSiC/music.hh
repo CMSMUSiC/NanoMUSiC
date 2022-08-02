@@ -146,20 +146,12 @@ std::unique_ptr<pxl::Event> buildPxlEvent(
   // Trigger bits
   analyzeTrigger(nano_reader, TrigEvtView);
 
-  // Filters bits
-  ////////////////////////////////////
-  // is it really needed???
-  // ignoring for now....
-  // for (vector<trigger_group>::iterator filt = filters.begin(); filt != filters.end(); ++filt)
-  // {
-  //   analyzeFilter(nano_reader, FilterEvtView, *filt);
-  // }
-  /////////////////////////////////////
+  // MET Filters bits
   analyseMETFilter(nano_reader, FilterEvtView);
 
-  //////////////////////
-  // Reconstructed stuff
-  //////////////////////
+  /////////////////////////
+  // Reconstructed stuff //
+  /////////////////////////
 
   // rho info
   analyzeRho(nano_reader, RecEvtView);
