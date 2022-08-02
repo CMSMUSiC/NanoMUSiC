@@ -124,11 +124,12 @@ std::unique_ptr<pxl::Event> buildPxlEvent(
   /////////////////////////////
   /// Store Gen information ///
   /////////////////////////////
-  // if (IsMC)
-  // {
+  if (IsMC)
+  {
   //   // PDFInfo, Process ID, scale, pthat
   //   analyzeGenRelatedInfo(nano_reader, GenEvtView);
   //   analyzeGenInfo(nano_reader, GenEvtView, genmap);
+  analyzeGenPU(nano_reader, GenEvtView);
 
   //   for (std::vector<string>::const_iterator jet_info = jet_infos.begin(); jet_info != jet_infos.end(); ++jet_info)
   //   {
@@ -138,7 +139,10 @@ std::unique_ptr<pxl::Event> buildPxlEvent(
   //     }
   //   }
   //   analyzeGenMET(nano_reader, GenEvtView);
-  // }
+  
+  // ttbar id 
+  GenEvtView->setUserRecord("genTtbarId", nano_reader.getVal<Int_t>("genTtbarId"));
+  }
 
   /////////////////////////////
   /// Store Rec information ///
@@ -171,30 +175,39 @@ std::unique_ptr<pxl::Event> buildPxlEvent(
   // Reconstructed stuff
   //////////////////////
 
-  // Primary Vertex - not needed...
-  // analyzeRecVertices(nano_reader, RecEvtView);
+  // Primary Vertices
+  analyzeRecVertices(nano_reader, RecEvtView);
 
-  // taus
+  // taus - could be that those two different collections will be merged in the future?
   analyzeRecTaus(nano_reader, RecEvtView);
   analyzeRecBoostedTaus(nano_reader, RecEvtView);
 
-  // analyzeRecMuons(iEvent, iSetup, RecEvtView, IsMC, genmap, vertices->at(0));
-  // analyzeRecElectrons(iEvent, RecEvtView, IsMC, genmap, vertices, pfCandidates, rhoFixedGrid);
-  // for (vector<jet_def>::const_iterator jet_info = jet_infos.begin(); jet_info != jet_infos.end(); ++jet_info)
-  // {
-  //   analyzeRecJets(iEvent, RecEvtView, IsMC, genjetmap, *jet_info);
-  // }
+  // muons
+  analyzeRecMuons(nano_reader, RecEvtView);
 
-  // analyzeRecMETs(iEvent, RecEvtView);
+  // electrons
+  analyzeRecElectrons(nano_reader, RecEvtView);
 
-  // analyzeRecGammas(iEvent, RecEvtView, IsMC, genmap, vertices, pfCandidates, rho25);
+  // photons
+  analyzeRecPhotons(nano_reader, RecEvtView);
+
+  // METs
+  analyzeRecMET(nano_reader, RecEvtView);
+  analyzeRecPuppiMET(nano_reader, RecEvtView);
+
+  // Jets
+  analyzeRecJets(nano_reader, RecEvtView);
+  analyzeRecFatJets(nano_reader, RecEvtView);
+
+  // btag Weights
+  analyzeRecBTagWeights(nano_reader, RecEvtView);
 
   // L1 Prefiring weights
   analyzePrefiringWeights(nano_reader, RecEvtView);
 
-  ///////////////////////////////
-  /// Store match information ///
-  ///////////////////////////////
+  //////////////////////////////////
+  /// Store matching information ///
+  //////////////////////////////////
   // if (IsMC) {
   //   const string met_name = "MET";
   //   Matcher->matchObjects(GenEvtView, RecEvtView, jet_infos, met_name);

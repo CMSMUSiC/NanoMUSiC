@@ -53,13 +53,13 @@
   };
 
 
-
+// deals with std:vector<bool>
+// will return a std:vector<UInt_t>
 template <>
 inline std::vector<UInt_t> NanoAODReader::getVec<Bool_t>(std::string vectorName)
 {
   auto array_temp_ = dynamic_cast<TTreeReaderArray<Bool_t> *>(fData[vectorName].get());
   return std::vector<UInt_t>(array_temp_->begin(), array_temp_->end());
 }
-// #include "NanoAODReader_imp.hh"
 
 #endif

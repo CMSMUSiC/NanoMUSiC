@@ -1,6 +1,7 @@
 
 
 #include "TLeaf.h"
+#include "TBranch.h"
 #include "TTree.h"
 #include "TTreeReader.h"
 #include "TTreeReaderValue.h"
@@ -339,26 +340,21 @@ void NanoAODReader::printContent()
     auto leaf_name = (std::string)(leaf_temp->GetName());
     auto leaf_type = (std::string)(leaf_temp->GetTypeName());
 
-    auto longest_leaf_name = std::max_element(fListOfBranches.begin(), fListOfBranches.end(),
-                                              [](const auto &a, const auto &b)
-                                              {
-                                                return a.size() < b.size();
-                                              });
-    auto length_diff = (*longest_leaf_name).size() - leaf_name.size();
-
-    std::cout << std::string((*longest_leaf_name).size() + 25, '-') << std::endl;
-
     // check if data is array or single value
     if (leaf_temp->GetLeafCount() != nullptr || leaf_temp->GetLenStatic() > 1)
     {
-      std::cout << leaf_name << std::string(length_diff, ' ') << " - "
+      std::cout << leaf_name << " - "
                 << "Vector < " << leaf_type << " >" << std::endl;
     }
     else
     {
-      std::cout << leaf_name << std::string(length_diff, ' ') << " - "
+      std::cout << leaf_name << " - "
                 << "Value < " << leaf_type << " >" << std::endl;
     }
+
+    std::cout << "Description: "  << ((dynamic_cast<TLeaf *>(leaf))->GetBranch())->GetTitle() << std::endl;
+
+    std::cout << std::string(100, '-') << std::endl;
   }
 
   std::cout << "\n\n\n\n\n"
@@ -388,7 +384,7 @@ void NanoAODReader::getTemplate(std::string &particle)
         }
         else
         {
-          std::cout << "auto " << leaf_name << " = nano_reader.getVal<" << leaf_type << ", unsigned int>(" << leaf_name << ");" << std::endl;
+          std::cout << "auto " << leaf_name << " = nano_reader.getVal<" << leaf_type << ", unsigned int>(\"" << leaf_name << "\");" << std::endl;
         }
       }
       else
@@ -399,7 +395,7 @@ void NanoAODReader::getTemplate(std::string &particle)
         }
         else
         {
-          std::cout << "auto " << leaf_name << " = nano_reader.getVal<" << leaf_type << ">(" << leaf_name << ");" << std::endl;
+          std::cout << "auto " << leaf_name << " = nano_reader.getVal<" << leaf_type << ">(\"" << leaf_name << "\");" << std::endl;
         }
       }
     }

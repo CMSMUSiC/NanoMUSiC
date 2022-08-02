@@ -1,6 +1,7 @@
 #include <string>
 #include <unordered_set>
 #include <iostream>
+#include <fstream>
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-local-typedefs"
@@ -38,11 +39,13 @@ int main(int argc, char *argv[])
 
    std::string input_file;
    std::string particle = "";
+   std::string outputFile = "";
    std::vector<std::string> arguments;
 
    po::options_description genericOptions("Generic options");
    genericOptions.add_options()("help", "produce help message");
    genericOptions.add_options()("particle", po::value<std::string>(&particle), "Get a template of how to get information on a given particle. Example: \"--particle Tau_\"");
+   genericOptions.add_options()("output", po::value<std::string>(&outputFile), "Path to output file, in order to save contents.");
    genericOptions.add_options()("input", po::value<std::string>(&input_file)->required(), "A NanoAOD file to print content.");
 
    // add positional arguments
@@ -73,12 +76,7 @@ int main(int argc, char *argv[])
       return ERROR_IN_COMMAND_LINE;
    }
 
-   // temp cache dir
-   std::cout << "Preparing cache dir: " << std::endl;
-   std::string process_hash = std::to_string(std::hash<std::string>{}(input_file));
-   std::string cache_dir = "/tmp/music/proc_" + process_hash;
-   system(("rm -rf " + cache_dir).c_str());
-   std::cout << cache_dir << std::endl;
+
 
    std::cout << "Opening file " << input_file << std::endl;
 
@@ -92,7 +90,16 @@ int main(int argc, char *argv[])
 
    // get "Events" TTree from file
    std::unique_ptr<TTree> events_tree = std::unique_ptr<TTree>(dynamic_cast<TTree *>(inFile->Get("Events")));
+   // events_tree->Print();
 
+   std::ofstream f_out(outputFile);
+   f_out.rdbuf();
+   std::streambuf *coutbuf = std::cout.rdbuf(); // save old buf
+   if (outputFile != "")
+   {
+      std::cout.rdbuf(f_out.rdbuf()); // redirect std::cout to file
+   }
+   
    // get NanoAODReader
    NanoAODReader nano_reader(*events_tree);
 
@@ -105,5 +112,6 @@ int main(int argc, char *argv[])
       nano_reader.getTemplate(particle);
    }
 
+   std::cout.rdbuf(coutbuf); // reset to standard output again
    return 0;
 }
