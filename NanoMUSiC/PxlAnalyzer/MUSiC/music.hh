@@ -71,19 +71,15 @@ std::unique_ptr<pxl::Event> buildPxlEvent(
   // create a new pxl::Event
   std::unique_ptr<pxl::Event> event = std::make_unique<pxl::Event>();
 
-  // std::cout << nano_reader.getVal<UInt_t>("nPhoton") << std::endl;
-  // std::cout << nano_reader.getVec<Float_t>("Photon_pt") << std::endl;
-  // std::cout << nano_reader.getVal<Bool_t>("HLT_Mu18_Mu9") << std::endl;
-
   // setup base variables
   bool IsMC = !isData;
   std::string Process_ = process; // is it really used somewhere?
   std::string Dataset_ = dataset; // is it rally used somewhere?
-  bool GenOnly_ = false;          // for now, it will be only false. Is it ever true?
+  // bool GenOnly_ = false;          // for now, it will be only false. Is it ever true?
   // in the past, it was used to find converted photons from SIM event content.
-  bool UseSIM_ = false;                             // for now, it will be only false. Is it ever true?
-  std::string PdfSetFileName_ = "data/pdfsets.txt"; // is it really used somewhere?
-  unsigned int Year_ = getIntYear(year);            // is it really used somewhere?
+  // bool UseSIM_ = false;                             // for now, it will be only false. Is it ever true?
+  // std::string PdfSetFileName_ = "data/pdfsets.txt"; // is it really used somewhere?
+  // unsigned int Year_ = getIntYear(year);            // is it really used somewhere?
 
   event->setUserRecord("MC", IsMC); // distinguish between MC and data
   event->setUserRecord("Run", nano_reader.getVal<UInt_t>("run"));
@@ -126,36 +122,26 @@ std::unique_ptr<pxl::Event> buildPxlEvent(
   /////////////////////////////
   if (IsMC)
   {
-  //   // PDFInfo, Process ID, scale, pthat
-  //   analyzeGenRelatedInfo(nano_reader, GenEvtView);
-  //   analyzeGenInfo(nano_reader, GenEvtView, genmap);
-  analyzeGenPU(nano_reader, GenEvtView);
+    // PDFInfo, scale, pthat, ...
+    analyzeGenRelatedInfo(nano_reader, GenEvtView);
+    analyzeLHEParticles(nano_reader, GenEvtView);
+    analyzeLHEInfo(nano_reader, GenEvtView);
+    analyzegenWeight(nano_reader, GenEvtView);
+    analyzeGenParticles(nano_reader, GenEvtView);
+    analyzeGenDressedLeptons(nano_reader, GenEvtView);
+    analyzeGenPU(nano_reader, GenEvtView);
 
-  //   for (std::vector<string>::const_iterator jet_info = jet_infos.begin(); jet_info != jet_infos.end(); ++jet_info)
-  //   {
-  //     if (not jet_info->recoOnly)
-  //     {
-  //       analyzeGenJets(nano_reader, GenEvtView, genjetmap, *jet_info);
-  //     }
-  //   }
-  //   analyzeGenMET(nano_reader, GenEvtView);
-  
-  // ttbar id 
-  GenEvtView->setUserRecord("genTtbarId", nano_reader.getVal<Int_t>("genTtbarId"));
+    analyzeGenJets(nano_reader, GenEvtView);
+    analyzeGenJetsAK8(nano_reader, GenEvtView);
+    analyzeGenMET(nano_reader, GenEvtView);
+
+    // ttbar id
+    GenEvtView->setUserRecord("genTtbarId", nano_reader.getVal<Int_t>("genTtbarId"));
   }
 
   /////////////////////////////
   /// Store Rec information ///
   /////////////////////////////
-
-  // rho
-  std::vector<double> rhos;
-  rhos.push_back(nano_reader.getVal<Float_t>("fixedGridRhoFastjetAll"));
-  // rhos.push_back(nano_reader.getVal<Float_t>("fixedGridRhoFastjetAllCalo"));
-  rhos.push_back(nano_reader.getVal<Float_t>("fixedGridRhoFastjetCentralCalo"));
-  rhos.push_back(nano_reader.getVal<Float_t>("fixedGridRhoFastjetCentralChargedPileUp"));
-  rhos.push_back(nano_reader.getVal<Float_t>("fixedGridRhoFastjetCentralNeutral"));
-  double rhoFixedGrid = nano_reader.getVal<Float_t>("fixedGridRhoFastjetAll");
 
   // Trigger bits
   analyzeTrigger(nano_reader, TrigEvtView);
@@ -174,6 +160,9 @@ std::unique_ptr<pxl::Event> buildPxlEvent(
   //////////////////////
   // Reconstructed stuff
   //////////////////////
+
+  // rho info
+  analyzeRho(nano_reader, RecEvtView);
 
   // Primary Vertices
   analyzeRecVertices(nano_reader, RecEvtView);
@@ -212,11 +201,6 @@ std::unique_ptr<pxl::Event> buildPxlEvent(
   //   const string met_name = "MET";
   //   Matcher->matchObjects(GenEvtView, RecEvtView, jet_infos, met_name);
   // }
-
-  ///////////////////////////////
-  /// Print event information ///
-  ///////////////////////////////
-  // printEventContent(GenEvtView, RecEvtView, IsMC);
 
   // return the produced pxl::Event
   return event;

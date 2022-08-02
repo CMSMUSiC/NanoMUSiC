@@ -1,5 +1,203 @@
 #include "TLorentzVector.h"
 
+// Gen Related Info
+void analyzeGenRelatedInfo(NanoAODReader &nano_reader, pxl::EventView *GenEvtView)
+{
+    auto LHEWeight_originalXWGTUP = nano_reader.getVal<Float_t>("LHEWeight_originalXWGTUP");
+    GenEvtView->setUserRecord("LHEWeight_originalXWGTUP", LHEWeight_originalXWGTUP);
+
+    auto Generator_binvar = nano_reader.getVal<Float_t>("Generator_binvar");
+    auto Generator_scalePDF = nano_reader.getVal<Float_t>("Generator_scalePDF");
+    auto Generator_weight = nano_reader.getVal<Float_t>("Generator_weight");
+    auto Generator_x1 = nano_reader.getVal<Float_t>("Generator_x1");
+    auto Generator_x2 = nano_reader.getVal<Float_t>("Generator_x2");
+    auto Generator_xpdf1 = nano_reader.getVal<Float_t>("Generator_xpdf1");
+    auto Generator_xpdf2 = nano_reader.getVal<Float_t>("Generator_xpdf2");
+    auto Generator_id1 = nano_reader.getVal<Int_t>("Generator_id1");
+    auto Generator_id2 = nano_reader.getVal<Int_t>("Generator_id2");
+
+    GenEvtView->setUserRecord("Generator_binvar", Generator_binvar);
+    GenEvtView->setUserRecord("Generator_scalePDF", Generator_scalePDF);
+    GenEvtView->setUserRecord("Generator_weight", Generator_weight);
+    GenEvtView->setUserRecord("Generator_x1", Generator_x1);
+    GenEvtView->setUserRecord("Generator_x2", Generator_x2);
+    GenEvtView->setUserRecord("Generator_xpdf1", Generator_xpdf1);
+    GenEvtView->setUserRecord("Generator_xpdf2", Generator_xpdf2);
+    GenEvtView->setUserRecord("Generator_id1", Generator_id1);
+    GenEvtView->setUserRecord("Generator_id2", Generator_id2);
+
+    GenEvtView->setUserRecord("nLHEScaleWeight", nano_reader.getVal<UInt_t>("nLHEScaleWeight"));
+    auto LHEScaleWeight = nano_reader.getVec<Float_t>("LHEScaleWeight");
+    for (unsigned int idx = 0; idx < nano_reader.getVal<UInt_t>("nLHEScaleWeight"); idx++)
+    {
+        GenEvtView->setUserRecord("LHEScaleWeight_" + std::to_string(idx), LHEScaleWeight[idx]);
+    }
+
+    GenEvtView->setUserRecord("nPSWeight", nano_reader.getVal<UInt_t>("nPSWeight"));
+    auto PSWeight = nano_reader.getVec<Float_t>("PSWeight");
+    for (unsigned int idx = 0; idx < nano_reader.getVal<UInt_t>("nPSWeight"); idx++)
+    {
+        GenEvtView->setUserRecord("PSWeight_" + std::to_string(idx), PSWeight[idx]);
+    }
+
+    GenEvtView->setUserRecord("nLHEPdfWeight", nano_reader.getVal<UInt_t>("nLHEPdfWeight"));
+    auto LHEPdfWeight = nano_reader.getVec<Float_t>("LHEPdfWeight");
+    for (unsigned int idx = 0; idx < nano_reader.getVal<UInt_t>("nLHEPdfWeight"); idx++)
+    {
+        GenEvtView->setUserRecord("LHEPdfWeight_" + std::to_string(idx), LHEPdfWeight[idx]);
+    }
+
+    GenEvtView->setUserRecord("nLHEReweightingWeight", nano_reader.getVal<UInt_t>("nLHEReweightingWeight"));
+    auto LHEReweightingWeight = nano_reader.getVec<Float_t>("LHEReweightingWeight");
+    for (unsigned int idx = 0; idx < nano_reader.getVal<UInt_t>("nLHEReweightingWeight"); idx++)
+    {
+        GenEvtView->setUserRecord("LHEReweightingWeight_" + std::to_string(idx), LHEReweightingWeight[idx]);
+    }
+}
+
+// gen Weight
+void analyzegenWeight(NanoAODReader &nano_reader, pxl::EventView *GenEvtView)
+{
+    auto genWeight = nano_reader.getVal<Float_t>("genWeight");
+    GenEvtView->setUserRecord("genWeight", genWeight);
+}
+
+// LHE  info
+void analyzeLHEInfo(NanoAODReader &nano_reader, pxl::EventView *GenEvtView)
+{
+    auto LHE_HT = nano_reader.getVal<Float_t>("LHE_HT");
+    auto LHE_HTIncoming = nano_reader.getVal<Float_t>("LHE_HTIncoming");
+    auto LHE_Vpt = nano_reader.getVal<Float_t>("LHE_Vpt");
+    auto LHE_AlphaS = nano_reader.getVal<Float_t>("LHE_AlphaS");
+    auto LHE_Njets = nano_reader.getVal<UChar_t>("LHE_Njets");
+    auto LHE_Nb = nano_reader.getVal<UChar_t>("LHE_Nb");
+    auto LHE_Nc = nano_reader.getVal<UChar_t>("LHE_Nc");
+    auto LHE_Nuds = nano_reader.getVal<UChar_t>("LHE_Nuds");
+    auto LHE_Nglu = nano_reader.getVal<UChar_t>("LHE_Nglu");
+    auto LHE_NpNLO = nano_reader.getVal<UChar_t>("LHE_NpNLO");
+    auto LHE_NpLO = nano_reader.getVal<UChar_t>("LHE_NpLO");
+
+    // set all available records
+    GenEvtView->setUserRecord("LHE_HT", LHE_HT);
+    GenEvtView->setUserRecord("LHE_HTIncoming", LHE_HTIncoming);
+    GenEvtView->setUserRecord("LHE_Vpt", LHE_Vpt);
+    GenEvtView->setUserRecord("LHE_AlphaS", LHE_AlphaS);
+    GenEvtView->setUserRecord("LHE_Njets", LHE_Njets);
+    GenEvtView->setUserRecord("LHE_Nb", LHE_Nb);
+    GenEvtView->setUserRecord("LHE_Nc", LHE_Nc);
+    GenEvtView->setUserRecord("LHE_Nuds", LHE_Nuds);
+    GenEvtView->setUserRecord("LHE_Nglu", LHE_Nglu);
+    GenEvtView->setUserRecord("LHE_NpNLO", LHE_NpNLO);
+    GenEvtView->setUserRecord("LHE_NpLO", LHE_NpLO);
+}
+
+// LHE particles
+void analyzeLHEParticles(NanoAODReader &nano_reader, pxl::EventView *GenEvtView)
+{
+
+    auto LHEPart_pt = nano_reader.getVec<Float_t>("LHEPart_pt");
+    auto LHEPart_eta = nano_reader.getVec<Float_t>("LHEPart_eta");
+    auto LHEPart_phi = nano_reader.getVec<Float_t>("LHEPart_phi");
+    auto LHEPart_mass = nano_reader.getVec<Float_t>("LHEPart_mass");
+    auto LHEPart_incomingpz = nano_reader.getVec<Float_t>("LHEPart_incomingpz");
+    auto LHEPart_pdgId = nano_reader.getVec<Int_t>("LHEPart_pdgId");
+    auto LHEPart_status = nano_reader.getVec<Int_t>("LHEPart_status");
+    auto LHEPart_spin = nano_reader.getVec<Int_t>("LHEPart_spin");
+
+    auto part_size = nano_reader.getVal<UInt_t>("nLHEPart");
+    GenEvtView->setUserRecord("NumLHEPart", part_size);
+
+    // loop over gen jets AK8
+    for (unsigned int idx_part = 0; idx_part < part_size; idx_part++)
+    {
+        pxl::Particle *part = GenEvtView->create<pxl::Particle>();
+        part->setName("GenPart");
+        part->setCharge((LHEPart_pdgId[idx_part] > 0) - (LHEPart_pdgId[idx_part] < 0));
+        auto p_temp_ = TLorentzVector();
+        p_temp_.SetPtEtaPhiM(LHEPart_pt[idx_part], LHEPart_eta[idx_part], LHEPart_phi[idx_part], LHEPart_mass[idx_part]);
+
+        // set all available records
+        part->setUserRecord("pt", LHEPart_pt[idx_part]);
+        part->setUserRecord("eta", LHEPart_eta[idx_part]);
+        part->setUserRecord("phi", LHEPart_phi[idx_part]);
+        part->setUserRecord("mass", LHEPart_mass[idx_part]);
+        part->setUserRecord("incomingpz", LHEPart_incomingpz[idx_part]);
+        part->setUserRecord("pdgId", LHEPart_pdgId[idx_part]);
+        part->setUserRecord("status", LHEPart_status[idx_part]);
+        part->setUserRecord("spin", LHEPart_spin[idx_part]);
+    }
+}
+
+// gen particles
+void analyzeGenParticles(NanoAODReader &nano_reader, pxl::EventView *GenEvtView)
+{
+    auto GenPart_eta = nano_reader.getVec<Float_t>("GenPart_eta");
+    auto GenPart_mass = nano_reader.getVec<Float_t>("GenPart_mass");
+    auto GenPart_phi = nano_reader.getVec<Float_t>("GenPart_phi");
+    auto GenPart_pt = nano_reader.getVec<Float_t>("GenPart_pt");
+    auto GenPart_genPartIdxMother = nano_reader.getVec<Int_t>("GenPart_genPartIdxMother");
+    auto GenPart_pdgId = nano_reader.getVec<Int_t>("GenPart_pdgId");
+    auto GenPart_status = nano_reader.getVec<Int_t>("GenPart_status");
+    auto GenPart_statusFlags = nano_reader.getVec<Int_t>("GenPart_statusFlags");
+
+    auto part_size = nano_reader.getVal<UInt_t>("nGenPart");
+    GenEvtView->setUserRecord("NumGenPart", part_size);
+
+    // loop over gen jets AK8
+    for (unsigned int idx_part = 0; idx_part < part_size; idx_part++)
+    {
+        pxl::Particle *part = GenEvtView->create<pxl::Particle>();
+        part->setName("GenPart");
+        part->setCharge((GenPart_pdgId[idx_part] > 0) - (GenPart_pdgId[idx_part] < 0));
+        auto p_temp_ = TLorentzVector();
+        p_temp_.SetPtEtaPhiM(GenPart_pt[idx_part], GenPart_eta[idx_part], GenPart_phi[idx_part], GenPart_mass[idx_part]);
+
+        // set all available records
+        part->setUserRecord("eta", GenPart_eta[idx_part]);
+        part->setUserRecord("mass", GenPart_mass[idx_part]);
+        part->setUserRecord("phi", GenPart_phi[idx_part]);
+        part->setUserRecord("pt", GenPart_pt[idx_part]);
+        part->setUserRecord("genPartIdxMother", GenPart_genPartIdxMother[idx_part]);
+        part->setUserRecord("pdgId", GenPart_pdgId[idx_part]);
+        part->setUserRecord("status", GenPart_status[idx_part]);
+        part->setUserRecord("statusFlags", GenPart_statusFlags[idx_part]);
+    }
+
+    GenEvtView->setUserRecord("NumVertices", 1);
+}
+
+// gen dressed leptons
+void analyzeGenDressedLeptons(NanoAODReader &nano_reader, pxl::EventView *GenEvtView)
+{
+    auto GenDressedLepton_eta = nano_reader.getVec<Float_t>("GenDressedLepton_eta");
+    auto GenDressedLepton_mass = nano_reader.getVec<Float_t>("GenDressedLepton_mass");
+    auto GenDressedLepton_phi = nano_reader.getVec<Float_t>("GenDressedLepton_phi");
+    auto GenDressedLepton_pt = nano_reader.getVec<Float_t>("GenDressedLepton_pt");
+    auto GenDressedLepton_pdgId = nano_reader.getVec<Int_t>("GenDressedLepton_pdgId");
+    auto GenDressedLepton_hasTauAnc = nano_reader.getVec<Bool_t, unsigned int>("GenDressedLepton_hasTauAnc");
+
+    auto part_size = nano_reader.getVal<UInt_t>("nGenDressedLepton");
+    GenEvtView->setUserRecord("NumGenDressedLepton", part_size);
+
+    // loop over gen jets AK8
+    for (unsigned int idx_part = 0; idx_part < part_size; idx_part++)
+    {
+        pxl::Particle *part = GenEvtView->create<pxl::Particle>();
+        part->setName("GenPart");
+        part->setCharge((GenDressedLepton_pdgId[idx_part] > 0) - (GenDressedLepton_pdgId[idx_part] < 0));
+        auto p_temp_ = TLorentzVector();
+        p_temp_.SetPtEtaPhiM(GenDressedLepton_pt[idx_part], GenDressedLepton_eta[idx_part], GenDressedLepton_phi[idx_part], GenDressedLepton_mass[idx_part]);
+
+        // set all available records
+        part->setUserRecord("eta", GenDressedLepton_eta[idx_part]);
+        part->setUserRecord("mass", GenDressedLepton_mass[idx_part]);
+        part->setUserRecord("phi", GenDressedLepton_phi[idx_part]);
+        part->setUserRecord("pt", GenDressedLepton_pt[idx_part]);
+        part->setUserRecord("pdgId", GenDressedLepton_pdgId[idx_part]);
+        part->setUserRecord("hasTauAnc", GenDressedLepton_hasTauAnc[idx_part]);
+    }
+}
+
 // PU Info
 void analyzeGenPU(NanoAODReader &nano_reader, pxl::EventView *GenEvtView)
 {
@@ -16,6 +214,84 @@ void analyzeGenPU(NanoAODReader &nano_reader, pxl::EventView *GenEvtView)
     GenEvtView->setUserRecord("Pileup_nPU", Pileup_nPU);
     GenEvtView->setUserRecord("Pileup_sumEOOT", Pileup_sumEOOT);
     GenEvtView->setUserRecord("Pileup_sumLOOT", Pileup_sumLOOT);
+}
+
+// gen jets
+void analyzeGenJets(NanoAODReader &nano_reader, pxl::EventView *GenEvtView)
+{
+    auto GenJet_eta = nano_reader.getVec<Float_t>("GenJet_eta");
+    auto GenJet_mass = nano_reader.getVec<Float_t>("GenJet_mass");
+    auto GenJet_phi = nano_reader.getVec<Float_t>("GenJet_phi");
+    auto GenJet_pt = nano_reader.getVec<Float_t>("GenJet_pt");
+    auto GenJet_partonFlavour = nano_reader.getVec<Int_t>("GenJet_partonFlavour");
+    auto GenJet_hadronFlavour = nano_reader.getVec<UChar_t>("GenJet_hadronFlavour");
+
+    auto part_size = nano_reader.getVal<UInt_t>("nGenJet");
+    GenEvtView->setUserRecord("NumGenJet", part_size);
+
+    // loop over gen jets
+    for (unsigned int idx_part = 0; idx_part < part_size; idx_part++)
+    {
+        pxl::Particle *part = GenEvtView->create<pxl::Particle>();
+        part->setName("GenJet");
+        auto p_temp_ = TLorentzVector();
+        p_temp_.SetPtEtaPhiM(GenJet_pt[idx_part], GenJet_eta[idx_part], GenJet_phi[idx_part], GenJet_mass[idx_part]);
+
+        // set all available records
+        part->setUserRecord("eta", GenJet_eta[idx_part]);
+        part->setUserRecord("mass", GenJet_mass[idx_part]);
+        part->setUserRecord("phi", GenJet_phi[idx_part]);
+        part->setUserRecord("pt", GenJet_pt[idx_part]);
+        part->setUserRecord("partonFlavour", GenJet_partonFlavour[idx_part]);
+        part->setUserRecord("hadronFlavour", GenJet_hadronFlavour[idx_part]);
+    }
+}
+
+// gen jets AK8
+void analyzeGenJetsAK8(NanoAODReader &nano_reader, pxl::EventView *GenEvtView)
+{
+    auto GenJetAK8_eta = nano_reader.getVec<Float_t>("GenJetAK8_eta");
+    auto GenJetAK8_mass = nano_reader.getVec<Float_t>("GenJetAK8_mass");
+    auto GenJetAK8_phi = nano_reader.getVec<Float_t>("GenJetAK8_phi");
+    auto GenJetAK8_pt = nano_reader.getVec<Float_t>("GenJetAK8_pt");
+    auto GenJetAK8_partonFlavour = nano_reader.getVec<Int_t>("GenJetAK8_partonFlavour");
+    auto GenJetAK8_hadronFlavour = nano_reader.getVec<UChar_t>("GenJetAK8_hadronFlavour");
+
+    auto part_size = nano_reader.getVal<UInt_t>("nGenJetAK8");
+    GenEvtView->setUserRecord("NumGenJet", part_size);
+
+    // loop over gen jets AK8
+    for (unsigned int idx_part = 0; idx_part < part_size; idx_part++)
+    {
+        pxl::Particle *part = GenEvtView->create<pxl::Particle>();
+        part->setName("GenJetAK8");
+        auto p_temp_ = TLorentzVector();
+        p_temp_.SetPtEtaPhiM(GenJetAK8_pt[idx_part], GenJetAK8_eta[idx_part], GenJetAK8_phi[idx_part], GenJetAK8_mass[idx_part]);
+
+        // set all available records
+        part->setUserRecord("eta", GenJetAK8_eta[idx_part]);
+        part->setUserRecord("mass", GenJetAK8_mass[idx_part]);
+        part->setUserRecord("phi", GenJetAK8_phi[idx_part]);
+        part->setUserRecord("pt", GenJetAK8_pt[idx_part]);
+        part->setUserRecord("partonFlavour", GenJetAK8_partonFlavour[idx_part]);
+        part->setUserRecord("hadronFlavour", GenJetAK8_hadronFlavour[idx_part]);
+    }
+}
+
+// gen MET
+void analyzeGenMET(NanoAODReader &nano_reader, pxl::EventView *GenEvtView)
+{
+    auto GenMET_phi = nano_reader.getVal<Float_t>("GenMET_phi");
+    auto GenMET_pt = nano_reader.getVal<Float_t>("GenMET_pt");
+
+    pxl::Particle *part = GenEvtView->create<pxl::Particle>();
+    part->setName("GenMET");
+    auto p_temp_ = TLorentzVector();
+    p_temp_.SetPtEtaPhiM(GenMET_pt, 0, GenMET_phi, 0);
+
+    // set all available records
+    part->setUserRecord("phi", GenMET_phi);
+    part->setUserRecord("pt", GenMET_pt);
 }
 
 // Trigger results
@@ -43,6 +319,17 @@ void analyseMETFilter(NanoAODReader &nano_reader, pxl::EventView *FilterEvtView)
             FilterEvtView->setUserRecord(filter_name, nano_reader.getVal<Bool_t>(filter_name));
         }
     }
+}
+
+// rho
+void analyzeRho(NanoAODReader &nano_reader, pxl::EventView *RecEvtView)
+{
+    RecEvtView->setUserRecord("fixedGridRhoFastjetAll", nano_reader.getVal<Float_t>("fixedGridRhoFastjetAll"));
+    RecEvtView->setUserRecord("fixedGridRhoFastjetAllCalo", nano_reader.getVal<Float_t>("fixedGridRhoFastjetAllCalo"));
+    RecEvtView->setUserRecord("fixedGridRhoFastjetCentralCalo", nano_reader.getVal<Float_t>("fixedGridRhoFastjetCentralCalo"));
+    RecEvtView->setUserRecord("fixedGridRhoFastjetCentralChargedPileUp", nano_reader.getVal<Float_t>("fixedGridRhoFastjetCentralChargedPileUp"));
+    RecEvtView->setUserRecord("fixedGridRhoFastjetCentralNeutral", nano_reader.getVal<Float_t>("fixedGridRhoFastjetCentralNeutral"));
+    RecEvtView->setUserRecord("fixedGridRhoFastjetAll", nano_reader.getVal<Float_t>("fixedGridRhoFastjetAll"));
 }
 
 // primary vertices
