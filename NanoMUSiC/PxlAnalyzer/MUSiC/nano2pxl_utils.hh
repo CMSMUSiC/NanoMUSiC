@@ -128,6 +128,20 @@ void analyzeLHEParticles(NanoAODReader &nano_reader, pxl::EventView *GenEvtView)
     }
 }
 
+// gen vertices
+void analyzeGenVertices(NanoAODReader &nano_reader, pxl::EventView *GenEvtView)
+{
+    auto GenVtx_x = nano_reader.getVal<Float_t>("GenVtx_x");
+    auto GenVtx_y = nano_reader.getVal<Float_t>("GenVtx_y");
+    auto GenVtx_z = nano_reader.getVal<Float_t>("GenVtx_z");
+    auto GenVtx_t0 = nano_reader.getVal<Float_t>("GenVtx_t0");
+
+    GenEvtView->setUserRecord("GenVtx_x", GenVtx_x);
+    GenEvtView->setUserRecord("GenVtx_y", GenVtx_y);
+    GenEvtView->setUserRecord("GenVtx_z", GenVtx_z);
+    GenEvtView->setUserRecord("GenVtx_t0", GenVtx_t0);
+}
+
 // gen particles
 void analyzeGenParticles(NanoAODReader &nano_reader, pxl::EventView *GenEvtView)
 {
@@ -325,7 +339,7 @@ void analyseMETFilter(NanoAODReader &nano_reader, pxl::EventView *FilterEvtView)
 void analyzeRho(NanoAODReader &nano_reader, pxl::EventView *RecEvtView)
 {
     RecEvtView->setUserRecord("fixedGridRhoFastjetAll", nano_reader.getVal<Float_t>("fixedGridRhoFastjetAll"));
-    RecEvtView->setUserRecord("fixedGridRhoFastjetAllCalo", nano_reader.getVal<Float_t>("fixedGridRhoFastjetAllCalo"));
+    // RecEvtView->setUserRecord("fixedGridRhoFastjetAllCalo", nano_reader.getVal<Float_t>("fixedGridRhoFastjetAllCalo"));
     RecEvtView->setUserRecord("fixedGridRhoFastjetCentralCalo", nano_reader.getVal<Float_t>("fixedGridRhoFastjetCentralCalo"));
     RecEvtView->setUserRecord("fixedGridRhoFastjetCentralChargedPileUp", nano_reader.getVal<Float_t>("fixedGridRhoFastjetCentralChargedPileUp"));
     RecEvtView->setUserRecord("fixedGridRhoFastjetCentralNeutral", nano_reader.getVal<Float_t>("fixedGridRhoFastjetCentralNeutral"));

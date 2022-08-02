@@ -28,16 +28,6 @@ unsigned int getIntYear(std::string year)
   return 1; // dummy
 }
 
-// void fillPxlParticle(
-//     pxl::Particle &particle_ptr,
-//     std::string particle_type,
-//     std::string year,
-//     bool isData,
-//     int debug)
-// {
-//   // fill pxl::Particle
-// }
-
 // This function will read a NanoAOD event from a tree and return a pxl::Event
 // How to access data:
 // nano_reader->getVal<UInt_t>("nMuon")
@@ -127,6 +117,7 @@ std::unique_ptr<pxl::Event> buildPxlEvent(
     analyzeLHEParticles(nano_reader, GenEvtView);
     analyzeLHEInfo(nano_reader, GenEvtView);
     analyzegenWeight(nano_reader, GenEvtView);
+    analyzeGenVertices(nano_reader, GenEvtView);
     analyzeGenParticles(nano_reader, GenEvtView);
     analyzeGenDressedLeptons(nano_reader, GenEvtView);
     analyzeGenPU(nano_reader, GenEvtView);
@@ -156,35 +147,35 @@ std::unique_ptr<pxl::Event> buildPxlEvent(
   // rho info
   analyzeRho(nano_reader, RecEvtView);
 
-  // Primary Vertices
-  analyzeRecVertices(nano_reader, RecEvtView);
+  // // Primary Vertices
+  // analyzeRecVertices(nano_reader, RecEvtView);
 
-  // taus - could be that those two different collections will be merged in the future?
-  analyzeRecTaus(nano_reader, RecEvtView);
-  analyzeRecBoostedTaus(nano_reader, RecEvtView);
+  // // taus - could be that those two different collections will be merged in the future?
+  // analyzeRecTaus(nano_reader, RecEvtView);
+  // analyzeRecBoostedTaus(nano_reader, RecEvtView);
 
-  // muons
-  analyzeRecMuons(nano_reader, RecEvtView);
+  // // muons
+  // analyzeRecMuons(nano_reader, RecEvtView);
 
-  // electrons
-  analyzeRecElectrons(nano_reader, RecEvtView);
+  // // electrons
+  // analyzeRecElectrons(nano_reader, RecEvtView);
 
-  // photons
-  analyzeRecPhotons(nano_reader, RecEvtView);
+  // // photons
+  // analyzeRecPhotons(nano_reader, RecEvtView);
 
-  // METs
-  analyzeRecMET(nano_reader, RecEvtView);
-  analyzeRecPuppiMET(nano_reader, RecEvtView);
+  // // METs
+  // analyzeRecMET(nano_reader, RecEvtView);
+  // analyzeRecPuppiMET(nano_reader, RecEvtView);
 
-  // Jets
-  analyzeRecJets(nano_reader, RecEvtView);
-  analyzeRecFatJets(nano_reader, RecEvtView);
+  // // Jets
+  // analyzeRecJets(nano_reader, RecEvtView);
+  // analyzeRecFatJets(nano_reader, RecEvtView);
 
-  // btag Weights
-  analyzeRecBTagWeights(nano_reader, RecEvtView);
+  // // btag Weights
+  // analyzeRecBTagWeights(nano_reader, RecEvtView);
 
-  // L1 Prefiring weights
-  analyzePrefiringWeights(nano_reader, RecEvtView);
+  // // L1 Prefiring weights
+  // analyzePrefiringWeights(nano_reader, RecEvtView);
 
   //////////////////////////////////
   /// Store matching information ///
