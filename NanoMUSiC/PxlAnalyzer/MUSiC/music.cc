@@ -235,16 +235,10 @@ int main(int argc, char *argv[])
       std::cout << "INFO: Using Config file: " << FinalCutsFile << std::endl;
 
    Tools::MConfig config(FinalCutsFile);
+   config.setYear(year);
 
    // Get the run config file from config file.
    std::string RunConfigFile;
-
-   bool const muoCocktailUse = config.GetItem<bool>("Muon.UseCocktail");
-   bool const eleHEEPUse = config.GetItem<bool>("Ele.UseHEEP");
-   bool const fatjetPUPPIUse = config.GetItem<bool>("FatJet.UsePUPPI");
-   bool const jetResCorrUse = config.GetItem<bool>("Jet.Resolutions.Corr.use");
-   // Event Adaptor only needs to be initalized per event if needed.
-   bool initAdaptor = eleHEEPUse or muoCocktailUse or jetResCorrUse or fatjetPUPPIUse;
 
    bool const useSYST = config.GetItem<bool>("General.useSYST");
    bool runOnData = config.GetItem<bool>("General.RunOnData");
@@ -273,6 +267,10 @@ int main(int argc, char *argv[])
    system(("cd " + outputDirectory).c_str());
    chdir(outputDirectory.c_str());
    system(("cp " + FinalCutsFile + " . ").c_str());
+
+   // dump config to file
+   config.DumpToFile("config_full.txt");
+
    if (!RunConfigFile.empty())
       system(("cp " + RunConfigFile + " . ").c_str());
 
@@ -382,194 +380,212 @@ int main(int argc, char *argv[])
          // pxl::Event *event_ptr = NULL;
          std::unique_ptr<pxl::Event> event_ptr = buildPxlEvent(e, nano_reader, year, process, dataset, runOnData, debug);
 
-         // event_counter_per_file++;
-         // if (!event_ptr)
-         //    continue;
+         event_counter_per_file++;
+         if (!event_ptr)
+            continue;
 
-         // // if set, skip first events
-         // if (numberOfSkipEvents > pre_run_skipped)
-         // {
-         //    // 
-         //    pre_run_skipped++;
-         //    continue;
-         // }
+         // if set, skip first events
+         if (numberOfSkipEvents > pre_run_skipped)
+         {
+            //
+            pre_run_skipped++;
+            continue;
+         }
 
-         // if (event_ptr->getObjectOwner().findObject<pxl::EventView>("Rec") == 0)
-         // {
-         //    fork.analyseEvent(event_ptr.get());
-         //    // 
-         //    e++;
-         //    continue;
-         // }
+         if (event_ptr->getObjectOwner().findObject<pxl::EventView>("Rec") == 0)
+         {
+            fork.analyseEvent(event_ptr.get());
+            //
+            e++;
+            continue;
+         }
 
-         // // check if shall analyze this event
-         // lumi::ID run = event_ptr->getUserRecord("Run");
-         // lumi::ID LS = event_ptr->getUserRecord("LumiSection");
-         // lumi::ID eventNum = event_ptr->getUserRecord("EventNum");
-         // if (!runcfg.check(run, LS))
-         // {
-         //    ++skipped;
-         //    if (debug > 1)
-         //    {
-         //       std::cerr << "[INFO] (SkipEvents): " << std::endl;
-         //       std::cerr << "Skipping Run/LS/Event: ";
-         //       std::cerr << run << ":" << LS << ":" << eventNum << std::endl;
-         //    }
-         //    // 
-         //    continue;
-         // }
+         // check if shall analyze this event
+         lumi::ID run = event_ptr->getUserRecord("Run");
+         lumi::ID LS = event_ptr->getUserRecord("LumiSection");
+         lumi::ID eventNum = event_ptr->getUserRecord("EventNum");
+         if (!runcfg.check(run, LS))
+         {
+            ++skipped;
+            if (debug > 1)
+            {
+               std::cerr << "[INFO] (SkipEvents): " << std::endl;
+               std::cerr << "Skipping Run/LS/Event: ";
+               std::cerr << run << ":" << LS << ":" << eventNum << std::endl;
+            }
+            //
+            continue;
+         }
 
-         // if (runOnData && skipEvents.skip(run, LS, eventNum))
-         // {
-         //    ++skipped;
+         if (runOnData && skipEvents.skip(run, LS, eventNum))
+         {
+            ++skipped;
 
-         //    if (debug > 1)
-         //    {
-         //       std::cerr << "[INFO] (SkipEvents): " << std::endl;
-         //       std::cerr << "Skipping Run/LS/Event (file Veto): ";
-         //       std::cerr << run << ":" << LS << ":" << eventNum << std::endl;
-         //    }
-         //    // 
-         //    continue;
-         // }
+            if (debug > 1)
+            {
+               std::cerr << "[INFO] (SkipEvents): " << std::endl;
+               std::cerr << "Skipping Run/LS/Event (file Veto): ";
+               std::cerr << run << ":" << LS << ":" << eventNum << std::endl;
+            }
+            //
+            continue;
+         }
 
-         // pxl::EventView *RecEvtView = event_ptr->getObjectOwner().findObject<pxl::EventView>("Rec");
-         // pxl::EventView *TrigEvtView = event_ptr->getObjectOwner().findObject<pxl::EventView>("Trig");
-         // pxl::EventView *FilterView = event_ptr->getObjectOwner().findObject<pxl::EventView>("Filter");
+         pxl::EventView *RecEvtView = event_ptr->getObjectOwner().findObject<pxl::EventView>("Rec");
+         pxl::EventView *TrigEvtView = event_ptr->getObjectOwner().findObject<pxl::EventView>("Trig");
+         pxl::EventView *FilterView = event_ptr->getObjectOwner().findObject<pxl::EventView>("Filter");
 
-         // // intialize event for adaption
-         // if (initAdaptor)
-         //    Adaptor.initEvent(RecEvtView);
+         // Start Adaptors
+         bool const muoCocktailUse = config.GetItem<bool>("Muon.UseCocktail");
+         bool const eleHEEPUse = config.GetItem<bool>("Ele.UseHEEP");
+         bool const fatjetPUPPIUse = config.GetItem<bool>("FatJet.UsePUPPI");
+         bool const jetResCorrUse = config.GetItem<bool>("Jet.Resolutions.Corr.use");
+         // Event Adaptor only needs to be initalized per event if needed.
+         bool initAdaptor = eleHEEPUse or muoCocktailUse or jetResCorrUse or fatjetPUPPIUse;
 
-         // if (muoCocktailUse)
-         // {
-         //    // Switch to cocktail muons (use the four momentum from
-         //    // TeV-optimised reconstructors.)
-         //    Adaptor.applyCocktailMuons();
-         // }
+         // intialize event for adaption
+         if (initAdaptor)
+         {
+            Adaptor.initEvent(RecEvtView);
+         }
 
+         if (muoCocktailUse)
+         {
+            // Switch to cocktail muons (use the four momentum from
+            // TeV-optimised reconstructors.)
+            Adaptor.applyCocktailMuons();
+         }
+
+         // it is not possible to adpt electron for (eta-->SCEta and phi-->SCphi), using NanoAOD information
          // if (eleHEEPUse)
          // {
          //    // Switch to HEEP ele kinematic for eles above switch pt
-         //    Adaptor.applyHEEPElectrons();
+         //    // Adaptor.applyHEEPElectrons();
          // }
 
-         // if (fatjetPUPPIUse)
-         // {
-         //    // Switch to puppi kinematics for fat jets
-         //    Adaptor.applyPUPPIFatJets();
-         // }
+         if (fatjetPUPPIUse)
+         {
+            // Switch to puppi kinematics for fat jets
+            Adaptor.applyPUPPIFatJets();
+         }
+         std::cout << "111" << std::endl;
+         if (runOnData)
+         {
+            // Only needed for 2016 data //LOR COMM IT OUT
+            // Adaptor.adaptDoubleEleTrigger( run, TrigEvtView );
+            // for data we just need to run the selection
+            Selector.performSelection(RecEvtView, 0, TrigEvtView, FilterView);
+            Selector.removeOverlaps(RecEvtView);
+            Selector.performOfflineTriggerSelection(RecEvtView, TrigEvtView);
+         }
+         else // run on MC
+         {
+            RecEvtView->setUserRecord("EventSeed", 
+               event_ptr->getUserRecord("Run").toInt32() +
+               event_ptr->getUserRecord("LumiSection").toInt32() +
+               event_ptr->getUserRecord("EventNum").toInt32()
+               );
 
-         // if (runOnData)
-         // {
-         //    // Only needed for 2016 data //LOR COMM IT OUT
-         //    // Adaptor.adaptDoubleEleTrigger( run, TrigEvtView );
-         //    // for data we just need to run the selection
-         //    Selector.performSelection(RecEvtView, 0, TrigEvtView, FilterView);
-         //    Selector.removeOverlaps(RecEvtView);
-         //    Selector.performOfflineTriggerSelection(RecEvtView, TrigEvtView);
-         // }
-         // else
-         // {
-         //    RecEvtView->setUserRecord("EventSeed", event_ptr->getUserRecord("Run").toInt32() +
-         //                                               event_ptr->getUserRecord("LumiSection").toInt32() +
-         //                                               event_ptr->getUserRecord("EventNum").toInt32());
+            // Don't do this on data, haha! And also not for special Ana hoho
+            reweighter.ReWeightEvent(event_ptr.get());
+            reweighterup.ReWeightEvent(event_ptr.get());
+            reweighterdown.ReWeightEvent(event_ptr.get());
+            pxl::EventView *GenEvtView = event_ptr->getObjectOwner().findObject<pxl::EventView>("Gen");
 
-         //    // Don't do this on data, haha! And also not for special Ana hoho
-         //    reweighter.ReWeightEvent(event_ptr.get());
-         //    reweighterup.ReWeightEvent(event_ptr.get());
-         //    reweighterdown.ReWeightEvent(event_ptr.get());
-         //    pxl::EventView *GenEvtView = event_ptr->getObjectOwner().findObject<pxl::EventView>("Gen");
+            // Sometimes events have missing PDF information (mainly POWHEG).
+            // This is checked in the skimmer and if PDF weights are missing, the event is tagged
+            if (config.GetItem<bool>("General.usePDF") and config.GetItem<bool>("PDF.SkipIncomplete") and GenEvtView->hasUserRecord("Incomplete_PDF_weights") and GenEvtView->getUserRecord("Incomplete_PDF_weights"))
+            {
+               skipped++;
+               //
+               continue;
+            }
 
-         //    // Sometimes events have missing PDF information (mainly POWHEG).
-         //    // This is checked in the skimmer and if PDF weights are missing, the event is tagged
-         //    if (config.GetItem<bool>("General.usePDF") and config.GetItem<bool>("PDF.SkipIncomplete") and GenEvtView->hasUserRecord("Incomplete_PDF_weights") and GenEvtView->getUserRecord("Incomplete_PDF_weights"))
-         //    {
-         //       skipped++;
-         //       // 
-         //       continue;
-         //    }
+            // (Pre)Matching must be done before selection, because the matches
+            // will be used to adapt the event. We only need the jets matched,
+            // so no "custom" matching.
+            // We use a different link name here, so the "normal" matching after
+            // all selection cuts can go ahead without changes.
+            // This link name is only used for the matching before cuts and to
+            // adapt the events (jet/met smearing).
+            std::string const linkName = "pre-priv-gen-rec";
+            Matcher.matchObjects(GenEvtView, RecEvtView, linkName, false);
 
-         //    // (Pre)Matching must be done before selection, because the matches
-         //    // will be used to adapt the event. We only need the jets matched,
-         //    // so no "custom" matching.
-         //    // We use a different link name here, so the "normal" matching after
-         //    // all selection cuts can go ahead without changes.
-         //    // This link name is only used for the matching before cuts and to
-         //    // adapt the events (jet/met smearing).
-         //    std::string const linkName = "pre-priv-gen-rec";
-         //    Matcher.matchObjects(GenEvtView, RecEvtView, linkName, false);
+            if (jetResCorrUse)
+            {
+               // Change event properties according to official recommendations.
+               // Don't do this on data!
+               Adaptor.applyJETMETSmearing(GenEvtView, RecEvtView, linkName);
+            }
+            try
+            {
+               if (useSYST)
+               {
+                  // perform systematic pre. selection on all selected event views
+                  //  with loosened kinematic cuts
+                  Selector.performSelection(RecEvtView, GenEvtView, TrigEvtView, FilterView, true);
+                  // use the    system(("rm -rf " + outputDirectory).c_str());config files to activate systematics for some objects
+                  syst_shifter.init(event_ptr.get());
+                  // create new event views with systematic shifts
+                  syst_shifter.createShiftedViews();
+                  // Check if particles fullfill standard kinematic cuts after shifting
+                  for (auto &systInfo : syst_shifter.m_activeSystematics)
+                  {
+                     for (auto &evtView : systInfo->eventViewPointers)
+                     {
+                        Selector.performKinematicsSelection(evtView, false);
+                        Selector.removeOverlaps(evtView);
+                        Selector.performOfflineTriggerSelection(evtView, TrigEvtView);
+                     }
+                  }
+                  // we need to check if normal rec view also survives
+                  // cuts with standard kinematics cuts
+                  Selector.performKinematicsSelection(RecEvtView, false);
+                  Selector.removeOverlaps(RecEvtView);
+                  // Now finally check triggering ( if active ) after view is fully selected
+                  Selector.performOfflineTriggerSelection(RecEvtView, TrigEvtView);
+               }
+               else
+               {
+                  Selector.performSelection(RecEvtView, GenEvtView, TrigEvtView, FilterView);
+                  Selector.removeOverlaps(RecEvtView);
+                  Selector.performOfflineTriggerSelection(RecEvtView, TrigEvtView);
+               }
 
-         //    if (jetResCorrUse)
-         //    {
-         //       // Change event properties according to official recommendations.
-         //       // Don't do this on data!
-         //       Adaptor.applyJETMETSmearing(GenEvtView, RecEvtView, linkName);
-         //    }
-         //    try
-         //    {
-         //       if (useSYST)
-         //       {
-         //          // perform systematic pre. selection on all selected event views
-         //          //  with loosened kinematic cuts
-         //          Selector.performSelection(RecEvtView, GenEvtView, TrigEvtView, FilterView, true);
-         //          // use the    system(("rm -rf " + outputDirectory).c_str());config files to activate systematics for some objects
-         //          syst_shifter.init(event_ptr.get());
-         //          // create new event views with systematic shifts
-         //          syst_shifter.createShiftedViews();
-         //          // Check if particles fullfill standard kinematic cuts after shifting
-         //          for (auto &systInfo : syst_shifter.m_activeSystematics)
-         //          {
-         //             for (auto &evtView : systInfo->eventViewPointers)
-         //             {
-         //                Selector.performKinematicsSelection(evtView, false);
-         //                Selector.removeOverlaps(evtView);
-         //                Selector.performOfflineTriggerSelection(evtView, TrigEvtView);
-         //             }
-         //          }
-         //          // we need to check if normal rec view also survives
-         //          // cuts with standard kinematics cuts
-         //          Selector.performKinematicsSelection(RecEvtView, false);
-         //          Selector.removeOverlaps(RecEvtView);
-         //          // Now finally check triggering ( if active ) after view is fully selected
-         //          Selector.performOfflineTriggerSelection(RecEvtView, TrigEvtView);
-         //       }
-         //       else
-         //       {
-         //          Selector.performSelection(RecEvtView, GenEvtView, TrigEvtView, FilterView);
-         //          Selector.removeOverlaps(RecEvtView);
-         //          Selector.performOfflineTriggerSelection(RecEvtView, TrigEvtView);
-         //       }
+               // Sometimes a particle is unsorted in an event, where it should be
+               // sorted by pt. This seems to be a PXL problem.
+               // Best idea until now is to skip the whole event.
+               // Do this only for MC at the moment. If this ever happens for data,
+               // you should investigate!
+            }
+            catch (Tools::unsorted_error &exc)
+            {
+               std::cerr << "[WARNING] (main): ";
+               std::cerr << "Found unsorted particle in event no. " << e << ". ";
+               std::cerr << "Skipping this event!" << std::endl;
+               //
+               if (runOnData)
+                  exit(1);
+               else
+                  continue;
+            }
+         }
+         // set user record for file name and event number in this file for further use in analysis
+         if (fileName.rfind('/') != std::string::npos)
+         {
+            event_ptr->setUserRecord("Filename", fileName.substr(fileName.rfind('/') + 1));
+         }
+         else
+         {
+            event_ptr->setUserRecord("Filename", fileName);
+         }
+         event_ptr->setUserRecord("EventNumPxlio", event_counter_per_file);
 
-         //       // Sometimes a particle is unsorted in an event, where it should be
-         //       // sorted by pt. This seems to be a PXL problem.
-         //       // Best idea until now is to skip the whole event.
-         //       // Do this only for MC at the moment. If this ever happens for data,
-         //       // you should investigate!
-         //    }
-         //    catch (Tools::unsorted_error &exc)
-         //    {
-         //       std::cerr << "[WARNING] (main): ";
-         //       std::cerr << "Found unsorted particle in event no. " << e << ". ";
-         //       std::cerr << "Skipping this event!" << std::endl;
-         //       // 
-         //       if (runOnData)
-         //          exit(1);
-         //       else
-         //          continue;
-         //    }
-         // }
-         // // set user record for file name and event number in this file for further use in analysis
-         // if (fileName.rfind('/') != std::string::npos)
-         //    event_ptr->setUserRecord("Filename", fileName.substr(fileName.rfind('/') + 1));
-         // else
-         //    event_ptr->setUserRecord("Filename", fileName);
-         // event_ptr->setUserRecord("EventNumPxlio", event_counter_per_file);
-         // // run the fork ..
-         // fork.analyseEvent(event_ptr.get());
-         // fork.finishEvent(event_ptr.get());
 
-         
+         // run the fork ..
+         fork.analyseEvent(event_ptr.get());
+         fork.finishEvent(event_ptr.get());
+
          e++;
          // std::cout << e << " <--- Event number " << std::endl; //<<-- FIX me?!?
          if (e < 10 || (e < 100 && e % 10 == 0) ||

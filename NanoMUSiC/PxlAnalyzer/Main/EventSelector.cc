@@ -165,7 +165,6 @@ void EventSelector::applyKinematicCuts(std::vector<pxl::Particle *> &objects,
    //~ for( auto& object : objects) {
    for (vector<Particle *>::const_iterator object = objects.begin(); object != objects.end(); ++object)
    {
-      std::cout << "ABC1" << std::endl;
       if (selector_map[partName]->passKinematics(*object, isSyst))
       {
          objectsAfterCut.push_back(*object);
@@ -206,7 +205,6 @@ void EventSelector::applyCutsOnObject(std::vector<pxl::Particle *> &objects,
    //~ for( auto& object : objects) {
    for (vector<Particle *>::const_iterator object = objects.begin(); object != objects.end(); ++object)
    {
-      std::cout << "ABC2" << std::endl;
       if (selector_map[partName]->passObjectSelection(*object,
                                                       objectRho,
                                                       idType,
@@ -409,7 +407,6 @@ void EventSelector::setScaleFactors(std::vector<pxl::Particle *> &objects, const
 {
    for (auto &obj : objects)
    {
-      std::cout << "ABC3" << std::endl;
       selector_map[partName]->setScaleFactors(obj);
    }
 }
@@ -564,6 +561,5 @@ void EventSelector::removeOverlaps(pxl::EventView *RecEvtView) const
 
 const ObjectSelector *EventSelector::getObjectSelector(const std::string &object) const
 {
-   std::cout << "ABC4" << std::endl;
    return selector_map.at(object);
 }

@@ -5,8 +5,6 @@
 #include <sstream>
 #include <iostream>
 
-#include <boost/algorithm/string.hpp>
-
 #include "TLeaf.h"
 #include "TTree.h"
 #include "TTreeReader.h"

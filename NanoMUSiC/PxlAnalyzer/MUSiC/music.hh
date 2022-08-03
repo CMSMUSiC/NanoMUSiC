@@ -147,35 +147,35 @@ std::unique_ptr<pxl::Event> buildPxlEvent(
   // rho info
   analyzeRho(nano_reader, RecEvtView);
 
-  // // Primary Vertices
-  // analyzeRecVertices(nano_reader, RecEvtView);
+  // Primary Vertices
+  analyzeRecVertices(nano_reader, RecEvtView);
 
-  // // taus - could be that those two different collections will be merged in the future?
-  // analyzeRecTaus(nano_reader, RecEvtView);
-  // analyzeRecBoostedTaus(nano_reader, RecEvtView);
+  // taus - could be that those two different collections will be merged in the future?
+  analyzeRecTaus(nano_reader, RecEvtView);
+  analyzeRecBoostedTaus(nano_reader, RecEvtView);
 
-  // // muons
-  // analyzeRecMuons(nano_reader, RecEvtView);
+  // muons
+  analyzeRecMuons(nano_reader, RecEvtView);
 
-  // // electrons
-  // analyzeRecElectrons(nano_reader, RecEvtView);
+  // electrons
+  analyzeRecElectrons(nano_reader, RecEvtView);
 
-  // // photons
-  // analyzeRecPhotons(nano_reader, RecEvtView);
+  // photons
+  analyzeRecPhotons(nano_reader, RecEvtView);
 
-  // // METs
-  // analyzeRecMET(nano_reader, RecEvtView);
-  // analyzeRecPuppiMET(nano_reader, RecEvtView);
+  // METs
+  analyzeRecMET(nano_reader, RecEvtView);
+  analyzeRecPuppiMET(nano_reader, RecEvtView);
 
-  // // Jets
-  // analyzeRecJets(nano_reader, RecEvtView);
-  // analyzeRecFatJets(nano_reader, RecEvtView);
+  // Jets
+  analyzeRecJets(nano_reader, RecEvtView);
+  analyzeRecFatJets(nano_reader, RecEvtView);
 
-  // // btag Weights
-  // analyzeRecBTagWeights(nano_reader, RecEvtView);
+  // btag Weights
+  analyzeRecBTagWeights(nano_reader, RecEvtView);
 
-  // // L1 Prefiring weights
-  // analyzePrefiringWeights(nano_reader, RecEvtView);
+  // L1 Prefiring weights
+  analyzePrefiringWeights(nano_reader, RecEvtView);
 
   //////////////////////////////////
   /// Store matching information ///

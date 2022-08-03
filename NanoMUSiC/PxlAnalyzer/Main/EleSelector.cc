@@ -3,94 +3,96 @@
 
 //--------------------Constructor-----------------------------------------------------------------
 
-EleSelector::EleSelector(const Tools::MConfig &cfg, OldNameMapper *globalOldNameMap) :
+EleSelector::EleSelector(
+    const Tools::MConfig &cfg,
+    OldNameMapper *globalOldNameMap) :
 
-                                                                                       // Add parent constructor
-                                                                                       ObjectSelector(cfg, globalOldNameMap, "Ele", true, "SCeta"),
-                                                                                       // general:
-                                                                                       m_ele_id_type(cfg.GetItem<std::string>("Ele.ID.Type", "HEEP")),
-                                                                                       m_ele_id_ptswitch(cfg.GetItem<double>("Ele.ID.switchpt", 100)),
-                                                                                       m_ele_pt_min(cfg.GetItem<double>("Ele.pt.min")),
-                                                                                       m_ele_eta_barrel_max(cfg.GetItem<double>("Ele.eta.Barrel.max")),
-                                                                                       m_ele_eta_endcap_min(cfg.GetItem<double>("Ele.eta.Endcap.min")),
-                                                                                       m_ele_eta_endcap_max(cfg.GetItem<double>("Ele.eta.Endcap.max")),
-                                                                                       m_ele_invertIso(cfg.GetItem<bool>("Ele.InvertIsolation")),
+                                       // Add parent constructor
+                                       ObjectSelector(cfg, globalOldNameMap, "Ele", true, "SCeta"),
+                                       // general:
+                                       m_ele_id_type(cfg.GetItem<std::string>("Ele.ID.Type", "HEEP")),
+                                       m_ele_id_ptswitch(cfg.GetItem<double>("Ele.ID.switchpt", 100)),
+                                       m_ele_pt_min(cfg.GetItem<double>("Ele.pt.min")),
+                                       m_ele_eta_barrel_max(cfg.GetItem<double>("Ele.eta.Barrel.max")),
+                                       m_ele_eta_endcap_min(cfg.GetItem<double>("Ele.eta.Endcap.min")),
+                                       m_ele_eta_endcap_max(cfg.GetItem<double>("Ele.eta.Endcap.max")),
+                                       m_ele_invertIso(cfg.GetItem<bool>("Ele.InvertIsolation")),
 
-                                                                                       // CutBasedID (Tight):
-                                                                                       // m_ele_cbid_use( cfg.GetItem< bool >( "Ele.CBID.use" ) ),
-                                                                                       // lowEta: |eta| < 1.0
-                                                                                       m_ele_cbid_usebool(cfg.GetItem<bool>("Ele.CBID.usebool", 1)),
-                                                                                       m_ele_cbid_boolname(cfg.GetItem<std::string>("Ele.CBID.boolname", "DefaultBoolname")),
-                                                                                       m_ele_cbid_lowEta_EoP_min(cfg.GetItem<double>("Ele.CBID.lowEta.EoverPin.min", 0.)), // Only for 2011!
-                                                                                       m_ele_cbid_fBrem_min(cfg.GetItem<double>("Ele.CBID.fBrem.min", 0.)),                // Only for 2011!
-                                                                                       m_use_fBrem(cfg.GetItem<bool>("Ele.CBID.Use.fBrem", false)),
-                                                                                       // Barrel values:
-                                                                                       m_ele_cbid_barrel_DEtaIn_max(cfg.GetItem<double>("Ele.CBID.Barrel.DEtaIn.max", 0.004)),
-                                                                                       m_ele_cbid_barrel_DPhiIn_max(cfg.GetItem<double>("Ele.CBID.Barrel.DPhiIn.max", 0.03)),
-                                                                                       m_ele_cbid_barrel_sigmaIetaIeta_max(cfg.GetItem<double>("Ele.CBID.Barrel.sigmaIetaIeta.max", 0.01)),
-                                                                                       m_ele_cbid_barrel_HoE_max(cfg.GetItem<double>("Ele.CBID.Barrel.HoE.max", 0.12)),                // Comment to move to UL
-                                                                                       m_ele_cbid_barrel_HoEIterm_max(cfg.GetItem<double>("Ele.CBID.Barrel.HoEIterm.max", 0.026)),     // UL
-                                                                                       m_ele_cbid_barrel_HoEIIterm_max(cfg.GetItem<double>("Ele.CBID.Barrel.HoEIIterm.max", 0.026)),   // UL
-                                                                                       m_ele_cbid_barrel_HoEIIIterm_max(cfg.GetItem<double>("Ele.CBID.Barrel.HoEIIIterm.max", 0.026)), // UL
-                                                                                       m_ele_cbid_barrel_Iterm_PFIsoRel_max(cfg.GetItem<double>("Ele.CBID.Barrel.ItermPFIsoRel.max", 0.1)),
-                                                                                       m_ele_cbid_barrel_IIterm_PFIsoRel_max(cfg.GetItem<double>("Ele.CBID.Barrel.IItermPFIsoRel.max", 0.1)),
+                                       // CutBasedID (Tight):
+                                       // m_ele_cbid_use( cfg.GetItem< bool >( "Ele.CBID.use" ) ),
+                                       // lowEta: |eta| < 1.0
+                                       m_ele_cbid_usebool(cfg.GetItem<bool>("Ele.CBID.usebool", 1)),
+                                       m_ele_cbid_boolname(cfg.GetItem<std::string>("Ele.CBID.boolname", "DefaultBoolname")),
+                                       m_ele_cbid_lowEta_EoP_min(cfg.GetItem<double>("Ele.CBID.lowEta.EoverPin.min", 0.)), // Only for 2011!
+                                       m_ele_cbid_fBrem_min(cfg.GetItem<double>("Ele.CBID.fBrem.min", 0.)),                // Only for 2011!
+                                       m_use_fBrem(cfg.GetItem<bool>("Ele.CBID.Use.fBrem", false)),
+                                       // Barrel values:
+                                       m_ele_cbid_barrel_DEtaIn_max(cfg.GetItem<double>("Ele.CBID.Barrel.DEtaIn.max", 0.004)),
+                                       m_ele_cbid_barrel_DPhiIn_max(cfg.GetItem<double>("Ele.CBID.Barrel.DPhiIn.max", 0.03)),
+                                       m_ele_cbid_barrel_sigmaIetaIeta_max(cfg.GetItem<double>("Ele.CBID.Barrel.sigmaIetaIeta.max", 0.01)),
+                                       m_ele_cbid_barrel_HoE_max(cfg.GetItem<double>("Ele.CBID.Barrel.HoE.max", 0.12)),                // Comment to move to UL
+                                       m_ele_cbid_barrel_HoEIterm_max(cfg.GetItem<double>("Ele.CBID.Barrel.HoEIterm.max", 0.026)),     // UL
+                                       m_ele_cbid_barrel_HoEIIterm_max(cfg.GetItem<double>("Ele.CBID.Barrel.HoEIIterm.max", 0.026)),   // UL
+                                       m_ele_cbid_barrel_HoEIIIterm_max(cfg.GetItem<double>("Ele.CBID.Barrel.HoEIIIterm.max", 0.026)), // UL
+                                       m_ele_cbid_barrel_Iterm_PFIsoRel_max(cfg.GetItem<double>("Ele.CBID.Barrel.ItermPFIsoRel.max", 0.1)),
+                                       m_ele_cbid_barrel_IIterm_PFIsoRel_max(cfg.GetItem<double>("Ele.CBID.Barrel.IItermPFIsoRel.max", 0.1)),
 
-                                                                                       m_ele_cbid_barrel_Dxy_max(cfg.GetItem<double>("Ele.CBID.Barrel.Dxy.max", 0.12)),
-                                                                                       m_ele_cbid_barrel_Dz_max(cfg.GetItem<double>("Ele.CBID.Barrel.Dz.max", 0.1)),
-                                                                                       m_ele_cbid_barrel_RelInvEpDiff_max(cfg.GetItem<double>("Ele.CBID.Barrel.RelInvEpDiff.max", 0.05)),
-                                                                                       m_ele_cbid_barrel_PFIsoRel_max(cfg.GetItem<double>("Ele.CBID.Barrel.PFIsoRel.max", 0.1)),
-                                                                                       m_ele_cbid_barrel_NInnerLayerLostHits_max(cfg.GetItem<int>("Ele.CBID.Barrel.NInnerLayerLostHits.max", 0)),
-                                                                                       m_ele_cbid_barrel_Conversion_reject(cfg.GetItem<bool>("Ele.CBID.Barrel.Conversion.reject", 1)),
+                                       m_ele_cbid_barrel_Dxy_max(cfg.GetItem<double>("Ele.CBID.Barrel.Dxy.max", 0.12)),
+                                       m_ele_cbid_barrel_Dz_max(cfg.GetItem<double>("Ele.CBID.Barrel.Dz.max", 0.1)),
+                                       m_ele_cbid_barrel_RelInvEpDiff_max(cfg.GetItem<double>("Ele.CBID.Barrel.RelInvEpDiff.max", 0.05)),
+                                       m_ele_cbid_barrel_PFIsoRel_max(cfg.GetItem<double>("Ele.CBID.Barrel.PFIsoRel.max", 0.1)),
+                                       m_ele_cbid_barrel_NInnerLayerLostHits_max(cfg.GetItem<int>("Ele.CBID.Barrel.NInnerLayerLostHits.max", 0)),
+                                       m_ele_cbid_barrel_Conversion_reject(cfg.GetItem<bool>("Ele.CBID.Barrel.Conversion.reject", 1)),
 
-                                                                                       m_ele_cbid_endcap_HoEIterm_max(cfg.GetItem<double>("Ele.CBID.Endcap.HoEIterm.max", 0.026)),     // UL
-                                                                                       m_ele_cbid_endcap_HoEIIterm_max(cfg.GetItem<double>("Ele.CBID.Endcap.HoEIIterm.max", 0.026)),   // UL
-                                                                                       m_ele_cbid_endcap_HoEIIIterm_max(cfg.GetItem<double>("Ele.CBID.Endcap.HoEIIIterm.max", 0.026)), // UL
-                                                                                       m_ele_cbid_endcap_Iterm_PFIsoRel_max(cfg.GetItem<double>("Ele.CBID.Endcap.ItermPFIsoRel.max", 0.1)),
-                                                                                       m_ele_cbid_endcap_IIterm_PFIsoRel_max(cfg.GetItem<double>("Ele.CBID.Endcap.IItermPFIsoRel.max", 0.1)),
-                                                                                       m_ele_cbid_endcap_DEtaIn_max(cfg.GetItem<double>("Ele.CBID.Endcap.DEtaIn.max", 0.005)),
-                                                                                       m_ele_cbid_endcap_DPhiIn_max(cfg.GetItem<double>("Ele.CBID.Endcap.DPhiIn.max", 0.02)),
-                                                                                       m_ele_cbid_endcap_sigmaIetaIeta_max(cfg.GetItem<double>("Ele.CBID.Endcap.sigmaIetaIeta.max", 0.03)),
-                                                                                       m_ele_cbid_endcap_HoE_max(cfg.GetItem<double>("Ele.CBID.Endcap.HoE.max", 0.1)),
-                                                                                       m_ele_cbid_endcap_Dxy_max(cfg.GetItem<double>("Ele.CBID.Endcap.Dxy.max", 0.02)),
-                                                                                       m_ele_cbid_endcap_Dz_max(cfg.GetItem<double>("Ele.CBID.Endcap.Dz.max", 0.1)),
-                                                                                       m_ele_cbid_endcap_RelInvEpDiff_max(cfg.GetItem<double>("Ele.CBID.Endcap.RelInvEpDiff.max", 0.05)),
-                                                                                       m_ele_cbid_endcap_PFIsoRel_max(cfg.GetItem<double>("Ele.CBID.Endcap.PFIsoRel.max", 0.1)),
-                                                                                       m_ele_cbid_endcap_NInnerLayerLostHits_max(cfg.GetItem<int>("Ele.CBID.Endcap.NInnerLayerLostHits.max", 0)),
-                                                                                       m_ele_cbid_endcap_Conversion_reject(cfg.GetItem<bool>("Ele.CBID.Endcap.Conversion.reject", 1)),
+                                       m_ele_cbid_endcap_HoEIterm_max(cfg.GetItem<double>("Ele.CBID.Endcap.HoEIterm.max", 0.026)),     // UL
+                                       m_ele_cbid_endcap_HoEIIterm_max(cfg.GetItem<double>("Ele.CBID.Endcap.HoEIIterm.max", 0.026)),   // UL
+                                       m_ele_cbid_endcap_HoEIIIterm_max(cfg.GetItem<double>("Ele.CBID.Endcap.HoEIIIterm.max", 0.026)), // UL
+                                       m_ele_cbid_endcap_Iterm_PFIsoRel_max(cfg.GetItem<double>("Ele.CBID.Endcap.ItermPFIsoRel.max", 0.1)),
+                                       m_ele_cbid_endcap_IIterm_PFIsoRel_max(cfg.GetItem<double>("Ele.CBID.Endcap.IItermPFIsoRel.max", 0.1)),
+                                       m_ele_cbid_endcap_DEtaIn_max(cfg.GetItem<double>("Ele.CBID.Endcap.DEtaIn.max", 0.005)),
+                                       m_ele_cbid_endcap_DPhiIn_max(cfg.GetItem<double>("Ele.CBID.Endcap.DPhiIn.max", 0.02)),
+                                       m_ele_cbid_endcap_sigmaIetaIeta_max(cfg.GetItem<double>("Ele.CBID.Endcap.sigmaIetaIeta.max", 0.03)),
+                                       m_ele_cbid_endcap_HoE_max(cfg.GetItem<double>("Ele.CBID.Endcap.HoE.max", 0.1)),
+                                       m_ele_cbid_endcap_Dxy_max(cfg.GetItem<double>("Ele.CBID.Endcap.Dxy.max", 0.02)),
+                                       m_ele_cbid_endcap_Dz_max(cfg.GetItem<double>("Ele.CBID.Endcap.Dz.max", 0.1)),
+                                       m_ele_cbid_endcap_RelInvEpDiff_max(cfg.GetItem<double>("Ele.CBID.Endcap.RelInvEpDiff.max", 0.05)),
+                                       m_ele_cbid_endcap_PFIsoRel_max(cfg.GetItem<double>("Ele.CBID.Endcap.PFIsoRel.max", 0.1)),
+                                       m_ele_cbid_endcap_NInnerLayerLostHits_max(cfg.GetItem<int>("Ele.CBID.Endcap.NInnerLayerLostHits.max", 0)),
+                                       m_ele_cbid_endcap_Conversion_reject(cfg.GetItem<bool>("Ele.CBID.Endcap.Conversion.reject", 1)),
 
-                                                                                       // HEEP ID v4.1:
-                                                                                       // m_ele_heepid_use(             cfg.GetItem< bool   >( "Ele.HEEPID.use" ) ),
-                                                                                       m_ele_heepid_usebool(cfg.GetItem<bool>("Ele.HEEPID.usebool", 1)),
-                                                                                       m_ele_heepid_boolname(cfg.GetItem<std::string>("Ele.HEEPID.boolname", "DefaultBoolname")),
-                                                                                       m_ele_heepid_requireEcalDriven(cfg.GetItem<bool>("Ele.HEEPID.RequireEcalDriven", 1)),
-                                                                                       // Barrel values:
-                                                                                       m_ele_heepid_barrel_deltaEta_max(cfg.GetItem<double>("Ele.HEEPID.Barrel.DEta.max", 0.05)),
-                                                                                       m_ele_heepid_barrel_deltaPhi_max(cfg.GetItem<double>("Ele.HEEPID.Barrel.DPhi.max", 0.06)),
-                                                                                       m_ele_heepid_barrel_HoEM_max(cfg.GetItem<double>("Ele.HEEPID.Barrel.HoEM.max", 0.05)),
-                                                                                       m_ele_heepid_barrel_HoEM_slope(cfg.GetItem<double>("Ele.HEEPID.Barrel.HoEM.Slope", 1)),
-                                                                                       m_ele_heepid_barrel_trackiso_max(cfg.GetItem<double>("Ele.HEEPID.Barrel.TrkIso.max", 5)),
-                                                                                       m_ele_heepid_barrel_HcalD1_offset(cfg.GetItem<double>("Ele.HEEPID.Barrel.HcalD1.Offset", 2)),
-                                                                                       m_ele_heepid_barrel_HcalD1_slope(cfg.GetItem<double>("Ele.HEEPID.Barrel.HcalD1.Slope", 0.03)),
-                                                                                       m_ele_heepid_barrel_HcalD1_rhoSlope(cfg.GetItem<double>("Ele.HEEPID.Barrel.HcalD1.RhoSlope", 0.28)),
-                                                                                       m_ele_heepid_barrel_TrkIso_rhoSlope(cfg.GetItem<double>("Ele.HEEPID.Barrel.TrkIso.RhoSlope", 1.5)),
-                                                                                       m_ele_heepid_barrel_NInnerLayerLostHits_max(cfg.GetItem<int>("Ele.HEEPID.Barrel.NInnerLayerLostHits.max", 1)),
-                                                                                       m_ele_heepid_barrel_dxy_max(cfg.GetItem<double>("Ele.HEEPID.Barrel.dxy.max", 0.02)),
-                                                                                       m_ele_heepid_barrel_e1x5_min(cfg.GetItem<double>("Ele.HEEPID.Barrel.E1x5.min", 0.83)),
-                                                                                       m_ele_heepid_barrel_e2x5_min(cfg.GetItem<double>("Ele.HEEPID.Barrel.E2x5.min", 0.94)),
-                                                                                       // Endcap values:
-                                                                                       m_ele_heepid_endcap_deltaEta_max(cfg.GetItem<double>("Ele.HEEPID.Endcap.DEta.max", 0.007)),
-                                                                                       m_ele_heepid_endcap_deltaPhi_max(cfg.GetItem<double>("Ele.HEEPID.Endcap.DPhi.max", 0.06)),
-                                                                                       m_ele_heepid_endcap_HoEM_max(cfg.GetItem<double>("Ele.HEEPID.Endcap.HoEM.max", 0.05)),
-                                                                                       m_ele_heepid_endcap_HoEM_slope(cfg.GetItem<double>("Ele.HEEPID.Endcap.HoEM.Slope", 5)),
-                                                                                       m_ele_heepid_endcap_trackiso_max(cfg.GetItem<double>("Ele.HEEPID.Endcap.TrkIso.max", 5)),
-                                                                                       m_ele_heepid_endcap_HcalD1_offset(cfg.GetItem<double>("Ele.HEEPID.Endcap.HcalD1.Offset", 2.5)),
-                                                                                       m_ele_heepid_endcap_HcalD1_slope(cfg.GetItem<double>("Ele.HEEPID.Endcap.HcalD1.Slope", 0.03)),
-                                                                                       m_ele_heepid_endcap_HcalD1_rhoSlope(cfg.GetItem<double>("Ele.HEEPID.Endcap.HcalD1.RhoSlope", 0.28)),
-                                                                                       m_ele_heepid_endcap_TrkIso_rhoSlope(cfg.GetItem<double>("Ele.HEEPID.Endcap.TrkIso.RhoSlope", 0.5)),
-                                                                                       m_ele_heepid_endcap_NInnerLayerLostHits_max(cfg.GetItem<int>("Ele.HEEPID.Endcap.NInnerLayerLostHits.max", 1)),
-                                                                                       m_ele_heepid_endcap_dxy_max(cfg.GetItem<double>("Ele.HEEPID.Endcap.dxy.max", 0.05)),
-                                                                                       m_ele_heepid_endcap_sigmaIetaIeta_max(cfg.GetItem<double>("Ele.HEEPID.Endcap.SigmaIetaIeta.max", 0.03)),
-                                                                                       m_ele_EA(cfg, "Ele")
+                                       // HEEP ID v4.1:
+                                       // m_ele_heepid_use(             cfg.GetItem< bool   >( "Ele.HEEPID.use" ) ),
+                                       m_ele_heepid_usebool(cfg.GetItem<bool>("Ele.HEEPID.usebool", 1)),
+                                       m_ele_heepid_boolname(cfg.GetItem<std::string>("Ele.HEEPID.boolname", "DefaultBoolname")),
+                                       m_ele_heepid_requireEcalDriven(cfg.GetItem<bool>("Ele.HEEPID.RequireEcalDriven", 1)),
+                                       // Barrel values:
+                                       m_ele_heepid_barrel_deltaEta_max(cfg.GetItem<double>("Ele.HEEPID.Barrel.DEta.max", 0.05)),
+                                       m_ele_heepid_barrel_deltaPhi_max(cfg.GetItem<double>("Ele.HEEPID.Barrel.DPhi.max", 0.06)),
+                                       m_ele_heepid_barrel_HoEM_max(cfg.GetItem<double>("Ele.HEEPID.Barrel.HoEM.max", 0.05)),
+                                       m_ele_heepid_barrel_HoEM_slope(cfg.GetItem<double>("Ele.HEEPID.Barrel.HoEM.Slope", 1)),
+                                       m_ele_heepid_barrel_trackiso_max(cfg.GetItem<double>("Ele.HEEPID.Barrel.TrkIso.max", 5)),
+                                       m_ele_heepid_barrel_HcalD1_offset(cfg.GetItem<double>("Ele.HEEPID.Barrel.HcalD1.Offset", 2)),
+                                       m_ele_heepid_barrel_HcalD1_slope(cfg.GetItem<double>("Ele.HEEPID.Barrel.HcalD1.Slope", 0.03)),
+                                       m_ele_heepid_barrel_HcalD1_rhoSlope(cfg.GetItem<double>("Ele.HEEPID.Barrel.HcalD1.RhoSlope", 0.28)),
+                                       m_ele_heepid_barrel_TrkIso_rhoSlope(cfg.GetItem<double>("Ele.HEEPID.Barrel.TrkIso.RhoSlope", 1.5)),
+                                       m_ele_heepid_barrel_NInnerLayerLostHits_max(cfg.GetItem<int>("Ele.HEEPID.Barrel.NInnerLayerLostHits.max", 1)),
+                                       m_ele_heepid_barrel_dxy_max(cfg.GetItem<double>("Ele.HEEPID.Barrel.dxy.max", 0.02)),
+                                       m_ele_heepid_barrel_e1x5_min(cfg.GetItem<double>("Ele.HEEPID.Barrel.E1x5.min", 0.83)),
+                                       m_ele_heepid_barrel_e2x5_min(cfg.GetItem<double>("Ele.HEEPID.Barrel.E2x5.min", 0.94)),
+                                       // Endcap values:
+                                       m_ele_heepid_endcap_deltaEta_max(cfg.GetItem<double>("Ele.HEEPID.Endcap.DEta.max", 0.007)),
+                                       m_ele_heepid_endcap_deltaPhi_max(cfg.GetItem<double>("Ele.HEEPID.Endcap.DPhi.max", 0.06)),
+                                       m_ele_heepid_endcap_HoEM_max(cfg.GetItem<double>("Ele.HEEPID.Endcap.HoEM.max", 0.05)),
+                                       m_ele_heepid_endcap_HoEM_slope(cfg.GetItem<double>("Ele.HEEPID.Endcap.HoEM.Slope", 5)),
+                                       m_ele_heepid_endcap_trackiso_max(cfg.GetItem<double>("Ele.HEEPID.Endcap.TrkIso.max", 5)),
+                                       m_ele_heepid_endcap_HcalD1_offset(cfg.GetItem<double>("Ele.HEEPID.Endcap.HcalD1.Offset", 2.5)),
+                                       m_ele_heepid_endcap_HcalD1_slope(cfg.GetItem<double>("Ele.HEEPID.Endcap.HcalD1.Slope", 0.03)),
+                                       m_ele_heepid_endcap_HcalD1_rhoSlope(cfg.GetItem<double>("Ele.HEEPID.Endcap.HcalD1.RhoSlope", 0.28)),
+                                       m_ele_heepid_endcap_TrkIso_rhoSlope(cfg.GetItem<double>("Ele.HEEPID.Endcap.TrkIso.RhoSlope", 0.5)),
+                                       m_ele_heepid_endcap_NInnerLayerLostHits_max(cfg.GetItem<int>("Ele.HEEPID.Endcap.NInnerLayerLostHits.max", 1)),
+                                       m_ele_heepid_endcap_dxy_max(cfg.GetItem<double>("Ele.HEEPID.Endcap.dxy.max", 0.05)),
+                                       m_ele_heepid_endcap_sigmaIetaIeta_max(cfg.GetItem<double>("Ele.HEEPID.Endcap.SigmaIetaIeta.max", 0.03)),
+                                       m_ele_EA(cfg, "Ele")
 {
    m_useAlternative = false;
 }

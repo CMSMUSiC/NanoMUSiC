@@ -23,7 +23,7 @@ class EventAdaptor {
 
       void initEvent( pxl::EventView const *RecEvtView );
       void applyCocktailMuons() const;
-      void applyHEEPElectrons() const;
+      // void applyHEEPElectrons() const;
       void applyPUPPIFatJets() const;
 
       void applyJETMETSmearing( pxl::EventView const *GenEvtView,
@@ -36,7 +36,7 @@ class EventAdaptor {
 
    private:
       void adaptMuon( pxl::Particle *muon ) const;
-      void adaptEle( pxl::Particle *ele ) const;
+      // void adaptEle( pxl::Particle *ele ) const;
       void adaptFatJet( pxl::Particle* fatjet ) const;
       float getPUPPIweight( const float puppipt, const float puppieta ) const;
       unsigned int const m_debug;

@@ -449,22 +449,27 @@ void CcEventClass::fillCutFlow(const pxl::Event *event, const double weight)
    pxl::EventView *recEvtView = event->getObjectOwner().findObject<pxl::EventView>("Rec");
    m_cutFlowUnweighted.Fill("all", 1.);
    m_cutFlowWeighted.Fill("all", weight);
+
    if (recEvtView->getUserRecord("Veto"))
       return;
    m_cutFlowUnweighted.Fill("Veto", 1.);
    m_cutFlowWeighted.Fill("Veto", weight);
+
    if (!recEvtView->getUserRecord("trigger_accept"))
       return;
    m_cutFlowUnweighted.Fill("trigger_accept", 1.);
    m_cutFlowWeighted.Fill("trigger_accept", weight);
+
    if (!recEvtView->getUserRecord("filter_accept"))
       return;
    m_cutFlowUnweighted.Fill("filter_accept", 1.);
    m_cutFlowWeighted.Fill("filter_accept", weight);
+
    if (!recEvtView->getUserRecord("generator_accept"))
       return;
    m_cutFlowUnweighted.Fill("generator_accept", 1.);
    m_cutFlowWeighted.Fill("generator_accept", weight);
+   
    if (!recEvtView->getUserRecord("topo_accept"))
       return;
    m_cutFlowUnweighted.Fill("topo_accept", 1.);
@@ -512,7 +517,7 @@ void CcEventClass::analyseEvent(const pxl::Event *event)
    if (!m_data)
    {
       pxl::EventView *GenEvtView = event->getObjectOwner().findObject<pxl::EventView>("Gen");
-      event_info.central_weight = GenEvtView->getUserRecord("Weight");
+      event_info.central_weight = GenEvtView->getUserRecord("genWeight");
       event_info.pileup = GenEvtView->getUserRecord("PUWeight");
       event_info.pileup_up = GenEvtView->getUserRecord("PUWeightUp");
       event_info.pileup_down = GenEvtView->getUserRecord("PUWeightDown");
@@ -571,14 +576,10 @@ void CcEventClass::analyseEvent(const pxl::Event *event)
       }
 
       // set the event weight to the actual value
-      event_weight = GenEvtView->getUserRecord("Weight");
+      event_weight = GenEvtView->getUserRecord("genWeight");
       pileup_weight = GenEvtView->getUserRecord("PUWeight");
       total_event_weight = event_weight * pileup_weight * event_info.prefire_weight;
-      //~ std::cout << "total event weight mc style "
-      //~ << total_event_weight << " "
-      //~ << event_weight << " "
-      //~ << pileup_weight << " "
-      //~ << event_info.prefire_weight << std::endl;
+
       // Fill differential systematics
       for (auto &systInfo : systematics->m_activeSystematics)
       {
@@ -1029,16 +1030,12 @@ TEventClass *CcEventClass::InitTEventClass(std::string const &Type,
    std::set<std::string> systNames;
    for (auto &systInfo : systematics->m_activeSystematics)
    {
-      //
-      //~ std::cout << "adding sys " << systInfo->m_funcKey<<std::endl; ;
-      //~ std::cout << "size eventViewPointers " <<  systInfo->eventViewPointers.size() <<std::endl; ;
       if (!systInfo->m_isDifferential)
          systNames.emplace(systInfo->m_funcKey);
       else
       {
          for (auto &evtView : systInfo->eventViewPointers)
          {
-            //~ std::cout << "push back " << evtView->getName() ;
             systNames.emplace(evtView->getName());
          }
       }

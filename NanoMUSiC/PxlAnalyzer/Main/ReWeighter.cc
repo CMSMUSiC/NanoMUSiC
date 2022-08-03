@@ -66,11 +66,11 @@ void ReWeighter::ReWeightEvent(pxl::Event *event)
 
    // Disable generator weights.
    if (not m_useGenWeights)
-      GenEvtView->setUserRecord("Weight", 1.0);
+      GenEvtView->setUserRecord("genWeight", 1.0);
 
    if (m_usePileUpReWeighting)
    {
-      float numVerticesPUTrue = GenEvtView->getUserRecord("NumVerticesPUTrue");
+      float numVerticesPUTrue = GenEvtView->getUserRecord("Pileup_nTrueInt");
       if (m_useREcoVertices)
       {
          numVerticesPUTrue = RecEvtView->getUserRecord("NumVertices");

@@ -20,12 +20,12 @@ Ele.ID.Tag = 1
 
 # Switch to decide if electron 4 vectors are adapted to use Et Eta from
 # super cluster instead PF
-Ele.UseHEEP = 1
+Ele.UseHEEP = 0
 # Pt thrshold to switch between PF eles and HEEP ( also relevant for swith ID Type)
 
 ###LOR INCREASE IT TO NOT SWITCH!!! CHANGE AFTER THE TEST!!!
-#Ele.ID.switchpt=100
-Ele.ID.switchpt=99999
+Ele.ID.switchpt=100
+# Ele.ID.switchpt=99999
 
 import "$PXLANA/ConfigFiles/Objects/EleID/Ele_CBID_veto_r20.cff"
 import "$PXLANA/ConfigFiles/Objects/EleID/Ele_HEEP_v70.cff"
