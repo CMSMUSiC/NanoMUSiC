@@ -12,4 +12,4 @@ echo $PWD
 echo $@
 MUSiC/music "$@" || { echo 'running music failed' ; exit 1; }
 
-tar czf MusicOutDir.tar.gz AnalysisOutput
+tar -zcvf MusicOutDir.tar.gz AnalysisOutput

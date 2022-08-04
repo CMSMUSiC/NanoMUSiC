@@ -272,10 +272,10 @@ private:
                                  ) const;
 
 
-   // Create a text file for each EventClass to store the "most interesting"
-   // events.
+   // Create a text file for each EventClass to store the "most interesting" events.
    void WriteEventListToFile( std::string const &ECname );
    void WriteAnalysisInfoToFile( std::set< std::string > const &processList );
+   
    inline bool ends_with(std::string const & value, std::string const & ending)
    {
     if (ending.size() > value.size()) return false;
