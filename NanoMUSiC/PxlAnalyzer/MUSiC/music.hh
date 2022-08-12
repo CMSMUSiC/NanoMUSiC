@@ -1,14 +1,53 @@
 
-
-#include <iostream>
+#include <time.h>
 #include <string>
+#include <unordered_set>
+#include <numeric>
 #include <sstream>
+#include <iostream>
+#include <csignal>
+#include <iomanip>
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-local-typedefs"
+#pragma GCC diagnostic ignored "-Wattributes"
+#include <boost/filesystem/path.hpp>
+#pragma GCC diagnostic pop
+#include "boost/program_options.hpp"
+
+// toml++ v3.1.0
+// https://github.com/marzer/tomlplusplus
+#include "toml.hh"
 
 #include "Pxl/Pxl/interface/pxl/hep.hh"
 #include "Pxl/Pxl/interface/pxl/core.hh"
 
-#include "Main/NanoAODReader.hh"
 
+#include "Tools/Tools.hh"
+#include "Main/EventAdaptor.hh"
+#include "Main/JetTypeWriter.hh"
+#include "Main/EventSelector.hh"
+#include "Main/ParticleMatcher.hh"
+#include "Main/ReWeighter.hh"
+#include "Main/RunLumiRanges.hh"
+#include "Main/SkipEvents.hh"
+#include "Main/Systematics.hh"
+
+// ROOT Stuff
+#include "TFile.h"
+#include "TTree.h"
+
+// Include user defined Analysis or use Validator as default
+// Implement your own analysis composer and use export to define the
+// header file as environment variable MYPXLANA.
+#define Q(x) #x
+#define QUOTE(x) Q(x)
+
+// #include QUOTE(MYPXLANA)
+
+#include "EventClassFactory/AnalysisComposer.hh"
+
+#include "Main/NanoAODReader.hh"
 #include "nano2pxl_utils.hh"
 
 unsigned int getIntYear(std::string year)

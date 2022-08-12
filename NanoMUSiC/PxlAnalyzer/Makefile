@@ -202,10 +202,12 @@ endif
 
 TEMP_OBJS := $(OBJECTS)
 
-all: $(TARGETS)
+all: $(OBJECTS)
+# all: $(TARGETS)
 
 clean:
 	@rm -f $(MUSIC) $(OBJECTS) $(DEPENDS)
+	@rm -rf bin
 
 $(MUSIC): $(filter-out $(PRINTER).o, $(TEMP_OBJS))
 	@echo "Building $@ ..."

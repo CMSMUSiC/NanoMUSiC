@@ -1,48 +1,4 @@
-#include <time.h>
-#include <string>
-#include <unordered_set>
-#include <numeric>
-#include <sstream>
-
-#include "Pxl/Pxl/interface/pxl/hep.hh"
-#include "Pxl/Pxl/interface/pxl/core.hh"
-#include <iostream>
-#include <csignal>
-#include <iomanip>
-
-#include "Tools/Tools.hh"
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-local-typedefs"
-#pragma GCC diagnostic ignored "-Wattributes"
-#include <boost/filesystem/path.hpp>
-#pragma GCC diagnostic pop
-#include "boost/program_options.hpp"
-
-#include "Main/EventAdaptor.hh"
-#include "Main/JetTypeWriter.hh"
-#include "Main/EventSelector.hh"
-#include "Main/ParticleMatcher.hh"
-#include "Main/ReWeighter.hh"
-#include "Main/RunLumiRanges.hh"
-#include "Main/SkipEvents.hh"
-
-// this will build pxl::Events from NanoAOD TTree's.
 #include "music.hh"
-
-// ROOT Stuff
-#include "TFile.h"
-#include "TTree.h"
-
-// Include user defined Analysis or use Validator as default
-// Implement your own analysis composer and use export to define the
-// header file as environment variable MYPXLANA.
-#define Q(x) #x
-#define QUOTE(x) Q(x)
-
-#include QUOTE(MYPXLANA)
-
-#include "Main/Systematics.hh"
 
 namespace fs = boost::filesystem;
 namespace po = boost::program_options;
@@ -68,7 +24,42 @@ void KeyboardInterrupt_endJob(int signum)
 }
 
 int main(int argc, char *argv[])
+
 {
+   toml::table config_file = toml::parse_file("MUSiC/test/MC.toml");
+   auto config = config_file["music"];
+   auto output = *(config["output"].value<std::string>());
+   auto debug = *(config["debug"].value<int>());
+   auto xsections = *(config["xsections"].value<std::string>());
+   auto year = *(config["year"].value<std::string>());
+   auto cacheread = *(config["cacheread"].value<bool>());
+   auto input = *(config["input"][0].value<std::string>());
+   
+   std::cout << output << std::endl;
+   std::cout << config["debug"] << std::endl;
+   std::cout << config["xsections"] << std::endl;
+   std::cout << config["year"] << std::endl;
+   std::cout << config["cacheread"] << std::endl;
+   std::cout << config["input"][0] << std::endl;
+
+   //        [music]
+   // output = 'foo'
+   // debug = 0
+   // xsections = '~/MUSiCPxl/NanoMUSiC/MUSiC-Configs/MC/scales.txt'
+   // config = '~/MUSiCPxl/NanoMUSiC/MUSiC-Configs/configs/MC.cfg'
+   // year = '2017'
+   // process = 'DiPhotonJetsBox_MGG-80toInf_13TeV_SP'
+   // dataset = '/foo/bar/abc/NANOAODSIM'
+   // cacheread = true
+   // input = [
+   //     'root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL17NanoAODv9/ChargedHiggsToTauNu_IntermediateNoNeutral_M165_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2560000/53210390-2F3D-2044-AB95-93EE21DC5B8E.root',
+   //     'root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL17NanoAODv9/ChargedHiggsToTauNu_IntermediateNoNeutral_M165_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2560000/53210390-2F3D-2044-AB95-93EE21DC5B8E.root'
+   //     ]
+}
+
+int main2(int argc, char *argv[])
+{
+
    if (getenv("MUSIC_BASE") == NULL)
    {
       throw std::runtime_error("MUSIC_BASE not set!");
@@ -425,11 +416,10 @@ int main(int argc, char *argv[])
          }
          else // run on MC
          {
-            RecEvtView->setUserRecord("EventSeed", 
-               event_ptr->getUserRecord("Run").toInt32() +
-               event_ptr->getUserRecord("LumiSection").toInt32() +
-               event_ptr->getUserRecord("EventNum").toInt32()
-               );
+            RecEvtView->setUserRecord("EventSeed",
+                                      event_ptr->getUserRecord("Run").toInt32() +
+                                          event_ptr->getUserRecord("LumiSection").toInt32() +
+                                          event_ptr->getUserRecord("EventNum").toInt32());
 
             // Don't do this on data, haha! And also not for special Ana hoho
             reweighter.ReWeightEvent(event_ptr.get());
@@ -525,7 +515,6 @@ int main(int argc, char *argv[])
             event_ptr->setUserRecord("Filename", fileName);
          }
          event_ptr->setUserRecord("EventNumPxlio", event_counter_per_file);
-
 
          // run the fork ..
          fork.analyseEvent(event_ptr.get());
