@@ -47,7 +47,6 @@ endif
 DIRS := $(MYPXLANA)
 DIRS += Main
 DIRS += Tools
-DIRS += MUSiC
 
 # define PXL library directories
 ifeq ($(wildcard Pxl/*),)
@@ -168,11 +167,15 @@ LDFLAGS += $(ROOT_LDFLAGS) $(ROOT_GLIBS) $(SYSLIBS) -L. $(EXTRA_LDFLAGS)
 ########################################
 # define colors for better overview
 
-RED=$(shell tput setaf 1)
-YELLOW=$(shell tput setaf 2)
-GREEN=$(shell tput setaf 3)
-BOLD=$(shell tput bold)
-NORMAL=$(shell tput sgr0)
+BLACK        := $(shell tput -Txterm setaf 0)
+RED          := $(shell tput -Txterm setaf 1)
+GREEN        := $(shell tput -Txterm setaf 2)
+YELLOW       := $(shell tput -Txterm setaf 3)
+LIGHTPURPLE  := $(shell tput -Txterm setaf 4)
+PURPLE       := $(shell tput -Txterm setaf 5)
+BLUE         := $(shell tput -Txterm setaf 6)
+WHITE        := $(shell tput -Txterm setaf 7)
+NC := $(shell tput -Txterm sgr0)
 
 
 ########################################
@@ -188,7 +191,7 @@ TARGETS += $(PRINTER)
 # if you have additional includes, you can put them in the includes.mk file in
 # your analysis directory
 ifneq (,$(wildcard $(MYPXLANA)/includes.mk))
-$(info Makefile fragment $(GREEN)include.mk$(NORMAL) found. Including ...)
+$(info Makefile fragment $(GREEN)include.mk$(NC) found. Including ...)
 -include $(MYPXLANA)/includes.mk
 endif
 
@@ -200,28 +203,25 @@ endif
 #	@shellcommand
 #	command
 
-TEMP_OBJS := $(OBJECTS)
-
 all: $(OBJECTS)
-# all: $(TARGETS)
 
 clean:
 	@rm -f $(MUSIC) $(OBJECTS) $(DEPENDS)
 	@rm -rf bin
 
-$(MUSIC): $(filter-out $(PRINTER).o, $(TEMP_OBJS))
-	@echo "Building $@ ..."
-	$(LD) $^ $(LDFLAGS)  -o $@
-	@echo "$@ done"
-	@mkdir -p bin
-	@cp $(MUSIC) bin/
+# $(MUSIC): $(filter-out $(PRINTER).o, $(TEMP_OBJS))
+# 	@echo "Building $@ ..."
+# 	$(LD) $^ $(LDFLAGS)  -o $@
+# 	@echo "$@ done"
+# 	@mkdir -p bin
+# 	@cp $(MUSIC) bin/
 
-$(PRINTER): $(filter-out $(MUSIC).o, $(TEMP_OBJS))
-	@echo "Building $@ ..."
-	$(LD) $^ $(LDFLAGS)  -o $@
-	@echo "$@ done"
-	@mkdir -p bin
-	@cp $(PRINTER) bin/
+# $(PRINTER): $(filter-out $(MUSIC).o, $(TEMP_OBJS))
+# 	@echo "Building $@ ..."
+# 	$(LD) $^ $(LDFLAGS)  -o $@
+# 	@echo "$@ done"
+# 	@mkdir -p bin
+# 	@cp $(PRINTER) bin/
 
 
 ########################################
@@ -230,7 +230,7 @@ $(PRINTER): $(filter-out $(MUSIC).o, $(TEMP_OBJS))
 # your analysis directory
 
 ifneq (,$(wildcard $(MYPXLANA)/targets.mk))
-$(info Makefile fragment $(GREEN)targets.mk$(NORMAL) found. Including ...)
+$(info Makefile fragment $(GREEN)targets.mk$(NC) found. Including ...)
 -include $(MYPXLANA)/targets.mk
 endif
 
@@ -239,6 +239,8 @@ endif
 # rules
 
 %.o : %.cc
+	@echo "${YELLOW}Building $@ ...${NC}"
 	$(CC) -MD -MP $(CFLAGS) -g -c -o $@ $<
-
+	@echo "${GREEN} $@ done ...${NC}"
+	
 -include $(DEPENDS)

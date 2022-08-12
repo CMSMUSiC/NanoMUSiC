@@ -42,6 +42,9 @@ source set_env.sh
 
 cd $SCRIPTDIR
 
+export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/bin;
+
+
 export CORRECTIONLIB=$SCRIPTDIR/correctionlib/correctionlib
 export LD_LIBRARY_PATH=$CORRECTIONLIB/lib/:$LD_LIBRARY_PATH
 

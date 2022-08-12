@@ -154,7 +154,7 @@ $(EXECUTABLES):
 
 $(LOOKUPTABLE): src/createLookupTable
 	@echo "$(RED)The lookup-table seems to be out of-date!"
-	@echo "Don't forget to regenerate it using 'make lut' (this might take up to several hours).$(NORMAL)"
+	@echo "Don't forget to regenerate it using 'make lut' (this might take up to several hours).$(NC)"
 
 lut:
 	@echo "Generating lookup table $@..."
