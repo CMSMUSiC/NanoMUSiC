@@ -300,7 +300,7 @@ def main():
         task.inputfiles=[]
         task.outputfiles=["MusicOutDir.tar.gz"]
 
-        #usage: bin/music [--DumpECHistos] [--NoSpecialAna] [--NoCcControl] [--NoCcEventClass] [-h] [-o value] [-N value] [-x value] [-p value] [--debug value] [-M value] a1...
+        #usage: bin/music [--DumpECHistos] [--NoSpecialAna] [--NoCcControl] [--NoEventClassFactory] [-h] [-o value] [-N value] [-x value] [-p value] [--debug value] [-M value] a1...
 
 
         standardArg=["-o","MusicOutDir",sampleList[sample][1]]

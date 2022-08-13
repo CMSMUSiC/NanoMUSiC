@@ -40,7 +40,7 @@
                 "${workspaceFolder}/NanoMUSiC/PxlAnalyzer/Pxl/Pxl/interface/pxl/*",
                 "${workspaceFolder}/NanoMUSiC/PxlAnalyzer/Pxl/Pxl/interface/pxl/core/*",
                 "${workspaceFolder}/NanoMUSiC/PxlAnalyzer/Main/*",
-                "${workspaceFolder}/NanoMUSiC/PxlAnalyzer/MUSiC/*",
+                "${workspaceFolder}/NanoMUSiC/MUSiC/*",
                 "${workspaceFolder}/NanoMUSiC/PxlAnalyzer/Tools/dCache/*",
                 "${workspaceFolder}/NanoMUSiC/PxlAnalyzer/Tools/*",
                 "${workspaceFolder}/NanoMUSiC/PxlAnalyzer/Tools/PXL/*",

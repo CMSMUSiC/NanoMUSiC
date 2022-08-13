@@ -166,9 +166,9 @@ LDFLAGS += $(ROOT_LDFLAGS) $(ROOT_GLIBS) $(SYSLIBS) -L. $(EXTRA_LDFLAGS) $(MUSIC
 # additional includes
 # if you have additional includes, you can put them in the includes.mk file in
 # your analysis directory
-ifneq (,$(wildcard $(MYPXLANA)/includes.mk))
+ifneq (,$(wildcard $(PXLANA)/$(MYPXLANA)/includes.mk))
 $(info Makefile fragment $(GREEN)include.mk$(NC) found. Including ...)
--include $(MYPXLANA)/includes.mk
+-include $(PXLANA)/$(MYPXLANA)/includes.mk
 endif
 
 
@@ -208,20 +208,21 @@ MAKEFILE_DIR := ${CURDIR}
 
 all: $(MUSIC) $(PRINTER)
 
-PxlAnalyzer: 
+# .PHONY: PxlAnalyzer
+# pxlanalyzer: 
+PxlAnalyzer/PxlAnalyzer.d:  $(PXLANA_SOURCES)
 	@echo "${YELLOW}Building PxlAnalyzer ...${NC}"
 	$(MAKE) -C ./PxlAnalyzer/
 	@echo "${GREEN} PxlAnalyzer done ...${NC}"
-.PHONY: PxlAnalyzer
 
-$(MUSIC): PxlAnalyzer MUSiC/music.o
+$(MUSIC): PxlAnalyzer/PxlAnalyzer.d MUSiC/music.o
 	@echo "${YELLOW}Building $@ ...${NC}"
 	$(LD) MUSiC/music.o $(PXLANA_OBJECTS) $(LDFLAGS)  -o $@
 	@echo "${GREEN}$@ done${NC}"
 	@mkdir -p bin
 	@cp $(MUSIC) bin/
 
-$(PRINTER): PxlAnalyzer MUSiC/nanoaod_content_printer.o
+$(PRINTER): PxlAnalyzer/PxlAnalyzer.d MUSiC/nanoaod_content_printer.o
 	@echo "${YELLOW}Building $@ ...${NC}"
 	$(LD) MUSiC/nanoaod_content_printer.o $(PXLANA_OBJECTS) $(LDFLAGS)  -o $@
 	@echo "${GREEN}$@ done${NC}"
@@ -229,17 +230,19 @@ $(PRINTER): PxlAnalyzer MUSiC/nanoaod_content_printer.o
 	@cp $(PRINTER) bin/
 
 clean: 
+	@echo "${GREEN}Cleanning PxlAnalyzer ...${NC}"
+	$(MAKE) -C ./PxlAnalyzer/ clean
 	@echo "${GREEN}Cleanning MUSiC ...${NC}"
 	@rm -f  $(MUSIC) $(OBJECTS) $(DEPENDS) 
-	@echo "${GREEN}Cleanning PxlAnalyzer ...${NC}"
-	@rm -f  $(PXLANA_OBJECTS) $(PXLANA_DEPENDS) 
+	# @echo "${GREEN}Cleanning PxlAnalyzer ...${NC}"
+	# @rm -f  $(PXLANA_OBJECTS) $(PXLANA_DEPENDS)
 	@echo "${GREEN}Cleanning bin ...${NC}"
 	@rm -rf bin/*
 
 
 ########################################
 # additional targets
-# if you have additional targets, you can put them in the includes.mk file in
+# if you have additional targets, you can put them in the targets.mk file in
 # your analysis directory
 
 ifneq (,$(wildcard $(MYPXLANA)/targets.mk))

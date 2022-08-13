@@ -64,6 +64,7 @@ SOURCES += $(foreach dir, $(DIRS), $(wildcard $(dir)/*.cc))
 HEADERS := $(SOURCES:.cc=.h)
 OBJECTS := $(SOURCES:.cc=.o)
 DEPENDS := $(SOURCES:.cc=.d)
+GCDAS   := $(SOURCES:.cc=.gcda)
 
 
 ########################################
@@ -204,10 +205,12 @@ endif
 #	command
 
 all: $(OBJECTS)
+	@touch PxlAnalyzer.d
 
 clean:
-	@rm -f $(MUSIC) $(OBJECTS) $(DEPENDS)
+	@rm -f $(MUSIC) $(OBJECTS) $(DEPENDS) $(GCDAS)
 	@rm -rf bin
+	@rm PxlAnalyzer.d
 
 # $(MUSIC): $(filter-out $(PRINTER).o, $(TEMP_OBJS))
 # 	@echo "Building $@ ..."
@@ -226,7 +229,7 @@ clean:
 
 ########################################
 # additional targets
-# if you have additional targets, you can put them in the includes.mk file in
+# if you have additional targets, you can put them in the targets.mk file in
 # your analysis directory
 
 ifneq (,$(wildcard $(MYPXLANA)/targets.mk))

@@ -5,7 +5,7 @@
 #include "Pxl/Pxl/interface/pxl/hep.hh"
 
 // music includes
-#include "EventClassFactory/CcEventClass.hh"
+#include "EventClassFactory/EventClassFactory.hh"
 
 #include "boost/program_options.hpp"
 using std::string;
@@ -53,13 +53,13 @@ pxl::AnalysisFork AnalysisComposer::addForkObjects(const Tools::MConfig &config,
    // save other configs with output
    system(("cp " + m_XSectionsFile + " . ").c_str());
 
-   CcEventClass *cc_event = new CcEventClass(config,
+   EventClassFactory *event_class_factory = new EventClassFactory(config,
                                              XSections,
-                                             &selector,
-                                             &syst,
+                                             selector,
+                                             syst,
                                              m_outfilename,
                                              m_RunHash);
-   fork.insertObject(cc_event, "CcEventClass");
+   fork.insertObject(event_class_factory, "EventClassFactory");
 
    return fork;
 }

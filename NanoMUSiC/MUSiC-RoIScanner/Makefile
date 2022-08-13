@@ -118,7 +118,7 @@ RED=$(shell tput setaf 1)
 YELLOW=$(shell tput setaf 2)
 GREEN=$(shell tput setaf 3)
 BOLD=$(shell tput bold)
-NORMAL=$(shell tput sgr0)
+NC=$(shell tput sgr0)
 
 
 ########################################

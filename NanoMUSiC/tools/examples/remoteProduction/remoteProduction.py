@@ -158,7 +158,7 @@ def main():
         task.inputfiles=[thisdir+"/hadronizer_match_pu_2_cfg.py"]
         #task.outputfiles=[""]
 
-        #usage: bin/music [--DumpECHistos] [--NoSpecialAna] [--NoCcControl] [--NoCcEventClass] [-h] [-o value] [-N value] [-x value] [-p value] [--debug value] [-M value] a1...
+        #usage: bin/music [--DumpECHistos] [--NoSpecialAna] [--NoCcControl] [--NoEventClassFactory] [-h] [-o value] [-N value] [-x value] [-p value] [--debug value] [-M value] a1...
 
 
         standardArg=[sample]

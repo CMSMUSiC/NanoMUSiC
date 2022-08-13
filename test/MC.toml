@@ -1,0 +1,18 @@
+[music]
+output = 'foo'
+debug = 0 
+number_of_events = -1
+number_of_skip_events = 0 
+run_on_data = false
+xsections = '$MUSIC_CONFIG/MC/scales.txt'
+config = '$MUSIC_CONFIG/configs/MC.cfg'
+year = '2017'
+process = 'DiPhotonJetsBox_MGG-80toInf_13TeV_SP' 
+dataset = '/foo/bar/abc/NANOAODSIM' 
+hash = 'dummyhash'
+cacheread = true 
+input = [
+    'root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL17NanoAODv9/ChargedHiggsToTauNu_IntermediateNoNeutral_M165_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2560000/53210390-2F3D-2044-AB95-93EE21DC5B8E.root',
+    'root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL17NanoAODv9/ChargedHiggsToTauNu_IntermediateNoNeutral_M165_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2560000/53210390-2F3D-2044-AB95-93EE21DC5B8E.root'
+    ]
+

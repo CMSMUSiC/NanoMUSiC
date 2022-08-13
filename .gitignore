@@ -4,6 +4,8 @@ music_env.config
 NanoMUSiC/MUSiC-RoIScanner/table2latex/
 Condor_utils/
 correctionlib/
+*.c
+foo/
 
 ##### PYTHON #####
 
@@ -205,3 +207,4 @@ cython_debug/
 
 hsimpleReader.C
 NanoMUSiC/bin/
+foo.txt

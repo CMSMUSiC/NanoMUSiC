@@ -17,11 +17,14 @@
 
 // toml++ v3.1.0
 // https://github.com/marzer/tomlplusplus
-#include "toml.hh"
+#include "tools/toml.hh"
+
+#include "tools/color.hh"
+
+#include "tools/emoji.hh"
 
 #include "Pxl/Pxl/interface/pxl/hep.hh"
 #include "Pxl/Pxl/interface/pxl/core.hh"
-
 
 #include "Tools/Tools.hh"
 #include "Main/EventAdaptor.hh"
@@ -37,6 +40,7 @@
 #include "TFile.h"
 #include "TTree.h"
 
+
 // Include user defined Analysis or use Validator as default
 // Implement your own analysis composer and use export to define the
 // header file as environment variable MYPXLANA.
@@ -45,7 +49,7 @@
 
 // #include QUOTE(MYPXLANA)
 
-#include "EventClassFactory/AnalysisComposer.hh"
+#include "EventClassFactory/EventClassFactory.hh"
 
 #include "Main/NanoAODReader.hh"
 #include "nano2pxl_utils.hh"
