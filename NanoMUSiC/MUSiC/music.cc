@@ -36,7 +36,6 @@ int main(int argc, char *argv[])
    TDirectory::AddDirectory(kFALSE); // Force ROOT to give directories in our hand - Yes, we can
    TH1::AddDirectory(kFALSE);        // Force ROOT to give histograms in our hand - Yes, we can
 
-
    // Variables for argstream.
    // The values they are initialized with serve as default values.
    // The number of music options should be kept short, so it is easier to use
@@ -200,7 +199,7 @@ int main(int argc, char *argv[])
    Tools::MConfig config(FinalCutsFile);
    config.setYear(year);
 
-   // Get the run config file from config file.
+   // Get the run config file from main config file.
    std::string RunConfigFile;
 
    bool const useSYST = config.GetItem<bool>("General.useSYST");
@@ -272,7 +271,6 @@ int main(int argc, char *argv[])
 
    // // pxl::AnalysisFork fork;
    // event_class_factory.setName(analysisName);
-   
 
    const Tools::MConfig XSections(XSectionsFile);
 
@@ -280,7 +278,7 @@ int main(int argc, char *argv[])
    system(("cp " + XSectionsFile + " . ").c_str());
 
    // EventClassFactory *event_class_factory = new EventClassFactory(config,XSections,selector,syst_shifter,outfilename,RunHash);
-   auto event_class_factory = EventClassFactory(config,XSections,selector,syst_shifter,outfilename,RunHash);
+   auto event_class_factory = EventClassFactory(config, XSections, selector, syst_shifter, outfilename, RunHash);
 
    // // Get fork from AnalysisComposer
    // pxl::AnalysisFork fork = thisAnalysis.addForkObjects(config,
@@ -459,7 +457,7 @@ int main(int argc, char *argv[])
             // Switch to puppi kinematics for fat jets
             adaptor.applyPUPPIFatJets();
          }
-         std::cout << "111" << std::endl;
+
          if (runOnData)
          {
             // Only needed for 2016 data //LOR COMM IT OUT
@@ -507,6 +505,8 @@ int main(int argc, char *argv[])
                // Don't do this on data!
                adaptor.applyJETMETSmearing(GenEvtView, RecEvtView, linkName);
             }
+
+            
             try
             {
                if (useSYST)
@@ -638,10 +638,9 @@ int main(int argc, char *argv[])
    event_class_factory.endRun(0);
    event_class_factory.endJob(0);
 
-
    // in the old analysis composer, this was empty.
    // Should stay?
-   // thisAnalysis.endAnalysis(); 
+   // thisAnalysis.endAnalysis();
 
    PrintProcessInfo(info);
    return 0;

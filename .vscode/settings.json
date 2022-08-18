@@ -10,7 +10,10 @@
         "iostream": "cpp",
         "foo.C": "cpp",
         "GetElementTypeName.C": "cpp",
-        "oi.C": "cpp"
+        "oi.C": "cpp",
+        "initializer_list": "cpp",
+        "FuncHEP.C": "cpp",
+        "cstdlib": "cpp"
     },
     "clang-format.executable": "/cvmfs/cms.cern.ch/slc7_amd64_gcc700/external/llvm/7.1.0-pafccj/bin/clang-format",
     "C_Cpp.loggingLevel": "Error"

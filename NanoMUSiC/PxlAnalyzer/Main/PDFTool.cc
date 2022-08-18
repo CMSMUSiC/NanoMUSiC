@@ -20,13 +20,16 @@ PDFTool::PDFTool(
                                 // '/cvmfs/cms.cern.ch/cmsset_default.sh' and call 'cmsenv'.
                                 // If it is set correctly, LHAPDF will find the files containing the PDF sets.
                                 m_pdfPath(getenv("LHAPATH")),
-                                m_pdfProdName(config.GetItem<std::string>("PDF.Prod.Name")), // The name of the PDF set with which your sample has been produced. You can set it in some config file.
-                                m_pdfProd(LHAPDF::mkPDF(m_pdfProdName,
-                                                        0)),
+                                // The name of the PDF set with which your sample has been produced. You can set it in some config file.
+                                m_pdfProdName(config.GetItem<std::string>("PDF.Prod.Name")), 
+                                m_pdfProd(LHAPDF::mkPDF(m_pdfProdName, 0)),
                                 m_pdfSetsNNPDF(PDFSets()),
                                 m_AsSetsNNPDF(std::make_pair(nullptr, nullptr)),
                                 m_PdfAsCombinedlabelOptions(Tools::splitString<std::string>(config.GetItem<std::string>("PDF.PDFAsCombinedLabels"), true)),
-                                m_labelPdfAsCombined(""), // The name of one or more PDF sets that contain As weights in themselves. You can set them in some config file e.g. PxlAnalyzer/ConfigFiles/pdf.cff. Below are the name of PDF sets if the PDF central DOES NOT CONTAINS As weights in itself, but As are provided different PDF sets.
+                                // The name of one or more PDF sets that contain As weights in themselves.
+                                // You can set them in some config file e.g. PxlAnalyzer/ConfigFiles/pdf.cff.
+                                // Below are the name of PDF sets if the PDF central DOES NOT CONTAINS As weights in itself, but As are provided different PDF sets.
+                                m_labelPdfAsCombined(""),
                                 m_labelPdfAsCentral(config.GetItem<std::string>("PDF.PDFAsCentral.Name", "NNPDF31_nnlo_as_0118")),
                                 m_labelPdfAsDownShifted(config.GetItem<std::string>("PDF.PDFAsDownShifted.Name", "NNPDF31_nnlo_as_0116")),
                                 m_labelPdfAsUpShifted(config.GetItem<std::string>("PDF.PDFAsUpShifted.Name", "NNPDF31_nnlo_as_0120")),
@@ -142,7 +145,10 @@ void PDFTool::initNNPDFRange(const std::string &name)
    else if (name == "NNPDF31_nnlo_as_0118") // Added by Sebastian to follow 2017 recommendations. See above where to find the latest once
    {
       m_NNPDFUncertIDRange = std::make_pair(303601, 303700);
-      m_NNPDFAsUncertIDs = std::make_pair(319300, 319500); // Modified by Lorenzo to have alphas variations. These IDs correspond to NNPDF31_nnlo_as_0116 and NNPDF31_nnlo_as_0120. Default pair is (0 , 0)
+      // Modified by Lorenzo to have alphas variations. 
+      // These IDs correspond to NNPDF31_nnlo_as_0116 and NNPDF31_nnlo_as_0120. 
+      // Default pair is (0 , 0)
+      m_NNPDFAsUncertIDs = std::make_pair(319300, 319500); 
    }
    else
    {
@@ -182,8 +188,7 @@ void PDFTool::setPDFWeightsLHAPDF(pxl::EventView const *genEvtView)
    float const x2 = genEvtView->getUserRecord("Generator_x2");
    int const f1 = genEvtView->getUserRecord("Generator_id1");
    int const f2 = genEvtView->getUserRecord("Generator_id2");
-   double prodWeight = m_pdfProd->xfxQ(f1, x1, Q) *
-                       m_pdfProd->xfxQ(f2, x2, Q);
+   double prodWeight = m_pdfProd->xfxQ(f1, x1, Q) * m_pdfProd->xfxQ(f2, x2, Q);
 
    for (auto &PDFSet : m_pdfSetsNNPDF)
    {

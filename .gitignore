@@ -6,6 +6,7 @@ Condor_utils/
 correctionlib/
 *.c
 foo/
+*.gcda
 
 ##### PYTHON #####
 
