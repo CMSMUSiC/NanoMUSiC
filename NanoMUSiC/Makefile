@@ -146,10 +146,10 @@ EXTRA_LDFLAGS := $(CMSSW_LIB_PATHS) $(CMSSW_LIBS) $(LHAPDF_LIB_PATH) $(LHAPDF_LI
 MUSIC_LDFLAGS := -L$(MUSIC_UTILS)/lib -lTEventClass -L$(CORRECTIONLIB)/lib  -lcorrectionlib
 
 CC := g++
-CFLAGS	:= -O3 -Wall -std=gnu++17
+CFLAGS	:= -O3 -Wall -std=c++17 -lstdc++fs
 
 LD := g++
-LDFLAGS := -O3fast -lz
+LDFLAGS := -O3fast -lz -lstdc++fs
 
 # Debug flags?
 ifdef DEBUG

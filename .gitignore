@@ -4,6 +4,8 @@ music_env.config
 # NanoMUSiC/MUSiC-RoIScanner/table2latex/
 # Condor_utils/
 # correctionlib/
+correctionlib/__init__.py
+correctionlib/correctionlib/
 *.c
 foo/
 *.gcda

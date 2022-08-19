@@ -48,19 +48,11 @@ ln -s /cvmfs/cms.cern.ch/slc6_amd64_gcc493/external/py2-pycurl/7.19.0-kpegke/lib
 
 # setup table2latex
 cd $SCRIPT_DIR/NanoMUSiC/MUSiC-RoIScanner
-# git clone git@github.com:tobias-pook/table2latex.git
 cd table2latex
 pip install --user -e .
 
-# clone Condor_utils
-# cd $SCRIPT_DIR
-# git clone git@github.com:CMSMUSiC/Condor_utils.git
-
-# clone and compile correctionlib
+# compile correctionlib
 cd $SCRIPT_DIR
-# git clone --recursive git@github.com:cms-nanoAOD/correctionlib.git
-# git fetch
-# git reset --hard 1f0febc
 cd correctionlib
 make PYTHON=python
 make install
