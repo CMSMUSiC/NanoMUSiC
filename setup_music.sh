@@ -29,12 +29,15 @@ echo ""
 CMSSW_VER=$1
 MY_SCRAM_ARCH=$2
 
-# Set up the skimmer
+# Set up CMSSW
 cd $SCRIPT_DIR
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 cd /cvmfs/cms.cern.ch/$MY_SCRAM_ARCH/cms/cmssw/$CMSSW_VER/ 
 cmsenv
 CMSSW_RELEASE_BASE=/cvmfs/cms.cern.ch/$MY_SCRAM_ARCH/cms/cmssw/$CMSSW_VER/
+
+echo "CMSSWRELEASE BASE: $CMSSW_RELEASE_BASE"
+echo " "
 cd $SCRIPT_DIR
 
 # create links for libaries
@@ -45,17 +48,19 @@ ln -s /cvmfs/cms.cern.ch/slc6_amd64_gcc493/external/py2-pycurl/7.19.0-kpegke/lib
 
 # setup table2latex
 cd $SCRIPT_DIR/NanoMUSiC/MUSiC-RoIScanner
-git clone git@github.com:tobias-pook/table2latex.git
+# git clone git@github.com:tobias-pook/table2latex.git
 cd table2latex
 pip install --user -e .
 
 # clone Condor_utils
-cd $SCRIPT_DIR
-git clone git@github.com:CMSMUSiC/Condor_utils.git
+# cd $SCRIPT_DIR
+# git clone git@github.com:CMSMUSiC/Condor_utils.git
 
 # clone and compile correctionlib
 cd $SCRIPT_DIR
-git clone --recursive git@github.com:cms-nanoAOD/correctionlib.git
+# git clone --recursive git@github.com:cms-nanoAOD/correctionlib.git
+# git fetch
+# git reset --hard 1f0febc
 cd correctionlib
 make PYTHON=python
 make install

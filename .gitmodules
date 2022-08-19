@@ -1,0 +1,9 @@
+[submodule "Condor_utils"]
+	path = Condor_utils
+	url = git@github.com:CMSMUSiC/Condor_utils.git
+[submodule "correctionlib"]
+	path = correctionlib
+	url = git@github.com:cms-nanoAOD/correctionlib.git
+[submodule "NanoMUSiC/MUSiC-RoIScanner/table2latex"]
+	path = NanoMUSiC/MUSiC-RoIScanner/table2latex
+	url = git@github.com:tobias-pook/table2latex.git
