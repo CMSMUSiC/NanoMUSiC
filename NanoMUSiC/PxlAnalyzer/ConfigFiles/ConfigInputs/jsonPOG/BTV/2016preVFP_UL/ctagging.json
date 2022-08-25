@@ -1,0 +1,3736 @@
+{
+  "schema_version": 2,
+  "description": "This json file contains the corrections for deepJet and deepCSV AK4 c-taggers. Corrections are supplied for c-tagging working point corrections (wp). ",
+  "corrections": [
+    {
+      "name": "deepJet_wp",
+      "description": "deepJet fixedWP c-tagging factors for UL 2016preVFP. 'up' and 'down' variations are available for the different measurement types. The uncertainties are to be decorrelated between b/c jets ('wcharm') and light jets ('incl')",
+      "version": 1,
+      "inputs": [
+        {
+          "name": "systematic",
+          "type": "string"
+        },
+        {
+          "name": "method",
+          "type": "string",
+          "description": "incl for light jets, wcharm for b/c jets"
+        },
+        {
+          "name": "working_point",
+          "type": "string",
+          "description": "L/M/T"
+        },
+        {
+          "name": "flavor",
+          "type": "int",
+          "description": "hadron flavor definition: 5=b, 4=c, 0=udsg"
+        },
+        {
+          "name": "abseta",
+          "type": "real"
+        },
+        {
+          "name": "pt",
+          "type": "real"
+        }
+      ],
+      "output": {
+        "name": "weight",
+        "type": "real"
+      },
+      "data": {
+        "nodetype": "category",
+        "input": "systematic",
+        "content": [
+          {
+            "key": "central",
+            "value": {
+              "nodetype": "category",
+              "input": "method",
+              "content": [
+                {
+                  "key": "wcharm",
+                  "value": {
+                    "nodetype": "category",
+                    "input": "working_point",
+                    "content": [
+                      {
+                        "key": "L",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 4,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      0.994079,
+                                      1.012779,
+                                      1.039393,
+                                      1.045916,
+                                      0.999465,
+                                      0.991741,
+                                      1.029848
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            },
+                            {
+                              "key": 5,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      0.994079,
+                                      1.012779,
+                                      1.039393,
+                                      1.045916,
+                                      0.999465,
+                                      0.991741,
+                                      1.029848
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "M",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 4,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      0.994432,
+                                      1.019441,
+                                      1.049665,
+                                      1.097455,
+                                      0.997805,
+                                      0.926999,
+                                      1.022339
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            },
+                            {
+                              "key": 5,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      0.994432,
+                                      1.019441,
+                                      1.049665,
+                                      1.097455,
+                                      0.997805,
+                                      0.926999,
+                                      1.022339
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "T",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 4,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      1.032787,
+                                      1.035922,
+                                      1.05016,
+                                      1.129377,
+                                      1.025138,
+                                      0.901094,
+                                      1.004283
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            },
+                            {
+                              "key": 5,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      1.032787,
+                                      1.035922,
+                                      1.05016,
+                                      1.129377,
+                                      1.025138,
+                                      0.901094,
+                                      1.004283
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "key": "incl",
+                  "value": {
+                    "nodetype": "category",
+                    "input": "working_point",
+                    "content": [
+                      {
+                        "key": "L",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "0.978708+20.0544/x+258.208/(x*x)+-1685.01/((x--12.5644)*(x--12.5644))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "M",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "1.25733+3.12021e-05*x+-1.22402e-07*x*x+-2.65201/x",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "T",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "1.24249+0.000710784*x+-4.74072e-07*x*x+3.50092/x",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "key": "down",
+            "value": {
+              "nodetype": "category",
+              "input": "method",
+              "content": [
+                {
+                  "key": "wcharm",
+                  "value": {
+                    "nodetype": "category",
+                    "input": "working_point",
+                    "content": [
+                      {
+                        "key": "L",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 4,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      0.9660030000000001,
+                                      0.9952700000000001,
+                                      1.010914,
+                                      1.002949,
+                                      0.9181330000000001,
+                                      0.8299559999999999,
+                                      0.7721210000000001
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            },
+                            {
+                              "key": 5,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      0.9379270000000001,
+                                      0.9777610000000001,
+                                      0.9824350000000001,
+                                      0.9599820000000001,
+                                      0.836801,
+                                      0.668171,
+                                      0.5143940000000001
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "M",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 4,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      0.954434,
+                                      0.99367,
+                                      1.014802,
+                                      1.044991,
+                                      0.9126860000000001,
+                                      0.770948,
+                                      0.7652540000000001
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            },
+                            {
+                              "key": 5,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      0.914436,
+                                      0.9678990000000001,
+                                      0.9799390000000001,
+                                      0.992527,
+                                      0.827567,
+                                      0.614897,
+                                      0.5081690000000001
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "T",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 4,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      0.9666789999999998,
+                                      1.001896,
+                                      1.009201,
+                                      1.06993,
+                                      0.9257920000000001,
+                                      0.734517,
+                                      0.7343280000000001
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            },
+                            {
+                              "key": 5,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      0.9005709999999999,
+                                      0.96787,
+                                      0.9682419999999999,
+                                      1.010483,
+                                      0.8264460000000001,
+                                      0.5679399999999999,
+                                      0.46437300000000004
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "key": "incl",
+                  "value": {
+                    "nodetype": "category",
+                    "input": "working_point",
+                    "content": [
+                      {
+                        "key": "L",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(0.978708+20.0544/x+258.208/(x*x)+-1685.01/((x--12.5644)*(x--12.5644)))*(1-(0.0289817+-1.18787e-07*x+-1.89502e-10*x*x))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "M",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.25733+3.12021e-05*x+-1.22402e-07*x*x+-2.65201/x)*(1-(0.0843237+4.86535e-06*x+-1.40918e-08*x*x))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "T",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.24249+0.000710784*x+-4.74072e-07*x*x+3.50092/x)*(1-(0.158654+0.000101332*x+-1.32546e-07*x*x))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "key": "up",
+            "value": {
+              "nodetype": "category",
+              "input": "method",
+              "content": [
+                {
+                  "key": "wcharm",
+                  "value": {
+                    "nodetype": "category",
+                    "input": "working_point",
+                    "content": [
+                      {
+                        "key": "L",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 4,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      1.0221550000000001,
+                                      1.030288,
+                                      1.067872,
+                                      1.088883,
+                                      1.080797,
+                                      1.153526,
+                                      1.2875750000000001
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            },
+                            {
+                              "key": 5,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      1.0502310000000001,
+                                      1.047797,
+                                      1.096351,
+                                      1.13185,
+                                      1.162129,
+                                      1.315311,
+                                      1.545302
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "M",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 4,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      1.03443,
+                                      1.045212,
+                                      1.0845280000000002,
+                                      1.1499190000000001,
+                                      1.082924,
+                                      1.08305,
+                                      1.2794240000000001
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            },
+                            {
+                              "key": 5,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      1.074428,
+                                      1.070983,
+                                      1.119391,
+                                      1.202383,
+                                      1.168043,
+                                      1.239101,
+                                      1.5365090000000001
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "T",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 4,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      1.098895,
+                                      1.0699480000000001,
+                                      1.091119,
+                                      1.188824,
+                                      1.124484,
+                                      1.067671,
+                                      1.274238
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            },
+                            {
+                              "key": 5,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      1.165003,
+                                      1.103974,
+                                      1.132078,
+                                      1.2482710000000001,
+                                      1.2238300000000002,
+                                      1.234248,
+                                      1.544193
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "key": "incl",
+                  "value": {
+                    "nodetype": "category",
+                    "input": "working_point",
+                    "content": [
+                      {
+                        "key": "L",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(0.978708+20.0544/x+258.208/(x*x)+-1685.01/((x--12.5644)*(x--12.5644)))*(1+(0.0289817+-1.18787e-07*x+-1.89502e-10*x*x))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "M",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.25733+3.12021e-05*x+-1.22402e-07*x*x+-2.65201/x)*(1+(0.0843237+4.86535e-06*x+-1.40918e-08*x*x))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "T",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.24249+0.000710784*x+-4.74072e-07*x*x+3.50092/x)*(1+(0.158654+0.000101332*x+-1.32546e-07*x*x))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "key": "down_correlated",
+            "value": {
+              "nodetype": "category",
+              "input": "method",
+              "content": [
+                {
+                  "key": "incl",
+                  "value": {
+                    "nodetype": "category",
+                    "input": "working_point",
+                    "content": [
+                      {
+                        "key": "L",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(0.978708+20.0544/x+258.208/(x*x)+-1685.01/((x--12.5644)*(x--12.5644)))*(1-(0.0284318+-1.38544e-07*x+-1.73283e-10*x*x))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "M",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.25733+3.12021e-05*x+-1.22402e-07*x*x+-2.65201/x)*(1-(0.0833127+4.9456e-06*x+-1.43192e-08*x*x))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "T",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.24249+0.000710784*x+-4.74072e-07*x*x+3.50092/x)*(1-(0.155219+0.000102961*x+-1.34996e-07*x*x))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "key": "down_uncorrelated",
+            "value": {
+              "nodetype": "category",
+              "input": "method",
+              "content": [
+                {
+                  "key": "incl",
+                  "value": {
+                    "nodetype": "category",
+                    "input": "working_point",
+                    "content": [
+                      {
+                        "key": "L",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(0.978708+20.0544/x+258.208/(x*x)+-1685.01/((x--12.5644)*(x--12.5644)))*(1-(0.00563793))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "M",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.25733+3.12021e-05*x+-1.22402e-07*x*x+-2.65201/x)*(1-(0.0131287))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "T",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.24249+0.000710784*x+-4.74072e-07*x*x+3.50092/x)*(1-(0.0335774))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "key": "up_correlated",
+            "value": {
+              "nodetype": "category",
+              "input": "method",
+              "content": [
+                {
+                  "key": "incl",
+                  "value": {
+                    "nodetype": "category",
+                    "input": "working_point",
+                    "content": [
+                      {
+                        "key": "L",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(0.978708+20.0544/x+258.208/(x*x)+-1685.01/((x--12.5644)*(x--12.5644)))*(1+(0.0284318+-1.38544e-07*x+-1.73283e-10*x*x))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "M",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.25733+3.12021e-05*x+-1.22402e-07*x*x+-2.65201/x)*(1+(0.0833127+4.9456e-06*x+-1.43192e-08*x*x))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "T",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.24249+0.000710784*x+-4.74072e-07*x*x+3.50092/x)*(1+(0.155219+0.000102961*x+-1.34996e-07*x*x))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "key": "up_uncorrelated",
+            "value": {
+              "nodetype": "category",
+              "input": "method",
+              "content": [
+                {
+                  "key": "incl",
+                  "value": {
+                    "nodetype": "category",
+                    "input": "working_point",
+                    "content": [
+                      {
+                        "key": "L",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(0.978708+20.0544/x+258.208/(x*x)+-1685.01/((x--12.5644)*(x--12.5644)))*(1+(0.00563793))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "M",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.25733+3.12021e-05*x+-1.22402e-07*x*x+-2.65201/x)*(1+(0.0131287))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "T",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.24249+0.000710784*x+-4.74072e-07*x*x+3.50092/x)*(1+(0.0335774))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "deepCSV_wp",
+      "description": "deepCSV fixedWP c-tagging factors for UL 2016preVFP. 'up' and 'down' variations are available for the different measurement types. The uncertainties are to be decorrelated between b/c jets ('wcharm') and light jets ('incl')",
+      "version": 1,
+      "inputs": [
+        {
+          "name": "systematic",
+          "type": "string"
+        },
+        {
+          "name": "method",
+          "type": "string",
+          "description": "incl for light jets, wcharm for b/c jets"
+        },
+        {
+          "name": "working_point",
+          "type": "string",
+          "description": "L/M/T"
+        },
+        {
+          "name": "flavor",
+          "type": "int",
+          "description": "hadron flavor definition: 5=b, 4=c, 0=udsg"
+        },
+        {
+          "name": "abseta",
+          "type": "real"
+        },
+        {
+          "name": "pt",
+          "type": "real"
+        }
+      ],
+      "output": {
+        "name": "weight",
+        "type": "real"
+      },
+      "data": {
+        "nodetype": "category",
+        "input": "systematic",
+        "content": [
+          {
+            "key": "central",
+            "value": {
+              "nodetype": "category",
+              "input": "method",
+              "content": [
+                {
+                  "key": "wcharm",
+                  "value": {
+                    "nodetype": "category",
+                    "input": "working_point",
+                    "content": [
+                      {
+                        "key": "L",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 4,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      0.979978,
+                                      1.009401,
+                                      1.030171,
+                                      1.034218,
+                                      1.005487,
+                                      0.965638,
+                                      1.078709
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            },
+                            {
+                              "key": 5,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      0.979978,
+                                      1.009401,
+                                      1.030171,
+                                      1.034218,
+                                      1.005487,
+                                      0.965638,
+                                      1.078709
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "M",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 4,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      1.000049,
+                                      1.001356,
+                                      1.050858,
+                                      1.080369,
+                                      1.003036,
+                                      0.932686,
+                                      1.160132
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            },
+                            {
+                              "key": 5,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      1.000049,
+                                      1.001356,
+                                      1.050858,
+                                      1.080369,
+                                      1.003036,
+                                      0.932686,
+                                      1.160132
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "T",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 4,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      1.046742,
+                                      1.042387,
+                                      1.060816,
+                                      1.103478,
+                                      1.010165,
+                                      0.826523,
+                                      1.005971
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            },
+                            {
+                              "key": 5,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      1.046742,
+                                      1.042387,
+                                      1.060816,
+                                      1.103478,
+                                      1.010165,
+                                      0.826523,
+                                      1.005971
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "key": "incl",
+                  "value": {
+                    "nodetype": "category",
+                    "input": "working_point",
+                    "content": [
+                      {
+                        "key": "L",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "1.05909+-4.55831e-05*x+-3.8109e-08*x*x+-1.9541/x",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "M",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "1.19674+0.00011874*x+-1.89974e-07*x*x+-2.35069/x",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "T",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "1.32626+0.000644983*x+-6.56945e-07*x*x+-0.994515/x",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "key": "down",
+            "value": {
+              "nodetype": "category",
+              "input": "method",
+              "content": [
+                {
+                  "key": "wcharm",
+                  "value": {
+                    "nodetype": "category",
+                    "input": "working_point",
+                    "content": [
+                      {
+                        "key": "L",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 4,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      0.95181,
+                                      0.992182,
+                                      1.001911,
+                                      0.991376,
+                                      0.922278,
+                                      0.80324,
+                                      0.803461
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            },
+                            {
+                              "key": 5,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      0.9236420000000001,
+                                      0.974963,
+                                      0.9736509999999999,
+                                      0.9485340000000001,
+                                      0.8390690000000001,
+                                      0.640842,
+                                      0.5282129999999999
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "M",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 4,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      0.9632499999999999,
+                                      0.9760489999999999,
+                                      1.015959,
+                                      1.0291979999999998,
+                                      0.9118820000000001,
+                                      0.76546,
+                                      0.8433059999999999
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            },
+                            {
+                              "key": 5,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      0.9264509999999999,
+                                      0.9507419999999999,
+                                      0.98106,
+                                      0.9780269999999999,
+                                      0.820728,
+                                      0.5982339999999999,
+                                      0.52648
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "T",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 4,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      0.9738060000000001,
+                                      1.010518,
+                                      1.01954,
+                                      1.044124,
+                                      0.9041319999999999,
+                                      0.655837,
+                                      0.688657
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            },
+                            {
+                              "key": 5,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      0.9008700000000001,
+                                      0.978649,
+                                      0.978264,
+                                      0.9847699999999999,
+                                      0.798099,
+                                      0.485151,
+                                      0.371343
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "key": "incl",
+                  "value": {
+                    "nodetype": "category",
+                    "input": "working_point",
+                    "content": [
+                      {
+                        "key": "L",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.05909+-4.55831e-05*x+-3.8109e-08*x*x+-1.9541/x)*(1-(0.0283428+4.79798e-07*x+-4.99409e-10*x*x))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "M",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.19674+0.00011874*x+-1.89974e-07*x*x+-2.35069/x)*(1-(0.0807249+4.84389e-06*x+-6.69184e-09*x*x))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "T",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.32626+0.000644983*x+-6.56945e-07*x*x+-0.994515/x)*(1-(0.150866+3.39189e-05*x+-3.77817e-08*x*x))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "key": "up",
+            "value": {
+              "nodetype": "category",
+              "input": "method",
+              "content": [
+                {
+                  "key": "wcharm",
+                  "value": {
+                    "nodetype": "category",
+                    "input": "working_point",
+                    "content": [
+                      {
+                        "key": "L",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 4,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      1.008146,
+                                      1.02662,
+                                      1.058431,
+                                      1.0770600000000001,
+                                      1.088696,
+                                      1.128036,
+                                      1.3539569999999999
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            },
+                            {
+                              "key": 5,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      1.036314,
+                                      1.043839,
+                                      1.0866909999999999,
+                                      1.1199020000000002,
+                                      1.171905,
+                                      1.2904339999999999,
+                                      1.6292049999999998
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "M",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 4,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      1.036848,
+                                      1.0266629999999999,
+                                      1.085757,
+                                      1.13154,
+                                      1.09419,
+                                      1.099912,
+                                      1.476958
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            },
+                            {
+                              "key": 5,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      1.073647,
+                                      1.0519699999999998,
+                                      1.120656,
+                                      1.1827109999999998,
+                                      1.185344,
+                                      1.267138,
+                                      1.793784
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "T",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 4,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      1.119678,
+                                      1.0742559999999999,
+                                      1.102092,
+                                      1.1628319999999999,
+                                      1.116198,
+                                      0.997209,
+                                      1.3232849999999998
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            },
+                            {
+                              "key": 5,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      25.0,
+                                      30.0,
+                                      50.0,
+                                      70.0,
+                                      100.0,
+                                      130.0,
+                                      160.0,
+                                      250.0
+                                    ],
+                                    "content": [
+                                      1.192614,
+                                      1.106125,
+                                      1.143368,
+                                      1.222186,
+                                      1.222231,
+                                      1.1678950000000001,
+                                      1.640599
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "key": "incl",
+                  "value": {
+                    "nodetype": "category",
+                    "input": "working_point",
+                    "content": [
+                      {
+                        "key": "L",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.05909+-4.55831e-05*x+-3.8109e-08*x*x+-1.9541/x)*(1+(0.0283428+4.79798e-07*x+-4.99409e-10*x*x))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "M",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.19674+0.00011874*x+-1.89974e-07*x*x+-2.35069/x)*(1+(0.0807249+4.84389e-06*x+-6.69184e-09*x*x))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "T",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.32626+0.000644983*x+-6.56945e-07*x*x+-0.994515/x)*(1+(0.150866+3.39189e-05*x+-3.77817e-08*x*x))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "key": "down_correlated",
+            "value": {
+              "nodetype": "category",
+              "input": "method",
+              "content": [
+                {
+                  "key": "incl",
+                  "value": {
+                    "nodetype": "category",
+                    "input": "working_point",
+                    "content": [
+                      {
+                        "key": "L",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.05909+-4.55831e-05*x+-3.8109e-08*x*x+-1.9541/x)*(1-(0.0283076+4.82884e-07*x+-5.08093e-10*x*x))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "M",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.19674+0.00011874*x+-1.89974e-07*x*x+-2.35069/x)*(1-(0.0798047+4.81685e-06*x+-6.73041e-09*x*x))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "T",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.32626+0.000644983*x+-6.56945e-07*x*x+-0.994515/x)*(1-(0.147281+3.3976e-05*x+-3.8214e-08*x*x))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "key": "down_uncorrelated",
+            "value": {
+              "nodetype": "category",
+              "input": "method",
+              "content": [
+                {
+                  "key": "incl",
+                  "value": {
+                    "nodetype": "category",
+                    "input": "working_point",
+                    "content": [
+                      {
+                        "key": "L",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.05909+-4.55831e-05*x+-3.8109e-08*x*x+-1.9541/x)*(1-(0.00147324))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "M",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.19674+0.00011874*x+-1.89974e-07*x*x+-2.35069/x)*(1-(0.0123613))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "T",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.32626+0.000644983*x+-6.56945e-07*x*x+-0.994515/x)*(1-(0.0337102))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "key": "up_correlated",
+            "value": {
+              "nodetype": "category",
+              "input": "method",
+              "content": [
+                {
+                  "key": "incl",
+                  "value": {
+                    "nodetype": "category",
+                    "input": "working_point",
+                    "content": [
+                      {
+                        "key": "L",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.05909+-4.55831e-05*x+-3.8109e-08*x*x+-1.9541/x)*(1+(0.0283076+4.82884e-07*x+-5.08093e-10*x*x))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "M",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.19674+0.00011874*x+-1.89974e-07*x*x+-2.35069/x)*(1+(0.0798047+4.81685e-06*x+-6.73041e-09*x*x))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "T",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.32626+0.000644983*x+-6.56945e-07*x*x+-0.994515/x)*(1+(0.147281+3.3976e-05*x+-3.8214e-08*x*x))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "key": "up_uncorrelated",
+            "value": {
+              "nodetype": "category",
+              "input": "method",
+              "content": [
+                {
+                  "key": "incl",
+                  "value": {
+                    "nodetype": "category",
+                    "input": "working_point",
+                    "content": [
+                      {
+                        "key": "L",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.05909+-4.55831e-05*x+-3.8109e-08*x*x+-1.9541/x)*(1+(0.00147324))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "M",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.19674+0.00011874*x+-1.89974e-07*x*x+-2.35069/x)*(1+(0.0123613))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "T",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formula",
+                                        "expression": "(1.32626+0.000644983*x+-6.56945e-07*x*x+-0.994515/x)*(1+(0.0337102))",
+                                        "parser": "TFormula",
+                                        "variables": [
+                                          "pt"
+                                        ],
+                                        "parameters": []
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

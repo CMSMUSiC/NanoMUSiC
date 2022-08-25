@@ -1,21 +1,15 @@
 #ifndef JETRESOLUTION
 #define JETRESOLUTION
 
-#ifndef STANDALONE
-#define STANDALONE
-#endif
+#include <string>
 
 #include "TRandom3.h"
 
 #include "Tools/MConfig.hh"
 #include "BinnedMapping.hh"
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wattributes"
-//#include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
-#include "CondFormats/JetMETObjects/interface/JetResolutionObject.h"
-#include "JetMETCorrections/Modules/interface/JetResolution.h"
-#pragma GCC diagnostic pop
 
+// correction lib
+#include "correction.h"
 
 namespace pxl {
     class Particle;
@@ -35,13 +29,14 @@ class JetResolution{
         pxl::Particle* matchGenJet(const pxl::Particle* rec_jet, const std::vector<pxl::Particle*>& gen_jets, const double radius, const double npv) const;
 
     private:
-        double getResolution( double const pt, double const eta, double const rho, double const npv ) const;
-        double getResolutionSF( double const pt, double const eta, double const rho, double const npv, int const updown ) const;
+        double getResolution(double const jet_pt, double const jet_eta, double const rho) const;
+        double getResolutionSF(double const jet_eta, int const updown) const;
 
         TRandom3 m_rand;
 
-        JME::JetResolution m_resolutionPt;
-        JME::JetResolutionScaleFactor m_resolutionPt_sf;
+        std::unique_ptr<correction::CorrectionSet> m_resolution_correction_set;
+        correction::Correction::Ref  m_resolution_scale_factor;
+        correction::Correction::Ref  m_resolution;
 };
 
 #endif /*JETRESOLUTION*/

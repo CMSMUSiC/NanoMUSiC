@@ -22,11 +22,6 @@ Decision.
 #include "FatJetSelector.hh"
 #include "METSelector.hh"
 
-#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wattributes"
-#include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
-#pragma GCC diagnostic pop
 
 #include "GenSelector.hh"
 #include "EventCleaning.hh"

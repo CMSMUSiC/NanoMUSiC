@@ -9,15 +9,14 @@
 #include "Tools/MConfig.hh"
 #include "JetResolution.hh"
 #include "GenRecNameMap.hh"
-
-#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wattributes"
-#include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
-#pragma GCC diagnostic pop
 #include "SystematicsInfo.hh"
-#include "TH2D.h"
 #include "Tools.hh"
+
+#include "TH2D.h"
+
+
+// correction lib
+#include "correction.h"
 
 class TRandom3;
 
@@ -54,10 +53,14 @@ private:
    // New recipe:
    // https://twiki.cern.ch/twiki/bin/view/CMS/JECUncertaintySources?rev=19#Code_example
    std::string const m_jecType;
-   JetCorrectorParameters const m_jecPara;
-   JetCorrectorParameters const m_fatjecPara;
-   JetCorrectionUncertainty m_jecUnc;
-   JetCorrectionUncertainty m_fatjecUnc;
+   // JetCorrectorParameters const m_jecPara;
+   // JetCorrectorParameters const m_fatjecPara;
+   // JetCorrectionUncertainty m_jecUnc;
+   // JetCorrectionUncertainty m_fatjecUnc;
+   std::unique_ptr<correction::CorrectionSet> m_jec_correction_set;
+   std::unique_ptr<correction::CorrectionSet> m_fat_jec_correction_set;
+   correction::Correction::Ref  m_jecUnc;
+   correction::Correction::Ref  m_fatjecUnc;
    JetResolution m_jetRes;
    JetResolution m_fatjetRes;
 

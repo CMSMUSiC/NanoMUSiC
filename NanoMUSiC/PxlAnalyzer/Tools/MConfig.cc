@@ -53,15 +53,15 @@ void MConfig::setYear(std::string year, std::vector<std::string> possibleYears)
    undesirableYears.erase(std::remove(undesirableYears.begin(), undesirableYears.end(), year), undesirableYears.end());
 
    // add "." to each year
-   year = year + ".";
+   auto year_ = year + ".";
    for (auto &uy : undesirableYears)
    {
       uy = uy + ".";
    }
 
-   for (auto const &u_year : undesirableYears)
+   for (const auto &u_year : undesirableYears)
    {
-      for (auto const &item_ : m_configMap)
+      for (const auto &item_ : m_configMap)
       {
          auto key = item_.first;
          if (key.find(u_year) == 0)
@@ -75,10 +75,10 @@ void MConfig::setYear(std::string year, std::vector<std::string> possibleYears)
    // Example:
    // <year>.foo.bar = 123
    // foo.bar = 123 <-- this should be removed
-   for (auto const &item_ : m_configMap)
+   for (const auto &item_ : m_configMap)
    {
       auto key = item_.first;
-      if (key.find(year, 0) == 0)
+      if (key.find(year_, 0) == 0)
       {
          auto temp_key = key;
          boost::replace_first(temp_key, year, "");
@@ -94,10 +94,10 @@ void MConfig::setYear(std::string year, std::vector<std::string> possibleYears)
    // <year>.foo.bar = 123 --> foo.bar = 123
    std::vector<std::pair<std::string, std::string>> to_add;
    std::vector<std::string> to_remove;
-   for (auto const &[key, val] : m_configMap)
+   for (const auto &[key, val] : m_configMap)
    {
       // std::cout << key << " : " << val << std::endl;
-      if (key.find(year, 0) == 0)
+      if (key.find(year_, 0) == 0)
       {
          auto temp_key = key;
          boost::replace_first(temp_key, year, "");
@@ -107,16 +107,19 @@ void MConfig::setYear(std::string year, std::vector<std::string> possibleYears)
    }
 
    // remove stuff
-   for (auto const &kv : to_remove)
+   for (const auto &kv : to_remove)
    {
       RemoveItem(kv);
    }
 
    // add stuff
-   for (auto const &kv : to_add)
+   for (const auto &kv : to_add)
    {
       AddItem(kv.first, kv.second);
    }
+
+   // finally add year configuration parameter
+   AddItem("year", year);
 }
 
 bool MConfig::RemoveItem(const string &itemtag)

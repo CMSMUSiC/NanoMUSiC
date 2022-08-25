@@ -28,7 +28,8 @@ Jet.Rho.Label = "fixedGridRhoFastjetAll"
 # https://twiki.cern.ch/twiki/bin/view/CMS/JECUncertaintySources?rev=29#2012_JEC
 #https://twiki.cern.ch/twiki/bin/view/CMS/JECUncertaintySources (r58)
 Jet.Error.JESType = "Total"
-Jet.Error.JESFile = "$MUSIC_BASE/ConfigFiles/ConfigInputs/Summer19UL17_V5_MC_UncertaintySources_AK4PFchs.txt"
+# Jet.Error.JESFile = "$MUSIC_BASE/ConfigFiles/ConfigInputs/jsonPOG/JME/2017_UL/jet_jerc.json"
+# Jet.Error.JESFile = "$MUSIC_BASE/ConfigFiles/ConfigInputs/Summer19UL17_V5_MC_UncertaintySources_AK4PFchs.txt"
 Jet.Error.Fakes = 0.0
 # If Jet.ID.use = False, use the following selection:
 # PFJetID (LOOSE):
@@ -132,8 +133,10 @@ Jet.BJets.Type.Rec = "b"
 Jet.Resolutions.Corr.use = 1
 
 #https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution?rev=50
-Jet.Resolution.UnmatchedFile = "$MUSIC_BASE/ConfigFiles/ConfigInputs/Summer19UL17_JRV2_MC_PtResolution_AK4PFchs.txt" #UPDATED TO UL17
-Jet.Resolution.SFFile = "$MUSIC_BASE/ConfigFiles/ConfigInputs/Summer19UL17_JRV2_MC_SF_AK4PFchs.txt"
+Jet.JSONFile = "$MUSIC_BASE/ConfigFiles/ConfigInputs/jsonPOG/JME/2017_UL/jet_jerc.json"
+# Jet.Resolution.UnmatchedFile = "$MUSIC_BASE/ConfigFiles/ConfigInputs/Summer19UL17_JRV2_MC_PtResolution_AK4PFchs.txt" #UPDATED TO UL17
+# Jet.Resolution.UnmatchedFile = "$MUSIC_BASE/ConfigFiles/ConfigInputs/Summer19UL17_JRV2_MC_PtResolution_AK4PFchs.txt" #UPDATED TO UL17
+# Jet.Resolution.SFFile = "$MUSIC_BASE/ConfigFiles/ConfigInputs/Summer19UL17_JRV2_MC_SF_AK4PFchs.txt"
 
 
 # If true, the given eta values are considered abolute.
