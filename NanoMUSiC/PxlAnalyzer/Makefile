@@ -75,67 +75,32 @@ ROOT_CFLAGS  := $(shell root-config --cflags)
 ROOT_LDFLAGS := $(shell root-config --ldflags)
 ROOT_GLIBS   := $(shell root-config --libs)
 
-# Paths for CMSSW libraries:
-ifndef CMSSW_RELEASE_BASE
-$(error ERROR: CMSSW libraries not found - Source CMSSW)
-endif
-CMSSW_DCAP_BASE  := $(shell cat $(CMSSW_RELEASE_BASE)/config/toolbox/$(SCRAM_ARCH)/tools/selected/dcap.xml | grep 'name="DCAP_BASE"' | sed -e 's/.*default="//' | sed -e 's/"\/>//')
-CMSSW_BOOST_BASE := $(shell cat $(CMSSW_RELEASE_BASE)/config/toolbox/$(SCRAM_ARCH)/tools/selected/boost.xml | grep 'name="BOOST_BASE"' | sed -e 's/.*default="//' | sed -e 's/"\/>//')
-CMSSW_GSL_BASE   := $(shell cat $(CMSSW_RELEASE_BASE)/config/toolbox/$(SCRAM_ARCH)/tools/selected/gsl.xml | grep 'name="GSL_BASE"' | sed -e 's/.*default="//' | sed -e 's/"\/>//')
 
-# If you're using a patched CMSSW release, some of the libs are still in the base release, so you also have to look there.
-CMSSW_RELEASE_BASE_NOPATCH := $(shell echo $(CMSSW_RELEASE_BASE) | sed -e 's/-patch//' -e 's/_patch.//')
+# LCG Base dir
+LCG_BASE := /cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt
 
-CMSSW_LIB_PATHS := -L$(CMSSW_BASE)/lib/$(SCRAM_ARCH)
-CMSSW_LIB_PATHS += -L$(CMSSW_RELEASE_BASE)/lib/$(SCRAM_ARCH)
-CMSSW_LIB_PATHS += -L$(CMSSW_RELEASE_BASE_NOPATCH)/lib/$(SCRAM_ARCH)
-CMSSW_LIB_PATHS += -L$(CMSSW_DCAP_BASE)/lib
-CMSSW_LIB_PATHS += -L$(CMSSW_GSL_BASE)/lib
-CMSSW_LIB_PATHS += -L$(CMSSW_BOOST_BASE)/lib
-
-CMSSW_LIBS += -lCondFormatsJetMETObjects
-CMSSW_LIBS += -lJetMETCorrectionsModules
-CMSSW_LIBS += -lPhysicsToolsUtilities
-CMSSW_LIBS += -lCondFormatsBTauObjects
-CMSSW_LIBS += -lCondToolsBTau
-CMSSW_LIBS += -ldcap
-CMSSW_LIBS += -lgsl
-CMSSW_LIBS += -lgslcblas
-#The first two lines below are needed for CMSSW_10_6_X. Maybe not for previous versions
-CMSSW_LIBS += -lboost_system
-CMSSW_LIBS += -lboost_thread
-CMSSW_LIBS += -lboost_filesystem
-CMSSW_LIBS += -lboost_date_time
-CMSSW_LIBS += -lboost_serialization
-CMSSW_LIBS += -lboost_program_options
-CMSSW_LIBS += -lFWCoreUtilities
-
-# For the headers there are symlinks.
-CMSSW_INC_PATHS := -isystem$(CMSSW_BASE)/src
-CMSSW_INC_PATHS += -isystem$(CMSSW_RELEASE_BASE)/src
-CMSSW_INC_PATHS += -isystem$(CMSSW_DCAP_BASE)/include
-CMSSW_INC_PATHS += -isystem$(CMSSW_BOOST_BASE)/include
-CMSSW_INC_PATHS += -isystem$(CMSSW_GSL_BASE)/include
-CMSSW_INC_PATHS += -isystem$(LIBS3A)/include
-
-#no nice way to get this automated
-ifeq ($(SCRAM_ARCH),slc7_amd64_gcc700)
-LHAPDF_BASE := /cvmfs/cms.cern.ch/slc7_amd64_gcc700/external/lhapdf/6.2.1-omkpbe2
-else ifeq ($(SCRAM_ARCH),slc6_amd64_gcc700)
-LHAPDF_BASE := /cvmfs/cms.cern.ch/slc6_amd64_gcc700/external/lhapdf/6.2.1-omkpbe2
-else ifeq ($(SCRAM_ARCH),slc7_amd64_gcc530)
-LHAPDF_BASE :=/cvmfs/cms.cern.ch/slc7_amd64_gcc493/external/lhapdf/6.1.5-kpegke
-else ifeq ($(SCRAM_ARCH),slc6_amd64_gcc530)
-LHAPDF_BASE :=/cvmfs/cms.cern.ch/slc6_amd64_gcc493/external/lhapdf/6.1.5-kpegke2
-else ifeq ($(SCRAM_ARCH),slc7_amd64_gcc820)
-LHAPDF_BASE :=/cvmfs/cms.cern.ch/slc7_amd64_gcc820/external/lhapdf/6.2.1-nmpfii3
-else
-$(error ERROR: Please specify a LHA path for this scram arch (probably /cvmfs/cms.cern.ch/SCRAM_ARCH/external/lhapdf/VERSION))
-endif
-
-LHAPDF_LIB_PATH := -L$(LHAPDF_BASE)/lib
-LHAPDF_INC_PATH := -I$(LHAPDF_BASE)/include
+LHAPDF_LIB_PATH := -L$(LCG_BASE)/lib
+LHAPDF_INC_PATH := -I$(-I)/include/LHAPDF
 LHAPDF_LIB := -lLHAPDF
+
+LCG_INC_PATHS := -I$(LCG_BASE)/include
+BOOST_INC_PATHS += -I$(LCG_BASE)/include/boost
+GSL_INC_PATHS += -I$(LCG_BASE)/include/gsl
+LIBS3A_INC_PATHS := -I$(LIBS3A)/include
+
+LCG_LIB_PATHS := -L$(LCG_BASE)/lib
+LCG_LIB_PATHS += -L$(LCG_BASE)/lib64
+
+LCG_LIBS := -ldcap
+LCG_LIBS += -lgsl
+LCG_LIBS += -lgslcblas
+LCG_LIBS += -lboost_system
+LCG_LIBS += -lboost_thread
+LCG_LIBS += -lboost_filesystem
+LCG_LIBS += -lboost_date_time
+LCG_LIBS += -lboost_serialization
+LCG_LIBS += -lboost_program_options
+
 
 # PXL interfaces
 PXL_INC_PATH := -I$(PXLANA)/$(PXLDIR)/src
@@ -145,8 +110,8 @@ TOOLS_INC_PATH := -I$(PXLANA)/Tools
 TOOLS_INC_PATH += -I$(PXLANA)/include
 
 # Gather all additional flags
-EXTRA_CFLAGS  := -ffloat-store $(PXL_INC_PATH) $(TOOLS_INC_PATH) $(CMSSW_INC_PATHS) $(LHAPDF_INC_PATH) -DPXL_ENABLE_DCAP -DSTANDALONE
-EXTRA_LDFLAGS := $(CMSSW_LIB_PATHS) $(CMSSW_LIBS) $(LHAPDF_LIB_PATH) $(LHAPDF_LIB)
+EXTRA_CFLAGS  := -ffloat-store $(PXL_INC_PATH) $(TOOLS_INC_PATH) $(LCG_INC_PATHS) $(LHAPDF_INC_PATH) $(BOOST_INC_PATHS) $(GSL_INC_PATHS) $(LIBS3A_INC_PATHS) -DPXL_ENABLE_DCAP -DSTANDALONE
+EXTRA_LDFLAGS := $(LCG_LIB_PATHS) $(LCG_LIBS) $(LHAPDF_LIB_PATH) $(LHAPDF_LIB)
 
 CC := g++
 CFLAGS	:= -O3 -Wall -std=gnu++17
@@ -210,7 +175,7 @@ all: $(OBJECTS)
 clean:
 	@rm -f $(MUSIC) $(OBJECTS) $(DEPENDS) $(GCDAS)
 	@rm -rf bin
-	@rm PxlAnalyzer.d
+	@rm -rf PxlAnalyzer.d
 
 # $(MUSIC): $(filter-out $(PRINTER).o, $(TEMP_OBJS))
 # 	@echo "Building $@ ..."

@@ -130,7 +130,7 @@ int EleSelector::passObjectSelection(pxl::Particle *ele,
       {
          eleEt = ele->getUserRecord("SCEt");
       }
-      catch (std::runtime_error)
+      catch (std::runtime_error &)
       {
          // Do nothing, simply use the Et from the pxl::Particle.
       }
@@ -551,7 +551,7 @@ bool EleSelector::passlooseHEEPID(pxl::Particle const *ele,
    {
       ele_innerLayerLostHits = ele->getUserRecord("NMissingHits: ");
    }
-   catch (std::runtime_error)
+   catch (std::runtime_error &)
    {
       ele_innerLayerLostHits = ele->getUserRecord("NinnerLayerLostHits");
    }
@@ -698,7 +698,7 @@ bool EleSelector::passtightHEEPID(pxl::Particle const *ele,
    {
       ele_innerLayerLostHits = ele->getUserRecord("NMissingHits: ");
    }
-   catch (std::runtime_error)
+   catch (std::runtime_error &)
    {
       ele_innerLayerLostHits = ele->getUserRecord("NinnerLayerLostHits");
    }

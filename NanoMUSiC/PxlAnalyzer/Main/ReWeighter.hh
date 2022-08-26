@@ -5,9 +5,8 @@ namespace Tools {
    class MConfig;
 }
 
-// CMSSW include:
-#include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
-
+// correction lib
+#include "correction.h"
 
 class ReWeighter {
 public:
@@ -19,12 +18,15 @@ public:
    static void adaptConfig( Tools::MConfig& config, const std::string& filename );
 
 private:
-   std::string dataname;
-   std::string mcname;
-   std::string datahistname;
-   std::string mchistname;
+   // std::string dataname;
+   // std::string mcname;
+   // std::string datahistname;
+   // std::string mchistname;
    int m_syst;
-   edm::LumiReWeighting m_LumiWeights;
+   std::unique_ptr<correction::CorrectionSet> m_pu_correction_set;
+   correction::Correction::Ref  m_pu_correction;
+   std::string m_year;
+   std::string m_json_pu_file;
    const bool m_useGenWeights;
    const bool m_useREcoVertices;
    const bool m_usePileUpReWeighting;

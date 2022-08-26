@@ -69,42 +69,31 @@ ROOT_CFLAGS  := $(shell root-config --cflags)
 ROOT_LDFLAGS := $(shell root-config --ldflags)
 ROOT_GLIBS   := $(shell root-config --libs)
 
-ifndef CMSSW_RELEASE_BASE
-   $(error Error: CMSSW libraries not found!)
-endif
 
-# Paths for CMSSW libraries:
-CMSSW_DCAP_BASE  := $(shell cat $(CMSSW_RELEASE_BASE)/config/toolbox/$(SCRAM_ARCH)/tools/selected/dcap.xml | grep 'name="DCAP_BASE"' | sed -e 's/.*default="//' | sed -e 's/"\/>//')
-CMSSW_BOOST_BASE := $(shell cat $(CMSSW_RELEASE_BASE)/config/toolbox/$(SCRAM_ARCH)/tools/selected/boost.xml | grep 'name="BOOST_BASE"' | sed -e 's/.*default="//' | sed -e 's/"\/>//')
-CMSSW_GSL_BASE   := $(shell cat $(CMSSW_RELEASE_BASE)/config/toolbox/$(SCRAM_ARCH)/tools/selected/gsl.xml | grep 'name="GSL_BASE"' | sed -e 's/.*default="//' | sed -e 's/"\/>//')
+# LCG Base dir
+LCG_BASE := /cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt
 
-# If you're using a patched CMSSW release, some of the libs are still in the base release, so you also have to look there.
-CMSSW_RELEASE_BASE_NOPATCH := $(shell echo $(CMSSW_RELEASE_BASE) | sed -e 's/-patch//' -e 's/_patch.//')
+LHAPDF_LIB_PATH := -L$(LCG_BASE)/lib
+LHAPDF_INC_PATH := -I$(-I)/include/LHAPDF
+LHAPDF_LIB := -lLHAPDF
 
-CMSSW_LIB_PATHS := -L$(CMSSW_BASE)/lib/$(SCRAM_ARCH)
-CMSSW_LIB_PATHS += -L$(CMSSW_RELEASE_BASE)/lib/$(SCRAM_ARCH)
-CMSSW_LIB_PATHS += -L$(CMSSW_RELEASE_BASE_NOPATCH)/lib/$(SCRAM_ARCH)
-CMSSW_LIB_PATHS += -L$(CMSSW_DCAP_BASE)/lib
-CMSSW_LIB_PATHS += -L$(CMSSW_GSL_BASE)/lib
-CMSSW_LIB_PATHS += -L$(CMSSW_BOOST_BASE)/lib
+LCG_INC_PATHS := -I$(LCG_BASE)/include
+BOOST_INC_PATHS += -I$(LCG_BASE)/include/boost
+GSL_INC_PATHS += -I$(LCG_BASE)/include/gsl
+LIBS3A_INC_PATHS := -I$(LIBS3A)/include
 
-CMSSW_LIBS += -lCondFormatsJetMETObjects
-CMSSW_LIBS += -lPhysicsToolsUtilities
-CMSSW_LIBS += -ldcap
-CMSSW_LIBS += -lgsl
-CMSSW_LIBS += -lgslcblas
-CMSSW_LIBS += -lboost_filesystem
-CMSSW_LIBS += -lboost_date_time
-CMSSW_LIBS += -lboost_serialization
-CMSSW_LIBS += -lboost_program_options
+LCG_LIB_PATHS := -L$(LCG_BASE)/lib
+LCG_LIB_PATHS += -L$(LCG_BASE)/lib64
 
-# For the headers there are symlinks.
-CMSSW_INC_PATHS := -isystem$(CMSSW_BASE)/src
-CMSSW_INC_PATHS += -isystem$(CMSSW_RELEASE_BASE)/src
-CMSSW_INC_PATHS += -isystem$(CMSSW_DCAP_BASE)/include
-CMSSW_INC_PATHS += -isystem$(CMSSW_BOOST_BASE)/include
-CMSSW_INC_PATHS += -isystem$(CMSSW_GSL_BASE)/include
-CMSSW_INC_PATHS += -isystem$(LIBS3A)/include
+LCG_LIBS := -ldcap
+LCG_LIBS += -lgsl
+LCG_LIBS += -lgslcblas
+LCG_LIBS += -lboost_system
+LCG_LIBS += -lboost_thread
+LCG_LIBS += -lboost_filesystem
+LCG_LIBS += -lboost_date_time
+LCG_LIBS += -lboost_serialization
+LCG_LIBS += -lboost_program_options
 
 EXTRA_CFLAGS  := -ffloat-store $(CMSSW_INC_PATHS) $(LHAPDF_INC_PATH)
 EXTRA_LDFLAGS := $(CMSSW_LIB_PATHS) $(CMSSW_LIBS) $(LHAPDF_LIB_PATH) $(LHAPDF_LIB)

@@ -10,6 +10,14 @@
 
 #include "ConvolutionComputer.hh"
 
+// https://github.com/bshoshany/thread-pool
+#include "BS_thread_pool.hh"
+
+#include <chrono>
+// https://github.com/p-ranav/indicators
+#include "indicators.hh" 
+#include <thread>
+
 typedef struct {
     // "private" entries
     uint8_t _version;

@@ -65,17 +65,30 @@ ROOT_CFLAGS  := $(shell root-config --cflags)
 ROOT_LDFLAGS := $(shell root-config --ldflags)
 ROOT_GLIBS   := $(shell root-config --libs)
 
-CMSSW_BOOST_BASE := $(shell cat $(CMSSW_RELEASE_BASE)/config/toolbox/$(SCRAM_ARCH)/tools/selected/boost.xml | grep 'name="BOOST_BASE"' | sed -e 's/.*default="//' | sed -e 's/"\/>//')
-CMSSW_GSL_BASE   := $(shell cat $(CMSSW_RELEASE_BASE)/config/toolbox/$(SCRAM_ARCH)/tools/selected/gsl.xml | grep 'name="GSL_BASE"' | sed -e 's/.*default="//' | sed -e 's/"\/>//')
+# LCG Base dir
+LCG_BASE := /cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt
 
-CMSSW_LIB_PATHS += -L$(CMSSW_BOOST_BASE)/lib
-CMSSW_LIB_PATHS += -L$(CMSSW_GSL_BASE)/lib
+LHAPDF_LIB_PATH := -L$(LCG_BASE)/lib
+LHAPDF_INC_PATH := -I$(-I)/include/LHAPDF
+LHAPDF_LIB := -lLHAPDF
 
-CMSSW_INC_PATHS += -isystem$(CMSSW_BOOST_BASE)/include
-CMSSW_INC_PATHS += -isystem$(CMSSW_GSL_BASE)/include
+LCG_INC_PATHS := -I$(LCG_BASE)/include
+BOOST_INC_PATHS += -I$(LCG_BASE)/include/boost
+GSL_INC_PATHS += -I$(LCG_BASE)/include/gsl
+LIBS3A_INC_PATHS := -I$(LIBS3A)/include
 
-CMSSW_LIBS += -lgsl
-CMSSW_LIBS += -lgslcblas
+LCG_LIB_PATHS := -L$(LCG_BASE)/lib
+LCG_LIB_PATHS += -L$(LCG_BASE)/lib64
+
+LCG_LIBS := -ldcap
+LCG_LIBS += -lgsl
+LCG_LIBS += -lgslcblas
+LCG_LIBS += -lboost_system
+LCG_LIBS += -lboost_thread
+LCG_LIBS += -lboost_filesystem
+LCG_LIBS += -lboost_date_time
+LCG_LIBS += -lboost_serialization
+LCG_LIBS += -lboost_program_options
 
 CC	:= g++
 CFLAGS	:= -Wall -Wextra -std=c++17 -g
@@ -97,13 +110,16 @@ endif
 
 CFLAGS  += -Iinclude/rapidjson
 CFLAGS  += -Iinclude
-CFLAGS  += $(CMSSW_INC_PATHS)
+CFLAGS  += $(LCG_INC_PATHS)
+CFLAGS  += $(BOOST_INC_PATHS)
+CFLAGS  += $(GSL_INC_PATHS)
+CFLAGS  += $(LIBS3A_INC_PATHS)
 CFLAGS  += $(ROOT_CFLAGS)
-CFLAGS  += -lboost_filesystem
-CFLAGS  += -lboost_program_options
+# CFLAGS  += -lboost_filesystem
+# CFLAGS  += -lboost_program_options
 
-LDFLAGS  += $(CMSSW_LIB_PATHS)
-LDFLAGS  += $(CMSSW_LIBS)
+LDFLAGS  += $(LCG_LIB_PATHS)
+LDFLAGS  += $(LCG_LIBS)
 LDFLAGS  += $(ROOT_LDFLAGS)
 LDFLAGS  += $(ROOT_GLIBS)
 LDFLAGS  += -lboost_filesystem

@@ -9,28 +9,30 @@ ReWeighter::ReWeighter(const Tools::MConfig &cutconfig, int i) : m_useGenWeights
                                                                  m_useREcoVertices(cutconfig.GetItem<bool>("Pileup.UseRecoVertices")),
                                                                  m_usePileUpReWeighting(cutconfig.GetItem<bool>("Pileup.UsePileupReWeighting")),
                                                                  m_quietMode(cutconfig.GetItem<bool>("Pileup.QuietMode", false)),
-                                                                 m_init(false)
+                                                                 m_init(false),
+                                                                 m_year(cutconfig.GetItem<std::string>("year")),
+                                                                 m_json_pu_file(Tools::AbsolutePath(cutconfig.GetItem<std::string>("Pileup.JSONFile")))
 {
-   dataname = (std::string)Tools::ExpandPath(cutconfig.GetItem<std::string>("Pileup.DataHistFile"));
-   mcname = (std::string)Tools::ExpandPath(cutconfig.GetItem<std::string>("Pileup.GenHistFile"));
-   datahistname = cutconfig.GetItem<std::string>("Pileup.DataHistName");
-   mchistname = cutconfig.GetItem<std::string>("Pileup.GenHistName");
+   // dataname = (std::string)Tools::ExpandPath(cutconfig.GetItem<std::string>("Pileup.DataHistFile"));
+   // mcname = (std::string)Tools::ExpandPath(cutconfig.GetItem<std::string>("Pileup.GenHistFile"));
+   // datahistname = cutconfig.GetItem<std::string>("Pileup.DataHistName");
+   // mchistname = cutconfig.GetItem<std::string>("Pileup.GenHistName");
    m_syst = 0;
 
    if (i >= 1)
    {
-      dataname = Tools::ExpandPath(cutconfig.GetItem<std::string>("Pileup.DataHistFileUp"));
-      mcname = Tools::ExpandPath(cutconfig.GetItem<std::string>("Pileup.GenHistFileUp"));
-      datahistname = cutconfig.GetItem<std::string>("Pileup.DataHistNameUp");
-      mchistname = cutconfig.GetItem<std::string>("Pileup.GenHistNameUp");
+      // dataname = Tools::ExpandPath(cutconfig.GetItem<std::string>("Pileup.DataHistFileUp"));
+      // mcname = Tools::ExpandPath(cutconfig.GetItem<std::string>("Pileup.GenHistFileUp"));
+      // datahistname = cutconfig.GetItem<std::string>("Pileup.DataHistNameUp");
+      // mchistname = cutconfig.GetItem<std::string>("Pileup.GenHistNameUp");
       m_syst = 1;
    }
    if (i <= -1)
    {
-      dataname = Tools::ExpandPath(cutconfig.GetItem<std::string>("Pileup.DataHistFileDown"));
-      mcname = Tools::ExpandPath(cutconfig.GetItem<std::string>("Pileup.GenHistFileDown"));
-      datahistname = cutconfig.GetItem<std::string>("Pileup.DataHistNameDown");
-      mchistname = cutconfig.GetItem<std::string>("Pileup.GenHistNameDown");
+      // dataname = Tools::ExpandPath(cutconfig.GetItem<std::string>("Pileup.DataHistFileDown"));
+      // mcname = Tools::ExpandPath(cutconfig.GetItem<std::string>("Pileup.GenHistFileDown"));
+      // datahistname = cutconfig.GetItem<std::string>("Pileup.DataHistNameDown");
+      // mchistname = cutconfig.GetItem<std::string>("Pileup.GenHistNameDown");
       m_syst = -1;
    }
 }
@@ -40,18 +42,27 @@ void ReWeighter::init()
    // if true Pileup weights will not be dumped to stdout when read
    if (m_quietMode)
       std::cout.setstate(std::ios_base::failbit);
-   m_LumiWeights = edm::LumiReWeighting(mcname,
-                                        dataname,
-                                        mchistname,
-                                        datahistname);
-   TFile *temp_mc_file = new TFile(mcname.c_str(), "READ");
-   TH1F *temp_mc_hist = (TH1F *)temp_mc_file->Get(mchistname.c_str());
-   m_max_gen_vertices = temp_mc_hist->GetXaxis()->GetBinUpEdge(temp_mc_hist->FindLastBinAbove(0));
-   if (m_quietMode)
-      std::cout.clear();
-   delete temp_mc_hist;
-   temp_mc_file->Close();
-   delete temp_mc_file;
+   // m_pu_correction_set = edm::LumiReWeighting(mcname,
+   //                                      dataname,
+   //                                      mchistname,
+   //                                      datahistname);
+   m_pu_correction_set = correction::CorrectionSet::from_file(m_json_pu_file);
+
+   std::map<std::string, std::string> pu_key = {
+       {"2016APV", "Collisions16_UltraLegacy_goldenJSON"},
+       {"2016", "Collisions16_UltraLegacy_goldenJSON"},
+       {"2017", "Collisions17_UltraLegacy_goldenJSON"},
+       {"2018", "Collisions17_UltraLegacy_goldenJSON"},
+   };
+   m_pu_correction = m_pu_correction_set->at(pu_key[m_year]);
+   // TFile *temp_mc_file = new TFile(mcname.c_str(), "READ");
+   // TH1F *temp_mc_hist = (TH1F *)temp_mc_file->Get(mchistname.c_str());
+   // m_max_gen_vertices = temp_mc_hist->GetXaxis()->GetBinUpEdge(temp_mc_hist->FindLastBinAbove(0));
+   // if (m_quietMode)
+   //    std::cout.clear();
+   // delete temp_mc_hist;
+   // temp_mc_file->Close();
+   // delete temp_mc_file;
    m_init = true;
 }
 
@@ -87,19 +98,17 @@ void ReWeighter::ReWeightEvent(pxl::Event *event)
          numVerticesPUTrue = m_max_gen_vertices - 0.1;
       }
 
-      double const pileupWeight = m_LumiWeights.weight(numVerticesPUTrue);
-
       if (m_syst == 1)
       {
-         GenEvtView->setUserRecord("PUWeightUp", pileupWeight);
+         GenEvtView->setUserRecord("PUWeightUp", m_pu_correction->evaluate({numVerticesPUTrue, "nominal"}));
       }
       if (m_syst == -1)
       {
-         GenEvtView->setUserRecord("PUWeightDown", pileupWeight);
+         GenEvtView->setUserRecord("PUWeightDown", m_pu_correction->evaluate({numVerticesPUTrue, "down"}));
       }
       if (m_syst == 0)
       {
-         GenEvtView->setUserRecord("PUWeight", pileupWeight);
+         GenEvtView->setUserRecord("PUWeight", m_pu_correction->evaluate({numVerticesPUTrue, "up"}));
       }
    }
    else

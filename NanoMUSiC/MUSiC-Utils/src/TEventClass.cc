@@ -547,7 +547,7 @@ void TEventClass::setPDFWeights( const string &process, const std::map< std::str
 //---------------Scale Histos to Lumi -----------------------------------------------------------
 
 void TEventClass::scaleAllHistograms( double relativeFactor ) {
-   for ( const std::string process : m_globalProcessList ) {
+   for ( const std::string &process : m_globalProcessList ) {
       // Absolute scaling does not make sense for all the various processes,
       // so we assume relative scaling.
       scaleAllHistogramsForProcess( process, relativeFactor, /*is_absolute=*/ false );
@@ -647,7 +647,7 @@ void TEventClass::scaleAllCrossSections( double factor ) {
         throw runtime_error( "Changing cross section for data does not make sense." );
     }
 
-    for( const std::string process : m_globalProcessList) {
+    for( const std::string &process : m_globalProcessList) {
         double new_cross_section = m_crossSection.at( process ) * factor;
         changeCrossSection( process, new_cross_section );
     }
@@ -665,7 +665,7 @@ void TEventClass::scale( const double totalXsec ){
    }
 
    // change the scale factor/cross sections for the whole global process list
-   for( const std::string process : m_globalProcessList) {
+   for( const std::string &process : m_globalProcessList) {
 
       // Save the total cross section for reference (used as safety-feature
       // when merging event classes).
@@ -898,7 +898,7 @@ void TEventClass::Browse( TBrowser* browser ){
    AddToFolder( browser, "resolutions", m_resolutionsMap );
 
    TFolder* dicedDataFolder = new TFolder( "diced", "diced" );
-   for( const std::string distType : getDistTypes() ){
+   for( const std::string &distType : getDistTypes() ){
       if ( hasDataScan( distType ) ){
          TFolder* distTypeFolder = new TFolder( distType.c_str(), distType.c_str() );
          for( int i=0; i < getNsignalRounds( distType ); ++i ){

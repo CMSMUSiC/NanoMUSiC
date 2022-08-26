@@ -1,44 +1,11 @@
 #!/bin/bash
 
-if [ -z "$1" ]; then
-      echo "ERROR: Please, set the CMSSW version, your architecture and your CERN username."
-      echo "ERROR: Example: ./setup_music.sh CMSSW_10_6_29 slc7_amd64_gcc700 your_CERN_username"
-      exit 1
-fi
-
-if [ -z "$2" ]; then
-      echo "ERROR: Please, set the CMSSW version, your architecture and your CERN username."
-      echo "ERROR: Example: ./setup_music.sh CMSSW_10_6_29 slc7_amd64_gcc700 your_CERN_username"
-      exit 1
-fi
-
-if [ -z "$3" ]; then
-      echo "ERROR: Please, set the CMSSW version, your architecture and your CERN username."
-      echo "ERROR: Example: ./setup_music.sh CMSSW_10_6_29 slc7_amd64_gcc700 your_CERN_username"
-      exit 1
-fi
+# Set up the LCG environment
+# List of available software:
+# https://lcginfo.cern.ch/release_packages/x86_64-centos7-gcc11-opt/102/
+source /cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/setup.sh
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-
-# Set up the CMSSW environment
-echo "INFO: Always check the latest recommendations for CMSSW version."
-echo "INFO: https://twiki.cern.ch/twiki/bin/view/CMS/PdmVRun2LegacyAnalysis"
-echo ""
-
-# Set CMSSW version
-CMSSW_VER=$1
-MY_SCRAM_ARCH=$2
-
-# Set up CMSSW
-cd $SCRIPT_DIR
-source /cvmfs/cms.cern.ch/cmsset_default.sh
-cd /cvmfs/cms.cern.ch/$MY_SCRAM_ARCH/cms/cmssw/$CMSSW_VER/ 
-cmsenv
-CMSSW_RELEASE_BASE=/cvmfs/cms.cern.ch/$MY_SCRAM_ARCH/cms/cmssw/$CMSSW_VER/
-
-echo "CMSSWRELEASE BASE: $CMSSW_RELEASE_BASE"
-echo " "
-cd $SCRIPT_DIR
 
 # create links for libaries
 mkdir -p lib/python
@@ -57,11 +24,4 @@ cd correctionlib
 make PYTHON=python
 make install
 
-# Create music_env.config
 cd $SCRIPT_DIR
-touch music_env.config
-echo "" > music_env.config
-echo "export CERNUSERNAME=$3" >> music_env.config
-echo "export CMSSW_VER=$CMSSW_VER" >> music_env.config
-echo "export MY_SCRAM_ARCH=$MY_SCRAM_ARCH" >> music_env.config
-echo "export CMSSW_RELEASE_BASE=/cvmfs/cms.cern.ch/$MY_SCRAM_ARCH/cms/cmssw/$CMSSW_VER/" >> music_env.config
