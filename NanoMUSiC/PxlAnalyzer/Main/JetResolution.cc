@@ -36,9 +36,11 @@ JetResolution::JetResolution(
 
    // FIXME: Summer19UL17_JRV2_MC does not includes Scale Factors for AK8Puppi jets#30
    // https://github.com/CMSMUSiC/NanoMUSiC/issues/30
-   if (jetType == "FatJet")
+   if (year == "2017" && jetType == "FatJet")
    {
       sf_key["2017"] = "Summer19UL18_JRV2_MC_ScaleFactor_" + algo;
+      auto json_file_2018 = Tools::AbsolutePath(config.GetItem<std::string>(jetType + ".JSONFile.2018"));
+      m_resolution_correction_set = correction::CorrectionSet::from_file(json_file_2018);
    }
 
    m_resolution_scale_factor = m_resolution_correction_set->at(sf_key[year]);
@@ -52,12 +54,12 @@ JetResolution::JetResolution(
    };
    // FIXME: Summer19UL17_JRV2_MC does not includes Scale Factors for AK8Puppi jets#30
    // https://github.com/CMSMUSiC/NanoMUSiC/issues/30
-   if (jetType == "FatJet")
+   if (year == "2017" && jetType == "FatJet")
    {
-      sf_key["2017"] = "Summer19UL18_JRV2_MC_PtResolution_" + algo;
-
-      m_resolution = m_resolution_correction_set->at(resolution_key[year]);
+      resolution_key["2017"] = "Summer19UL18_JRV2_MC_PtResolution_" + algo;
    }
+
+   m_resolution = m_resolution_correction_set->at(resolution_key[year]);
 }
 
 double JetResolution::getResolution(double const jet_pt, double const jet_eta, double const rho) const

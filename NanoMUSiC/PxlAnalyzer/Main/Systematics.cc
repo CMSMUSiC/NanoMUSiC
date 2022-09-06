@@ -81,7 +81,7 @@ Systematics::Systematics(const Tools::MConfig &cfg, unsigned int const debug) : 
        {"2018", "Summer19UL18_V5_MC_" + cfg.GetItem<std::string>("FatJet.Error.JESType") + "_AK8PFPuppi"},
    };
 
-   m_fatjecUnc = m_jec_correction_set->at(fat_jet_JEC_key[year]);
+   m_fatjecUnc = m_fat_jec_correction_set->at(fat_jet_JEC_key[year]);
 
    rand = new TRandom3();
 

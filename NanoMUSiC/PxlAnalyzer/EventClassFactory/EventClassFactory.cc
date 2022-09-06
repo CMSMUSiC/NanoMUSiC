@@ -48,7 +48,6 @@ EventClassFactory::EventClassFactory(const Tools::MConfig &cutconfig,
                            const std::string outfilename,
                            const string hash,
                            const bool debug) :
-
                                                m_XSections(xsecs),
                                                m_pdfTool(cutconfig, debug),
                                                m_selector(selector),
@@ -110,6 +109,7 @@ EventClassFactory::EventClassFactory(const Tools::MConfig &cutconfig,
                                                m_gen_rec_map(cutconfig)
 
 {
+   std::cout << "FOO" << std::endl;
    if (m_ec_genOnly and m_ec_recOnly)
    {
       stringstream error;
@@ -118,17 +118,17 @@ EventClassFactory::EventClassFactory(const Tools::MConfig &cutconfig,
       error << "'EventClass.GenOnly' and 'EventClass.RecOnly' not allowed simultaneously!";
       throw Tools::config_error(error.str());
    }
-
+std::cout << "FOO" << std::endl;
    if (m_use_prefire_check)
    {
       std::cout << "Requesting simple prefire check for events" << std::endl;
    }
-
+std::cout << "FOO" << std::endl;
    m_data = cutconfig.GetItem<bool>("General.RunOnData");
    // suppress root Info messages:
    gErrorIgnoreLevel = 1001;
    gROOT->SetStyle("Plain");
-
+std::cout << "FOO" << std::endl;
    // create the splitting list for particle maps
    if (m_useBJets)
    {
@@ -138,15 +138,20 @@ EventClassFactory::EventClassFactory(const Tools::MConfig &cutconfig,
    // if( m_useWjet ){
    //   list.push_back( Splitting::splitWfatjets );
    //}
+   
+   std::cout << "FOO" << std::endl;
    if (m_gam_regions_use)
    {
       splittings.push_back(splitGammaRegions);
    }
+   std::cout << "FOO" << std::endl;
    if (m_ele_regions_use)
    {
       splittings.push_back(splitEleRegions);
    }
+   std::cout << "FOO" << std::endl;
    m_cutFlowFilterWeighted.SetCanExtend(TH1::kAllAxes);
+   std::cout << "FOO" << std::endl;
    m_cutFlowFilterUnweighted.SetCanExtend(TH1::kAllAxes);
 }
 

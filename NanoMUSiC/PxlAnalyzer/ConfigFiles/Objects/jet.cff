@@ -134,6 +134,9 @@ Jet.Resolutions.Corr.use = 1
 
 #https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution?rev=50
 Jet.JSONFile = "$MUSIC_BASE/ConfigFiles/ConfigInputs/jsonPOG/JME/2017_UL/jet_jerc.json"
+# needed untill 2017 SFs are provided
+Jet.JSONFile.2018 = "$MUSIC_BASE/ConfigFiles/ConfigInputs/jsonPOG/JME/2018_UL/jet_jerc.json"
+
 # Jet.Resolution.UnmatchedFile = "$MUSIC_BASE/ConfigFiles/ConfigInputs/Summer19UL17_JRV2_MC_PtResolution_AK4PFchs.txt" #UPDATED TO UL17
 # Jet.Resolution.UnmatchedFile = "$MUSIC_BASE/ConfigFiles/ConfigInputs/Summer19UL17_JRV2_MC_PtResolution_AK4PFchs.txt" #UPDATED TO UL17
 # Jet.Resolution.SFFile = "$MUSIC_BASE/ConfigFiles/ConfigInputs/Summer19UL17_JRV2_MC_SF_AK4PFchs.txt"
