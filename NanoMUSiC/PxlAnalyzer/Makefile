@@ -177,20 +177,6 @@ clean:
 	@rm -rf bin
 	@rm -rf PxlAnalyzer.d
 
-# $(MUSIC): $(filter-out $(PRINTER).o, $(TEMP_OBJS))
-# 	@echo "Building $@ ..."
-# 	$(LD) $^ $(LDFLAGS)  -o $@
-# 	@echo "$@ done"
-# 	@mkdir -p bin
-# 	@cp $(MUSIC) bin/
-
-# $(PRINTER): $(filter-out $(MUSIC).o, $(TEMP_OBJS))
-# 	@echo "Building $@ ..."
-# 	$(LD) $^ $(LDFLAGS)  -o $@
-# 	@echo "$@ done"
-# 	@mkdir -p bin
-# 	@cp $(PRINTER) bin/
-
 
 ########################################
 # additional targets

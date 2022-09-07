@@ -4565,7 +4565,7 @@ NLOHMANN_JSON_NAMESPACE_END
 NLOHMANN_JSON_NAMESPACE_BEGIN
 namespace detail
 {
-namespace std_fs = std::experimental::filesystem;
+namespace std_fs = std::filesystem;
 }  // namespace detail
 NLOHMANN_JSON_NAMESPACE_END
 #elif JSON_HAS_FILESYSTEM

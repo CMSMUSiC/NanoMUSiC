@@ -74,7 +74,7 @@ ROOT_GLIBS   := $(shell root-config --libs)
 LCG_BASE := /cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt
 
 LHAPDF_LIB_PATH := -L$(LCG_BASE)/lib
-LHAPDF_INC_PATH := -I$(-I)/include/LHAPDF
+LHAPDF_INC_PATH := -I$(LCG_BASE)/include/LHAPDF
 LHAPDF_LIB := -lLHAPDF
 
 LCG_INC_PATHS := -I$(LCG_BASE)/include
@@ -169,11 +169,8 @@ PXLANA_DEPENDS := $(PXLANA_SOURCES:.cc=.d)
 SHELL := /bin/bash
 MAKEFILE_DIR := ${CURDIR}
 
-
 all: $(MUSIC) $(PRINTER)
 
-# .PHONY: PxlAnalyzer
-# pxlanalyzer: 
 PxlAnalyzer/PxlAnalyzer.d:  $(PXLANA_SOURCES)
 	@echo "${YELLOW}Building PxlAnalyzer ...${NC}"
 	$(MAKE) -C ./PxlAnalyzer/

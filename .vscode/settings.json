@@ -16,7 +16,6 @@
         "cstdlib": "cpp",
         "exception": "cpp"
     },
-    "clang-format.executable": "/cvmfs/cms.cern.ch/slc7_amd64_gcc700/external/llvm/7.1.0-pafccj/bin/clang-format",
     "C_Cpp.loggingLevel": "Error",
-    "cmake.configureOnOpen": false
+    "clang-format.executable": "/home/home1/institut_3a/silva/.vscode-server/extensions/ms-vscode.cpptools-1.12.4-linux-x64/bin/../LLVM/bin/clang-format"
 }

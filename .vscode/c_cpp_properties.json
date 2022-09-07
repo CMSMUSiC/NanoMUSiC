@@ -33,7 +33,6 @@
                 "${workspaceFolder}/NanoMUSiC/PxlAnalyzer/include/spdlog/sinks/*",
                 "${workspaceFolder}/NanoMUSiC/PxlAnalyzer/include/spdlog/fmt/bundled/*",
                 "${workspaceFolder}/NanoMUSiC/PxlAnalyzer/include/spdlog/fmt/*",
-                "${workspaceFolder}/NanoMUSiC/PxlAnalyzer/Validator/*",
                 "${workspaceFolder}/NanoMUSiC/PxlAnalyzer/Pxl/Pxl/src/*",
                 "${workspaceFolder}/NanoMUSiC/PxlAnalyzer/Pxl/Pxl/src/simpleini/*",
                 "${workspaceFolder}/NanoMUSiC/PxlAnalyzer/Pxl/Pxl/interface/pxl/hep/*",
@@ -45,11 +44,10 @@
                 "${workspaceFolder}/NanoMUSiC/PxlAnalyzer/Tools/*",
                 "${workspaceFolder}/NanoMUSiC/PxlAnalyzer/Tools/PXL/*",
                 "${workspaceFolder}/NanoMUSiC/PlotLib/*",
-                "/cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/*"
+                "/cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/include/*"
             ],
             "defines": [],
-            // "compilerPath": "/usr/lib64/ccache/gcc",
-            "compilerPath": "/cvmfs/cms.cern.ch/slc7_amd64_gcc700/external/gcc/7.0.0-pafccj/bin/g++",
+            "compilerPath": "/cvmfs/sft.cern.ch/lcg/releases/gcc/11.2.0-8a51a/x86_64-centos7/bin/g++",
             "cStandard": "c89",
             "cppStandard": "c++17",
             "intelliSenseMode": "linux-gcc-x64",

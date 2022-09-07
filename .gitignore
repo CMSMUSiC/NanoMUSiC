@@ -9,6 +9,9 @@ correctionlib/correctionlib/
 *.c
 foo/
 *.gcda
+bin/
+lib/
+build/
 
 ##### PYTHON #####
 

@@ -147,6 +147,7 @@ endif
 #	command
 
 all: $(TARGETS)
+	@echo "------------> Executing target: $@"
 ifndef PXLANA
 	@echo "PXLANA not set, libs will not be copied"
 	@echo $(PXLANA)
@@ -154,28 +155,35 @@ endif
 
 # Directory rules:
 $(BINDIR):
+	@echo "------------> Executing target: $@"
 	@mkdir $(BINDIR)
 
 $(LIBDIR):
+	@echo "------------> Executing target: $@"
 	@mkdir $(LIBDIR)
 
 $(ANALIBDIR):
+	@echo "------------> Executing target: $@"
 	@mkdir $(ANALIBDIR)
 
 $(DEPDIR):
+	@echo "------------> Executing target: $@"
 	@mkdir $(DEPDIR)
 
 $(ANALIBDIR)/libTEventClass.so: $(LIBDIR)/libTEventClass.so | $(ANALIBDIR)
+	@echo "------------> Executing target: $@"
 	@echo install $(LIBDIR)/libTEventClass.so $(ANALIBDIR)
 	install $(LIBDIR)/libTEventClass.so $(ANALIBDIR)/libTEventClass.so
 
 $(ANALIBDIR)/TEventClassDict_rdict.pcm: src/TEventClassDict.cc | $(ANALIBDIR)
+	@echo "------------> Executing target: $@"
 	@echo install $(LIBDIR)/TEventClassDict_rdict.pcm $(ANALIBDIR)
 	install $(LIBDIR)/TEventClassDict_rdict.pcm $(ANALIBDIR)/TEventClassDict_rdict.pcm
 
 # Rules for shared libraries for interactive (py)ROOT:
 #$(LIBDIR)/TEventClass.so: $(TEVENTCLASS) | $(LIBDIR)
 $(LIBDIR)/libTEventClass.so: src/TEventClassDict.o src/TEventClass.o | $(LIBDIR)
+	@echo "------------> Executing target: $@"
 ifndef VERBOSE
 	@echo "build EC so"
 	$(LD) -shared $(LDFLAGS) -o $(LIBDIR)/libTEventClass.so src/TEventClassDict.o src/TEventClass.o
@@ -184,12 +192,14 @@ else
 endif
 
 src/TEventClassDict.cc: include/TEventClass.hh include/TEventClassLinkDef.h | $(LIBDIR)
+	@echo "------------> Executing target: $@"
 	@echo "Generating TEventClass dictionary ..."
 	@# -v2: Display error and warning messages.
 	rootcint -v2 -f $@ -c -I. $(MUSIC_CFLAGS) $^
 	install src/TEventClassDict_rdict.pcm $(LIBDIR)/TEventClassDict_rdict.pcm
 
 clean:
+	@echo "------------> Executing target: $@"
 	@rm -f $(OBJECTS) $(DEPENDS)
 	@rm -f $(LIBDIR)/TEventClassDict_rdict.pcm
 	@rm -f $(LIBDIR)/libTEventClass.so
@@ -200,6 +210,7 @@ clean:
 # rules
 
 %.o : %.cc
+	@echo "------------> Executing target: $@"
 	$(CC) -MD -MP $(CFLAGS) -c -o $@ $<
 
 -include $(DEPENDS)

@@ -41,4 +41,4 @@
 #	$(BUILDBIN)
 #endif
 
-	#~ @rootcint -v2 -f $@ -c -I$(MUSIC_BASE)/Main/ $^ # -v2: Display error and warning messages.
+	# ~ @rootcint -v2 -f $@ -c -I$(MUSIC_BASE)/Main/ $^ # -v2: Display error and warning messages.

@@ -13,7 +13,7 @@ source /cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/setup.sh
 export SCRAM_ARCH=slc7_amd64_gcc11
 
 # This is a TAPAS set_env script. Source it before usage of TAPAS.
-export LD_LIBRARY_PATH=$SCRIPTDIR/NanoMUSiC/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$SCRIPTDIR/lib:$LD_LIBRARY_PATH
 export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/lib/python:$PYTHONPATH
 export MYPXLANA=EventClassFactory
 
@@ -50,7 +50,7 @@ source set_env.sh
 cd $SCRIPTDIR
 
 
-export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/bin;
+export PATH=$PATH:$SCRIPTDIR/bin;
 
 
 export CORRECTIONLIB=$SCRIPTDIR/correctionlib/correctionlib

@@ -565,19 +565,28 @@ bool EleSelector::passlooseHEEPID(pxl::Particle const *ele,
    {
       // delta eta between SC and track
       if (ele_absDeltaEta > m_ele_heepid_barrel_deltaEta_max)
+      {
          return false;
+      }
 
       // delta phi between SC and track
       if (ele_absDeltaPhi > m_ele_heepid_barrel_deltaPhi_max)
+      {
          return false;
+      }
 
       // avoid division by zero in hadronic over EM
       if (ele_E == 0)
+      {
          return false;
+      }
 
       // hadronic over EM
       if (ele_HoEM > (m_ele_heepid_barrel_HoEM_slope / ele_E + m_ele_heepid_barrel_HoEM_max))
+      {
          return false;
+      }
+
       // shower shape
       double e5x5 = 0;
       double e1x5 = 0;
