@@ -6,7 +6,7 @@ Condor_utils/
 correctionlib/
 extern/correctionlib/__init__.py
 extern/correctionlib/correctionlib/
-extern/
+# extern/
 *.c
 foo/
 *.gcda
