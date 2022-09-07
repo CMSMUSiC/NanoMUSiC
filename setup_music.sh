@@ -18,10 +18,6 @@ cd $SCRIPT_DIR/NanoMUSiC/MUSiC-RoIScanner
 cd table2latex
 pip install --user -e .
 
-# compile correctionlib
 cd $SCRIPT_DIR
-cd extern/correctionlib
-make PYTHON=python
-make install
 
-cd $SCRIPT_DIR
+
