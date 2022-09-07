@@ -1,8 +1,8 @@
-[submodule "Condor_utils"]
+[submodule "extern/Condor_utils"]
 	path = extern/Condor_utils
 	url = git@github.com:CMSMUSiC/Condor_utils.git
 	ignore = untracked
-[submodule "correctionlib"]
+[submodule "extern/correctionlib"]
 	path = extern/correctionlib
 	url = git@github.com:cms-nanoAOD/correctionlib.git
 	ignore = untracked
