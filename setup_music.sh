@@ -20,7 +20,7 @@ pip install --user -e .
 
 # compile correctionlib
 cd $SCRIPT_DIR
-cd correctionlib
+cd extern/correctionlib
 make PYTHON=python
 make install
 

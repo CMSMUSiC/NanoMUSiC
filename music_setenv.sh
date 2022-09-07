@@ -53,7 +53,7 @@ cd $SCRIPTDIR
 export PATH=$PATH:$SCRIPTDIR/bin;
 
 
-export CORRECTIONLIB=$SCRIPTDIR/correctionlib/correctionlib
+export CORRECTIONLIB=$SCRIPTDIR/extern/correctionlib/correctionlib
 export LD_LIBRARY_PATH=$CORRECTIONLIB/lib/:$LD_LIBRARY_PATH
 
 

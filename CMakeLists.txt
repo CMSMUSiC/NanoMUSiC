@@ -1,4 +1,16 @@
 cmake_minimum_required(VERSION 3.14.0)
+Set(ALL_TARGETS "" CACHE INTERNAL "")
+
+function(Add_library NAME)
+    Set(ALL_TARGETS ${ALL_TARGETS} "${ARGN}" CACHE INTERNAL "ALL_TARGETS")
+    _add_library(${NAME} ${ARGN})
+endfunction()
+
+function(Add_executable NAME)
+    Set(ALL_TARGETS ${ALL_TARGETS} "${ARGN}" CACHE INTERNAL "ALL_TARGETS")
+    _add_executable(${NAME} ${ARGN})
+endfunction()
+
 project(NANOMUSIC CXX)
 
 # specify the C++ standard
@@ -20,16 +32,16 @@ include_directories(
     NanoMUSiC/
     ${ROOT_INCLUDE_DIR}
     ${LCG_BASE}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer
-    ${CMAKE_CURRENT_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Pxl/Pxl/src
-    ${CMAKE_CURRENT_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Tools
-    ${CMAKE_CURRENT_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/NanoMUSiC/tools/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Tools/
-    ${CMAKE_CURRENT_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Tools/PXL/
-    ${CMAKE_CURRENT_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Main
-    ${CMAKE_CURRENT_SOURCE_DIR}/NanoMUSiC/MUSiC-Utils/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/correctionlib/correctionlib/include
+    ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer
+    ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Pxl/Pxl/src
+    ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Tools
+    ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/include
+    ${CMAKE_SOURCE_DIR}/NanoMUSiC/tools/include
+    ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Tools/
+    ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Tools/PXL/
+    ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Main
+    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-Utils/include
+    ${CMAKE_SOURCE_DIR}/extern/correctionlib/correctionlib/include
 )
 
 # ${LCG_BASE}/include/boost
@@ -63,8 +75,8 @@ add_link_options(
     -lboost_serialization
     -lboost_program_options
     -lLHAPDF
-    -L${CMAKE_CURRENT_SOURCE_DIR}/NanoMUSiC/MUSiC-Utils/lib
-    -L${CMAKE_CURRENT_SOURCE_DIR}/NanoMUSiC/correctionlib/correctionlib/lib
+    -L${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-Utils/lib
+    -L${CMAKE_SOURCE_DIR}/NanoMUSiC/correctionlib/correctionlib/lib
     -lcorrectionlib
     -O3fast
     -lz
@@ -76,3 +88,27 @@ add_subdirectory(NanoMUSiC)
 
 # enable tests
 enable_testing()
+list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
+
+add_custom_target(BUILD_SUCCESSFUL ALL
+    DEPENDS ${ALL_TARGETS}
+    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan ""
+    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "========================================="
+    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "  Compilation complete!"
+    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "  Don't forget to install:"
+    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "  make install"
+    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "========================================="
+    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan ""
+)
+
+add_custom_target(INSTALL_SUCCESSFUL ALL
+    DEPENDS install
+    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan ""
+    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "========================================="
+    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "  Installation complete!"
+    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "  you can run tests and validation:"
+    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "  make test"
+    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "  make validation"
+    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "========================================="
+    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan ""
+)

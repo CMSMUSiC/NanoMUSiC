@@ -1,3 +1,6 @@
+# enable tests
+enable_testing()
+
 add_subdirectory(MUSiC)
 add_subdirectory(PxlAnalyzer)
 add_subdirectory(MUSiC-Utils)
