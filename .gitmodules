@@ -1,3 +1,7 @@
+[submodule "NanoMUSiC/MUSiC-RoIScanner/table2latex"]
+	path = NanoMUSiC/MUSiC-RoIScanner/table2latex
+	url = git@github.com:tobias-pook/table2latex.git
+	ignore = untracked
 [submodule "extern/Condor_utils"]
 	path = extern/Condor_utils
 	url = git@github.com:CMSMUSiC/Condor_utils.git
@@ -5,8 +9,4 @@
 [submodule "extern/correctionlib"]
 	path = extern/correctionlib
 	url = git@github.com:cms-nanoAOD/correctionlib.git
-	ignore = untracked
-[submodule "NanoMUSiC/MUSiC-RoIScanner/table2latex"]
-	path = NanoMUSiC/MUSiC-RoIScanner/table2latex
-	url = git@github.com:tobias-pook/table2latex.git
 	ignore = untracked

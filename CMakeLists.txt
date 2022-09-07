@@ -1,15 +1,4 @@
 cmake_minimum_required(VERSION 3.14.0)
-Set(ALL_TARGETS "" CACHE INTERNAL "")
-
-function(Add_library NAME)
-    Set(ALL_TARGETS ${ALL_TARGETS} "${ARGN}" CACHE INTERNAL "ALL_TARGETS")
-    _add_library(${NAME} ${ARGN})
-endfunction()
-
-function(Add_executable NAME)
-    Set(ALL_TARGETS ${ALL_TARGETS} "${ARGN}" CACHE INTERNAL "ALL_TARGETS")
-    _add_executable(${NAME} ${ARGN})
-endfunction()
 
 project(NANOMUSIC CXX)
 
@@ -76,7 +65,7 @@ add_link_options(
     -lboost_program_options
     -lLHAPDF
     -L${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-Utils/lib
-    -L${CMAKE_SOURCE_DIR}/NanoMUSiC/correctionlib/correctionlib/lib
+    -L${CMAKE_SOURCE_DIR}/NanoMUSiC/extern/correctionlib/correctionlib/lib
     -lcorrectionlib
     -O3fast
     -lz
@@ -89,26 +78,3 @@ add_subdirectory(NanoMUSiC)
 # enable tests
 enable_testing()
 list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
-
-add_custom_target(BUILD_SUCCESSFUL ALL
-    DEPENDS ${ALL_TARGETS}
-    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan ""
-    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "========================================="
-    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "  Compilation complete!"
-    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "  Don't forget to install:"
-    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "  make install"
-    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "========================================="
-    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan ""
-)
-
-add_custom_target(INSTALL_SUCCESSFUL ALL
-    DEPENDS install
-    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan ""
-    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "========================================="
-    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "  Installation complete!"
-    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "  you can run tests and validation:"
-    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "  make test"
-    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "  make validation"
-    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "========================================="
-    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan ""
-)
