@@ -11,22 +11,23 @@
 #include "Pxl/Pxl/interface/pxl/hep.hh"
 namespace po = boost::program_options;
 using std::string;
-class AnalysisComposer {
+class AnalysisComposer
+{
 
-public:
+  public:
     AnalysisComposer();
     // Destructor
-    ~AnalysisComposer() {;};
+    ~AnalysisComposer()
+    {
+        ;
+    };
     //~ po::options_description addCmdArguments( argstream &as );
-    po::options_description getCmdArguments( );
-    pxl::AnalysisFork addForkObjects ( const Tools::MConfig &config,
-                                       string outputDirectory,
-                                       EventSelector &selector,
-                                       Systematics &syst,
-                                       const bool debug);
+    po::options_description getCmdArguments();
+    pxl::AnalysisFork addForkObjects(const Tools::MConfig &config, string outputDirectory, EventSelector &selector,
+                                     Systematics &syst, const bool debug);
     void endAnalysis();
 
-private:
+  private:
     string m_analysisName;
     string m_outputDirectory;
     bool runOnData;
@@ -34,7 +35,6 @@ private:
     std::string m_outfilename;
     string m_XSectionsFile;
     string m_RunHash;
-
 };
 
 #endif /*ANALYSISCOMPOSER*/

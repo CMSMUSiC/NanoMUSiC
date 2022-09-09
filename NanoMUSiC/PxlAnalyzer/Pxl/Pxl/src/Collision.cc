@@ -8,13 +8,15 @@
 
 #include "Pxl/Pxl/interface/pxl/hep/Collision.hh"
 
-namespace pxl {
+namespace pxl
+{
 
-std::ostream& Collision::print(int level, std::ostream& os, int pan) const
+std::ostream &Collision::print(int level, std::ostream &os, int pan) const
 {
     printPan1st(os, pan) << "Collision: " << getName() << std::endl;
 
-    if (level>0) printContent(level, os, pan);
+    if (level > 0)
+        printContent(level, os, pan);
 
     return os;
 }

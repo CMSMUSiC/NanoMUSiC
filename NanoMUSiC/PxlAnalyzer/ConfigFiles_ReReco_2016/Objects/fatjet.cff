@@ -17,7 +17,7 @@ FatJet.WJets.mass.min = 65
 FatJet.WJets.mass.max = 95
 FatJet.WJets.tau.max = 0.4
 
-FatJet.Resolution.UnmatchedFile = "$MUSIC_BASE/ConfigFiles/ConfigInputs/Summer16_25nsV1_MC_PtResolution_AK8PFchs.txt"
-FatJet.Resolution.SFFile = "$MUSIC_BASE/ConfigFiles/ConfigInputs/Summer16_25nsV1_MC_SF_AK8PFchs.txt"
+FatJet.Resolution.UnmatchedFile = "$PXLANALYZER_BASE/ConfigFiles/ConfigInputs/Summer16_25nsV1_MC_PtResolution_AK8PFchs.txt"
+FatJet.Resolution.SFFile = "$PXLANALYZER_BASE/ConfigFiles/ConfigInputs/Summer16_25nsV1_MC_SF_AK8PFchs.txt"
 
-FatJet.Error.JESFile = "$MUSIC_BASE/ConfigFiles/ConfigInputs/Summer16_23Sep2016V4_MC_UncertaintySources_AK8PFchs.txt"
+FatJet.Error.JESFile = "$PXLANALYZER_BASE/ConfigFiles/ConfigInputs/Summer16_23Sep2016V4_MC_UncertaintySources_AK8PFchs.txt"

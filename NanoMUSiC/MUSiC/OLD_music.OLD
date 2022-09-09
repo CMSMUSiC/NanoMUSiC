@@ -60,8 +60,8 @@ void KeyboardInterrupt_endJob(int signum)
 
 int main(int argc, char *argv[])
 {
-   if (getenv("MUSIC_BASE") == NULL)
-      throw std::runtime_error("MUSIC_BASE not set!");
+   if (getenv("PXLANALYZER_BASE") == NULL)
+      throw std::runtime_error("PXLANALYZER_BASE not set!");
 
    std::cout << "Running Analysis '" QUOTE(MYPXLANA) "'..." << std::endl;
 

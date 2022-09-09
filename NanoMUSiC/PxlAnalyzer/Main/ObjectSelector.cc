@@ -7,27 +7,19 @@
 // Pure Abstract base class for all object selectors in PXLanalzyer
 
 // Constructor
-ObjectSelector::ObjectSelector(const Tools::MConfig &cfg,
-                               OldNameMapper *globalOldNameMap,
-                               const std::string &object_name,
-                               bool endcap_eta_cuts,
-                               std::string alternative_eta_label) : oldNameMap(globalOldNameMap),
-                                                                    m_object_name(object_name),
-                                                                    m_alternative_eta_label(std::move(alternative_eta_label)),
-                                                                    m_object_endcap_eta_cuts(endcap_eta_cuts),
-                                                                    m_object_barrel_only(cfg.GetItem<bool>(object_name + ".barrel.only", false)),
-                                                                    m_object_endcap_only(cfg.GetItem<bool>(object_name + ".endcap.only", false)),
-                                                                    m_object_pt_min(cfg.GetItem<double>(object_name + ".pt.min")),
-                                                                    m_object_eta_barrel_max(9999.),
-                                                                    m_object_eta_endcap_min(-1.),
-                                                                    m_object_eta_endcap_max(99999.),
+ObjectSelector::ObjectSelector(const Tools::MConfig &cfg, OldNameMapper *globalOldNameMap,
+                               const std::string &object_name, bool endcap_eta_cuts, std::string alternative_eta_label)
+    : oldNameMap(globalOldNameMap), m_object_name(object_name),
+      m_alternative_eta_label(std::move(alternative_eta_label)), m_object_endcap_eta_cuts(endcap_eta_cuts),
+      m_object_barrel_only(cfg.GetItem<bool>(object_name + ".barrel.only", false)),
+      m_object_endcap_only(cfg.GetItem<bool>(object_name + ".endcap.only", false)),
+      m_object_pt_min(cfg.GetItem<double>(object_name + ".pt.min")), m_object_eta_barrel_max(9999.),
+      m_object_eta_endcap_min(-1.), m_object_eta_endcap_max(99999.),
 
-                                                                    m_object_syst_pt_min(cfg.GetItem<double>(object_name + ".Syst.pt.min")),
-                                                                    m_object_syst_eta_barrel_max(9999.),
-                                                                    m_object_syst_eta_endcap_min(-1.),
-                                                                    m_object_syst_eta_endcap_max(99999.),
+      m_object_syst_pt_min(cfg.GetItem<double>(object_name + ".Syst.pt.min")), m_object_syst_eta_barrel_max(9999.),
+      m_object_syst_eta_endcap_min(-1.), m_object_syst_eta_endcap_max(99999.),
 
-                                                                    m_scale_factors(std::vector<ScaleFactor>())
+      m_scale_factors(std::vector<ScaleFactor>())
 
 {
 
@@ -46,7 +38,8 @@ ObjectSelector::ObjectSelector(const Tools::MConfig &cfg,
         m_object_eta_barrel_max = cfg.GetItem<double>(object_name + ".eta.max");
         m_object_syst_eta_barrel_max = cfg.GetItem<double>(object_name + ".Syst.eta.max");
     }
-    std::vector<std::string> sf_names = Tools::splitString<std::string>(cfg.GetItem<std::string>(object_name + ".ScaleFactors"), true);
+    std::vector<std::string> sf_names =
+        Tools::splitString<std::string>(cfg.GetItem<std::string>(object_name + ".ScaleFactors"), true);
     // in configs: ID.Tight, ID.Medium, ID.Loose,... same name as for ID.Type
     for (const auto &sf_name : sf_names)
     {
@@ -85,10 +78,7 @@ bool ObjectSelector::passKinematics(pxl::Particle *object, const bool isSyst) co
     bool isEndcap = false;
     if (abseta < eta_barrel_max)
         isBarrel = true;
-    if (m_object_endcap_eta_cuts &&
-        !isBarrel &&
-        abseta > eta_endcap_min &&
-        abseta < eta_endcap_max)
+    if (m_object_endcap_eta_cuts && !isBarrel && abseta > eta_endcap_min && abseta < eta_endcap_max)
         isEndcap = true;
 
     object->setUserRecord("isBarrel", isBarrel);

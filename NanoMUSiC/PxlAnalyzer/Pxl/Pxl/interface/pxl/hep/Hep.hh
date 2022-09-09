@@ -15,11 +15,10 @@ namespace pxl
 {
 class PXL_DLL_EXPORT Hep
 {
-public:
-	static void initialize();
-	static void shutdown();
-
+  public:
+    static void initialize();
+    static void shutdown();
 };
-}
+} // namespace pxl
 
 #endif /* INITIALIZE_HH_ */

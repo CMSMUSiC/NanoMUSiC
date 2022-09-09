@@ -114,7 +114,8 @@ void analyzeLHEParticles(NanoAODReader &nano_reader, pxl::EventView *GenEvtView)
         part->setName("GenPart");
         part->setCharge((LHEPart_pdgId[idx_part] > 0) - (LHEPart_pdgId[idx_part] < 0));
         auto p_temp_ = TLorentzVector();
-        p_temp_.SetPtEtaPhiM(LHEPart_pt[idx_part], LHEPart_eta[idx_part], LHEPart_phi[idx_part], LHEPart_mass[idx_part]);
+        p_temp_.SetPtEtaPhiM(LHEPart_pt[idx_part], LHEPart_eta[idx_part], LHEPart_phi[idx_part],
+                             LHEPart_mass[idx_part]);
 
         // set all available records
         part->setUserRecord("pt", LHEPart_pt[idx_part]);
@@ -164,7 +165,8 @@ void analyzeGenParticles(NanoAODReader &nano_reader, pxl::EventView *GenEvtView)
         part->setName("GenPart");
         part->setCharge((GenPart_pdgId[idx_part] > 0) - (GenPart_pdgId[idx_part] < 0));
         auto p_temp_ = TLorentzVector();
-        p_temp_.SetPtEtaPhiM(GenPart_pt[idx_part], GenPart_eta[idx_part], GenPart_phi[idx_part], GenPart_mass[idx_part]);
+        p_temp_.SetPtEtaPhiM(GenPart_pt[idx_part], GenPart_eta[idx_part], GenPart_phi[idx_part],
+                             GenPart_mass[idx_part]);
 
         // set all available records
         part->setUserRecord("eta", GenPart_eta[idx_part]);
@@ -200,7 +202,8 @@ void analyzeGenDressedLeptons(NanoAODReader &nano_reader, pxl::EventView *GenEvt
         part->setName("GenPart");
         part->setCharge((GenDressedLepton_pdgId[idx_part] > 0) - (GenDressedLepton_pdgId[idx_part] < 0));
         auto p_temp_ = TLorentzVector();
-        p_temp_.SetPtEtaPhiM(GenDressedLepton_pt[idx_part], GenDressedLepton_eta[idx_part], GenDressedLepton_phi[idx_part], GenDressedLepton_mass[idx_part]);
+        p_temp_.SetPtEtaPhiM(GenDressedLepton_pt[idx_part], GenDressedLepton_eta[idx_part],
+                             GenDressedLepton_phi[idx_part], GenDressedLepton_mass[idx_part]);
 
         // set all available records
         part->setUserRecord("eta", GenDressedLepton_eta[idx_part]);
@@ -280,7 +283,8 @@ void analyzeGenJetsAK8(NanoAODReader &nano_reader, pxl::EventView *GenEvtView)
         pxl::Particle *part = GenEvtView->create<pxl::Particle>();
         part->setName("GenJetAK8");
         auto p_temp_ = TLorentzVector();
-        p_temp_.SetPtEtaPhiM(GenJetAK8_pt[idx_part], GenJetAK8_eta[idx_part], GenJetAK8_phi[idx_part], GenJetAK8_mass[idx_part]);
+        p_temp_.SetPtEtaPhiM(GenJetAK8_pt[idx_part], GenJetAK8_eta[idx_part], GenJetAK8_phi[idx_part],
+                             GenJetAK8_mass[idx_part]);
 
         // set all available records
         part->setUserRecord("eta", GenJetAK8_eta[idx_part]);
@@ -339,10 +343,14 @@ void analyseMETFilter(NanoAODReader &nano_reader, pxl::EventView *FilterEvtView)
 void analyzeRho(NanoAODReader &nano_reader, pxl::EventView *RecEvtView)
 {
     RecEvtView->setUserRecord("fixedGridRhoFastjetAll", nano_reader.getVal<Float_t>("fixedGridRhoFastjetAll"));
-    // RecEvtView->setUserRecord("fixedGridRhoFastjetAllCalo", nano_reader.getVal<Float_t>("fixedGridRhoFastjetAllCalo"));
-    RecEvtView->setUserRecord("fixedGridRhoFastjetCentralCalo", nano_reader.getVal<Float_t>("fixedGridRhoFastjetCentralCalo"));
-    RecEvtView->setUserRecord("fixedGridRhoFastjetCentralChargedPileUp", nano_reader.getVal<Float_t>("fixedGridRhoFastjetCentralChargedPileUp"));
-    RecEvtView->setUserRecord("fixedGridRhoFastjetCentralNeutral", nano_reader.getVal<Float_t>("fixedGridRhoFastjetCentralNeutral"));
+    // RecEvtView->setUserRecord("fixedGridRhoFastjetAllCalo",
+    // nano_reader.getVal<Float_t>("fixedGridRhoFastjetAllCalo"));
+    RecEvtView->setUserRecord("fixedGridRhoFastjetCentralCalo",
+                              nano_reader.getVal<Float_t>("fixedGridRhoFastjetCentralCalo"));
+    RecEvtView->setUserRecord("fixedGridRhoFastjetCentralChargedPileUp",
+                              nano_reader.getVal<Float_t>("fixedGridRhoFastjetCentralChargedPileUp"));
+    RecEvtView->setUserRecord("fixedGridRhoFastjetCentralNeutral",
+                              nano_reader.getVal<Float_t>("fixedGridRhoFastjetCentralNeutral"));
     RecEvtView->setUserRecord("fixedGridRhoFastjetAll", nano_reader.getVal<Float_t>("fixedGridRhoFastjetAll"));
 }
 
@@ -497,7 +505,8 @@ void analyzeRecBoostedTaus(NanoAODReader &nano_reader, pxl::EventView *RecEvtVie
         part->setName("BoostedTau");
         part->setCharge(boostedTau_charge[idx_part]);
         auto p_temp_ = TLorentzVector();
-        p_temp_.SetPtEtaPhiM(boostedTau_pt[idx_part], boostedTau_eta[idx_part], boostedTau_phi[idx_part], boostedTau_mass[idx_part]);
+        p_temp_.SetPtEtaPhiM(boostedTau_pt[idx_part], boostedTau_eta[idx_part], boostedTau_phi[idx_part],
+                             boostedTau_mass[idx_part]);
 
         // set all available records
         part->setUserRecord("chargedIso", boostedTau_chargedIso[idx_part]);
@@ -738,7 +747,8 @@ void analyzeRecElectrons(NanoAODReader &nano_reader, pxl::EventView *RecEvtView)
         part->setName("Ele");
         part->setCharge(Electron_charge[idx_part]);
         auto p_temp_ = TLorentzVector();
-        p_temp_.SetPtEtaPhiM(Electron_pt[idx_part], Electron_eta[idx_part], Electron_phi[idx_part], Electron_mass[idx_part]);
+        p_temp_.SetPtEtaPhiM(Electron_pt[idx_part], Electron_eta[idx_part], Electron_phi[idx_part],
+                             Electron_mass[idx_part]);
 
         // set all available records
         part->setUserRecord("dEscaleDown", Electron_dEscaleDown[idx_part]);

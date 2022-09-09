@@ -1,10 +1,10 @@
 #include "Tools.hh"
 
-#include <string>
+#include <algorithm>
 #include <cstdlib>
 #include <iostream>
-#include <algorithm>
 #include <random>
+#include <string>
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-local-typedefs"
@@ -16,14 +16,14 @@ std::string Tools::musicAbsPath(std::string relPath)
     if (relPath.substr(0, 1) == "/")
         return relPath;
     std::string output;
-    char *pPath = std::getenv("MUSIC_BASE");
+    char *pPath = std::getenv("PXLANALYZER_BASE");
     if (pPath != NULL)
     {
         output = std::string(pPath) + "/" + relPath;
     }
     else
     {
-        std::cout << "FATAL: MUSIC_BASE not set!" << std::endl;
+        std::cout << "FATAL: PXLANALYZER_BASE not set!" << std::endl;
         output = "";
     }
     return output;
@@ -49,12 +49,10 @@ std::string Tools::removeComment(std::string line, char const commentChar)
 
 std::string Tools::random_string(size_t length)
 {
-    auto randchar = []() -> char
-    {
-        const char charset[] =
-            "0123456789"
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            "abcdefghijklmnopqrstuvwxyz";
+    auto randchar = []() -> char {
+        const char charset[] = "0123456789"
+                               "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                               "abcdefghijklmnopqrstuvwxyz";
         const size_t max_index = (sizeof(charset) - 1);
         return charset[rand() % max_index];
     };

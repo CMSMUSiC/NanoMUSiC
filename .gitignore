@@ -1,12 +1,7 @@
 ##### CUSTOM #####
+docs/html
+docs_BKP/
 *CMSSW_*
-music_env.config
-# NanoMUSiC/MUSiC-RoIScanner/table2latex/
-# Condor_utils/
-# correctionlib/
-# extern/correctionlib/__init__.py
-# extern/correctionlib/correctionlib/
-# extern/
 *.c
 foo/
 *.gcda

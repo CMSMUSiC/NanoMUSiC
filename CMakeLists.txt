@@ -21,6 +21,7 @@ include_directories(
     NanoMUSiC/
     ${ROOT_INCLUDE_DIR}
     ${LCG_BASE}/include
+    ${LCG_BASE}/include/rapidjson
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Pxl/Pxl/src
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Tools
@@ -30,7 +31,6 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Tools/PXL/
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Main
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-Utils/include
-    ${CMAKE_SOURCE_DIR}/extern/correctionlib/correctionlib/include
 )
 
 # correctionlib compilation and linking flags
@@ -40,17 +40,18 @@ separate_arguments(CORRECTIONLIB_FLAGS)
 # compilation options
 execute_process(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
 separate_arguments(ROOT_CFLAGS)
-add_compile_options(${ROOT_CFLAGS} ${CORRECTIONLIB_FLAGS} -MD -MP -O3 -Wall -fconcepts-ts -pthread -m64 -ffloat-store)
+add_compile_options(${ROOT_CFLAGS} ${CORRECTIONLIB_FLAGS} -fdiagnostics-color=always -MD -MP -O3 -Wall -fconcepts-ts -pthread -m64 -ffloat-store)
 
 # root linker options
 execute_process(COMMAND root-config --ldflags OUTPUT_VARIABLE ROOT_LDFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
 separate_arguments(ROOT_LDFLAGS)
 
 # root libs
-execute_process(COMMAND root-config --libs --glibs OUTPUT_VARIABLE ROOT_LIBS OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND root-config --libs OUTPUT_VARIABLE ROOT_LIBS OUTPUT_STRIP_TRAILING_WHITESPACE)
 separate_arguments(ROOT_LIBS)
 
 add_link_options(
+    -fdiagnostics-color=always
     ${ROOT_LDFLAGS}
     ${ROOT_LIBS}
     ${CORRECTIONLIB_FLAGS}
@@ -67,8 +68,6 @@ add_link_options(
     -lboost_program_options
     -lLHAPDF
     -L${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-Utils/lib
-    -L${CMAKE_SOURCE_DIR}/NanoMUSiC/extern/correctionlib/correctionlib/lib
-    -lcorrectionlib
     -O3fast
     -lz
     -lstdc++fs
@@ -79,4 +78,5 @@ add_subdirectory(NanoMUSiC)
 
 # enable tests
 enable_testing()
-list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
+
+# list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")

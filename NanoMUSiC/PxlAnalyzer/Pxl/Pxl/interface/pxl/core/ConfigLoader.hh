@@ -1,4 +1,4 @@
- //-------------------------------------------
+//-------------------------------------------
 // Project: Physics eXtension Library (PXL) -
 //      http://vispa.physik.rwth-aachen.de/ -
 // Copyright (C) 2006-2015 Martin Erdmann   -
@@ -8,7 +8,6 @@
 
 #ifndef PXL_CORE_CONFIGLOADER
 #define PXL_CORE_CONFIGLOADER
-
 
 #include "Pxl/Pxl/interface/pxl/core/macros.hh"
 
@@ -22,7 +21,6 @@ void PXL_DLL_EXPORT fillConfigFromSimpleIni(const CSimpleIniA &iniFile);
 /// loads configurations from /etc/pxlrc and HOME/.pxlrc
 void PXL_DLL_EXPORT loadDefaultConfigurations();
 
+} // namespace pxl
 
-} // namespace
-
-#endif //PXL_CORE_CONFIGLOADER
+#endif // PXL_CORE_CONFIGLOADER

@@ -19,47 +19,45 @@ FileFactory::FileFactory()
 {
 }
 
-FileFactory& FileFactory::instance()
+FileFactory &FileFactory::instance()
 {
-	static FileFactory f;
-	return f;
+    static FileFactory f;
+    return f;
 }
 
-FileImpl *FileFactory::create(const std::string& id)
+FileImpl *FileFactory::create(const std::string &id)
 {
-	std::map<std::string, const FileProducerInterface *>::iterator result;
-	result = _Producers.find(id);
-	if (result == _Producers.end())
-		return 0;
-	else
-		return (*result).second->create();
+    std::map<std::string, const FileProducerInterface *>::iterator result;
+    result = _Producers.find(id);
+    if (result == _Producers.end())
+        return 0;
+    else
+        return (*result).second->create();
 }
 
-void FileFactory::registerProducer(const std::string& id,
-		const FileProducerInterface* producer)
+void FileFactory::registerProducer(const std::string &id, const FileProducerInterface *producer)
 {
-	PXL_LOG_INFO << "register file schema " << id;
-	_Producers[id] = producer;
+    PXL_LOG_INFO << "register file schema " << id;
+    _Producers[id] = producer;
 }
 
-void FileFactory::unregisterProducer(const FileProducerInterface* producer)
+void FileFactory::unregisterProducer(const FileProducerInterface *producer)
 {
-	std::map<std::string, const FileProducerInterface *>::iterator i;
-	for (i = _Producers.begin(); i != _Producers.end(); i++)
-	{
-		if (i->second == producer)
-		{
-			PXL_LOG_INFO << "unregister file schema " << i->first;
-			_Producers.erase(i);
-			return;
-		}
-	}
+    std::map<std::string, const FileProducerInterface *>::iterator i;
+    for (i = _Producers.begin(); i != _Producers.end(); i++)
+    {
+        if (i->second == producer)
+        {
+            PXL_LOG_INFO << "unregister file schema " << i->first;
+            _Producers.erase(i);
+            return;
+        }
+    }
 }
 
-bool FileFactory::hasSchema(const std::string& schema)
+bool FileFactory::hasSchema(const std::string &schema)
 {
-	return (_Producers.find(schema) != _Producers.end());
+    return (_Producers.find(schema) != _Producers.end());
 }
 
 } // namespace pxl
-

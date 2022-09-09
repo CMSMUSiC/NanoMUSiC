@@ -1,35 +1,32 @@
 #ifndef ObjectSelector_hh
 #define ObjectSelector_hh
 
+#include "MConfig.hh"
 #include "OldNameMapper.hh"
 #include "ScaleFactor.hh"
-#include "MConfig.hh"
 
 #include <vector>
 
-class ObjectSelector{
+class ObjectSelector
+{
 
-public:
-    ObjectSelector( const Tools::MConfig &cfg,
-                    OldNameMapper* globalOldNameMap,
-                    const std::string& onjectName,
-                    bool endcap_eta_cuts,
-                    std::string alternative_eta_label= "" );
+  public:
+    ObjectSelector(const Tools::MConfig &cfg, OldNameMapper *globalOldNameMap, const std::string &onjectName,
+                   bool endcap_eta_cuts, std::string alternative_eta_label = "");
     virtual ~ObjectSelector();
     // generic virtual function for selection
-    virtual int passObjectSelection( pxl::Particle *object,
-                   double const objectRho,
-                   const std::string& idType,
-                   const bool isSyst // use alternative kinematic cuts for syst
-                   ) const = 0;
+    virtual int passObjectSelection(pxl::Particle *object, double const objectRho, const std::string &idType,
+                                    const bool isSyst // use alternative kinematic cuts for syst
+    ) const = 0;
 
-    bool passKinematics( pxl::Particle *object, const bool isSyst= false ) const;
-    virtual void setScaleFactors( pxl::Particle *object );
-    OldNameMapper* oldNameMap;
+    bool passKinematics(pxl::Particle *object, const bool isSyst = false) const;
+    virtual void setScaleFactors(pxl::Particle *object);
+    OldNameMapper *oldNameMap;
 
-protected:
+  protected:
     std::string m_object_name;
-private:
+
+  private:
     std::string m_alternative_eta_label;
 
     bool m_object_endcap_eta_cuts;
@@ -45,8 +42,7 @@ private:
     double m_object_syst_eta_endcap_min;
     double m_object_syst_eta_endcap_max;
 
-protected:
-    std::vector< ScaleFactor > m_scale_factors;
-
+  protected:
+    std::vector<ScaleFactor> m_scale_factors;
 };
 #endif

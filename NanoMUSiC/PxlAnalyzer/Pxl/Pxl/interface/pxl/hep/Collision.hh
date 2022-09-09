@@ -23,63 +23,60 @@ namespace pxl
 
 class PXL_DLL_EXPORT Collision : public Object
 {
-public:
-	Collision() :
-		Object()
-	{
-	}
-	/// This copy constructor provides a deep copy of the event container \p original with all data members,
-	/// hep objects, and their (redirected) relations.
-	Collision(const Collision& original) :
-		Object(original)
-	{
-	}
-	/// This copy constructor provides a deep copy of the event container \p original with all data members,
-	/// hep objects, and their (redirected) relations.
-	explicit Collision(const Collision* original) :
-		Object(original)
-	{
-	}
+  public:
+    Collision() : Object()
+    {
+    }
+    /// This copy constructor provides a deep copy of the event container \p original with all data members,
+    /// hep objects, and their (redirected) relations.
+    Collision(const Collision &original) : Object(original)
+    {
+    }
+    /// This copy constructor provides a deep copy of the event container \p original with all data members,
+    /// hep objects, and their (redirected) relations.
+    explicit Collision(const Collision *original) : Object(original)
+    {
+    }
 
-	virtual WkPtrBase* createSelfWkPtr()
-	{
-		return new weak_ptr<Collision>(this);
-	}
+    virtual WkPtrBase *createSelfWkPtr()
+    {
+        return new weak_ptr<Collision>(this);
+    }
 
-	virtual const Id& getTypeId() const
-	{
-		return getStaticTypeId();
-	}
+    virtual const Id &getTypeId() const
+    {
+        return getStaticTypeId();
+    }
 
-	static const Id& getStaticTypeId()
-	{
-		static const Id id("59b2f95c-5142-4970-844f-226ebbc57a99");
-		return id;
-	}
+    static const Id &getStaticTypeId()
+    {
+        static const Id id("59b2f95c-5142-4970-844f-226ebbc57a99");
+        return id;
+    }
 
-	virtual void serialize(const OutputStream &out) const
-	{
-		Object::serialize(out);
-	}
+    virtual void serialize(const OutputStream &out) const
+    {
+        Object::serialize(out);
+    }
 
-	virtual void deserialize(const InputStream &in)
-	{
-		Object::deserialize(in);
-	}
+    virtual void deserialize(const InputStream &in)
+    {
+        Object::deserialize(in);
+    }
 
-	/// Creates a deep copy and returns a C++ pointer to the newly-created object.  
-	virtual Serializable* clone() const
-	{
-		return new Collision(*this);
-	}
-	
-	virtual std::ostream& print(int level=1, std::ostream& os=std::cout, int pan=0) const;
-	
-private:
-	Collision& operator=(const Collision& original)
-	{
-		return *this;
-	}
+    /// Creates a deep copy and returns a C++ pointer to the newly-created object.
+    virtual Serializable *clone() const
+    {
+        return new Collision(*this);
+    }
+
+    virtual std::ostream &print(int level = 1, std::ostream &os = std::cout, int pan = 0) const;
+
+  private:
+    Collision &operator=(const Collision &original)
+    {
+        return *this;
+    }
 };
 
 } // namespace pxl

@@ -127,7 +127,7 @@ def makeExe(user,options,md5sum):
     echo $MD5SUM
     tar xzvf $PROGRAM
     export PXLANA=$PWD
-    export MUSIC_BASE=$PWD
+    export PXLANALYZER_BASE=$PWD
     export MYPXLANA=specialAna
     export LD_LIBRARY_PATH=$PWD/extra_libs:$LD_LIBRARY_PATH
     export LD_LIBRARY_PATH=$LHAPATHREPLACE/lib:$LD_LIBRARY_PATH

@@ -48,8 +48,8 @@ std::string PXL_DLL_EXPORT trim(const std::string &s);
  * @param t String containing whitespaces. Default: space, tab, carriage return and newline.
  * @param trim_spaces Flag to decide if pieces should be trimmed. Default: false.
  */
-void PXL_DLL_EXPORT explode(const std::string &s, std::vector<std::string> &v,
-		const bool trim_spaces, const std::string &t);
+void PXL_DLL_EXPORT explode(const std::string &s, std::vector<std::string> &v, const bool trim_spaces,
+                            const std::string &t);
 /**
  * Function to assemble strings from a vector into one strng.
  * @param v Vector which conatins the string pieces.
@@ -60,13 +60,12 @@ PXL_DLL_EXPORT std::string implode(const std::vector<std::string> &v, const std:
 
 /**
  * Function to expand enviroment variables in a string.
- * @param input String 
+ * @param input String
  * @return input string with expanded variables.
  */
 std::string PXL_DLL_EXPORT expandEnvironmentVariables(const std::string &input);
 
-
-PXL_DLL_EXPORT std::string&  replace(std::string& context, const std::string& from, const std::string& to);
+PXL_DLL_EXPORT std::string &replace(std::string &context, const std::string &from, const std::string &to);
 
 std::string PXL_DLL_EXPORT getParentDirectory(const std::string &path);
 bool PXL_DLL_EXPORT createDirectory(const std::string &path);
@@ -76,21 +75,21 @@ bool PXL_DLL_EXPORT isFile(const std::string &path);
 std::string PXL_DLL_EXPORT clearPathName(const std::string &path);
 void PXL_DLL_EXPORT splitSchema(const std::string &url, std::string &schema, std::string &path);
 
-template<class T>
-inline void safe_delete(T* &p)
+template <class T> inline void safe_delete(T *&p)
 {
-	if (p)
-	{
-		delete p;
-		p = 0;
-	}
+    if (p)
+    {
+        delete p;
+        p = 0;
+    }
 }
 
-inline const char *safe_string(const char *ptr) {
-	if (ptr == 0)
-		return "";
-	else
-		return ptr;
+inline const char *safe_string(const char *ptr)
+{
+    if (ptr == 0)
+        return "";
+    else
+        return ptr;
 }
 
 } // namespace pxl

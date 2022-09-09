@@ -12,15 +12,15 @@
 
 // toml++ v3.1.0
 // https://github.com/marzer/tomlplusplus
-#include "tools/toml.hh"
+#include "Tools/cpp_helper_libs/toml.h"
 
-#include "tools/color.hh"
+#include "Tools/cpp_helper_libs/color.hh"
 
-#include "tools/emoji.hh"
+#include "Tools/cpp_helper_libs/emoji.hh"
 
 // Comand line Tools
 // https://github.com/adishavit/argh
-#include "tools/argh.h"
+#include "Tools/cpp_helper_libs/argh.h"
 
 #include "RunLumiFilter.hh"
 
@@ -35,19 +35,12 @@
 #include "Main/RunLumiRanges.hh"
 #include "Main/SkipEvents.hh"
 #include "Main/Systematics.hh"
+#include "Main/TOMLConfig.hh"
 #include "Tools/Tools.hh"
 
 // ROOT Stuff
 #include "TFile.h"
 #include "TTree.h"
-
-// Include user defined Analysis or use Validator as default
-// Implement your own analysis composer and use export to define the
-// header file as environment variable MYPXLANA.
-#define Q(x) #x
-#define QUOTE(x) Q(x)
-
-// #include QUOTE(MYPXLANA)
 
 #include "EventClassFactory/EventClassFactory.hh"
 

@@ -12,8 +12,8 @@
 
 #include <stdexcept>
 
-#include "Pxl/Pxl/interface/pxl/core/OutputHandler.hh"
 #include "Pxl/Pxl/interface/pxl/core/ChunkWriter.hh"
+#include "Pxl/Pxl/interface/pxl/core/OutputHandler.hh"
 
 namespace pxl
 {
@@ -26,42 +26,40 @@ namespace pxl
 
 class GenericOutputHandler : public OutputHandler
 {
-public:
-	GenericOutputHandler(ChunkWriter& writer) :
-		OutputHandler(), _writer(&writer)
-	{
-	}
+  public:
+    GenericOutputHandler(ChunkWriter &writer) : OutputHandler(), _writer(&writer)
+    {
+    }
 
-	virtual ~GenericOutputHandler()
-	{
-	}
+    virtual ~GenericOutputHandler()
+    {
+    }
 
-	virtual ChunkWriter& getChunkWriter() 
-	{
-		if (!_writer)
-			throw std::runtime_error("GenericOutputHandler::getChunkWriter(): ChunkWriter pointer invalid.");
-		return *_writer;
-	}
+    virtual ChunkWriter &getChunkWriter()
+    {
+        if (!_writer)
+            throw std::runtime_error("GenericOutputHandler::getChunkWriter(): ChunkWriter pointer invalid.");
+        return *_writer;
+    }
 
-	virtual void setChunkWriter(ChunkWriter* writer)
-	{
-		_writer=writer;
-	}
+    virtual void setChunkWriter(ChunkWriter *writer)
+    {
+        _writer = writer;
+    }
 
-private:
-	GenericOutputHandler(const GenericOutputHandler& original)
-	{
-	}
-	
-	GenericOutputHandler& operator= (const GenericOutputHandler& other)
-	{
-		return *this;
-	}
-		
-		
-	ChunkWriter* _writer;
+  private:
+    GenericOutputHandler(const GenericOutputHandler &original)
+    {
+    }
+
+    GenericOutputHandler &operator=(const GenericOutputHandler &other)
+    {
+        return *this;
+    }
+
+    ChunkWriter *_writer;
 };
 
-}//namespace pxl
+} // namespace pxl
 
 #endif /*PXL_IO_GENERICOUTPUTHANDLER_HH*/

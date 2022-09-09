@@ -13,9 +13,9 @@ import resource
 import sys
 
 
-music_path = os.getenv( 'MUSIC_BASE' )
+music_path = os.getenv( 'PXLANALYZER_BASE' )
 if music_path == None:
-    print 'FATAL: MUSIC_BASE not set'
+    print 'FATAL: PXLANALYZER_BASE not set'
     sys.exit(1)
 
 

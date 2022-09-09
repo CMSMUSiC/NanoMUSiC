@@ -1,18 +1,17 @@
+#include "Tools/cpp_helper_libs/json.hpp"
 #include <string>
-#include "tools/json.hpp"
 using json = nlohmann::json;
 
 class RunLumiFilter
 {
-private:
+  private:
     json good_runs_lumis_json;
     bool dummy_json = false;
 
-public:
+  public:
     RunLumiFilter(const std::string &_input_json_file)
     {
-        good_runs_lumis_json = [&]()
-        {
+        good_runs_lumis_json = [&]() {
             if (_input_json_file == "")
             {
                 // no golden json provided --> should always return true

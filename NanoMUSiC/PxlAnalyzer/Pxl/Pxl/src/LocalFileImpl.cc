@@ -7,159 +7,154 @@
 namespace pxl
 {
 
-LocalFileImpl::LocalFileImpl() :
-		_file(0)
+LocalFileImpl::LocalFileImpl() : _file(0)
 {
-
 }
 
-LocalFileImpl::LocalFileImpl(const std::string &filename, int32_t mode) :
-		_file(0)
+LocalFileImpl::LocalFileImpl(const std::string &filename, int32_t mode) : _file(0)
 {
-	open(filename, mode);
+    open(filename, mode);
 }
 
 LocalFileImpl::~LocalFileImpl()
 {
-	close();
+    close();
 }
 
 bool LocalFileImpl::open(const std::string &filename, int32_t mode)
 {
-	close();
-	std::string open_mode;
-	if (mode & OpenRead)
-		open_mode.append("r");
-	else if (mode & OpenWrite)
-		open_mode.append("w");
-	open_mode.append("b");
+    close();
+    std::string open_mode;
+    if (mode & OpenRead)
+        open_mode.append("r");
+    else if (mode & OpenWrite)
+        open_mode.append("w");
+    open_mode.append("b");
 
-	std::string schema, path;
-	splitSchema(filename, schema, path);
-#if defined( _MSC_VER)
-	errno_t err = fopen_s(&_file, filename.c_str(), open_mode.c_str());
-	if (err != 0)
-		_file = 0;
-#elif defined( __APPLE__)
-	_file = fopen(path.c_str(), open_mode.c_str());
+    std::string schema, path;
+    splitSchema(filename, schema, path);
+#if defined(_MSC_VER)
+    errno_t err = fopen_s(&_file, filename.c_str(), open_mode.c_str());
+    if (err != 0)
+        _file = 0;
+#elif defined(__APPLE__)
+    _file = fopen(path.c_str(), open_mode.c_str());
 #else
-	_file = fopen64(path.c_str(), open_mode.c_str());
+    _file = fopen64(path.c_str(), open_mode.c_str());
 #endif
 
-	_mode = mode;
+    _mode = mode;
 
-	return isOpen();
+    return isOpen();
 }
 
 void LocalFileImpl::close()
 {
-	if (_file == 0)
-		return;
-	fclose(_file);
-	_file = 0;
+    if (_file == 0)
+        return;
+    fclose(_file);
+    _file = 0;
 }
 
 bool LocalFileImpl::isEof()
 {
-	if (_file == 0)
-		return true;
+    if (_file == 0)
+        return true;
 
-	return (feof(_file) != 0);
+    return (feof(_file) != 0);
 }
 
 bool LocalFileImpl::isOpen()
 {
-	return (_file != 0);
+    return (_file != 0);
 }
 
 bool LocalFileImpl::isBad()
 {
-	if (_file == 0)
-		return true;
+    if (_file == 0)
+        return true;
 
-	return false;
+    return false;
 }
 
 void LocalFileImpl::clear()
 {
-
 }
 
 bool LocalFileImpl::isGood()
 {
-	if (_file == 0)
-		return false;
+    if (_file == 0)
+        return false;
 
-	if (feof(_file))
-		return false;
+    if (feof(_file))
+        return false;
 
-	return true;
+    return true;
 }
 
 int64_t LocalFileImpl::tell()
 {
-	if (_file == 0)
-		return 0;
+    if (_file == 0)
+        return 0;
 
 #if defined(_MSC_VER)
-	return _ftelli64(_file);
+    return _ftelli64(_file);
 #elif defined(__APPLE__)
-	return ftell(_file);
+    return ftell(_file);
 #else
-	return ftello64(_file);
+    return ftello64(_file);
 #endif
 }
 
 void LocalFileImpl::seek(int64_t pos, int32_t d)
 {
-	int whence;
-	if (d == SeekBegin)
-		whence = SEEK_SET;
-	else if (d == SeekCurrent)
-		whence = SEEK_CUR;
-	else if (d == SeekEnd)
-		whence = SEEK_END;
-  else
-    throw std::runtime_error("Uninitialized value in LocalFileImpl::seek. This never should happen!.");
+    int whence;
+    if (d == SeekBegin)
+        whence = SEEK_SET;
+    else if (d == SeekCurrent)
+        whence = SEEK_CUR;
+    else if (d == SeekEnd)
+        whence = SEEK_END;
+    else
+        throw std::runtime_error("Uninitialized value in LocalFileImpl::seek. This never should happen!.");
 
 #if defined(_MSC_VER)
-	_fseeki64(_file, pos, SEEK_CUR);
+    _fseeki64(_file, pos, SEEK_CUR);
 #elif defined(__APPLE__)
-	fseek(_file, pos, whence);
+    fseek(_file, pos, whence);
 #else
-	fseeko64(_file, pos, whence);
+    fseeko64(_file, pos, whence);
 #endif
 }
 
 int32_t LocalFileImpl::peek()
 {
-	int32_t c;
+    int32_t c;
 
-	c = fgetc(_file);
-	ungetc(c, _file);
+    c = fgetc(_file);
+    ungetc(c, _file);
 
-	return c;
+    return c;
 }
 
 int64_t LocalFileImpl::read(char *s, size_t count)
 {
-	return fread(s, sizeof(char), count, _file);
+    return fread(s, sizeof(char), count, _file);
 }
 
 int64_t LocalFileImpl::write(const char *s, size_t count)
 {
-	return fwrite(s, sizeof(char), count, _file);
-
+    return fwrite(s, sizeof(char), count, _file);
 }
 
 void LocalFileImpl::ignore(int64_t count)
 {
-	seek(count, SeekCurrent);
+    seek(count, SeekCurrent);
 }
 
 void LocalFileImpl::destroy()
 {
-	delete this;
+    delete this;
 }
 
-}
+} // namespace pxl

@@ -6,8 +6,8 @@
 // Licensed under a LGPL-2 or later license -
 //-------------------------------------------
 
-#include "Pxl/Pxl/interface/pxl/core.hh"
 #include "Pxl/Pxl/interface/pxl/hep.hh"
+#include "Pxl/Pxl/interface/pxl/core.hh"
 
 namespace pxl
 {
@@ -23,32 +23,32 @@ static ObjectProducerTemplate<EventView> _EventViewProducer;
 
 void Hep::initialize()
 {
-	if (_initialized)
-		return;
+    if (_initialized)
+        return;
 
-	_AnalysisForkProducer.initialize();
-	_AnalysisProcessProducer.initialize();
-	_CollisionProducer.initialize();
-	_ParticleProducer.initialize();
-	_VertexProducer.initialize();
-	_EventViewProducer.initialize();
+    _AnalysisForkProducer.initialize();
+    _AnalysisProcessProducer.initialize();
+    _CollisionProducer.initialize();
+    _ParticleProducer.initialize();
+    _VertexProducer.initialize();
+    _EventViewProducer.initialize();
 
-	_initialized = true;
+    _initialized = true;
 }
 
 void Hep::shutdown()
 {
-	if (_initialized == false)
-		return;
+    if (_initialized == false)
+        return;
 
-	_AnalysisForkProducer.shutdown();
-	_AnalysisProcessProducer.shutdown();
-	_CollisionProducer.shutdown();
-	_ParticleProducer.shutdown();
-	_VertexProducer.shutdown();
-	_EventViewProducer.shutdown();
+    _AnalysisForkProducer.shutdown();
+    _AnalysisProcessProducer.shutdown();
+    _CollisionProducer.shutdown();
+    _ParticleProducer.shutdown();
+    _VertexProducer.shutdown();
+    _EventViewProducer.shutdown();
 
-	_initialized = false;
+    _initialized = false;
 }
 
 } // namespace pxl

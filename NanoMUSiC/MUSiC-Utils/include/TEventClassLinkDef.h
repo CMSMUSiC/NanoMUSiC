@@ -6,7 +6,7 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-#pragma link C++ class TEventClass+;
-#pragma link C++ class pdf::PDFInfo+;
+#pragma link C++ class TEventClass + ;
+// #pragma link C++ class pdf::PDFInfo+;
 
 #endif

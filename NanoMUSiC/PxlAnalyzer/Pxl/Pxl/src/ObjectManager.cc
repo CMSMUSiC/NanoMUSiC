@@ -7,5 +7,3 @@
 //-------------------------------------------
 
 #include "Pxl/Pxl/interface/pxl/core/ObjectManager.hh"
-
-

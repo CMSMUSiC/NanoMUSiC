@@ -36,41 +36,38 @@
 
 #include "TProfile.h"
 
-namespace Tools {
-   class MConfig;
+namespace Tools
+{
+class MConfig;
 }
 
-class BinnedMapping {
-   public:
-      BinnedMapping( Tools::MConfig const &config,
-                     std::string const& keyName,
-                     std::string const& valueName,
-                     std::string const& absBinName = ""
-                     );
-      ~BinnedMapping() {}
+class BinnedMapping
+{
+  public:
+    BinnedMapping(Tools::MConfig const &config, std::string const &keyName, std::string const &valueName,
+                  std::string const &absBinName = "");
+    ~BinnedMapping()
+    {
+    }
 
-      // Get the value in the bin corresponding to key.
-      double getValue( double const key ) const;
+    // Get the value in the bin corresponding to key.
+    double getValue(double const key) const;
 
-   private:
-      // Read the bin edges from config and sort them!
-      std::vector< double > initBinEdges( Tools::MConfig const &config,
-                                          std::string const& keyName
-                                          ) const;
+  private:
+    // Read the bin edges from config and sort them!
+    std::vector<double> initBinEdges(Tools::MConfig const &config, std::string const &keyName) const;
 
-      // Fill the TProfile bins with the values given in the config file.
-      // The "names" of the keys and values is used to name the histogram in a
-      // meaningful way.
-      TProfile initKeyValueMap( Tools::MConfig const &config,
-                                std::string const& keyName,
-                                std::string const& valueName
-                                ) const;
+    // Fill the TProfile bins with the values given in the config file.
+    // The "names" of the keys and values is used to name the histogram in a
+    // meaningful way.
+    TProfile initKeyValueMap(Tools::MConfig const &config, std::string const &keyName,
+                             std::string const &valueName) const;
 
-      std::vector< double > const m_bin_edges;
-      std::vector< double > const m_bin_values;
+    std::vector<double> const m_bin_edges;
+    std::vector<double> const m_bin_values;
 
-      bool const m_abs_bins;
-      TProfile const m_key_value_map;
+    bool const m_abs_bins;
+    TProfile const m_key_value_map;
 };
 
 #endif /*BINNEDMAPPING*/

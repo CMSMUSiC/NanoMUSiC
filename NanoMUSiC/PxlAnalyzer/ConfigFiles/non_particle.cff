@@ -28,7 +28,7 @@ Pileup.UseSampleName = 0
 #Pileup.GenHistFileDown  = "$PXLANA/ConfigFiles/ConfigInputs/mc_pileup_Summer16.root"
 #Pileup.GenHistNameDown = "pileup"
 
-Pileup.JSONFile = "$MUSIC_BASE/ConfigFiles/ConfigInputs/jsonPOG/LUM/2017_UL/puWeights.json"
+Pileup.JSONFile = "$PXLANALYZER_BASE/ConfigFiles/ConfigInputs/jsonPOG/LUM/2017_UL/puWeights.json"
 
 # Pileup.DataHistFile = "$PXLANA/ConfigFiles/ConfigInputs/data_pileup_UL2017_69p2.root"
 # Pileup.DataHistName = "pileup"

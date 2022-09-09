@@ -12,8 +12,8 @@
 
 #include <fstream>
 
-#include "Pxl/Pxl/interface/pxl/core/OutputHandler.hh"
 #include "Pxl/Pxl/interface/pxl/core/ChunkWriter.hh"
+#include "Pxl/Pxl/interface/pxl/core/OutputHandler.hh"
 
 namespace pxl
 {
@@ -26,26 +26,24 @@ namespace pxl
 
 class PXL_DLL_EXPORT OutputFile : public OutputHandler
 {
-public:
+  public:
+    OutputFile(const std::string &filename, size_t maxBlockSize = 1048576, size_t maxNObjects = 1000);
+    virtual ~OutputFile();
+    virtual void open(const std::string &filename);
+    virtual void close();
+    virtual ChunkWriter &getChunkWriter();
 
-	OutputFile(const std::string& filename, size_t maxBlockSize = 1048576, size_t maxNObjects = 1000);
-	virtual ~OutputFile();
-	virtual void open(const std::string& filename);
-	virtual void close();
-	virtual ChunkWriter& getChunkWriter();
-		
-	void setCompressionMode(int compressionMode);
-	
-private:
-	
-	OutputFile(const OutputFile& original);
+    void setCompressionMode(int compressionMode);
 
-	OutputFile& operator= (const OutputFile& other);
-	
-	File _stream;
-	ChunkWriter _writer;
+  private:
+    OutputFile(const OutputFile &original);
+
+    OutputFile &operator=(const OutputFile &other);
+
+    File _stream;
+    ChunkWriter _writer;
 };
 
-}//namespace pxl
+} // namespace pxl
 
 #endif /*PXL_IO_OUTPUTFILE_HH*/

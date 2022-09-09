@@ -12,53 +12,48 @@
 
 namespace pxl
 {
-OutputFile::OutputFile(const std::string& filename, size_t maxBlockSize,
-		size_t maxNObjects) :
-		OutputHandler(maxBlockSize, maxNObjects), _stream(filename, OpenWrite), _writer(
-				_stream)
+OutputFile::OutputFile(const std::string &filename, size_t maxBlockSize, size_t maxNObjects)
+    : OutputHandler(maxBlockSize, maxNObjects), _stream(filename, OpenWrite), _writer(_stream)
 {
-	if (_stream.isGood() == false)
-		throw std::runtime_error(
-				"OutputFile: " + filename + " could not be opened.");
+    if (_stream.isGood() == false)
+        throw std::runtime_error("OutputFile: " + filename + " could not be opened.");
 }
 
 OutputFile::~OutputFile()
 {
-	close();
+    close();
 }
 
-void OutputFile::open(const std::string& filename)
+void OutputFile::open(const std::string &filename)
 {
-	_stream.open(filename.c_str(), OpenWrite);
-	if (_stream.isGood() == false)
-		throw std::runtime_error(
-				"OutputFile: " + filename + " could not be opened.");
+    _stream.open(filename.c_str(), OpenWrite);
+    if (_stream.isGood() == false)
+        throw std::runtime_error("OutputFile: " + filename + " could not be opened.");
 }
 
 void OutputFile::close()
 {
-	finish();
-	_stream.close();
+    finish();
+    _stream.close();
 }
 
-ChunkWriter& OutputFile::getChunkWriter()
+ChunkWriter &OutputFile::getChunkWriter()
 {
-	return _writer;
+    return _writer;
 }
 
 void OutputFile::setCompressionMode(int compressionMode)
 {
-	_writer.setCompressionMode(compressionMode);
+    _writer.setCompressionMode(compressionMode);
 }
 
-OutputFile::OutputFile(const OutputFile& original) :
-		_stream(), _writer(_stream)
+OutputFile::OutputFile(const OutputFile &original) : _stream(), _writer(_stream)
 {
 }
 
-OutputFile& OutputFile::operator=(const OutputFile& other)
+OutputFile &OutputFile::operator=(const OutputFile &other)
 {
-	return *this;
+    return *this;
 }
 
-}
+} // namespace pxl

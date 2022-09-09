@@ -7,8 +7,8 @@
 
 #include "Pxl/Pxl/interface/pxl/core.hh"
 
-#include "Pxl/Pxl/interface/pxl/core/FileFactory.hh"
 #include "LocalFileImpl.hh"
+#include "Pxl/Pxl/interface/pxl/core/FileFactory.hh"
 #include "StdFileImpl.hh"
 
 #ifdef PXL_ENABLE_SFTP
@@ -40,47 +40,47 @@ static FileProducerTemplate<dCapFileImpl> _dCapFileProducer;
 #endif
 void Core::initialize()
 {
-	if (_initialized)
-		return;
+    if (_initialized)
+        return;
 
-	_BasicContainerProducer.initialize();
-	_BasicMatrixProducer.initialize();
-	_BasicNVectorProducer.initialize();
-	_EventProducer.initialize();
-	_InformationChunkProducer.initialize();
-	_ObjectProducer.initialize();
-	_ObjectManagerProducer.initialize();
-	_LocalFileProducer.initialize("file");
-	_StdFileProducer.initialize("std");
+    _BasicContainerProducer.initialize();
+    _BasicMatrixProducer.initialize();
+    _BasicNVectorProducer.initialize();
+    _EventProducer.initialize();
+    _InformationChunkProducer.initialize();
+    _ObjectProducer.initialize();
+    _ObjectManagerProducer.initialize();
+    _LocalFileProducer.initialize("file");
+    _StdFileProducer.initialize("std");
 #ifdef PXL_ENABLE_SFTP
-	_sFTPFileProducer.initialize("ssh");
+    _sFTPFileProducer.initialize("ssh");
 #endif
 #ifdef PXL_ENABLE_DCAP
-	_dCapFileProducer.initialize("dcap");
+    _dCapFileProducer.initialize("dcap");
 #endif
-	_initialized = true;
+    _initialized = true;
 }
 
 void Core::shutdown()
 {
-	if (_initialized == false)
-		return;
+    if (_initialized == false)
+        return;
 
-	_BasicMatrixProducer.shutdown();
-	_BasicContainerProducer.shutdown();
-	_BasicNVectorProducer.shutdown();
-	_EventProducer.shutdown();
-	_InformationChunkProducer.shutdown();
-	_ObjectProducer.shutdown();
-	_ObjectManagerProducer.shutdown();
-	_LocalFileProducer.shutdown();
+    _BasicMatrixProducer.shutdown();
+    _BasicContainerProducer.shutdown();
+    _BasicNVectorProducer.shutdown();
+    _EventProducer.shutdown();
+    _InformationChunkProducer.shutdown();
+    _ObjectProducer.shutdown();
+    _ObjectManagerProducer.shutdown();
+    _LocalFileProducer.shutdown();
 #ifdef PXL_ENABLE_SFTP
-	_sFTPFileProducer.shutdown();
+    _sFTPFileProducer.shutdown();
 #endif
 #ifdef PXL_ENABLE_DCAP
-	_dCapFileProducer.shutdown();
+    _dCapFileProducer.shutdown();
 #endif
-	_initialized = false;
+    _initialized = false;
 }
 
 } // namespace pxl

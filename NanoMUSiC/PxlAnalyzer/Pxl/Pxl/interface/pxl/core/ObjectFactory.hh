@@ -12,8 +12,8 @@
 
 #include <map>
 
-#include "Pxl/Pxl/interface/pxl/core/Serializable.hh"
 #include "Pxl/Pxl/interface/pxl/core/Id.hh"
+#include "Pxl/Pxl/interface/pxl/core/Serializable.hh"
 
 // io
 /**
@@ -28,53 +28,47 @@ class ObjectProducerInterface;
 
 class PXL_DLL_EXPORT ObjectFactory
 {
-private:
+  private:
+    ObjectFactory();
 
-	ObjectFactory();
+    std::map<Id, const ObjectProducerInterface *> _Producers;
 
-	std::map<Id, const ObjectProducerInterface *> _Producers;
+  public:
+    static ObjectFactory &instance();
 
-public:
+    Serializable *create(const Id &id);
 
-	static ObjectFactory& instance();
-
-	Serializable *create(const Id& id);
-
-	void
-			registerProducer(const Id& id,
-					const ObjectProducerInterface* producer);
-	void unregisterProducer(const ObjectProducerInterface* producer);
+    void registerProducer(const Id &id, const ObjectProducerInterface *producer);
+    void unregisterProducer(const ObjectProducerInterface *producer);
 };
 
 class ObjectProducerInterface
 {
-public:
-	virtual ~ObjectProducerInterface()
-	{
-	}
+  public:
+    virtual ~ObjectProducerInterface()
+    {
+    }
 
-	virtual Serializable *create() const = 0;
+    virtual Serializable *create() const = 0;
 };
 
-template<class T>
-class ObjectProducerTemplate: public ObjectProducerInterface
+template <class T> class ObjectProducerTemplate : public ObjectProducerInterface
 {
-public:
+  public:
+    void initialize()
+    {
+        ObjectFactory::instance().registerProducer(T::getStaticTypeId(), this);
+    }
 
-	void initialize()
-	{
-		ObjectFactory::instance().registerProducer(T::getStaticTypeId(), this);
-	}
+    void shutdown()
+    {
+        ObjectFactory::instance().unregisterProducer(this);
+    }
 
-	void shutdown()
-	{
-		ObjectFactory::instance().unregisterProducer(this);
-	}
-
-	virtual Serializable *create() const
-	{
-		return new T();
-	}
+    virtual Serializable *create() const
+    {
+        return new T();
+    }
 };
 
 } // namespace pxl

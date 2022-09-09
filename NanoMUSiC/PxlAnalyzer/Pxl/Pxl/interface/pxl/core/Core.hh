@@ -16,11 +16,11 @@ namespace pxl
 
 class PXL_DLL_EXPORT Core
 {
-public:
-	static void initialize();
-	static void shutdown();
+  public:
+    static void initialize();
+    static void shutdown();
 };
 
-}
+} // namespace pxl
 
 #endif /* INITIALIZE_HH_ */

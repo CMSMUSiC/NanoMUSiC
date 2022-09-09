@@ -1,5 +1,4 @@
 add_library(PxlAnalyzer
-    EventClassFactory/AnalysisComposer.cc
     EventClassFactory/ParticleMap.cc
     EventClassFactory/TriggerStream.cc
     EventClassFactory/EventClassFactory.cc
@@ -85,6 +84,7 @@ add_library(PxlAnalyzer
     Tools/SignalHandler.cc
     Tools/AnyOption.cc
     Tools/Tools.cc
+    Main/TOMLConfig.cc
 )
 target_include_directories(PxlAnalyzer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_compile_options(PxlAnalyzer PRIVATE -DPXL_ENABLE_DCAP -DSTANDALONE -DMYPXLANA=EventClassFactory/AnalysisComposer.hh -g -c)
+target_compile_options(PxlAnalyzer PUBLIC -g -c)

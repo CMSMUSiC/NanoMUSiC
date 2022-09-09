@@ -12,8 +12,8 @@
 
 #include <map>
 
-#include "Pxl/Pxl/interface/pxl/core/Id.hh"
 #include "Pxl/Pxl/interface/pxl/core/File.hh"
+#include "Pxl/Pxl/interface/pxl/core/Id.hh"
 
 namespace pxl
 {
@@ -22,54 +22,49 @@ class FileProducerInterface;
 
 class PXL_DLL_EXPORT FileFactory
 {
-private:
+  private:
+    FileFactory();
 
-	FileFactory();
+    std::map<std::string, const FileProducerInterface *> _Producers;
 
-	std::map<std::string, const FileProducerInterface *> _Producers;
+  public:
+    static FileFactory &instance();
 
-public:
+    FileImpl *create(const std::string &id);
 
-	static FileFactory& instance();
+    void registerProducer(const std::string &id, const FileProducerInterface *producer);
+    void unregisterProducer(const FileProducerInterface *producer);
 
-	FileImpl *create(const std::string& id);
-
-	void registerProducer(const std::string& id,
-			const FileProducerInterface* producer);
-	void unregisterProducer(const FileProducerInterface* producer);
-
-	bool hasSchema(const std::string& schema);
+    bool hasSchema(const std::string &schema);
 };
 
 class FileProducerInterface
 {
-public:
-	virtual ~FileProducerInterface()
-	{
-	}
+  public:
+    virtual ~FileProducerInterface()
+    {
+    }
 
-	virtual FileImpl *create() const = 0;
+    virtual FileImpl *create() const = 0;
 };
 
-template<class T>
-class FileProducerTemplate: public FileProducerInterface
+template <class T> class FileProducerTemplate : public FileProducerInterface
 {
-public:
+  public:
+    void initialize(const std::string &schema)
+    {
+        FileFactory::instance().registerProducer(schema, this);
+    }
 
-	void initialize(const std::string &schema)
-	{
-		FileFactory::instance().registerProducer(schema, this);
-	}
+    void shutdown()
+    {
+        FileFactory::instance().unregisterProducer(this);
+    }
 
-	void shutdown()
-	{
-		FileFactory::instance().unregisterProducer(this);
-	}
-
-	FileImpl *create() const
-	{
-		return new T();
-	}
+    FileImpl *create() const
+    {
+        return new T();
+    }
 };
 
 } // namespace pxl

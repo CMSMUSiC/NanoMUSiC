@@ -12,8 +12,8 @@
 
 #include <stdexcept>
 
-#include "Pxl/Pxl/interface/pxl/core/InputHandler.hh"
 #include "Pxl/Pxl/interface/pxl/core/ChunkReader.hh"
+#include "Pxl/Pxl/interface/pxl/core/InputHandler.hh"
 
 namespace pxl
 {
@@ -24,42 +24,40 @@ namespace pxl
  */
 class GenericInputHandler : public InputHandler
 {
-public:
+  public:
+    GenericInputHandler(ChunkReader &reader) : InputHandler(), _reader(&reader)
+    {
+    }
 
-	GenericInputHandler(ChunkReader& reader) :
-		InputHandler(),	_reader(&reader)
-	{
-	}
+    virtual ~GenericInputHandler()
+    {
+    }
 
-	virtual ~GenericInputHandler()
-	{
-	}
+    virtual ChunkReader &getChunkReader()
+    {
+        if (!_reader)
+            throw std::runtime_error("GenericInputHandler::getChunkReader(): ChunkReader pointer invalid.");
+        return *_reader;
+    }
 
-	virtual ChunkReader& getChunkReader() 
-	{
-		if (!_reader)
-			throw std::runtime_error("GenericInputHandler::getChunkReader(): ChunkReader pointer invalid.");			
-		return *_reader;
-	}
-	
-	virtual void setChunkReader(ChunkReader* reader)
-	{
-		_reader=reader;
-	}
+    virtual void setChunkReader(ChunkReader *reader)
+    {
+        _reader = reader;
+    }
 
-private:
-	GenericInputHandler(const GenericInputHandler& original)
-	{
-	}
-	
-	GenericInputHandler& operator= (const GenericInputHandler& other)
-	{
-		return *this;
-	}
-	
-	ChunkReader* _reader;
+  private:
+    GenericInputHandler(const GenericInputHandler &original)
+    {
+    }
+
+    GenericInputHandler &operator=(const GenericInputHandler &other)
+    {
+        return *this;
+    }
+
+    ChunkReader *_reader;
 };
 
-} //namespace pxl
+} // namespace pxl
 
 #endif /*PXL_IO_GENERICINPUTHANDLER_HH*/

@@ -1,37 +1,29 @@
 #ifndef GammaSelector_hh
 #define GammaSelector_hh
 
-#include <string>
-#include <map>
+#include "EffectiveArea.hh"
+#include "ObjectSelector.hh"
 #include "Pxl/Pxl/interface/pxl/core.hh"
 #include "Pxl/Pxl/interface/pxl/hep.hh"
 #include "Tools/MConfig.hh"
-#include "EffectiveArea.hh"
-#include "ObjectSelector.hh"
+#include <map>
+#include <string>
 
-class GammaSelector : public ObjectSelector {
-    public:
-        GammaSelector( const Tools::MConfig &cfg, OldNameMapper *globalOldNameMap );
-        ~GammaSelector();
-    int passObjectSelection( pxl::Particle *gam,
-                       double const gamRho,
-                       const std::string& idType,
-                       const bool isSyst // use alternative kinematic cuts for syst
-                       ) const;
+class GammaSelector : public ObjectSelector
+{
+  public:
+    GammaSelector(const Tools::MConfig &cfg, OldNameMapper *globalOldNameMap);
+    ~GammaSelector();
+    int passObjectSelection(pxl::Particle *gam, double const gamRho, const std::string &idType,
+                            const bool isSyst // use alternative kinematic cuts for syst
+    ) const;
 
-    private:
+  private:
     // member functions
-    bool passCBID( pxl::Particle const *gam,
-                                              double const gamRho,
-                                              bool const barrel,
-                                              bool const endcap
-                                              ) const;
-    bool passMVAID( pxl::Particle const *gam,
-                                              bool const barrel,
-                                              bool const endcap
-                                              ) const;
+    bool passCBID(pxl::Particle const *gam, double const gamRho, bool const barrel, bool const endcap) const;
+    bool passMVAID(pxl::Particle const *gam, bool const barrel, bool const endcap) const;
 
-//     bool passCutBased2012(pxl::Particle const *gam) const;
+    //     bool passCutBased2012(pxl::Particle const *gam) const;
     bool passPhys14Loose(pxl::Particle const *gam) const;
     bool passPhys14Medium(pxl::Particle const *gam) const;
     bool passPhys14Tight(pxl::Particle const *gam) const;
@@ -45,10 +37,10 @@ class GammaSelector : public ObjectSelector {
 
     // member variables
 
-    bool const    m_gam_useConverted;
-    bool const    m_gam_useElectronVeto;
-    bool const    m_gam_usePixelSeed;
-    bool const    m_gam_rejectOutOfTime;
+    bool const m_gam_useConverted;
+    bool const m_gam_useElectronVeto;
+    bool const m_gam_usePixelSeed;
+    bool const m_gam_rejectOutOfTime;
     double const m_gam_corrFactor_max;
 
     double const m_gam_barrel_sigmaIetaIeta_min;

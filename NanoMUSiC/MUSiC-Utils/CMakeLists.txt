@@ -15,7 +15,6 @@ target_compile_options(TEventClass PUBLIC
         -fno-signaling-nans
         -fcx-limited-range
         -fno-associative-math
-        -std=gnu++17
         -DMYPXLANA=EventClassFactory/AnalysisComposer.hh
         -pthread
         -std=c++17

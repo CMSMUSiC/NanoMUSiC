@@ -86,7 +86,7 @@ Gamma.Error.Fakes = 0.4
 # https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedPhotonID2012#Effective_Areas_for_rho_correcti
 # (r20: 2013-01-10)
 
-#Gamma.EffectiveArea.File = "$MUSIC_BASE/ConfigFiles/PhotonEffectiveArea.txt"
+#Gamma.EffectiveArea.File = "$PXLANALYZER_BASE/ConfigFiles/PhotonEffectiveArea.txt"
 
 # If true, the given eta values are considered abolute.
 # No negative values allowed!

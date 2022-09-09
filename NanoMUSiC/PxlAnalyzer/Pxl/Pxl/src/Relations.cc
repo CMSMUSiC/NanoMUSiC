@@ -14,11 +14,11 @@ namespace pxl
 
 void Relations::serialize(const OutputStream &out) const
 {
-	out.writeInt(size());
-	for (const_iterator iter = begin(); iter != end(); ++iter)
-	{
-		(*iter)->getId().serialize(out);
-	}
+    out.writeInt(size());
+    for (const_iterator iter = begin(); iter != end(); ++iter)
+    {
+        (*iter)->getId().serialize(out);
+    }
 }
 
-}
+} // namespace pxl

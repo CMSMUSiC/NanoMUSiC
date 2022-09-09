@@ -9,20 +9,21 @@
 #include "Pxl/Pxl/interface/pxl/core/InformationChunk.hh"
 #include "Pxl/Pxl/interface/pxl/core/ObjectFactory.hh"
 
-namespace pxl {
+namespace pxl
+{
 
 /// Write data to the OutputStream \p out.
 void InformationChunk::serialize(const OutputStream &out) const
 {
-	Serializable::serialize(out);
-	UserRecordHelper::serialize(out);
+    Serializable::serialize(out);
+    UserRecordHelper::serialize(out);
 }
 
 /// Read data from the InputStream \p in.
 void InformationChunk::deserialize(const InputStream &in)
 {
-	Serializable::deserialize(in);
-	UserRecordHelper::deserialize(in);
+    Serializable::deserialize(in);
+    UserRecordHelper::deserialize(in);
 }
 
-}
+} // namespace pxl

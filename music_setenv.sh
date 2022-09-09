@@ -9,6 +9,12 @@ SCRIPTDIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 # https://lcginfo.cern.ch/release_packages/x86_64-centos7-gcc11-opt/102/
 source /cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/setup.sh
 
+# Set ninja as default CMake generator
+export CMAKE_GENERATOR=Ninja
+
+# set base dir
+export MUSIC_BASE=$SCRIPTDIR
+
 # Set dummy SCRAM_ARCH. needed for LHAPDF.
 export SCRAM_ARCH=slc7_amd64_gcc11
 
@@ -49,13 +55,8 @@ source set_env.sh
 
 cd $SCRIPTDIR
 
-
+# set PATH
 export PATH=$PATH:$SCRIPTDIR/bin;
-
-
-export CORRECTIONLIB=$SCRIPTDIR/extern/correctionlib/correctionlib
-export LD_LIBRARY_PATH=$CORRECTIONLIB/lib/:$LD_LIBRARY_PATH
-
 
 # control whether MUSiC envs are set
 # to be used by Makefile

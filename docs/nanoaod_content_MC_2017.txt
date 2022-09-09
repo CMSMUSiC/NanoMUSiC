@@ -690,7 +690,7 @@ nLHEPdfWeight - Value < UInt_t >
 Description: 
 ----------------------------------------------------------------------------------------------------
 LHEPdfWeight - Vector < Float_t >
-Description: LHE pdf variation weights (w_var / w_nominal) for LHA IDs 325500 - 325600
+Description: LHE pdf variation weights (w_var / w_nominal) for LHA IDs 325300 - 325402
 ----------------------------------------------------------------------------------------------------
 nLHEReweightingWeight - Value < UInt_t >
 Description: 

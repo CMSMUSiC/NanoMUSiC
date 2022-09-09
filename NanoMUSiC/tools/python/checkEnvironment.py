@@ -9,7 +9,7 @@ def checkEnvironment():
     if major < 2 or minor < 4:
         raise EnvironmentError( 1, 'Requires Python >= 2.4! Activate a CMSSW release to get that.' )
 
-    var = 'MUSIC_BASE'
+    var = 'PXLANALYZER_BASE'
     music_path = os.getenv( var )
     if music_path == None:
         raise EnvironmentError( 1, 'Environment variable not set', var )

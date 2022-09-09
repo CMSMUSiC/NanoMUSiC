@@ -1,25 +1,23 @@
 #ifndef JetSelector_hh
 #define JetSelector_hh
 
-#include <string>
-#include <map>
+#include "ObjectSelector.hh"
 #include "Pxl/Pxl/interface/pxl/core.hh"
 #include "Pxl/Pxl/interface/pxl/hep.hh"
 #include "Tools/MConfig.hh"
-#include "ObjectSelector.hh"
+#include <map>
+#include <string>
 
 class JetSelector : public ObjectSelector
 {
-public:
+  public:
     JetSelector(const Tools::MConfig &cfg, OldNameMapper *globalOldNameMap, const std::string &name = "Jet");
     ~JetSelector();
-    int passObjectSelection(pxl::Particle *jet,
-                            double const jetRho,
-                            const std::string &idType,
+    int passObjectSelection(pxl::Particle *jet, double const jetRho, const std::string &idType,
                             const bool isSyst // use alternative kinematic cuts for syst
     ) const;
 
-protected:
+  protected:
     // Jets:
     bool const m_jet_use;
     double const m_jet_pt_min;

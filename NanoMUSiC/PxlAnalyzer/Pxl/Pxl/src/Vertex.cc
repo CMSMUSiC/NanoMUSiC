@@ -14,24 +14,23 @@
 namespace pxl
 {
 
-bool operator==(const Vertex& obj1, const Vertex& obj2)
+bool operator==(const Vertex &obj1, const Vertex &obj2)
 {
-	return obj1.getVector() == obj2.getVector();
+    return obj1.getVector() == obj2.getVector();
 }
 
-bool operator!=(const Vertex& obj1, const Vertex& obj2)
+bool operator!=(const Vertex &obj1, const Vertex &obj2)
 {
-	return obj1.getVector() != obj2.getVector();
+    return obj1.getVector() != obj2.getVector();
 }
 
-std::ostream& Vertex::print(int level, std::ostream& os, int pan) const
+std::ostream &Vertex::print(int level, std::ostream &os, int pan) const
 {
-	printPan1st(os, pan) << "Vertex: '" << getName() << "', x = (" << getX()
-			<< ", " << getY() << ", " << getZ() << ")" << std::endl;
-	if (level > 0)
-		printContent(level, os, pan);
-	return os;
+    printPan1st(os, pan) << "Vertex: '" << getName() << "', x = (" << getX() << ", " << getY() << ", " << getZ() << ")"
+                         << std::endl;
+    if (level > 0)
+        printContent(level, os, pan);
+    return os;
 }
 
 } // namespace pxl
-

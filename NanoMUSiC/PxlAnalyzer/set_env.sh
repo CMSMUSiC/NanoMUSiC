@@ -6,10 +6,10 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
   [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
 done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-export MUSIC_BASE=$DIR
+export PXLANALYZER_BASE=$DIR
 export PXLANA=$DIR
-export PATH=$PATH:$MUSIC_BASE/bin;
-export PYTHONPATH=$MUSIC_BASE/python:$PYTHONPATH
+export PATH=$PATH:$PXLANALYZER_BASE/bin;
+export PYTHONPATH=$PXLANALYZER_BASE/python:$PYTHONPATH
 
 # if [ "$SCRAM_ARCH" = "slc7_amd64_gcc700" ]; then
 #   export LHAPDF=/cvmfs/cms.cern.ch/slc7_amd64_gcc700/external/lhapdf/6.2.1-omkpbe2

@@ -41,7 +41,7 @@ case $ACTION in
       ;;
 esac
 
-LUIGI_MUSIC_BASE=$MUSIC_UTILS/python/luigi_music/
+LUIGI_PXLANALYZER_BASE=$MUSIC_UTILS/python/luigi_music/
 
 CMD="luigi --module luigi_music.tasks $REAL_TASK $ARGS"
 echo "Executing $CMD..."

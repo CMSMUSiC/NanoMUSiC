@@ -1,15 +1,16 @@
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 
 #include <limits>
 
-#include <cmath>
 #include <cassert>
+#include <cmath>
 
 #include "ConvolutionLookup.hh"
 
 // Main function for table generation
-int main( int argc, char* argv[] ) {
+int main(int argc, char *argv[])
+{
     LookupOptions options;
 
     // PARAMS
@@ -33,20 +34,23 @@ int main( int argc, char* argv[] ) {
     options.data_lower_block_size = 10;
     // END PARAMS
 
-    options.bg_npoints_down = log( 2. - bg_min ) / log( options.bg_factor_down );
-    options.bg_npoints_up = log( bg_max ) / log( options.bg_factor_up );
+    options.bg_npoints_down = log(2. - bg_min) / log(options.bg_factor_down);
+    options.bg_npoints_up = log(bg_max) / log(options.bg_factor_up);
 
-    options.uncert_npoints = log( uncert_max / options.uncert_min ) / log( options.uncert_factor );
+    options.uncert_npoints = log(uncert_max / options.uncert_min) / log(options.uncert_factor);
 
-    options.data_npoints = options.data_log_block_start
-        + log( data_max / options.data_log_block_start )/log( options.data_log_block_factor );
+    options.data_npoints = options.data_log_block_start +
+                           log(data_max / options.data_log_block_start) / log(options.data_log_block_factor);
 
-    LookupTable lookupTable( /* debug = */ true );
-    lookupTable.generate( options );
+    LookupTable lookupTable(/* debug = */ true);
+    lookupTable.generate(options);
 
-    if( argc >= 2 ){
-        lookupTable.writeFile( argv[ 1 ] );
-    } else {
+    if (argc >= 2)
+    {
+        lookupTable.writeFile(argv[1]);
+    }
+    else
+    {
         lookupTable.writeFile();
     }
 

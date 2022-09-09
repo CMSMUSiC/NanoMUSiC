@@ -17,9 +17,9 @@ void PrintProcessInfo()
 int main(int argc, char *argv[])
 {
     // check for env setup
-    if (getenv("MUSIC_BASE") == NULL)
+    if (getenv("PXLANALYZER_BASE") == NULL)
     {
-        throw std::runtime_error("MUSIC_BASE not set!");
+        throw std::runtime_error("PXLANALYZER_BASE not set!");
     }
 
     TDirectory::AddDirectory(kFALSE); // Force ROOT to give directories in our hand - Yes, we can
@@ -29,22 +29,22 @@ int main(int argc, char *argv[])
     argh::parser cmdl(argc, argv, argh::parser::PREFER_PARAM_FOR_UNREG_OPTION);
     const bool show_help = cmdl[{"-h", "--help"}];
     const bool batch_mode = cmdl[{"-b", "--batch"}];
-    const std::string inputs = cmdl({"-c", "--config"}).str();
-    if (show_help || inputs == "")
+    const std::string run_config_file = cmdl({"-c", "--run-config"}).str();
+    if (show_help || run_config_file == "")
     {
         std::cout << " " << std::endl;
         std::cout << " " << std::endl;
         std::cout << "MUSiC - Model Unspecific Search in CMS" << std::endl;
         std::cout << emojicpp::emojize("      :signal_strength: Run2 - Ultra Legacy :signal_strength:") << std::endl;
         std::cout << " " << std::endl;
-        if (inputs == "")
+        if (run_config_file == "")
         {
             std::cout << "ERROR: the option '--config' is required but missing" << std::endl;
         }
         std::cout << "Available options:" << std::endl;
         std::cout << " " << std::endl;
         std::cout << "  -h [ --help ]          produce help message" << std::endl;
-        std::cout << "  -c [ --config ] arg    The main config file (TOML format)." << std::endl;
+        std::cout << "  -c [ --run-config ] arg    The main config file (TOML format)." << std::endl;
         std::cout << "  -b [ --batch ] arg     Set to 1, if running in batch mode." << std::endl;
         return -1;
     }
@@ -63,55 +63,60 @@ int main(int argc, char *argv[])
     {
         system("clear");
         std::cout << " " << std::endl;
-        std::cout << acqua << "███    ███ ██    ██ ███████ ██  ██████ " << def << std::endl;
-        std::cout << acqua << "████  ████ ██    ██ ██      ██ ██      " << def << std::endl;
-        std::cout << acqua << "██ ████ ██ ██    ██ ███████ ██ ██      " << def << std::endl;
-        std::cout << acqua << "██  ██  ██ ██    ██      ██ ██ ██      " << def << std::endl;
-        std::cout << acqua << "██      ██  ██████  ███████ ██  ██████ " << def << std::endl;
+        std::cout << " " << std::endl;
+        std::cout << " " << std::endl;
+        std::cout << " " << std::endl;
+        std::cout << " " << std::endl;
+        std::cout << acqua << "        ███    ███ ██    ██ ███████ ██  ██████ " << def << std::endl;
+        std::cout << acqua << "        ████  ████ ██    ██ ██      ██ ██      " << def << std::endl;
+        std::cout << acqua << "        ██ ████ ██ ██    ██ ███████ ██ ██      " << def << std::endl;
+        std::cout << acqua << "        ██  ██  ██ ██    ██      ██ ██ ██      " << def << std::endl;
+        std::cout << acqua << "        ██      ██  ██████  ███████ ██  ██████ " << def << std::endl;
     }
 
     std::cout << " " << std::endl;
     std::cout << " " << std::endl;
-    std::cout << acqua << "MUSiC - Model Unspecific Search in CMS" << def << std::endl;
-    std::cout << acqua << emojicpp::emojize("      :signal_strength: Run2 - Ultra Legacy :signal_strength:") << def
-              << std::endl;
+    std::cout << acqua << "        MUSiC - Model Unspecific Search in CMS" << def << std::endl;
+    std::cout << acqua << emojicpp::emojize("              :signal_strength: Run2 - Ultra Legacy :signal_strength:")
+              << def << std::endl;
     std::cout << " " << std::endl;
 
     std::cout << " " << std::endl;
-    std::cout << yellow << "Checking configuration [" << inputs << "] ..." << def << std::endl;
+    std::cout << yellow << "Checking configuration [" << run_config_file << "] ..." << def << std::endl;
     std::cout << " " << std::endl;
 
     // read parameters from TOML file
-    const auto config_file = [&]() {
+    const auto run_config = [&]() {
         try
         {
-            auto config_file = toml::parse_file(inputs);
-            return config_file;
+            auto run_config = toml::parse_file(run_config_file);
+            return run_config;
         }
         catch (const toml::parse_error &err)
         {
-            std::cerr << red << "ERROR: Config file [" << inputs << "] parsing failed.\n" << err << def << "\n";
+            std::cerr << red << "ERROR: Config file [" << run_config_file << "] parsing failed.\n"
+                      << err << def << "\n";
             exit(-1);
         }
     }();
 
-    const auto toml_config = config_file["music"];
-    const auto outputDirectory = *(toml_config["output"].value<std::string>());
-    const auto FinalCutsFile = Tools::AbsolutePath(*(toml_config["config"].value<std::string>()));
-    const auto process = *(toml_config["process"].value<std::string>());
-    const auto dataset = *(toml_config["dataset"].value<std::string>());
-    const auto numberOfEvents = *(toml_config["number_of_events"].value<int>());
-    const auto numberOfSkipEvents = *(toml_config["number_of_skip_events"].value<int>());
-    const auto debug = *(toml_config["debug"].value<int>());
-    const auto XSectionsFile = Tools::AbsolutePath(*(toml_config["xsections"].value<std::string>()));
-    const auto RunHash = *(toml_config["hash"].value<std::string>());
-    const auto year = *(toml_config["year"].value<std::string>());
-    const auto outfilename = *(toml_config["outfilename"].value<std::string>());
-    const auto cacheread = *(toml_config["cacheread"].value<bool>());
+    const auto config_toml = run_config["music"];
+    const auto output_directory = *(config_toml["output"].value<std::string>());
+    const auto analysis_config_file = Tools::AbsolutePath(*(config_toml["config"].value<std::string>()));
+    const auto process = *(config_toml["process"].value<std::string>());
+    const auto dataset = *(config_toml["dataset"].value<std::string>());
+    const auto max_events = *(config_toml["max_events"].value<int>());
+    const auto number_of_events_to_skip = *(config_toml["number_of_events_to_skip"].value<int>());
+    const auto debug = *(config_toml["debug"].value<int>());
+    const auto x_section_file = Tools::AbsolutePath(*(config_toml["x_section_file"].value<std::string>()));
+    const auto run_hash = *(config_toml["hash"].value<std::string>());
+    const auto year = *(config_toml["year"].value<std::string>());
+    const auto output_file = *(config_toml["output_file"].value<std::string>());
+    const auto cacheread = *(config_toml["cacheread"].value<bool>());
 
     const auto input_files = [&]() {
         auto f = std::vector<std::string>();
-        for (const auto &i : *(toml_config["input"].as_array()))
+        for (const auto &i : *(config_toml["input_files"].as_array()))
         {
             f.push_back(*(i.value<std::string>()));
         }
@@ -125,14 +130,14 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    if (not std::filesystem::exists(FinalCutsFile))
+    if (not std::filesystem::exists(analysis_config_file))
     {
-        throw Tools::file_not_found(FinalCutsFile, "Config file");
+        throw Tools::file_not_found(analysis_config_file, "Config file");
     }
     else
-        std::cout << "INFO: Using Config file: " << FinalCutsFile << std::endl;
+        std::cout << "INFO: Using Config file: " << analysis_config_file << std::endl;
 
-    auto config = Tools::MConfig(FinalCutsFile);
+    auto config = Tools::MConfig(analysis_config_file);
     config.setYear(year);
 
     const auto useSYST = config.GetItem<bool>("General.useSYST");
@@ -153,7 +158,7 @@ int main(int argc, char *argv[])
         {
             std::stringstream error;
             error << "golden_json_file '" << golden_json_file << "' ";
-            error << "in config file: '" << FinalCutsFile << "' not found!";
+            error << "in config file: '" << analysis_config_file << "' not found!";
             throw Tools::config_error(error.str());
         }
     }
@@ -168,12 +173,12 @@ int main(int argc, char *argv[])
 
     const std::string startDir = getcwd(NULL, 0);
 
-    // (Re)create outputDirectory dir and cd into it.
-    system(("rm -rf " + outputDirectory).c_str());
-    system(("mkdir -p " + outputDirectory).c_str());
-    system(("cd " + outputDirectory).c_str());
-    chdir(outputDirectory.c_str());
-    system(("cp " + FinalCutsFile + " . ").c_str());
+    // (Re)create output_directory dir and cd into it.
+    system(("rm -rf " + output_directory).c_str());
+    system(("mkdir -p " + output_directory).c_str());
+    system(("cd " + output_directory).c_str());
+    chdir(output_directory.c_str());
+    system(("cp " + analysis_config_file + " . ").c_str());
 
     // dump config to file
     config.DumpToFile("config_full.txt");
@@ -185,7 +190,7 @@ int main(int argc, char *argv[])
         system("mkdir -p Event-lists");
 
     // save other configs with output
-    system(("cp " + XSectionsFile + " . ").c_str());
+    system(("cp " + x_section_file + " . ").c_str());
 
     // Init the run config
     std::cout << " " << std::endl;
@@ -218,11 +223,12 @@ int main(int argc, char *argv[])
     std::cout << def << "[Initializing] Systematics ..." << def << std::endl;
     auto syst_shifter = Systematics(config, debug);
 
+    // read cross-sections files
     std::cout << def << "[Initializing] X-Sections ..." << def << std::endl;
-    const auto XSections = Tools::MConfig(XSectionsFile);
+    const auto x_sections = TOMLConfig::make_toml_config(x_section_file);
 
     std::cout << def << "[Initializing] Event Class Factory ..." << def << std::endl;
-    auto event_class_factory = EventClassFactory(config, XSections, selector, syst_shifter, outfilename, RunHash);
+    auto event_class_factory = EventClassFactory(config, x_sections, selector, syst_shifter, output_file, run_hash);
 
     // performance monitoring
     double dTime1 = pxl::getCpuTime(); // Start Time
@@ -258,7 +264,7 @@ int main(int argc, char *argv[])
     }
 
     std::cout << " " << std::endl;
-    std::cout << green << "Starting Classfication ..." << def << std::endl;
+    std::cout << green << "Starting Classification ..." << def << std::endl;
     std::cout << " " << std::endl;
 
     // loop over files
@@ -307,7 +313,7 @@ int main(int argc, char *argv[])
                 continue;
 
             // if set, skip first events
-            if (numberOfSkipEvents > pre_run_skipped)
+            if (number_of_events_to_skip > pre_run_skipped)
             {
                 //
                 pre_run_skipped++;
@@ -447,8 +453,8 @@ int main(int argc, char *argv[])
                         // perform systematic pre. selection on all selected event views
                         //  with loosened kinematic cuts
                         selector.performSelection(RecEvtView, GenEvtView, TrigEvtView, FilterView, true);
-                        // use the    system(("rm -rf " + outputDirectory).c_str());config files to activate systematics
-                        // for some objects
+                        // use the    system(("rm -rf " + output_directory).c_str());config files to activate
+                        // systematics for some objects
                         syst_shifter.init(event_ptr.get());
                         // create new event views with systematic shifts
                         syst_shifter.createShiftedViews();
@@ -523,15 +529,21 @@ int main(int argc, char *argv[])
                               << std::endl;
                 }
             }
+            // stop if max number of events to be processed is reaced
+            if (max_events != -1 && e > max_events)
+            {
+                break;
+            }
 
-            // end of file
+            // PrintProcessInfo every 10_000 events
             if (e % 10000 == 0)
             {
                 PrintProcessInfo();
             }
         }
 
-        if (numberOfEvents != -1 && e > numberOfEvents)
+        // stop if max number of events to be processed is reaced
+        if (max_events != -1 && e > max_events)
         {
             break;
         }
@@ -567,13 +579,9 @@ int main(int argc, char *argv[])
     }
     std::cout << "\n\n\n" << std::endl;
 
-    // zero is dummy
+    // 0 (zero) is dummy
     // it is here just to match the method definition
     event_class_factory.endJob(0);
-
-    // in the old analysis composer, this was empty.
-    // Should stay?
-    // thisAnalysis.endAnalysis();
 
     PrintProcessInfo();
     return 0;

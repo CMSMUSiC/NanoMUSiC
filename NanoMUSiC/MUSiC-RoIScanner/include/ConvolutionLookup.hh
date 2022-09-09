@@ -3,8 +3,8 @@
 
 #define TABLE_VERSION 1
 
-#include <cstdint> // for the fixed size int types
 #include <cstddef> // for size_t
+#include <cstdint> // for the fixed size int types
 
 #include <string>
 
@@ -15,10 +15,11 @@
 
 #include <chrono>
 // https://github.com/p-ranav/indicators
-#include "indicators.hh" 
+#include "indicators.hh"
 #include <thread>
 
-typedef struct {
+typedef struct
+{
     // "private" entries
     uint8_t _version;
     uint8_t _sizeof_float;
@@ -43,17 +44,17 @@ typedef struct {
 
 } __attribute__((packed)) LookupOptions;
 
-
-class LookupTable {
-public:
-    LookupTable( bool debug=false );
+class LookupTable
+{
+  public:
+    LookupTable(bool debug = false);
     ~LookupTable();
 
-    void generate( const LookupOptions& options );
-    double lookup( double data, double bg, double uncert ) const;
+    void generate(const LookupOptions &options);
+    double lookup(double data, double bg, double uncert) const;
 
-    void writeFile( std::string filename="" );
-    void readFile( std::string filename="" );
+    void writeFile(std::string filename = "");
+    void readFile(std::string filename = "");
 
     size_t expectedBinarySize() const;
 
@@ -64,13 +65,13 @@ public:
 
     static std::string getDefaultLutPath();
 
-private:
-    void calcPoints( double data_index, double bg_index, double uncert_index,
-        double& data_out, double& bg_out, double& uncert_out ) const;
-    void calcIndices( double data, double bg, double uncert,
-        double& data_index_out, double& bg_index_out, double& uncert_index_out ) const;
+  private:
+    void calcPoints(double data_index, double bg_index, double uncert_index, double &data_out, double &bg_out,
+                    double &uncert_out) const;
+    void calcIndices(double data, double bg, double uncert, double &data_index_out, double &bg_index_out,
+                     double &uncert_index_out) const;
 
-    double interpolate( double data_index, double bg_index, double uncert_index ) const;
+    double interpolate(double data_index, double bg_index, double uncert_index) const;
 
     inline size_t totalDataPoints() const;
     inline size_t totalBgPoints() const;
@@ -78,17 +79,17 @@ private:
     inline size_t totalPoints() const;
     inline PriorMode prior() const;
 
-    static double calcFactor( double index, double factor_down, double factor_up );
-    static double unCalcFactor( double factor, double factor_down, double factor_up );
+    static double calcFactor(double index, double factor_down, double factor_up);
+    static double unCalcFactor(double factor, double factor_down, double factor_up);
 
-    void newTable( const float default_value = -1. );
+    void newTable(const float default_value = -1.);
     void deleteTable();
 
-    inline size_t index( size_t data_index, size_t bg_index, size_t uncert_index ) const;
+    inline size_t index(size_t data_index, size_t bg_index, size_t uncert_index) const;
 
     const bool debug = false;
     LookupOptions options;
-    float* buffer = nullptr;
+    float *buffer = nullptr;
     std::string lastFile;
 
     static constexpr float OUT_OF_BOUNDS = -1.;
@@ -98,8 +99,7 @@ private:
     static constexpr float BETWEEN_REGIONS = -5.;
 };
 
-extern "C"
-double lookup_p_convolution( double N_obs, double N_SM,
-    double error_parameter, bool debug=false, const char* filename="" );
+extern "C" double lookup_p_convolution(double N_obs, double N_SM, double error_parameter, bool debug = false,
+                                       const char *filename = "");
 
 #endif // CONVOLUTIONLOOKUP_HH

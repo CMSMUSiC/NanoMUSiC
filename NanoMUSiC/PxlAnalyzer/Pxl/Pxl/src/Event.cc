@@ -13,39 +13,37 @@ namespace pxl
 
 void Event::serialize(const OutputStream &out) const
 {
-	Serializable::serialize(out);
-	_objects.serialize(out);
-	UserRecordHelper::serialize(out);
+    Serializable::serialize(out);
+    _objects.serialize(out);
+    UserRecordHelper::serialize(out);
 }
 
 void Event::deserialize(const InputStream &in)
 {
-	Serializable::deserialize(in);
-	_objects.deserialize(in);
-	UserRecordHelper::deserialize(in);
+    Serializable::deserialize(in);
+    _objects.deserialize(in);
+    UserRecordHelper::deserialize(in);
 }
 
-
-std::ostream& Event::print(int level, std::ostream& os, int pan) const
+std::ostream &Event::print(int level, std::ostream &os, int pan) const
 {
-	os << "Event." << std::endl;
+    os << "Event." << std::endl;
 
-	if (level>0)
-		getUserRecords().print(level, os, pan);
+    if (level > 0)
+        getUserRecords().print(level, os, pan);
 
-	for (ObjectOwner::const_iterator iter = _objects.begin(); iter
-			!=_objects.end(); ++iter)
-	{
-		if ((*iter)->getMotherRelations().size() == 0)
-			(*iter)->printDecayTree(0, os, pan);
-	}
-	return os;
+    for (ObjectOwner::const_iterator iter = _objects.begin(); iter != _objects.end(); ++iter)
+    {
+        if ((*iter)->getMotherRelations().size() == 0)
+            (*iter)->printDecayTree(0, os, pan);
+    }
+    return os;
 }
 
-const Id& Event::getStaticTypeId()
+const Id &Event::getStaticTypeId()
 {
-	static const Id id("c95f7434-2481-45e2-91dc-9baff0669bb3");
-	return id;
+    static const Id id("c95f7434-2481-45e2-91dc-9baff0669bb3");
+    return id;
 }
 
 } // namespace pxl

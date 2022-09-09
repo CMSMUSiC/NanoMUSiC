@@ -14,34 +14,33 @@
 namespace pxl
 {
 
-class PXL_DLL_EXPORT dCapFileImpl: public FileImpl
+class PXL_DLL_EXPORT dCapFileImpl : public FileImpl
 {
-	FILE *_file;
-	int32_t _mode;
+    FILE *_file;
+    int32_t _mode;
 
-public:
+  public:
+    dCapFileImpl();
 
-	dCapFileImpl();
+    dCapFileImpl(const std::string &filename, int32_t mode);
 
-	dCapFileImpl(const std::string &filename, int32_t mode);
+    ~dCapFileImpl();
 
-	~dCapFileImpl();
-
-	virtual bool open(const std::string &filename, int32_t mode);
-	virtual void close();
-	virtual bool isEof();
-	virtual bool isOpen();
-	virtual bool isBad();
-	virtual void clear();
-	virtual bool isGood();
-	virtual int64_t tell();
-	virtual void seek(int64_t pos, int32_t d);
-	virtual int32_t peek();
-	virtual int64_t read(char *s, size_t count);
-	virtual int64_t write(const char *s, size_t count);
-	virtual void ignore(int64_t count);
-	virtual void destroy();
+    virtual bool open(const std::string &filename, int32_t mode);
+    virtual void close();
+    virtual bool isEof();
+    virtual bool isOpen();
+    virtual bool isBad();
+    virtual void clear();
+    virtual bool isGood();
+    virtual int64_t tell();
+    virtual void seek(int64_t pos, int32_t d);
+    virtual int32_t peek();
+    virtual int64_t read(char *s, size_t count);
+    virtual int64_t write(const char *s, size_t count);
+    virtual void ignore(int64_t count);
+    virtual void destroy();
 };
 
-}
+} // namespace pxl
 #endif /* PXL_SFTP_FILE_HH_ */

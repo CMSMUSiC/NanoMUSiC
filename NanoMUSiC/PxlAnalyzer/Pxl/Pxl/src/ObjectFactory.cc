@@ -19,42 +19,40 @@ ObjectFactory::ObjectFactory()
 {
 }
 
-ObjectFactory& ObjectFactory::instance()
+ObjectFactory &ObjectFactory::instance()
 {
-	static ObjectFactory f;
-	return f;
+    static ObjectFactory f;
+    return f;
 }
 
-Serializable *ObjectFactory::create(const Id& id)
+Serializable *ObjectFactory::create(const Id &id)
 {
-	std::map<Id, const ObjectProducerInterface *>::iterator result;
-	result = _Producers.find(id);
-	if (result == _Producers.end())
-		return 0;
-	else
-		return (*result).second->create();
+    std::map<Id, const ObjectProducerInterface *>::iterator result;
+    result = _Producers.find(id);
+    if (result == _Producers.end())
+        return 0;
+    else
+        return (*result).second->create();
 }
 
-void ObjectFactory::registerProducer(const Id& id,
-		const ObjectProducerInterface* producer)
+void ObjectFactory::registerProducer(const Id &id, const ObjectProducerInterface *producer)
 {
-	PXL_LOG_INFO << "register object producer for " << id;
-	_Producers[id] = producer;
+    PXL_LOG_INFO << "register object producer for " << id;
+    _Producers[id] = producer;
 }
 
-void ObjectFactory::unregisterProducer(const ObjectProducerInterface* producer)
+void ObjectFactory::unregisterProducer(const ObjectProducerInterface *producer)
 {
-	std::map<Id, const ObjectProducerInterface *>::iterator i;
-	for (i = _Producers.begin(); i != _Producers.end(); i++)
-	{
-		if (i->second == producer)
-		{
-			PXL_LOG_INFO << "unregister object producer for " << i->first;
-			_Producers.erase(i);
-			return;
-		}
-	}
+    std::map<Id, const ObjectProducerInterface *>::iterator i;
+    for (i = _Producers.begin(); i != _Producers.end(); i++)
+    {
+        if (i->second == producer)
+        {
+            PXL_LOG_INFO << "unregister object producer for " << i->first;
+            _Producers.erase(i);
+            return;
+        }
+    }
 }
 
 } // namespace pxl
-

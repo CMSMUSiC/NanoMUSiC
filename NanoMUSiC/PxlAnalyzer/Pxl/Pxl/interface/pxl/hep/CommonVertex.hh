@@ -18,27 +18,26 @@ namespace pxl
 
 class PXL_DLL_EXPORT CommonVertex
 {
-public:
-	virtual ~CommonVertex()
-	{
-	}
-		
-	//getters for basic vector quantities.
-	virtual double getX() const = 0;
-	virtual double getY() const = 0;
-	virtual double getZ() const = 0;
+  public:
+    virtual ~CommonVertex()
+    {
+    }
 
-	//setters for basic fourvector quantities
-	virtual void setX(double x) = 0;
-	virtual void setY(double y) = 0;
-	virtual void setZ(double z) = 0;
+    // getters for basic vector quantities.
+    virtual double getX() const = 0;
+    virtual double getY() const = 0;
+    virtual double getZ() const = 0;
 
-	//setters for basic fourvector quantities
-	virtual void setXYZ(double x, double y, double z) = 0;
-	virtual void addXYZ(double x, double y, double z) = 0;
+    // setters for basic fourvector quantities
+    virtual void setX(double x) = 0;
+    virtual void setY(double y) = 0;
+    virtual void setZ(double z) = 0;
 
+    // setters for basic fourvector quantities
+    virtual void setXYZ(double x, double y, double z) = 0;
+    virtual void addXYZ(double x, double y, double z) = 0;
 };
 
-}
+} // namespace pxl
 
 #endif /*PXL_HEP_COMMON_VERTEX_HH*/

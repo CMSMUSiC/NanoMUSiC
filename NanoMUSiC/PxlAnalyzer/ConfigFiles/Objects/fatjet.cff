@@ -17,12 +17,12 @@ FatJet.WJets.mass.min = 65
 FatJet.WJets.mass.max = 95
 FatJet.WJets.tau.max = 0.4
 
-FatJet.JSONFile = "$MUSIC_BASE/ConfigFiles/ConfigInputs/jsonPOG/JME/2017_UL/fatJet_jerc.json"
+FatJet.JSONFile = "$PXLANALYZER_BASE/ConfigFiles/ConfigInputs/jsonPOG/JME/2017_UL/fatJet_jerc.json"
 # needed untill 2017 SFs are provided
-FatJet.JSONFile.2018 = "$MUSIC_BASE/ConfigFiles/ConfigInputs/jsonPOG/JME/2018_UL/fatJet_jerc.json"
+FatJet.JSONFile.2018 = "$PXLANALYZER_BASE/ConfigFiles/ConfigInputs/jsonPOG/JME/2018_UL/fatJet_jerc.json"
 
-# FatJet.Resolution.UnmatchedFile = "$MUSIC_BASE/ConfigFiles/ConfigInputs/Summer19UL17_JRV2_MC_PtResolution_AK4PFchs.txt" # UL17 AK8 NOT AVAILABLE
-# FatJet.Resolution.SFFile = "$MUSIC_BASE/ConfigFiles/ConfigInputs/Summer19UL17_JRV2_MC_SF_AK4PFchs.txt" # UL17 AK8 NOT AVAILABLE
+# FatJet.Resolution.UnmatchedFile = "$PXLANALYZER_BASE/ConfigFiles/ConfigInputs/Summer19UL17_JRV2_MC_PtResolution_AK4PFchs.txt" # UL17 AK8 NOT AVAILABLE
+# FatJet.Resolution.SFFile = "$PXLANALYZER_BASE/ConfigFiles/ConfigInputs/Summer19UL17_JRV2_MC_SF_AK4PFchs.txt" # UL17 AK8 NOT AVAILABLE
 
-# FatJet.Error.JESFile = "$MUSIC_BASE/ConfigFiles/ConfigInputs/Summer19UL17_V5_MC_UncertaintySources_AK8PFchs.txt"
-# FatJet.Error.JESFile = "$MUSIC_BASE/ConfigFiles/ConfigInputs/jsonPOG/JME/2017_UL/fatJet_jerc.json"
+# FatJet.Error.JESFile = "$PXLANALYZER_BASE/ConfigFiles/ConfigInputs/Summer19UL17_V5_MC_UncertaintySources_AK8PFchs.txt"
+# FatJet.Error.JESFile = "$PXLANALYZER_BASE/ConfigFiles/ConfigInputs/jsonPOG/JME/2017_UL/fatJet_jerc.json"

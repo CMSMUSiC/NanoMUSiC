@@ -123,7 +123,7 @@ class Job:
             'StdError  = "err.txt";\n'
             'outputsandboxbasedesturi="gsiftp://localhost";\n'
             )
-        standardinput = ["./prologue.sh"]
+        standardinput_files = ["./prologue.sh"]
         if self.task.uploadexecutable:
             standardinput.append(self.executable)
         jdl += 'InputSandbox = { "' + ('", "'.join(standardinput+self.inputfiles+self.task.inputfiles)) + '"};\n'
