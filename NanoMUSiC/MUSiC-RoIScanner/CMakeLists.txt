@@ -13,7 +13,7 @@ add_custom_command(
         COMMAND cmake -E cmake_echo_color --yellow --bold ""
         COMMAND cmake -E cmake_echo_color --yellow --bold "=================================================="
         COMMAND cmake -E cmake_echo_color --yellow --bold " Before scanning, do not forget to build the LUT:"
-        COMMAND cmake -E cmake_echo_color --yellow --bold " make lut"
+        COMMAND cmake -E cmake_echo_color --yellow --bold " ninja lut"
         COMMAND cmake -E cmake_echo_color --yellow --bold "=================================================="
         COMMAND cmake -E cmake_echo_color --yellow --bold ""
 )

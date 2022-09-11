@@ -1,0 +1,38 @@
+# Debug levels are:
+#    - 0: Display only ERRORS/EXCEPTIONS
+#    - 1: Display also WARNINGS
+#    - 2: Display also INFO
+#    - 3: Display also DEBUG
+#    - 4: Display also verbose DEBUG
+
+# By default, debug = 1, means only WARNINGS will be displayed.
+# (ERRORS should always be handled with help of exceptions!)
+
+# The debug information is meant to be written to stderr.
+# Additionally there is "normal" program output that goes to stdout.
+
+# The output formatting should be the following:
+# "[<LEVEL>] (<invoking_class>): <message>"
+# e.g.:
+# "[DEBUG] (ParticleMatcher): Something's fishy!"
+# Please keep to that.
+
+[music]
+output = 'test_mc_2017'
+debug = 0
+max_events = 100
+number_of_events_to_skip = 0
+run_on_data = false
+x_section_file = '$MUSIC_BASE/configs/x_sections.toml'
+config = '$MUSIC_CONFIG/configs/MC.cfg'
+year = '2017'
+output_file = '' # if empty, constructed from process
+process = 'DYJetsToLL_M-50_13TeV_AM'
+dataset = '/foo/bar/abc/NANOAODSIM'
+hash = 'dummyhash'
+cacheread = false
+input_files = [
+    'root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/100000/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    'root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/100000/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    'root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/230000/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+]

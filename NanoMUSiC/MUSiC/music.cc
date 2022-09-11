@@ -1,4 +1,7 @@
 #include "music.hh"
+// sleep
+#include <chrono>
+#include <thread>
 
 void PrintProcessInfo()
 {
@@ -259,7 +262,7 @@ int main(int argc, char *argv[])
         std::cout << " " << std::endl;
         std::cout << " " << std::endl;
         std::cout << yellow << "Preparing cache directory for NanoAOD files: " << def << std::endl;
-        // system(("rm -rf " + cache_dir).c_str()); // <-- FIX me!!
+        system(("rm -rf " + cache_dir).c_str()); // <-- FIX me!!
         std::cout << cache_dir << std::endl;
     }
 
@@ -281,9 +284,9 @@ int main(int argc, char *argv[])
             cacheread_option = "CACHEREAD";
         }
 
-        std::unique_ptr<TFile> inFile(TFile::Open(fileName.c_str(), cacheread_option.c_str()));
+        std::unique_ptr<TFile> input_root_file(TFile::Open(fileName.c_str(), cacheread_option.c_str()));
 
-        if (!inFile)
+        if (!input_root_file)
         {
             std::cout << "ERROR: could not open data file" << std::endl;
             exit(1);
@@ -297,7 +300,8 @@ int main(int argc, char *argv[])
         int event_counter_per_file = 0;
 
         // get "Events" TTree from file
-        std::unique_ptr<TTree> events_tree = std::unique_ptr<TTree>(dynamic_cast<TTree *>(inFile->Get("Events")));
+        std::unique_ptr<TTree> events_tree =
+            std::unique_ptr<TTree>(dynamic_cast<TTree *>(input_root_file->Get("Events")));
 
         // get NanoAODReader
         auto nano_reader = NanoAODReader(*events_tree);
@@ -306,7 +310,7 @@ int main(int argc, char *argv[])
         while (nano_reader.next())
         {
             std::unique_ptr<pxl::Event> event_ptr =
-                buildPxlEvent(e, nano_reader, year, process, dataset, run_on_data, debug);
+                make_pxlevent(e, nano_reader, year, process, dataset, run_on_data, debug);
 
             event_counter_per_file++;
             if (!event_ptr)
@@ -549,8 +553,8 @@ int main(int argc, char *argv[])
         }
 
         // clear cache dir
-        // if (cacheread)
-        if (false) // <-- FIX ME!
+        if (cacheread)
+        // if (false) // <-- FIX ME!
         {
             std::cout << yellow << "Cleaning NanoAOD cache directory..." << def << std::endl;
             system(("rm -rf " + cache_dir + "/*").c_str());
