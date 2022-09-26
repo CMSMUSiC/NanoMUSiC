@@ -7,6 +7,7 @@
 ##next option new in miniAOD
 Ele.CBID.usebool = 0
 Ele.CBID.boolname = cutBasedElectronID-Fall17-94X-V2-tight
+# Ele.CBID.boolname = tight
 ##########unset#####################
 Ele.CBID.fBrem.min = 0.0           # Only for 2011!
 Ele.CBID.lowEta.fBrem.min = 0.0     # Only for 2011!

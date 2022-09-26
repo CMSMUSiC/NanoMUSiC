@@ -40,7 +40,7 @@ void ReWeighter::init()
         {"2016APV", "Collisions16_UltraLegacy_goldenJSON"},
         {"2016", "Collisions16_UltraLegacy_goldenJSON"},
         {"2017", "Collisions17_UltraLegacy_goldenJSON"},
-        {"2018", "Collisions17_UltraLegacy_goldenJSON"},
+        {"2018", "Collisions18_UltraLegacy_goldenJSON"},
     };
     m_pu_correction = m_pu_correction_set->at(pu_key[m_year]);
     // TFile *temp_mc_file = new TFile(mcname.c_str(), "READ");
@@ -86,7 +86,7 @@ void ReWeighter::ReWeightEvent(pxl::Event *event)
 
         if (m_syst == 1)
         {
-            GenEvtView->setUserRecord("PUWeightUp", m_pu_correction->evaluate({numVerticesPUTrue, "nominal"}));
+            GenEvtView->setUserRecord("PUWeightUp", m_pu_correction->evaluate({numVerticesPUTrue, "up"}));
         }
         if (m_syst == -1)
         {
@@ -94,7 +94,7 @@ void ReWeighter::ReWeightEvent(pxl::Event *event)
         }
         if (m_syst == 0)
         {
-            GenEvtView->setUserRecord("PUWeight", m_pu_correction->evaluate({numVerticesPUTrue, "up"}));
+            GenEvtView->setUserRecord("PUWeight", m_pu_correction->evaluate({numVerticesPUTrue, "nominal"}));
         }
     }
     else

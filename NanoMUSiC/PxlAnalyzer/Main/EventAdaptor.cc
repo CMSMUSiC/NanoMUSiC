@@ -107,6 +107,7 @@ void EventAdaptor::adaptMuon(pxl::Particle *muon) const
     // We are only interested in muons here.
     if (muon->getUserRecord("tightCharge") == 2)
     {
+        muon->setUserRecord("validCocktail", true);
         // Change muon 4-vector
         auto cocktail = pxl::Particle();
         cocktail.setPtEtaPhiM((muon->getPt()) * (muon->getUserRecord("tunepRelPt").asFloat()), muon->getEta(),
@@ -138,8 +139,8 @@ void EventAdaptor::adaptMuon(pxl::Particle *muon) const
 }
 
 // it is not possible to do it anymore, using NanoAOD.
-// This function changes the Muon qunatities from "normal" (PF) to "HEEP" which is largely driven by
-// super clust information from the ECAL
+// This function changes the Muon quantities from "normal" (PF) to "HEEP" which is largely driven by
+// super cluster information from the ECAL
 // void EventAdaptor::applyHEEPElectrons() const
 // {
 //    for (auto &ele : m_ele_list)
@@ -149,7 +150,7 @@ void EventAdaptor::adaptMuon(pxl::Particle *muon) const
 //    }
 // }
 
-// it is not possible to do it anymore, using NanoAOD.
+// It is not possible to do it anymore, using NanoAOD: Electron SC information is no available.
 // void EventAdaptor::adaptEle(pxl::Particle *ele) const
 // {
 // // Get Et and Eta from super cluster

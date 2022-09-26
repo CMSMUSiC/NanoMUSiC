@@ -17,16 +17,15 @@
 # "[DEBUG] (ParticleMatcher): Something's fishy!"
 # Please keep to that.
 
-[music]
 output = 'test_mc_2017'
 debug = 0
 max_events = 100
 number_of_events_to_skip = 0
-run_on_data = false
+run_on_data = false                                    # Is Data?
 x_section_file = '$MUSIC_BASE/configs/x_sections.toml'
 config = '$MUSIC_CONFIG/configs/MC.cfg'
 year = '2017'
-output_file = '' # if empty, constructed from process
+# output_file = '' # if empty, constructed from process
 process = 'DYJetsToLL_M-50_13TeV_AM'
 dataset = '/foo/bar/abc/NANOAODSIM'
 hash = 'dummyhash'

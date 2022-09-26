@@ -36,9 +36,9 @@ class MuonSelector : public ObjectSelector
     bool passTightID(pxl::Particle *muon) const;
     bool passHighPtID(pxl::Particle *muon) const;
     bool passTrackerID(pxl::Particle *muon) const;
-    bool passPFIso(pxl::Particle *muon, double rho, const double muo_iso_max) const;
-    bool passMiniIso(pxl::Particle *muon, const double muo_iso_max) const;
-    bool passTrackerIso(pxl::Particle *muon, const double muo_iso_max) const;
+    bool passPFIso(pxl::Particle *muon) const;
+    bool passMiniIso(pxl::Particle *muon) const;
+    bool passTrackerIso(pxl::Particle *muon) const;
 
     // Variables
     std::string const m_muo_id_type;

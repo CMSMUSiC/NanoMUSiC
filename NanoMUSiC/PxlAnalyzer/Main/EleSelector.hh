@@ -29,14 +29,11 @@ class EleSelector : public ObjectSelector
 
   private:
     // methods:
-    bool passlooseCBID(pxl::Particle const *ele, double const elePt, double const eleAbsEta, bool const eleBarrel,
-                       bool const eleEndcap) const;
-    bool passtightCBID(pxl::Particle const *ele, double const elePt, double const eleAbsEta, bool const eleBarrel,
-                       bool const eleEndcap) const;
-    bool passlooseHEEPID(pxl::Particle const *ele, double const eleEt, bool const eleBarrel,
-                         bool const eleEndcap) const;
-    bool passtightHEEPID(pxl::Particle const *ele, double const eleEt, bool const eleBarrel,
-                         bool const eleEndcap) const;
+    bool passlooseCBID(pxl::Particle const *ele) const;
+    bool passtightCBID(pxl::Particle const *ele) const;
+    bool passHEEPID(pxl::Particle const *ele) const;
+    // bool passtightHEEPID(pxl::Particle const *ele, double const eleEt, bool const eleBarrel,
+    //                      bool const eleEndcap) const;
     bool passHEEP_Isolation(pxl::Particle const *ele, double const eleEt, bool const eleBarrel, bool const eleEndcap,
                             double const eleRho) const;
     bool passCBID_Isolation(pxl::Particle const *ele, double const &eleRho, bool const &eleBarrel,

@@ -9,8 +9,8 @@ OldNameMapper::OldNameMapper()
     // addReplacement(  "general.oldname", "general.oldname");
 
     // add particle specific replacements in order of change in skimmer
-    addReplacement("Gamma", "sigma_iEta_iEta", "iEta_iEta");
-    addReplacement("Gamma", "hadTowOverEm", "HoverE2012");
+    // addReplacement("Gamma", "sigma_iEta_iEta", "iEta_iEta");
+    // addReplacement("Gamma", "hadTowOverEm", "HoverE2012");
 }
 
 OldNameMapper::~OldNameMapper()

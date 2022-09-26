@@ -25,14 +25,36 @@ class TOMLConfig
     // Factory method to create a TOML reader that return a const TOMLConfig.
     const static TOMLConfig make_toml_config(const std::string &_toml_config_file);
 
+    std::string config_file_path();
+
+    bool check_item(const std::string &key);
+    // Get a node as an specific type.
+    template <typename T>
+    T get_value(const std::string &path) const
+    {
+        return *(toml_config.at_path(path).value<T>());
+    }
+
     // Get a node as an specific type.
     template <typename T>
     T get(const std::string &path) const
     {
-        return *(toml_config.at_path(path).value<T>());
+        return get_value<T>(path);
     }
-    std::string config_file_path();
-    bool check_item(const std::string &key);
+
+    // Get a node as vector of specific type.
+    template <typename T>
+    std::vector<T> get_vector(const std::string &path) const
+    {
+        auto _array = *(toml_config.at_path(path).as_array());
+
+        auto _f = std::vector<T>();
+        for (const auto &i : _array)
+        {
+            _f.push_back(*(i.template value<std::string>()));
+        }
+        return _f;
+    }
 
   private:
     const toml::table toml_config;

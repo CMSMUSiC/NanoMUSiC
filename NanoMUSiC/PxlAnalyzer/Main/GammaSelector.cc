@@ -59,38 +59,25 @@ int GammaSelector::passObjectSelection(pxl::Particle *gam, double const gamRho, 
     bool passID = true;
     bool passIso = true;
 
-    //    double const gamPt = gam->getPt();
-    // set in passKinematics
-    bool barrel = gam->getUserRecord("isBarrel");
-    bool endcap = gam->getUserRecord("isEndcap");
+    // double const gamPt = gam->getPt();
+    // set in passKinematics --> not any more. now comes from NanoAOD (SC eta).
+    // bool barrel = gam->getUserRecord("isScEtaEB").toBool();
+    // bool endcap = gam->getUserRecord("isScEtaEE").toBool();
+    bool barrel = gam->getUserRecord("isBarrel").toBool();
+    bool endcap = gam->getUserRecord("isEndcap").toBool();
 
     //~ oldNameMap.getUserRecordName( const_cast<const pxl::Particle*>(gam), "Gamma", "sigma_iEta_iEta" ) );
     gam->setUserRecord("usedID", m_gam_ID_Type);
     // cut on sigmaietaieta ("eta width") which is different for EB and EE
     // double const gam_sigma_ieta_ieta = gam->getUserRecord( "sigma_iEta_iEta" );
-    double const gam_sigma_ieta_ieta =
-        gam->getUserRecord(ObjectSelector::oldNameMap->getUserRecordName(gam, "Gamma", "sigma_iEta_iEta"));
+    double const gam_sigma_ieta_ieta = gam->getUserRecord("sieie").toDouble();
     if (m_gam_ID_Type == "CB")
     {
-        if (m_gam_cb_use_bool)
-        {
-            passID = gam->getUserRecord(m_gam_cb_boolname).asBool();
-        }
-        else
-        {
-            passID = passCBID(gam, gamRho, barrel, endcap);
-        }
+        passID = passCBID(gam);
     }
     else if (m_gam_ID_Type == "MVA ")
     {
-        if (m_gam_cb_use_bool)
-        {
-            passID = gam->getUserRecord(m_gam_mva_boolname).asBool();
-        }
-        else
-        {
-            passID = passMVAID(gam, barrel, endcap);
-        }
+        passID = passMVAID(gam);
     }
     else if (m_gam_ID_Type == "OVERRIDE")
     {
@@ -137,12 +124,12 @@ int GammaSelector::passObjectSelection(pxl::Particle *gam, double const gamRho, 
         }
     }
 
-    // do we care about converted photons?
-    if (m_gam_useConverted and gam->getUserRecord("Converted").asBool())
+    // // do we care about converted photons? i don't think so...
+    // if (m_gam_useConverted and gam->getUserRecord("Converted").toBool())
+    // passID = false;
+    if (m_gam_useElectronVeto and not gam->getUserRecord("electronVeto").toBool())
         passID = false;
-    if (m_gam_useElectronVeto and not gam->getUserRecord("passElectronVeto").asBool())
-        passID = false;
-    if (m_gam_usePixelSeed and gam->getUserRecord("HasSeed").asBool())
+    if (m_gam_usePixelSeed and gam->getUserRecord("pixelSeed").toBool())
         passID = false;
 
     if (m_gam_corrFactor_max > 0.0)
@@ -164,69 +151,29 @@ int GammaSelector::passObjectSelection(pxl::Particle *gam, double const gamRho, 
     return 4;
 }
 
-bool GammaSelector::passCBID(pxl::Particle const *gam, double const gamRho, bool const barrel, bool const endcap) const
+bool GammaSelector::passCBID(pxl::Particle const *gam) const
 {
-    double const gamPt = gam->getPt();
-    double const abseta = fabs(gam->getUserRecord("eta").toDouble());
-
-    double const neutralHadronEA = m_gam_EA.getEffectiveArea(abseta, EffectiveArea::neutralHadron);
-    double const photonEA = m_gam_EA.getEffectiveArea(abseta, EffectiveArea::photon);
-
-    // set cuts
-    double HoEm = m_gam_endcap_HoEm_max;
-    double sigmaIetaIeta = m_gam_endcap_sigmaIetaIeta_max;
-    double isoChHadr = m_gam_endcap_PFIsoChargedHadron_max;
-    double isoNeuHadr = m_gam_endcap_PFIsoNeutralHadron_offset + gamPt * m_gam_endcap_PFIsoNeutralHadron_linscale +
-                        gamPt * gamPt * m_gam_endcap_PFIsoNeutralHadron_quadscale;
-    double isoPhoton = m_gam_endcap_PFIsoPhoton_offset + gamPt * m_gam_endcap_PFIsoPhoton_linscale;
-    if (barrel)
+    // Description: cut-based ID bitmap, Fall17V2:
+    // 0 : fail
+    // 1 : loose
+    // 2 : medium
+    // 3 : tight
+    if (gam->getUserRecord("cutBased").toUInt32() >= 3)
     {
-        HoEm = m_gam_barrel_HoEm_max;
-        sigmaIetaIeta = m_gam_barrel_sigmaIetaIeta_max;
-        isoChHadr = m_gam_barrel_PFIsoChargedHadron_max;
-        isoNeuHadr = m_gam_barrel_PFIsoNeutralHadron_offset + gamPt * m_gam_barrel_PFIsoNeutralHadron_linscale +
-                     gamPt * gamPt * m_gam_barrel_PFIsoNeutralHadron_quadscale;
-        isoPhoton = m_gam_barrel_PFIsoPhoton_offset + gamPt * m_gam_barrel_PFIsoPhoton_linscale;
+        return true;
     }
-
-    // std::cout << "TestCB ID for gasmma pt = " << gamPt << std::endl;
-
-    if (HoEm <
-        (gam->getUserRecord(ObjectSelector::oldNameMap->getUserRecordName(gam, "Gamma", "hadTowOverEm")).toDouble()))
-        return false;
-    if (sigmaIetaIeta < gam->getUserRecord("full5x5_sigma_iEta_iEta").toDouble())
-        return false;
-    if (isoChHadr < gam->getUserRecord("chargedHadronIso").toDouble())
-        return false;
-    if (isoNeuHadr < gam->getUserRecord("neutralHadronIso").toDouble() - gamRho * neutralHadronEA)
-        return false;
-    if (isoPhoton < gam->getUserRecord("photonIso").toDouble() - gamRho * photonEA)
-        return false;
-
-    // std::cout << "PASSED" << std::endl;
-    return true;
+    return false;
 }
 
-bool GammaSelector::passMVAID(pxl::Particle const *gam, bool const barrel, bool const endcap) const
+bool GammaSelector::passMVAID(pxl::Particle const *gam) const
 {
-
-    double mva_min = m_gam_endcap_mva_min;
-    double mva_value = gam->getUserRecord("MVA_wp90_value").toDouble();
-    if (gam->hasUserRecord("MVA_wp90_category"))
+    // Description: MVA ID WP80/90, Fall17V2
+    // mvaID_WP90 --> WP: 90%
+    // mvaID_WP80 --> WP: 80%
+    auto mva_id_wp = "mvaID_WP90";
+    if (gam->getUserRecord(mva_id_wp).toBool())
     {
-        int cat = gam->getUserRecord("MVA_wp90_category");
-        // categorization ints taken from:
-        // 0 - barrel 1 - endcap
-        // https://github.com/ikrav/cmssw/blob/egm_id_80X_v3_photons/RecoEgamma/PhotonIdentification/python/Identification/mvaPhotonID_Spring16_nonTrig_V1_cff.py
-        if (cat == 0)
-            mva_min = m_gam_barrel_mva_min;
+        return true;
     }
-    else
-    { // 2015 compability mode
-        if (barrel)
-            mva_min = m_gam_barrel_mva_min;
-    }
-    if (mva_min > mva_value)
-        return false;
-    return true;
+    return false;
 }

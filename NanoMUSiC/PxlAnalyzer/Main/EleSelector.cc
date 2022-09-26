@@ -120,24 +120,24 @@ int EleSelector::passObjectSelection(pxl::Particle *ele, double const eleRho, co
     // Updated transverse energy in Skimmer for HEEP selection (Supercluster based transverse energy).
     // TODO: Remove try-block once everything is reskimmed.
     double eleEt = ele->getEt();
-    if (idType == "HEEP" or (idType == "switch" and elePt > m_ele_id_ptswitch))
-    {
-        try
-        {
-            eleEt = ele->getUserRecord("SCEt");
-        }
-        catch (std::runtime_error &)
-        {
-            // Do nothing, simply use the Et from the pxl::Particle.
-        }
-    }
+    // if (idType == "HEEP" or (idType == "switch" and elePt > m_ele_id_ptswitch))
+    // {
+    //     try
+    //     {
+    //         eleEt = ele->getUserRecord("SCEt");
+    //     }
+    //     catch (std::runtime_error &)
+    //     {
+    //         // Do nothing, simply use the Et from the pxl::Particle.
+    //     }
+    // }
 
     // set in passKinematics
     bool barrel = ele->getUserRecord("isBarrel");
     bool endcap = ele->getUserRecord("isEndcap");
 
     // eta
-    double const abseta = fabs(ele->getUserRecord("eta").toDouble());
+    // double const abseta = fabs(ele->getUserRecord("eta").toDouble());
 
     ele->setUserRecord("usedID", idType);
     if (idType == "CB" or (idType == "switch" and elePt <= m_ele_id_ptswitch))
@@ -145,13 +145,13 @@ int EleSelector::passObjectSelection(pxl::Particle *ele, double const eleRho, co
         // check ID
         try
         {
-            if (not passlooseCBID(ele, elePt, abseta, barrel, endcap))
+            if (not passlooseCBID(ele))
             {
                 passlooseID = false;
                 passID = false;
                 ele->setUserRecord("usedID", "None");
             }
-            else if (not passtightCBID(ele, elePt, abseta, barrel, endcap))
+            else if (not passtightCBID(ele))
             {
                 passID = false;
                 ele->setUserRecord("usedID", "LooseID");
@@ -174,12 +174,12 @@ int EleSelector::passObjectSelection(pxl::Particle *ele, double const eleRho, co
             {
                 m_alternativeUserVariables["passConversionVeto"] = "passConversionVeto";
             }
-            if (not passlooseCBID(ele, elePt, abseta, barrel, endcap))
+            if (not passlooseCBID(ele))
             {
                 passlooseID = false;
                 passID = false;
             }
-            else if (not passtightCBID(ele, elePt, abseta, barrel, endcap))
+            else if (not passtightCBID(ele))
             {
                 passID = false;
             }
@@ -198,12 +198,12 @@ int EleSelector::passObjectSelection(pxl::Particle *ele, double const eleRho, co
         try
         {
             // if( not passHEEPID( ele, eleEt, barrel, endcap ) ){
-            if (not passlooseHEEPID(ele, eleEt, barrel, endcap))
+            if (not passHEEPID(ele))
             {
                 passlooseID = false;
                 passID = false;
             }
-            else if (not passtightHEEPID(ele, eleEt, barrel, endcap))
+            else if (not passHEEPID(ele))
             {
                 passID = false;
             }
@@ -224,12 +224,12 @@ int EleSelector::passObjectSelection(pxl::Particle *ele, double const eleRho, co
             {
                 m_alternativeUserVariables["SCE"] = "SCE";
             }
-            if (not passlooseHEEPID(ele, eleEt, barrel, endcap))
+            if (not passHEEPID(ele))
             {
                 passlooseID = false;
                 passID = false;
             }
-            else if (not passtightHEEPID(ele, eleEt, barrel, endcap))
+            else if (not passHEEPID(ele))
             {
                 passID = false;
             }
@@ -300,492 +300,196 @@ int EleSelector::passObjectSelection(pxl::Particle *ele, double const eleRho, co
 // Return true, if the electron passes the CutBasedID.
 // See also:
 // https://twiki.cern.ch/twiki/bin/view/CMS/EgammaCutBasedIdentification?rev=30
-bool EleSelector::passlooseCBID(pxl::Particle const *ele, double const elePt, double const eleAbsEta,
-                                bool const eleBarrel, bool const eleEndcap) const
+bool EleSelector::passlooseCBID(pxl::Particle const *ele) const
 {
-    // First check if we want to use only id flags from miniaod or
-    // reperform cuts
-    if (m_ele_cbid_usebool)
+    // Description: cut-based ID Fall17 V2
+    // 0 : fail
+    // 1 : veto
+    // 2 : loose
+    // 3 : medium
+    // 4 : tight
+    if (ele->getUserRecord("cutBased").toUInt32() == 2)
     {
-        if (ele->hasUserRecord(m_ele_cbid_boolname))
-        {
-            return ele->getUserRecord(m_ele_cbid_boolname);
-        }
-        else
-        {
-            std::cerr << "Error: You are tring to select Ele with CBID" << std::endl;
-            std::cerr << "But no user record is found for boolname: " << m_ele_cbid_boolname << std::endl;
-            exit(1);
-        }
-    }
-
-    double sigmaIetaIeta = 0;
-    if (!m_useAlternative)
-    {
-        sigmaIetaIeta = ele->getUserRecord("full5x5_sigmaIetaIeta");
-    }
-    else
-    {
-        sigmaIetaIeta = ele->getUserRecord(m_alternativeUserVariables["full5x5_sigmaIetaIeta"]);
-    }
-    if (eleBarrel and sigmaIetaIeta > m_ele_cbid_barrel_sigmaIetaIeta_max)
-        return false;
-    if (eleEndcap and sigmaIetaIeta > m_ele_cbid_endcap_sigmaIetaIeta_max)
-        return false;
-
-    double const Dxy = ele->getUserRecord("Dxy");
-    if (eleBarrel and Dxy > m_ele_cbid_barrel_Dxy_max)
-        return false;
-    if (eleEndcap and Dxy > m_ele_cbid_endcap_Dxy_max)
-        return false;
-
-    double const Dz = ele->getUserRecord("Dz");
-    if (eleBarrel and Dz > m_ele_cbid_barrel_Dz_max)
-        return false;
-    if (eleEndcap and Dz > m_ele_cbid_endcap_Dz_max)
-        return false;
-
-    double const NinnerLayerLostHits = ele->getUserRecord("NinnerLayerLostHits");
-    if (eleBarrel and NinnerLayerLostHits > m_ele_cbid_barrel_NInnerLayerLostHits_max)
-        return false;
-    if (eleEndcap and NinnerLayerLostHits > m_ele_cbid_endcap_NInnerLayerLostHits_max)
-        return false;
-
-    double hasConversion = 0;
-    if (!m_useAlternative)
-    {
-        hasConversion = ele->getUserRecord("passConversionVeto");
-    }
-    else
-    {
-        hasConversion = ele->getUserRecord(m_alternativeUserVariables["passConversionVeto"]);
-    }
-    if (eleBarrel and m_ele_cbid_barrel_Conversion_reject and hasConversion)
         return true;
-    if (eleEndcap and m_ele_cbid_endcap_Conversion_reject and hasConversion)
-        return true;
-
-    // All cuts passed!
-    return true;
+    }
+    return false;
 }
 
 // Return true, if the electron passes the CutBasedID.
 // See also:
 // https://twiki.cern.ch/twiki/bin/view/CMS/EgammaCutBasedIdentification?rev=30
-bool EleSelector::passtightCBID(pxl::Particle const *ele, double const elePt, double const eleAbsEta,
-                                bool const eleBarrel, bool const eleEndcap) const
+bool EleSelector::passtightCBID(pxl::Particle const *ele) const
 {
-    // First check if we want to use only id flags from miniaod or
-    // reperform cuts
-    if (m_ele_cbid_usebool)
+    // Description: cut-based ID Fall17 V2
+    // 0 : fail
+    // 1 : veto
+    // 2 : loose
+    // 3 : medium
+    // 4 : tight
+    if (ele->getUserRecord("cutBased").toUInt32() == 4)
     {
-        if (ele->hasUserRecord(m_ele_cbid_boolname))
-        {
-            return ele->getUserRecord(m_ele_cbid_boolname);
-        }
-        else
-        {
-            std::cerr << "Error: You are tring to select Ele with CBID" << std::endl;
-            std::cerr << "But no user record is found for boolname: " << m_ele_cbid_boolname << std::endl;
-            exit(1);
-        }
-    }
-
-    // Retrieve each variable and IMMEDIATELY check if it passes the cut!
-    double const DEtaIn = ele->getUserRecord("DEtaSCVtx");
-    if (eleBarrel and DEtaIn > m_ele_cbid_barrel_DEtaIn_max)
-        return false;
-    if (eleEndcap and DEtaIn > m_ele_cbid_endcap_DEtaIn_max)
-        return false;
-
-    double const DPhiIn = ele->getUserRecord("DPhiSCVtx");
-    if (eleBarrel and DPhiIn > m_ele_cbid_barrel_DPhiIn_max)
-        return false;
-    if (eleEndcap and DPhiIn > m_ele_cbid_endcap_DPhiIn_max)
-        return false;
-    double sigmaIetaIeta = 0;
-    if (!m_useAlternative)
-    {
-        sigmaIetaIeta = ele->getUserRecord("full5x5_sigmaIetaIeta");
-    }
-    else
-    {
-        sigmaIetaIeta = ele->getUserRecord(m_alternativeUserVariables["full5x5_sigmaIetaIeta"]);
-    }
-    if (eleBarrel and sigmaIetaIeta > m_ele_cbid_barrel_sigmaIetaIeta_max)
-        return false;
-    if (eleEndcap and sigmaIetaIeta > m_ele_cbid_endcap_sigmaIetaIeta_max)
-        return false;
-
-    double const HoE = ele->getUserRecord("HoEm");
-    // LOR TRYING TO FIX THE ELE identification for UL
-    double const SCE = ele->getUserRecord("SCE");
-    double const rho = ele->getUserRecord("rho");
-    double const HoE_barrel_max = m_ele_cbid_barrel_HoEIterm_max + m_ele_cbid_barrel_HoEIIterm_max * 1 / SCE +
-                                  m_ele_cbid_barrel_HoEIIIterm_max * rho / SCE;
-    double const HoE_endcap_max = m_ele_cbid_endcap_HoEIterm_max + m_ele_cbid_endcap_HoEIIterm_max * 1 / SCE +
-                                  m_ele_cbid_endcap_HoEIIIterm_max * rho / SCE;
-    if (eleBarrel and HoE > HoE_barrel_max)
-        return false;
-    if (eleEndcap and HoE > HoE_endcap_max)
-        return false;
-    // END LOR MODIFICATIONS
-    double const Dxy = ele->getUserRecord("Dxy");
-    if (eleBarrel and Dxy > m_ele_cbid_barrel_Dxy_max)
-        return false;
-    if (eleEndcap and Dxy > m_ele_cbid_endcap_Dxy_max)
-        return false;
-
-    double const Dz = ele->getUserRecord("Dz");
-    if (eleBarrel and Dz > m_ele_cbid_barrel_Dz_max)
-        return false;
-    if (eleEndcap and Dz > m_ele_cbid_endcap_Dz_max)
-        return false;
-
-    double const Energy = ele->getE();
-    double const EoP = ele->getUserRecord("EoP");
-    // p_in, the same as 'pat::Electron::trackMomentumAtVtx().p()'
-    double const pIn = Energy / EoP;
-    double const relInvEpDiff = std::abs(1.0 / Energy - 1.0 / pIn);
-    if (eleBarrel and relInvEpDiff > m_ele_cbid_barrel_RelInvEpDiff_max)
-        return false;
-    if (eleEndcap and relInvEpDiff > m_ele_cbid_endcap_RelInvEpDiff_max)
-        return false;
-
-    double const NinnerLayerLostHits = ele->getUserRecord("NinnerLayerLostHits");
-    if (eleBarrel and NinnerLayerLostHits > m_ele_cbid_barrel_NInnerLayerLostHits_max)
-        return false;
-    if (eleEndcap and NinnerLayerLostHits > m_ele_cbid_endcap_NInnerLayerLostHits_max)
-        return false;
-
-    double hasConversion = 0;
-    if (!m_useAlternative)
-    {
-        hasConversion = ele->getUserRecord("passConversionVeto");
-    }
-    else
-    {
-        hasConversion = ele->getUserRecord(m_alternativeUserVariables["passConversionVeto"]);
-    }
-    if (eleBarrel and m_ele_cbid_barrel_Conversion_reject and hasConversion)
         return true;
-    if (eleEndcap and m_ele_cbid_endcap_Conversion_reject and hasConversion)
-        return true;
-
-    // NOTE: fbrem and E/pIn cuts only for 2011 analysis!
-    // See also:
-    // https://twiki.cern.ch/twiki/bin/view/CMS/EgammaCutBasedIdentification?rev=30#E_p_and_fbrem_based_tight_ID_201
-
-    if (m_use_fBrem)
-    {
-        double const fBrem = ele->getUserRecord("fbrem");
-        // It is OK that fBrem is too small, if we are in the lowEta region and the
-        // EoP is large enough!
-        bool const passfBrem = fBrem > m_ele_cbid_fBrem_min or (eleAbsEta < 1.0 and EoP > m_ele_cbid_lowEta_EoP_min);
-        if (not passfBrem)
-            return false;
     }
-
-    // All cuts passed!
-    return true;
+    return false;
 }
 
 // This function returns true, if the given electron passes the HEEP Selection.
 // See also:
 // https://twiki.cern.ch/twiki/bin/view/CMS/HEEPElectronID?rev=65
-bool EleSelector::passlooseHEEPID(pxl::Particle const *ele, double const eleEt, bool const eleBarrel,
-                                  bool const eleEndcap) const
+bool EleSelector::passHEEPID(pxl::Particle const *ele) const
 {
-
-    // First check if we want to use only id flags from miniaod or
-    // reperform cuts
-    if (m_ele_heepid_usebool)
+    // Electron_cutBased_HEEP - Vector < Bool_t >
+    // Description: cut-based HEEP ID
+    if (ele->getUserRecord("cutBased_HEEP").toBool())
     {
-        if (ele->hasUserRecord(m_ele_heepid_boolname))
-        {
-            return ele->getUserRecord(m_ele_heepid_boolname);
-        }
-        else
-        {
-            std::cerr << "Error: You are tring to select Ele with HEEPID" << std::endl;
-            std::cerr << "But no user record is found for boolname: " << m_ele_heepid_boolname << std::endl;
-            exit(1);
-        }
+        return true;
     }
-
-    // Require electron to be ECAL driven?
-    if (m_ele_heepid_requireEcalDriven and not ele->getUserRecord("ecalDriven"))
-        return false;
-
-    // These variables are checked in the barrel as well as in the endcaps.
-    double const ele_absDeltaEta = fabs(ele->getUserRecord("DEtaSeedVtx").toDouble());
-    double const ele_absDeltaPhi = fabs(ele->getUserRecord("DPhiSCVtx").toDouble());
-    double const ele_HoEM = ele->getUserRecord("HoEm");
-
-    double ele_E = 0;
-    if (!m_useAlternative)
-    {
-        ele_E = ele->getUserRecord("SCE");
-    }
-    else
-    {
-        ele_E = ele->getUserRecord(m_alternativeUserVariables["SCE"]);
-    }
-
-    // TODO: Remove this construct when FA11 or older samples are not used anymore.
-    // (Typo in skimmer already fixed. UserRecord: NinnerLayerLostHits.)
-    int ele_innerLayerLostHits;
-    try
-    {
-        ele_innerLayerLostHits = ele->getUserRecord("NMissingHits: ");
-    }
-    catch (std::runtime_error &)
-    {
-        ele_innerLayerLostHits = ele->getUserRecord("NinnerLayerLostHits");
-    }
-    catch (...)
-    {
-        throw;
-    }
-
-    // ele in barrel
-    if (eleBarrel)
-    {
-        // delta eta between SC and track
-        if (ele_absDeltaEta > m_ele_heepid_barrel_deltaEta_max)
-        {
-            return false;
-        }
-
-        // delta phi between SC and track
-        if (ele_absDeltaPhi > m_ele_heepid_barrel_deltaPhi_max)
-        {
-            return false;
-        }
-
-        // avoid division by zero in hadronic over EM
-        if (ele_E == 0)
-        {
-            return false;
-        }
-
-        // hadronic over EM
-        if (ele_HoEM > (m_ele_heepid_barrel_HoEM_slope / ele_E + m_ele_heepid_barrel_HoEM_max))
-        {
-            return false;
-        }
-
-        // shower shape
-        double e5x5 = 0;
-        double e1x5 = 0;
-        double e2x5 = 0;
-        if (!m_useAlternative)
-        {
-            e5x5 = ele->getUserRecord("full5x5_e5x5");
-            e1x5 = ele->getUserRecord("full5x5_e1x5");
-            e2x5 = ele->getUserRecord("full5x5_e2x5Max");
-        }
-        else
-        {
-            e5x5 = ele->getUserRecord(m_alternativeUserVariables["full5x5_e5x5"]);
-            e1x5 = ele->getUserRecord(m_alternativeUserVariables["full5x5_e1x5"]);
-            e2x5 = ele->getUserRecord(m_alternativeUserVariables["full5x5_e2x5Max"]);
-        }
-
-        if (e1x5 / e5x5 <= m_ele_heepid_barrel_e1x5_min and e2x5 / e5x5 <= m_ele_heepid_barrel_e2x5_min)
-            return false;
-
-        if (ele_innerLayerLostHits > m_ele_heepid_barrel_NInnerLayerLostHits_max)
-            return false;
-
-        if (fabs(ele->getUserRecord("Dxy").toDouble()) > m_ele_heepid_barrel_dxy_max)
-            return false;
-    }
-
-    // ele in endcap
-    if (eleEndcap)
-    {
-        // delta eta between SC and track
-        if (ele_absDeltaEta > m_ele_heepid_endcap_deltaEta_max)
-            return false;
-
-        // delta phi between SC and track
-        if (ele_absDeltaPhi > m_ele_heepid_endcap_deltaPhi_max)
-            return false;
-
-        // avoid division by zero in hadronic over EM
-        if (ele_E == 0)
-            return false;
-
-        // hadronic over EM
-        if (ele_HoEM > (m_ele_heepid_endcap_HoEM_slope / ele_E + m_ele_heepid_endcap_HoEM_max))
-            return false;
-
-        // sigma iEta-iEta
-        if (!m_useAlternative)
-        {
-            if (ele->getUserRecord("full5x5_sigmaIetaIeta").toDouble() > m_ele_heepid_endcap_sigmaIetaIeta_max)
-                return false;
-        }
-        else
-        {
-            if (ele->getUserRecord(m_alternativeUserVariables["full5x5_sigmaIetaIeta"]).toDouble() >
-                m_ele_heepid_endcap_sigmaIetaIeta_max)
-                return false;
-        }
-
-        if (ele_innerLayerLostHits > m_ele_heepid_endcap_NInnerLayerLostHits_max)
-            return false;
-
-        if (fabs(ele->getUserRecord("Dxy").toDouble()) > m_ele_heepid_endcap_dxy_max)
-            return false;
-    }
-    return true;
+    return false;
 }
 
-// This function returns true, if the given electron passes the HEEP Selection.
-// See also:
-// https://twiki.cern.ch/twiki/bin/view/CMS/HEEPElectronIdentificationRun2?rev=14
-bool EleSelector::passtightHEEPID(pxl::Particle const *ele, double const eleEt, bool const eleBarrel,
-                                  bool const eleEndcap) const
-{
+// // This function returns true, if the given electron passes the HEEP Selection.
+// // See also:
+// // https://twiki.cern.ch/twiki/bin/view/CMS/HEEPElectronIdentificationRun2?rev=14
+// bool EleSelector::passtightHEEPID(pxl::Particle const *ele, double const eleEt, bool const eleBarrel,
+//                                   bool const eleEndcap) const
+// {
 
-    // First check if we want to use only id flags from miniaod or
-    // reperform cuts
-    if (m_ele_heepid_usebool)
-    {
-        if (ele->hasUserRecord(m_ele_heepid_boolname))
-        {
-            return ele->getUserRecord(m_ele_heepid_boolname);
-        }
-        else
-        {
-            std::cerr << "Error: You are tring to select Ele with HEEPID" << std::endl;
-            std::cerr << "But no user record is found for boolname: " << m_ele_heepid_boolname << std::endl;
-            exit(1);
-        }
-    }
+//     // First check if we want to use only id flags from miniaod or
+//     // reperform cuts
+//     if (m_ele_heepid_usebool)
+//     {
+//         if (ele->hasUserRecord(m_ele_heepid_boolname))
+//         {
+//             return ele->getUserRecord(m_ele_heepid_boolname);
+//         }
+//         else
+//         {
+//             std::cerr << "Error: You are tring to select Ele with HEEPID" << std::endl;
+//             std::cerr << "But no user record is found for boolname: " << m_ele_heepid_boolname << std::endl;
+//             exit(1);
+//         }
+//     }
 
-    // Require electron to be ECAL driven?
-    if (m_ele_heepid_requireEcalDriven and not ele->getUserRecord("ecalDriven"))
-        return false;
+//     // Require electron to be ECAL driven?
+//     if (m_ele_heepid_requireEcalDriven and not ele->getUserRecord("ecalDriven"))
+//         return false;
 
-    // These variables are checked in the barrel as well as in the endcaps.
-    double const ele_absDeltaEta = fabs(ele->getUserRecord("DEtaSeedVtx").toDouble());
-    double const ele_absDeltaPhi = fabs(ele->getUserRecord("DPhiSCVtx").toDouble());
-    double const ele_HoEM = ele->getUserRecord("HoEm");
+//     // These variables are checked in the barrel as well as in the endcaps.
+//     double const ele_absDeltaEta = fabs(ele->getUserRecord("DEtaSeedVtx").toDouble());
+//     double const ele_absDeltaPhi = fabs(ele->getUserRecord("DPhiSCVtx").toDouble());
+//     double const ele_HoEM = ele->getUserRecord("HoEm");
 
-    double ele_E = 0;
-    if (!m_useAlternative)
-    {
-        ele_E = ele->getUserRecord("SCE");
-    }
-    else
-    {
-        ele_E = ele->getUserRecord(m_alternativeUserVariables["SCE"]);
-    }
+//     double ele_E = 0;
+//     if (!m_useAlternative)
+//     {
+//         ele_E = ele->getUserRecord("SCE");
+//     }
+//     else
+//     {
+//         ele_E = ele->getUserRecord(m_alternativeUserVariables["SCE"]);
+//     }
 
-    // TODO: Remove this construct when FA11 or older samples are not used anymore.
-    // (Typo in skimmer already fixed. UserRecord: NinnerLayerLostHits.)
-    int ele_innerLayerLostHits;
-    try
-    {
-        ele_innerLayerLostHits = ele->getUserRecord("NMissingHits: ");
-    }
-    catch (std::runtime_error &)
-    {
-        ele_innerLayerLostHits = ele->getUserRecord("NinnerLayerLostHits");
-    }
-    catch (...)
-    {
-        throw;
-    }
+//     // TODO: Remove this construct when FA11 or older samples are not used anymore.
+//     // (Typo in skimmer already fixed. UserRecord: NinnerLayerLostHits.)
+//     int ele_innerLayerLostHits;
+//     try
+//     {
+//         ele_innerLayerLostHits = ele->getUserRecord("NMissingHits: ");
+//     }
+//     catch (std::runtime_error &)
+//     {
+//         ele_innerLayerLostHits = ele->getUserRecord("NinnerLayerLostHits");
+//     }
+//     catch (...)
+//     {
+//         throw;
+//     }
 
-    // ele in barrel
-    if (eleBarrel)
-    {
-        // delta eta between SC and track
-        if (ele_absDeltaEta > m_ele_heepid_barrel_deltaEta_max)
-            return false;
+//     // ele in barrel
+//     if (eleBarrel)
+//     {
+//         // delta eta between SC and track
+//         if (ele_absDeltaEta > m_ele_heepid_barrel_deltaEta_max)
+//             return false;
 
-        // delta phi between SC and track
-        if (ele_absDeltaPhi > m_ele_heepid_barrel_deltaPhi_max)
-            return false;
+//         // delta phi between SC and track
+//         if (ele_absDeltaPhi > m_ele_heepid_barrel_deltaPhi_max)
+//             return false;
 
-        // avoid division by zero in hadronic over EM
-        if (ele_E == 0)
-            return false;
+//         // avoid division by zero in hadronic over EM
+//         if (ele_E == 0)
+//             return false;
 
-        // hadronic over EM
-        if (ele_HoEM > (m_ele_heepid_barrel_HoEM_slope / ele_E + m_ele_heepid_barrel_HoEM_max))
-            return false;
-        // shower shape
-        double e5x5 = 0;
-        double e1x5 = 0;
-        double e2x5 = 0;
-        if (!m_useAlternative)
-        {
-            e5x5 = ele->getUserRecord("full5x5_e5x5");
-            e1x5 = ele->getUserRecord("full5x5_e1x5");
-            e2x5 = ele->getUserRecord("full5x5_e2x5Max");
-        }
-        else
-        {
-            e5x5 = ele->getUserRecord(m_alternativeUserVariables["full5x5_e5x5"]);
-            e1x5 = ele->getUserRecord(m_alternativeUserVariables["full5x5_e1x5"]);
-            e2x5 = ele->getUserRecord(m_alternativeUserVariables["full5x5_e2x5Max"]);
-        }
+//         // hadronic over EM
+//         if (ele_HoEM > (m_ele_heepid_barrel_HoEM_slope / ele_E + m_ele_heepid_barrel_HoEM_max))
+//             return false;
+//         // shower shape
+//         double e5x5 = 0;
+//         double e1x5 = 0;
+//         double e2x5 = 0;
+//         if (!m_useAlternative)
+//         {
+//             e5x5 = ele->getUserRecord("full5x5_e5x5");
+//             e1x5 = ele->getUserRecord("full5x5_e1x5");
+//             e2x5 = ele->getUserRecord("full5x5_e2x5Max");
+//         }
+//         else
+//         {
+//             e5x5 = ele->getUserRecord(m_alternativeUserVariables["full5x5_e5x5"]);
+//             e1x5 = ele->getUserRecord(m_alternativeUserVariables["full5x5_e1x5"]);
+//             e2x5 = ele->getUserRecord(m_alternativeUserVariables["full5x5_e2x5Max"]);
+//         }
 
-        if (e1x5 / e5x5 <= m_ele_heepid_barrel_e1x5_min and e2x5 / e5x5 <= m_ele_heepid_barrel_e2x5_min)
-            return false;
+//         if (e1x5 / e5x5 <= m_ele_heepid_barrel_e1x5_min and e2x5 / e5x5 <= m_ele_heepid_barrel_e2x5_min)
+//             return false;
 
-        if (ele_innerLayerLostHits > m_ele_heepid_barrel_NInnerLayerLostHits_max)
-            return false;
+//         if (ele_innerLayerLostHits > m_ele_heepid_barrel_NInnerLayerLostHits_max)
+//             return false;
 
-        if (fabs(ele->getUserRecord("Dxy").toDouble()) > m_ele_heepid_barrel_dxy_max)
-            return false;
-    }
+//         if (fabs(ele->getUserRecord("Dxy").toDouble()) > m_ele_heepid_barrel_dxy_max)
+//             return false;
+//     }
 
-    // ele in endcap
-    if (eleEndcap)
-    {
-        // delta eta between SC and track
-        if (ele_absDeltaEta > m_ele_heepid_endcap_deltaEta_max)
-            return false;
+//     // ele in endcap
+//     if (eleEndcap)
+//     {
+//         // delta eta between SC and track
+//         if (ele_absDeltaEta > m_ele_heepid_endcap_deltaEta_max)
+//             return false;
 
-        // delta phi between SC and track
-        if (ele_absDeltaPhi > m_ele_heepid_endcap_deltaPhi_max)
-            return false;
+//         // delta phi between SC and track
+//         if (ele_absDeltaPhi > m_ele_heepid_endcap_deltaPhi_max)
+//             return false;
 
-        // avoid division by zero in hadronic over EM
-        if (ele_E == 0)
-            return false;
+//         // avoid division by zero in hadronic over EM
+//         if (ele_E == 0)
+//             return false;
 
-        // hadronic over EM
-        if (ele_HoEM > (m_ele_heepid_endcap_HoEM_slope / ele_E + m_ele_heepid_endcap_HoEM_max))
-            return false;
+//         // hadronic over EM
+//         if (ele_HoEM > (m_ele_heepid_endcap_HoEM_slope / ele_E + m_ele_heepid_endcap_HoEM_max))
+//             return false;
 
-        // sigma iEta-iEta
-        if (!m_useAlternative)
-        {
-            if (ele->getUserRecord("full5x5_sigmaIetaIeta").toDouble() > m_ele_heepid_endcap_sigmaIetaIeta_max)
-                return false;
-        }
-        else
-        {
-            if (ele->getUserRecord(m_alternativeUserVariables["full5x5_sigmaIetaIeta"]).toDouble() >
-                m_ele_heepid_endcap_sigmaIetaIeta_max)
-                return false;
-        }
+//         // sigma iEta-iEta
+//         if (!m_useAlternative)
+//         {
+//             if (ele->getUserRecord("full5x5_sigmaIetaIeta").toDouble() > m_ele_heepid_endcap_sigmaIetaIeta_max)
+//                 return false;
+//         }
+//         else
+//         {
+//             if (ele->getUserRecord(m_alternativeUserVariables["full5x5_sigmaIetaIeta"]).toDouble() >
+//                 m_ele_heepid_endcap_sigmaIetaIeta_max)
+//                 return false;
+//         }
 
-        if (ele_innerLayerLostHits > m_ele_heepid_endcap_NInnerLayerLostHits_max)
-            return false;
+//         if (ele_innerLayerLostHits > m_ele_heepid_endcap_NInnerLayerLostHits_max)
+//             return false;
 
-        if (fabs(ele->getUserRecord("Dxy").toDouble()) > m_ele_heepid_endcap_dxy_max)
-            return false;
-    }
-    return true;
-}
+//         if (fabs(ele->getUserRecord("Dxy").toDouble()) > m_ele_heepid_endcap_dxy_max)
+//             return false;
+//     }
+//     return true;
+// }
 
 bool EleSelector::passHEEP_Isolation(pxl::Particle const *ele, double const eleEt, bool const eleBarrel,
                                      bool const eleEndcap, double const eleRho) const

@@ -22,6 +22,27 @@ add_test(NAME test_music_2018_Data COMMAND music --batch --run-config ${CMAKE_SO
 # #####################################################
 # #####################################################
 
+# nano_music (classification)
+add_executable(nano_music NanoMUSiC.cc)
+target_link_libraries(nano_music LINK_PUBLIC PxlAnalyzer TEventClass)
+install(TARGETS nano_music DESTINATION ${CMAKE_SOURCE_DIR}/bin)
+
+# MC
+add_test(NAME test_nano_music_2016APV_MC COMMAND nano_music --batch --run-config ${CMAKE_SOURCE_DIR}/test/MC_2016APV.toml)
+add_test(NAME test_nano_music_2016_MC COMMAND nano_music --batch --run-config ${CMAKE_SOURCE_DIR}/test/MC_2016.toml)
+add_test(NAME test_nano_music_2017_MC COMMAND nano_music --batch --run-config ${CMAKE_SOURCE_DIR}/test/MC_2017.toml)
+add_test(NAME test_nano_music_2018_MC COMMAND nano_music --batch --run-config ${CMAKE_SOURCE_DIR}/test/MC_2018.toml)
+
+# Data
+add_test(NAME test_nano_music_2016APV_Data COMMAND nano_music --batch --run-config ${CMAKE_SOURCE_DIR}/test/Data_2016APV.toml)
+add_test(NAME test_nano_music_2016_Data COMMAND nano_music --batch --run-config ${CMAKE_SOURCE_DIR}/test/Data_2016.toml)
+add_test(NAME test_nano_music_2017_Data COMMAND nano_music --batch --run-config ${CMAKE_SOURCE_DIR}/test/Data_2017.toml)
+add_test(NAME test_nano_music_2018_Data COMMAND nano_music --batch --run-config ${CMAKE_SOURCE_DIR}/test/Data_2018.toml)
+
+# #####################################################
+# #####################################################
+# #####################################################
+
 # nanoaod_content_printer
 add_executable(nanoaod_content_printer nanoaod_content_printer.cc)
 target_link_libraries(nanoaod_content_printer LINK_PUBLIC PxlAnalyzer)

@@ -20,8 +20,8 @@ class GammaSelector : public ObjectSelector
 
   private:
     // member functions
-    bool passCBID(pxl::Particle const *gam, double const gamRho, bool const barrel, bool const endcap) const;
-    bool passMVAID(pxl::Particle const *gam, bool const barrel, bool const endcap) const;
+    bool passCBID(pxl::Particle const *gam) const;
+    bool passMVAID(pxl::Particle const *gam) const;
 
     //     bool passCutBased2012(pxl::Particle const *gam) const;
     bool passPhys14Loose(pxl::Particle const *gam) const;

@@ -138,7 +138,9 @@ int main(int argc, char *argv[])
         throw Tools::file_not_found(analysis_config_file, "Config file");
     }
     else
+    {
         std::cout << "INFO: Using Config file: " << analysis_config_file << std::endl;
+    }
 
     auto config = Tools::MConfig(analysis_config_file);
     config.setYear(year);

@@ -81,7 +81,7 @@ Gamma.Error.Fakes = 0.5
 import "$PXLANA/ConfigFiles/Objects/EleID/Ele_CBID_tight_r20.cff"
 Ele.use = 1
 Ele.CBID.usebool = 1
-Ele.HEEPID.usebool = 0
+Ele.HEEPID.usebool = 1
 Ele.regions.use = 0
 Ele.ID.Tag = 0
 Ele.ID.Type = "switch"

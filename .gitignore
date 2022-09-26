@@ -8,7 +8,8 @@ foo/
 bin/
 lib/
 build/
-
+foo.C
+nano.root
 ##### PYTHON #####
 
 # Byte-compiled / optimized / DLL files

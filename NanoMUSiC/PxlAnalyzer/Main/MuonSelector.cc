@@ -186,15 +186,15 @@ int MuonSelector::muonID(pxl::Particle *muon, double const rho, const std::strin
     // decide which isolation to perform
     if (m_muo_iso_type == "PFIso")
     {
-        passIso = passPFIso(muon, rho, m_muo_iso_pf_max);
+        passIso = passPFIso(muon);
     }
     else if (m_muo_iso_type == "MiniIso")
     {
-        passIso = passMiniIso(muon, m_muo_iso_max);
+        passIso = passMiniIso(muon);
     }
     else if (m_muo_iso_type == "TrackerIso")
     {
-        passIso = passTrackerIso(muon, m_muo_iso_tracker_max);
+        passIso = passTrackerIso(muon);
     }
     else if (m_muo_iso_type == "None")
     {
@@ -205,11 +205,11 @@ int MuonSelector::muonID(pxl::Particle *muon, double const rho, const std::strin
     {
         if (muon->getPt() < m_muo_ptSwitch)
         {
-            passIso = passPFIso(muon, rho, m_muo_iso_pf_max);
+            passIso = passPFIso(muon);
         }
         else
         {
-            passIso = passTrackerIso(muon, m_muo_iso_tracker_max);
+            passIso = passTrackerIso(muon);
         }
     }
     else
@@ -343,178 +343,43 @@ bool MuonSelector::passMediumID(pxl::Particle *muon) const
 
 bool MuonSelector::passTightID(pxl::Particle *muon) const
 {
-    // return built-in bool if requested
-    if (m_muo_tightid_useBool)
-        return muon->getUserRecord(m_muo_tightid_boolName).toBool();
-    // do the cut based ID if we are not using the bool
-    if (!(muon->getUserRecord("isGlobalMuon").toBool() == m_muo_tightid_isGlobalMuon))
-        return false;
-    if (!(muon->getUserRecord("isPFMuon").toBool() == m_muo_tightid_isPFMuon))
-        return false;
-    if (!m_useAlternative)
-    {
-        if (muon->hasUserRecord("normalizedChi2") &&
-            !(muon->getUserRecord("normalizedChi2").toDouble() < m_muo_tightid_normalizedChi2_max))
-            return false;
-        if (!(fabs(muon->getUserRecord("Dxy").toDouble()) < m_muo_tightid_dxy_max))
-            return false;
-        if (!(fabs(muon->getUserRecord("Dz").toDouble()) < m_muo_tightid_dz_max))
-            return false;
-    }
-    else
-    {
-        if (!(muon->getUserRecord(m_alternativeUserVariables["normalizedChi2"]).toDouble() <
-              m_muo_tightid_normalizedChi2_max))
-            return false;
-        if (!(fabs(muon->getUserRecord(m_alternativeUserVariables["Dxy"]).toDouble()) < m_muo_tightid_dxy_max))
-            return false;
-        if (!(fabs(muon->getUserRecord(m_alternativeUserVariables["Dz"]).toDouble()) < m_muo_tightid_dz_max))
-            return false;
-    }
-    if (!(muon->getUserRecord("VHitsMuonSys").toInt32() > m_muo_tightid_vHitsMuonSys_min))
-        return false;
-    if (!(muon->getUserRecord("NMatchedStations").toInt32() > m_muo_tightid_nMatchedStations_min))
-        return false;
-
-    if (!(muon->getUserRecord("VHitsPixel").toInt32() > m_muo_tightid_vHitsPixel_min))
-        return false;
-    if (!(muon->getUserRecord("TrackerLayersWithMeas").toInt32() > m_muo_tightid_trackerLayersWithMeas_min))
-        return false;
-    return true;
+    return muon->getUserRecord("tightId").toBool();
 }
 
 bool MuonSelector::passHighPtID(pxl::Particle *muon) const
 {
-    // check if a cocktail muon exists
-    if (!(muon->getUserRecord("validCocktail").toBool()))
-        return false;
-    // return built-in bool if requested
-    if (m_muo_highptid_useBool)
-        return muon->getUserRecord(m_muo_highptid_boolName).toBool();
-
-    // do the cut based ID if we are not using the bool
-    if (!(m_muo_highptid_isGlobalMuon == muon->getUserRecord("isGlobalMuon").toBool()))
-        return false;
-    if (!(m_muo_highptid_ptRelativeError_max >
-          muon->getUserRecord("ptErrorCocktail").toDouble() / muon->getUserRecord("ptCocktail").toDouble()))
-        return false;
-    // careful, these variables use user records that are not based on the cocktail track
-    if (!(m_muo_highptid_nMatchedStations_min < muon->getUserRecord("NMatchedStations").toInt32()))
-        return false;
-    if (!(m_muo_highptid_vHitsMuonSys_min < muon->getUserRecord("VHitsMuonSys").toInt32()))
-        return false;
-    if (!(m_muo_highptid_vHitsPixel_min < muon->getUserRecord("VHitsPixel").toInt32()))
-        return false;
-    if (!(m_muo_highptid_trackerLayersWithMeas_min < muon->getUserRecord("TrackerLayersWithMeas").toInt32()))
-        return false;
-
-    if (!(m_muo_highptid_dxy_max > fabs(muon->getUserRecord("DxyCocktail").toDouble())))
-        return false;
-    if (!(m_muo_highptid_dz_max > fabs(muon->getUserRecord("DzCocktail").toDouble())))
-        return false;
-
-    // return true if everything passed
-    return true;
+    return muon->getUserRecord("highPtId").toBool();
 }
 
 bool MuonSelector::passTrackerID(pxl::Particle *muon) const
 {
-    // check if a cocktail muon exists
-    if (!(muon->getUserRecord("validCocktail").toBool()))
-        return false;
-    // return built-in bool if requested
-    if (m_muo_trackerid_useBool)
-        return muon->getUserRecord(m_muo_trackerid_boolName).toBool();
-
-    // do the cut based ID if we are not using the bool
-    if (!(m_muo_trackerid_isTrackerMuon == muon->getUserRecord("isTrackerMuon").toBool()))
-        return false;
-    if (!(m_muo_trackerid_ptRelativeError_max >
-          muon->getUserRecord("ptErrorCocktail").toDouble() / muon->getUserRecord("ptCocktail").toDouble()))
-        return false;
-    // careful, these variables use user records that are not based on the cocktail track
-    if (!(m_muo_trackerid_nMatchedStations_min < muon->getUserRecord("NMatchedStations").toInt32()))
-        return false;
-    if (!(m_muo_trackerid_vHitsPixel_min < muon->getUserRecord("VHitsPixel").toInt32()))
-        return false;
-    if (!(m_muo_trackerid_trackerLayersWithMeas_min < muon->getUserRecord("TrackerLayersWithMeas").toInt32()))
-        return false;
-
-    if (!(m_muo_trackerid_dxy_max > fabs(muon->getUserRecord("DxyCocktail").toDouble())))
-        return false;
-    if (!(m_muo_trackerid_dz_max > fabs(muon->getUserRecord("DzCocktail").toDouble())))
-        return false;
-
-    // return true if everything passed
-    return true;
+    return muon->getUserRecord("isTracker").toBool();
 }
 
-bool MuonSelector::passTrackerIso(pxl::Particle *muon, const double muo_iso_max) const
+bool MuonSelector::passTrackerIso(pxl::Particle *muon) const
 {
-    double muon_iso = muon->getUserRecord("TrkIso");
-    return (muon_iso / muon->getPt() < muo_iso_max);
+    // TkIso ID (1=TkIsoLoose, 2=TkIsoTight)
+    return (muon->getUserRecord("tkIsoId").toInt32() == 1);
 }
 
-bool MuonSelector::passPFIso(pxl::Particle *muon, double rho, const double muo_iso_max) const
+bool MuonSelector::passPFIso(pxl::Particle *muon) const
 {
-    double muon_iso;
-    if (m_muo_iso_puCorrection == "DB")
-    {
-        // formula: muon_iso = [sumChargedHadronPt+ max(0.,sumNeutralHadronPt+sumPhotonPt-0.5sumPUPtr]/pt
-        muon_iso = muon->getUserRecord("PFIsoR04ChargedHadrons").toDouble() +
-                   max(0., muon->getUserRecord("PFIsoR04NeutralHadrons").toDouble() +
-                               muon->getUserRecord("PFIsoR04Photons").toDouble() -
-                               0.5 * muon->getUserRecord("PFIsoR04PU").toDouble());
-    }
-    else if (m_muo_iso_puCorrection == "EA")
-    {
-        // formula: muon_iso = [sumChargedHadronPt+ max(0.,sumNeutralHadronPt+sumPhotonPt- rho*EA]/pt
-        // take conesize of 0.3 since current EA have been computed for this cone size (28.06.15)
-        double const photonEA = m_muo_EA.getEffectiveArea(fabs(muon->getEta()), EffectiveArea::photon);
-        double const neutralHadronEA = m_muo_EA.getEffectiveArea(fabs(muon->getEta()), EffectiveArea::neutralHadron);
-        muon_iso = muon->getUserRecord("PFIsoR03ChargedHadrons").toDouble() +
-                   max(0., muon->getUserRecord("PFIsoR03NeutralHadrons").toDouble() +
-                               muon->getUserRecord("PFIsoR03Photons").toDouble() - rho * (photonEA + neutralHadronEA));
-    }
-    else if (m_muo_iso_puCorrection == "None")
-    {
-        muon_iso = muon->getUserRecord("PFIsoR04ChargedHadrons").toDouble() +
-                   muon->getUserRecord("PFIsoR04NeutralHadrons").toDouble() +
-                   muon->getUserRecord("PFIsoR04Photons").toDouble();
-    }
-    else
-    {
-        throw Tools::config_error("When using 'Muon.Iso.Type' = '" + m_muo_iso_type +
-                                  "', 'Muon.Iso.PUCorr' must be one of these values: 'DB' (deltaBeta), 'EA' (effective "
-                                  "Area), 'None'. The value is '" +
-                                  m_muo_iso_puCorrection + "'");
-        return false;
-    }
-    return ((muon_iso / muon->getPt()) < muo_iso_max);
+    // PFIso ID from miniAOD selector:
+    // 1 = PFIsoVeryLoose
+    // 2 = PFIsoLoose
+    // 3 = PFIsoMedium
+    // 4 = PFIsoTight  🔥🔥🔥
+    // 5 = PFIsoVeryTight
+    // 6 = PFIsoVeryVeryTight
+    return (muon->getUserRecord("pfIsoId").toInt32() >= 4);
 }
 
-bool MuonSelector::passMiniIso(pxl::Particle *muon, const double muo_iso_max) const
+bool MuonSelector::passMiniIso(pxl::Particle *muon) const
 {
-    double muon_iso;
-    if (m_muo_iso_puCorrection == "DB")
-    {
-        muon_iso = muon->getUserRecord("miniIsoDB");
-    }
-    else if (m_muo_iso_puCorrection == "EA")
-    {
-        muon_iso = muon->getUserRecord("miniIsoEA");
-    }
-    else if (m_muo_iso_puCorrection == "PFWeighted")
-    {
-        muon_iso = muon->getUserRecord("miniIsoPFWeight");
-    }
-    else
-    {
-        throw Tools::config_error("When using 'Muon.Iso.Type' = '" + m_muo_iso_type +
-                                  "', 'Muon.Iso.PUCorr' must be one of these values: 'DB' (deltaBeta), 'EA' (effective "
-                                  "Area), 'PFWeighted'. The value is '" +
-                                  m_muo_iso_puCorrection + "'");
-        return false;
-    }
-    return ((muon_iso / muon->getPt()) < muo_iso_max);
+    // Description: MiniIso ID from miniAOD selector
+    // 1 = MiniIsoLoose
+    // 2 = MiniIsoMedium
+    // 3 = MiniIsoTight 🔥🔥🔥
+    // 4 = MiniIsoVeryTight
+    return (muon->getUserRecord("miniIsoId").toInt32() >= 3);
 }
