@@ -57,6 +57,7 @@ cd $SCRIPTDIR
 
 # set PATH
 export PATH=$PATH:$SCRIPTDIR/bin;
+export PATH=$PATH:$SCRIPTDIR/scripts;
 
 # control whether MUSiC envs are set
 # to be used by Makefile

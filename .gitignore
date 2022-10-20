@@ -211,3 +211,4 @@ cython_debug/
 hsimpleReader.C
 NanoMUSiC/bin/
 foo.txt
+bar.C

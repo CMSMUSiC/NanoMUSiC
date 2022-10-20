@@ -1,8 +1,8 @@
 const std::map<unsigned int, std::string> event_class_objects = {
     {0, "muons"}, {1, "electrons"}, {2, "photons"}, {3, "taus"}, {4, "bjets"}, {5, "jets"}, {6, "met"}};
 
-unsigned int make_event_class_hash(unsigned int n_muons, unsigned int n_electrons, unsigned int n_photons,
-                                   unsigned int n_taus, unsigned int n_bjets, unsigned int n_jets, unsigned int n_met)
+unsigned int get_event_class_hash(unsigned int n_muons, unsigned int n_electrons, unsigned int n_photons,
+                                  unsigned int n_taus, unsigned int n_bjets, unsigned int n_jets, unsigned int n_met)
 {
     if (n_muons >= 10)
     {
@@ -39,7 +39,7 @@ unsigned int make_event_class_hash(unsigned int n_muons, unsigned int n_electron
                                      pow(10, 6) * n_met);
 }
 
-void _collect_digits(std::vector<unsigned int> &digits, unsigned long num)
+void _collect_digits(std::vector<unsigned int> &digits, const unsigned long &num)
 {
     if (num > 9)
     {
@@ -48,7 +48,7 @@ void _collect_digits(std::vector<unsigned int> &digits, unsigned long num)
     digits.push_back(num % 10);
 }
 
-auto get_n_objects(unsigned int event_class_hash)
+auto get_n_objects(unsigned int &event_class_hash)
 {
     std::vector<unsigned int> digits;
     _collect_digits(digits, event_class_hash);

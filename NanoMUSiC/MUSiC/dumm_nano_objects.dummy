@@ -1,0 +1,232 @@
+
+#include <any>
+#include <string>
+
+#include "Math/Vector4D.h"
+#include "ROOT/RVec.hxx"
+
+using namespace ROOT::Math;
+using namespace ROOT::VecOps;
+
+const double MUON_MASS = 105.6583755 / 1000.0;
+
+class NanoObjects
+{
+  private:
+    RVec<float> pt_;
+    RVec<float> eta_;
+    RVec<float> phi_;
+    RVec<float> mass_;
+    unsigned int size_;
+
+  public:
+    NanoObjects(RVec<float> _pt, RVec<float> _eta, RVec<float> _phi, RVec<float> _mass,
+                std::map<std::string, RVec<std::any>> _props = {})
+        : pt_(_pt), eta_(_eta), phi_(_phi), mass_(_mass), size_(_pt.size()),
+          p4(Construct<PtEtaPhiMVector>(_pt, _eta, _phi, mass_)), props(_props)
+    {
+        indexes = RVec<size_t>(size_);
+        std::iota(indexes.begin(), indexes.end(), 0);
+    }
+    // NanoObjects(NanoObjects &&) = default;
+    // NanoObjects(const NanoObjects &) = default;
+    // NanoObjects &operator=(NanoObjects &&) = default;
+    // NanoObjects &operator=(const NanoObjects &) = default;
+    // ~NanoObjects()
+    // {
+    // }
+
+    // custom members
+    RVec<PtEtaPhiMVector> p4;
+    std::map<std::string, RVec<std::any>> props;
+    RVec<size_t> indexes;
+
+    void set(std::string prop_name, RVec<std::any> prop_value)
+    {
+        props[prop_name] = prop_value;
+    }
+
+    void set_indexes(RVec<size_t> _indexes)
+    {
+        indexes = _indexes;
+    }
+
+    template <class Q>
+    RVec<Q> get(std::string prop_name)
+    {
+        RVec<Q> _buffer;
+        for (const auto &v : props[prop_name])
+        {
+            try
+            {
+                _buffer.emplace_back(std::any_cast<Q>(v));
+            }
+            catch (std::bad_any_cast &e)
+            {
+                std::cerr << e.what() << std::endl;
+                std::cerr << "Could not cast: " + prop_name << std::endl;
+                exit(1);
+            }
+        }
+        return _buffer;
+    }
+
+    template <typename V, typename = std::enable_if<std::is_convertible<V, bool>::value>>
+    NanoObjects operator[](const RVec<V> &conds)
+    {
+        const auto n = conds.size();
+
+        if (n != this->size())
+        {
+            throw std::runtime_error("Cannot index RVecN with condition vector of different size");
+        }
+
+        std::map<std::string, RVec<std::any>> _buffer;
+        for (const auto &[key, value] : this->props)
+        {
+            _buffer[key] = value[conds];
+        }
+        auto _temp =
+            NanoObjects{this->pt()[conds], this->eta()[conds], this->phi()[conds], this->mass()[conds], _buffer};
+        _temp.set_indexes(this->indexes[conds]);
+        return _temp;
+    }
+
+    template <typename V, typename = std::enable_if<std::is_convertible<V, unsigned int>::value>>
+    NanoObjects operator[](const V idx)
+    {
+
+        std::map<std::string, RVec<std::any>> _buffer;
+        for (const auto &[key, value] : this->props)
+        {
+            _buffer[key] = value[idx];
+        }
+
+        auto _temp = NanoObjects{this->pt()[idx], this->eta()[idx], this->phi()[idx], this->mass()[idx], _buffer};
+        _temp.set_indexes(this->indexes[idx]);
+        return _temp;
+    }
+
+    friend auto operator<<(std::ostream &os, const NanoObjects &m) -> std::ostream &
+    {
+        os << "NanoObjects: " << m.p4;
+        return os;
+    }
+
+    RVec<float> pt()
+    {
+        RVec<float> _buffer;
+        for (const auto &m : p4)
+        {
+            _buffer.emplace_back(m.pt());
+        }
+        return _buffer;
+    }
+    RVec<float> eta()
+    {
+        RVec<float> _buffer;
+        for (const auto &m : p4)
+        {
+            _buffer.emplace_back(m.eta());
+        }
+        return _buffer;
+    }
+    RVec<float> phi()
+    {
+        RVec<float> _buffer;
+        for (const auto &m : p4)
+        {
+            _buffer.emplace_back(m.phi());
+        }
+        return _buffer;
+    }
+    RVec<float> e()
+    {
+        RVec<float> _buffer;
+        for (const auto &m : p4)
+        {
+            _buffer.emplace_back(m.E());
+        }
+        return _buffer;
+    }
+    RVec<float> mass()
+    {
+        RVec<float> _buffer;
+        for (const auto &m : p4)
+        {
+            _buffer.emplace_back(m.mass());
+        }
+        return _buffer;
+    }
+    unsigned int size()
+    {
+        return size_;
+    }
+};
+
+template <class T>
+RVec<std::any> unroll_props(RVec<T> _props)
+{
+    RVec<std::any> _buffer;
+    for (const auto &p : _props)
+    {
+        _buffer.emplace_back(p);
+    }
+    return _buffer;
+}
+
+template <class T>
+RVec<std::any> unroll_props_single_value(T _props)
+{
+    RVec<std::any> _buffer;
+    _buffer.emplace_back(_props);
+    return _buffer;
+}
+
+// full factory (vector-like object)
+template <class... Args>
+NanoObjects make_NanoObjects(RVec<float> &&pt, RVec<float> &&eta, RVec<float> &&phi, RVec<float> &&mass,
+                             std::pair<const char *, Args> &&...props)
+{
+    auto _props = std::make_tuple(props...);
+    std::map<std::string, RVec<std::any>> _buffer;
+    std::apply([&](auto &&...args) { ((_buffer[args.first] = unroll_props(args.second)), ...); }, _props);
+
+    return NanoObjects{pt, eta, phi, mass, _buffer};
+}
+
+// mass as constant (value)
+template <class... Args>
+NanoObjects make_NanoObjects(RVec<float> &&pt, RVec<float> &&eta, RVec<float> &&phi, float mass,
+                             std::pair<const char *, Args> &&...props)
+{
+    return make_NanoObjects(std::move(pt), std::move(eta), std::move(phi), std::move(RVec<float>(pt.size(), mass)),
+                            std::move(props)...);
+}
+
+// value-like object
+template <class... Args>
+NanoObjects make_NanoObjects(float &&pt, float &&eta, float &&phi, float &&mass,
+                             std::pair<const char *, Args> &&...props)
+{
+    std::cout << pt << eta << phi << mass << std::endl;
+    auto _props = std::make_tuple(props...);
+    std::map<std::string, RVec<std::any>> _buffer;
+    std::apply([&](auto &&...args) { ((_buffer[args.first] = unroll_props_single_value(args.second)), ...); }, _props);
+
+    return NanoObjects{RVec<float>(1, pt), RVec<float>(1, eta), RVec<float>(1, phi), RVec<float>(1, mass), _buffer};
+}
+
+// met-like object
+template <class... Args>
+NanoObjects make_NanoObjects(float &&pt, float &&phi, std::pair<const char *, Args> &&...props)
+{
+    return make_NanoObjects(std::move(pt), std::move(0.0), std::move(phi), std::move(0.0), std::move(props)...);
+}
+
+// generator-like object
+template <class... Args>
+NanoObjects make_NanoObjects(std::pair<const char *, Args> &&...props)
+{
+    return make_NanoObjects(std::move(0.0), std::move(0.0), std::move(0.0), std::move(0.0), std::move(props)...);
+}

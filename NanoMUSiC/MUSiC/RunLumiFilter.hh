@@ -35,8 +35,42 @@ class RunLumiFilter
         }();
     }
 
+    auto operator()(unsigned long run_number, unsigned long lumi, bool run_on_data) const
+    {
+        if (!run_on_data)
+        {
+            return true;
+        }
+        if (dummy_json)
+        {
+            // no golden json provided --> should always return true
+            return true;
+        }
+        // CMS standard is to have run number as string
+        const auto test_run = std::to_string(run_number);
+        const auto test_lumi = lumi;
+
+        auto is_good_run_lumi = false;
+
+        if (good_runs_lumis_json.find(test_run) != good_runs_lumis_json.end())
+        {
+            for (auto const &interval : good_runs_lumis_json[test_run])
+            {
+                const unsigned long low = interval.front();
+                const unsigned long high = interval.back();
+                if (test_lumi >= low && test_lumi <= high)
+                {
+                    is_good_run_lumi = true;
+                }
+            }
+        }
+        return is_good_run_lumi;
+    }
+
+    // implemented only for backward compatibility
     auto operator()(unsigned long run_number, unsigned long lumi) const
     {
+
         if (dummy_json)
         {
             // no golden json provided --> should always return true

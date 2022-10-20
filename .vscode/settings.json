@@ -72,9 +72,14 @@
         "atomic": "cpp",
         "semaphore": "cpp",
         "stop_token": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "bar.C": "cpp",
+        "variant": "cpp",
+        "*.dummy": "cpp"
     },
     "C_Cpp.loggingLevel": "Error",
-    "clang-format.executable": "/home/home1/institut_3a/silva/.vscode-server/extensions/ms-vscode.cpptools-1.12.4-linux-x64/bin/../LLVM/bin/clang-format",
-    "python.formatting.provider": "black"
+    "clang-format.executable": "/.automount/home/home__home1/institut_3a/silva/.local/bin/clang-format",
+    "python.formatting.provider": "black",
+    "python.formatting.blackPath": "/.automount/home/home__home1/institut_3a/silva/.local/bin/black",
+    "editor.formatOnSave": true
 }

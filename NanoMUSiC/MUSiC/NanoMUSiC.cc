@@ -203,6 +203,7 @@ int main(int argc, char *argv[])
     std::cout << def << "[Initializing] Cut flow histo ..." << def << std::endl;
     const auto n_cuts = 10;
     auto cutflow_histo = TH1F("cutflow_histo", output_tree_title.str().c_str(), n_cuts, -0.5, n_cuts + 0.5);
+    cutflow_histo.Sumw2();
 
     // performance monitoring
     double dTime1 = getCpuTime(); // Start Time
@@ -266,7 +267,13 @@ int main(int argc, char *argv[])
         // get NanoAODReader
         auto nano_reader = NanoAODReader(*events_tree);
 
-        // loop over events
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////       [ BEGIN ]      //////////////////////////////////////
+        //////////////////////////////////////   loop over events   //////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////
         while (nano_reader.next())
         {
 
@@ -293,39 +300,100 @@ int main(int argc, char *argv[])
             event_content.lumi_section = nano_reader.getVal<UInt_t>("luminosityBlock");
             event_content.event_number = nano_reader.getVal<ULong64_t>("event");
 
-            // reset object counters
-            auto n_muons = 0;
-            auto n_electrons = 0;
-            auto n_photons = 0;
-            auto n_taus = 0;
-            auto n_bjets = 0;
-            auto n_jets = 0;
-            auto n_met = 0;
+            // initialize object counter
+            auto object_counter = ObjectCounter{};
 
-            if (run_on_data)
+            // only if data
+            // filter run and lumi section
+            if (!run_lumi_filter(event_content.run, event_content.lumi_section, run_on_data))
             {
-                // filter run and lumi section
-                if (!run_lumi_filter(event_content.run, event_content.lumi_section))
+                ++skipped;
+                if (debug > 1)
                 {
-                    ++skipped;
-                    if (debug > 1)
-                    {
-                        std::cerr << "[INFO] (SkipEvents): " << std::endl;
-                        std::cerr << "Skipping Run/lumi_section/Event: ";
-                        std::cerr << event_content.run << ":" << event_content.lumi_section << ":"
-                                  << event_content.event_number << std::endl;
-                    }
-
-                    continue;
+                    std::cerr << "[INFO] (SkipEvents): " << std::endl;
+                    std::cerr << "Skipping Run/lumi_section/Event: ";
+                    std::cerr << event_content.run << ":" << event_content.lumi_section << ":"
+                              << event_content.event_number << std::endl;
                 }
+                continue;
             }
-            else // run on MC
+
+            auto muons = NanoObject::make_collection(
+                nano_reader.getVec<Float_t>("Muon_pt"), nano_reader.getVec<Float_t>("Muon_eta"),
+                nano_reader.getVec<Float_t>("Muon_phi"), NanoObject::MUON_MASS,
+                std::make_pair("dxy", nano_reader.getVec<Float_t>("Muon_dxy")),
+                std::make_pair("charge", nano_reader.getVec<Int_t>("Muon_charge")));
+
+            // if (debug >= 2)
+            if (true)
             {
+                std::cout << "-----------------------------------------" << std::endl;
+                std::cout << "Muons: " << muons << std::endl;
+                std::cout << "Muons Pt: " << NanoObject::Pt(muons) << std::endl;
+                std::cout << "Muons Eta: " << NanoObject::Eta(muons) << std::endl;
+                std::cout << "Muons Phi: " << NanoObject::Phi(muons) << std::endl;
+                std::cout << "Muons Mass: " << NanoObject::Mass(muons) << std::endl;
+                std::cout << "Muons E: " << NanoObject::E(muons) << std::endl;
+                std::cout << "Muons dxy: " << NanoObject::GetFeature<Float_t>(muons, "dxy") << std::endl;
+                std::cout << "Muons charge: " << NanoObject::GetFeature<Int_t>(muons, "charge") << std::endl;
+                std::cout << "Muons indices: " << NanoObject::Indices(muons) << std::endl;
+                std::cout << "Muons GetByIndex: " << NanoObject::GetByIndex(muons, 0) << std::endl;
             }
+
+            // if (muons.size() > 1)
+            // {
+            //     std::cout << "Selected: " << muons[1] << std::endl;
+            // }
+            if (true)
+            {
+                auto muon_filter = NanoObject::Pt(muons) > 2;
+                std::cout << "Filter: " << muon_filter << std::endl;
+
+                auto filtered_muons = muons[muon_filter];
+                // auto filtered_muons = muons[NanoObject::Pt(muons) > 25];
+                std::cout << "Filtered: " << filtered_muons << std::endl;
+                std::cout << "Filtered - features: " << NanoObject::Pt(filtered_muons) << std::endl;
+                std::cout << "Filtered - features: " << NanoObject::GetFeature<Int_t>(filtered_muons, "charge")
+                          << std::endl;
+            }
+            auto met = NanoObject::make_object(
+                nano_reader.getVal<Float_t>("MET_pt"), nano_reader.getVal<Float_t>("MET_phi"),
+                std::make_pair("significance", nano_reader.getVal<Float_t>("MET_significance")),
+                std::make_pair("MetUnclustEnUpDeltaX", nano_reader.getVal<Float_t>("MET_MetUnclustEnUpDeltaX")));
+
+            auto met_filter = met.pt() > 35.0;
+            // std::cout << "++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
+            // std::cout << "MET: " << met << std::endl;
+            // std::cout << "MET - features: " << met.get<float>("significance") << std::endl;
+            // std::cout << "MET - features: " << met.get<float>("MetUnclustEnUpDeltaX") << std::endl;
+            // std::cout << "MET - index: " << met.index() << std::endl;
+
+            met.set("abc", true);
+            // std::cout << "MET - set features: " << met.get<bool>("abc") << std::endl;
+
+            // try
+            // {
+            //     std::cout << "MET - index: " << met.get<float>("dadas") << std::endl;
+            // }
+            // catch (const std::runtime_error &e)
+            // {
+            //     std::cerr << e.what() << '\n';
+            // }
+
+            // std::cout << "Filter: " << met_filter << std::endl;
+            // if (met_filter)
+            // {
+            //     std::cout << "Filtered: " << met << std::endl;
+            //     std::cout << "Filtered - features: " << met.get<float>("significance") << std::endl;
+            //     std::cout << "Filtered - features: " << met.get<float>("MetUnclustEnUpDeltaX") << std::endl;
+            // }
 
             // write event class event_class_hash
-            event_content.event_class_hash =
-                make_event_class_hash(n_muons, n_electrons, n_photons, n_taus, n_bjets, n_jets, n_met);
+            event_content.event_class_hash = get_event_class_hash(9, 5, 2, 1, 4, 5, 0);
+            // get_event_class_hash(object_counter.n_muons, object_counter.n_electrons, object_counter.n_photons,
+            // object_counter.n_taus, object_counter.n_bjets, object_counter.n_jets, object_counter.n_met);
+
+            // std::cout << "event_content.event_class_hash: " << event_content.event_class_hash << std::endl;
 
             // fill data
             output_tree->Fill();
@@ -357,6 +425,13 @@ int main(int argc, char *argv[])
                 PrintProcessInfo();
             }
         }
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////       [ END ]        //////////////////////////////////////
+        //////////////////////////////////////   loop over events   //////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////
 
         // stop if max number of events to be processed is reaced
         if (max_events != -1 && e > max_events)
