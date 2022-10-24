@@ -126,7 +126,6 @@ int main(int argc, char *argv[])
 
     // Get the run config file from main config file.
     const auto golden_json_file = std::string(std::getenv("MUSIC_BASE")) + "/configs/golden_jsons/" + year + ".txt";
-    std::cout << "golden_json_file: " << golden_json_file << std::endl;
 
     if (run_on_data)
     {
@@ -175,6 +174,9 @@ int main(int argc, char *argv[])
 
     std::cout << def << "[Initializing] Run Lumi Filter ..." << def << std::endl;
     auto run_lumi_filter = RunLumiFilter(golden_json_file);
+
+    std::cout << def << "[Initializing] PU corrections ..." << def << std::endl;
+    auto pu_corrections = Corrector(CorrectionTypes::PU, year, run_on_data);
 
     // read cross-sections files
     std::cout << def << "[Initializing] X-Sections ..." << def << std::endl;

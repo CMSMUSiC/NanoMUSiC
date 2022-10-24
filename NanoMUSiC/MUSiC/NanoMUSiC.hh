@@ -31,18 +31,7 @@
 
 #include "RunLumiFilter.hh"
 
-// #include "Pxl/Pxl/interface/pxl/core.hh"
-// #include "Pxl/Pxl/interface/pxl/hep.hh"
-
 #include "MConfig.hh"
-// #include "Main/EventAdaptor.hh"
-// #include "Main/EventSelector.hh"
-// #include "Main/JetTypeWriter.hh"
-// #include "Main/ParticleMatcher.hh"
-// #include "Main/ReWeighter.hh"
-// #include "Main/RunLumiRanges.hh"
-// #include "Main/SkipEvents.hh"
-// #include "Main/Systematics.hh"
 #include "Main/TOMLConfig.hh"
 #include "Tools/Tools.hh"
 
@@ -55,10 +44,9 @@
 #include "TH1.h"
 #include "TObjString.h"
 #include "TTree.h"
-// #include "EventClassFactory/EventClassFactory.hh"
 
+#include "CorrectionSets.hh"
 #include "Main/NanoAODReader.hh"
-// #include "nano2pxl_utils.hh"
 
 using namespace ROOT::Math;
 
@@ -101,14 +89,6 @@ std::unique_ptr<TFile> get_TFile(const std::string &file_path, const bool cacher
 //     }
 //     return 1; // dummy
 // }
-
-// enum class Cuts
-// {
-//     TotalUnweighted,
-//     TotalWeighted,
-//     Trigger,
-//     ObjectSelection
-// };
 
 // This function will read a NanoAOD event from a tree and return a pxl::Event
 // How to access data:
