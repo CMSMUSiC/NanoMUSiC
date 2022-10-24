@@ -29,7 +29,7 @@ def main():
     for b in f.nano_music.GetListOfBranches():
         if not b.GetName().startswith("weight"):
             branches_with_type.append(f"{b.GetName()}/{(b.GetListOfLeaves()[0].GetTypeName())}")
-    branches_with_type.append("<float> weight")
+    branches_with_type.append("weight/Float_t")
 
     
     # display table

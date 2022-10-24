@@ -1,14 +1,15 @@
+#include <iostream>
+#include <sstream> // std::ostringstream
+#include <string>
 
 #include <any>
 #include <string>
 
 #include "Math/Vector4D.h"
-#include "ROOT/RVec.hxx"
 
 namespace NanoObject
 {
 using namespace ROOT::Math;
-using namespace ROOT::VecOps;
 
 const double MUON_MASS = 105.6583755 / 1000.0;
 
@@ -63,23 +64,23 @@ class NanoObject
         }
     }
 
-    float pt()
+    float pt() const
     {
         return p4.pt();
     }
-    float eta()
+    float eta() const
     {
         return p4.eta();
     }
-    float phi()
+    float phi() const
     {
         return p4.phi();
     }
-    float mass()
+    float mass() const
     {
         return p4.mass();
     }
-    float e()
+    float e() const
     {
         return p4.e();
     }
@@ -117,7 +118,35 @@ NanoObject make_object(std::pair<const char *, Args> &&...features)
 }
 
 // NanoObjects
-typedef RVec<NanoObject> NanoObjectCollection;
+typedef std::vector<NanoObject> NanoObjectCollection;
+
+template <typename ResType, typename F, typename G, typename H>
+std::vector<ResType> Where(const NanoObjectCollection &vec, F &&conditional_pred, G &&if_true_pred, H &&if_false_pred)
+{
+    std::vector<ResType> _out(vec.size());
+    std::transform(vec.cbegin(), vec.cend(), _out.begin(), [&](const auto &item) {
+        if (conditional_pred(item))
+        {
+            return if_true_pred(item);
+        }
+        return if_false_pred(item);
+    });
+    return _out;
+}
+
+template <typename F>
+std::vector<int> BuildMask(const NanoObjectCollection &vec, F &&pred)
+{
+    std::vector<int> _out(vec.size());
+    std::transform(vec.cbegin(), vec.cend(), _out.begin(), [&](const auto &item) {
+        if (pred(item))
+        {
+            return 1;
+        }
+        return 0;
+    });
+    return _out;
+}
 
 template <typename F>
 NanoObjectCollection Filter(const NanoObjectCollection &vec, F &&pred)
@@ -127,17 +156,47 @@ NanoObjectCollection Filter(const NanoObjectCollection &vec, F &&pred)
     return _out;
 }
 
-NanoObjectCollection Filter(const NanoObjectCollection &vec, RVec<int> condictions)
+NanoObjectCollection Filter(const NanoObjectCollection &vec, std::vector<int> &conditions)
 {
+    if (vec.size() != conditions.size())
+    {
+        throw std::runtime_error("Conditions vector is shorter than NanoObjectCollection.");
+    }
+
     NanoObjectCollection _out;
-    std::copy_if(vec.begin(), vec.end(), std::back_inserter(_out), [&condictions](auto nanoobj) { return true; });
+    _out.reserve(vec.size());
+    for (unsigned int i = 0; i < vec.size(); i++)
+    {
+        if (conditions.at(i))
+        {
+            _out.emplace_back(vec.at(i));
+        }
+    }
+    _out.shrink_to_fit();
+    return _out;
+}
+
+NanoObjectCollection Take(const NanoObjectCollection &vec, const std::vector<int> &indices)
+{
+    if (vec.size() < indices.size())
+    {
+        throw std::runtime_error("Indices vector is larger than NanoObjectCollection.");
+    }
+
+    NanoObjectCollection _out;
+    _out.reserve(vec.size());
+    for (unsigned int i = 0; i < indices.size(); i++)
+    {
+        _out.emplace_back(vec.at(indices.at(i)));
+    }
+    _out.shrink_to_fit();
     return _out;
 }
 
 template <class T>
-RVec<T> GetFeature(NanoObjectCollection &collection, std::string &&feature_name)
+std::vector<T> GetFeature(NanoObjectCollection &collection, std::string &&feature_name)
 {
-    RVec<T> _buffer;
+    std::vector<T> _buffer;
     for (auto &obj : collection)
     {
         _buffer.emplace_back(obj.get<T>(feature_name));
@@ -146,7 +205,7 @@ RVec<T> GetFeature(NanoObjectCollection &collection, std::string &&feature_name)
 }
 
 template <class T>
-void SetFeature(NanoObjectCollection &collection, std::string &&feature_name, RVec<T> feature_values)
+void SetFeature(NanoObjectCollection &collection, std::string &&feature_name, std::vector<T> feature_values)
 {
     for (unsigned int i = 0; i < feature_values.size(); i++)
     {
@@ -154,13 +213,14 @@ void SetFeature(NanoObjectCollection &collection, std::string &&feature_name, RV
     }
 }
 
-RVec<unsigned int> Indices(NanoObjectCollection &collection)
+std::vector<unsigned int> Indices(NanoObjectCollection &collection)
 {
     return GetFeature<unsigned int>(collection, "index");
 }
 
 NanoObject GetByIndex(NanoObjectCollection &collection, unsigned int _index)
 {
+    // TODO: use binary search
     for (auto &obj : collection)
     {
         if (obj.index() == _index)
@@ -171,9 +231,36 @@ NanoObject GetByIndex(NanoObjectCollection &collection, unsigned int _index)
     return NanoObject();
 }
 
-RVec<float> Pt(NanoObjectCollection &collection)
+template <class T>
+auto Repr(const std::vector<T> &vec)
 {
-    RVec<float> _buffer;
+    std::ostringstream _buff;
+    _buff << "{ ";
+    std::for_each(vec.cbegin(), vec.cend(), [&](const auto &item) {
+        _buff << "[ ";
+        _buff << item;
+        _buff << " ]";
+    });
+    _buff << " }";
+    return _buff.str();
+}
+
+auto Repr(NanoObjectCollection &collection)
+{
+    std::ostringstream _buff;
+    _buff << "{ ";
+    std::for_each(collection.cbegin(), collection.cend(), [&](auto &obj) {
+        _buff << "[ ";
+        _buff << obj;
+        _buff << " ]";
+    });
+    _buff << " }";
+    return _buff.str();
+}
+
+std::vector<float> Pt(NanoObjectCollection &collection)
+{
+    std::vector<float> _buffer;
     for (auto &obj : collection)
     {
         _buffer.emplace_back(obj.pt());
@@ -181,9 +268,9 @@ RVec<float> Pt(NanoObjectCollection &collection)
     return _buffer;
 }
 
-RVec<float> Eta(NanoObjectCollection &collection)
+std::vector<float> Eta(NanoObjectCollection &collection)
 {
-    RVec<float> _buffer;
+    std::vector<float> _buffer;
     for (auto &obj : collection)
     {
         _buffer.emplace_back(obj.eta());
@@ -191,9 +278,9 @@ RVec<float> Eta(NanoObjectCollection &collection)
     return _buffer;
 }
 
-RVec<float> Phi(NanoObjectCollection &collection)
+std::vector<float> Phi(NanoObjectCollection &collection)
 {
-    RVec<float> _buffer;
+    std::vector<float> _buffer;
     for (auto &obj : collection)
     {
         _buffer.emplace_back(obj.phi());
@@ -201,9 +288,9 @@ RVec<float> Phi(NanoObjectCollection &collection)
     return _buffer;
 }
 
-RVec<float> Mass(NanoObjectCollection &collection)
+std::vector<float> Mass(NanoObjectCollection &collection)
 {
-    RVec<float> _buffer;
+    std::vector<float> _buffer;
     for (auto &obj : collection)
     {
         _buffer.emplace_back(obj.mass());
@@ -211,9 +298,9 @@ RVec<float> Mass(NanoObjectCollection &collection)
     return _buffer;
 }
 
-RVec<float> E(NanoObjectCollection &collection)
+std::vector<float> E(NanoObjectCollection &collection)
 {
-    RVec<float> _buffer;
+    std::vector<float> _buffer;
     for (auto &obj : collection)
     {
         _buffer.emplace_back(obj.e());
@@ -222,8 +309,8 @@ RVec<float> E(NanoObjectCollection &collection)
 }
 
 template <class T>
-void _unroll_and_fill(RVec<std::map<std::string, std::any>> &_features_buffer,
-                      std::pair<const char *, RVec<T>> &&features)
+void _unroll_and_fill(std::vector<std::map<std::string, std::any>> &_features_buffer,
+                      std::pair<const char *, std::vector<T>> &&features)
 {
     for (unsigned int i = 0; i < features.second.size(); i++)
     {
@@ -233,16 +320,21 @@ void _unroll_and_fill(RVec<std::map<std::string, std::any>> &_features_buffer,
 
 // factory function (particle-like)
 template <class... Args>
-NanoObjectCollection make_collection(RVec<float> &&pt, RVec<float> &&eta, RVec<float> &&phi, RVec<float> &&mass,
-                                     std::pair<const char *, RVec<Args>> &&...features)
+NanoObjectCollection make_collection(std::vector<float> &&pt, std::vector<float> &&eta, std::vector<float> &&phi,
+                                     std::vector<float> &&mass,
+                                     std::pair<const char *, std::vector<Args>> &&...features)
 {
     auto _features = std::make_tuple(features...);
-    auto _features_buffer = RVec<std::map<std::string, std::any>>(pt.size());
+    auto _features_buffer = std::vector<std::map<std::string, std::any>>(pt.size());
     std::apply([&](auto &&...args) { (_unroll_and_fill(_features_buffer, std::move(args)), ...); }, _features);
 
-    auto _tmp_collection = Construct<NanoObject>(pt, eta, phi, mass, _features_buffer);
+    NanoObjectCollection _tmp_collection;
+    for (size_t i = 0; i < pt.size(); i++)
+    {
+        _tmp_collection.emplace_back(pt.at(i), eta.at(i), phi.at(i), mass.at(i), _features_buffer.at(i));
+    }
 
-    auto _indices = RVec<unsigned int>(_tmp_collection.size());
+    auto _indices = std::vector<unsigned int>(_tmp_collection.size());
     std::iota(_indices.begin(), _indices.end(), 0);
     SetFeature(_tmp_collection, "index", _indices);
 
@@ -251,11 +343,11 @@ NanoObjectCollection make_collection(RVec<float> &&pt, RVec<float> &&eta, RVec<f
 
 // mass as constant (value)
 template <class... Args>
-NanoObjectCollection make_collection(RVec<float> &&pt, RVec<float> &&eta, RVec<float> &&phi, float mass,
-                                     std::pair<const char *, Args> &&...features)
+NanoObjectCollection make_collection(std::vector<float> &&pt, std::vector<float> &&eta, std::vector<float> &&phi,
+                                     float mass, std::pair<const char *, Args> &&...features)
 {
-    return make_collection(std::move(pt), std::move(eta), std::move(phi), std::move(RVec<float>(pt.size(), mass)),
-                           std::move(features)...);
+    return make_collection(std::move(pt), std::move(eta), std::move(phi),
+                           std::move(std::vector<float>(pt.size(), mass)), std::move(features)...);
 }
 
 } // namespace NanoObject

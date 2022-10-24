@@ -1,11 +1,16 @@
 
 #include <algorithm>
+#include <bitset>
 #include <csignal>
+#include <cstdlib>
 #include <filesystem>
+#include <functional>
+#include <future>
 #include <iomanip>
 #include <iostream>
 #include <math.h>
 #include <numeric>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <sys/time.h>
@@ -55,33 +60,55 @@
 #include "Main/NanoAODReader.hh"
 // #include "nano2pxl_utils.hh"
 
-using namespace ROOT::VecOps;
 using namespace ROOT::Math;
 
-unsigned int getIntYear(std::string year)
+using OptionalFuture_t = std::optional<std::future<std::unique_ptr<TFile>>>;
+
+// (async) TFile getter
+std::unique_ptr<TFile> get_TFile(const std::string &file_path, const bool cacheread, const std::string &cache_dir)
 {
-    if (year == "2016APV" || year == "2016")
+    std::cout << "Loading file [ " << file_path << " ]" << std::endl;
+
+    if (cacheread)
     {
-        return 2016;
+        const auto hash = std::to_string(std::hash<std::string>{}(file_path));
+        const auto dest = cache_dir + "/" + hash + ".root";
+        if (TFile::Cp(file_path.c_str(), dest.c_str(), false))
+        {
+            std::unique_ptr<TFile> input_root_file(TFile::Open(dest.c_str()));
+            return input_root_file;
+        }
+
+        return std::unique_ptr<TFile>{};
     }
-    if (year == "2017")
-    {
-        return 2017;
-    }
-    if (year == "2018")
-    {
-        return 2018;
-    }
-    return 1; // dummy
+    std::unique_ptr<TFile> input_root_file(TFile::Open(file_path.c_str()));
+    return input_root_file;
 }
 
-enum class Cuts
-{
-    TotalUnweighted,
-    TotalWeighted,
-    Trigger,
-    ObjectSelection
-};
+// constexpr unsigned int getIntYear(const std::string_view &year)
+// {
+//     if (year == "2016APV" || year == "2016")
+//     {
+//         return 2016;
+//     }
+//     if (year == "2017")
+//     {
+//         return 2017;
+//     }
+//     if (year == "2018")
+//     {
+//         return 2018;
+//     }
+//     return 1; // dummy
+// }
+
+// enum class Cuts
+// {
+//     TotalUnweighted,
+//     TotalWeighted,
+//     Trigger,
+//     ObjectSelection
+// };
 
 // This function will read a NanoAOD event from a tree and return a pxl::Event
 // How to access data:
@@ -96,10 +123,63 @@ double getCpuTime()
     return ((double)tv.tv_sec + (double)tv.tv_usec / 1000000.0);
 }
 
+constexpr bool is_tenth(int &event_counter)
+{
+    return (event_counter < 10 || (event_counter < 100 && event_counter % 10 == 0) ||
+            (event_counter < 1000 && event_counter % 100 == 0) ||
+            (event_counter < 10000 && event_counter % 1000 == 0) ||
+            (event_counter >= 10000 && event_counter % 10000 == 0));
+}
+
 std::string get_hash256(const std::string &input_string)
 {
     return picosha2::hash256_hex_string(input_string);
 }
+
+enum HLTPaths
+{
+    SingleMuon,
+    SingleElectron,
+    DoubleMuon,
+    DoubleElectron,
+    Tau,
+    BJet,
+    MET,
+    Photon,
+};
+
+struct TriggerBits
+{
+    // will have size = SIZE
+    constexpr static size_t SIZE = sizeof(unsigned int) * 8;
+    std::bitset<SIZE> trigger_bits;
+
+    TriggerBits &set(unsigned int path, bool value)
+    {
+        trigger_bits.set(path, value);
+        return *this;
+    }
+
+    auto as_ulong() const
+    {
+        return trigger_bits.to_ulong();
+    }
+
+    auto as_ulonglong() const
+    {
+        return trigger_bits.to_ullong();
+    }
+
+    auto as_uint() const
+    {
+        return static_cast<unsigned int>(trigger_bits.to_ullong());
+    }
+
+    std::string_view as_string() const
+    {
+        return std::string_view(std::to_string(this->as_ulong()));
+    }
+};
 
 struct ObjectCounter
 {
@@ -117,6 +197,7 @@ struct EventContent
     unsigned int run = 0;
     unsigned int lumi_section = 0;
     unsigned long event_number = 0;
+    unsigned int trigger_bits = 0;
     unsigned int event_class_hash = 0;
     float sum_pt = -99.0;
     float mass = -99.0;
@@ -130,25 +211,26 @@ struct EventContent
     float weight_pileup_down = 1.0;
     float weight_lumi_up = 1.0;
     float weight_lumi_down = 1.0;
-};
 
-void register_branches(EventContent &event_content, std::unique_ptr<TTree> &output_tree)
-{
-    output_tree->Branch("run", &(event_content.run));
-    output_tree->Branch("lumi_section", &(event_content.lumi_section));
-    output_tree->Branch("event_number", &(event_content.event_number));
-    output_tree->Branch("event_class_hash", &(event_content.event_class_hash));
-    output_tree->Branch("sum_pt", &(event_content.sum_pt));
-    output_tree->Branch("mass", &(event_content.mass));
-    output_tree->Branch("met", &(event_content.met));
-    output_tree->Branch("weight", &(event_content.weight));
-    output_tree->Branch("weight", &(event_content.weight));
-    output_tree->Branch("weight_pdf_up", &(event_content.weight_pdf_up));
-    output_tree->Branch("weight_pdf_down", &(event_content.weight_pdf_down));
-    output_tree->Branch("weight_alphas_up", &(event_content.weight_alphas_up));
-    output_tree->Branch("weight_alphas_down", &(event_content.weight_alphas_down));
-    output_tree->Branch("weight_pileup_up", &(event_content.weight_pileup_up));
-    output_tree->Branch("weight_pileup_down", &(event_content.weight_pileup_down));
-    output_tree->Branch("weight_lumi_up", &(event_content.weight_lumi_up));
-    output_tree->Branch("weight_lumi_down", &(event_content.weight_lumi_down));
-}
+    void register_branches(std::unique_ptr<TTree> &output_tree)
+    {
+        output_tree->Branch("run", &(this->run));
+        output_tree->Branch("lumi_section", &(this->lumi_section));
+        output_tree->Branch("event_number", &(this->event_number));
+        output_tree->Branch("trigger_bits", &(this->trigger_bits));
+        output_tree->Branch("event_class_hash", &(this->event_class_hash));
+        output_tree->Branch("sum_pt", &(this->sum_pt));
+        output_tree->Branch("mass", &(this->mass));
+        output_tree->Branch("met", &(this->met));
+        output_tree->Branch("weight", &(this->weight));
+        output_tree->Branch("weight", &(this->weight));
+        output_tree->Branch("weight_pdf_up", &(this->weight_pdf_up));
+        output_tree->Branch("weight_pdf_down", &(this->weight_pdf_down));
+        output_tree->Branch("weight_alphas_up", &(this->weight_alphas_up));
+        output_tree->Branch("weight_alphas_down", &(this->weight_alphas_down));
+        output_tree->Branch("weight_pileup_up", &(this->weight_pileup_up));
+        output_tree->Branch("weight_pileup_down", &(this->weight_pileup_down));
+        output_tree->Branch("weight_lumi_up", &(this->weight_lumi_up));
+        output_tree->Branch("weight_lumi_down", &(this->weight_lumi_down));
+    }
+};

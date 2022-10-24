@@ -5,14 +5,11 @@
 #include <sstream>
 #include <string>
 
-#include "ROOT/RVec.hxx"
 #include "TLeaf.h"
 #include "TTree.h"
 #include "TTreeReader.h"
 #include "TTreeReaderArray.h"
 #include "TTreeReaderValue.h"
-
-using namespace ROOT::VecOps;
 
 void simple_replace(std::string &str_in, auto &str_old, auto &str_new)
 {
@@ -118,7 +115,7 @@ class NanoAODReader
     }
 
     template <class T, class T2 = T>
-    RVec<T2> getVec(std::string vectorName)
+    std::vector<T2> getVec(std::string vectorName)
     {
         // check for branch name
         try
@@ -186,7 +183,7 @@ class NanoAODReader
         }
 
         auto array_temp_ = dynamic_cast<TTreeReaderArray<T> *>(fData[vectorName].get());
-        return RVec<T>(array_temp_->begin(), array_temp_->end());
+        return std::vector<T>(array_temp_->begin(), array_temp_->end());
     }
 
   private:
@@ -200,7 +197,7 @@ class NanoAODReader
 // deals with std:vector<bool>
 // will return a std:vector<UInt_t>
 template <>
-inline RVec<UInt_t> NanoAODReader::getVec<Bool_t>(std::string vectorName)
+inline std::vector<UInt_t> NanoAODReader::getVec<Bool_t>(std::string vectorName)
 {
     // check for branch name
     try
@@ -266,7 +263,7 @@ inline RVec<UInt_t> NanoAODReader::getVec<Bool_t>(std::string vectorName)
     }
 
     auto array_temp_ = dynamic_cast<TTreeReaderArray<Bool_t> *>(fData[vectorName].get());
-    return RVec<UInt_t>(array_temp_->begin(), array_temp_->end());
+    return std::vector<UInt_t>(array_temp_->begin(), array_temp_->end());
 }
 
 #endif
