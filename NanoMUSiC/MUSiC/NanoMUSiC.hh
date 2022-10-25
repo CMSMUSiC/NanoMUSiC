@@ -46,6 +46,8 @@
 #include "TTree.h"
 
 #include "CorrectionSets.hh"
+#include "PDFAlphaSWeights.hh"
+
 #include "Main/NanoAODReader.hh"
 
 using namespace ROOT::Math;
