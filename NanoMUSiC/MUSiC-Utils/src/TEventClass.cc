@@ -14,7 +14,7 @@ using namespace std;
 
 ClassImp(TEventClass)
 
-    //-------------Konstructor-------------------------------------------------------------
+    //-------------Constructor-------------------------------------------------------------
 
     TEventClass::TEventClass(const std::string &EventType, const std::string &EventClassType, const std::string runhash,
                              bool const data, double const cme, std::map<std::string, int> countmap,
@@ -641,7 +641,8 @@ void TEventClass::scaleAllHistogramsForProcess(std::string process, double facto
     m_scaleFactor[process] = destination_scale_factor;
 }
 
-template <typename T> void TEventClass::scaleHistoMap(std::map<std::string, T> &map, double relativeFactor)
+template <typename T>
+void TEventClass::scaleHistoMap(std::map<std::string, T> &map, double relativeFactor)
 {
     for (std::pair<const std::string, T> &entry : map)
     {
@@ -968,7 +969,8 @@ void TEventClass::AddToFolder(B *parent, const char *name, std::vector<T> object
     parent->Add(folder);
 }
 
-template <typename B> void TEventClass::AddToFolder(B *parent, const char *name, TObject *object) const
+template <typename B>
+void TEventClass::AddToFolder(B *parent, const char *name, TObject *object) const
 {
     parent->Add(object);
 }

@@ -1,6 +1,7 @@
 
 #include <algorithm>
 #include <bitset>
+#include <chrono>
 #include <csignal>
 #include <cstdlib>
 #include <filesystem>
@@ -14,8 +15,16 @@
 #include <sstream>
 #include <string>
 #include <sys/time.h>
+#include <thread>
 #include <time.h>
 #include <unordered_set>
+
+// ROOT Stuff
+#include "Math/Vector4D.h"
+#include "TFile.h"
+#include "TH1.h"
+#include "TObjString.h"
+#include "TTree.h"
 
 // toml++ v3.1.0
 // https://github.com/marzer/tomlplusplus
@@ -46,8 +55,9 @@
 #include "TTree.h"
 
 #include "CorrectionSets.hh"
-#include "PDFAlphaSWeights.hh"
+// #include "PDFAlphaSWeights.hh"
 
+#include "MUSiCEvent.hh"
 #include "Main/NanoAODReader.hh"
 
 using namespace ROOT::Math;
@@ -160,59 +170,5 @@ struct TriggerBits
     std::string_view as_string() const
     {
         return std::string_view(std::to_string(this->as_ulong()));
-    }
-};
-
-struct ObjectCounter
-{
-    unsigned int n_muons = 0;
-    unsigned int n_electrons = 0;
-    unsigned int n_photons = 0;
-    unsigned int n_taus = 0;
-    unsigned int n_bjets = 0;
-    unsigned int n_jets = 0;
-    unsigned int n_met = 0;
-};
-
-struct EventContent
-{
-    unsigned int run = 0;
-    unsigned int lumi_section = 0;
-    unsigned long event_number = 0;
-    unsigned int trigger_bits = 0;
-    unsigned int event_class_hash = 0;
-    float sum_pt = -99.0;
-    float mass = -99.0;
-    float met = -99.0;
-    float weight = 1.0;
-    float weight_pdf_up = 1.0;
-    float weight_pdf_down = 1.0;
-    float weight_alphas_up = 1.0;
-    float weight_alphas_down = 1.0;
-    float weight_pileup_up = 1.0;
-    float weight_pileup_down = 1.0;
-    float weight_lumi_up = 1.0;
-    float weight_lumi_down = 1.0;
-
-    void register_branches(std::unique_ptr<TTree> &output_tree)
-    {
-        output_tree->Branch("run", &(this->run));
-        output_tree->Branch("lumi_section", &(this->lumi_section));
-        output_tree->Branch("event_number", &(this->event_number));
-        output_tree->Branch("trigger_bits", &(this->trigger_bits));
-        output_tree->Branch("event_class_hash", &(this->event_class_hash));
-        output_tree->Branch("sum_pt", &(this->sum_pt));
-        output_tree->Branch("mass", &(this->mass));
-        output_tree->Branch("met", &(this->met));
-        output_tree->Branch("weight", &(this->weight));
-        output_tree->Branch("weight", &(this->weight));
-        output_tree->Branch("weight_pdf_up", &(this->weight_pdf_up));
-        output_tree->Branch("weight_pdf_down", &(this->weight_pdf_down));
-        output_tree->Branch("weight_alphas_up", &(this->weight_alphas_up));
-        output_tree->Branch("weight_alphas_down", &(this->weight_alphas_down));
-        output_tree->Branch("weight_pileup_up", &(this->weight_pileup_up));
-        output_tree->Branch("weight_pileup_down", &(this->weight_pileup_down));
-        output_tree->Branch("weight_lumi_up", &(this->weight_lumi_up));
-        output_tree->Branch("weight_lumi_down", &(this->weight_lumi_down));
     }
 };

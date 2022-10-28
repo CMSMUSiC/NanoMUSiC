@@ -1,9 +1,50 @@
+add_library(MUSiCEvent SHARED
+        MUSiCEvent.hh
+)
+
+target_include_directories(MUSiCEvent PUBLIC ./)
+target_compile_options(MUSiCEvent PUBLIC
+        -MD
+        -MP
+        -O3
+        -Wall
+        -fPIC
+        -fsignaling-nans
+        -funsafe-math-optimizations
+        -fno-rounding-math
+        -fno-signaling-nans
+        -fcx-limited-range
+        -fno-associative-math
+        -DMYPXLANA=EventClassFactory/AnalysisComposer.hh
+        -pthread
+        -std=c++17
+        -m64
+        -ffloat-store
+)
+
+target_link_options(MUSiCEvent PRIVATE -lz -fno-associative-math)
+
+message(STATUS "Generating MUSiCEvent dictionaries ...")
+ROOT_GENERATE_DICTIONARY(MUSiCEventDict MUSiCEvent.hh MODULE MUSiCEvent LINKDEF MUSiCEventLinkDef.h)
+message(STATUS "Done.")
+
+install(TARGETS MUSiCEventDict DESTINATION ${CMAKE_SOURCE_DIR}/lib)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libMUSiCEvent_rdict.pcm DESTINATION ${CMAKE_SOURCE_DIR}/lib)
+install(TARGETS MUSiCEvent DESTINATION ${CMAKE_SOURCE_DIR}/lib)
+
+
+###############################################################################
+###############################################################################
+###############################################################################
+###############################################################################
+###############################################################################
+
 # enable tests
 enable_testing()
 
 # music (classification)
 add_executable(music music.cc)
-target_link_libraries(music LINK_PUBLIC PxlAnalyzer TEventClass)
+target_link_libraries(music LINK_PUBLIC PxlAnalyzer TEventClass MUSiCEvent)
 install(TARGETS music DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 
 # MC
@@ -24,7 +65,7 @@ add_test(NAME test_music_2018_Data COMMAND music --batch --run-config ${CMAKE_SO
 
 # nano_music (classification)
 add_executable(nano_music NanoMUSiC.cc)
-target_link_libraries(nano_music LINK_PUBLIC PxlAnalyzer TEventClass)
+target_link_libraries(nano_music LINK_PUBLIC PxlAnalyzer TEventClass MUSiCEvent)
 install(TARGETS nano_music DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 
 # MC

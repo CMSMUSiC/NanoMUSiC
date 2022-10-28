@@ -1,7 +1,57 @@
 #include "NanoMUSiC.hh"
-// sleep
-#include <chrono>
-#include <thread>
+
+// int main(int argc, char *argv[])
+// {
+//     TFile f("test_MUSiCEvent.root", "recreate");
+//     TTree t2("test_MUSiCEvent", "test_MUSiCEvent");
+//     auto music_content = MUSiCEvent();
+//     t2.Branch("music_content", &music_content, 256000, 99);
+//     std::cout << "test ..." << std::endl;
+
+//     for (int i = 0; i < 1; i++)
+//     {
+//         // reset content per event
+//         music_content = MUSiCEvent();
+//         music_content.event_number = i;
+//         t2.Fill();
+//     }
+//     t2.Write();
+//     f.Close();
+
+//     for (auto multiplicity : EventContent::get_multiplicities(2, 1, 1, 0, 0, 0, 2))
+//     {
+//         auto [n_muons, n_electrons, n_photons, n_taus, n_bjets, n_jets, n_met] = multiplicity;
+//         std::cout << n_muons << " - " << n_electrons << " - " << n_photons << " - " << n_taus << " - " << n_bjets
+//                   << " - " << n_jets << " - " << n_met << std::endl;
+//     }
+
+//     std::cout << "++++++++++++++++++++++" << std::endl;
+//     for (auto multiplicity : EventContent::get_multiplicities(2, 1, 1, 0, 0, 10, 2))
+//     {
+//         auto [n_muons, n_electrons, n_photons, n_taus, n_bjets, n_jets, n_met] = multiplicity;
+//         std::cout << n_muons << " - " << n_electrons << " - " << n_photons << " - " << n_taus << " - " << n_bjets
+//                   << " - " << n_jets << " - " << n_met << std::endl;
+//     }
+
+//     TFile *fr = new TFile("test_MUSiCEvent.root");
+//     TTree *t2r = (TTree *)fr->Get("test_MUSiCEvent");
+//     auto *music_content_r = new MUSiCEvent();
+//     t2r->SetBranchAddress("music_content", &music_content_r);
+//     TBranch *br = t2r->GetBranch("music_content");
+//     Long64_t nentries = t2r->GetEntries();
+//     for (int i = 0; i < nentries; i++)
+//     {
+//         br->GetEntry(i);
+//         if (is_tenth(i))
+//         {
+//             // std::cout << "event_number:" << music_content_r->event_number << std::endl;
+//             // std::cout << "event_content_nominal:"
+//             //           << music_content_r->event_content_nominal[Variation::MuonResolution].met << std::endl;
+//             // std::cout << "event_content_up:"
+//             //           << music_content_r->event_content_up[Variation::JER].event_weight.get_weight() << std::endl;
+//         }
+//     }
+// }
 
 void PrintProcessInfo()
 {
@@ -195,8 +245,8 @@ int main(int argc, char *argv[])
     auto output_tree = std::make_unique<TTree>("nano_music", output_tree_title.str().c_str());
 
     std::cout << def << "[Initializing] Output tree branches ..." << def << std::endl;
-    EventContent event_content;
-    event_content.register_branches(output_tree);
+    auto music_content = MUSiCEvent{};
+    output_tree->Branch("music_content", &music_content, 256000, 99);
 
     std::cout << def << "[Initializing] Cut flow histo ..." << def << std::endl;
     const auto n_cuts = 10;
@@ -289,6 +339,9 @@ int main(int argc, char *argv[])
             //////////////////////////////////////////////////////////////////////////////////////////////////
             while (nano_reader.next())
             {
+                // reset content per event
+                music_content = MUSiCEvent{};
+
                 event_counter_per_file++;
 
                 // if set, skip first events
@@ -304,34 +357,28 @@ int main(int argc, char *argv[])
                 // std::cout << nano_reader.getVec<Float_t>("Muon_pt") << std::endl;
                 // std::cout << nano_reader.getVal<Bool_t>("HLT_Mu18_Mu9") << std::endl;
 
-                // load per event defaults
-                event_content = {}; // reset
-
-                // reload event const's
-                event_content.run = nano_reader.getVal<UInt_t>("run");
-                event_content.lumi_section = nano_reader.getVal<UInt_t>("luminosityBlock");
-                event_content.event_number = nano_reader.getVal<ULong64_t>("event");
-
-                // initialize object counter
-                auto object_counter = ObjectCounter{};
+                // // reload event const's
+                // event_content.run = nano_reader.getVal<UInt_t>("run");
+                // event_content.lumi_section = nano_reader.getVal<UInt_t>("luminosityBlock");
+                // event_content.event_number = nano_reader.getVal<ULong64_t>("event");
 
                 // only if data
                 // filter run and lumi section
-                if (!run_lumi_filter(event_content.run, event_content.lumi_section, run_on_data))
+                if (!run_lumi_filter(music_content.run, music_content.lumi_section, run_on_data))
                 {
                     ++skipped;
                     if (debug > 1)
                     {
                         std::cerr << "[INFO] (SkipEvents): " << std::endl;
                         std::cerr << "Skipping Run/lumi_section/Event: ";
-                        std::cerr << event_content.run << ":" << event_content.lumi_section << ":"
-                                  << event_content.event_number << std::endl;
+                        std::cerr << music_content.run << ":" << music_content.lumi_section << ":"
+                                  << music_content.event_number << std::endl;
                     }
                     continue;
                 }
 
                 // fill trigger bits
-                event_content.trigger_bits = [&]() {
+                music_content.trigger_bits = [&]() {
                     TriggerBits trigger_bits;
                     if (year == "2016APV")
                     {
@@ -383,7 +430,7 @@ int main(int argc, char *argv[])
                 //     std::cout << "Muons E: " << NanoObject::Repr(NanoObject::E(muons)) << std::endl;
                 //     std::cout << "Muons dxy: " << NanoObject::Repr(NanoObject::GetFeature<Float_t>(muons, "dxy"))
                 //               << std::endl;
-                //     std::cout << "Muons charge: " << NanoObject::Repr(NanoObject::GetFeature<Int_t>(muons, "charge"))
+                //     std::cout << "Muons charge: " << NanoObject::Repr(NanoObject::GetFeature<Int_t>(muons,"charge"))
                 //               << std::endl;
                 //     std::cout << "Muons indices: " << NanoObject::Repr(NanoObject::Indices(muons)) << std::endl;
                 //     std::cout << "Muons GetByIndex: " << NanoObject::GetByIndex(muons, 0) << std::endl;
@@ -429,14 +476,14 @@ int main(int argc, char *argv[])
                     std::make_pair("significance", nano_reader.getVal<Float_t>("MET_significance")),
                     std::make_pair("MetUnclustEnUpDeltaX", nano_reader.getVal<Float_t>("MET_MetUnclustEnUpDeltaX")));
 
-                auto met_filter = met.pt() > 35.0;
+                // auto met_filter = met.pt() > 35.0;
                 // std::cout << "++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
                 // std::cout << "MET: " << met << std::endl;
                 // std::cout << "MET - features: " << met.get<float>("significance") << std::endl;
                 // std::cout << "MET - features: " << met.get<float>("MetUnclustEnUpDeltaX") << std::endl;
                 // std::cout << "MET - index: " << met.index() << std::endl;
 
-                met.set("abc", true);
+                // met.set("abc", true);
                 // std::cout << "MET - set features: " << met.get<bool>("abc") << std::endl;
 
                 // try
@@ -456,12 +503,8 @@ int main(int argc, char *argv[])
                 //     std::cout << "Filtered - features: " << met.get<float>("MetUnclustEnUpDeltaX") << std::endl;
                 // }
 
-                // write event class event_class_hash
-                event_content.event_class_hash = get_event_class_hash(9, 5, 2, 1, 4, 5, 0);
-                // get_event_class_hash(object_counter.n_muons, object_counter.n_electrons, object_counter.n_photons,
-                // object_counter.n_taus, object_counter.n_bjets, object_counter.n_jets, object_counter.n_met);
-
-                // std::cout << "event_content.event_class_hash: " << event_content.event_class_hash << std::endl;
+                // set dummt event content
+                music_content.event_number = i;
 
                 // fill data
                 output_tree->Fill();
@@ -518,7 +561,7 @@ int main(int argc, char *argv[])
         // load next file
         if (input_root_file_future)
         {
-            std::cout << "Get next file ..." << std::endl;
+            std::cout << "Getting next file ..." << std::endl;
             input_root_file = input_root_file_future->get();
         }
     }
