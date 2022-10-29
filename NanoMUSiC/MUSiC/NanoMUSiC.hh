@@ -60,6 +60,13 @@
 #include "MUSiCEvent.hh"
 #include "Main/NanoAODReader.hh"
 
+// On: 28.10.2022
+// https://ericniebler.github.io/range-v3
+// https://github.com/ericniebler/range-v3
+#include <range/v3/view/iota.hpp>
+#include <range/v3/view/transform.hpp>
+
+using namespace ranges;
 using namespace ROOT::Math;
 
 using OptionalFuture_t = std::optional<std::future<std::unique_ptr<TFile>>>;
@@ -172,3 +179,17 @@ struct TriggerBits
         return std::string_view(std::to_string(this->as_ulong()));
     }
 };
+
+// Helper function to get a integer iterator
+template <typename T = UInt_t>
+auto idx_range(const int &from, const int &to)
+{
+    return views::ints(from, to) |
+           views::transform([](auto i) { return static_cast<T>(std::make_unsigned_t<int>(i)); });
+}
+
+template <typename T = UInt_t>
+auto idx_range(const int &to)
+{
+    return idx_range<T>(0, to);
+}

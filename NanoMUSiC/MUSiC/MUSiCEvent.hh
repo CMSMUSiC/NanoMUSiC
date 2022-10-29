@@ -2,6 +2,8 @@
 #include <functional>
 #include <iostream>
 #include <numeric>
+#include <string>
+#include <tuple>
 
 #include "TObjString.h"
 #include "TObject.h"
@@ -23,6 +25,7 @@ enum Shift
     Nominal,
     Up,
     Down,
+    kTotalShifts, // !!! should always be the last one !!!
 };
 
 enum Weight
@@ -85,7 +88,6 @@ class EventContent : public TObject
 {
   public:
     std::vector<EventWeight> event_weight;
-    unsigned long n_classes;
     std::vector<unsigned int> event_class_hash;
     std::vector<float> sum_pt;
     std::vector<float> mass;
@@ -93,6 +95,14 @@ class EventContent : public TObject
 
     EventContent()
     {
+    }
+
+    static unsigned int get_class_hash(const std::tuple<int, int, int, int, int, int, int> &multiplicity)
+    {
+        auto [i_muons, i_electrons, i_photons, i_taus, i_bjets, i_jets, i_met] = multiplicity;
+        return std::stoul(std::to_string(i_muons) + std::to_string(i_electrons) + std::to_string(i_photons) +
+                          std::to_string(i_taus) + std::to_string(i_bjets) + std::to_string(i_jets) +
+                          std::to_string(i_met));
     }
 
     static auto get_multiplicities(const int &n_muons, const int &n_electrons, const int &n_photons, const int &n_taus,
@@ -157,7 +167,7 @@ class MUSiCEvent : public TObject
     char n_bjets = 0;
     char n_jets = 0;
     bool n_met = 0;
-    unsigned long nClasses = 0;
+    unsigned long n_classes = 0;
 
     std::array<EventContent, Variation::kTotalVariations> event_content_nominal;
     std::array<EventContent, Variation::kTotalVariations> event_content_up;
