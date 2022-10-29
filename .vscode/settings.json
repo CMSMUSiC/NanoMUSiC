@@ -81,5 +81,6 @@
     "clang-format.executable": "/.automount/home/home__home1/institut_3a/silva/.local/bin/clang-format",
     "python.formatting.provider": "black",
     "python.formatting.blackPath": "/.automount/home/home__home1/institut_3a/silva/.local/bin/black",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "cmake.cmakePath": "/cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/bin/cmake"
 }
