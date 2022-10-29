@@ -4,7 +4,7 @@
 *.so
 *.gcda
 bin/
-*-generated.hh
+*-generated.hpp
 
 a.out
 scanClass

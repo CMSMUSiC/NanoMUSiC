@@ -23,6 +23,8 @@ include_directories(
     ${LCG_BASE}/include
     ${LCG_BASE}/include/rapidjson
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/external/range-v3/include
+    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/external/
+    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/include/
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Pxl/Pxl/src

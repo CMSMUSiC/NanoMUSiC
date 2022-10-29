@@ -7,7 +7,7 @@ MUSiC/nanoaod_content_printer
 *.gcda
 \#*\#
 *.tar.gz
-*Dict.cc
+*Dict.cpp
 *Dict.h
 music
 ECCrossSectionRescaler

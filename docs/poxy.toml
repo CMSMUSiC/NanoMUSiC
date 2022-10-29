@@ -30,7 +30,7 @@ undocumented = true
 extract_all = true
 paths = ['pages']
 recursive_paths = ['../NanoMUSiC']
-patterns = ['*.hh', '*.dox']
+patterns = ['*.hpp', '*.dox']
 strip_paths = ['../NanoMUSiC']
 
 

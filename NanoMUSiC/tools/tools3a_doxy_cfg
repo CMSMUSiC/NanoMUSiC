@@ -747,8 +747,8 @@ INPUT_ENCODING         = UTF-8
 # If the value of the INPUT tag contains directories, you can use the
 # FILE_PATTERNS tag to specify one or more wildcard patterns (like *.cpp and
 # *.h) to filter out the source-files in the directories. If left blank the
-# following patterns are tested:*.c, *.cc, *.cxx, *.cpp, *.c++, *.java, *.ii,
-# *.ixx, *.ipp, *.i++, *.inl, *.idl, *.ddl, *.odl, *.h, *.hh, *.hxx, *.hpp,
+# following patterns are tested:*.c, *.cpp, *.cxx, *.cpp, *.c++, *.java, *.ii,
+# *.ixx, *.ipp, *.i++, *.inl, *.idl, *.ddl, *.odl, *.h, *.hpp, *.hxx, *.hpp,
 # *.h++, *.cs, *.d, *.php, *.php4, *.php5, *.phtml, *.inc, *.m, *.markdown,
 # *.md, *.mm, *.dox, *.py, *.f90, *.f, *.for, *.tcl, *.vhd, *.vhdl, *.ucf,
 # *.qsf, *.as and *.js.
@@ -1176,8 +1176,8 @@ DOCSET_PUBLISHER_ID    = org.doxygen.Publisher
 DOCSET_PUBLISHER_NAME  = Publisher
 
 # If the GENERATE_HTMLHELP tag is set to YES then doxygen generates three
-# additional HTML index files: index.hhp, index.hhc, and index.hhk. The
-# index.hhp is a project file that can be read by Microsoft's HTML Help Workshop
+# additional HTML index files: index.hppp, index.hppc, and index.hppk. The
+# index.hppp is a project file that can be read by Microsoft's HTML Help Workshop
 # (see: http://www.microsoft.com/en-us/download/details.aspx?id=21138) on
 # Windows.
 #
@@ -1202,7 +1202,7 @@ CHM_FILE               =
 
 # The HHC_LOCATION tag can be used to specify the location (absolute path
 # including file name) of the HTML help compiler ( hhc.exe). If non-empty
-# doxygen will try to run the HTML help compiler on the generated index.hhp.
+# doxygen will try to run the HTML help compiler on the generated index.hppp.
 # The file has to be specified with full path.
 # This tag requires that the tag GENERATE_HTMLHELP is set to YES.
 

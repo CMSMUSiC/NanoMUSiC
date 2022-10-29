@@ -61,7 +61,7 @@ target/
 # C++ (MUSiC)-specific
 *.o
 *.d
-*Dict.cc
+*Dict.cpp
 
 python/luigi_music/work/
 src/TEventClassDict_rdict.pcm

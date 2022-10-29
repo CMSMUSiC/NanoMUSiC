@@ -404,7 +404,7 @@ jobs:
       shell: bash
       working-directory: ${{ env.HOME }}
       run: |
-        sudo apt-get install -y ${{matrix.config.cc}} ${{matrix.config.cxx}}
+        sudo apt-get install -y ${{matrix.config.cpp}} ${{matrix.config.cxx}}
 
     - name: Install libc++
       id: install_libcxx
@@ -412,7 +412,7 @@ jobs:
       shell: bash
       working-directory: ${{ env.HOME }}
       env:
-        CC: ${{ matrix.config.cc }}
+        CC: ${{ matrix.config.cpp }}
         CXX: ${{ matrix.config.cxx }}
       run: |
         $GITHUB_WORKSPACE/install_libcxx.sh
@@ -420,7 +420,7 @@ jobs:
     - name: Configure
       shell: cmake -P {0}
       run: |
-        set(ENV{CC} ${{ matrix.config.cc }})
+        set(ENV{CC} ${{ matrix.config.cpp }})
         set(ENV{CXX} ${{ matrix.config.cxx }})
 
         if ("${{ runner.os }}" STREQUAL "Windows" AND NOT "x${{ matrix.config.environment_script }}" STREQUAL "x")

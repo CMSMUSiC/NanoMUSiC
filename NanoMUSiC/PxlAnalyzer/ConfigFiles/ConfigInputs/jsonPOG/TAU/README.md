@@ -70,7 +70,7 @@ sf3 = corr3.evaluate(pt,dm,"etau",wp,"sf",syst)
 tes = corr4.evaluate(pt,eta,dm,genmatch,"DeepTau2017v2p1",syst)
 ```
 Where `syst='nom'`, `'up'` or  `'down'`.
-A C++ example can be found [here](https://github.com/cms-nanoAOD/correctionlib/blob/master/src/demo.cc).
+A C++ example can be found [here](https://github.com/cms-nanoAOD/correctionlib/blob/master/src/demo.cpp).
 
 Alternative way to load the JSON files (including gunzip'ed):
 ```

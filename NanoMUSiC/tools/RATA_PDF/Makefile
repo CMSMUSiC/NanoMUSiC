@@ -91,7 +91,7 @@ tarball:
 .cpp.o:
 	$(CXX) $(CXXFLAGS) -c $<
 
-.cc.o:
+.cpp.o:
 	$(CXX) $(CXXFLAGS) -c $<
 
 .C.o:
@@ -106,7 +106,7 @@ tarball:
 .cpp.d:
 	$(SHELL) -ec '$(CXX) -M $(CXXFLAGS) $< > $@'
 
-.cc.d:
+.cpp.d:
 	$(SHELL) -ec '$(CXX) -M $(CXXFLAGS) $< > $@'
 
 include $(DEPENDS)

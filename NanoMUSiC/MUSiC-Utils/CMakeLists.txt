@@ -1,5 +1,5 @@
 add_library(TEventClass SHARED
-        src/TEventClass.cc
+        src/TEventClass.cpp
 )
 
 target_include_directories(TEventClass PUBLIC ./)
@@ -15,7 +15,7 @@ target_compile_options(TEventClass PUBLIC
         -fno-signaling-nans
         -fcx-limited-range
         -fno-associative-math
-        -DMYPXLANA=EventClassFactory/AnalysisComposer.hh
+        -DMYPXLANA=EventClassFactory/AnalysisComposer.hpp
         -pthread
         -std=c++17
         -m64
@@ -25,7 +25,7 @@ target_compile_options(TEventClass PUBLIC
 target_link_options(TEventClass PRIVATE -lz -fno-associative-math)
 
 message(STATUS "Generating TEventClass dictionaries ...")
-ROOT_GENERATE_DICTIONARY(TEventClassDict include/TEventClass.hh MODULE TEventClass LINKDEF include/TEventClassLinkDef.h)
+ROOT_GENERATE_DICTIONARY(TEventClassDict include/TEventClass.hpp MODULE TEventClass LINKDEF include/TEventClassLinkDef.h)
 message(STATUS "Done.")
 
 install(TARGETS TEventClassDict DESTINATION ${CMAKE_SOURCE_DIR}/lib)

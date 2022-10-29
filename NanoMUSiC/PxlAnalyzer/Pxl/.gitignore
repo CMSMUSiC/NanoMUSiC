@@ -5,7 +5,7 @@
 *.sublime-project
 *.py~
 *.c~
-*.cc~
+*.cpp~
 *.cpp~
 hg-check*
 doc/build

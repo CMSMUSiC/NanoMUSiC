@@ -6,7 +6,7 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
   [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
 done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-export MYTEventClass=$PXLANALYZER_BASE/EventClassFactory/TEventClass.hh
+export MYTEventClass=$PXLANALYZER_BASE/EventClassFactory/TEventClass.hpp
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PXLANALYZER_BASE/lib
 export SCAN_BASE=$DIR
 export PYTHONPATH=$PYTHONPATH:$SCAN_BASE/python

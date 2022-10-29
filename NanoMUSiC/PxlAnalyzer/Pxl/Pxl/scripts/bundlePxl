@@ -68,7 +68,7 @@ if [ ! -d "$PXL/build" ]; then
 	echo "error: please run cmake in the build directory of pxl"
 	exit 1
 fi
-for file in pxl/core/config.hh; do
+for file in pxl/core/config.hpp; do
 	echo "copy dynamic file ${file}"
 	src="$PXL/build/include/$file"
 	dst="$MODULE/interface/$file"

@@ -22,7 +22,7 @@ _lookup_p_convolution.argtypes = [ ctypes.c_double, ctypes.c_double, ctypes.c_do
 _lookup_p_convolution.restype = ctypes.c_double
 
 # Constants
-# We have to copy this from ConvolutionComputer.hh
+# We have to copy this from ConvolutionComputer.hpp
 NORMAL_PRIOR = 1
 LOGNORMAL_PRIOR = 2
 

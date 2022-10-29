@@ -718,12 +718,12 @@ def parse_status_multiple_l1(stdout,job_ids, dir_tmp): #Yannik improve the funct
                     if "out.txt" in f:
                         with open(out_path, 'r') as g:
                             if "Segmentation violation" in g.read():
-                                print("music.cc has SEGMENTATION VAIOLATION for this job. Put this JOB on FAILED. Check music.cc or discard this sample.")
+                                print("music.cpp has SEGMENTATION VAIOLATION for this job. Put this JOB on FAILED. Check music.cpp or discard this sample.")
                                 print(tmpk[job_id])
                                 status= "FAILED"
                                 break            
                             if "running music failed"  in g.read():
-                                print("music.cc has FAILED for this job. Check the reason below.")
+                                print("music.cpp has FAILED for this job. Check the reason below.")
                                 print(tmpk[job_id])
                                 if "err.txt" in f:
                                     with open(err_path, 'r') as h:
@@ -733,7 +733,7 @@ def parse_status_multiple_l1(stdout,job_ids, dir_tmp): #Yannik improve the funct
                                             status= "RESUB"
                                             extcd="1"
                                             break
-                                print("Reason unknown. At the moment Put this JOB on RESUBMIT. Check music.cc or discard this sample.")
+                                print("Reason unknown. At the moment Put this JOB on RESUBMIT. Check music.cpp or discard this sample.")
                                 status= "RESUB"
                                 extcd="1"
                                 break
