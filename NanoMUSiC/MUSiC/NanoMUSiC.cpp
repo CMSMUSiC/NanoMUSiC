@@ -192,6 +192,9 @@ int main(int argc, char *argv[])
     auto cutflow_histo = TH1F("cutflow_histo", output_tree_title.str().c_str(), n_cuts, -0.5, n_cuts + 0.5);
     cutflow_histo.Sumw2();
 
+    std::cout << def << "[Initializing] Set of classes ..." << def << std::endl;
+    std::set<unsigned long> classes;
+
     // performance monitoring
     double dTime1 = getCpuTime(); // Start Time
     int event_counter = -1;       // Event counter
@@ -434,40 +437,35 @@ int main(int argc, char *argv[])
                                                      static_cast<int>(met.get<bool>("good_met")) /* MET */);
 
                 unsigned long n_classes = ranges::distance(multiplicities.begin(), multiplicities.end());
+
                 if (n_classes == 0)
                 {
                     continue;
                 }
+
+                // fill total of classes and update the set of classes
+                ranges::for_each(multiplicities, [&](const auto &multiplicity) {
+                    classes.emplace(EventContent::get_class_hash(multiplicity));
+                });
                 music_event.n_classes = n_classes;
 
-                // loop over variations
-                for (const auto &variation : Tools::index_range<Variation>(Variation::kTotalVariations))
-                {
-                    for (const auto &shift : Tools::index_range<Shift>(Shift::kTotalShifts))
-                    {
+                // loop over variations, shifts and classes (aka multiplicities)
+                ranges::for_each(
+                    views::cartesian_product(range_variations, range_shifts), [&](const auto &variation_and_shift) {
+                        const auto [variation, shift] = variation_and_shift;
+
                         // modify objects according to the given variation
                         const auto varied_objects = apply_variation(variation, shift, is_data, good_muons, met);
 
                         // will hold event content for all classes
                         auto content_buffer = EventContent{};
-
-                        ////////////////////////////////////////////////////////////
-                        ////////////////////////////////////////////////////////////
-                        ///         loop over classes (multiplicities)           ///
-                        ////////////////////////////////////////////////////////////
-                        ////////////////////////////////////////////////////////////
-                        for (auto multiplicity : multiplicities)
-                        {
-                            // DEBUG
-                            // std::cout << i_muons << " - " << i_electrons << " - " << i_photons << " - " << i_taus
-                            //           << " - " << i_bjets << " - " << i_jets << " - " << i_met << std::endl;
+                        ranges::for_each(multiplicities, [&](const auto &multiplicity) {
                             content_buffer.fill(multiplicity, varied_objects);
-                        }
+                        });
 
                         // save event content for this pair of variation + shift
                         music_event.fill(variation, shift, std::move(content_buffer));
-                    }
-                }
+                    });
 
                 // save data into output tree
                 output_tree->Fill();
@@ -536,6 +534,9 @@ int main(int argc, char *argv[])
     output_file->cd();
     output_tree->Write();
     cutflow_histo.Write();
+
+    auto storaged_classes = TObjString(make_class_storage(classes).c_str());
+    storaged_classes.Write();
 
     PrintProcessInfo();
     return 0;

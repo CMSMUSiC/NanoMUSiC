@@ -208,6 +208,7 @@ auto index_range(const int &to)
 {
     return index_range<T>(0, to);
 }
+
 } // namespace Tools
 
 #endif /*MUSIC_TOOLS*/

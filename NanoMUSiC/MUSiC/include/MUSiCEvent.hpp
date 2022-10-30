@@ -19,6 +19,8 @@
 // https://github.com/ericniebler/range-v3
 #include <range/v3/numeric/accumulate.hpp>
 #include <range/v3/view/cartesian_product.hpp>
+// #include <range/v3/view/for_each.hpp>
+#include <range/v3/algorithm/for_each.hpp>
 #include <range/v3/view/iota.hpp>
 #include <range/v3/view/remove_if.hpp>
 
@@ -27,8 +29,8 @@
 
 using namespace ranges;
 
-constexpr int MAX_JETS = 6;    // SAME AS 2016 PAPER
-constexpr int MAX_OBJECTS = 9; // SAME AS 2016 PAPER
+constexpr int MAX_JETS = 6;     // SAME AS 2016 PAPER
+constexpr int MAX_OBJECTS = 99; // SAME AS 2016 PAPER
 
 using Multiplicity_t = std::tuple<int, int, int, int, int, int, int>;
 
@@ -49,6 +51,22 @@ enum Weight
     Lumi,
     kTotalWeights, // !!! should always be the last one !!!
 };
+
+enum Variation
+{
+    Default,
+    JEC,
+    JER,
+    MuonScale,
+    MuonResolution,
+    ElectronScale,
+    ElectronResolution,
+    kTotalVariations, // !!! should always be the last one !!!
+};
+
+auto range_variations = Tools::index_range<Variation>(Variation::kTotalVariations);
+auto range_shifts = Tools::index_range<Shift>(Shift::kTotalShifts);
+auto range_weights = Tools::index_range<Weight>(Weight::kTotalWeights);
 
 class EventWeight : public TObject
 {
@@ -100,7 +118,7 @@ class EventContent : public TObject
 {
   public:
     std::vector<EventWeight> event_weight;
-    std::vector<unsigned int> event_class_hash;
+    std::vector<unsigned long> event_class_hash;
     std::vector<float> sum_pt;
     std::vector<float> mass;
     std::vector<float> met;
@@ -109,12 +127,25 @@ class EventContent : public TObject
     {
     }
 
-    static unsigned int get_class_hash(const Multiplicity_t &multiplicity)
+    template <typename T>
+    static std::string to_string_with_zero_padding(T &value, std::size_t total_length = 2)
+    {
+        std::string _str = std::to_string(value);
+        if (_str.length() < total_length)
+        {
+            _str.insert(0, "0");
+        }
+        return _str;
+    }
+
+    static unsigned long get_class_hash(const Multiplicity_t &multiplicity)
     {
         const auto [i_muons, i_electrons, i_photons, i_taus, i_bjets, i_jets, i_met] = multiplicity;
-        return std::stoul(std::to_string(i_muons) + std::to_string(i_electrons) + std::to_string(i_photons) +
-                          std::to_string(i_taus) + std::to_string(i_bjets) + std::to_string(i_jets) +
-                          std::to_string(i_met));
+
+        return std::stoul("9" + to_string_with_zero_padding(i_muons) + to_string_with_zero_padding(i_electrons) +
+                          to_string_with_zero_padding(i_photons) + to_string_with_zero_padding(i_taus) +
+                          to_string_with_zero_padding(i_bjets) + to_string_with_zero_padding(i_jets) +
+                          to_string_with_zero_padding(i_met));
     }
 
     static auto get_multiplicities(const int &n_muons, const int &n_electrons, const int &n_photons, const int &n_taus,
@@ -175,7 +206,7 @@ class EventContent : public TObject
             mass.emplace_back(20.);
             met.emplace_back(30.);
             auto event_weight_buffer = EventWeight{};
-            for (const auto &weight : Tools::index_range<Weight>(Weight::kTotalWeights))
+            for (const auto &weight : range_weights)
             {
                 event_weight_buffer.set_weight(weight, Shift::Nominal, 1.0);
                 event_weight_buffer.set_weight(weight, Shift::Up, 1.1);
@@ -187,18 +218,6 @@ class EventContent : public TObject
     }
 
     ClassDef(EventContent, 1)
-};
-
-enum Variation
-{
-    Default,
-    JEC,
-    JER,
-    MuonScale,
-    MuonResolution,
-    ElectronScale,
-    ElectronResolution,
-    kTotalVariations, // !!! should always be the last one !!!
 };
 
 class MUSiCEvent : public TObject

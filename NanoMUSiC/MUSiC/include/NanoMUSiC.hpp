@@ -14,6 +14,7 @@
 #include <math.h>
 #include <numeric>
 #include <optional>
+#include <set>
 #include <sstream>
 #include <string>
 #include <sys/time.h>
@@ -177,5 +178,19 @@ struct TriggerBits
         return std::string_view(std::to_string(this->as_ulong()));
     }
 };
+
+std::string make_class_storage(const std::set<unsigned long> &classes)
+{
+    // expected number of elements: (7*2 + 1) * classes.size()
+    // 7 types of objects
+    // 2 digits per object
+    // classes.size(): number of classes
+    std::string str_class_storage =
+        std::accumulate(classes.begin(), classes.end(), std::string(""),
+                        [](std::string a, unsigned long b) { return std::move(a) + ',' + std::to_string(b); });
+    str_class_storage.erase(0, 1);
+
+    return str_class_storage;
+}
 
 #endif /*MUSIC_NANOMUSIC*/
