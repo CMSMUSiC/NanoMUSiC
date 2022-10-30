@@ -35,9 +35,9 @@ class RunLumiFilter
         }();
     }
 
-    auto operator()(const unsigned long &run_number, const unsigned long &lumi, const bool &run_on_data) const
+    auto operator()(const unsigned long &run_number, const unsigned long &lumi, const bool &is_data) const
     {
-        if (!run_on_data)
+        if (!is_data)
         {
             return true;
         }

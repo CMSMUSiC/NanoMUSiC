@@ -12,6 +12,14 @@
 
 #include "NanoAODReader.hpp"
 
+void simple_replace(std::string &str_in, const std::string &str_old, const std::string &str_new)
+{
+    if (str_in == str_old)
+    {
+        str_in = str_new;
+    }
+}
+
 // Constructor
 NanoAODReader::NanoAODReader(TTree &tree) : fReader(TTreeReader(&tree)), fListOfLeaves(*(tree.GetListOfLeaves()))
 {

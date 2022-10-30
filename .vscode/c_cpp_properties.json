@@ -3,27 +3,9 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**",
-                "${workspaceFolder}/lib/*",
-                "${workspaceFolder}/NanoMUSiC/*",
-                "${workspaceFolder}/NanoMUSiC/tools/examples/cesubmit/gridpack/*",
-                "${workspaceFolder}/NanoMUSiC/tools/examples/cesubmit/zeros/*",
-                "${workspaceFolder}/NanoMUSiC/tools/examples/ram/*",
-                "${workspaceFolder}/NanoMUSiC/tools/*",
-                "${workspaceFolder}/NanoMUSiC/tools/include/*",
-                "${workspaceFolder}/NanoMUSiC/tools/scripts/*",
-                "${workspaceFolder}/NanoMUSiC/tools/RATA_PDF/*",
-                "${workspaceFolder}/NanoMUSiC/tools/RATA_PDF/input/*",
-                "${workspaceFolder}/NanoMUSiC/MUSiC-Utils/*",
-                "${workspaceFolder}/NanoMUSiC/MUSiC-Utils/include/*",
-                "${workspaceFolder}/NanoMUSiC/MUSiC-Utils/python/luigi_music/*",
-                "${workspaceFolder}/NanoMUSiC/MUSiC-Utils/scripts/*",
-                "${workspaceFolder}/NanoMUSiC/MUSiC-RoIScanner/*",
-                "${workspaceFolder}/NanoMUSiC/MUSiC-RoIScanner/include/*",
-                "${workspaceFolder}/NanoMUSiC/MUSiC-Configs/*",
                 "${workspaceFolder}/NanoMUSiC/MUSiC/**",
-                "${workspaceFolder}/NanoMUSiC/PlotLib/*",
-                "/cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/include/*"
+                "${workspaceFolder}/NanoMUSiC/MUSiC/include/**"
+                // "/cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/include/**"
             ],
             "defines": [],
             "compilerPath": "/cvmfs/sft.cern.ch/lcg/releases/gcc/11.2.0-8a51a/x86_64-centos7/bin/g++",
@@ -34,10 +16,12 @@
             "browse": {
                 "path": [
                     "${workspaceFolder}"
+                    // "/cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/include/"
                 ],
                 "limitSymbolsToIncludedHeaders": true,
-                "databaseFilename": ""
-            }
+                "databaseFilename": "${workspaceFolder}/.vscode/browse.vc.db"
+            },
+            "forcedInclude": []
         }
     ],
     "version": 4

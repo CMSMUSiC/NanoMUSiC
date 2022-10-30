@@ -51,7 +51,7 @@ add_library(PxlAnalyzer
     Pxl/Pxl/src/logging.cpp
     Main/JetResolution.cpp
     Main/EventAdaptor.cpp
-    Main/NanoAODReader.cpp
+    #Main/NanoAODReader.cpp
     Main/SkipEvents.cpp
     Main/GammaSelector.cpp
     Main/PDFTool.cpp

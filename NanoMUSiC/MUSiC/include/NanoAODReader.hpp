@@ -11,13 +11,7 @@
 #include "TTreeReaderArray.h"
 #include "TTreeReaderValue.h"
 
-void simple_replace(std::string &str_in, auto &str_old, auto &str_new)
-{
-    if (str_in == static_cast<std::string>(str_old))
-    {
-        str_in = static_cast<std::string>(str_new);
-    }
-}
+void simple_replace(std::string &str_in, const std::string &str_old, const std::string &str_new);
 
 // Load and read NanoAOD files, regardsless of its implementation version.
 class NanoAODReader

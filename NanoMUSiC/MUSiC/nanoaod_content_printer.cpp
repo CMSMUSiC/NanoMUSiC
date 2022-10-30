@@ -14,7 +14,7 @@
 #include "TFile.h"
 #include "TTree.h"
 
-#include "Main/NanoAODReader.hpp"
+#include "NanoAODReader.hpp"
 
 namespace fs = boost::filesystem;
 namespace po = boost::program_options;

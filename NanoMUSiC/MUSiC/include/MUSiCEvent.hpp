@@ -1,10 +1,15 @@
+#ifndef MUSIC_EVENTS
+#define MUSIC_EVENTS
+
 #include <array>
 #include <functional>
 #include <iostream>
 #include <numeric>
+#include <optional>
 #include <string>
 #include <tuple>
 
+// ROOT stuff
 #include "TObjString.h"
 #include "TObject.h"
 #include "TTree.h"
@@ -12,13 +17,20 @@
 // On: 28.10.2022
 // https://ericniebler.github.io/range-v3
 // https://github.com/ericniebler/range-v3
+#include <range/v3/numeric/accumulate.hpp>
 #include <range/v3/view/cartesian_product.hpp>
 #include <range/v3/view/iota.hpp>
 #include <range/v3/view/remove_if.hpp>
 
+#include "NanoObjects.hpp"
+#include "Tools.hpp"
+
 using namespace ranges;
 
-constexpr int MAX_JETS = 6; // SAME AS 2016 PAPER
+constexpr int MAX_JETS = 6;    // SAME AS 2016 PAPER
+constexpr int MAX_OBJECTS = 9; // SAME AS 2016 PAPER
+
+using Multiplicity_t = std::tuple<int, int, int, int, int, int, int>;
 
 enum Shift
 {
@@ -97,9 +109,9 @@ class EventContent : public TObject
     {
     }
 
-    static unsigned int get_class_hash(const std::tuple<int, int, int, int, int, int, int> &multiplicity)
+    static unsigned int get_class_hash(const Multiplicity_t &multiplicity)
     {
-        auto [i_muons, i_electrons, i_photons, i_taus, i_bjets, i_jets, i_met] = multiplicity;
+        const auto [i_muons, i_electrons, i_photons, i_taus, i_bjets, i_jets, i_met] = multiplicity;
         return std::stoul(std::to_string(i_muons) + std::to_string(i_electrons) + std::to_string(i_photons) +
                           std::to_string(i_taus) + std::to_string(i_bjets) + std::to_string(i_jets) +
                           std::to_string(i_met));
@@ -108,12 +120,25 @@ class EventContent : public TObject
     static auto get_multiplicities(const int &n_muons, const int &n_electrons, const int &n_photons, const int &n_taus,
                                    const int &n_bjets, const int &n_jets, const int &n_met)
     {
-        return views::cartesian_product(views::ints(0, n_muons + 1), views::ints(0, n_electrons + 1),
-                                        views::ints(0, n_photons + 1), views::ints(0, n_taus + 1),
-                                        views::ints(0, n_bjets + 1), views::ints(0, n_jets + 1),
-                                        views::ints(0, n_met + 1)) |
+        return views::cartesian_product(views::ints(0, std::min(n_muons, MAX_OBJECTS) + 1),
+                                        views::ints(0, std::min(n_electrons, MAX_OBJECTS) + 1),
+                                        views::ints(0, std::min(n_photons, MAX_OBJECTS) + 1),
+                                        views::ints(0, std::min(n_taus, MAX_OBJECTS) + 1),
+                                        views::ints(0, std::min(n_bjets, MAX_OBJECTS) + 1),
+                                        views::ints(0, std::min(n_jets, MAX_OBJECTS) + 1),
+                                        views::ints(0, std::min(n_met, MAX_OBJECTS) + 1)) |
                views::remove_if([&](const auto &multiplicity) {
                    const auto [i_muons, i_electrons, i_photons, i_taus, i_bjets, i_jets, i_met] = multiplicity;
+
+                   // debug
+                   //    std::cout << i_muons << " - " << i_electrons << " - " << i_photons << " - " << i_taus << " - "
+                   //    << i_bjets << " - " << i_jets << " - " << i_met << std::endl;
+
+                   // no taus (for now)
+                   if (i_taus > 0)
+                   {
+                       return true;
+                   }
 
                    // MET filter
                    if (i_met > 1)
@@ -122,7 +147,7 @@ class EventContent : public TObject
                    }
 
                    // at least one muon or one electron
-                   if (i_muons == 0 || i_electrons == 0)
+                   if (i_muons == 0 && i_electrons == 0)
                    {
                        return true;
                    }
@@ -136,6 +161,29 @@ class EventContent : public TObject
                    // default --> accepted
                    return false;
                });
+    }
+
+    void fill(const Multiplicity_t &multiplicity, const std::optional<NanoObject::NanoAODObjects_t> nanoaod_objects)
+    {
+        if (nanoaod_objects)
+        {
+            // unpacking ...
+            const auto [i_muons, i_electrons, i_photons, i_taus, i_bjets, i_jets, i_met] = multiplicity;
+            const auto [muons, _met] = *nanoaod_objects;
+
+            sum_pt.emplace_back(10.);
+            mass.emplace_back(20.);
+            met.emplace_back(30.);
+            auto event_weight_buffer = EventWeight{};
+            for (const auto &weight : Tools::index_range<Weight>(Weight::kTotalWeights))
+            {
+                event_weight_buffer.set_weight(weight, Shift::Nominal, 1.0);
+                event_weight_buffer.set_weight(weight, Shift::Up, 1.1);
+                event_weight_buffer.set_weight(weight, Shift::Down, 0.9);
+            }
+            event_weight.emplace_back(event_weight_buffer);
+            event_class_hash.emplace_back(EventContent::get_class_hash(multiplicity));
+        }
     }
 
     ClassDef(EventContent, 1)
@@ -177,7 +225,7 @@ class MUSiCEvent : public TObject
     {
     }
 
-    void set_content(Variation variation, Shift shift, EventContent &&event_content)
+    void fill(const Variation variation, const Shift shift, const EventContent &&event_content)
     {
         switch (shift)
         {
@@ -192,7 +240,8 @@ class MUSiCEvent : public TObject
             break;
         }
     }
-    EventContent get_content(Variation variation = Variation::Default, Shift shift = Shift::Nominal)
+
+    EventContent get(const Variation variation = Variation::Default, const Shift shift = Shift::Nominal)
     {
         switch (shift)
         {
@@ -206,3 +255,5 @@ class MUSiCEvent : public TObject
     }
     ClassDef(MUSiCEvent, 1)
 };
+
+#endif /*MUSIC_EVENTS*/

@@ -9,6 +9,7 @@
 #pragma link C++ class MUSiCEvent + ;
 #pragma link C++ class EventContent + ;
 #pragma link C++ class EventWeight + ;
+#pragma link C++ class NanoObject + ;
 #pragma link C++ enum Variations + ;
 #pragma link C++ enum Shift + ;
 #pragma link C++ enum Weight + ;

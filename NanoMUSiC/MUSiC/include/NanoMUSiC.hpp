@@ -1,3 +1,5 @@
+#ifndef MUSIC_NANOMUSIC
+#define MUSIC_NANOMUSIC
 
 #include <algorithm>
 #include <bitset>
@@ -38,14 +40,13 @@
 // https://github.com/adishavit/argh
 #include "argh.h"
 
-#include "RunLumiFilter.hpp"
-
+// Configurarion and filter
 #include "MConfig.hpp"
 #include "TOMLConfig.hpp"
 #include "Tools.hpp"
 
-#include "NanoObjects.hpp"
-#include "event_class_hash.hpp"
+// Filters (lumi, gen phase-space, ...)
+#include "RunLumiFilter.hpp"
 
 // ROOT Stuff
 #include "Math/Vector4D.h"
@@ -54,21 +55,18 @@
 #include "TObjString.h"
 #include "TTree.h"
 
+// Corrections and weighters
 #include "CorrectionSets.hpp"
 // #include "PDFAlphaSWeights.hpp"
 
+// MUSiC data models
 #include "MUSiCEvent.hpp"
 #include "NanoAODReader.hpp"
-
-// On: 28.10.2022
-// https://ericniebler.github.io/range-v3
-// https://github.com/ericniebler/range-v3
-#include <range/v3/view/iota.hpp>
-#include <range/v3/view/transform.hpp>
+#include "NanoObjects.hpp"
+#include "ObjectCorrections.hpp"
 
 using namespace ranges;
 using namespace ROOT::Math;
-
 using OptionalFuture_t = std::optional<std::future<std::unique_ptr<TFile>>>;
 
 // (async) TFile getter
@@ -127,7 +125,7 @@ constexpr bool is_tenth(int &event_counter)
     return (event_counter < 10 || (event_counter < 100 && event_counter % 10 == 0) ||
             (event_counter < 1000 && event_counter % 100 == 0) ||
             (event_counter < 10000 && event_counter % 1000 == 0) ||
-            (event_counter >= 10000 && event_counter % 10000 == 0));
+            (event_counter >= 100000 && event_counter % 10000 == 0));
 }
 
 std::string get_hash256(const std::string &input_string)
@@ -180,16 +178,4 @@ struct TriggerBits
     }
 };
 
-// Helper function to get a integer iterator
-template <typename T = UInt_t>
-auto idx_range(const int &from, const int &to)
-{
-    return views::ints(from, to) |
-           views::transform([](auto i) { return static_cast<T>(std::make_unsigned_t<int>(i)); });
-}
-
-template <typename T = UInt_t>
-auto idx_range(const int &to)
-{
-    return idx_range<T>(0, to);
-}
+#endif /*MUSIC_NANOMUSIC*/

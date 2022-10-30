@@ -1,80 +1,22 @@
 #include "NanoMUSiC.hpp"
 
-// int main(int argc, char *argv[])
-// {
-//     TFile f("test_MUSiCEvent.root", "recreate");
-//     TTree t2("test_MUSiCEvent", "test_MUSiCEvent");
-//     auto music_event = MUSiCEvent();
-//     t2.Branch("music_event", &music_event, 256000, 99);
-//     std::cout << "test ..." << std::endl;
-
-//     for (int i = 0; i < 1; i++)
-//     {
-//         // reset content per event
-//         music_event = MUSiCEvent();
-//         music_event.event_number = i;
-//         t2.Fill();
-//     }
-//     t2.Write();
-//     f.Close();
-
-//     for (auto multiplicity : EventContent::get_multiplicities(2, 1, 1, 0, 0, 0, 2))
-//     {
-//         auto [n_muons, n_electrons, n_photons, n_taus, n_bjets, n_jets, n_met] = multiplicity;
-//         std::cout << n_muons << " - " << n_electrons << " - " << n_photons << " - " << n_taus << " - " << n_bjets
-//                   << " - " << n_jets << " - " << n_met << std::endl;
-//     }
-
-//     std::cout << "++++++++++++++++++++++" << std::endl;
-//     for (auto multiplicity : EventContent::get_multiplicities(2, 1, 1, 0, 0, 10, 2))
-//     {
-//         auto [n_muons, n_electrons, n_photons, n_taus, n_bjets, n_jets, n_met] = multiplicity;
-//         std::cout << n_muons << " - " << n_electrons << " - " << n_photons << " - " << n_taus << " - " << n_bjets
-//                   << " - " << n_jets << " - " << n_met << std::endl;
-//     }
-
-//     TFile *fr = new TFile("test_MUSiCEvent.root");
-//     TTree *t2r = (TTree *)fr->Get("test_MUSiCEvent");
-//     auto *music_event_r = new MUSiCEvent();
-//     t2r->SetBranchAddress("music_event", &music_event_r);
-//     TBranch *br = t2r->GetBranch("music_event");
-//     Long64_t nentries = t2r->GetEntries();
-//     for (int i = 0; i < nentries; i++)
-//     {
-//         br->GetEntry(i);
-//         if (is_tenth(i))
-//         {
-//             // std::cout << "event_number:" << music_event_r->event_number << std::endl;
-//             // std::cout << "event_content_nominal:"
-//             //           << music_event_r->event_content_nominal[Variation::MuonResolution].met << std::endl;
-//             // std::cout << "event_content_up:"
-//             //           << music_event_r->event_content_up[Variation::JER].event_weight.get_weight() << std::endl;
-//         }
-//     }
-// }
-
 void PrintProcessInfo()
 {
     auto info = ProcInfo_t();
     gSystem->GetProcInfo(&info);
     std::cout.precision(1);
     std::cout << std::fixed;
-    std::cout << "--> Process info:" << std::endl;
-    std::cout << "    -------------" << std::endl;
-    std::cout << "    CPU time elapsed: " << info.fCpuUser << " s" << std::endl;
-    std::cout << "    Sys time elapsed: " << info.fCpuSys << " s" << std::endl;
-    std::cout << "    Resident memory:  " << info.fMemResident / 1024. << " MB" << std::endl;
-    std::cout << "    Virtual memory:   " << info.fMemVirtual / 1024. << " MB" << std::endl;
+    std::cout << "-------------" << std::endl;
+    std::cout << "Process info:" << std::endl;
+    std::cout << "-------------" << std::endl;
+    std::cout << "CPU time elapsed: " << info.fCpuUser << " s" << std::endl;
+    std::cout << "Sys time elapsed: " << info.fCpuSys << " s" << std::endl;
+    std::cout << "Resident memory:  " << info.fMemResident / 1024. << " MB" << std::endl;
+    std::cout << "Virtual memory:   " << info.fMemVirtual / 1024. << " MB" << std::endl;
 }
 
 int main(int argc, char *argv[])
 {
-    // check for env setup
-    if (getenv("PXLANALYZER_BASE") == NULL)
-    {
-        throw std::runtime_error("PXLANALYZER_BASE not set!");
-    }
-
     TDirectory::AddDirectory(kFALSE); // Force ROOT to give directories in our hand - Yes, we can
     TH1::AddDirectory(kFALSE);        // Force ROOT to give histograms in our hand - Yes, we can
 
@@ -146,7 +88,7 @@ int main(int argc, char *argv[])
     const auto dataset = run_config.get<std::string>("dataset");
     const auto max_events = run_config.get<int>("max_events");
     const auto number_of_events_to_skip = run_config.get<int>("number_of_events_to_skip");
-    const auto run_on_data = run_config.get<bool>("run_on_data");
+    const auto is_data = run_config.get<bool>("is_data");
     const auto debug = run_config.get<int>("debug");
     const auto x_section_file = Tools::AbsolutePath(run_config.get<std::string>("x_section_file"));
     const auto run_hash = run_config.get<std::string>("hash");
@@ -171,13 +113,10 @@ int main(int argc, char *argv[])
     auto config = Tools::MConfig(analysis_config_file);
     config.setYear(year);
 
-    // const auto useSYST = config.GetItem<bool>("General.useSYST");
-    // const auto run_on_data = config.GetItem<bool>("General.RunOnData");
-
     // Get the run config file from main config file.
     const auto golden_json_file = std::string(std::getenv("MUSIC_BASE")) + "/configs/golden_jsons/" + year + ".txt";
 
-    if (run_on_data)
+    if (is_data)
     {
         if (not std::filesystem::exists(golden_json_file))
         {
@@ -211,7 +150,7 @@ int main(int argc, char *argv[])
     if (!golden_json_file.empty())
         system(("cp " + golden_json_file + " . ").c_str());
 
-    if (run_on_data)
+    if (is_data)
         system("mkdir -p Event-lists");
 
     // save other configs with output
@@ -226,7 +165,7 @@ int main(int argc, char *argv[])
     auto run_lumi_filter = RunLumiFilter(golden_json_file);
 
     std::cout << def << "[Initializing] PU corrections ..." << def << std::endl;
-    auto pu_corrections = Corrector(CorrectionTypes::PU, year, run_on_data);
+    auto pu_corrections = Corrector(CorrectionTypes::PU, year, is_data);
 
     // read cross-sections files
     std::cout << def << "[Initializing] X-Sections ..." << def << std::endl;
@@ -255,7 +194,7 @@ int main(int argc, char *argv[])
 
     // performance monitoring
     double dTime1 = getCpuTime(); // Start Time
-    int event_counter = 0;        // Event counter
+    int event_counter = -1;       // Event counter
     unsigned int skipped = 0;     // number of events skipped from run/lumi_section config
     int pre_run_skipped = 0;      // number of events skipped due to skipped option
 
@@ -336,25 +275,61 @@ int main(int argc, char *argv[])
             //////////////////////////////////////   loop over events   //////////////////////////////////////
             //////////////////////////////////////////////////////////////////////////////////////////////////
             //////////////////////////////////////////////////////////////////////////////////////////////////
+            double dTime_0 = getCpuTime();
+            unsigned int event_counter_buffer = 0;
             while (nano_reader.next())
             {
-                // reset content per event
-                music_event = MUSiCEvent{};
-
-                event_counter_per_file++;
-
+                event_counter++;
                 // if set, skip first events
                 if (number_of_events_to_skip > pre_run_skipped)
                 {
-                    //
                     pre_run_skipped++;
                     continue;
                 }
 
-                // HOW TO READ DATA FROM NanoAODReader:
-                // std::cout << nano_reader.getVal<UInt_t>("nMuon") << std::endl;
-                // std::cout << nano_reader.getVec<Float_t>("Muon_pt") << std::endl;
-                // std::cout << nano_reader.getVal<Bool_t>("HLT_Mu18_Mu9") << std::endl;
+                if (event_counter > 0)
+                {
+                    // print every tenth
+                    if (is_tenth(event_counter))
+                    {
+                        auto _now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+                        std::cout << "\n[INFO] - " << std::strtok(std::ctime(&_now), "\n") << " - ";
+                        if (pre_run_skipped == 0)
+                        {
+                            std::cout << event_counter << " Events analyzed (" << skipped << " skipped)";
+                        }
+                        else
+                        {
+                            std::cout << event_counter << " Events analyzed (" << pre_run_skipped << " + " << skipped
+                                      << " skipped)";
+                        }
+
+                        std::cout << " - Processing rate: "
+                                  << double(event_counter - event_counter_buffer) / (getCpuTime() - dTime_0)
+                                  << " Events/s" << std::endl;
+                        event_counter_buffer = event_counter;
+                        dTime_0 = getCpuTime();
+
+                        PrintProcessInfo();
+                    }
+
+                    // // PrintProcessInfo every 10_000 events
+                    // if (event_counter % 10000 == 0)
+                    // {
+                    //     PrintProcessInfo();
+                    // }
+                }
+
+                // stop if max number of events to be processed is reaced
+                if (max_events != -1 && event_counter > max_events)
+                {
+                    break;
+                }
+
+                // reset content per event
+                music_event = MUSiCEvent{};
+
+                event_counter_per_file++;
 
                 // load event const's
                 music_event.run = nano_reader.getVal<UInt_t>("run");
@@ -363,7 +338,7 @@ int main(int argc, char *argv[])
 
                 // only if data
                 // filter run and lumi section
-                if (!run_lumi_filter(music_event.run, music_event.lumi_section, run_on_data))
+                if (!run_lumi_filter(music_event.run, music_event.lumi_section, is_data))
                 {
                     ++skipped;
                     if (debug > 1)
@@ -414,10 +389,7 @@ int main(int argc, char *argv[])
                 // skip event event if no trigger is fired
                 if (music_event.trigger_bits != 0)
                 {
-                    // // // // // // // // //
-                    // DEBUG: FIX ME!
-                    // // // // // // // // //
-                    // continue;
+                    continue;
                 }
 
                 // load nanoaod objects + minimal dummy object filtering
@@ -428,6 +400,13 @@ int main(int argc, char *argv[])
                     std::make_pair("dxy", nano_reader.getVec<Float_t>("Muon_dxy")),
                     std::make_pair("charge", nano_reader.getVec<Int_t>("Muon_charge")));
 
+                // MET
+                auto met = NanoObject::make_object(
+                    nano_reader.getVal<Float_t>("MET_pt"), nano_reader.getVal<Float_t>("MET_phi"),
+                    std::make_pair("significance", nano_reader.getVal<Float_t>("MET_significance")),
+                    std::make_pair("MetUnclustEnUpDeltaX", nano_reader.getVal<Float_t>("MET_MetUnclustEnUpDeltaX")));
+
+                // select objects
                 auto good_muons = NanoObject::Filter(muons, [](const auto &muon) {
                     if (muon.pt() > 2.0)
                     {
@@ -435,12 +414,6 @@ int main(int argc, char *argv[])
                     }
                     return false;
                 });
-
-                // MET
-                auto met = NanoObject::make_object(
-                    nano_reader.getVal<Float_t>("MET_pt"), nano_reader.getVal<Float_t>("MET_phi"),
-                    std::make_pair("significance", nano_reader.getVal<Float_t>("MET_significance")),
-                    std::make_pair("MetUnclustEnUpDeltaX", nano_reader.getVal<Float_t>("MET_MetUnclustEnUpDeltaX")));
 
                 met.set("good_met", [&]() {
                     if (met.pt() > 20.)
@@ -450,200 +423,54 @@ int main(int argc, char *argv[])
                     return false;
                 }());
 
-                // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
-                // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
-                // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
-                // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
-                // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
-                // <BEGIN> DEBUG
-                // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
-                // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
-                // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
-                // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
-                // if (debug >= 2)
-                // if (true)
-                // {
-                //     std::cout << "-----------------------------------------" << std::endl;
-                //     std::cout << "Muons: " << NanoObject::Repr(muons) << std::endl;
-                //     std::cout << "Muons Pt: " << NanoObject::Repr(NanoObject::Pt(muons)) << std::endl;
-                //     std::cout << "Muons Eta: " << NanoObject::Repr(NanoObject::Eta(muons)) << std::endl;
-                //     std::cout << "Muons Phi: " << NanoObject::Repr(NanoObject::Phi(muons)) << std::endl;
-                //     std::cout << "Muons Mass: " << NanoObject::Repr(NanoObject::Mass(muons)) << std::endl;
-                //     std::cout << "Muons E: " << NanoObject::Repr(NanoObject::E(muons)) << std::endl;
-                //     std::cout << "Muons dxy: " << NanoObject::Repr(NanoObject::GetFeature<Float_t>(muons, "dxy"))
-                //               << std::endl;
-                //     std::cout << "Muons charge: " <<
-                //     NanoObject::Repr(NanoObject::GetFeature<Int_t>(muons,"charge"))
-                //               << std::endl;
-                //     std::cout << "Muons indices: " << NanoObject::Repr(NanoObject::Indices(muons)) << std::endl;
-                //     std::cout << "Muons GetByIndex: " << NanoObject::GetByIndex(muons, 0) << std::endl;
-                // }
-
-                // if (muons.size() > 1)
-                // {
-                //     std::cout << "Selected: " << muons[1] << std::endl;
-                // }
-                // if (true)
-                // {
-                //     auto _test_where = NanoObject::Where<float>(
-                //         muons,
-                //         [](const auto &muon) {
-                //             if (muon.pt() > 2.0)
-                //             {
-                //                 return true;
-                //             }
-                //             return false;
-                //         },
-                //         [](const auto &muon) { return 9999.0; }, [](const auto &muon) { return -9999.0; });
-                //     // std::cout << "_test_where: " << NanoObject::Repr(_test_where) << std::endl;
-
-                //     auto muon_filter = NanoObject::BuildMask(muons, [](const auto &muon) {
-                //         if (muon.pt() > 2.0)
-                //         {
-                //             return true;
-                //         }
-                //         return false;
-                //     });
-                // std::cout << "Filter: " << NanoObject::Repr(muon_filter) << std::endl;
-
-                // auto filtered_muons = NanoObject::Filter(muons, muon_filter);
-                // auto filtered_muons = muons[NanoObject::Pt(muons) > 25];
-                // std::cout << "Filtered: " << NanoObject::Repr(filtered_muons) << std::endl;
-                // std::cout << "Filtered - features: " << NanoObject::Repr(NanoObject::Pt(filtered_muons)) <<
-                // std::endl; std::cout << "Filtered - features: "
-                //           << NanoObject::Repr(NanoObject::GetFeature<Int_t>(filtered_muons, "charge")) <<
-                //           std::endl;
-                // }
-
-                // auto met_filter = met.pt() > 35.0;
-                // std::cout << "++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
-                // std::cout << "MET: " << met << std::endl;
-                // std::cout << "MET - features: " << met.get<float>("significance") << std::endl;
-                // std::cout << "MET - features: " << met.get<float>("MetUnclustEnUpDeltaX") << std::endl;
-                // std::cout << "MET - index: " << met.index() << std::endl;
-
-                // met.set("abc", true);
-                // std::cout << "MET - set features: " << met.get<bool>("abc") << std::endl;
-
-                // try
-                // {
-                //     std::cout << "MET - index: " << met.get<float>("dadas") << std::endl;
-                // }
-                // catch (const std::runtime_error &e)
-                // {
-                //     std::cerr << e.what() << '\n';
-                // }
-
-                // std::cout << "Filter: " << met_filter << std::endl;
-                // if (met_filter)
-                // {
-                //     std::cout << "Filtered: " << met << std::endl;
-                //     std::cout << "Filtered - features: " << met.get<float>("significance") << std::endl;
-                //     std::cout << "Filtered - features: " << met.get<float>("MetUnclustEnUpDeltaX") << std::endl;
-                // }
-                // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
-                // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
-                // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
-                // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
-                // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
-                // <END> DEBUG
-                // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
-                // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
-                // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
-                // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
-
                 // will hold the number of classes
-                auto n_classes = 0;
+                auto multiplicities =
+                    EventContent::get_multiplicities(good_muons.size(), /* total number of muons */
+                                                     0,                 /* total number of electrons */
+                                                     0,                 /* total number of photons */
+                                                     0,                 /* total number of taus */
+                                                     0,                 /* total number of bjets */
+                                                     0,                 /* total number of jets */
+                                                     static_cast<int>(met.get<bool>("good_met")) /* MET */);
+
+                unsigned long n_classes = ranges::distance(multiplicities.begin(), multiplicities.end());
+                if (n_classes == 0)
+                {
+                    continue;
+                }
+                music_event.n_classes = n_classes;
 
                 // loop over variations
-                for (const auto &variation : idx_range<Variation>(Variation::kTotalVariations))
+                for (const auto &variation : Tools::index_range<Variation>(Variation::kTotalVariations))
                 {
-                    for (const auto &shift : idx_range<Shift>(Shift::kTotalShifts))
+                    for (const auto &shift : Tools::index_range<Shift>(Shift::kTotalShifts))
                     {
-                        //////////////////////////////
-                        //////////////////////////////
-                        // loop over classes
-                        //////////////////////////////
-                        //////////////////////////////
-
-                        // reset the total number of classes per iteration
-                        n_classes = 0;
+                        // modify objects according to the given variation
+                        const auto varied_objects = apply_variation(variation, shift, is_data, good_muons, met);
 
                         // will hold event content for all classes
                         auto content_buffer = EventContent{};
 
-                        // clang-format off
-                        for (auto multiplicity : EventContent::get_multiplicities(
-                                                                        good_muons.size(), // total number of muons
-                                                                        0, // total number of electrons
-                                                                        0, // total number of photons
-                                                                        0, // total number of taus
-                                                                        0, // total number of bjets
-                                                                        0, // total number of jets
-                                                                        static_cast<int>(met.get<bool>("good_met")) // MET
-                                                                        ))
-                        // clang-format on
+                        ////////////////////////////////////////////////////////////
+                        ////////////////////////////////////////////////////////////
+                        ///         loop over classes (multiplicities)           ///
+                        ////////////////////////////////////////////////////////////
+                        ////////////////////////////////////////////////////////////
+                        for (auto multiplicity : multiplicities)
                         {
-                            n_classes++;
-                            auto [i_muons, i_electrons, i_photons, i_taus, i_bjets, i_jets, i_met] = multiplicity;
-                            std::cout << i_muons << " - " << i_electrons << " - " << i_photons << " - " << i_taus
-                                      << " - " << i_bjets << " - " << i_jets << " - " << i_met << std::endl;
-                            // // // // // // // // // // // // // // // // // // // // //
-                            // // // // // // // // // // // // // // // // // // // // //
-                            // FIX ME
-                            // somehow modify the objects according to the "variation"
-                            // and calculate pt, mass, met and event weight
-                            // // // // // // // // // // // // // // // // // // // // //
-                            // // // // // // // // // // // // // // // // // // // // //
-                            content_buffer.sum_pt.emplace_back(10.);
-                            content_buffer.mass.emplace_back(20.);
-                            content_buffer.met.emplace_back(30.);
-                            auto event_weight_buffer = EventWeight{};
-                            for (const auto &weight : idx_range<Weight>(Weight::kTotalWeights))
-                            {
-                                event_weight_buffer.set_weight(weight, Shift::Nominal, 1.0);
-                                event_weight_buffer.set_weight(weight, Shift::Up, 1.1);
-                                event_weight_buffer.set_weight(weight, Shift::Down, 0.9);
-                            }
-                            content_buffer.event_weight.emplace_back(event_weight_buffer);
-                            content_buffer.event_class_hash.emplace_back(EventContent::get_class_hash(multiplicity));
+                            // DEBUG
+                            // std::cout << i_muons << " - " << i_electrons << " - " << i_photons << " - " << i_taus
+                            //           << " - " << i_bjets << " - " << i_jets << " - " << i_met << std::endl;
+                            content_buffer.fill(multiplicity, varied_objects);
                         }
+
                         // save event content for this pair of variation + shift
-                        music_event.set_content(variation, shift, std::move(content_buffer));
+                        music_event.fill(variation, shift, std::move(content_buffer));
                     }
                 }
 
-                // set number of classes
-                music_event.n_classes = n_classes;
-
-                // fsave data into output tree
+                // save data into output tree
                 output_tree->Fill();
-
-                event_counter++;
-                // print every tenth
-                if (is_tenth(event_counter))
-                {
-                    if (pre_run_skipped == 0)
-                    {
-                        std::cout << event_counter << " Events analyzed (" << skipped << " skipped)" << std::endl;
-                    }
-                    else
-                    {
-                        std::cout << event_counter << " Events analyzed (" << pre_run_skipped << " + " << skipped
-                                  << " skipped)" << std::endl;
-                    }
-                }
-                // stop if max number of events to be processed is reaced
-                if (max_events != -1 && event_counter > max_events)
-                {
-                    break;
-                }
-
-                // PrintProcessInfo every 10_000 events
-                if (event_counter % 10000 == 0)
-                {
-                    PrintProcessInfo();
-                }
             }
             //////////////////////////////////////////////////////////////////////////////////////////////////
             //////////////////////////////////////////////////////////////////////////////////////////////////

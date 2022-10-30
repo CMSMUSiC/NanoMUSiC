@@ -146,18 +146,18 @@ int main(int argc, char *argv[])
     config.setYear(year);
 
     const auto useSYST = config.GetItem<bool>("General.useSYST");
-    const auto run_on_data = config.GetItem<bool>("General.RunOnData");
+    const auto is_data = config.GetItem<bool>("General.RunOnData");
 
     // Get the run config file from main config file.
     const auto golden_json_file = [&]() {
-        if (run_on_data)
+        if (is_data)
         {
             return Tools::AbsolutePath(config.GetItem<std::string>("General.RunConfig"));
         }
         return std::string();
     }();
 
-    if (run_on_data)
+    if (is_data)
     {
         if (not std::filesystem::exists(golden_json_file))
         {
@@ -191,7 +191,7 @@ int main(int argc, char *argv[])
     if (!golden_json_file.empty())
         system(("cp " + golden_json_file + " . ").c_str());
 
-    if (run_on_data)
+    if (is_data)
         system("mkdir -p Event-lists");
 
     // save other configs with output
@@ -312,7 +312,7 @@ int main(int argc, char *argv[])
         while (nano_reader.next())
         {
             std::unique_ptr<pxl::Event> event_ptr =
-                make_pxlevent(e, nano_reader, year, process, dataset, run_on_data, debug);
+                make_pxlevent(e, nano_reader, year, process, dataset, is_data, debug);
 
             event_counter_per_file++;
             if (!event_ptr)
@@ -351,7 +351,7 @@ int main(int argc, char *argv[])
                 continue;
             }
 
-            if (run_on_data && skipEvents.skip(run, lumi_section, eventNum))
+            if (is_data && skipEvents.skip(run, lumi_section, eventNum))
             {
                 ++skipped;
 
@@ -403,7 +403,7 @@ int main(int argc, char *argv[])
                 adaptor.applyPUPPIFatJets();
             }
 
-            if (run_on_data)
+            if (is_data)
             {
                 // Only needed for 2016 data //LOR COMM IT OUT
                 // adaptor.adaptDoubleEleTrigger( run, TrigEvtView );
@@ -500,7 +500,7 @@ int main(int argc, char *argv[])
                     std::cerr << "Found unsorted particle in event no. " << e << ". ";
                     std::cerr << "Skipping this event!" << std::endl;
                     //
-                    if (run_on_data)
+                    if (is_data)
                         exit(1);
                     else
                         continue;

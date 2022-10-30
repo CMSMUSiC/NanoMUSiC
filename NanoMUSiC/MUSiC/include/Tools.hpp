@@ -17,6 +17,13 @@
 #include <boost/lexical_cast.hpp>
 #pragma GCC diagnostic pop
 
+// External libs
+// On: 28.10.2022
+// https://ericniebler.github.io/range-v3
+// https://github.com/ericniebler/range-v3
+#include <range/v3/view/iota.hpp>
+#include <range/v3/view/transform.hpp>
+
 #include "TSystem.h" // for ExpandPathName
 
 namespace Tools
@@ -185,6 +192,21 @@ inline std::string AbsolutePath(Path const &path)
 {
     Path const AbsPath(ExpandPath(path));
     return complete(AbsPath).string();
+}
+
+// Helper function to get a integer iterator
+template <typename T = UInt_t>
+auto index_range(const int &from, const int &to)
+{
+    using namespace ranges;
+    return views::ints(from, to) |
+           views::transform([](auto i) { return static_cast<T>(std::make_unsigned_t<int>(i)); });
+}
+
+template <typename T = UInt_t>
+auto index_range(const int &to)
+{
+    return index_range<T>(0, to);
 }
 } // namespace Tools
 

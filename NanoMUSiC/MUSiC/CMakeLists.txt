@@ -1,3 +1,16 @@
+
+#################################################
+#################################################
+# NanoAODReader
+#################################################
+#################################################
+
+add_library(NanoAODReader
+    NanoAODReader.cpp
+)
+#target_include_directories(NanoAODReader PUBLIC include)
+target_compile_options(NanoAODReader PUBLIC -g -c -O3)
+
 #################################################
 #################################################
 # MUSiCEvent
@@ -44,9 +57,9 @@ install(TARGETS MUSiCEvent DESTINATION ${CMAKE_SOURCE_DIR}/lib)
 # #####################################################
 
 # nano_music (classification)
-add_executable(nano_music NanoMUSiC.cpp MConfig.cpp NanoAODReader.cpp NanoMUSiC.cpp Tools.cpp )
+add_executable(nano_music NanoMUSiC.cpp MConfig.cpp NanoMUSiC.cpp Tools.cpp )
 # target_link_libraries(nano_music LINK_PUBLIC PxlAnalyzer TEventClass MUSiCEvent)
-target_link_libraries(nano_music LINK_PUBLIC MUSiCEvent)
+target_link_libraries(nano_music LINK_PUBLIC MUSiCEvent NanoAODReader)
 install(TARGETS nano_music DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 
 # MC
@@ -67,7 +80,7 @@ add_test(NAME test_nano_music_2018_Data COMMAND nano_music --batch --run-config 
 
 # nanoaod_content_printer
 add_executable(nanoaod_content_printer nanoaod_content_printer.cpp)
-target_link_libraries(nanoaod_content_printer LINK_PUBLIC PxlAnalyzer)
+target_link_libraries(nanoaod_content_printer LINK_PUBLIC NanoAODReader)
 install(TARGETS nanoaod_content_printer DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 
 ##########

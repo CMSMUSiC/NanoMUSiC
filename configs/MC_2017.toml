@@ -20,8 +20,8 @@
 output = 'test_mc_2017'
 debug = 0
 max_events = -1
-number_of_events_to_skip = 972400
-run_on_data = false                                    # Is Data?
+number_of_events_to_skip = 0
+is_data = false                                    # Is Data?
 x_section_file = '$MUSIC_BASE/configs/x_sections.toml'
 config = '$MUSIC_CONFIG/configs/MC.cfg'
 year = '2017'
@@ -31,7 +31,12 @@ dataset = '/foo/bar/abc/NANOAODSIM'
 hash = 'dummyhash'
 cacheread = true
 input_files = [
-    'root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/100000/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
-    'root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/100000/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
-    'root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/230000/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    '/home/home1/institut_3a/silva/projects/NanoMUSiC_Test_Data/DY_2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    '/home/home1/institut_3a/silva/projects/NanoMUSiC_Test_Data/DY_2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    '/home/home1/institut_3a/silva/projects/NanoMUSiC_Test_Data/DY_2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
 ]
+# input_files = [
+#     'root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/100000/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+#     'root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/100000/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+#     'root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/230000/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+# ]

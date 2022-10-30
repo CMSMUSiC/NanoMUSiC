@@ -1,8 +1,9 @@
-#include <iostream>
-#include <sstream> // std::ostringstream
-#include <string>
+#ifndef MUSIC_NANOOBJECTS
+#define MUSIC_NANOOBJECTS
 
 #include <any>
+#include <iostream>
+#include <sstream>
 #include <string>
 
 #include "Math/Vector4D.h"
@@ -11,7 +12,7 @@ namespace NanoObject
 {
 using namespace ROOT::Math;
 
-const double MUON_MASS = 105.6583755 / 1000.0;
+constexpr double MUON_MASS = 105.6583755 / 1000.0;
 
 class NanoObject
 {
@@ -118,7 +119,8 @@ NanoObject make_object(std::pair<const char *, Args> &&...features)
 }
 
 // NanoObjects
-typedef std::vector<NanoObject> NanoObjectCollection;
+using NanoObjectCollection = std::vector<NanoObject>;
+using NanoAODObjects_t = std::tuple<NanoObjectCollection /*Muons*/, NanoObject /*MET*/>;
 
 template <typename ResType, typename F, typename G, typename H>
 std::vector<ResType> Where(const NanoObjectCollection &vec, F &&conditional_pred, G &&if_true_pred, H &&if_false_pred)
@@ -351,3 +353,5 @@ NanoObjectCollection make_collection(std::vector<float> &&pt, std::vector<float>
 }
 
 } // namespace NanoObject
+
+#endif /*MUSIC_NANOOBJECTS*/
