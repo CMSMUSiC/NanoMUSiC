@@ -1,0 +1,4 @@
+- name: Doxygen Action
+  uses: mattnotmitt/doxygen-action@1.9.4
+  with:
+    additional-packages: font-fira-code
