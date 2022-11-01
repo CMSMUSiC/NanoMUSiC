@@ -9,7 +9,7 @@ add_library(NanoAODReader
     NanoAODReader.cpp
 )
 #target_include_directories(NanoAODReader PUBLIC include)
-target_compile_options(NanoAODReader PUBLIC -g -c -O3)
+target_compile_options(NanoAODReader PUBLIC -g -c -O0)
 
 #################################################
 #################################################
@@ -25,7 +25,7 @@ target_include_directories(MUSiCEvent PUBLIC ./)
 target_compile_options(MUSiCEvent PUBLIC
         -MD
         -MP
-        -O3
+        -O0
         -Wall
         -fPIC
         -fsignaling-nans

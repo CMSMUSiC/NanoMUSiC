@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14.0)
+cmake_minimum_required(VERSION 3.10.0)
 
 project(NANOMUSIC CXX)
 
@@ -44,7 +44,7 @@ separate_arguments(CORRECTIONLIB_FLAGS)
 # compilation options
 execute_process(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
 separate_arguments(ROOT_CFLAGS)
-add_compile_options(${ROOT_CFLAGS} ${CORRECTIONLIB_FLAGS} -fdiagnostics-color=always -MD -MP -O3 -Wall -fconcepts-ts -pthread -m64 -ffloat-store)
+add_compile_options(${ROOT_CFLAGS} ${CORRECTIONLIB_FLAGS} -fdiagnostics-color=always -MD -MP -O0 -Wall -fconcepts-ts -pthread -m64 -ffloat-store)
 
 # root linker options
 execute_process(COMMAND root-config --ldflags OUTPUT_VARIABLE ROOT_LDFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -72,7 +72,7 @@ add_link_options(
     -lboost_program_options
     -lLHAPDF
     -L${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-Utils/lib
-    -O3fast
+    -O0
     -lz
     -lstdc++fs
 )

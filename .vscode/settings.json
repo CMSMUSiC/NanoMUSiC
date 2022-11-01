@@ -92,11 +92,11 @@
   "command-runner.terminal.autoClear": true,
   "command-runner.terminal.autoFocus": true,
   "command-runner.commands": {
-    "Build": "cd ${workspaceFolder} && source ${workspaceFolder}/music_setenv.sh && cd ${workspaceFolder}/build && ninja install",
-    "Run": "cd ${workspaceFolder} && source ${workspaceFolder}/music_setenv.sh && cd ${workspaceFolder}/build && ninja install && nano_music --run-config ../configs/MC_2017.toml",
-    "Build and Run": "cd ${workspaceFolder} && source ${workspaceFolder}/music_setenv.sh && cd ${workspaceFolder}/build && nano_music --run-config ../configs/MC_2017.toml",
-    "Clean": "cd ${workspaceFolder} && source ${workspaceFolder}/music_setenv.sh && cd ${workspaceFolder}/build && ninja clean",
-    "Configure": "cd ${workspaceFolder} && source ${workspaceFolder}/music_setenv.sh && cd ${workspaceFolder}/build && cmake .."
+    "Build": "cd ${workspaceFolder}/build && ninja install",
+    "Run": "nano_music --run-config ../configs/MC_2017.toml",
+    "Build and Run": "${workspaceFolder}/build && ninja --install && nano_music --run-config ../configs/MC_2017.toml",
+    "Clean": "cd ${workspaceFolder}/build && ninja clean",
+    "Configure": "cd ${workspaceFolder}/build && cmake .."
   },
   "C_Cpp.intelliSenseEngine": "Default",
   "C_Cpp.default.intelliSenseMode": "gcc-x86",
@@ -118,5 +118,14 @@
     "OBJECTCORRECTIONS",
     "Prefiring"
   ],
-  "cmake.configureOnOpen": false
+  "cmake.configureOnOpen": false,
+  // "cmake.cmakePath": "/cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/bin/cmake",
+  "cmake.cmakePath": "/home/home1/institut_3a/silva/.local/bin/cmake",
+  // "cmake.ctestPath": "/cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/bin/ctest",
+  "cmake.generator": "Ninja",
+  "cmake.preferredGenerators": [
+    "Ninja"
+  ],
+  "cmake.revealLog": "never",
+  "notebook.output.textLineLimit": 999,
 }

@@ -1,0 +1,34 @@
+Starting program: /.automount/home/home__home1/institut_3a/silva/NanoMUSiC/bin/nano_music --batch --run-config configs/MC_2017.toml
+warning: File "/cvmfs/sft.cern.ch/lcg/releases/gcc/11.2.0-8a51a/x86_64-centos7/lib64/libstdc++.so.6.0.29-gdb.py" auto-loading has been declined by your `auto-load safe-path' set to "$debugdir:$datadir/auto-load".
+To enable execution of this file add
+	add-auto-load-safe-path /cvmfs/sft.cern.ch/lcg/releases/gcc/11.2.0-8a51a/x86_64-centos7/lib64/libstdc++.so.6.0.29-gdb.py
+line to your configuration file "/home/home1/institut_3a/silva/.config/gdb/gdbinit".
+To completely disable this security protection add
+	set auto-load safe-path /
+line to your configuration file "/home/home1/institut_3a/silva/.config/gdb/gdbinit".
+For more information about this security protection see the
+"Auto-loading safe path" section in the GDB manual.  E.g., run from the shell:
+	info "(gdb)Auto-loading safe path"
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib64/libthread_db.so.1".
+[Detaching after fork from child process 4114589]
+[Detaching after fork from child process 4114590]
+[Detaching after fork from child process 4114591]
+[Detaching after fork from child process 4114592]
+[Detaching after fork from child process 4114594]
+[Detaching after fork from child process 4114595]
+[Detaching after fork from child process 4114596]
+[Detaching after fork from child process 4114599]
+[Detaching after fork from child process 4114601]
+[Detaching after fork from child process 4114603]
+[Detaching after fork from child process 4114606]
+[Detaching after fork from child process 4114611]
+[Detaching after fork from child process 4114614]
+[Detaching after fork from child process 4114617]
+[Detaching after fork from child process 4114618]
+[New Thread 0x7fffda867700 (LWP 4114619)]
+[Thread 0x7fffda867700 (LWP 4114619) exited]
+[Detaching after fork from child process 4114656]
+
+Thread 1 "nano_music" received signal SIGINT, Interrupt.
+0x00007ffff52b46fd in write () from /lib64/libpthread.so.0

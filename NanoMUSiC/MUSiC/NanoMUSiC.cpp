@@ -23,8 +23,16 @@ int main(int argc, char *argv[])
     // command line options
     argh::parser cmdl(argc, argv, argh::parser::PREFER_PARAM_FOR_UNREG_OPTION);
     const bool show_help = cmdl[{"-h", "--help"}];
-    const bool batch_mode = cmdl[{"-b", "--batch"}];
-    const std::string run_config_file = cmdl({"-c", "--run-config"}).str();
+    bool batch_mode = cmdl[{"-b", "--batch"}];
+    std::string run_config_file = cmdl({"-c", "--run-config"}).str();
+
+    if (std::getenv("NANOMUSIC_DEBUG"))
+    {
+        std::cout << "[WARNING] running in DEBUG Mode!\n" << std::endl;
+        batch_mode = true;
+        run_config_file = std::string("configs/MC_2017.toml");
+    }
+
     if (show_help || run_config_file == "")
     {
         std::cout << " " << std::endl;
@@ -32,9 +40,12 @@ int main(int argc, char *argv[])
         std::cout << "MUSiC - Model Unspecific Search in CMS" << std::endl;
         std::cout << emojicpp::emojize("      :signal_strength: Run2 - Ultra Legacy :signal_strength:") << std::endl;
         std::cout << " " << std::endl;
+
+        std::cout << run_config_file << std::endl;
+
         if (run_config_file == "")
         {
-            std::cout << "ERROR: the option '--config' is required but missing" << std::endl;
+            std::cout << "ERROR: the option '--run-config' is required but missing" << std::endl;
         }
         std::cout << "Available options:" << std::endl;
         std::cout << " " << std::endl;
@@ -108,7 +119,6 @@ int main(int argc, char *argv[])
     const auto jets_config = TOMLConfig::make_toml_config(jets_config_file);
     const auto jets_btag_algo = jets_config.get<std::string>("Jets.btag_algo");
     const auto jets_btag_wp_tight = jets_config.get<float>("jets_btag_wp_tight");
-
     if (not std::filesystem::exists(analysis_config_file))
     {
         throw Tools::file_not_found(analysis_config_file, "Config file");
