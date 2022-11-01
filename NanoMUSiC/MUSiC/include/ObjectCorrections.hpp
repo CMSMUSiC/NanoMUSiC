@@ -24,7 +24,12 @@
 // };
 
 auto default_corr = [](const Shift &shift, const NanoObject::NanoObjectCollection &muons,
-                       const NanoObject::NanoObject &met) { return std::make_tuple(muons, met); };
+                       const NanoObject::NanoObjectCollection &electrons,
+                       const NanoObject::NanoObjectCollection &photons, const NanoObject::NanoObjectCollection &taus,
+                       const NanoObject::NanoObjectCollection &bjets, const NanoObject::NanoObjectCollection &jets,
+                       const NanoObject::NanoObject &met) {
+    return std::make_tuple(muons, electrons, photons, taus, bjets, jets, met);
+};
 
 auto get_correction(const Variation &variation)
 {
@@ -53,16 +58,17 @@ auto get_correction(const Variation &variation)
     }
 }
 
-std::optional<NanoObject::NanoAODObjects_t> apply_variation(const Variation &variation, const Shift &shift,
-                                                            const bool &is_data,
-                                                            const NanoObject::NanoObjectCollection &muons,
-                                                            const NanoObject::NanoObject &met)
+std::optional<NanoObject::NanoAODObjects_t> apply_variation(
+    const Variation &variation, const Shift &shift, const bool &is_data, const NanoObject::NanoObjectCollection &muons,
+    const NanoObject::NanoObjectCollection &electrons, const NanoObject::NanoObjectCollection &photons,
+    const NanoObject::NanoObjectCollection &taus, const NanoObject::NanoObjectCollection &bjets,
+    const NanoObject::NanoObjectCollection &jets, const NanoObject::NanoObject &met)
 {
     // for now, just pass forward
     if (shift == Shift::Nominal || !is_data)
     {
         auto correction_func = get_correction(variation);
-        return correction_func(shift, muons, met);
+        return correction_func(shift, muons, electrons, photons, taus, bjets, jets, met);
     }
     return std::nullopt;
 }

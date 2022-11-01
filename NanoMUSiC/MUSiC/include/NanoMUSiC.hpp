@@ -188,6 +188,8 @@ std::string make_class_storage(const std::set<unsigned long> &classes)
     std::string str_class_storage =
         std::accumulate(classes.begin(), classes.end(), std::string(""),
                         [](std::string a, unsigned long b) { return std::move(a) + ',' + std::to_string(b); });
+
+    // this will remove the leading comma in the begining of the string
     str_class_storage.erase(0, 1);
 
     return str_class_storage;

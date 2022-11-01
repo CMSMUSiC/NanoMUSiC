@@ -34,18 +34,18 @@ class NanoObject
     PtEtaPhiMVector p4;
     std::map<std::string, std::any> features;
 
-    template <class T>
+    template <typename T>
     void set(std::string &&feature_name, T feature_value)
     {
         features[feature_name] = feature_value;
     }
 
-    template <class TypeToCast>
+    template <typename TypeToCast>
     TypeToCast get(std::string feature_name)
     {
         if (features.find(feature_name) != features.end())
         {
-            return std::any_cast<TypeToCast>(features[feature_name]);
+            return std::any_cast<TypeToCast>(features.at(feature_name));
         }
         else
         {
@@ -94,7 +94,7 @@ class NanoObject
 };
 
 // factory function
-template <class... Args>
+template <typename... Args>
 NanoObject make_object(float &&pt, float &&eta, float &&phi, float &&mass, std::pair<const char *, Args> &&...features)
 {
     auto _features = std::make_tuple(features...);
@@ -105,14 +105,14 @@ NanoObject make_object(float &&pt, float &&eta, float &&phi, float &&mass, std::
 }
 
 // met-like object
-template <class... Args>
+template <typename... Args>
 NanoObject make_object(float &&pt, float &&phi, std::pair<const char *, Args> &&...features)
 {
     return make_object(std::move(pt), std::move(0.0), std::move(phi), std::move(0.0), std::move(features)...);
 }
 
 // event-wise object
-template <class... Args>
+template <typename... Args>
 NanoObject make_object(std::pair<const char *, Args> &&...features)
 {
     return make_object(std::move(0.0), std::move(0.0), std::move(0.0), std::move(0.0), std::move(features)...);
@@ -120,7 +120,13 @@ NanoObject make_object(std::pair<const char *, Args> &&...features)
 
 // NanoObjects
 using NanoObjectCollection = std::vector<NanoObject>;
-using NanoAODObjects_t = std::tuple<NanoObjectCollection /*Muons*/, NanoObject /*MET*/>;
+using NanoAODObjects_t = std::tuple<NanoObjectCollection, /*Muons*/
+                                    NanoObjectCollection, /*Electrons*/
+                                    NanoObjectCollection, /*Photons*/
+                                    NanoObjectCollection, /*Taus*/
+                                    NanoObjectCollection, /*BJets*/
+                                    NanoObjectCollection, /*Jets*/
+                                    NanoObject /*MET*/>;
 
 template <typename ResType, typename F, typename G, typename H>
 std::vector<ResType> Where(const NanoObjectCollection &vec, F &&conditional_pred, G &&if_true_pred, H &&if_false_pred)
@@ -151,7 +157,7 @@ std::vector<int> BuildMask(const NanoObjectCollection &vec, F &&pred)
 }
 
 template <typename F>
-NanoObjectCollection Filter(const NanoObjectCollection &vec, F &&pred)
+NanoObjectCollection Filter(NanoObjectCollection &vec, F &&pred)
 {
     NanoObjectCollection _out;
     std::copy_if(vec.begin(), vec.end(), std::back_inserter(_out), pred);
@@ -195,8 +201,8 @@ NanoObjectCollection Take(const NanoObjectCollection &vec, const std::vector<int
     return _out;
 }
 
-template <class T>
-std::vector<T> GetFeature(NanoObjectCollection &collection, std::string &&feature_name)
+template <typename T>
+std::vector<T> GetFeature(NanoObjectCollection &collection, std::string feature_name)
 {
     std::vector<T> _buffer;
     for (auto &obj : collection)
@@ -206,7 +212,7 @@ std::vector<T> GetFeature(NanoObjectCollection &collection, std::string &&featur
     return _buffer;
 }
 
-template <class T>
+template <typename T>
 void SetFeature(NanoObjectCollection &collection, std::string &&feature_name, std::vector<T> feature_values)
 {
     for (unsigned int i = 0; i < feature_values.size(); i++)
@@ -233,7 +239,7 @@ NanoObject GetByIndex(NanoObjectCollection &collection, unsigned int _index)
     return NanoObject();
 }
 
-template <class T>
+template <typename T>
 auto Repr(const std::vector<T> &vec)
 {
     std::ostringstream _buff;
@@ -310,7 +316,7 @@ std::vector<float> E(NanoObjectCollection &collection)
     return _buffer;
 }
 
-template <class T>
+template <typename T>
 void _unroll_and_fill(std::vector<std::map<std::string, std::any>> &_features_buffer,
                       std::pair<const char *, std::vector<T>> &&features)
 {
@@ -321,7 +327,7 @@ void _unroll_and_fill(std::vector<std::map<std::string, std::any>> &_features_bu
 }
 
 // factory function (particle-like)
-template <class... Args>
+template <typename... Args>
 NanoObjectCollection make_collection(std::vector<float> &&pt, std::vector<float> &&eta, std::vector<float> &&phi,
                                      std::vector<float> &&mass,
                                      std::pair<const char *, std::vector<Args>> &&...features)
@@ -344,7 +350,7 @@ NanoObjectCollection make_collection(std::vector<float> &&pt, std::vector<float>
 }
 
 // mass as constant (value)
-template <class... Args>
+template <typename... Args>
 NanoObjectCollection make_collection(std::vector<float> &&pt, std::vector<float> &&eta, std::vector<float> &&phi,
                                      float mass, std::pair<const char *, Args> &&...features)
 {

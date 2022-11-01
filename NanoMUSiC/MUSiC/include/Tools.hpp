@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <exception>
 #include <map>
+#include <regex>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -208,6 +209,8 @@ auto index_range(const int &to)
 {
     return index_range<T>(0, to);
 }
+
+std::string parse_and_expand_music_base(std::string path);
 
 } // namespace Tools
 

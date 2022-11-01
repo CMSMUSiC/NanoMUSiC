@@ -104,5 +104,19 @@
   "C_Cpp.files.exclude": {
     "**/.vscode": true,
     "**/.vs": true
-  }
+  },
+  "vim.handleKeys": {
+    "<C-c>": false,
+    "<C-d>": false,
+    "<C-a>": false,
+    "<C-b>": false,
+    "<C-f>": false
+  },
+  "cSpell.words": [
+    "bjets",
+    "jsons",
+    "OBJECTCORRECTIONS",
+    "Prefiring"
+  ],
+  "cmake.configureOnOpen": false
 }

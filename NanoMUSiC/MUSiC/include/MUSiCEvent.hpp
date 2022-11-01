@@ -17,12 +17,14 @@
 // On: 28.10.2022
 // https://ericniebler.github.io/range-v3
 // https://github.com/ericniebler/range-v3
-#include <range/v3/numeric/accumulate.hpp>
-#include <range/v3/view/cartesian_product.hpp>
-// #include <range/v3/view/for_each.hpp>
-#include <range/v3/algorithm/for_each.hpp>
-#include <range/v3/view/iota.hpp>
-#include <range/v3/view/remove_if.hpp>
+// #include <range/v3/algorithm/for_each.hpp>
+// #include <range/v3/numeric/accumulate.hpp>
+// #include <range/v3/view/cartesian_product.hpp>
+// #include <range/v3/view/iota.hpp>
+// #include <range/v3/view/remove_if.hpp>
+// #include <range/v3/view/take.hpp>
+// #include <range/v3/view/transform.hpp>
+#include <range/v3/all.hpp>
 
 #include "NanoObjects.hpp"
 #include "Tools.hpp"
@@ -200,9 +202,21 @@ class EventContent : public TObject
         {
             // unpacking ...
             const auto [i_muons, i_electrons, i_photons, i_taus, i_bjets, i_jets, i_met] = multiplicity;
-            const auto [muons, _met] = *nanoaod_objects;
+            const auto [muons, electrons, photons, taus, bjets, jets, met_obj] = *nanoaod_objects;
 
-            sum_pt.emplace_back(10.);
+            auto selected_muons = muons | views::take(i_muons);
+            auto selected_electrons = electrons | views::take(i_electrons);
+            auto selected_photons = photons | views::take(i_photons);
+            // auto selected_taus = taus | views::take(i_taus);
+            auto selected_bjets = bjets | views::take(i_bjets);
+            auto selected_jets = jets | views::take(i_jets);
+            auto selected_met = views::single(met_obj) | views::take(i_met);
+
+            // FIX ME: add taus
+            sum_pt.emplace_back(ranges::accumulate(views::concat(selected_muons, selected_electrons, selected_photons,
+                                                                 selected_bjets, selected_jets, selected_met) |
+                                                       views::transform([](const auto _muon) { return _muon.pt(); }),
+                                                   0));
             mass.emplace_back(20.);
             met.emplace_back(30.);
             auto event_weight_buffer = EventWeight{};

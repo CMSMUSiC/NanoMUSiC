@@ -119,4 +119,7 @@ std::vector<std::string> Tools::getParticleTypeAbbreviations(bool isRec)
     return partList;
 }
 
-
+std::string Tools::parse_and_expand_music_base(std::string path)
+{
+    return std::regex_replace(path, std::regex("\\$MUSIC_BASE"), std::string(std::getenv("MUSIC_BASE")));
+}

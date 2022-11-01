@@ -103,6 +103,12 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    // read object configurations
+    const auto jets_config_file = Tools::AbsolutePath(run_config.get<std::string>("jets_config_file"));
+    const auto jets_config = TOMLConfig::make_toml_config(jets_config_file);
+    const auto jets_btag_algo = jets_config.get<std::string>("Jets.btag_algo");
+    const auto jets_btag_wp_tight = jets_config.get<float>("jets_btag_wp_tight");
+
     if (not std::filesystem::exists(analysis_config_file))
     {
         throw Tools::file_not_found(analysis_config_file, "Config file");
@@ -114,7 +120,8 @@ int main(int argc, char *argv[])
     config.setYear(year);
 
     // Get the run config file from main config file.
-    const auto golden_json_file = std::string(std::getenv("MUSIC_BASE")) + "/configs/golden_jsons/" + year + ".txt";
+    const auto golden_json_file =
+        Tools::parse_and_expand_music_base("$MUSIC_BASE/configs/golden_jsons/" + year + ".txt");
 
     if (is_data)
     {
@@ -315,12 +322,6 @@ int main(int argc, char *argv[])
 
                         PrintProcessInfo();
                     }
-
-                    // // PrintProcessInfo every 10_000 events
-                    // if (event_counter % 10000 == 0)
-                    // {
-                    //     PrintProcessInfo();
-                    // }
                 }
 
                 // stop if max number of events to be processed is reaced
@@ -383,7 +384,7 @@ int main(int argc, char *argv[])
                         return trigger_bits.as_uint();
                     }
                     throw std::runtime_error(
-                        "Year (" + year + ") not mathcing with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
+                        "Year (" + year + ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
 
                     // dummy return, to avoid compilation warnings
                     return trigger_bits.as_uint();
@@ -395,13 +396,72 @@ int main(int argc, char *argv[])
                     continue;
                 }
 
-                // load nanoaod objects + minimal dummy object filtering
+                //////////////////////////////////////////////////////////////
+                //////////////////////////////////////////////////////////////
+                // FIX ME: Implement the MET event filters
+                //////////////////////////////////////////////////////////////
+                //////////////////////////////////////////////////////////////
+
+                //////////////////////////////////////////////////////////////
+                //////////////////////////////////////////////////////////////
+                // FIX ME: Prefiring!!!
+                //////////////////////////////////////////////////////////////
+                //////////////////////////////////////////////////////////////
+
+                //////////////////////////////////////////////////////////////
+                //////////////////////////////////////////////////////////////
+                //////////////////////////////////////////////////////////////
+                // Load NanoObjects
+                //////////////////////////////////////////////////////////////
+                //////////////////////////////////////////////////////////////
+                //////////////////////////////////////////////////////////////
+
                 // Muons
                 auto muons = NanoObject::make_collection(
                     nano_reader.getVec<Float_t>("Muon_pt"), nano_reader.getVec<Float_t>("Muon_eta"),
-                    nano_reader.getVec<Float_t>("Muon_phi"), NanoObject::MUON_MASS,
+                    nano_reader.getVec<Float_t>("Muon_phi"), nano_reader.getVec<Float_t>("Muon_mass"),
                     std::make_pair("dxy", nano_reader.getVec<Float_t>("Muon_dxy")),
                     std::make_pair("charge", nano_reader.getVec<Int_t>("Muon_charge")));
+
+                // Electrons
+                auto electrons = NanoObject::make_collection(
+                    nano_reader.getVec<Float_t>("Electron_pt"), nano_reader.getVec<Float_t>("Electron_eta"),
+                    nano_reader.getVec<Float_t>("Electron_phi"), nano_reader.getVec<Float_t>("Electron_mass"));
+
+                // Photons
+                auto photons = NanoObject::make_collection(
+                    nano_reader.getVec<Float_t>("Photon_pt"), nano_reader.getVec<Float_t>("Photon_eta"),
+                    nano_reader.getVec<Float_t>("Photon_phi"), nano_reader.getVec<Float_t>("Photon_mass"));
+
+                // Taus
+                auto taus = NanoObject::make_collection(
+                    nano_reader.getVec<Float_t>("Tau_pt"), nano_reader.getVec<Float_t>("Tau_eta"),
+                    nano_reader.getVec<Float_t>("Tau_phi"), nano_reader.getVec<Float_t>("Tau_mass"));
+
+                // Jets
+                auto jets = NanoObject::make_collection(
+                    nano_reader.getVec<Float_t>("Jet_pt"), nano_reader.getVec<Float_t>("Jet_eta"),
+                    nano_reader.getVec<Float_t>("Jet_phi"), nano_reader.getVec<Float_t>("Jet_mass"),
+                    std::make_pair(jets_btag_algo.c_str(),
+                                   nano_reader.getVec<Float_t>(std::string("Jet_") + jets_btag_algo)));
+
+                // BJets (a subset of jets)
+                auto bjets = NanoObject::Filter(jets, [&](auto &jet) {
+                    if ((jet.template get<Float_t>(jets_btag_algo)) >= jets_btag_wp_tight)
+                    {
+                        return true;
+                    }
+                    return false;
+                });
+
+                // Jets again: one should remove bjets from jets
+                jets = NanoObject::Filter(jets, [&](auto &&jet) {
+                    if (!((jet.template get<Float_t>(jets_btag_algo)) >= jets_btag_wp_tight))
+                    {
+                        return true;
+                    }
+                    return false;
+                });
 
                 // MET
                 auto met = NanoObject::make_object(
@@ -409,9 +469,55 @@ int main(int argc, char *argv[])
                     std::make_pair("significance", nano_reader.getVal<Float_t>("MET_significance")),
                     std::make_pair("MetUnclustEnUpDeltaX", nano_reader.getVal<Float_t>("MET_MetUnclustEnUpDeltaX")));
 
-                // select objects
+                //////////////////////////////////////////////////////////////
+                //////////////////////////////////////////////////////////////
+                //////////////////////////////////////////////////////////////
+                // Modify and Filter Objects
+                //////////////////////////////////////////////////////////////
+                //////////////////////////////////////////////////////////////
+                //////////////////////////////////////////////////////////////
                 auto good_muons = NanoObject::Filter(muons, [](const auto &muon) {
-                    if (muon.pt() > 2.0)
+                    if (muon.pt() > 20.0)
+                    {
+                        return true;
+                    }
+                    return false;
+                });
+
+                auto good_electrons = NanoObject::Filter(electrons, [](const auto &electron) {
+                    if (electron.pt() > 20.0)
+                    {
+                        return true;
+                    }
+                    return false;
+                });
+
+                auto good_photons = NanoObject::Filter(photons, [](const auto &photon) {
+                    if (photon.pt() > 20.0)
+                    {
+                        return true;
+                    }
+                    return false;
+                });
+
+                auto good_taus = NanoObject::Filter(taus, [](const auto &tau) {
+                    if (tau.pt() > 20.0)
+                    {
+                        return true;
+                    }
+                    return false;
+                });
+
+                auto good_bjets = NanoObject::Filter(bjets, [](const auto &bjet) {
+                    if (bjet.pt() > 50.0)
+                    {
+                        return true;
+                    }
+                    return false;
+                });
+
+                auto good_jets = NanoObject::Filter(jets, [](const auto &jet) {
+                    if (jet.pt() > 50.0)
                     {
                         return true;
                     }
@@ -428,13 +534,13 @@ int main(int argc, char *argv[])
 
                 // will hold the number of classes
                 auto multiplicities =
-                    EventContent::get_multiplicities(good_muons.size(), /* total number of muons */
-                                                     0,                 /* total number of electrons */
-                                                     0,                 /* total number of photons */
-                                                     0,                 /* total number of taus */
-                                                     0,                 /* total number of bjets */
-                                                     0,                 /* total number of jets */
-                                                     static_cast<int>(met.get<bool>("good_met")) /* MET */);
+                    EventContent::get_multiplicities(good_muons.size(),     /* total number of good muons */
+                                                     good_electrons.size(), /* total number of good electrons */
+                                                     good_photons.size(),   /* total number of good photons */
+                                                     0,                     /* total number of good taus */
+                                                     good_bjets.size(),     /* total number of good bjets */
+                                                     good_jets.size(),      /* total number of good jets */
+                                                     static_cast<int>(met.get<bool>("good_met")) /* is good MET? */);
 
                 unsigned long n_classes = ranges::distance(multiplicities.begin(), multiplicities.end());
 
@@ -450,22 +556,24 @@ int main(int argc, char *argv[])
                 music_event.n_classes = n_classes;
 
                 // loop over variations, shifts and classes (aka multiplicities)
-                ranges::for_each(
-                    views::cartesian_product(range_variations, range_shifts), [&](const auto &variation_and_shift) {
-                        const auto [variation, shift] = variation_and_shift;
+                ranges::for_each(views::cartesian_product(range_variations, range_shifts),
+                                 [&](const auto &variation_and_shift) {
+                                     const auto [variation, shift] = variation_and_shift;
 
-                        // modify objects according to the given variation
-                        const auto varied_objects = apply_variation(variation, shift, is_data, good_muons, met);
+                                     // modify objects according to the given variation
+                                     const auto varied_objects =
+                                         apply_variation(variation, shift, is_data, good_muons, good_electrons,
+                                                         good_photons, good_taus, good_bjets, good_jets, met);
 
-                        // will hold event content for all classes
-                        auto content_buffer = EventContent{};
-                        ranges::for_each(multiplicities, [&](const auto &multiplicity) {
-                            content_buffer.fill(multiplicity, varied_objects);
-                        });
+                                     // will hold event content for all classes
+                                     auto content_buffer = EventContent{};
+                                     ranges::for_each(multiplicities, [&](const auto &multiplicity) {
+                                         content_buffer.fill(multiplicity, varied_objects);
+                                     });
 
-                        // save event content for this pair of variation + shift
-                        music_event.fill(variation, shift, std::move(content_buffer));
-                    });
+                                     // save event content for this pair of variation + shift
+                                     music_event.fill(variation, shift, std::move(content_buffer));
+                                 });
 
                 // save data into output tree
                 output_tree->Fill();

@@ -3,7 +3,7 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/NanoMUSiC/MUSiC/**",
+                "${workspaceFolder}/NanoMUSiC/MUSiC/*",
                 "${workspaceFolder}/NanoMUSiC/MUSiC/include/**"
                 // "/cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/include/**"
             ],
@@ -15,7 +15,9 @@
             "configurationProvider": "ms-vscode.makefile-tools",
             "browse": {
                 "path": [
-                    "${workspaceFolder}"
+                    "${workspaceFolder}/NanoMUSiC/MUSiC/**",
+                    "${workspaceFolder}/NanoMUSiC/MUSiC/include/**"
+                    // "${workspaceFolder}"
                     // "/cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/include/"
                 ],
                 "limitSymbolsToIncludedHeaders": true,

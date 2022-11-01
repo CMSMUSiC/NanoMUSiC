@@ -40,3 +40,5 @@ input_files = [
 #     'root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/100000/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
 #     'root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/230000/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
 # ]
+
+jets_config_file = '$MUSIC_BASE/configs/jets_2017.toml'

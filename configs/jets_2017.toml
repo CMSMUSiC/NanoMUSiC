@@ -1,0 +1,6 @@
+[Jets]
+# REF: https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL17#AK4_b_tagging
+# btag_algo = "btagDeepFlavB" # DeepCSV
+# btag_wp_tight = 0.7738
+btag_algo = "btagDeepFlavB" # DeepJet=DeepFlavour
+btag_wp_tight = 0.7476
