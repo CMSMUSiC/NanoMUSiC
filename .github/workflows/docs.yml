@@ -10,9 +10,15 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: DenverCoder1/doxygen-github-pages-action@v1.1.0
+      - name: Deploy
+        uses: mattnotmitt/doxygen-action@v1.9.4
+        with:
+          additional-packages: font-fira-code
+          working-directory: 'submodule/'
+          doxyfile-path: 'docs/Doxygen'
+          enable-latex: true
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: gh-pages
-          folder: docs/html
-          config_file: docs/Doxyfile
+          publish_dir: ./submodule
