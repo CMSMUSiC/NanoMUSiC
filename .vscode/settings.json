@@ -115,8 +115,10 @@
   "cSpell.words": [
     "bjets",
     "jsons",
+    "NANOOBJECTS",
     "OBJECTCORRECTIONS",
-    "Prefiring"
+    "Prefiring",
+    "Repr"
   ],
   "cmake.configureOnOpen": false,
   // "cmake.cmakePath": "/cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/bin/cmake",
