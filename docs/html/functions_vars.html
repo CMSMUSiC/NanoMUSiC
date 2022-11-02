@@ -1,0 +1,407 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    <meta name="generator" content="Doxygen 1.8.18" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- BEGIN opengraph metadata -->
+    <meta property="og:title" content="Doxygen Awesome" />
+    <meta property="og:image"
+        content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+    <meta property="og:description"
+        content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+    <meta property="og:url" content="https://jothepro.github.io/doxygen-awesome-css/" />
+    <!-- END opengraph metadata -->
+    <!-- BEGIN twitter metadata -->
+    <meta name="twitter:image:src"
+        content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+    <meta name="twitter:title" content="Doxygen Awesome" />
+    <meta name="twitter:description"
+        content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+    <!-- END twitter metadata -->
+    <title>NanoMUSiC: Class Members - Variables</title>
+    <link href="tabs.css" rel="stylesheet" type="text/css" />
+    <link rel="icon" type="image/svg+xml" href="logo.drawio.svg" />
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="dynsections.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+    <script type="text/javascript" src="toggle-alternative-theme.js"></script>
+    <script type="text/javascript">
+        DoxygenAwesomeFragmentCopyButton.init()
+        DoxygenAwesomeDarkModeToggle.init()
+        DoxygenAwesomeParagraphLink.init()
+        DoxygenAwesomeInteractiveToc.init()
+    </script>
+    <link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+    <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+    <link href="doxygen.css" rel="stylesheet" type="text/css" />
+    <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-alternative.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+    <!-- https://tholman.com/github-corners/ -->
+    <a href="https://github.com/cmsmusic/nanomusic" class="github-corner" title="View source on GitHub" target="_blank">
+        <svg viewBox="0 0 250 250" width="40" height="40"
+            style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+            <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+            <path
+                d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+                fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+            <path
+                d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+                fill="currentColor" class="octo-body"></path>
+        </svg></a>
+    <style>
+        .github-corner:hover .octo-arm {
+            animation: octocat-wave 560ms ease-in-out
+        }
+        @keyframes octocat-wave {
+            0%,
+            100% {
+                transform: rotate(0)
+            }
+            20%,
+            60% {
+                transform: rotate(-25deg)
+            }
+            40%,
+            80% {
+                transform: rotate(10deg)
+            }
+        }
+        @media (max-width:500px) {
+            .github-corner:hover .octo-arm {
+                animation: none
+            }
+            .github-corner .octo-arm {
+                animation: octocat-wave 560ms ease-in-out
+            }
+        }
+    </style>
+    <div id="top">
+        <!-- do not remove this div, it is closed by doxygen! -->
+        <div id="titlearea">
+            <table cellspacing="0" cellpadding="0">
+                <tbody>
+                    <tr style="height: 56px;">
+                        <td id="projectalign" style="padding-left: 0.5em;">
+                            <div id="projectname">NanoMUSiC
+                            </div>
+                            <div id="projectbrief">CMS MUSiC with NanoAOD</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- end header part --><!-- Generated by Doxygen 1.8.18 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'Search');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(document).ready(function(){initNavTree('functions_vars.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div class="contents">
+&#160;
+
+<h3><a id="index_c"></a>- c -</h3><ul>
+<li>correction_keys
+: <a class="el" href="classCorrector.html#a0d95755ab90ceebc5bc59623a7e9ceb5">Corrector</a>
+</li>
+<li>correction_ref
+: <a class="el" href="classCorrector.html#abb101b78ec99abc2ff6ce57a41bc9ae0">Corrector</a>
+</li>
+<li>correction_type
+: <a class="el" href="classCorrector.html#ab03d759230a761e21481d9acc29c84a9">Corrector</a>
+</li>
+</ul>
+
+
+<h3><a id="index_d"></a>- d -</h3><ul>
+<li>dummy_json
+: <a class="el" href="classRunLumiFilter.html#a036f1dfa3fcbcf0934fbfaabd80ac130">RunLumiFilter</a>
+</li>
+</ul>
+
+
+<h3><a id="index_e"></a>- e -</h3><ul>
+<li>event_class_hash
+: <a class="el" href="classEventContent.html#a525627e804cbe431090b187c532b320f">EventContent</a>
+</li>
+<li>event_content_down
+: <a class="el" href="classMUSiCEvent.html#a98b16ef45da2cf9a93885eac88284641">MUSiCEvent</a>
+</li>
+<li>event_content_nominal
+: <a class="el" href="classMUSiCEvent.html#a0587b6d2821dbcd8cc91c8410c7fd02f">MUSiCEvent</a>
+</li>
+<li>event_content_up
+: <a class="el" href="classMUSiCEvent.html#a6f6bd967836afa7d06ae858314fd0ec3">MUSiCEvent</a>
+</li>
+<li>event_number
+: <a class="el" href="classMUSiCEvent.html#ab474f07485f8dfc2489c8b7b4ff378b6">MUSiCEvent</a>
+</li>
+<li>event_weight
+: <a class="el" href="classEventContent.html#ad9520f2ea567f1728f8857edb9996f26">EventContent</a>
+</li>
+</ul>
+
+
+<h3><a id="index_f"></a>- f -</h3><ul>
+<li>fData
+: <a class="el" href="classNanoAODReader.html#a0b4f0ecb07da63858c2d34a2b5b67467">NanoAODReader</a>
+</li>
+<li>features
+: <a class="el" href="classNanoObject_1_1NanoObject.html#a7d38774621833592216de9004aec9cf8">NanoObject::NanoObject</a>
+</li>
+<li>fListOfBranches
+: <a class="el" href="classNanoAODReader.html#a09c8c9ed87fa9c4bb56ac0971b689b7e">NanoAODReader</a>
+</li>
+<li>fListOfLeaves
+: <a class="el" href="classNanoAODReader.html#aa39ba69a494ca4b4ff263ab08a757304">NanoAODReader</a>
+</li>
+<li>fReader
+: <a class="el" href="classNanoAODReader.html#a8a89e188660e88f0419ebb354bd32982">NanoAODReader</a>
+</li>
+<li>fType
+: <a class="el" href="classNanoAODReader.html#a94917b9304a236bf5befbc258ed78622">NanoAODReader</a>
+</li>
+</ul>
+
+
+<h3><a id="index_g"></a>- g -</h3><ul>
+<li>good_runs_lumis_json
+: <a class="el" href="classRunLumiFilter.html#a35ab7e861e15849274fb9ecf03195151">RunLumiFilter</a>
+</li>
+</ul>
+
+
+<h3><a id="index_i"></a>- i -</h3><ul>
+<li>isData
+: <a class="el" href="classCorrector.html#a7794af190442216b77ec4e6d2bc43523">Corrector</a>
+</li>
+</ul>
+
+
+<h3><a id="index_l"></a>- l -</h3><ul>
+<li>lumi_section
+: <a class="el" href="classMUSiCEvent.html#ad9cf8d5799bf9f42f90e7ea78de9f4a7">MUSiCEvent</a>
+</li>
+</ul>
+
+
+<h3><a id="index_m"></a>- m -</h3><ul>
+<li>m_commentChar
+: <a class="el" href="classTools_1_1MConfig.html#abdb3b25393018a16d683d2f88e29ce16">Tools::MConfig</a>
+</li>
+<li>m_configBasePath
+: <a class="el" href="classTools_1_1MConfig.html#a526f8667b164c82ebaeccdc3026605f8">Tools::MConfig</a>
+</li>
+<li>m_configFileName
+: <a class="el" href="classTools_1_1MConfig.html#a0b973d9502366909458f7e4498018cba">Tools::MConfig</a>
+</li>
+<li>m_configFilePath
+: <a class="el" href="classTools_1_1MConfig.html#ab1c36a8276e96e4345bb5b17cdf71aa6">Tools::MConfig</a>
+</li>
+<li>m_configInit
+: <a class="el" href="classTools_1_1MConfig.html#ae9ebde8b63838942b873c2ee40b550ab">Tools::MConfig</a>
+</li>
+<li>m_configMap
+: <a class="el" href="classTools_1_1MConfig.html#a30f878a6825163670c5f696e6ba081e6">Tools::MConfig</a>
+</li>
+<li>m_delimiterChar
+: <a class="el" href="classTools_1_1MConfig.html#a3f21f077c97bd71b35902f1340dcd2c5">Tools::MConfig</a>
+</li>
+<li>m_filename
+: <a class="el" href="classTools_1_1file__not__found.html#af5467ad44a0c6247569aed65941f70bd">Tools::file_not_found</a>
+</li>
+<li>m_filetype
+: <a class="el" href="classTools_1_1file__not__found.html#a461c01ad5ca6eba1346f222862c5987a">Tools::file_not_found</a>
+</li>
+<li>m_importIdentifier
+: <a class="el" href="classTools_1_1MConfig.html#ad1ce5a9c779364eb1a96823c6d72dfd9">Tools::MConfig</a>
+</li>
+<li>m_modifiedImportIdentifier1
+: <a class="el" href="classTools_1_1MConfig.html#a128c636c930334b34fd619b0c6893fc3">Tools::MConfig</a>
+</li>
+<li>m_modifiedImportIdentifier2
+: <a class="el" href="classTools_1_1MConfig.html#aa0be689352be5b84368d1038cd81ef89">Tools::MConfig</a>
+</li>
+<li>m_quoteChar
+: <a class="el" href="classTools_1_1MConfig.html#ad49838b7f273574391dd2ad92e81e500">Tools::MConfig</a>
+</li>
+<li>m_warnOverwrite
+: <a class="el" href="classTools_1_1MConfig.html#a57b2f33a859f79167bedf1af3f285f54">Tools::MConfig</a>
+</li>
+<li>m_writeFile
+: <a class="el" href="classTools_1_1MConfig.html#a46be9534678b83b12d44155d6eb3c186">Tools::MConfig</a>
+</li>
+<li>m_writeFileName
+: <a class="el" href="classTools_1_1MConfig.html#a53483afdaad016fb780c7e52117673c0">Tools::MConfig</a>
+</li>
+<li>m_writePath
+: <a class="el" href="classTools_1_1MConfig.html#a6d98b218ba97efc23bdd31f13fb12c1b">Tools::MConfig</a>
+</li>
+<li>mass
+: <a class="el" href="classEventContent.html#a48b32bada843c0bad87b69c58651b692">EventContent</a>
+</li>
+<li>met
+: <a class="el" href="classEventContent.html#a7adc6990558e25fb98ca7f0752e23042">EventContent</a>
+</li>
+</ul>
+
+
+<h3><a id="index_n"></a>- n -</h3><ul>
+<li>n_bjets
+: <a class="el" href="classMUSiCEvent.html#a82c878a15056b543f9ab58dea97b7ab8">MUSiCEvent</a>
+</li>
+<li>n_classes
+: <a class="el" href="classMUSiCEvent.html#ae9d46ab6eae76d8a997a22da7cb617fd">MUSiCEvent</a>
+</li>
+<li>n_electrons
+: <a class="el" href="classMUSiCEvent.html#ade44813d5108ab57da7daa6a4332f0c9">MUSiCEvent</a>
+</li>
+<li>n_jets
+: <a class="el" href="classMUSiCEvent.html#a7dd34291595d05e70b935a737df8f0a0">MUSiCEvent</a>
+</li>
+<li>n_met
+: <a class="el" href="classMUSiCEvent.html#a5e371258e2da3f40ded2bf60b363d3d2">MUSiCEvent</a>
+</li>
+<li>n_muons
+: <a class="el" href="classMUSiCEvent.html#ab10698e6756ee2767d0559cc2891d0a1">MUSiCEvent</a>
+</li>
+<li>n_photons
+: <a class="el" href="classMUSiCEvent.html#aec594afcdc2cce14bfdf39bb2b30a250">MUSiCEvent</a>
+</li>
+<li>n_taus
+: <a class="el" href="classMUSiCEvent.html#a46dd890f6e640a0663686453a4c35f4a">MUSiCEvent</a>
+</li>
+</ul>
+
+
+<h3><a id="index_p"></a>- p -</h3><ul>
+<li>p4
+: <a class="el" href="classNanoObject_1_1NanoObject.html#aa94e14eed4d2651427cc0df8d38c8829">NanoObject::NanoObject</a>
+</li>
+</ul>
+
+
+<h3><a id="index_r"></a>- r -</h3><ul>
+<li>run
+: <a class="el" href="classMUSiCEvent.html#a33d71050933ec7230ee012b80360ac5e">MUSiCEvent</a>
+</li>
+</ul>
+
+
+<h3><a id="index_s"></a>- s -</h3><ul>
+<li>SIZE
+: <a class="el" href="structTriggerBits.html#afb490579667b250d56bf7336d798d10a">TriggerBits</a>
+</li>
+<li>sum_pt
+: <a class="el" href="classEventContent.html#a0cd15d2380d53d8e69f615aa0d5de8fa">EventContent</a>
+</li>
+</ul>
+
+
+<h3><a id="index_t"></a>- t -</h3><ul>
+<li>toml_config
+: <a class="el" href="classTOMLConfig.html#a4b76c4aad10d65c4bfebc8324e22f217">TOMLConfig</a>
+</li>
+<li>toml_config_file
+: <a class="el" href="classTOMLConfig.html#a79359a822b2d0d8f6eb3a1d1f2be9a52">TOMLConfig</a>
+</li>
+<li>trigger_bits
+: <a class="el" href="classMUSiCEvent.html#aae9f2539ea2047528034e28595bd8d0b">MUSiCEvent</a>
+, <a class="el" href="structTriggerBits.html#a4d46f2f04c9ff72cae66676c955517a4">TriggerBits</a>
+</li>
+</ul>
+
+
+<h3><a id="index_w"></a>- w -</h3><ul>
+<li>weights_down
+: <a class="el" href="classEventWeight.html#aed71c578ff544a7dbdeca36a3f73819d">EventWeight</a>
+</li>
+<li>weights_nominal
+: <a class="el" href="classEventWeight.html#adab29eb0edc3863b739e549a0a08d3a0">EventWeight</a>
+</li>
+<li>weights_up
+: <a class="el" href="classEventWeight.html#ad8853114ba832230b937e9289c45c457">EventWeight</a>
+</li>
+</ul>
+
+
+<h3><a id="index_y"></a>- y -</h3><ul>
+<li>year
+: <a class="el" href="classCorrector.html#a2f640db0e9e5c08b0b1dbf5a213a13c9">Corrector</a>
+</li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Generated by
+    <a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.18 </li>
+  </ul>
+</div>
+</body>
+</html>

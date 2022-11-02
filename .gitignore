@@ -1,5 +1,4 @@
 ##### CUSTOM #####
-docs/html
 docs_BKP/
 *CMSSW_*
 *.c
@@ -14,7 +13,7 @@ nano.root
 .vscode/browse.vc.db-shm
 .vscode/browse.vc.db-wal
 test_mc_2017/
-
+docs/foo
 ##### PYTHON #####
 
 # Byte-compiled / optimized / DLL files

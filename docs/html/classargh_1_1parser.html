@@ -1,0 +1,252 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    <meta name="generator" content="Doxygen 1.8.18" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- BEGIN opengraph metadata -->
+    <meta property="og:title" content="Doxygen Awesome" />
+    <meta property="og:image"
+        content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+    <meta property="og:description"
+        content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+    <meta property="og:url" content="https://jothepro.github.io/doxygen-awesome-css/" />
+    <!-- END opengraph metadata -->
+    <!-- BEGIN twitter metadata -->
+    <meta name="twitter:image:src"
+        content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+    <meta name="twitter:title" content="Doxygen Awesome" />
+    <meta name="twitter:description"
+        content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+    <!-- END twitter metadata -->
+    <title>NanoMUSiC: argh::parser Class Reference</title>
+    <link href="tabs.css" rel="stylesheet" type="text/css" />
+    <link rel="icon" type="image/svg+xml" href="logo.drawio.svg" />
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="dynsections.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+    <script type="text/javascript" src="toggle-alternative-theme.js"></script>
+    <script type="text/javascript">
+        DoxygenAwesomeFragmentCopyButton.init()
+        DoxygenAwesomeDarkModeToggle.init()
+        DoxygenAwesomeParagraphLink.init()
+        DoxygenAwesomeInteractiveToc.init()
+    </script>
+    <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+    <link href="doxygen.css" rel="stylesheet" type="text/css" />
+    <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-alternative.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+    <!-- https://tholman.com/github-corners/ -->
+    <a href="https://github.com/cmsmusic/nanomusic" class="github-corner" title="View source on GitHub" target="_blank">
+        <svg viewBox="0 0 250 250" width="40" height="40"
+            style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+            <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+            <path
+                d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+                fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+            <path
+                d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+                fill="currentColor" class="octo-body"></path>
+        </svg></a>
+    <style>
+        .github-corner:hover .octo-arm {
+            animation: octocat-wave 560ms ease-in-out
+        }
+        @keyframes octocat-wave {
+            0%,
+            100% {
+                transform: rotate(0)
+            }
+            20%,
+            60% {
+                transform: rotate(-25deg)
+            }
+            40%,
+            80% {
+                transform: rotate(10deg)
+            }
+        }
+        @media (max-width:500px) {
+            .github-corner:hover .octo-arm {
+                animation: none
+            }
+            .github-corner .octo-arm {
+                animation: octocat-wave 560ms ease-in-out
+            }
+        }
+    </style>
+    <div id="top">
+        <!-- do not remove this div, it is closed by doxygen! -->
+        <div id="titlearea">
+            <table cellspacing="0" cellpadding="0">
+                <tbody>
+                    <tr style="height: 56px;">
+                        <td id="projectalign" style="padding-left: 0.5em;">
+                            <div id="projectname">NanoMUSiC
+                            </div>
+                            <div id="projectbrief">CMS MUSiC for NanoAOD</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- end header part --><!-- Generated by Doxygen 1.8.18 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'Search');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><b>argh</b></li><li class="navelem"><a class="el" href="classargh_1_1parser.html">parser</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="classargh_1_1parser-members.html">List of all members</a>  </div>
+  <div class="headertitle">
+<div class="title">argh::parser Class Reference</div>  </div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:acc6289a512d0dbdcaa506de33c8ff56a"><td class="memItemLeft" align="right" valign="top"><a id="acc6289a512d0dbdcaa506de33c8ff56a"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>Mode</b> { <b>PREFER_FLAG_FOR_UNREG_OPTION</b> = 1 &lt;&lt; 0, 
+<b>PREFER_PARAM_FOR_UNREG_OPTION</b> = 1 &lt;&lt; 1, 
+<b>NO_SPLIT_ON_EQUALSIGN</b> = 1 &lt;&lt; 2, 
+<b>SINGLE_DASH_IS_MULTIFLAG</b> = 1 &lt;&lt; 3
+ }</td></tr>
+<tr class="separator:acc6289a512d0dbdcaa506de33c8ff56a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:ae0b1c02f35e0d3dd2df4a4d5ccd3355e"><td class="memItemLeft" align="right" valign="top"><a id="ae0b1c02f35e0d3dd2df4a4d5ccd3355e"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>parser</b> (std::initializer_list&lt; char const *const &gt; pre_reg_names)</td></tr>
+<tr class="separator:ae0b1c02f35e0d3dd2df4a4d5ccd3355e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a942f5428ea3f50b8b31623d3bf23f0b0"><td class="memItemLeft" align="right" valign="top"><a id="a942f5428ea3f50b8b31623d3bf23f0b0"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>parser</b> (const char *const argv[], int mode=PREFER_FLAG_FOR_UNREG_OPTION)</td></tr>
+<tr class="separator:a942f5428ea3f50b8b31623d3bf23f0b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1a21b3bc25f1d768fc5ccb3dec9eed1"><td class="memItemLeft" align="right" valign="top"><a id="ad1a21b3bc25f1d768fc5ccb3dec9eed1"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>parser</b> (int argc, const char *const argv[], int mode=PREFER_FLAG_FOR_UNREG_OPTION)</td></tr>
+<tr class="separator:ad1a21b3bc25f1d768fc5ccb3dec9eed1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a185253f8610973b3863dd626084f6a52"><td class="memItemLeft" align="right" valign="top"><a id="a185253f8610973b3863dd626084f6a52"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>add_param</b> (std::string const &amp;name)</td></tr>
+<tr class="separator:a185253f8610973b3863dd626084f6a52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16efc9b4d30af2f5aad94112b44e0507"><td class="memItemLeft" align="right" valign="top"><a id="a16efc9b4d30af2f5aad94112b44e0507"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>add_params</b> (std::initializer_list&lt; char const *const &gt; init_list)</td></tr>
+<tr class="separator:a16efc9b4d30af2f5aad94112b44e0507"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a345898bc0ba4918cf77e5ab9bf0ab81e"><td class="memItemLeft" align="right" valign="top"><a id="a345898bc0ba4918cf77e5ab9bf0ab81e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>parse</b> (const char *const argv[], int mode=PREFER_FLAG_FOR_UNREG_OPTION)</td></tr>
+<tr class="separator:a345898bc0ba4918cf77e5ab9bf0ab81e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cf305240aab344a2bac1c1793264242"><td class="memItemLeft" align="right" valign="top"><a id="a3cf305240aab344a2bac1c1793264242"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>parse</b> (int argc, const char *const argv[], int mode=PREFER_FLAG_FOR_UNREG_OPTION)</td></tr>
+<tr class="separator:a3cf305240aab344a2bac1c1793264242"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2df6a719fd3ebab81f53430ed73064d3"><td class="memItemLeft" align="right" valign="top"><a id="a2df6a719fd3ebab81f53430ed73064d3"></a>
+std::multiset&lt; std::string &gt; const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>flags</b> () const</td></tr>
+<tr class="separator:a2df6a719fd3ebab81f53430ed73064d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca432362e914b3e80c81b61784b085fc"><td class="memItemLeft" align="right" valign="top"><a id="aca432362e914b3e80c81b61784b085fc"></a>
+std::multimap&lt; std::string, std::string &gt; const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>params</b> () const</td></tr>
+<tr class="separator:aca432362e914b3e80c81b61784b085fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24e7272f79db608b2e16373d685bf6a0"><td class="memItemLeft" align="right" valign="top"><a id="a24e7272f79db608b2e16373d685bf6a0"></a>
+<a class="el" href="classargh_1_1multimap__iteration__wrapper.html">multimap_iteration_wrapper</a>&#160;</td><td class="memItemRight" valign="bottom"><b>params</b> (std::string const &amp;name) const</td></tr>
+<tr class="separator:a24e7272f79db608b2e16373d685bf6a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bda2affd73ce7f258bb1c4276254731"><td class="memItemLeft" align="right" valign="top"><a id="a2bda2affd73ce7f258bb1c4276254731"></a>
+std::vector&lt; std::string &gt; const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>pos_args</b> () const</td></tr>
+<tr class="separator:a2bda2affd73ce7f258bb1c4276254731"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3398b50b142a74a7d9fecce3fa03e8c4"><td class="memItemLeft" align="right" valign="top"><a id="a3398b50b142a74a7d9fecce3fa03e8c4"></a>
+std::vector&lt; std::string &gt;::const_iterator&#160;</td><td class="memItemRight" valign="bottom"><b>begin</b> () const</td></tr>
+<tr class="separator:a3398b50b142a74a7d9fecce3fa03e8c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e1e6e260af6604bd5b1e2eda5d8dbd5"><td class="memItemLeft" align="right" valign="top"><a id="a0e1e6e260af6604bd5b1e2eda5d8dbd5"></a>
+std::vector&lt; std::string &gt;::const_iterator&#160;</td><td class="memItemRight" valign="bottom"><b>end</b> () const</td></tr>
+<tr class="separator:a0e1e6e260af6604bd5b1e2eda5d8dbd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9ced5cbf77cc5a26c8bd8cf6a02f1b6"><td class="memItemLeft" align="right" valign="top"><a id="ae9ced5cbf77cc5a26c8bd8cf6a02f1b6"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>size</b> () const</td></tr>
+<tr class="separator:ae9ced5cbf77cc5a26c8bd8cf6a02f1b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41c1b91868c7de782f13a27ee216a206"><td class="memItemLeft" align="right" valign="top"><a id="a41c1b91868c7de782f13a27ee216a206"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (std::string const &amp;name) const</td></tr>
+<tr class="separator:a41c1b91868c7de782f13a27ee216a206"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfd197e443e56e197ba43a57bae72320"><td class="memItemLeft" align="right" valign="top"><a id="acfd197e443e56e197ba43a57bae72320"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (std::initializer_list&lt; char const *const &gt; init_list) const</td></tr>
+<tr class="separator:acfd197e443e56e197ba43a57bae72320"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23ca8dd57a9a9f3e5184a7ddcf286c92"><td class="memItemLeft" align="right" valign="top"><a id="a23ca8dd57a9a9f3e5184a7ddcf286c92"></a>
+std::string const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (size_t ind) const</td></tr>
+<tr class="separator:a23ca8dd57a9a9f3e5184a7ddcf286c92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5a1c702884a59092b25c40d1b7f0fe8"><td class="memItemLeft" align="right" valign="top"><a id="af5a1c702884a59092b25c40d1b7f0fe8"></a>
+string_stream&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (size_t ind) const</td></tr>
+<tr class="separator:af5a1c702884a59092b25c40d1b7f0fe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23aabd5949cd4ad7a3eb7d6d0a163f33"><td class="memTemplParams" colspan="2"><a id="a23aabd5949cd4ad7a3eb7d6d0a163f33"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a23aabd5949cd4ad7a3eb7d6d0a163f33"><td class="memTemplItemLeft" align="right" valign="top">string_stream&#160;</td><td class="memTemplItemRight" valign="bottom"><b>operator()</b> (size_t ind, <a class="el" href="structT.html">T</a> &amp;&amp;def_val) const</td></tr>
+<tr class="separator:a23aabd5949cd4ad7a3eb7d6d0a163f33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c017cffab306797bd31e7bf23aa930b"><td class="memItemLeft" align="right" valign="top"><a id="a6c017cffab306797bd31e7bf23aa930b"></a>
+string_stream&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (std::string const &amp;name) const</td></tr>
+<tr class="separator:a6c017cffab306797bd31e7bf23aa930b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba0e78217ff6b3a812147261399b5bf4"><td class="memItemLeft" align="right" valign="top"><a id="aba0e78217ff6b3a812147261399b5bf4"></a>
+string_stream&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (std::initializer_list&lt; char const *const &gt; init_list) const</td></tr>
+<tr class="separator:aba0e78217ff6b3a812147261399b5bf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad9fd1bf10ceb8550d59e4e12a5a41a0"><td class="memTemplParams" colspan="2"><a id="aad9fd1bf10ceb8550d59e4e12a5a41a0"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:aad9fd1bf10ceb8550d59e4e12a5a41a0"><td class="memTemplItemLeft" align="right" valign="top">string_stream&#160;</td><td class="memTemplItemRight" valign="bottom"><b>operator()</b> (std::string const &amp;name, <a class="el" href="structT.html">T</a> &amp;&amp;def_val) const</td></tr>
+<tr class="separator:aad9fd1bf10ceb8550d59e4e12a5a41a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f6e1a6cde61908d764260485c34d9db"><td class="memTemplParams" colspan="2"><a id="a7f6e1a6cde61908d764260485c34d9db"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a7f6e1a6cde61908d764260485c34d9db"><td class="memTemplItemLeft" align="right" valign="top">string_stream&#160;</td><td class="memTemplItemRight" valign="bottom"><b>operator()</b> (std::initializer_list&lt; char const *const &gt; init_list, <a class="el" href="structT.html">T</a> &amp;&amp;def_val) const</td></tr>
+<tr class="separator:a7f6e1a6cde61908d764260485c34d9db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<hr/>The documentation for this class was generated from the following file:<ul>
+<li>/.automount/home/home__home1/institut_3a/silva/NanoMUSiC/NanoMUSiC/MUSiC/external/<a class="el" href="argh_8h_source.html">argh.h</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.8.18
+</small></address>
+</body>
+</html>

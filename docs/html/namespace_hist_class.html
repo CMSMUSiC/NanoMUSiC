@@ -1,0 +1,2532 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8"/>
+  <title>HistClass namespace | NanoMUSiC MUSiC analysis code, for NanoAOD samples</title>
+  <link href="favicon-dark.png" rel="icon" type="image/png"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <meta content="#22272e" name="theme-color"/>
+  <link href="poxy.css" referrerpolicy="no-referrer" rel="stylesheet"/>
+  <script src="poxy.js"></script>
+  <script>initialize_theme("dark");</script>
+  <meta content="NanoMUSiC" name="twitter:title"/>
+  <meta content="NanoMUSiC" property="og:title"/>
+  <meta content="NanoMUSiC" itemprop="name"/>
+  <meta content="MUSiC Team @ RWTH Aachen 3A" name="author"/>
+  <meta content="MUSiC Team @ RWTH Aachen 3A" property="article:author"/>
+  <meta content="MUSiC analysis code, for NanoAOD samples" name="description"/>
+  <meta content="MUSiC analysis code, for NanoAOD samples" name="twitter:description"/>
+  <meta content="MUSiC analysis code, for NanoAOD samples" property="og:description"/>
+  <meta content="MUSiC analysis code, for NanoAOD samples" itemprop="description"/>
+  <meta content="telephone=no" name="format-detection"/>
+  <meta content="Poxy v0.7.1" name="generator"/>
+  <meta content="strict-origin-when-cross-origin" name="referrer"/>
+  <style>div.poxy-main-banner { padding: 2rem; }</style>
+</head>
+<body>
+<header><nav id="navigation">
+  <div class="m-container">
+    <div class="m-row">
+      <a class="m-col-t-8 m-col-m-none m-left-m" href="index.html" id="m-navbar-brand">NanoMUSiC <span class="m-thin">MUSiC analysis code, for NanoAOD samples</span></a>
+      <div class="m-col-t-4 m-hide-m m-text-right m-nopadr">
+        <a class="m-doc-search-icon" href="#search" onclick="return showSearch()" title="Search"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+          <path d="m6 0c-3.31 0-6 2.69-6 6 0 3.31 2.69 6 6 6 1.49 0 2.85-0.541 3.89-1.44-0.0164 0.338 0.147 0.759 0.5 1.15l3.22 3.79c0.552 0.614 1.45 0.665 2 0.115 0.55-0.55 0.499-1.45-0.115-2l-3.79-3.22c-0.392-0.353-0.812-0.515-1.15-0.5 0.895-1.05 1.44-2.41 1.44-3.89 0-3.31-2.69-6-6-6zm0 1.56a4.44 4.44 0 0 1 4.44 4.44 4.44 4.44 0 0 1-4.44 4.44 4.44 4.44 0 0 1-4.44-4.44 4.44 4.44 0 0 1 4.44-4.44z" id="m-doc-search-icon-path"></path>
+        </svg></a>
+        <a href="#navigation" id="m-navbar-show" title="Show navigation"></a>
+        <a href="#" id="m-navbar-hide" title="Hide navigation"></a>
+      </div>
+      <div class="m-col-t-12 m-show-m m-col-m-none m-right-m" id="m-navbar-collapse">
+        <div class="m-row">
+          <ol class="m-col-t-6 m-col-m-none">
+            <li><a href="pages.html">Pages</a></li>
+            <li><a href="annotated.html">Classes</a></li>
+            <li><a href="files.html">Files</a></li>
+          </ol>
+          <ol class="m-col-t-6 m-col-m-none" start="4">
+            <li><a class="poxy-icon github poxy-external" href="https://github.com/CMSMUSiC/NanoMUSiC/" target="_blank"><svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+	<path d="M25,1.23a24.37,24.37,0,0,0-7.7,47.5C18.51,49,19,48.2,19,47.56s0-2.12,0-4.15c-6.78,1.47-8.21-3.27-8.21-3.27C9.61,37.33,8,36.58,8,36.58c-2.21-1.51.17-1.48.17-1.48a5.12,5.12,0,0,1,3.73,2.51c2.17,3.72,5.7,2.65,7.09,2a5.25,5.25,0,0,1,1.55-3.26c-5.41-.61-11.1-2.7-11.1-12A9.41,9.41,0,0,1,12,17.79a8.75,8.75,0,0,1,.24-6.45s2-.66,6.7,2.49a23.1,23.1,0,0,1,12.2,0c4.66-3.15,6.7-2.49,6.7-2.49A8.75,8.75,0,0,1,38,17.79a9.41,9.41,0,0,1,2.51,6.54c0,9.36-5.7,11.42-11.13,12a5.83,5.83,0,0,1,1.65,4.51c0,3.26,0,5.89,0,6.69,0,.65.44,1.41,1.68,1.17A24.38,24.38,0,0,0,25,1.23Z" fill="currentColor"></path>
+</svg>
+</a></li>
+            <li><a class="poxy-icon theme" href="#poxy-theme-switch" id="poxy-theme-switch" onclick="toggle_theme();"><svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+	<circle cx="185.6708" cy="183.8122" fill="currentColor" r="65.625"></circle>
+	<path d="M185.6708,87.5622a13.1256,13.1256,0,0,0,13.125-13.125V52.5622a13.125,13.125,0,1,0-26.25,0v21.875A13.1257,13.1257,0,0,0,185.6708,87.5622Z" fill="currentColor"></path>
+	<path d="M99.051,115.7519a13.1236,13.1236,0,1,0,18.56-18.56L102.1442,81.726a13.1236,13.1236,0,0,0-18.5595,18.56Z" fill="currentColor"></path>
+	<path d="M89.4208,183.8122a13.1257,13.1257,0,0,0-13.125-13.125H54.4208a13.125,13.125,0,0,0,0,26.25h21.875A13.1256,13.1256,0,0,0,89.4208,183.8122Z" fill="currentColor"></path>
+	<path d="M99.051,251.8725,83.5847,267.3431a13.1236,13.1236,0,1,0,18.56,18.56l15.4663-15.4706a13.1236,13.1236,0,1,0-18.5595-18.56Z" fill="currentColor"></path>
+	<path d="M185.6708,280.0622a13.1258,13.1258,0,0,0-13.125,13.125v21.875a13.125,13.125,0,0,0,26.25,0v-21.875A13.1257,13.1257,0,0,0,185.6708,280.0622Z" fill="currentColor"></path>
+	<path d="M272.2907,251.8725a13.1236,13.1236,0,1,0-18.56,18.56l15.4663,15.4706a13.1236,13.1236,0,1,0,18.56-18.56Z" fill="currentColor"></path>
+	<path d="M330.0458,183.8122a13.1257,13.1257,0,0,0-13.125-13.125h-21.875a13.125,13.125,0,0,0,0,26.25h21.875A13.1256,13.1256,0,0,0,330.0458,183.8122Z" fill="currentColor"></path>
+	<path d="M263.0109,119.5971a13.0824,13.0824,0,0,0,9.28-3.8452l15.4663-15.4663a13.1236,13.1236,0,1,0-18.56-18.56L253.7312,97.1923a13.125,13.125,0,0,0,9.28,22.4048Z" fill="currentColor"></path>
+	<path d="M456.9379,401.6714a63.97,63.97,0,0,1-14.9963,7.2055c-19.6448,6.5283-41.8787,2.9566-58.1439-9.8523a68.9311,68.9311,0,0,1-10.835-10.8339c-12.8088-16.2663-16.3806-38.5-9.8523-58.1471a63.8444,63.8444,0,0,1,7.2077-14.9931,8.8036,8.8036,0,0,0-10.1172-13.3034,87.5188,87.5188,0,1,0,110.0372,110.04A8.8,8.8,0,0,0,456.9379,401.6714Z" fill="currentColor"></path>
+</svg>
+</a></li>
+            <li class="m-show-m"><a class="m-doc-search-icon" href="#search" onclick="return showSearch()" title="Search"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+              <use href="#m-doc-search-icon-path"></use>
+            </svg></a></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav></header>
+<main><article>
+  <div class="m-container m-container-inflatable">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        <h1>
+          HistClass <span class="m-thin">namespace</span>
+        </h1>
+        <p>Functions to have easy histogram handling.</p>
+        <nav class="m-block m-default poxy-toc">
+          <h3>Contents</h3>
+          <ul>
+            <li>
+              Reference
+              <ul>
+                <li><a href="#func-members">Functions</a></li>
+                <li><a href="#var-members">Variables</a></li>
+              </ul>
+            </li>
+          </ul>
+        </nav>
+<p>In this namespace different functions to interact with the histogram map are included, to create, fill and write histograms in a convinient way.</p>
+        <section id="func-members">
+          <h2><a href="#func-members">Functions</a></h2>
+          <dl class="m-doc">
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#ae0299ef577b40a223a94bf5f1dbd61eb">AddBranch</a>(</span><span class="m-doc-wrap"><a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a> branch,
+              float content,
+              const char* name)</span>
+            </dt>
+            <dd>Function to add a branch to one Tree in the TTree map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a3d428c20b002eb63ac7ad1a53ab96a88">AddBranch</a>(</span><span class="m-doc-wrap"><a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a> branch,
+              Int_t content,
+              const char* name)</span>
+            </dt>
+            <dd>Function to add a branch to one Tree in the TTree map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#ad445fd80470b09ed4263d5ff61cf757a">AddBranch</a>(</span><span class="m-doc-wrap"><a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a> branch,
+              Long64_t content,
+              const char* name)</span>
+            </dt>
+            <dd>Function to add a branch to one Tree in the TTree map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#af1bba014c9ce9f98a00a7d34ac5e7de9">AddBranch</a>(</span><span class="m-doc-wrap"><a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a> branch,
+              UInt_t content,
+              const char* name)</span>
+            </dt>
+            <dd>Function to add a branch to one Tree in the TTree map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#ab0df0e6cab3a230bd414c0ad8d4d2a54">AddBranch</a>(</span><span class="m-doc-wrap"><a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a> branch,
+              ULong64_t content,
+              const char* name)</span>
+            </dt>
+            <dd>Function to add a branch to one Tree in the TTree map.</dd>
+            <dt id="a804f08b267b0b0d4adaee6bb1c79dc0c">
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc-self" href="#a804f08b267b0b0d4adaee6bb1c79dc0c">CleanUp</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd>Function to clean up the memory usage of the <a class="m-doc" href="namespace_hist_class.html">HistClass</a>.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a232555f89d8e8b63e5b45153ef9c5332">CreateEff</a>(</span><span class="m-doc-wrap">const char* name,
+              Int_t nbinsx,
+              Double_t* xbins,
+              const char* xtitle = "")</span>
+            </dt>
+            <dd>Function to create one 1D Efficiency container in the eff map with variable binning.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a341e10447b703002433ffa8affb2c986">CreateEff</a>(</span><span class="m-doc-wrap">const char* name,
+              Int_t nbinsx,
+              Double_t xlow,
+              Double_t xup,
+              const char* xtitle = "",
+              bool weighted = false)</span>
+            </dt>
+            <dd>Function to create one 1D Efficiency container in the eff map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a0931ed95b5d319d41df03096cc842ff1">CreateEff</a>(</span><span class="m-doc-wrap">const char* name,
+              TH1D* hist_all,
+              TH1D* hist_pass,
+              bool weighted = false)</span>
+            </dt>
+            <dd>Function to create one 1D Efficiency container in the eff map from two histograms.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#ad836c71d7d0287d177a48b29bddb5980">CreateEff</a>(</span><span class="m-doc-wrap">const char* name,
+              Int_t nbinsx,
+              Double_t xlow,
+              Double_t xup,
+              Int_t nbinsy,
+              Double_t ylow,
+              Double_t yup,
+              const char* xtitle = "",
+              const char* ytitle = "")</span>
+            </dt>
+            <dd>Function to create one 2D Efficiency container in the eff map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a49091691323810629fb920854450cc1f">CreateHisto</a>(</span><span class="m-doc-wrap">Int_t n_histos,
+              const char* name,
+              Int_t nbinsx,
+              Double_t xlow,
+              Double_t xup,
+              TString xtitle = "")</span>
+            </dt>
+            <dd>Function to create a number of 1D histograms in the histo map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a152d88a7a2064fb82b2ff646786bdd52">CreateHisto</a>(</span><span class="m-doc-wrap">Int_t n_histos,
+              const char* name,
+              const char* particle,
+              Int_t nbinsx,
+              Double_t xlow,
+              Double_t xup,
+              TString xtitle = "")</span>
+            </dt>
+            <dd>Function to create a number of 1D histograms in the histo map for a specific particle.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#ad74f058069319bb02007ed9c92a56229">CreateHisto</a>(</span><span class="m-doc-wrap">const char* name,
+              Int_t nbinsx,
+              Double_t xlow,
+              Double_t xup,
+              TString xtitle = "",
+              TString ytitle = "")</span>
+            </dt>
+            <dd>Function to create one 1D histograms in the histo map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a60c57e10efb96af3e2f654bbf9864950">CreateHisto</a>(</span><span class="m-doc-wrap">const char* name,
+              const char* particle,
+              Int_t nbinsx,
+              Double_t xlow,
+              Double_t xup,
+              TString xtitle = "")</span>
+            </dt>
+            <dd>Function to create one 1D histogram in the histo map for a specific particle.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#ab25caa0a2a45f5e6200f935e47beea50">CreateHisto</a>(</span><span class="m-doc-wrap">boost::basic_format&lt;char&gt; name,
+              Int_t nbinsx,
+              Double_t xlow,
+              Double_t xup,
+              TString xtitle = "")</span>
+            </dt>
+            <dd>Function to create one 1D histograms in the histo map with a boost name as input.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#adc6fb47c66419f80ad6525599c2246f2">CreateHisto</a>(</span><span class="m-doc-wrap">const char* name,
+              Int_t nbinsx,
+              Double_t xlow,
+              Double_t xup,
+              Int_t nbinsy,
+              Double_t ylow,
+              Double_t yup,
+              TString xtitle = "",
+              TString ytitle = "")</span>
+            </dt>
+            <dd>Function to create one 2D histograms in the histo map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#abe525f498c13c62e7ff4afc294b2e163">CreateHisto</a>(</span><span class="m-doc-wrap">Int_t n_histos,
+              const char* name,
+              Int_t nbinsx,
+              Double_t xlow,
+              Double_t xup,
+              Int_t nbinsy,
+              Double_t ylow,
+              Double_t yup,
+              TString xtitle = "",
+              TString ytitle = "")</span>
+            </dt>
+            <dd>Function to create a number of 2D histograms in the histo map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a0d48d3bbfb4a2ac0a83b47d408f2c0bf">CreateHisto</a>(</span><span class="m-doc-wrap">const char* name,
+              Int_t nbinsx,
+              const Double_t* xbins,
+              Int_t nbinsy,
+              Double_t ylow,
+              Double_t yup,
+              TString xtitle = "",
+              TString ytitle = "")</span>
+            </dt>
+            <dd>Function to create one 2D histograms in the histo map explicitly specifying x bin borders.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a4dcf251bd3936b9482592611ec60a1d9">CreateHisto</a>(</span><span class="m-doc-wrap">const char* name,
+              Int_t nbinsx,
+              Double_t xlow,
+              Double_t xup,
+              Int_t nbinsy,
+              const Double_t* ybins,
+              TString xtitle = "",
+              TString ytitle = "")</span>
+            </dt>
+            <dd>Function to create one 2D histograms in the histo map explicitly specifying y bin borders.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a72a01116cf85ef8179274fde717fc9b2">CreateHisto</a>(</span><span class="m-doc-wrap">const char* name,
+              Int_t nbinsx,
+              const Double_t* xbins,
+              Int_t nbinsy,
+              const Double_t* ybins,
+              TString xtitle = "",
+              TString ytitle = "")</span>
+            </dt>
+            <dd>Function to create one 2D histograms in the histo map explicitly specifying x and y bin borders.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a700f65b40c3eceda268d583c6cac2b07">CreateHistoUnchangedName</a>(</span><span class="m-doc-wrap">const char* name,
+              Int_t nbinsx,
+              Double_t xlow,
+              Double_t xup,
+              TString xtitle = "")</span>
+            </dt>
+            <dd>Function to create a 1D histogram in the histo map without the standard histogram naming convention (h1_...)</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a9db9c311779b09e329f3f6563a700824">CreateNSparse</a>(</span><span class="m-doc-wrap">const char* name,
+              int dimension,
+              int* bins,
+              double* xmin,
+              double* xmax,
+              <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a> axisTitle[])</span>
+            </dt>
+            <dd>Function to create one NSparse in the nSparse map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a720de431502167b31954126746b1a7eb">CreateProf</a>(</span><span class="m-doc-wrap">const char* name,
+              Int_t nbinsx,
+              Double_t xlow,
+              Double_t xup,
+              const char* xtitle = "",
+              const char* ytitle = "")</span>
+            </dt>
+            <dd>Function to create one 1D Profile container in the eff map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a6fd54823578c8bbf356a31d10e70e84b">CreateTree</a>(</span><span class="m-doc-wrap">const char* name,
+              const char* varlist,
+              int bufsize)</span>
+            </dt>
+            <dd>Function to create one NtupleD in the NtupleD map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#aa5698b4ddda6859d0dcbe17e691f0821">CreateTree</a>(</span><span class="m-doc-wrap"><a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/container/unordered_map.html" target="_blank">std::<wbr/>unordered_map</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>, float&gt;* m,
+              const char* name)</span>
+            </dt>
+            <dd>Function to create one Tree in the TTree map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a22ec25d7260d8c9124094a682a441bec">DeleteHisto</a>(</span><span class="m-doc-wrap">Int_t n_histos,
+              const char* name)</span>
+            </dt>
+            <dd>Function to delete a histogram from the histo map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#afb5f8a57c50703889081b9b86a44ad4b">Fill</a>(</span><span class="m-doc-wrap">Int_t n_histo,
+              const char* name,
+              double value,
+              double weight)</span>
+            </dt>
+            <dd>Function to fill an event in a 1D histogram of the map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a37f3566c61ac03224e23d0fd23889fa6">Fill</a>(</span><span class="m-doc-wrap">Int_t n_histo,
+              <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a> name,
+              double value,
+              double weight)</span>
+            </dt>
+            <dd>Function to fill an event in a 1D histogram of the map with a string as histo name.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#aa4d79620d598bf78f49d06259c9bf992">Fill</a>(</span><span class="m-doc-wrap">const char* name,
+              double value,
+              double weight)</span>
+            </dt>
+            <dd>Function to fill an event in a 1D histogram of the map without histo number.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#aa6ff34f5846fffe418b7d16ad408f8e0">Fill</a>(</span><span class="m-doc-wrap">const char* name,
+              double valuex,
+              double valuey,
+              double weight)</span>
+            </dt>
+            <dd>Function to fill an event in a 2D histogram of the map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a732b3c25eeecc0a45e8e450722b3ea24">Fill</a>(</span><span class="m-doc-wrap">Int_t n_histo,
+              const char* name,
+              double valuex,
+              double valuey,
+              double weight)</span>
+            </dt>
+            <dd>Function to fill an event in a 2D histogram of the map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#aa5de6cafcfa49145cf4102e4c7514261">FillEff</a>(</span><span class="m-doc-wrap">const char* name,
+              double valuex,
+              bool passed)</span>
+            </dt>
+            <dd>Function to fill an event in a efficiency container of the map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a6b4b61290c93feb811ac70f9948e28f2">FillEff</a>(</span><span class="m-doc-wrap">const char* name,
+              double valuex,
+              bool passed,
+              double weight)</span>
+            </dt>
+            <dd>Function to fill an weighted event in a efficiency container of the map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a4aa6bd9e47e4f1b9228d93afaa1eb7ac">FillEff</a>(</span><span class="m-doc-wrap">const char* name,
+              double valuex,
+              double valuey,
+              bool passed)</span>
+            </dt>
+            <dd>Function to fill an event in a 2D efficiency container of the map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a64718c000876dcccd65cf562bf579bda">FillSparse</a>(</span><span class="m-doc-wrap">const char* name,
+              int n,
+              ...)</span>
+            </dt>
+            <dd>Function to fill an event in a nSparse of the nSparse map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a04991a8616f7d572c084ca444e7c4cfe">FillStr</a>(</span><span class="m-doc-wrap">const char* name,
+              const char* value,
+              double weight)</span>
+            </dt>
+            <dd>Function to fill an event in a 1D histogram of the map without histo number.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#aa36cc50680a989bb0a5fff4392710484">FillStr</a>(</span><span class="m-doc-wrap">Int_t n_histo,
+              const char* name,
+              const char* value,
+              double weight)</span>
+            </dt>
+            <dd>Function to fill an event in a 1D histogram of the map without histo number.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#adae770de479cead6b5ba97227b5a4085">FillTree</a>(</span><span class="m-doc-wrap">const char* name,
+              double* values)</span>
+            </dt>
+            <dd>Function to fill an event in a NTupleD of the map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#aee19094200eaefed28e514fa221b5c57">FillTree</a>(</span><span class="m-doc-wrap">const char* name)</span>
+            </dt>
+            <dd>Function to fill an event in a TTree of the map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#ad4d69c424f27f060aeec7520e2aaf2d9">NameBins</a>(</span><span class="m-doc-wrap">const char* name,
+              const uint n_bins,
+              TString* d_mydisc)</span>
+            </dt>
+            <dd>Function to give one 1D histogram from the map alphanumeric bin labels without number.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#aa37020d67cebd732502feb6f640b1bb8">NameBins</a>(</span><span class="m-doc-wrap">const char* name,
+              const uint n_bins_x,
+              TString* x_bin_names,
+              const uint n_bins_y,
+              TString* y_bin_names)</span>
+            </dt>
+            <dd>Function to give one 2D histogram from the map alphanumeric bin labels without number.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#af06190f0b9211215b39dffa45343b237">NameBins</a>(</span><span class="m-doc-wrap">Int_t n_histo,
+              const char* name,
+              const uint n_bins,
+              TString* d_mydisc)</span>
+            </dt>
+            <dd>Function to give one 1D histogram from the map alphanumeric bin labels.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#ab74ee15a321efec14b316164aca01704">Profile</a>(</span><span class="m-doc-wrap">const char* name,
+              double valuex,
+              double valuey)</span>
+            </dt>
+            <dd>Function to fill an event in a 1D profile container of the map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#ab6cd7f869c885e3504bf44369514a499">RebinHisto</a>(</span><span class="m-doc-wrap">Int_t n_histos,
+              const char* name,
+              Int_t n_rebin,
+              Double_t* bins)</span>
+            </dt>
+            <dd>Function to rebin histograms in the histo map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static auto <a class="m-doc" href="#a0f58078c240f7934752c8c8bc5823b14">ReturnHist</a>(</span><span class="m-doc-wrap">const char* name) -&gt; TH1D*</span>
+            </dt>
+            <dd>Function to get one 1D histogram from the map without number.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a25b65d3660a02273ac982346789e6bee">SetToZero</a>(</span><span class="m-doc-wrap">Int_t n_histo,
+              const char* name)</span>
+            </dt>
+            <dd>Function to set all negative bin contents to zero for a 1D histogram.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a5f875095804a13f24568b0a18eeeb917">Write</a>(</span><span class="m-doc-wrap">Int_t n_histo,
+              const char* name)</span>
+            </dt>
+            <dd>Function to write one 1D histogram of the map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a422bd07ac1532b5f79761f3b47255b1d">Write</a>(</span><span class="m-doc-wrap">const char* name)</span>
+            </dt>
+            <dd>Function to write one 1D histogram of the map without number.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#adf167d044c6af8281e1fd9fd70693b28">Write2</a>(</span><span class="m-doc-wrap">const char* name)</span>
+            </dt>
+            <dd>Function to write one 2D histogram of the map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a3a156e5a0a61caa8ee635095e8de354d">WriteAll</a>(</span><span class="m-doc-wrap">const char* name = "")</span>
+            </dt>
+            <dd>Function to write many 1D histograms of the map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a423a33fd4d15c2989d8d9f5265634ee6">WriteAll</a>(</span><span class="m-doc-wrap">const char* name,
+              const char* contains_i)</span>
+            </dt>
+            <dd>Function to write many 1D histograms which contain specific strings of the map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a2b5dabf051dbb4303cc74b6776a349ba">WriteAll</a>(</span><span class="m-doc-wrap">const char* name,
+              const char* contains_i,
+              const char* vetos_i)</span>
+            </dt>
+            <dd>Function to write many 1D histograms which (not) contain specific strings of the map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#abda34b999b26f55ad7403bee23713bad">WriteAll2</a>(</span><span class="m-doc-wrap">const char* name = "")</span>
+            </dt>
+            <dd>Function to write many 2D histograms of the map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a5fc43973045154f9f37ae29d431510cc">WriteAll2</a>(</span><span class="m-doc-wrap">const char* name,
+              const char* contains_i)</span>
+            </dt>
+            <dd>Function to write many 2D histograms which contain specific strings of the map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a6b9c75d2f396e75ddc38f3a32f3f814a">WriteAll2</a>(</span><span class="m-doc-wrap">const char* name,
+              const char* contains_i,
+              const char* vetos_i)</span>
+            </dt>
+            <dd>Function to write many 2D histograms which (not) contain specific strings of the map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a88a83998532f3977feb26fe2af53a258">WriteAllEff</a>(</span><span class="m-doc-wrap">const char* name = "")</span>
+            </dt>
+            <dd>Function to write many efficiency containers of the map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#afad18c2106e99345a34651fcffea8ffe">WriteAllEff</a>(</span><span class="m-doc-wrap">const char* name,
+              const char* contains_i)</span>
+            </dt>
+            <dd>Function to write many efficiency containers which contain specific strings of the map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a80070cf90008e30bb778daf94a9fa92f">WriteAllProf</a>(</span><span class="m-doc-wrap">const char* name = "")</span>
+            </dt>
+            <dd>Function to write many profile containers of the map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#ac85eef693dd133d65b2a8301955a66a2">WriteAllTrees</a>(</span><span class="m-doc-wrap">const char* name = "")</span>
+            </dt>
+            <dd>Function to write many TTrees and TNtupleDs of the maps.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a class="m-doc" href="#a71a36b20262168fe88d6efbe47fa9947">WriteN</a>(</span><span class="m-doc-wrap">const char* name = "")</span>
+            </dt>
+            <dd>Function to write many TNsparses of the map.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">void <a class="m-doc" href="#a7a3cc1b23690daea1ffb70d196f4a0f0">split</a>(</span><span class="m-doc-wrap">const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; s,
+              char delim,
+              <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/container/vector.html" target="_blank">std::<wbr/>vector</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&gt;* elems)</span>
+            </dt>
+            <dd>Function split a string at a delimiter.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc" href="#a3b9f2e0dd38e3ceb2981c47595ad40c9">split</a>(</span><span class="m-doc-wrap">const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; s,
+              char delim) -&gt; <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/container/vector.html" target="_blank">std::<wbr/>vector</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&gt;</span>
+            </dt>
+            <dd>Function split a string at a delimiter and return the results.</dd>
+          </dl>
+        </section>
+        <section id="var-members">
+          <h2><a href="#var-members">Variables</a></h2>
+          <dl class="m-doc">
+            <dt>
+              static <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/container/unordered_map.html" target="_blank">std::<wbr/>unordered_map</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>, TEfficiency*&gt; <a class="m-doc" href="#a4fca6b4a498db0d72bb1ec59415faa1b">effs</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              static <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/container/unordered_map.html" target="_blank">std::<wbr/>unordered_map</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>, TH1D*&gt; <a class="m-doc" href="#a9a53104c5781bee35364881a803af659">histo</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              static <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/container/unordered_map.html" target="_blank">std::<wbr/>unordered_map</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>, TH2D*&gt; <a class="m-doc" href="#a1176edb78b4ba9f8e43d05449c1e3d8e">histo2</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              static <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/container/unordered_map.html" target="_blank">std::<wbr/>unordered_map</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>, THnSparseD*&gt; <a class="m-doc" href="#a00773db07f3c29fe290be05e9f732207">histon</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              static <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/container/unordered_map.html" target="_blank">std::<wbr/>unordered_map</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>, TProfile*&gt; <a class="m-doc" href="#a52ad0e21892263e3fc4720dcb15c86d4">prof</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              static <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/container/unordered_map.html" target="_blank">std::<wbr/>unordered_map</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>, TTree*&gt; <a class="m-doc" href="#a0e442cd33ccc9d935834fe04f8932f69">trees</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              static <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/container/unordered_map.html" target="_blank">std::<wbr/>unordered_map</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>, TNtupleD*&gt; <a class="m-doc" href="#abf0d7c5b5c1f1ccd60a96b92a87d15de">ttupple</a>
+            </dt>
+            <dd></dd>
+          </dl>
+        </section>
+        <section>
+          <h2>Function documentation</h2>
+          <section class="m-doc-details" id="ae0299ef577b40a223a94bf5f1dbd61eb"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#ae0299ef577b40a223a94bf5f1dbd61eb">AddBranch</a>(</span><span class="m-doc-wrap"><a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a> branch,
+              float content,
+              const char* name)</span></span>
+            </h3>
+            <p>Function to add a branch to one Tree in the TTree map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">branch <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the branch to be added to the tree</td>
+                </tr>
+                <tr>
+                  <td>content</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the TTree</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a3d428c20b002eb63ac7ad1a53ab96a88"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a3d428c20b002eb63ac7ad1a53ab96a88">AddBranch</a>(</span><span class="m-doc-wrap"><a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a> branch,
+              Int_t content,
+              const char* name)</span></span>
+            </h3>
+            <p>Function to add a branch to one Tree in the TTree map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">branch <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the branch to be added to the tree</td>
+                </tr>
+                <tr>
+                  <td>content</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the TTree</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="ad445fd80470b09ed4263d5ff61cf757a"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#ad445fd80470b09ed4263d5ff61cf757a">AddBranch</a>(</span><span class="m-doc-wrap"><a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a> branch,
+              Long64_t content,
+              const char* name)</span></span>
+            </h3>
+            <p>Function to add a branch to one Tree in the TTree map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">branch <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the branch to be added to the tree</td>
+                </tr>
+                <tr>
+                  <td>content</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the TTree</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="af1bba014c9ce9f98a00a7d34ac5e7de9"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#af1bba014c9ce9f98a00a7d34ac5e7de9">AddBranch</a>(</span><span class="m-doc-wrap"><a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a> branch,
+              UInt_t content,
+              const char* name)</span></span>
+            </h3>
+            <p>Function to add a branch to one Tree in the TTree map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">branch <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the branch to be added to the tree</td>
+                </tr>
+                <tr>
+                  <td>content</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the TTree</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="ab0df0e6cab3a230bd414c0ad8d4d2a54"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#ab0df0e6cab3a230bd414c0ad8d4d2a54">AddBranch</a>(</span><span class="m-doc-wrap"><a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a> branch,
+              ULong64_t content,
+              const char* name)</span></span>
+            </h3>
+            <p>Function to add a branch to one Tree in the TTree map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">branch <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the branch to be added to the tree</td>
+                </tr>
+                <tr>
+                  <td>content</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the TTree</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a232555f89d8e8b63e5b45153ef9c5332"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a232555f89d8e8b63e5b45153ef9c5332">CreateEff</a>(</span><span class="m-doc-wrap">const char* name,
+              Int_t nbinsx,
+              Double_t* xbins,
+              const char* xtitle = "")</span></span>
+            </h3>
+            <p>Function to create one 1D Efficiency container in the eff map with variable binning.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the Efficiency container that should be created</td>
+                </tr>
+                <tr>
+                  <td>nbinsx <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of bins on the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xbins <span class="m-label m-flat m-info">in</span></td>
+                  <td>defines the binning bounds</td>
+                </tr>
+                <tr>
+                  <td>xtitle <span class="m-label m-flat m-info">in</span></td>
+                  <td>Optinal title of the x-axis (DEFAULT = "")</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a341e10447b703002433ffa8affb2c986"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a341e10447b703002433ffa8affb2c986">CreateEff</a>(</span><span class="m-doc-wrap">const char* name,
+              Int_t nbinsx,
+              Double_t xlow,
+              Double_t xup,
+              const char* xtitle = "",
+              bool weighted = false)</span></span>
+            </h3>
+            <p>Function to create one 1D Efficiency container in the eff map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the Efficiency container that should be created</td>
+                </tr>
+                <tr>
+                  <td>nbinsx <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of bins on the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xlow <span class="m-label m-flat m-info">in</span></td>
+                  <td>Lower edge of the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xup <span class="m-label m-flat m-info">in</span></td>
+                  <td>Upper edge of the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xtitle <span class="m-label m-flat m-info">in</span></td>
+                  <td>Optinal title of the x-axis (DEFAULT = "")</td>
+                </tr>
+                <tr>
+                  <td>weighted <span class="m-label m-flat m-info">in</span></td>
+                  <td>Option for weighted events (DEFAULT = false)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a0931ed95b5d319d41df03096cc842ff1"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a0931ed95b5d319d41df03096cc842ff1">CreateEff</a>(</span><span class="m-doc-wrap">const char* name,
+              TH1D* hist_all,
+              TH1D* hist_pass,
+              bool weighted = false)</span></span>
+            </h3>
+            <p>Function to create one 1D Efficiency container in the eff map from two histograms.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the Efficiency container that should be created</td>
+                </tr>
+                <tr>
+                  <td>hist_all <span class="m-label m-flat m-info">in</span></td>
+                  <td>Histogram of all events</td>
+                </tr>
+                <tr>
+                  <td>hist_pass <span class="m-label m-flat m-info">in</span></td>
+                  <td>Histogram of all passed events</td>
+                </tr>
+                <tr>
+                  <td>weighted <span class="m-label m-flat m-info">in</span></td>
+                  <td>Bool if the histograms contain weighted events (DEFAULT = false)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="ad836c71d7d0287d177a48b29bddb5980"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#ad836c71d7d0287d177a48b29bddb5980">CreateEff</a>(</span><span class="m-doc-wrap">const char* name,
+              Int_t nbinsx,
+              Double_t xlow,
+              Double_t xup,
+              Int_t nbinsy,
+              Double_t ylow,
+              Double_t yup,
+              const char* xtitle = "",
+              const char* ytitle = "")</span></span>
+            </h3>
+            <p>Function to create one 2D Efficiency container in the eff map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the Efficiency container that should be created</td>
+                </tr>
+                <tr>
+                  <td>nbinsx <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of bins on the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xlow <span class="m-label m-flat m-info">in</span></td>
+                  <td>Lower edge of the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xup <span class="m-label m-flat m-info">in</span></td>
+                  <td>Upper edge of the x-axis</td>
+                </tr>
+                <tr>
+                  <td>nbinsy <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of bins on the y-axis</td>
+                </tr>
+                <tr>
+                  <td>ylow <span class="m-label m-flat m-info">in</span></td>
+                  <td>Lower edge of the y-axis</td>
+                </tr>
+                <tr>
+                  <td>yup <span class="m-label m-flat m-info">in</span></td>
+                  <td>Upper edge of the y-axis</td>
+                </tr>
+                <tr>
+                  <td>xtitle <span class="m-label m-flat m-info">in</span></td>
+                  <td>Optinal title of the x-axis (DEFAULT = "")</td>
+                </tr>
+                <tr>
+                  <td>ytitle <span class="m-label m-flat m-info">in</span></td>
+                  <td>Optinal title of the y-axis (DEFAULT = "")</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a49091691323810629fb920854450cc1f"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a49091691323810629fb920854450cc1f">CreateHisto</a>(</span><span class="m-doc-wrap">Int_t n_histos,
+              const char* name,
+              Int_t nbinsx,
+              Double_t xlow,
+              Double_t xup,
+              TString xtitle = "")</span></span>
+            </h3>
+            <p>Function to create a number of 1D histograms in the histo map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">n_histos <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of histograms that should be created with different numbers</td>
+                </tr>
+                <tr>
+                  <td>name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histograms that should be created</td>
+                </tr>
+                <tr>
+                  <td>nbinsx <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of bins on the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xlow <span class="m-label m-flat m-info">in</span></td>
+                  <td>Lower edge of the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xup <span class="m-label m-flat m-info">in</span></td>
+                  <td>Upper edge of the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xtitle <span class="m-label m-flat m-info">in</span></td>
+                  <td>Optinal title of the x-axis (DEFAULT = "")</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a152d88a7a2064fb82b2ff646786bdd52"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a152d88a7a2064fb82b2ff646786bdd52">CreateHisto</a>(</span><span class="m-doc-wrap">Int_t n_histos,
+              const char* name,
+              const char* particle,
+              Int_t nbinsx,
+              Double_t xlow,
+              Double_t xup,
+              TString xtitle = "")</span></span>
+            </h3>
+            <p>Function to create a number of 1D histograms in the histo map for a specific particle.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">n_histos <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of histograms that should be created with different numbers</td>
+                </tr>
+                <tr>
+                  <td>name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histograms that should be created</td>
+                </tr>
+                <tr>
+                  <td>particle <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the particle for which the histograms are created</td>
+                </tr>
+                <tr>
+                  <td>nbinsx <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of bins on the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xlow <span class="m-label m-flat m-info">in</span></td>
+                  <td>Lower edge of the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xup <span class="m-label m-flat m-info">in</span></td>
+                  <td>Upper edge of the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xtitle <span class="m-label m-flat m-info">in</span></td>
+                  <td>Optinal title of the x-axis (DEFAULT = "")</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="ad74f058069319bb02007ed9c92a56229"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#ad74f058069319bb02007ed9c92a56229">CreateHisto</a>(</span><span class="m-doc-wrap">const char* name,
+              Int_t nbinsx,
+              Double_t xlow,
+              Double_t xup,
+              TString xtitle = "",
+              TString ytitle = "")</span></span>
+            </h3>
+            <p>Function to create one 1D histograms in the histo map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histogram that should be created</td>
+                </tr>
+                <tr>
+                  <td>nbinsx <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of bins on the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xlow <span class="m-label m-flat m-info">in</span></td>
+                  <td>Lower edge of the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xup <span class="m-label m-flat m-info">in</span></td>
+                  <td>Upper edge of the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xtitle <span class="m-label m-flat m-info">in</span></td>
+                  <td>Optinal title of the x-axis (DEFAULT = "")</td>
+                </tr>
+                <tr>
+                  <td>ytitle <span class="m-label m-flat m-info">in</span></td>
+                  <td>Optinal title of the y-axis (DEFAULT = "")</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a60c57e10efb96af3e2f654bbf9864950"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a60c57e10efb96af3e2f654bbf9864950">CreateHisto</a>(</span><span class="m-doc-wrap">const char* name,
+              const char* particle,
+              Int_t nbinsx,
+              Double_t xlow,
+              Double_t xup,
+              TString xtitle = "")</span></span>
+            </h3>
+            <p>Function to create one 1D histogram in the histo map for a specific particle.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histograms that should be created</td>
+                </tr>
+                <tr>
+                  <td>particle <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the particle for which the histograms are created</td>
+                </tr>
+                <tr>
+                  <td>nbinsx <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of bins on the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xlow <span class="m-label m-flat m-info">in</span></td>
+                  <td>Lower edge of the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xup <span class="m-label m-flat m-info">in</span></td>
+                  <td>Upper edge of the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xtitle <span class="m-label m-flat m-info">in</span></td>
+                  <td>Optinal title of the x-axis (DEFAULT = "")</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="ab25caa0a2a45f5e6200f935e47beea50"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#ab25caa0a2a45f5e6200f935e47beea50">CreateHisto</a>(</span><span class="m-doc-wrap">boost::basic_format&lt;char&gt; name,
+              Int_t nbinsx,
+              Double_t xlow,
+              Double_t xup,
+              TString xtitle = "")</span></span>
+            </h3>
+            <p>Function to create one 1D histograms in the histo map with a boost name as input.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histogram that should be created (boost::basic_format)</td>
+                </tr>
+                <tr>
+                  <td>nbinsx <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of bins on the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xlow <span class="m-label m-flat m-info">in</span></td>
+                  <td>Lower edge of the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xup <span class="m-label m-flat m-info">in</span></td>
+                  <td>Upper edge of the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xtitle <span class="m-label m-flat m-info">in</span></td>
+                  <td>Optinal title of the x-axis (DEFAULT = "")</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="adc6fb47c66419f80ad6525599c2246f2"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#adc6fb47c66419f80ad6525599c2246f2">CreateHisto</a>(</span><span class="m-doc-wrap">const char* name,
+              Int_t nbinsx,
+              Double_t xlow,
+              Double_t xup,
+              Int_t nbinsy,
+              Double_t ylow,
+              Double_t yup,
+              TString xtitle = "",
+              TString ytitle = "")</span></span>
+            </h3>
+            <p>Function to create one 2D histograms in the histo map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histogram that should be created</td>
+                </tr>
+                <tr>
+                  <td>nbinsx <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of bins on the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xlow <span class="m-label m-flat m-info">in</span></td>
+                  <td>Lower edge of the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xup <span class="m-label m-flat m-info">in</span></td>
+                  <td>Upper edge of the x-axis</td>
+                </tr>
+                <tr>
+                  <td>nbinsy <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of bins on the y-axis</td>
+                </tr>
+                <tr>
+                  <td>ylow <span class="m-label m-flat m-info">in</span></td>
+                  <td>Lower edge of the y-axis</td>
+                </tr>
+                <tr>
+                  <td>yup <span class="m-label m-flat m-info">in</span></td>
+                  <td>Upper edge of the y-axis</td>
+                </tr>
+                <tr>
+                  <td>xtitle <span class="m-label m-flat m-info">in</span></td>
+                  <td>Optinal title of the x-axis (DEFAULT = "")</td>
+                </tr>
+                <tr>
+                  <td>ytitle <span class="m-label m-flat m-info">in</span></td>
+                  <td>Optinal title of the y-axis (DEFAULT = "")</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="abe525f498c13c62e7ff4afc294b2e163"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#abe525f498c13c62e7ff4afc294b2e163">CreateHisto</a>(</span><span class="m-doc-wrap">Int_t n_histos,
+              const char* name,
+              Int_t nbinsx,
+              Double_t xlow,
+              Double_t xup,
+              Int_t nbinsy,
+              Double_t ylow,
+              Double_t yup,
+              TString xtitle = "",
+              TString ytitle = "")</span></span>
+            </h3>
+            <p>Function to create a number of 2D histograms in the histo map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">n_histos <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of histograms that should be created with different numbers</td>
+                </tr>
+                <tr>
+                  <td>name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histogram that should be created</td>
+                </tr>
+                <tr>
+                  <td>nbinsx <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of bins on the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xlow <span class="m-label m-flat m-info">in</span></td>
+                  <td>Lower edge of the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xup <span class="m-label m-flat m-info">in</span></td>
+                  <td>Upper edge of the x-axis</td>
+                </tr>
+                <tr>
+                  <td>nbinsy <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of bins on the y-axis</td>
+                </tr>
+                <tr>
+                  <td>ylow <span class="m-label m-flat m-info">in</span></td>
+                  <td>Lower edge of the y-axis</td>
+                </tr>
+                <tr>
+                  <td>yup <span class="m-label m-flat m-info">in</span></td>
+                  <td>Upper edge of the y-axis</td>
+                </tr>
+                <tr>
+                  <td>xtitle <span class="m-label m-flat m-info">in</span></td>
+                  <td>Optinal title of the x-axis (DEFAULT = "")</td>
+                </tr>
+                <tr>
+                  <td>ytitle <span class="m-label m-flat m-info">in</span></td>
+                  <td>Optinal title of the y-axis (DEFAULT = "")</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a0d48d3bbfb4a2ac0a83b47d408f2c0bf"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a0d48d3bbfb4a2ac0a83b47d408f2c0bf">CreateHisto</a>(</span><span class="m-doc-wrap">const char* name,
+              Int_t nbinsx,
+              const Double_t* xbins,
+              Int_t nbinsy,
+              Double_t ylow,
+              Double_t yup,
+              TString xtitle = "",
+              TString ytitle = "")</span></span>
+            </h3>
+            <p>Function to create one 2D histograms in the histo map explicitly specifying x bin borders.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histogram that should be created</td>
+                </tr>
+                <tr>
+                  <td>nbinsx <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of bins on the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xbins <span class="m-label m-flat m-info">in</span></td>
+                  <td>array with lower edge of x-axis bins and upper edge of last bin</td>
+                </tr>
+                <tr>
+                  <td>nbinsy <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of bins on the y-axis</td>
+                </tr>
+                <tr>
+                  <td>ylow <span class="m-label m-flat m-info">in</span></td>
+                  <td>Lower edge of the y-axis</td>
+                </tr>
+                <tr>
+                  <td>yup <span class="m-label m-flat m-info">in</span></td>
+                  <td>Upper edge of the y-axis</td>
+                </tr>
+                <tr>
+                  <td>xtitle <span class="m-label m-flat m-info">in</span></td>
+                  <td>Optinal title of the x-axis (DEFAULT = "")</td>
+                </tr>
+                <tr>
+                  <td>ytitle <span class="m-label m-flat m-info">in</span></td>
+                  <td>Optinal title of the y-axis (DEFAULT = "")</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a4dcf251bd3936b9482592611ec60a1d9"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a4dcf251bd3936b9482592611ec60a1d9">CreateHisto</a>(</span><span class="m-doc-wrap">const char* name,
+              Int_t nbinsx,
+              Double_t xlow,
+              Double_t xup,
+              Int_t nbinsy,
+              const Double_t* ybins,
+              TString xtitle = "",
+              TString ytitle = "")</span></span>
+            </h3>
+            <p>Function to create one 2D histograms in the histo map explicitly specifying y bin borders.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histogram that should be created</td>
+                </tr>
+                <tr>
+                  <td>nbinsx <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of bins on the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xlow <span class="m-label m-flat m-info">in</span></td>
+                  <td>Lower edge of the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xup <span class="m-label m-flat m-info">in</span></td>
+                  <td>Upper edge of the x-axis</td>
+                </tr>
+                <tr>
+                  <td>nbinsy <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of bins on the y-axis</td>
+                </tr>
+                <tr>
+                  <td>ybins <span class="m-label m-flat m-info">in</span></td>
+                  <td>array with lower edge of y-axis bins and upper edge of last bin</td>
+                </tr>
+                <tr>
+                  <td>xtitle <span class="m-label m-flat m-info">in</span></td>
+                  <td>Optinal title of the x-axis (DEFAULT = "")</td>
+                </tr>
+                <tr>
+                  <td>ytitle <span class="m-label m-flat m-info">in</span></td>
+                  <td>Optinal title of the y-axis (DEFAULT = "")</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a72a01116cf85ef8179274fde717fc9b2"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a72a01116cf85ef8179274fde717fc9b2">CreateHisto</a>(</span><span class="m-doc-wrap">const char* name,
+              Int_t nbinsx,
+              const Double_t* xbins,
+              Int_t nbinsy,
+              const Double_t* ybins,
+              TString xtitle = "",
+              TString ytitle = "")</span></span>
+            </h3>
+            <p>Function to create one 2D histograms in the histo map explicitly specifying x and y bin borders.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histogram that should be created</td>
+                </tr>
+                <tr>
+                  <td>nbinsx <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of bins on the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xbins <span class="m-label m-flat m-info">in</span></td>
+                  <td>array with lower edge of x-axis bins and upper edge of last bin</td>
+                </tr>
+                <tr>
+                  <td>nbinsy <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of bins on the y-axis</td>
+                </tr>
+                <tr>
+                  <td>ybins <span class="m-label m-flat m-info">in</span></td>
+                  <td>array with lower edge of y-axis bins and upper edge of last bin</td>
+                </tr>
+                <tr>
+                  <td>xtitle <span class="m-label m-flat m-info">in</span></td>
+                  <td>Optinal title of the x-axis (DEFAULT = "")</td>
+                </tr>
+                <tr>
+                  <td>ytitle <span class="m-label m-flat m-info">in</span></td>
+                  <td>Optinal title of the y-axis (DEFAULT = "")</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a700f65b40c3eceda268d583c6cac2b07"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a700f65b40c3eceda268d583c6cac2b07">CreateHistoUnchangedName</a>(</span><span class="m-doc-wrap">const char* name,
+              Int_t nbinsx,
+              Double_t xlow,
+              Double_t xup,
+              TString xtitle = "")</span></span>
+            </h3>
+            <p>Function to create a 1D histogram in the histo map without the standard histogram naming convention (h1_...)</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histograms that should be created</td>
+                </tr>
+                <tr>
+                  <td>nbinsx <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of bins on the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xlow <span class="m-label m-flat m-info">in</span></td>
+                  <td>Lower edge of the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xup <span class="m-label m-flat m-info">in</span></td>
+                  <td>Upper edge of the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xtitle <span class="m-label m-flat m-info">in</span></td>
+                  <td>Optinal title of the x-axis (DEFAULT = "")</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a9db9c311779b09e329f3f6563a700824"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a9db9c311779b09e329f3f6563a700824">CreateNSparse</a>(</span><span class="m-doc-wrap">const char* name,
+              int dimension,
+              int* bins,
+              double* xmin,
+              double* xmax,
+              <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a> axisTitle[])</span></span>
+            </h3>
+            <p>Function to create one NSparse in the nSparse map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the NSparse that should be created</td>
+                </tr>
+                <tr>
+                  <td>dimension <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of dimensions that the NSparse should have</td>
+                </tr>
+                <tr>
+                  <td>bins <span class="m-label m-flat m-info">in</span></td>
+                  <td>Array with the number of bins for each dimension</td>
+                </tr>
+                <tr>
+                  <td>xmin <span class="m-label m-flat m-info">in</span></td>
+                  <td>Array of the lower edge of the axis for each dimension</td>
+                </tr>
+                <tr>
+                  <td>xmax <span class="m-label m-flat m-info">in</span></td>
+                  <td>Array of the upper edge of the axis for each dimension</td>
+                </tr>
+                <tr>
+                  <td>axisTitle</td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a720de431502167b31954126746b1a7eb"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a720de431502167b31954126746b1a7eb">CreateProf</a>(</span><span class="m-doc-wrap">const char* name,
+              Int_t nbinsx,
+              Double_t xlow,
+              Double_t xup,
+              const char* xtitle = "",
+              const char* ytitle = "")</span></span>
+            </h3>
+            <p>Function to create one 1D Profile container in the eff map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the Profile container that should be created</td>
+                </tr>
+                <tr>
+                  <td>nbinsx <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of bins on the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xlow <span class="m-label m-flat m-info">in</span></td>
+                  <td>Lower edge of the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xup <span class="m-label m-flat m-info">in</span></td>
+                  <td>Upper edge of the x-axis</td>
+                </tr>
+                <tr>
+                  <td>xtitle <span class="m-label m-flat m-info">in</span></td>
+                  <td>Optinal title of the x-axis (DEFAULT = "")</td>
+                </tr>
+                <tr>
+                  <td>ytitle <span class="m-label m-flat m-info">in</span></td>
+                  <td>Optinal title of the y-axis (DEFAULT = "")</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a6fd54823578c8bbf356a31d10e70e84b"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a6fd54823578c8bbf356a31d10e70e84b">CreateTree</a>(</span><span class="m-doc-wrap">const char* name,
+              const char* varlist,
+              int bufsize)</span></span>
+            </h3>
+            <p>Function to create one NtupleD in the NtupleD map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the NSparse that should be created</td>
+                </tr>
+                <tr>
+                  <td>varlist <span class="m-label m-flat m-info">in</span></td>
+                  <td>Colon sepereated list with the name of the branches that should be created</td>
+                </tr>
+                <tr>
+                  <td>bufsize <span class="m-label m-flat m-info">in</span></td>
+                  <td>Buffer size that the NtupleD should have</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="aa5698b4ddda6859d0dcbe17e691f0821"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#aa5698b4ddda6859d0dcbe17e691f0821">CreateTree</a>(</span><span class="m-doc-wrap"><a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/container/unordered_map.html" target="_blank">std::<wbr/>unordered_map</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>, float&gt;* m,
+              const char* name)</span></span>
+            </h3>
+            <p>Function to create one Tree in the TTree map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">m <span class="m-label m-flat m-info">in</span></td>
+                  <td>Map of the name and variable that should be matched to each branch</td>
+                </tr>
+                <tr>
+                  <td>name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the TTree that should be created</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a22ec25d7260d8c9124094a682a441bec"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a22ec25d7260d8c9124094a682a441bec">DeleteHisto</a>(</span><span class="m-doc-wrap">Int_t n_histos,
+              const char* name)</span></span>
+            </h3>
+            <p>Function to delete a histogram from the histo map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">n_histos <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of histogram to be deleted</td>
+                </tr>
+                <tr>
+                  <td>name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histogram to be deleted</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="afb5f8a57c50703889081b9b86a44ad4b"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#afb5f8a57c50703889081b9b86a44ad4b">Fill</a>(</span><span class="m-doc-wrap">Int_t n_histo,
+              const char* name,
+              double value,
+              double weight)</span></span>
+            </h3>
+            <p>Function to fill an event in a 1D histogram of the map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">n_histo <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of the histogram that should be filled</td>
+                </tr>
+                <tr>
+                  <td>name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histogram which should be filled</td>
+                </tr>
+                <tr>
+                  <td>value <span class="m-label m-flat m-info">in</span></td>
+                  <td>Value that should be filled</td>
+                </tr>
+                <tr>
+                  <td>weight <span class="m-label m-flat m-info">in</span></td>
+                  <td>Weight of the event that should be filled</td>
+                </tr>
+              </tbody>
+            </table>
+<p>This function fills one value with one weight for one event in one specific histogram. The function also checks if the histogram exists in the map, otherwise it will print an error message.</p>
+          </div></section>
+          <section class="m-doc-details" id="a37f3566c61ac03224e23d0fd23889fa6"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a37f3566c61ac03224e23d0fd23889fa6">Fill</a>(</span><span class="m-doc-wrap">Int_t n_histo,
+              <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a> name,
+              double value,
+              double weight)</span></span>
+            </h3>
+            <p>Function to fill an event in a 1D histogram of the map with a string as histo name.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">n_histo <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of the histogram that should be filled</td>
+                </tr>
+                <tr>
+                  <td>name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histogram which should be filled (std string)</td>
+                </tr>
+                <tr>
+                  <td>value <span class="m-label m-flat m-info">in</span></td>
+                  <td>Value that should be filled</td>
+                </tr>
+                <tr>
+                  <td>weight <span class="m-label m-flat m-info">in</span></td>
+                  <td>Weight of the event that should be filled</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="aa4d79620d598bf78f49d06259c9bf992"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#aa4d79620d598bf78f49d06259c9bf992">Fill</a>(</span><span class="m-doc-wrap">const char* name,
+              double value,
+              double weight)</span></span>
+            </h3>
+            <p>Function to fill an event in a 1D histogram of the map without histo number.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histogram which should be filled</td>
+                </tr>
+                <tr>
+                  <td>value <span class="m-label m-flat m-info">in</span></td>
+                  <td>Value that should be filled</td>
+                </tr>
+                <tr>
+                  <td>weight <span class="m-label m-flat m-info">in</span></td>
+                  <td>Weight of the event that should be filled</td>
+                </tr>
+              </tbody>
+            </table>
+<p>This function fills one value with one weight for one event in one specific histogram. The function also checks if the histogram exists in the map, otherwise it will print an error message.</p>
+          </div></section>
+          <section class="m-doc-details" id="aa6ff34f5846fffe418b7d16ad408f8e0"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#aa6ff34f5846fffe418b7d16ad408f8e0">Fill</a>(</span><span class="m-doc-wrap">const char* name,
+              double valuex,
+              double valuey,
+              double weight)</span></span>
+            </h3>
+            <p>Function to fill an event in a 2D histogram of the map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histogram which should be filled</td>
+                </tr>
+                <tr>
+                  <td>valuex <span class="m-label m-flat m-info">in</span></td>
+                  <td>x-value that should be filled</td>
+                </tr>
+                <tr>
+                  <td>valuey <span class="m-label m-flat m-info">in</span></td>
+                  <td>y-value that should be filled</td>
+                </tr>
+                <tr>
+                  <td>weight <span class="m-label m-flat m-info">in</span></td>
+                  <td>Weight of the event that should be filled</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a732b3c25eeecc0a45e8e450722b3ea24"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a732b3c25eeecc0a45e8e450722b3ea24">Fill</a>(</span><span class="m-doc-wrap">Int_t n_histo,
+              const char* name,
+              double valuex,
+              double valuey,
+              double weight)</span></span>
+            </h3>
+            <p>Function to fill an event in a 2D histogram of the map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">n_histo <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of the histogram that should be filled</td>
+                </tr>
+                <tr>
+                  <td>name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histogram which should be filled</td>
+                </tr>
+                <tr>
+                  <td>valuex <span class="m-label m-flat m-info">in</span></td>
+                  <td>x-value that should be filled</td>
+                </tr>
+                <tr>
+                  <td>valuey <span class="m-label m-flat m-info">in</span></td>
+                  <td>y-value that should be filled</td>
+                </tr>
+                <tr>
+                  <td>weight <span class="m-label m-flat m-info">in</span></td>
+                  <td>Weight of the event that should be filled</td>
+                </tr>
+              </tbody>
+            </table>
+<p>This function fills one value with one weight for one event in one specific histogram. The function also checks if the histogram exists in the map, otherwise it will print an error message.</p>
+          </div></section>
+          <section class="m-doc-details" id="aa5de6cafcfa49145cf4102e4c7514261"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#aa5de6cafcfa49145cf4102e4c7514261">FillEff</a>(</span><span class="m-doc-wrap">const char* name,
+              double valuex,
+              bool passed)</span></span>
+            </h3>
+            <p>Function to fill an event in a efficiency container of the map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histogram which should be filled</td>
+                </tr>
+                <tr>
+                  <td>valuex <span class="m-label m-flat m-info">in</span></td>
+                  <td>x-value that should be filled</td>
+                </tr>
+                <tr>
+                  <td>passed <span class="m-label m-flat m-info">in</span></td>
+                  <td>Boolean if the event passed or not</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a6b4b61290c93feb811ac70f9948e28f2"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a6b4b61290c93feb811ac70f9948e28f2">FillEff</a>(</span><span class="m-doc-wrap">const char* name,
+              double valuex,
+              bool passed,
+              double weight)</span></span>
+            </h3>
+            <p>Function to fill an weighted event in a efficiency container of the map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histogram which should be filled</td>
+                </tr>
+                <tr>
+                  <td>valuex <span class="m-label m-flat m-info">in</span></td>
+                  <td>x-value that should be filled</td>
+                </tr>
+                <tr>
+                  <td>passed <span class="m-label m-flat m-info">in</span></td>
+                  <td>Boolean if the event passed or not</td>
+                </tr>
+                <tr>
+                  <td>weight <span class="m-label m-flat m-info">in</span></td>
+                  <td>Weight for the event to be filled</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a4aa6bd9e47e4f1b9228d93afaa1eb7ac"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a4aa6bd9e47e4f1b9228d93afaa1eb7ac">FillEff</a>(</span><span class="m-doc-wrap">const char* name,
+              double valuex,
+              double valuey,
+              bool passed)</span></span>
+            </h3>
+            <p>Function to fill an event in a 2D efficiency container of the map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histogram which should be filled</td>
+                </tr>
+                <tr>
+                  <td>valuex <span class="m-label m-flat m-info">in</span></td>
+                  <td>x-value that should be filled</td>
+                </tr>
+                <tr>
+                  <td>valuey <span class="m-label m-flat m-info">in</span></td>
+                  <td>y-value that should be filled</td>
+                </tr>
+                <tr>
+                  <td>passed <span class="m-label m-flat m-info">in</span></td>
+                  <td>Boolean if the event passed or not</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a64718c000876dcccd65cf562bf579bda"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a64718c000876dcccd65cf562bf579bda">FillSparse</a>(</span><span class="m-doc-wrap">const char* name,
+              int n,
+              ...)</span></span>
+            </h3>
+            <p>Function to fill an event in a nSparse of the nSparse map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the n which should be filled</td>
+                </tr>
+                <tr>
+                  <td>n <span class="m-label m-flat m-info">in</span></td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+<p>This function fills one value with one event in one specific nSparse. The function also checks if the nSparse exists in the map, otherwise it will print an error message.</p>
+          </div></section>
+          <section class="m-doc-details" id="a04991a8616f7d572c084ca444e7c4cfe"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a04991a8616f7d572c084ca444e7c4cfe">FillStr</a>(</span><span class="m-doc-wrap">const char* name,
+              const char* value,
+              double weight)</span></span>
+            </h3>
+            <p>Function to fill an event in a 1D histogram of the map without histo number.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histogram which should be filled</td>
+                </tr>
+                <tr>
+                  <td>value <span class="m-label m-flat m-info">in</span></td>
+                  <td>Value that should be filled</td>
+                </tr>
+                <tr>
+                  <td>weight <span class="m-label m-flat m-info">in</span></td>
+                  <td>Weight of the event that should be filled</td>
+                </tr>
+              </tbody>
+            </table>
+<p>This function fills one value with one weight for one event in one specific histogram. The function also checks if the histogram exists in the map, otherwise it will print an error message.</p>
+          </div></section>
+          <section class="m-doc-details" id="aa36cc50680a989bb0a5fff4392710484"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#aa36cc50680a989bb0a5fff4392710484">FillStr</a>(</span><span class="m-doc-wrap">Int_t n_histo,
+              const char* name,
+              const char* value,
+              double weight)</span></span>
+            </h3>
+            <p>Function to fill an event in a 1D histogram of the map without histo number.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">n_histo</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histogram which should be filled</td>
+                </tr>
+                <tr>
+                  <td>value <span class="m-label m-flat m-info">in</span></td>
+                  <td>Value that should be filled</td>
+                </tr>
+                <tr>
+                  <td>weight <span class="m-label m-flat m-info">in</span></td>
+                  <td>Weight of the event that should be filled</td>
+                </tr>
+              </tbody>
+            </table>
+<p>This function fills one value with one weight for one event in one specific histogram. The function also checks if the histogram exists in the map, otherwise it will print an error message.</p>
+          </div></section>
+          <section class="m-doc-details" id="adae770de479cead6b5ba97227b5a4085"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#adae770de479cead6b5ba97227b5a4085">FillTree</a>(</span><span class="m-doc-wrap">const char* name,
+              double* values)</span></span>
+            </h3>
+            <p>Function to fill an event in a NTupleD of the map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the NTupleD which should be filled</td>
+                </tr>
+                <tr>
+                  <td>values <span class="m-label m-flat m-info">in</span></td>
+                  <td>Array of values that should be filled</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="aee19094200eaefed28e514fa221b5c57"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#aee19094200eaefed28e514fa221b5c57">FillTree</a>(</span><span class="m-doc-wrap">const char* name)</span></span>
+            </h3>
+            <p>Function to fill an event in a TTree of the map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the TTree which should be filled</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="ad4d69c424f27f060aeec7520e2aaf2d9"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#ad4d69c424f27f060aeec7520e2aaf2d9">NameBins</a>(</span><span class="m-doc-wrap">const char* name,
+              const uint n_bins,
+              TString* d_mydisc)</span></span>
+            </h3>
+            <p>Function to give one 1D histogram from the map alphanumeric bin labels without number.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histogram that should get bin names</td>
+                </tr>
+                <tr>
+                  <td>n_bins <span class="m-label m-flat m-info">in</span></td>
+                  <td>of bins that should be renamed</td>
+                </tr>
+                <tr>
+                  <td>d_mydisc <span class="m-label m-flat m-info">in</span></td>
+                  <td>Array with the names that th bins should get</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="aa37020d67cebd732502feb6f640b1bb8"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#aa37020d67cebd732502feb6f640b1bb8">NameBins</a>(</span><span class="m-doc-wrap">const char* name,
+              const uint n_bins_x,
+              TString* x_bin_names,
+              const uint n_bins_y,
+              TString* y_bin_names)</span></span>
+            </h3>
+            <p>Function to give one 2D histogram from the map alphanumeric bin labels without number.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histogram that should get bin names</td>
+                </tr>
+                <tr>
+                  <td>n_bins_x <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of x-bins that should be renamed</td>
+                </tr>
+                <tr>
+                  <td>x_bin_names <span class="m-label m-flat m-info">in</span></td>
+                  <td>Array with the names that the x-bins should get</td>
+                </tr>
+                <tr>
+                  <td>n_bins_y <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of y-bins that should be renamed</td>
+                </tr>
+                <tr>
+                  <td>y_bin_names <span class="m-label m-flat m-info">in</span></td>
+                  <td>Array with the names that the y-bins should get</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="af06190f0b9211215b39dffa45343b237"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#af06190f0b9211215b39dffa45343b237">NameBins</a>(</span><span class="m-doc-wrap">Int_t n_histo,
+              const char* name,
+              const uint n_bins,
+              TString* d_mydisc)</span></span>
+            </h3>
+            <p>Function to give one 1D histogram from the map alphanumeric bin labels.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">n_histo <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of the histogram that should get bin names</td>
+                </tr>
+                <tr>
+                  <td>name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histogram that should get bin names</td>
+                </tr>
+                <tr>
+                  <td>n_bins <span class="m-label m-flat m-info">in</span></td>
+                  <td>of bins that should be renamed</td>
+                </tr>
+                <tr>
+                  <td>d_mydisc <span class="m-label m-flat m-info">in</span></td>
+                  <td>Array with the names that th bins should get</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="ab74ee15a321efec14b316164aca01704"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#ab74ee15a321efec14b316164aca01704">Profile</a>(</span><span class="m-doc-wrap">const char* name,
+              double valuex,
+              double valuey)</span></span>
+            </h3>
+            <p>Function to fill an event in a 1D profile container of the map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histogram which should be filled</td>
+                </tr>
+                <tr>
+                  <td>valuex <span class="m-label m-flat m-info">in</span></td>
+                  <td>x-value that should be filled</td>
+                </tr>
+                <tr>
+                  <td>valuey <span class="m-label m-flat m-info">in</span></td>
+                  <td>y-value that should be filled</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="ab6cd7f869c885e3504bf44369514a499"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#ab6cd7f869c885e3504bf44369514a499">RebinHisto</a>(</span><span class="m-doc-wrap">Int_t n_histos,
+              const char* name,
+              Int_t n_rebin,
+              Double_t* bins)</span></span>
+            </h3>
+            <p>Function to rebin histograms in the histo map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">n_histos <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of histograms with the same name</td>
+                </tr>
+                <tr>
+                  <td>name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histograms that should be rebinned</td>
+                </tr>
+                <tr>
+                  <td>n_rebin <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of bins that the rebinned histogram should have</td>
+                </tr>
+                <tr>
+                  <td>bins <span class="m-label m-flat m-info">in</span></td>
+                  <td>Array of bin edges that the rebinned histogram should have</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a0f58078c240f7934752c8c8bc5823b14"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static TH1D* HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a0f58078c240f7934752c8c8bc5823b14">ReturnHist</a>(</span><span class="m-doc-wrap">const char* name)</span></span>
+            </h3>
+            <p>Function to get one 1D histogram from the map without number.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histogram that should be returned</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a25b65d3660a02273ac982346789e6bee"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a25b65d3660a02273ac982346789e6bee">SetToZero</a>(</span><span class="m-doc-wrap">Int_t n_histo,
+              const char* name)</span></span>
+            </h3>
+            <p>Function to set all negative bin contents to zero for a 1D histogram.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">n_histo <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of the histogram that should be modified</td>
+                </tr>
+                <tr>
+                  <td>name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histogram that should be modified</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a5f875095804a13f24568b0a18eeeb917"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a5f875095804a13f24568b0a18eeeb917">Write</a>(</span><span class="m-doc-wrap">Int_t n_histo,
+              const char* name)</span></span>
+            </h3>
+            <p>Function to write one 1D histogram of the map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">n_histo <span class="m-label m-flat m-info">in</span></td>
+                  <td>Number of the histogram that should be written</td>
+                </tr>
+                <tr>
+                  <td>name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histogram that should be written</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a422bd07ac1532b5f79761f3b47255b1d"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a422bd07ac1532b5f79761f3b47255b1d">Write</a>(</span><span class="m-doc-wrap">const char* name)</span></span>
+            </h3>
+            <p>Function to write one 1D histogram of the map without number.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histogram that should be written</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="adf167d044c6af8281e1fd9fd70693b28"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#adf167d044c6af8281e1fd9fd70693b28">Write2</a>(</span><span class="m-doc-wrap">const char* name)</span></span>
+            </h3>
+            <p>Function to write one 2D histogram of the map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Name of the histogram that should be written</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a3a156e5a0a61caa8ee635095e8de354d"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a3a156e5a0a61caa8ee635095e8de354d">WriteAll</a>(</span><span class="m-doc-wrap">const char* name = "")</span></span>
+            </h3>
+            <p>Function to write many 1D histograms of the map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Optional string that all histogram names that should be written contain (DEFAULT = "")</td>
+                </tr>
+              </tbody>
+            </table>
+<p>This function writes all histograms of the map with the default options, otherwise it writes all histograms that contain the given string in there name.</p>
+          </div></section>
+          <section class="m-doc-details" id="a423a33fd4d15c2989d8d9f5265634ee6"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a423a33fd4d15c2989d8d9f5265634ee6">WriteAll</a>(</span><span class="m-doc-wrap">const char* name,
+              const char* contains_i)</span></span>
+            </h3>
+            <p>Function to write many 1D histograms which contain specific strings of the map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>String that all histogram names that should be written contain</td>
+                </tr>
+                <tr>
+                  <td>contains_i <span class="m-label m-flat m-info">in</span></td>
+                  <td>String that of names (seperated by ':') that the histogram name should contain</td>
+                </tr>
+              </tbody>
+            </table>
+<p>This function writes all histograms of the map with that contain the given string in there name. The written histo- grams also have to contain a list of strings that are sepe- rated by a ':'.</p>
+          </div></section>
+          <section class="m-doc-details" id="a2b5dabf051dbb4303cc74b6776a349ba"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a2b5dabf051dbb4303cc74b6776a349ba">WriteAll</a>(</span><span class="m-doc-wrap">const char* name,
+              const char* contains_i,
+              const char* vetos_i)</span></span>
+            </h3>
+            <p>Function to write many 1D histograms which (not) contain specific strings of the map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>String that all histogram names that should be written contain</td>
+                </tr>
+                <tr>
+                  <td>contains_i <span class="m-label m-flat m-info">in</span></td>
+                  <td>String that of names (seperated by ':') that the histogram name should contain</td>
+                </tr>
+                <tr>
+                  <td>vetos_i <span class="m-label m-flat m-info">in</span></td>
+                  <td>String that of names (seperated by ':') that the histogram name should not contain</td>
+                </tr>
+              </tbody>
+            </table>
+<p>This function writes all histograms of the map with that contain the given string in there name. The written histo- grams also have to contain a list of strings that are sepe- rated by a ':'. In this version also a list of strings that should not be contained in the histogram name can be given.</p>
+          </div></section>
+          <section class="m-doc-details" id="abda34b999b26f55ad7403bee23713bad"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#abda34b999b26f55ad7403bee23713bad">WriteAll2</a>(</span><span class="m-doc-wrap">const char* name = "")</span></span>
+            </h3>
+            <p>Function to write many 2D histograms of the map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Optional string that all histogram names that should be written contain (DEFAULT = "")</td>
+                </tr>
+              </tbody>
+            </table>
+<p>This function writes all histograms of the map with the default options, otherwise it writes all histograms that contain the given string in there name.</p>
+          </div></section>
+          <section class="m-doc-details" id="a5fc43973045154f9f37ae29d431510cc"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a5fc43973045154f9f37ae29d431510cc">WriteAll2</a>(</span><span class="m-doc-wrap">const char* name,
+              const char* contains_i)</span></span>
+            </h3>
+            <p>Function to write many 2D histograms which contain specific strings of the map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>String that all histogram names that should be written contain</td>
+                </tr>
+                <tr>
+                  <td>contains_i <span class="m-label m-flat m-info">in</span></td>
+                  <td>String that of names (seperated by ':') that the histogram name should contain</td>
+                </tr>
+              </tbody>
+            </table>
+<p>This function writes all histograms of the map with that contain the given string in there name. The written histo- grams also have to contain a list of strings that are sepe- rated by a ':'.</p>
+          </div></section>
+          <section class="m-doc-details" id="a6b9c75d2f396e75ddc38f3a32f3f814a"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a6b9c75d2f396e75ddc38f3a32f3f814a">WriteAll2</a>(</span><span class="m-doc-wrap">const char* name,
+              const char* contains_i,
+              const char* vetos_i)</span></span>
+            </h3>
+            <p>Function to write many 2D histograms which (not) contain specific strings of the map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>String that all histogram names that should be written contain</td>
+                </tr>
+                <tr>
+                  <td>contains_i <span class="m-label m-flat m-info">in</span></td>
+                  <td>String that of names (seperated by ':') that the histogram name should contain</td>
+                </tr>
+                <tr>
+                  <td>vetos_i <span class="m-label m-flat m-info">in</span></td>
+                  <td>String that of names (seperated by ':') that the histogram name should not contain</td>
+                </tr>
+              </tbody>
+            </table>
+<p>This function writes all histograms of the map with that contain the given string in there name. The written histo- grams also have to contain a list of strings that are sepe- rated by a ':'. In this version also a list of strings that should not be contained in the histogram name can be given.</p>
+          </div></section>
+          <section class="m-doc-details" id="a88a83998532f3977feb26fe2af53a258"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a88a83998532f3977feb26fe2af53a258">WriteAllEff</a>(</span><span class="m-doc-wrap">const char* name = "")</span></span>
+            </h3>
+            <p>Function to write many efficiency containers of the map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Optional string that all efficiency containers names that should be written contain (DEFAULT = "")</td>
+                </tr>
+              </tbody>
+            </table>
+<p>This function writes all efficiency containers of the map with the default options, otherwise it writes all efficiency containers that contain the given string in there name.</p>
+          </div></section>
+          <section class="m-doc-details" id="afad18c2106e99345a34651fcffea8ffe"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#afad18c2106e99345a34651fcffea8ffe">WriteAllEff</a>(</span><span class="m-doc-wrap">const char* name,
+              const char* contains_i)</span></span>
+            </h3>
+            <p>Function to write many efficiency containers which contain specific strings of the map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>String that all efficiency names that should be written contain</td>
+                </tr>
+                <tr>
+                  <td>contains_i <span class="m-label m-flat m-info">in</span></td>
+                  <td>String that of names (seperated by ':') that the efficiency name should contain</td>
+                </tr>
+              </tbody>
+            </table>
+<p>This function writes all efficiency containers of the map with that contain the given string in there name. The written efficiencies also have to contain a list of strings that are sepe- rated by a ':'.</p>
+          </div></section>
+          <section class="m-doc-details" id="a80070cf90008e30bb778daf94a9fa92f"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a80070cf90008e30bb778daf94a9fa92f">WriteAllProf</a>(</span><span class="m-doc-wrap">const char* name = "")</span></span>
+            </h3>
+            <p>Function to write many profile containers of the map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Optional string that all profile containers names that should be written contain (DEFAULT = "")</td>
+                </tr>
+              </tbody>
+            </table>
+<p>This function writes all profile containers of the map with the default options, otherwise it writes all profile containers that contain the given string in there name.</p>
+          </div></section>
+          <section class="m-doc-details" id="ac85eef693dd133d65b2a8301955a66a2"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#ac85eef693dd133d65b2a8301955a66a2">WriteAllTrees</a>(</span><span class="m-doc-wrap">const char* name = "")</span></span>
+            </h3>
+            <p>Function to write many TTrees and TNtupleDs of the maps.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Optional string that all TTrees or TNtupleDs names that should be written contain (DEFAULT = "")</td>
+                </tr>
+              </tbody>
+            </table>
+<p>This function writes all TTrees and TNtupleDs of the maps with the default options, otherwise it writes all histograms that contain the given string in there name.</p>
+          </div></section>
+          <section class="m-doc-details" id="a71a36b20262168fe88d6efbe47fa9947"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a71a36b20262168fe88d6efbe47fa9947">WriteN</a>(</span><span class="m-doc-wrap">const char* name = "")</span></span>
+            </h3>
+            <p>Function to write many TNsparses of the map.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">name <span class="m-label m-flat m-info">in</span></td>
+                  <td>Optional string that all nSparses names that should be written contain (DEFAULT = "")</td>
+                </tr>
+              </tbody>
+            </table>
+<p>This function writes all nSparses of the map with the default options, otherwise it writes all histograms that contain the given string in there name.</p>
+          </div></section>
+          <section class="m-doc-details" id="a7a3cc1b23690daea1ffb70d196f4a0f0"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">void HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a7a3cc1b23690daea1ffb70d196f4a0f0">split</a>(</span><span class="m-doc-wrap">const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; s,
+              char delim,
+              <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/container/vector.html" target="_blank">std::<wbr/>vector</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&gt;* elems)</span></span>
+            </h3>
+            <p>Function split a string at a delimiter.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">s</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>delim <span class="m-label m-flat m-info">in</span></td>
+                  <td>Delimiter where the string should be split</td>
+                </tr>
+                <tr>
+                  <td>elems</td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+<p>Example to create a nice folder structure in your output folder //void specialAna::channel_writer(TFile* file, const char* channel) { //file1-&gt;cd(); //file1-&gt;mkdir(channel); //for ( int i = 0; i &lt; channel_stages[channel]; i++) { //char n_satge = (char)(((int)'0')+i); //file1-&gt;mkdir(TString::Format("%s/Stage_%c", channel, n_satge)); //file1-&gt;cd(TString::Format("%s/Stage_%c/", channel, n_satge)); //HistClass::WriteAll(TString::Format("_%s_", channel),TString::Format("%s:_%c_", channel, n_satge),TString::Format("sys")); //file1-&gt;cd(); //file1-&gt;mkdir(TString::Format("%s/Stage_%c/sys", channel, n_satge)); //file1-&gt;cd(TString::Format("%s/Stage_%c/sys/", channel, n_satge)); //HistClass::WriteAll(TString::Format("_%s_", channel),TString::Format("_%c_:sys", n_satge)); //} //file1-&gt;cd(); //}</p><p>This function splits a given string at a given delimineter, and pushes the results in a given vector.</p>
+          </div></section>
+          <section class="m-doc-details" id="a3b9f2e0dd38e3ceb2981c47595ad40c9"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/container/vector.html" target="_blank">std::<wbr/>vector</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&gt; HistClass::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a3b9f2e0dd38e3ceb2981c47595ad40c9">split</a>(</span><span class="m-doc-wrap">const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; s,
+              char delim)</span></span>
+            </h3>
+            <p>Function split a string at a delimiter and return the results.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">s</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>delim <span class="m-label m-flat m-info">in</span></td>
+                  <td>Delimiter where the string should be split</td>
+                </tr>
+              </tbody>
+            </table>
+<p>This function splits a given string at a given delimineter, and returns the resulting substrings as a vector.</p>
+          </div></section>
+        </section>
+        <section>
+          <h2>Variable documentation</h2>
+          <section class="m-doc-details" id="a4fca6b4a498db0d72bb1ec59415faa1b"><div>
+            <h3>
+              static <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/container/unordered_map.html" target="_blank">std::<wbr/>unordered_map</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>, TEfficiency*&gt; HistClass::<wbr/><a class="m-doc-self" href="#a4fca6b4a498db0d72bb1ec59415faa1b">effs</a>
+            </h3>
+<p>Map of a string and a TEfficiency container.</p>
+          </div></section>
+          <section class="m-doc-details" id="a9a53104c5781bee35364881a803af659"><div>
+            <h3>
+              static <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/container/unordered_map.html" target="_blank">std::<wbr/>unordered_map</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>, TH1D*&gt; HistClass::<wbr/><a class="m-doc-self" href="#a9a53104c5781bee35364881a803af659">histo</a>
+            </h3>
+<p>Map of a string and a TH1D histogram, for easy 1D histogram handling.</p>
+          </div></section>
+          <section class="m-doc-details" id="a1176edb78b4ba9f8e43d05449c1e3d8e"><div>
+            <h3>
+              static <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/container/unordered_map.html" target="_blank">std::<wbr/>unordered_map</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>, TH2D*&gt; HistClass::<wbr/><a class="m-doc-self" href="#a1176edb78b4ba9f8e43d05449c1e3d8e">histo2</a>
+            </h3>
+<p>Map of a string and a TH2D histogram, for easy 2D histogram handling.</p>
+          </div></section>
+          <section class="m-doc-details" id="a00773db07f3c29fe290be05e9f732207"><div>
+            <h3>
+              static <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/container/unordered_map.html" target="_blank">std::<wbr/>unordered_map</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>, THnSparseD*&gt; HistClass::<wbr/><a class="m-doc-self" href="#a00773db07f3c29fe290be05e9f732207">histon</a>
+            </h3>
+<p>Map of a string and a THnSparseD histogram, for easy nSparse handling.</p>
+          </div></section>
+          <section class="m-doc-details" id="a52ad0e21892263e3fc4720dcb15c86d4"><div>
+            <h3>
+              static <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/container/unordered_map.html" target="_blank">std::<wbr/>unordered_map</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>, TProfile*&gt; HistClass::<wbr/><a class="m-doc-self" href="#a52ad0e21892263e3fc4720dcb15c86d4">prof</a>
+            </h3>
+<p>Map of a string and a TEfficiency container.</p>
+          </div></section>
+          <section class="m-doc-details" id="a0e442cd33ccc9d935834fe04f8932f69"><div>
+            <h3>
+              static <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/container/unordered_map.html" target="_blank">std::<wbr/>unordered_map</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>, TTree*&gt; HistClass::<wbr/><a class="m-doc-self" href="#a0e442cd33ccc9d935834fe04f8932f69">trees</a>
+            </h3>
+<p>Map of a string and a TTree histogram, for easy tree handling.</p>
+          </div></section>
+          <section class="m-doc-details" id="abf0d7c5b5c1f1ccd60a96b92a87d15de"><div>
+            <h3>
+              static <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/container/unordered_map.html" target="_blank">std::<wbr/>unordered_map</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>, TNtupleD*&gt; HistClass::<wbr/><a class="m-doc-self" href="#abf0d7c5b5c1f1ccd60a96b92a87d15de">ttupple</a>
+            </h3>
+<p>Map of a string and a TNtupleD histogram, for easy Ntuple handling.</p>
+          </div></section>
+        </section>
+      </div>
+    </div>
+  </div>
+</article></main>
+<div class="m-doc-search" id="search">
+  <a href="#!" onclick="return hideSearch()"></a>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-m-8 m-push-m-2">
+        <div class="m-doc-search-header m-text m-small">
+          <div><span class="m-label m-default">Tab</span> / <span class="m-label m-default">T</span> to search, <span class="m-label m-default">Esc</span> to close</div>
+          <div id="search-symbolcount">…</div>
+        </div>
+        <div class="m-doc-search-content">
+          <form>
+            <input autocomplete="off" autofocus="autofocus" disabled="disabled" id="search-input" name="q" placeholder="Loading …" spellcheck="false" type="search"/>
+          </form>
+          <noscript class="m-text m-danger m-text-center">Unlike everything else in the docs, the search functionality <em>requires</em> JavaScript.</noscript>
+          <div class="m-text m-dim m-text-center" id="search-help">
+            <p class="m-noindent">Search for symbols, directories, files, pages or
+            modules. You can omit any prefix from the symbol or file path; adding a
+            <code>:</code> or <code>/</code> suffix lists all members of given symbol or
+            directory.</p>
+            <p class="m-noindent">Use <span class="m-label m-dim">↓</span>
+            / <span class="m-label m-dim">↑</span> to navigate through the list,
+            <span class="m-label m-dim">Enter</span> to go.
+            <span class="m-label m-dim">Tab</span> autocompletes common prefix, you can
+            copy a link to the result using <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">L</span> while <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">M</span> produces a Markdown link.</p>
+          </div>
+          <div class="m-text m-warning m-text-center" id="search-notfound">Sorry, nothing was found.</div>
+          <ul id="search-results"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="search-v2.js"></script>
+<script async="async" src="searchdata-v2.js"></script>
+<footer><nav>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        
+<a class="poxy-external" href="https://github.com/CMSMUSiC/NanoMUSiC/" target="_blank">Github</a>
+• <a class="poxy-external" href="https://github.com/CMSMUSiC/NanoMUSiC/issues" target="_blank">Report an issue</a>
+• <a class="poxy-external" href="https://github.com/marzer/tomlplusplus/blob/master/LICENSE" target="_blank">License</a>
+• <a download="" href="NanoMUSiC.tagfile.xml" target="_blank" type="text/xml">Doxygen tagfile</a>
+<br/><br/>
+Site generated using <a class="poxy-external" href="https://github.com/marzer/poxy/" target="_blank">Poxy</a>
+
+      </div>
+    </div>
+  </div>
+</nav></footer>
+
+
+</body></html>

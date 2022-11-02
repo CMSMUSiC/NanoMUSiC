@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8"/>
+  <title>pxl namespace | NanoMUSiC MUSiC analysis code, for NanoAOD samples</title>
+  <link href="favicon-dark.png" rel="icon" type="image/png"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <meta content="#22272e" name="theme-color"/>
+  <link href="poxy.css" referrerpolicy="no-referrer" rel="stylesheet"/>
+  <script src="poxy.js"></script>
+  <script>initialize_theme("dark");</script>
+  <meta content="NanoMUSiC" name="twitter:title"/>
+  <meta content="NanoMUSiC" property="og:title"/>
+  <meta content="NanoMUSiC" itemprop="name"/>
+  <meta content="MUSiC Team @ RWTH Aachen 3A" name="author"/>
+  <meta content="MUSiC Team @ RWTH Aachen 3A" property="article:author"/>
+  <meta content="MUSiC analysis code, for NanoAOD samples" name="description"/>
+  <meta content="MUSiC analysis code, for NanoAOD samples" name="twitter:description"/>
+  <meta content="MUSiC analysis code, for NanoAOD samples" property="og:description"/>
+  <meta content="MUSiC analysis code, for NanoAOD samples" itemprop="description"/>
+  <meta content="telephone=no" name="format-detection"/>
+  <meta content="Poxy v0.7.1" name="generator"/>
+  <meta content="strict-origin-when-cross-origin" name="referrer"/>
+  <style>div.poxy-main-banner { padding: 2rem; }</style>
+</head>
+<body>
+<header><nav id="navigation">
+  <div class="m-container">
+    <div class="m-row">
+      <a class="m-col-t-8 m-col-m-none m-left-m" href="index.html" id="m-navbar-brand">NanoMUSiC <span class="m-thin">MUSiC analysis code, for NanoAOD samples</span></a>
+      <div class="m-col-t-4 m-hide-m m-text-right m-nopadr">
+        <a class="m-doc-search-icon" href="#search" onclick="return showSearch()" title="Search"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+          <path d="m6 0c-3.31 0-6 2.69-6 6 0 3.31 2.69 6 6 6 1.49 0 2.85-0.541 3.89-1.44-0.0164 0.338 0.147 0.759 0.5 1.15l3.22 3.79c0.552 0.614 1.45 0.665 2 0.115 0.55-0.55 0.499-1.45-0.115-2l-3.79-3.22c-0.392-0.353-0.812-0.515-1.15-0.5 0.895-1.05 1.44-2.41 1.44-3.89 0-3.31-2.69-6-6-6zm0 1.56a4.44 4.44 0 0 1 4.44 4.44 4.44 4.44 0 0 1-4.44 4.44 4.44 4.44 0 0 1-4.44-4.44 4.44 4.44 0 0 1 4.44-4.44z" id="m-doc-search-icon-path"></path>
+        </svg></a>
+        <a href="#navigation" id="m-navbar-show" title="Show navigation"></a>
+        <a href="#" id="m-navbar-hide" title="Hide navigation"></a>
+      </div>
+      <div class="m-col-t-12 m-show-m m-col-m-none m-right-m" id="m-navbar-collapse">
+        <div class="m-row">
+          <ol class="m-col-t-6 m-col-m-none">
+            <li><a href="pages.html">Pages</a></li>
+            <li><a href="annotated.html">Classes</a></li>
+            <li><a href="files.html">Files</a></li>
+          </ol>
+          <ol class="m-col-t-6 m-col-m-none" start="4">
+            <li><a class="poxy-icon github poxy-external" href="https://github.com/CMSMUSiC/NanoMUSiC/" target="_blank"><svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+	<path d="M25,1.23a24.37,24.37,0,0,0-7.7,47.5C18.51,49,19,48.2,19,47.56s0-2.12,0-4.15c-6.78,1.47-8.21-3.27-8.21-3.27C9.61,37.33,8,36.58,8,36.58c-2.21-1.51.17-1.48.17-1.48a5.12,5.12,0,0,1,3.73,2.51c2.17,3.72,5.7,2.65,7.09,2a5.25,5.25,0,0,1,1.55-3.26c-5.41-.61-11.1-2.7-11.1-12A9.41,9.41,0,0,1,12,17.79a8.75,8.75,0,0,1,.24-6.45s2-.66,6.7,2.49a23.1,23.1,0,0,1,12.2,0c4.66-3.15,6.7-2.49,6.7-2.49A8.75,8.75,0,0,1,38,17.79a9.41,9.41,0,0,1,2.51,6.54c0,9.36-5.7,11.42-11.13,12a5.83,5.83,0,0,1,1.65,4.51c0,3.26,0,5.89,0,6.69,0,.65.44,1.41,1.68,1.17A24.38,24.38,0,0,0,25,1.23Z" fill="currentColor"></path>
+</svg>
+</a></li>
+            <li><a class="poxy-icon theme" href="#poxy-theme-switch" id="poxy-theme-switch" onclick="toggle_theme();"><svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+	<circle cx="185.6708" cy="183.8122" fill="currentColor" r="65.625"></circle>
+	<path d="M185.6708,87.5622a13.1256,13.1256,0,0,0,13.125-13.125V52.5622a13.125,13.125,0,1,0-26.25,0v21.875A13.1257,13.1257,0,0,0,185.6708,87.5622Z" fill="currentColor"></path>
+	<path d="M99.051,115.7519a13.1236,13.1236,0,1,0,18.56-18.56L102.1442,81.726a13.1236,13.1236,0,0,0-18.5595,18.56Z" fill="currentColor"></path>
+	<path d="M89.4208,183.8122a13.1257,13.1257,0,0,0-13.125-13.125H54.4208a13.125,13.125,0,0,0,0,26.25h21.875A13.1256,13.1256,0,0,0,89.4208,183.8122Z" fill="currentColor"></path>
+	<path d="M99.051,251.8725,83.5847,267.3431a13.1236,13.1236,0,1,0,18.56,18.56l15.4663-15.4706a13.1236,13.1236,0,1,0-18.5595-18.56Z" fill="currentColor"></path>
+	<path d="M185.6708,280.0622a13.1258,13.1258,0,0,0-13.125,13.125v21.875a13.125,13.125,0,0,0,26.25,0v-21.875A13.1257,13.1257,0,0,0,185.6708,280.0622Z" fill="currentColor"></path>
+	<path d="M272.2907,251.8725a13.1236,13.1236,0,1,0-18.56,18.56l15.4663,15.4706a13.1236,13.1236,0,1,0,18.56-18.56Z" fill="currentColor"></path>
+	<path d="M330.0458,183.8122a13.1257,13.1257,0,0,0-13.125-13.125h-21.875a13.125,13.125,0,0,0,0,26.25h21.875A13.1256,13.1256,0,0,0,330.0458,183.8122Z" fill="currentColor"></path>
+	<path d="M263.0109,119.5971a13.0824,13.0824,0,0,0,9.28-3.8452l15.4663-15.4663a13.1236,13.1236,0,1,0-18.56-18.56L253.7312,97.1923a13.125,13.125,0,0,0,9.28,22.4048Z" fill="currentColor"></path>
+	<path d="M456.9379,401.6714a63.97,63.97,0,0,1-14.9963,7.2055c-19.6448,6.5283-41.8787,2.9566-58.1439-9.8523a68.9311,68.9311,0,0,1-10.835-10.8339c-12.8088-16.2663-16.3806-38.5-9.8523-58.1471a63.8444,63.8444,0,0,1,7.2077-14.9931,8.8036,8.8036,0,0,0-10.1172-13.3034,87.5188,87.5188,0,1,0,110.0372,110.04A8.8,8.8,0,0,0,456.9379,401.6714Z" fill="currentColor"></path>
+</svg>
+</a></li>
+            <li class="m-show-m"><a class="m-doc-search-icon" href="#search" onclick="return showSearch()" title="Search"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+              <use href="#m-doc-search-icon-path"></use>
+            </svg></a></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav></header>
+<main><article>
+  <div class="m-container m-container-inflatable">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        <h1>
+          pxl <span class="m-thin">namespace</span>
+        </h1>
+        <nav class="m-block m-default poxy-toc">
+          <h3>Contents</h3>
+          <ul>
+            <li>
+              Reference
+              <ul>
+                <li><a href="#namespaces">Namespaces</a></li>
+                <li><a href="#nested-classes">Classes</a></li>
+                <li><a href="#enum-members">Enums</a></li>
+                <li><a href="#typedef-members">Typedefs</a></li>
+                <li><a href="#func-members">Functions</a></li>
+              </ul>
+            </li>
+          </ul>
+        </nav>
+<p>This class serves the PXL I/O scheme by managing the relation of classes to UUIDs.</p>
+        <section id="namespaces">
+          <h2><a href="#namespaces">Namespaces</a></h2>
+          <dl class="m-doc">
+            <dt>namespace <a class="m-doc" href="namespacepxl_1_1skip_space.html">skipSpace</a></dt>
+            <dd></dd>
+          </dl>
+        </section>
+        <section id="nested-classes">
+          <h2><a href="#nested-classes">Classes</a></h2>
+          <dl class="m-doc">
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_analysis_fork.html">AnalysisFork</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_analysis_process.html">AnalysisProcess</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_basic3_vector.html">Basic3Vector</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_basic_container.html">BasicContainer</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_basic_matrix.html">BasicMatrix</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_basic_n_vector.html">BasicNVector</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_buffer_input.html">BufferInput</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_buffer_output.html">BufferOutput</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_chunk_reader.html">ChunkReader</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_chunk_writer.html">ChunkWriter</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_collision.html">Collision</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_common_particle.html">CommonParticle</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_common_vertex.html">CommonVertex</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              <div class="m-doc-template">template&lt;class comparetype&gt;</div>
+              class <a class="m-doc" href="classpxl_1_1_comparator_interface.html">ComparatorInterface</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_configuration.html">Configuration</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_console_log_handler.html">ConsoleLogHandler</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_core.html">Core</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_event.html">Event</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_event_view.html">EventView</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_file.html">File</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_file_factory.html">FileFactory</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_file_impl.html">FileImpl</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_file_producer_interface.html">FileProducerInterface</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              <div class="m-doc-template">template&lt;class T&gt;</div>
+              class <a class="m-doc" href="classpxl_1_1_file_producer_template.html">FileProducerTemplate</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              <div class="m-doc-template">template&lt;class objecttype, class compare&gt;</div>
+              class <a class="m-doc" href="classpxl_1_1_filter.html">Filter</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              <div class="m-doc-template">template&lt;class objecttype&gt;</div>
+              class <a class="m-doc" href="classpxl_1_1_filter_criterion_interface.html">FilterCriterionInterface</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_generic_input_handler.html">GenericInputHandler</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_generic_output_handler.html">GenericOutputHandler</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_hep.html">Hep</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_id.html">Id</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_information_chunk.html">InformationChunk</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_input_file.html">InputFile</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_input_handler.html">InputHandler</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_input_stream.html">InputStream</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_local_file_impl.html">LocalFileImpl</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_log_buffer.html">LogBuffer</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_log_dispatcher.html">LogDispatcher</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_log_handler.html">LogHandler</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_logger.html">Logger</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_lorentz_vector.html">LorentzVector</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_message_dispatcher.html">MessageDispatcher</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_message_handler.html">MessageHandler</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_named_t_m_p_file.html">NamedTMPFile</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_object.html">Object</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_object_factory.html">ObjectFactory</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_object_manager.html">ObjectManager</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_object_owner.html">ObjectOwner</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              <div class="m-doc-template">template&lt;class objecttype&gt;</div>
+              class <a class="m-doc" href="classpxl_1_1_object_owner_type_iterator.html">ObjectOwnerTypeIterator</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_object_producer_interface.html">ObjectProducerInterface</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              <div class="m-doc-template">template&lt;class T&gt;</div>
+              class <a class="m-doc" href="classpxl_1_1_object_producer_template.html">ObjectProducerTemplate</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_output_file.html">OutputFile</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_output_handler.html">OutputHandler</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_output_stream.html">OutputStream</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_particle.html">Particle</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_particle_p_d_gid_pt_criterion.html">ParticlePDGidPtCriterion</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_particle_pt_comparator.html">ParticlePtComparator</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_particle_pt_criterion.html">ParticlePtCriterion</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_particle_pt_eta_name_criterion.html">ParticlePtEtaNameCriterion</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_plugin_manager.html">PluginManager</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_random.html">Random</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_random_access_input_file.html">RandomAccessInputFile</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_relations.html">Relations</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_relative.html">Relative</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_rotation_matrix.html">RotationMatrix</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_serializable.html">Serializable</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_soft_relations.html">SoftRelations</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_std_file_impl.html">StdFileImpl</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_tokenizer.html">Tokenizer</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_user_record_helper.html">UserRecordHelper</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_user_records.html">UserRecords</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_variant.html">Variant</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_vertex.html">Vertex</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1_wk_ptr_base.html">WkPtrBase</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1d_cache_input_file.html">dCacheInputFile</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1d_cap_file_impl.html">dCapFileImpl</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a class="m-doc" href="classpxl_1_1s_f_t_p_file_impl.html">sFTPFileImpl</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              <div class="m-doc-template">template&lt;class objecttype&gt;</div>
+              class <a class="m-doc" href="classpxl_1_1weak__ptr.html">weak_ptr</a>
+            </dt>
+            <dd></dd>
+          </dl>
+        </section>
+        <section id="enum-members">
+          <h2><a href="#enum-members">Enums</a></h2>
+          <dl class="m-doc">
+            <dt id="aa2803878ec506ff556ee8052dc205e88">
+              <span class="m-doc-wrap-bumper">enum <a class="m-doc-self" href="#aa2803878ec506ff556ee8052dc205e88">LogLevel</a> { </span><span class="m-doc-wrap"><a class="m-doc-self" href="#aa2803878ec506ff556ee8052dc205e88">LOG_LEVEL_ALL</a>,
+              <a class="m-doc-self" href="#aa2803878ec506ff556ee8052dc205e88">LOG_LEVEL_DEBUG</a>,
+              <a class="m-doc-self" href="#aa2803878ec506ff556ee8052dc205e88">LOG_LEVEL_INFO</a>,
+              <a class="m-doc-self" href="#aa2803878ec506ff556ee8052dc205e88">LOG_LEVEL_WARNING</a>,
+              <a class="m-doc-self" href="#aa2803878ec506ff556ee8052dc205e88">LOG_LEVEL_ERROR</a>,
+              <a class="m-doc-self" href="#aa2803878ec506ff556ee8052dc205e88">LOG_LEVEL_NONE</a> }</span>
+            </dt>
+            <dd></dd>
+            <dt id="ae58cd884d34dd6dc5807bde796b22ea9">
+              <span class="m-doc-wrap-bumper">enum <a class="m-doc-self" href="#ae58cd884d34dd6dc5807bde796b22ea9">OpenModeEnum</a> { </span><span class="m-doc-wrap"><a class="m-doc-self" href="#ae58cd884d34dd6dc5807bde796b22ea9">OpenRead</a> = 1,
+              <a class="m-doc-self" href="#ae58cd884d34dd6dc5807bde796b22ea9">OpenWrite</a> = 2,
+              <a class="m-doc-self" href="#ae58cd884d34dd6dc5807bde796b22ea9">OpenOverwrite</a> = 4 }</span>
+            </dt>
+            <dd></dd>
+            <dt id="a50b4b5d7346adc40cc4674a15610a03d">
+              <span class="m-doc-wrap-bumper">enum <a class="m-doc-self" href="#a50b4b5d7346adc40cc4674a15610a03d">SeekDirectionEnum</a> { </span><span class="m-doc-wrap"><a class="m-doc-self" href="#a50b4b5d7346adc40cc4674a15610a03d">SeekBegin</a>,
+              <a class="m-doc-self" href="#a50b4b5d7346adc40cc4674a15610a03d">SeekCurrent</a>,
+              <a class="m-doc-self" href="#a50b4b5d7346adc40cc4674a15610a03d">SeekEnd</a> }</span>
+            </dt>
+            <dd></dd>
+            <dt id="f81427cb0836fe7f9f7cbad3ba551a48ec9b37541330a971dde483cb2d82f7f7">
+              <span class="m-doc-wrap-bumper">enum <a class="m-doc" href="#af7ae1a96f4c70538f6387257fd6f9fd8">StorageOrder</a> { </span><span class="m-doc-wrap"><a class="m-doc-self" href="#f81427cb0836fe7f9f7cbad3ba551a48ec9b37541330a971dde483cb2d82f7f7">ROWMAJOR</a>,
+              <a class="m-doc-self" href="#f81427cb0836fe7f9f7cbad3ba551a48ec9b37541330a971dde483cb2d82f7f7">COLUMNMAJOR</a> }</span>
+            </dt>
+            <dd></dd>
+          </dl>
+        </section>
+        <section id="typedef-members">
+          <h2><a href="#typedef-members">Typedefs</a></h2>
+          <dl class="m-doc">
+            <dt>
+              using <a class="m-doc" href="#a9f0fb37dcffd5e9b09c08620c5d9c397">ParticleFilter</a> = <a class="m-doc" href="classpxl_1_1_filter.html">Filter</a>&lt;<a class="m-doc" href="classpxl_1_1_particle.html">Particle</a>, <a class="m-doc" href="classpxl_1_1_particle_pt_comparator.html">ParticlePtComparator</a>&gt;
+            </dt>
+            <dd></dd>
+          </dl>
+        </section>
+        <section id="func-members">
+          <h2><a href="#func-members">Functions</a></h2>
+          <dl class="m-doc">
+            <dt id="a0c4e1c40b93c1426be45ee71f006bcda">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#a0c4e1c40b93c1426be45ee71f006bcda">LogLevelToString</a>(</span><span class="m-doc-wrap"><a class="m-doc" href="namespacepxl.html#aa2803878ec506ff556ee8052dc205e88">LogLevel</a> level) -&gt; <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp;</span>
+            </dt>
+            <dd></dd>
+            <dt id="a348838c38e29172db9236f08fd96fa51">
+              <div class="m-doc-template">template&lt;&gt;</div>
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#a348838c38e29172db9236f08fd96fa51">Variant::to&lt;std::string&gt;</a>(</span><span class="m-doc-wrap">) const -&gt; <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a></span>
+            </dt>
+            <dd></dd>
+            <dt id="af72f2a220208937fceae6784e3827220">
+              <div class="m-doc-template">template&lt;&gt;</div>
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#af72f2a220208937fceae6784e3827220">Variant::to&lt;std::vector&lt;Variant&gt;&gt;</a>(</span><span class="m-doc-wrap">) const -&gt; <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/container/vector.html" target="_blank">std::<wbr/>vector</a>&lt;<a class="m-doc" href="classpxl_1_1_variant.html">Variant</a>&gt;</span>
+            </dt>
+            <dd></dd>
+            <dt id="ad5d9993a61a75cf187a21293014dd737">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#ad5d9993a61a75cf187a21293014dd737">clearPathName</a>(</span><span class="m-doc-wrap">const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; path) -&gt; <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a> <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a></span>
+            </dt>
+            <dd></dd>
+            <dt id="aa96953839edd598a6fda4689a5bbf484">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#aa96953839edd598a6fda4689a5bbf484">compPart</a>(</span><span class="m-doc-wrap"><a class="m-doc" href="classpxl_1_1_particle.html">pxl::<wbr/>Particle</a>* first,
+              <a class="m-doc" href="classpxl_1_1_particle.html">pxl::<wbr/>Particle</a>* second) -&gt; bool</span>
+            </dt>
+            <dd></dd>
+            <dt id="aa656b00bcfb11f066358deea2f491a7a">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#aa656b00bcfb11f066358deea2f491a7a">createDirectory</a>(</span><span class="m-doc-wrap">const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; path) -&gt; bool <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a></span>
+            </dt>
+            <dd></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc" href="#a21b5965003d046282ce19a0715a42f3b">expandEnvironmentVariables</a>(</span><span class="m-doc-wrap">const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; input) -&gt; <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a> <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a></span>
+            </dt>
+            <dd></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc" href="#ad8e5398846f5604a3fbba3eb3b1703ea">explode</a>(</span><span class="m-doc-wrap">const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; s,
+              <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/container/vector.html" target="_blank">std::<wbr/>vector</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&gt;&amp; v,
+              const bool trim_spaces,
+              const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; t) -&gt; void <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a></span>
+            </dt>
+            <dd></dd>
+            <dt id="a68546bc6b2c65ba1aaa012780e6912a8">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#a68546bc6b2c65ba1aaa012780e6912a8">fillConfigFromSimpleIni</a>(</span><span class="m-doc-wrap">const CSimpleIniA&amp; iniFile) -&gt; void <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a></span>
+            </dt>
+            <dd>Add all items from a CSimpleIniA object to the pcl <a class="m-doc" href="classpxl_1_1_configuration.html">Configuration</a> instance.</dd>
+            <dt id="a72150d45d91cfa83646673ed33dd54c7">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#a72150d45d91cfa83646673ed33dd54c7">getCpuTime</a>(</span><span class="m-doc-wrap">) -&gt; <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> double</span>
+            </dt>
+            <dd></dd>
+            <dt id="a2cf21720566d475ff1c3a5fa3c292546">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#a2cf21720566d475ff1c3a5fa3c292546">getParentDirectory</a>(</span><span class="m-doc-wrap">const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; path) -&gt; <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a> <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a></span>
+            </dt>
+            <dd></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc" href="#a293bc85a0eca67f4a0f18d36bfe5290b">implode</a>(</span><span class="m-doc-wrap">const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/container/vector.html" target="_blank">std::<wbr/>vector</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&gt;&amp; v,
+              const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; t) -&gt; <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a></span>
+            </dt>
+            <dd></dd>
+            <dt id="acceb9e5999d6ad93a76d6f13e5eafa1c">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#acceb9e5999d6ad93a76d6f13e5eafa1c">intToLogLevel</a>(</span><span class="m-doc-wrap">int i) -&gt; <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> <a class="m-doc" href="namespacepxl.html#aa2803878ec506ff556ee8052dc205e88">LogLevel</a></span>
+            </dt>
+            <dd></dd>
+            <dt id="a5d6b2310f2579cbf869d24087089c029">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#a5d6b2310f2579cbf869d24087089c029">isAbsolutePath</a>(</span><span class="m-doc-wrap">const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; path) -&gt; bool <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a></span>
+            </dt>
+            <dd></dd>
+            <dt id="ac1bac77f87ec356165ef219b177c561e">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#ac1bac77f87ec356165ef219b177c561e">isDirectory</a>(</span><span class="m-doc-wrap">const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; path) -&gt; bool <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a></span>
+            </dt>
+            <dd></dd>
+            <dt id="affc92681eb5eaf2682a0cf923f34e94a">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#affc92681eb5eaf2682a0cf923f34e94a">isFile</a>(</span><span class="m-doc-wrap">const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; path) -&gt; bool <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a></span>
+            </dt>
+            <dd></dd>
+            <dt id="aea0ae9ab093941fcf705982e0dda3f74">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#aea0ae9ab093941fcf705982e0dda3f74">loadDefaultConfigurations</a>(</span><span class="m-doc-wrap">) -&gt; void <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a></span>
+            </dt>
+            <dd>loads configurations from /etc/pxlrc and HOME/.pxlrc</dd>
+            <dt id="a4c8d346aaa14d6ebaeac2183b6184ab9">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#a4c8d346aaa14d6ebaeac2183b6184ab9">operator!=</a>(</span><span class="m-doc-wrap">const <a class="m-doc" href="classpxl_1_1_basic3_vector.html">Basic3Vector</a>&amp; obj1,
+              const <a class="m-doc" href="classpxl_1_1_basic3_vector.html">Basic3Vector</a>&amp; obj2) -&gt; <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> bool</span>
+            </dt>
+            <dd></dd>
+            <dt id="a939db489ab19f05274af15d08f93b816">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#a939db489ab19f05274af15d08f93b816">operator!=</a>(</span><span class="m-doc-wrap">const <a class="m-doc" href="classpxl_1_1_basic_matrix.html">BasicMatrix</a>&amp; obj1,
+              const <a class="m-doc" href="classpxl_1_1_basic_matrix.html">BasicMatrix</a>&amp; obj2) -&gt; <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> bool</span>
+            </dt>
+            <dd></dd>
+            <dt id="abe449f184b052af5d9c8e6aa00ca3776">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#abe449f184b052af5d9c8e6aa00ca3776">operator!=</a>(</span><span class="m-doc-wrap">const <a class="m-doc" href="classpxl_1_1_basic_n_vector.html">BasicNVector</a>&amp; obj1,
+              const <a class="m-doc" href="classpxl_1_1_basic_n_vector.html">BasicNVector</a>&amp; obj2) -&gt; <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> bool</span>
+            </dt>
+            <dd></dd>
+            <dt id="af46472ac54840ff1c36635156498f064">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#af46472ac54840ff1c36635156498f064">operator!=</a>(</span><span class="m-doc-wrap">const <a class="m-doc" href="classpxl_1_1_lorentz_vector.html">LorentzVector</a>&amp; obj1,
+              const <a class="m-doc" href="classpxl_1_1_lorentz_vector.html">LorentzVector</a>&amp; obj2) -&gt; <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> bool</span>
+            </dt>
+            <dd></dd>
+            <dt id="a8cebb9c684317076e64fd5e28c9e540a">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#a8cebb9c684317076e64fd5e28c9e540a">operator!=</a>(</span><span class="m-doc-wrap">const <a class="m-doc" href="classpxl_1_1_particle.html">Particle</a>&amp; obj1,
+              const <a class="m-doc" href="classpxl_1_1_particle.html">Particle</a>&amp; obj2) -&gt; <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> bool</span>
+            </dt>
+            <dd></dd>
+            <dt id="a36c0747413d7b562c5011996a0ae6d41">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#a36c0747413d7b562c5011996a0ae6d41">operator!=</a>(</span><span class="m-doc-wrap">const <a class="m-doc" href="classpxl_1_1_vertex.html">Vertex</a>&amp; obj1,
+              const <a class="m-doc" href="classpxl_1_1_vertex.html">Vertex</a>&amp; obj2) -&gt; <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> bool</span>
+            </dt>
+            <dd></dd>
+            <dt id="aba142ab2f56d4095bf5ba126247dd344">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#aba142ab2f56d4095bf5ba126247dd344">operator*</a>(</span><span class="m-doc-wrap">const double skalar,
+              const <a class="m-doc" href="classpxl_1_1_basic3_vector.html">Basic3Vector</a>&amp; vec) -&gt; <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> <a class="m-doc" href="classpxl_1_1_basic3_vector.html">Basic3Vector</a></span>
+            </dt>
+            <dd></dd>
+            <dt id="aa4b1e1c118580dd6e3472eb697e13114">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#aa4b1e1c118580dd6e3472eb697e13114">operator*</a>(</span><span class="m-doc-wrap">const <a class="m-doc" href="classpxl_1_1_basic3_vector.html">Basic3Vector</a>&amp; vec,
+              const double skalar) -&gt; <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> <a class="m-doc" href="classpxl_1_1_basic3_vector.html">Basic3Vector</a></span>
+            </dt>
+            <dd></dd>
+            <dt id="acece6400a95843be6e4398d0fab28b2e">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#acece6400a95843be6e4398d0fab28b2e">operator*</a>(</span><span class="m-doc-wrap">double skalar,
+              const <a class="m-doc" href="classpxl_1_1_basic_matrix.html">BasicMatrix</a>&amp; vec) -&gt; <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> <a class="m-doc" href="classpxl_1_1_basic_matrix.html">BasicMatrix</a></span>
+            </dt>
+            <dd></dd>
+            <dt id="a66b66028508605fb49583cc6a8116ffa">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#a66b66028508605fb49583cc6a8116ffa">operator*</a>(</span><span class="m-doc-wrap">const <a class="m-doc" href="classpxl_1_1_basic_matrix.html">BasicMatrix</a>&amp; vec,
+              double skalar) -&gt; <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> <a class="m-doc" href="classpxl_1_1_basic_matrix.html">BasicMatrix</a></span>
+            </dt>
+            <dd></dd>
+            <dt id="a5e75cd305a915bbc5530368dabeda6e9">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#a5e75cd305a915bbc5530368dabeda6e9">operator*</a>(</span><span class="m-doc-wrap">const <a class="m-doc" href="classpxl_1_1_basic_matrix.html">BasicMatrix</a>&amp; M,
+              const <a class="m-doc" href="classpxl_1_1_basic_n_vector.html">BasicNVector</a>&amp; vec) -&gt; <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> <a class="m-doc" href="classpxl_1_1_basic_n_vector.html">BasicNVector</a></span>
+            </dt>
+            <dd></dd>
+            <dt id="a5f95421bd897ed7ffded50b12a574638">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#a5f95421bd897ed7ffded50b12a574638">operator*</a>(</span><span class="m-doc-wrap">const <a class="m-doc" href="classpxl_1_1_basic_matrix.html">BasicMatrix</a>&amp; M,
+              const <a class="m-doc" href="classpxl_1_1_basic3_vector.html">Basic3Vector</a>&amp; vec) -&gt; <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> <a class="m-doc" href="classpxl_1_1_basic3_vector.html">Basic3Vector</a></span>
+            </dt>
+            <dd></dd>
+            <dt id="abfb0f98d28b925598cd3c2695c092339">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#abfb0f98d28b925598cd3c2695c092339">operator*</a>(</span><span class="m-doc-wrap">double skalar,
+              const <a class="m-doc" href="classpxl_1_1_basic_n_vector.html">BasicNVector</a>&amp; vec) -&gt; <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> <a class="m-doc" href="classpxl_1_1_basic_n_vector.html">BasicNVector</a></span>
+            </dt>
+            <dd></dd>
+            <dt id="a4dd7157cbcb3f47b9e6c144c58567351">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#a4dd7157cbcb3f47b9e6c144c58567351">operator*</a>(</span><span class="m-doc-wrap">const <a class="m-doc" href="classpxl_1_1_basic_n_vector.html">BasicNVector</a>&amp; vec,
+              double skalar) -&gt; <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> <a class="m-doc" href="classpxl_1_1_basic_n_vector.html">BasicNVector</a></span>
+            </dt>
+            <dd></dd>
+            <dt id="a144ba670a325156850a559beab87961f">
+              <div class="m-doc-template">template&lt;class objecttype&gt;</div>
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#a144ba670a325156850a559beab87961f">operator*</a>(</span><span class="m-doc-wrap"><a class="m-doc" href="classpxl_1_1weak__ptr.html">weak_<wbr/>ptr</a>&lt;objecttype&gt;&amp; wkPtr) -&gt; objecttype&amp;</span>
+            </dt>
+            <dd></dd>
+            <dt id="aeae0595b07df3b42c1856420d1e96de8">
+              <div class="m-doc-template">template&lt;class objecttype&gt;</div>
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#aeae0595b07df3b42c1856420d1e96de8">operator*</a>(</span><span class="m-doc-wrap">const <a class="m-doc" href="classpxl_1_1weak__ptr.html">weak_<wbr/>ptr</a>&lt;objecttype&gt;&amp; wkPtr) -&gt; const objecttype&amp;</span>
+            </dt>
+            <dd></dd>
+            <dt id="a080762f4b0ac64b6d921a4a5c6f374a1">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#a080762f4b0ac64b6d921a4a5c6f374a1">operator&lt;&lt;</a>(</span><span class="m-doc-wrap"><a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/io/basic_ostream.html" target="_blank">std::<wbr/>ostream</a>&amp; os,
+              const <a class="m-doc" href="classpxl_1_1_id.html">Id</a>&amp; id) -&gt; <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/io/basic_ostream.html" target="_blank">std::<wbr/>ostream</a>&amp;</span>
+            </dt>
+            <dd></dd>
+            <dt id="a2f9369f4db8d58d4f78304f008d94c72">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#a2f9369f4db8d58d4f78304f008d94c72">operator&lt;&lt;</a>(</span><span class="m-doc-wrap"><a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/io/basic_ostream.html" target="_blank">std::<wbr/>ostream</a>&amp; os,
+              const <a class="m-doc" href="classpxl_1_1_variant.html">Variant</a>&amp; v) -&gt; <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/io/basic_ostream.html" target="_blank">std::<wbr/>ostream</a>&amp;</span>
+            </dt>
+            <dd></dd>
+            <dt id="a23aca4365b37065fd14de599e26dc3f3">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#a23aca4365b37065fd14de599e26dc3f3">operator==</a>(</span><span class="m-doc-wrap">const <a class="m-doc" href="classpxl_1_1_basic3_vector.html">Basic3Vector</a>&amp; obj1,
+              const <a class="m-doc" href="classpxl_1_1_basic3_vector.html">Basic3Vector</a>&amp; obj2) -&gt; <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> bool</span>
+            </dt>
+            <dd></dd>
+            <dt id="a3ff2c9f172bc71f021aa95e6c796badf">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#a3ff2c9f172bc71f021aa95e6c796badf">operator==</a>(</span><span class="m-doc-wrap">const <a class="m-doc" href="classpxl_1_1_basic_matrix.html">BasicMatrix</a>&amp; obj1,
+              const <a class="m-doc" href="classpxl_1_1_basic_matrix.html">BasicMatrix</a>&amp; obj2) -&gt; <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> bool</span>
+            </dt>
+            <dd></dd>
+            <dt id="a59e6851abb3c85074cffa37dcb2387e9">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#a59e6851abb3c85074cffa37dcb2387e9">operator==</a>(</span><span class="m-doc-wrap">const <a class="m-doc" href="classpxl_1_1_basic_n_vector.html">BasicNVector</a>&amp; obj1,
+              const <a class="m-doc" href="classpxl_1_1_basic_n_vector.html">BasicNVector</a>&amp; obj2) -&gt; <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> bool</span>
+            </dt>
+            <dd></dd>
+            <dt id="a50f445e4d5bafb8741ff9c12f0305591">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#a50f445e4d5bafb8741ff9c12f0305591">operator==</a>(</span><span class="m-doc-wrap">const <a class="m-doc" href="classpxl_1_1_lorentz_vector.html">LorentzVector</a>&amp; obj1,
+              const <a class="m-doc" href="classpxl_1_1_lorentz_vector.html">LorentzVector</a>&amp; obj2) -&gt; <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> bool</span>
+            </dt>
+            <dd></dd>
+            <dt id="ac014b48d7f80607c25df78585fcbcb11">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#ac014b48d7f80607c25df78585fcbcb11">operator==</a>(</span><span class="m-doc-wrap">const <a class="m-doc" href="classpxl_1_1_particle.html">Particle</a>&amp; obj1,
+              const <a class="m-doc" href="classpxl_1_1_particle.html">Particle</a>&amp; obj2) -&gt; <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> bool</span>
+            </dt>
+            <dd></dd>
+            <dt id="af4cb19e7b109712cd7beba9aa2e2a7ea">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#af4cb19e7b109712cd7beba9aa2e2a7ea">operator==</a>(</span><span class="m-doc-wrap">const <a class="m-doc" href="classpxl_1_1_vertex.html">Vertex</a>&amp; obj1,
+              const <a class="m-doc" href="classpxl_1_1_vertex.html">Vertex</a>&amp; obj2) -&gt; <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> bool</span>
+            </dt>
+            <dd></dd>
+            <dt id="a4c35b2d05f6fa9327599470e1a613fbe">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#a4c35b2d05f6fa9327599470e1a613fbe">replace</a>(</span><span class="m-doc-wrap"><a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; context,
+              const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; from,
+              const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; to) -&gt; <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp;</span>
+            </dt>
+            <dd></dd>
+            <dt id="ae283a40e7bf5abf179d085f0791c0451">
+              <div class="m-doc-template">template&lt;class T&gt;</div>
+              <span class="m-doc-wrap-bumper">void <a class="m-doc-self" href="#ae283a40e7bf5abf179d085f0791c0451">safe_delete</a>(</span><span class="m-doc-wrap">T*&amp; p)</span>
+            </dt>
+            <dd></dd>
+            <dt id="a03eb4c77adbea5e768476b4d8ed8fdf7">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#a03eb4c77adbea5e768476b4d8ed8fdf7">safe_string</a>(</span><span class="m-doc-wrap">const char* ptr) -&gt; const char*</span>
+            </dt>
+            <dd></dd>
+            <dt id="a7dbca8a3fe7c607c8fb6d5d64c5a1c74">
+              <span class="m-doc-wrap-bumper">void <a class="m-doc-self" href="#a7dbca8a3fe7c607c8fb6d5d64c5a1c74">sortParticles</a>(</span><span class="m-doc-wrap"><a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/container/vector.html" target="_blank">std::<wbr/>vector</a>&lt;<a class="m-doc" href="classpxl_1_1_particle.html">pxl::<wbr/>Particle</a>*&gt;&amp; vec)</span>
+            </dt>
+            <dd></dd>
+            <dt id="a3d02b8420aa8cb883fadbc57fb30cdad">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#a3d02b8420aa8cb883fadbc57fb30cdad">splitSchema</a>(</span><span class="m-doc-wrap">const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; url,
+              <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; schema,
+              <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; path) -&gt; void <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a></span>
+            </dt>
+            <dd></dd>
+            <dt id="af22c8fe2c93dde81dafbec5e1ac13b70">
+              <div class="m-doc-template">template&lt;typename T&gt;</div>
+              <span class="m-doc-wrap-bumper">void <a class="m-doc-self" href="#af22c8fe2c93dde81dafbec5e1ac13b70">swap_endianess</a>(</span><span class="m-doc-wrap">T&amp; t)</span>
+            </dt>
+            <dd></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc" href="#a46971e4f31f6cd630377d2751c724b5c">trim</a>(</span><span class="m-doc-wrap">const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; s,
+              const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; t) -&gt; <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a> <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a></span>
+            </dt>
+            <dd></dd>
+            <dt id="afadca93d49c9f4ecff0cd62345bdd8f6">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#afadca93d49c9f4ecff0cd62345bdd8f6">trim</a>(</span><span class="m-doc-wrap">const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; s) -&gt; <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a> <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a></span>
+            </dt>
+            <dd></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc" href="#a7d5f1c395ab6616a0fd0cdd56f30a60f">trim_left</a>(</span><span class="m-doc-wrap">const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; s,
+              const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; t) -&gt; <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a> <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a></span>
+            </dt>
+            <dd></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc" href="#ad6862ebbad2672bf7da7cffb51c85417">trim_right</a>(</span><span class="m-doc-wrap">const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; s,
+              const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; t) -&gt; <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a> <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a></span>
+            </dt>
+            <dd></dd>
+          </dl>
+        </section>
+        <section>
+          <h2>Enum documentation</h2>
+          <section class="m-doc-details" id="af7ae1a96f4c70538f6387257fd6f9fd8"><div>
+            <h3>
+              enum pxl::<wbr/><a class="m-doc-self" href="#af7ae1a96f4c70538f6387257fd6f9fd8">StorageOrder</a>
+            </h3>
+<p>Storage Order</p>
+          </div></section>
+        </section>
+        <section>
+          <h2>Typedef documentation</h2>
+          <section class="m-doc-details" id="a9f0fb37dcffd5e9b09c08620c5d9c397"><div>
+            <h3>
+              typedef <a class="m-doc" href="classpxl_1_1_filter.html">Filter</a>&lt;<a class="m-doc" href="classpxl_1_1_particle.html">Particle</a>, <a class="m-doc" href="classpxl_1_1_particle_pt_comparator.html">ParticlePtComparator</a>&gt; pxl::<wbr/><a class="m-doc-self" href="#a9f0fb37dcffd5e9b09c08620c5d9c397">ParticleFilter</a>
+            </h3>
+<p>This typedef provides a filter for PXL particles which sorts the particle by transverse momentum. The concrete filter criterion is passed at evaluation time, e.g. the <a class="m-doc" href="classpxl_1_1_particle_pt_criterion.html">ParticlePtCriterion</a> or the <a class="m-doc" href="classpxl_1_1_particle_pt_eta_name_criterion.html">ParticlePtEtaNameCriterion</a>. See the example for further hints on how to use the filters.</p>
+          </div></section>
+        </section>
+        <section>
+          <h2>Function documentation</h2>
+          <section class="m-doc-details" id="a21b5965003d046282ce19a0715a42f3b"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a> <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> pxl::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a21b5965003d046282ce19a0715a42f3b">expandEnvironmentVariables</a>(</span><span class="m-doc-wrap">const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; input)</span></span>
+            </h3>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">input</td>
+                  <td>String</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td>input string with expanded variables.</td>
+                </tr>
+              </tfoot>
+            </table>
+<p>Function to expand enviroment variables in a string.</p>
+          </div></section>
+          <section class="m-doc-details" id="ad8e5398846f5604a3fbba3eb3b1703ea"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">void <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> pxl::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#ad8e5398846f5604a3fbba3eb3b1703ea">explode</a>(</span><span class="m-doc-wrap">const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; s,
+              <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/container/vector.html" target="_blank">std::<wbr/>vector</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&gt;&amp; v,
+              const bool trim_spaces,
+              const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; t)</span></span>
+            </h3>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">s</td>
+                  <td>String to be exploded.</td>
+                </tr>
+                <tr>
+                  <td>v</td>
+                  <td>Vector which receives the pieces.</td>
+                </tr>
+                <tr>
+                  <td>trim_spaces</td>
+                  <td>Flag to decide if pieces should be trimmed. Default: false.</td>
+                </tr>
+                <tr>
+                  <td>t</td>
+                  <td>String containing whitespaces. Default: space, tab, carriage return and newline.</td>
+                </tr>
+              </tbody>
+            </table>
+<p>Splits a string into pieces, and returns them in an array.</p>
+          </div></section>
+          <section class="m-doc-details" id="a293bc85a0eca67f4a0f18d36bfe5290b"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a> pxl::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a293bc85a0eca67f4a0f18d36bfe5290b">implode</a>(</span><span class="m-doc-wrap">const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/container/vector.html" target="_blank">std::<wbr/>vector</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&gt;&amp; v,
+              const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; t)</span></span>
+            </h3>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">v</td>
+                  <td>Vector which conatins the string pieces.</td>
+                </tr>
+                <tr>
+                  <td>t</td>
+                  <td>String which is places between peaces. Default: one space " ".</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td>Assembled string.</td>
+                </tr>
+              </tfoot>
+            </table>
+<p>Function to assemble strings from a vector into one strng.</p>
+          </div></section>
+          <section class="m-doc-details" id="a46971e4f31f6cd630377d2751c724b5c"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a> <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> pxl::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a46971e4f31f6cd630377d2751c724b5c">trim</a>(</span><span class="m-doc-wrap">const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; s,
+              const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; t)</span></span>
+            </h3>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">s</td>
+                  <td>String to be trimmed.</td>
+                </tr>
+                <tr>
+                  <td>t</td>
+                  <td>String containing whitespaces. Default: space, tab, carriage return and newline.</td>
+                </tr>
+              </tbody>
+            </table>
+<p>Function to remove whitespaces from the beginning and the end of the string.</p>
+          </div></section>
+          <section class="m-doc-details" id="a7d5f1c395ab6616a0fd0cdd56f30a60f"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a> <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> pxl::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a7d5f1c395ab6616a0fd0cdd56f30a60f">trim_left</a>(</span><span class="m-doc-wrap">const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; s,
+              const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; t)</span></span>
+            </h3>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">s</td>
+                  <td>String to be trimmed.</td>
+                </tr>
+                <tr>
+                  <td>t</td>
+                  <td>String containing whitespaces. Default: space, tab, carriage return and newline.</td>
+                </tr>
+              </tbody>
+            </table>
+<p>Function to remove whitespaces from the beginning of the string.</p>
+          </div></section>
+          <section class="m-doc-details" id="ad6862ebbad2672bf7da7cffb51c85417"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a> <a class="m-doc" href="macros_8hh.html#a124d90dd5756dd2656f2d71c115bd736">PXL_<wbr/>DLL_<wbr/>EXPORT</a> pxl::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#ad6862ebbad2672bf7da7cffb51c85417">trim_right</a>(</span><span class="m-doc-wrap">const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; s,
+              const <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/string/basic_string.html" target="_blank">std::<wbr/>string</a>&amp; t)</span></span>
+            </h3>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">s</td>
+                  <td>String to be trimmed.</td>
+                </tr>
+                <tr>
+                  <td>t</td>
+                  <td>String containing whitespaces. Default: space, tab, carriage return and newline.</td>
+                </tr>
+              </tbody>
+            </table>
+<p>Function to remove whitespaces from the end of the string.</p>
+          </div></section>
+        </section>
+      </div>
+    </div>
+  </div>
+</article></main>
+<div class="m-doc-search" id="search">
+  <a href="#!" onclick="return hideSearch()"></a>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-m-8 m-push-m-2">
+        <div class="m-doc-search-header m-text m-small">
+          <div><span class="m-label m-default">Tab</span> / <span class="m-label m-default">T</span> to search, <span class="m-label m-default">Esc</span> to close</div>
+          <div id="search-symbolcount">…</div>
+        </div>
+        <div class="m-doc-search-content">
+          <form>
+            <input autocomplete="off" autofocus="autofocus" disabled="disabled" id="search-input" name="q" placeholder="Loading …" spellcheck="false" type="search"/>
+          </form>
+          <noscript class="m-text m-danger m-text-center">Unlike everything else in the docs, the search functionality <em>requires</em> JavaScript.</noscript>
+          <div class="m-text m-dim m-text-center" id="search-help">
+            <p class="m-noindent">Search for symbols, directories, files, pages or
+            modules. You can omit any prefix from the symbol or file path; adding a
+            <code>:</code> or <code>/</code> suffix lists all members of given symbol or
+            directory.</p>
+            <p class="m-noindent">Use <span class="m-label m-dim">↓</span>
+            / <span class="m-label m-dim">↑</span> to navigate through the list,
+            <span class="m-label m-dim">Enter</span> to go.
+            <span class="m-label m-dim">Tab</span> autocompletes common prefix, you can
+            copy a link to the result using <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">L</span> while <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">M</span> produces a Markdown link.</p>
+          </div>
+          <div class="m-text m-warning m-text-center" id="search-notfound">Sorry, nothing was found.</div>
+          <ul id="search-results"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="search-v2.js"></script>
+<script async="async" src="searchdata-v2.js"></script>
+<footer><nav>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        
+<a class="poxy-external" href="https://github.com/CMSMUSiC/NanoMUSiC/" target="_blank">Github</a>
+• <a class="poxy-external" href="https://github.com/CMSMUSiC/NanoMUSiC/issues" target="_blank">Report an issue</a>
+• <a class="poxy-external" href="https://github.com/marzer/tomlplusplus/blob/master/LICENSE" target="_blank">License</a>
+• <a download="" href="NanoMUSiC.tagfile.xml" target="_blank" type="text/xml">Doxygen tagfile</a>
+<br/><br/>
+Site generated using <a class="poxy-external" href="https://github.com/marzer/poxy/" target="_blank">Poxy</a>
+
+      </div>
+    </div>
+  </div>
+</nav></footer>
+
+
+</body></html>

@@ -1,0 +1,370 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    <meta name="generator" content="Doxygen 1.8.18" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- BEGIN opengraph metadata -->
+    <meta property="og:title" content="Doxygen Awesome" />
+    <meta property="og:image"
+        content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+    <meta property="og:description"
+        content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+    <meta property="og:url" content="https://jothepro.github.io/doxygen-awesome-css/" />
+    <!-- END opengraph metadata -->
+    <!-- BEGIN twitter metadata -->
+    <meta name="twitter:image:src"
+        content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+    <meta name="twitter:title" content="Doxygen Awesome" />
+    <meta name="twitter:description"
+        content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+    <!-- END twitter metadata -->
+    <title>NanoMUSiC: Namespace Members</title>
+    <link href="tabs.css" rel="stylesheet" type="text/css" />
+    <link rel="icon" type="image/svg+xml" href="logo.drawio.svg" />
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="dynsections.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+    <script type="text/javascript" src="toggle-alternative-theme.js"></script>
+    <script type="text/javascript">
+        DoxygenAwesomeFragmentCopyButton.init()
+        DoxygenAwesomeDarkModeToggle.init()
+        DoxygenAwesomeParagraphLink.init()
+        DoxygenAwesomeInteractiveToc.init()
+    </script>
+    <link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+    <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+    <link href="doxygen.css" rel="stylesheet" type="text/css" />
+    <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-alternative.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+    <!-- https://tholman.com/github-corners/ -->
+    <a href="https://github.com/cmsmusic/nanomusic" class="github-corner" title="View source on GitHub" target="_blank">
+        <svg viewBox="0 0 250 250" width="40" height="40"
+            style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+            <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+            <path
+                d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+                fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+            <path
+                d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+                fill="currentColor" class="octo-body"></path>
+        </svg></a>
+    <style>
+        .github-corner:hover .octo-arm {
+            animation: octocat-wave 560ms ease-in-out
+        }
+        @keyframes octocat-wave {
+            0%,
+            100% {
+                transform: rotate(0)
+            }
+            20%,
+            60% {
+                transform: rotate(-25deg)
+            }
+            40%,
+            80% {
+                transform: rotate(10deg)
+            }
+        }
+        @media (max-width:500px) {
+            .github-corner:hover .octo-arm {
+                animation: none
+            }
+            .github-corner .octo-arm {
+                animation: octocat-wave 560ms ease-in-out
+            }
+        }
+    </style>
+    <div id="top">
+        <!-- do not remove this div, it is closed by doxygen! -->
+        <div id="titlearea">
+            <table cellspacing="0" cellpadding="0">
+                <tbody>
+                    <tr style="height: 56px;">
+                        <td id="projectalign" style="padding-left: 0.5em;">
+                            <div id="projectname">NanoMUSiC
+                            </div>
+                            <div id="projectbrief">CMS MUSiC with NanoAOD</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- end header part --><!-- Generated by Doxygen 1.8.18 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'Search');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(document).ready(function(){initNavTree('namespacemembers.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div class="contents">
+<div class="textblock">Here is a list of all namespace members with links to the namespace documentation for each member:</div>
+
+<h3><a id="index__5F"></a>- _ -</h3><ul>
+<li>_unroll_and_fill()
+: <a class="el" href="namespaceNanoObject.html#a6e5f3a3cc561929a355db76fc8a5003d">NanoObject</a>
+</li>
+</ul>
+
+
+<h3><a id="index_a"></a>- a -</h3><ul>
+<li>AbsolutePath()
+: <a class="el" href="namespaceTools.html#af7ec4031cb991f4e2b1a599a5804c899">Tools</a>
+</li>
+</ul>
+
+
+<h3><a id="index_b"></a>- b -</h3><ul>
+<li>BuildMask()
+: <a class="el" href="namespaceNanoObject.html#a73b2ab8273218835e239966d8e654f51">NanoObject</a>
+</li>
+</ul>
+
+
+<h3><a id="index_e"></a>- e -</h3><ul>
+<li>E()
+: <a class="el" href="namespaceNanoObject.html#a7b0ff8740b2644a4d9cb74f742d94eb7">NanoObject</a>
+</li>
+<li>ERROR_IN_COMMAND_LINE
+: <a class="el" href="namespaceanonymous__namespace_02nanoaod__content__printer_8cpp_03.html#a80383e0b73cb16ccf193f5dec126d7ab">anonymous_namespace{nanoaod_content_printer.cpp}</a>
+</li>
+<li>ERROR_UNHANDLED_EXCEPTION
+: <a class="el" href="namespaceanonymous__namespace_02nanoaod__content__printer_8cpp_03.html#a4cce96e3d55cdad9a8bd2bd340317d38">anonymous_namespace{nanoaod_content_printer.cpp}</a>
+</li>
+<li>Eta()
+: <a class="el" href="namespaceNanoObject.html#a3706396ccb3a15c35db1f7091283f67f">NanoObject</a>
+</li>
+<li>ExpandPath()
+: <a class="el" href="namespaceTools.html#adc60a3d4a2e21756bf526f4724d61469">Tools</a>
+</li>
+</ul>
+
+
+<h3><a id="index_f"></a>- f -</h3><ul>
+<li>Filter()
+: <a class="el" href="namespaceNanoObject.html#a9e3cfbb46b2456ef1610e2770a58480a">NanoObject</a>
+</li>
+<li>fromString()
+: <a class="el" href="namespaceTools.html#a33e5fdbeef6c18029b7b35ed8363d46e">Tools</a>
+</li>
+<li>fromString&lt; std::string &gt;()
+: <a class="el" href="namespaceTools.html#ab89a06dc9302e2de99efb673a9c9cc91">Tools</a>
+</li>
+</ul>
+
+
+<h3><a id="index_g"></a>- g -</h3><ul>
+<li>get_pdf_ids()
+: <a class="el" href="namespacePDFAlphaSWeights.html#a9e34caf4dd955b8c34964d4e79fee6c9">PDFAlphaSWeights</a>
+</li>
+<li>get_pdf_weight()
+: <a class="el" href="namespacePDFAlphaSWeights.html#acec655381a82568fe10439f2d98a3663">PDFAlphaSWeights</a>
+</li>
+<li>get_pdf_weight_from_LHAPDf()
+: <a class="el" href="namespacePDFAlphaSWeights.html#aa81303140703533857c23d391232d573">PDFAlphaSWeights</a>
+</li>
+<li>get_pdf_weight_from_sample()
+: <a class="el" href="namespacePDFAlphaSWeights.html#a2686457bcddf14bf969f9b8e8d34afb7">PDFAlphaSWeights</a>
+</li>
+<li>get_pdfset_name_by_id()
+: <a class="el" href="namespacePDFAlphaSWeights.html#ae8df4687e31557b0347619e05a524099">PDFAlphaSWeights</a>
+</li>
+<li>GetByIndex()
+: <a class="el" href="namespaceNanoObject.html#ae5eb1f0426c944720c66230a3a52b316">NanoObject</a>
+</li>
+<li>getConfigParticleMap()
+: <a class="el" href="namespaceTools.html#a78ff41210e7d97d09872fb8e221d97fa">Tools</a>
+</li>
+<li>getConfigParticleReverseMap()
+: <a class="el" href="namespaceTools.html#ab83000996657097563d13304dc44216d">Tools</a>
+</li>
+<li>GetFeature()
+: <a class="el" href="namespaceNanoObject.html#aa25552f451b16fefdc532be0728ffd7f">NanoObject</a>
+</li>
+<li>getParticleTypeAbbreviations()
+: <a class="el" href="namespaceTools.html#a7f7a1427c71264da4d2c038b5ca7096d">Tools</a>
+</li>
+</ul>
+
+
+<h3><a id="index_h"></a>- h -</h3><ul>
+<li>has_pdf_weight()
+: <a class="el" href="namespacePDFAlphaSWeights.html#adc72012ac04ff409d853467188e0e039">PDFAlphaSWeights</a>
+</li>
+</ul>
+
+
+<h3><a id="index_i"></a>- i -</h3><ul>
+<li>index_range()
+: <a class="el" href="namespaceTools.html#aa2436ff21902f6f6901ab2c8c7021955">Tools</a>
+</li>
+<li>Indices()
+: <a class="el" href="namespaceNanoObject.html#abf55a5566a33d2ce8eec56b9dbfd2927">NanoObject</a>
+</li>
+</ul>
+
+
+<h3><a id="index_m"></a>- m -</h3><ul>
+<li>make_collection()
+: <a class="el" href="namespaceNanoObject.html#ab6a19ff943c256e96a08130369610ed7">NanoObject</a>
+</li>
+<li>make_object()
+: <a class="el" href="namespaceNanoObject.html#a2685b18d5511a53efca3dcd3e7d7e82e">NanoObject</a>
+</li>
+<li>Mass()
+: <a class="el" href="namespaceNanoObject.html#aa761d9d2645fc85ea1c1b3920fa1bab0">NanoObject</a>
+</li>
+<li>MUON_MASS
+: <a class="el" href="namespaceNanoObject.html#aa388addf65f7004a3b26fb71fbc24e8b">NanoObject</a>
+</li>
+<li>musicAbsPath()
+: <a class="el" href="namespaceTools.html#a7db58becf00acaa3519fab94e4f6665d">Tools</a>
+</li>
+</ul>
+
+
+<h3><a id="index_n"></a>- n -</h3><ul>
+<li>NanoAODObjects_t
+: <a class="el" href="namespaceNanoObject.html#a85e25d67a42e4ad256f4c8558d5020c2">NanoObject</a>
+</li>
+<li>NanoObjectCollection
+: <a class="el" href="namespaceNanoObject.html#afb1956f463886afafc2f00c4552745ed">NanoObject</a>
+</li>
+</ul>
+
+
+<h3><a id="index_p"></a>- p -</h3><ul>
+<li>parse_and_expand_music_base()
+: <a class="el" href="namespaceTools.html#ab23c7d737c43eef7157ed283bee69461">Tools</a>
+</li>
+<li>Path
+: <a class="el" href="namespaceTools.html#ad75b68ac70e81e850dbfe8cc5ececdb4">Tools</a>
+</li>
+<li>pdg_id_type_map()
+: <a class="el" href="namespaceTools.html#a72840a5c0ef521779e2d958122b8a3f0">Tools</a>
+</li>
+<li>Phi()
+: <a class="el" href="namespaceNanoObject.html#a7b7186cf5337a05aa0c8e79c08a49762">NanoObject</a>
+</li>
+<li>Pt()
+: <a class="el" href="namespaceNanoObject.html#a61b0ec817799927dd4edb5e008ae59d9">NanoObject</a>
+</li>
+</ul>
+
+
+<h3><a id="index_r"></a>- r -</h3><ul>
+<li>random_string()
+: <a class="el" href="namespaceTools.html#a1a488ac515c63bc9f3b0f3778c7b3981">Tools</a>
+</li>
+<li>removeComment()
+: <a class="el" href="namespaceTools.html#a50243b657b62c7ca509f1f1cb54049c6">Tools</a>
+</li>
+<li>Repr()
+: <a class="el" href="namespaceNanoObject.html#addcc6a0bd88e05a334f8133a5e32e941">NanoObject</a>
+</li>
+</ul>
+
+
+<h3><a id="index_s"></a>- s -</h3><ul>
+<li>SetFeature()
+: <a class="el" href="namespaceNanoObject.html#a16e9e7bb483e8a143f5df460fe2511c3">NanoObject</a>
+</li>
+<li>splitString()
+: <a class="el" href="namespaceTools.html#afa894c72e8a81fc63c03f0edb6b41f32">Tools</a>
+</li>
+<li>SUCCESS
+: <a class="el" href="namespaceanonymous__namespace_02nanoaod__content__printer_8cpp_03.html#ab1bc12e615680ed86655463d516588b2">anonymous_namespace{nanoaod_content_printer.cpp}</a>
+</li>
+</ul>
+
+
+<h3><a id="index_t"></a>- t -</h3><ul>
+<li>Take()
+: <a class="el" href="namespaceNanoObject.html#a8f09b6b77f3c787a4b2e668c581c360a">NanoObject</a>
+</li>
+<li>toString()
+: <a class="el" href="namespaceTools.html#a1ac8c9ccc5ea2292e2a5b004a3225baf">Tools</a>
+</li>
+</ul>
+
+
+<h3><a id="index_w"></a>- w -</h3><ul>
+<li>Where()
+: <a class="el" href="namespaceNanoObject.html#a089c569b89f654da088ecdf6940aa20d">NanoObject</a>
+</li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Generated by
+    <a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.18 </li>
+  </ul>
+</div>
+</body>
+</html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    <meta name="generator" content="Doxygen 1.8.18" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- BEGIN opengraph metadata -->
+    <meta property="og:title" content="Doxygen Awesome" />
+    <meta property="og:image"
+        content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+    <meta property="og:description"
+        content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+    <meta property="og:url" content="https://jothepro.github.io/doxygen-awesome-css/" />
+    <!-- END opengraph metadata -->
+    <!-- BEGIN twitter metadata -->
+    <meta name="twitter:image:src"
+        content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+    <meta name="twitter:title" content="Doxygen Awesome" />
+    <meta name="twitter:description"
+        content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+    <!-- END twitter metadata -->
+    <title>NanoMUSiC: ranges::any Struct Reference</title>
+    <link href="tabs.css" rel="stylesheet" type="text/css" />
+    <link rel="icon" type="image/svg+xml" href="logo.drawio.svg" />
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="dynsections.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+    <script type="text/javascript" src="toggle-alternative-theme.js"></script>
+    <script type="text/javascript">
+        DoxygenAwesomeFragmentCopyButton.init()
+        DoxygenAwesomeDarkModeToggle.init()
+        DoxygenAwesomeParagraphLink.init()
+        DoxygenAwesomeInteractiveToc.init()
+    </script>
+    <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+    <link href="doxygen.css" rel="stylesheet" type="text/css" />
+    <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-alternative.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+    <!-- https://tholman.com/github-corners/ -->
+    <a href="https://github.com/cmsmusic/nanomusic" class="github-corner" title="View source on GitHub" target="_blank">
+        <svg viewBox="0 0 250 250" width="40" height="40"
+            style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+            <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+            <path
+                d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+                fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+            <path
+                d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+                fill="currentColor" class="octo-body"></path>
+        </svg></a>
+    <style>
+        .github-corner:hover .octo-arm {
+            animation: octocat-wave 560ms ease-in-out
+        }
+        @keyframes octocat-wave {
+            0%,
+            100% {
+                transform: rotate(0)
+            }
+            20%,
+            60% {
+                transform: rotate(-25deg)
+            }
+            40%,
+            80% {
+                transform: rotate(10deg)
+            }
+        }
+        @media (max-width:500px) {
+            .github-corner:hover .octo-arm {
+                animation: none
+            }
+            .github-corner .octo-arm {
+                animation: octocat-wave 560ms ease-in-out
+            }
+        }
+    </style>
+    <div id="top">
+        <!-- do not remove this div, it is closed by doxygen! -->
+        <div id="titlearea">
+            <table cellspacing="0" cellpadding="0">
+                <tbody>
+                    <tr style="height: 56px;">
+                        <td id="projectalign" style="padding-left: 0.5em;">
+                            <div id="projectname">NanoMUSiC
+                            </div>
+                            <div id="projectbrief">CMS MUSiC for NanoAOD</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- end header part --><!-- Generated by Doxygen 1.8.18 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'Search');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><b>ranges</b></li><li class="navelem"><a class="el" href="structranges_1_1any.html">any</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#friends">Friends</a> &#124;
+<a href="structranges_1_1any-members.html">List of all members</a>  </div>
+  <div class="headertitle">
+<div class="title">ranges::any Struct Reference</div>  </div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a3b32aacc08e8a58466a173cc3d7f68bb"><td class="memItemLeft" align="right" valign="top"><a id="a3b32aacc08e8a58466a173cc3d7f68bb"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>template</b> (typename TRef, typename <a class="el" href="structT.html">T</a>=detail::decay_t&lt; TRef &gt;)(requires(!same_as&lt; <a class="el" href="structT.html">T</a></td></tr>
+<tr class="separator:a3b32aacc08e8a58466a173cc3d7f68bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a959c33c07f51cf57c2e4aeb89afbc6ee"><td class="memItemLeft" align="right" valign="top"><a id="a959c33c07f51cf57c2e4aeb89afbc6ee"></a>
+<a class="el" href="structranges_1_1any.html">any</a> AND copyable&lt; <a class="el" href="structT.html">T</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>any</b> (TRef &amp;&amp;t)</td></tr>
+<tr class="separator:a959c33c07f51cf57c2e4aeb89afbc6ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4956b62b1b7f9ac94a3856c20305f7fb"><td class="memItemLeft" align="right" valign="top"><a id="a4956b62b1b7f9ac94a3856c20305f7fb"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>any</b> (<a class="el" href="structranges_1_1any.html">any</a> &amp;&amp;) noexcept=default</td></tr>
+<tr class="separator:a4956b62b1b7f9ac94a3856c20305f7fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad46740f7149c97bf6ffcd125235d292f"><td class="memItemLeft" align="right" valign="top"><a id="ad46740f7149c97bf6ffcd125235d292f"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>any</b> (<a class="el" href="structranges_1_1any.html">any</a> const &amp;that)</td></tr>
+<tr class="separator:ad46740f7149c97bf6ffcd125235d292f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adad4b35335b3117e53a251b3607c013e"><td class="memItemLeft" align="right" valign="top"><a id="adad4b35335b3117e53a251b3607c013e"></a>
+<a class="el" href="structranges_1_1any.html">any</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="structranges_1_1any.html">any</a> &amp;&amp;) noexcept=default</td></tr>
+<tr class="separator:adad4b35335b3117e53a251b3607c013e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a705bc054913854b162a237f8b2c99cdb"><td class="memItemLeft" align="right" valign="top"><a id="a705bc054913854b162a237f8b2c99cdb"></a>
+<a class="el" href="structranges_1_1any.html">any</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="structranges_1_1any.html">any</a> const &amp;that)</td></tr>
+<tr class="separator:a705bc054913854b162a237f8b2c99cdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b32aacc08e8a58466a173cc3d7f68bb"><td class="memItemLeft" align="right" valign="top"><a id="a3b32aacc08e8a58466a173cc3d7f68bb"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>template</b> (typename TRef, typename <a class="el" href="structT.html">T</a>=detail::decay_t&lt; TRef &gt;)(requires(!same_as&lt; <a class="el" href="structT.html">T</a></td></tr>
+<tr class="separator:a3b32aacc08e8a58466a173cc3d7f68bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f0f1622b32f34316f552d743f87ea1d"><td class="memItemLeft" align="right" valign="top"><a id="a2f0f1622b32f34316f552d743f87ea1d"></a>
+<a class="el" href="structranges_1_1any.html">any</a> AND copyable&lt; <a class="el" href="structT.html">T</a> &gt; <a class="el" href="structranges_1_1any.html">any</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (TRef &amp;&amp;t)</td></tr>
+<tr class="separator:a2f0f1622b32f34316f552d743f87ea1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b3e80ccd4d57f0a46576332908a1d5a"><td class="memItemLeft" align="right" valign="top"><a id="a9b3e80ccd4d57f0a46576332908a1d5a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> () noexcept</td></tr>
+<tr class="separator:a9b3e80ccd4d57f0a46576332908a1d5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a415fa7ec6f6209e3f14778275691daf9"><td class="memItemLeft" align="right" valign="top"><a id="a415fa7ec6f6209e3f14778275691daf9"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>empty</b> () const noexcept</td></tr>
+<tr class="separator:a415fa7ec6f6209e3f14778275691daf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96cfe0622c33401182dbf7cc200dcea0"><td class="memItemLeft" align="right" valign="top"><a id="a96cfe0622c33401182dbf7cc200dcea0"></a>
+std::type_info const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>type</b> () const noexcept</td></tr>
+<tr class="separator:a96cfe0622c33401182dbf7cc200dcea0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab06376bc5426f2555e42d8e206c27bb0"><td class="memItemLeft" align="right" valign="top"><a id="ab06376bc5426f2555e42d8e206c27bb0"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>swap</b> (<a class="el" href="structranges_1_1any.html">any</a> &amp;that) noexcept</td></tr>
+<tr class="separator:ab06376bc5426f2555e42d8e206c27bb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
+Friends</h2></td></tr>
+<tr class="memitem:ac612907c5b836f40bfa5ceeba8f0ec50"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ac612907c5b836f40bfa5ceeba8f0ec50"><td class="memTemplItemLeft" align="right" valign="top">meta::if_c&lt; std::is_reference&lt; <a class="el" href="structT.html">T</a> &gt;)||(bool) copyable&lt; <a class="el" href="structT.html">T</a> &gt;, <a class="el" href="structT.html">T</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structranges_1_1any.html#ac612907c5b836f40bfa5ceeba8f0ec50">any_cast</a> (<a class="el" href="structranges_1_1any.html">any</a> &amp;)</td></tr>
+<tr class="separator:ac612907c5b836f40bfa5ceeba8f0ec50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4cccfcf34c2b203d7c5b9d1350d3700"><td class="memTemplParams" colspan="2"><a id="ac4cccfcf34c2b203d7c5b9d1350d3700"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ac4cccfcf34c2b203d7c5b9d1350d3700"><td class="memTemplItemLeft" align="right" valign="top">meta::if_c&lt; std::is_reference&lt; <a class="el" href="structT.html">T</a> &gt;)||(bool) copyable&lt; <a class="el" href="structT.html">T</a> &gt;, <a class="el" href="structT.html">T</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structranges_1_1any.html#ac4cccfcf34c2b203d7c5b9d1350d3700">any_cast</a> (<a class="el" href="structranges_1_1any.html">any</a> const &amp;)</td></tr>
+<tr class="memdesc:ac4cccfcf34c2b203d7c5b9d1350d3700"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts. <br /></td></tr>
+<tr class="separator:ac4cccfcf34c2b203d7c5b9d1350d3700"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f2d4f173e29a8cba015c4c3c8fca350"><td class="memTemplParams" colspan="2"><a id="a8f2d4f173e29a8cba015c4c3c8fca350"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a8f2d4f173e29a8cba015c4c3c8fca350"><td class="memTemplItemLeft" align="right" valign="top">meta::if_c&lt; std::is_reference&lt; <a class="el" href="structT.html">T</a> &gt;)||(bool) copyable&lt; <a class="el" href="structT.html">T</a> &gt;, <a class="el" href="structT.html">T</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structranges_1_1any.html#a8f2d4f173e29a8cba015c4c3c8fca350">any_cast</a> (<a class="el" href="structranges_1_1any.html">any</a> &amp;&amp;)</td></tr>
+<tr class="memdesc:a8f2d4f173e29a8cba015c4c3c8fca350"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts. <br /></td></tr>
+<tr class="separator:a8f2d4f173e29a8cba015c4c3c8fca350"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abfde7fedc1928acf2ed9e0cccebcb09f"><td class="memTemplParams" colspan="2"><a id="abfde7fedc1928acf2ed9e0cccebcb09f"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:abfde7fedc1928acf2ed9e0cccebcb09f"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structT.html">T</a> *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structranges_1_1any.html#abfde7fedc1928acf2ed9e0cccebcb09f">any_cast</a> (<a class="el" href="structranges_1_1any.html">any</a> *) noexcept</td></tr>
+<tr class="memdesc:abfde7fedc1928acf2ed9e0cccebcb09f"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts. <br /></td></tr>
+<tr class="separator:abfde7fedc1928acf2ed9e0cccebcb09f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a657c6de748c5b513c19c85c907b1d36e"><td class="memTemplParams" colspan="2"><a id="a657c6de748c5b513c19c85c907b1d36e"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a657c6de748c5b513c19c85c907b1d36e"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structT.html">T</a> const  *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structranges_1_1any.html#a657c6de748c5b513c19c85c907b1d36e">any_cast</a> (<a class="el" href="structranges_1_1any.html">any</a> const *) noexcept</td></tr>
+<tr class="memdesc:a657c6de748c5b513c19c85c907b1d36e"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts. <br /></td></tr>
+<tr class="separator:a657c6de748c5b513c19c85c907b1d36e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1e93a6d17d6eadfabe6ae59011b2d3e"><td class="memItemLeft" align="right" valign="top"><a id="ab1e93a6d17d6eadfabe6ae59011b2d3e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>swap</b> (<a class="el" href="structranges_1_1any.html">any</a> &amp;x, <a class="el" href="structranges_1_1any.html">any</a> &amp;y) noexcept</td></tr>
+<tr class="separator:ab1e93a6d17d6eadfabe6ae59011b2d3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">Friends And Related Function Documentation</h2>
+<a id="ac612907c5b836f40bfa5ceeba8f0ec50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac612907c5b836f40bfa5ceeba8f0ec50">&#9670;&nbsp;</a></span>any_cast</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">meta::if_c&lt;std::is_reference&lt;<a class="el" href="structT.html">T</a>&gt;) || (bool)copyable&lt;<a class="el" href="structT.html">T</a>&gt;, <a class="el" href="structT.html">T</a>&gt; any_cast </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structranges_1_1any.html">any</a> &amp;&#160;</td>
+          <td class="paramname"><em>x</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="structranges_1_1bad__any__cast.html">bad_any_cast</a></td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>/.automount/home/home__home1/institut_3a/silva/NanoMUSiC/NanoMUSiC/MUSiC/external/range-v3/include/range/v3/utility/<a class="el" href="any_8hpp_source.html">any.hpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.8.18
+</small></address>
+</body>
+</html>

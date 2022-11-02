@@ -1,0 +1,1609 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    <meta name="generator" content="Doxygen 1.8.18" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- BEGIN opengraph metadata -->
+    <meta property="og:title" content="Doxygen Awesome" />
+    <meta property="og:image"
+        content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+    <meta property="og:description"
+        content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+    <meta property="og:url" content="https://jothepro.github.io/doxygen-awesome-css/" />
+    <!-- END opengraph metadata -->
+    <!-- BEGIN twitter metadata -->
+    <meta name="twitter:image:src"
+        content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+    <meta name="twitter:title" content="Doxygen Awesome" />
+    <meta name="twitter:description"
+        content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+    <!-- END twitter metadata -->
+    <title>NanoMUSiC: Tools::MConfig Class Reference</title>
+    <link href="tabs.css" rel="stylesheet" type="text/css" />
+    <link rel="icon" type="image/svg+xml" href="logo.drawio.svg" />
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="dynsections.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+    <script type="text/javascript" src="toggle-alternative-theme.js"></script>
+    <script type="text/javascript">
+        DoxygenAwesomeFragmentCopyButton.init()
+        DoxygenAwesomeDarkModeToggle.init()
+        DoxygenAwesomeParagraphLink.init()
+        DoxygenAwesomeInteractiveToc.init()
+    </script>
+    <link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+    <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+    <link href="doxygen.css" rel="stylesheet" type="text/css" />
+    <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-alternative.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+    <!-- https://tholman.com/github-corners/ -->
+    <a href="https://github.com/cmsmusic/nanomusic" class="github-corner" title="View source on GitHub" target="_blank">
+        <svg viewBox="0 0 250 250" width="40" height="40"
+            style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+            <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+            <path
+                d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+                fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+            <path
+                d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+                fill="currentColor" class="octo-body"></path>
+        </svg></a>
+    <style>
+        .github-corner:hover .octo-arm {
+            animation: octocat-wave 560ms ease-in-out
+        }
+        @keyframes octocat-wave {
+            0%,
+            100% {
+                transform: rotate(0)
+            }
+            20%,
+            60% {
+                transform: rotate(-25deg)
+            }
+            40%,
+            80% {
+                transform: rotate(10deg)
+            }
+        }
+        @media (max-width:500px) {
+            .github-corner:hover .octo-arm {
+                animation: none
+            }
+            .github-corner .octo-arm {
+                animation: octocat-wave 560ms ease-in-out
+            }
+        }
+    </style>
+    <div id="top">
+        <!-- do not remove this div, it is closed by doxygen! -->
+        <div id="titlearea">
+            <table cellspacing="0" cellpadding="0">
+                <tbody>
+                    <tr style="height: 56px;">
+                        <td id="projectalign" style="padding-left: 0.5em;">
+                            <div id="projectname">NanoMUSiC
+                            </div>
+                            <div id="projectbrief">CMS MUSiC with NanoAOD</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- end header part --><!-- Generated by Doxygen 1.8.18 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'Search');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(document).ready(function(){initNavTree('classTools_1_1MConfig.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-types">Private Types</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classTools_1_1MConfig-members.html">List of all members</a>  </div>
+  <div class="headertitle">
+<div class="title">Tools::MConfig Class Reference</div>  </div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="MConfig_8hpp_source.html">MConfig.hpp</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a343415225fea3dc8ba6499e4447fd214"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a343415225fea3dc8ba6499e4447fd214">MConfig</a> (const std::string &amp;path=&quot;&quot;, const std::string &amp;configBasePath=&quot;&quot;, const char commentChar='#', const char delimiterChar='=', const char quoteChar='&quot;', const bool warnOverwrite = false) </td></tr>
+<tr class="separator:a343415225fea3dc8ba6499e4447fd214"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9337a487c0a8eee2b003a46ad114670"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#ae9337a487c0a8eee2b003a46ad114670">~MConfig</a> ()</td></tr>
+<tr class="separator:ae9337a487c0a8eee2b003a46ad114670"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abca1ac2769e38c48b99daffc97037da7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#abca1ac2769e38c48b99daffc97037da7">AddItem</a> (const std::string &amp;key, const std::string &amp;value)</td></tr>
+<tr class="separator:abca1ac2769e38c48b99daffc97037da7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19db9c3f003270e9032b0b2fae07f747"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a19db9c3f003270e9032b0b2fae07f747">CheckItem</a> (const std::string &amp;key)</td></tr>
+<tr class="separator:a19db9c3f003270e9032b0b2fae07f747"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e7f03cc51be8da3f218e4e15813b8f3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a5e7f03cc51be8da3f218e4e15813b8f3">ClearItems</a> ()</td></tr>
+<tr class="separator:a5e7f03cc51be8da3f218e4e15813b8f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c5f527e13b9e8103d18ea9ad39450f2"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a7c5f527e13b9e8103d18ea9ad39450f2"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a7c5f527e13b9e8103d18ea9ad39450f2">GetItem</a> (const std::string &amp;key, const T &amp;defaultItem) const</td></tr>
+<tr class="separator:a7c5f527e13b9e8103d18ea9ad39450f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afde7471ccc4236e348dd0184b69b3cc9"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:afde7471ccc4236e348dd0184b69b3cc9"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#afde7471ccc4236e348dd0184b69b3cc9">GetItem</a> (const std::string &amp;key) const</td></tr>
+<tr class="separator:afde7471ccc4236e348dd0184b69b3cc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd94b02bdc8d7cc0ce7a0c06ca28bb37"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#afd94b02bdc8d7cc0ce7a0c06ca28bb37">ImportFile</a> (const std::string &amp;iPath, const std::string &amp;old_string=&quot;&quot;, const std::string &amp;new_string=&quot;&quot;)</td></tr>
+<tr class="separator:afd94b02bdc8d7cc0ce7a0c06ca28bb37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6509bfcd27b21db712061e0b09746380"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a6509bfcd27b21db712061e0b09746380">Print</a> ()</td></tr>
+<tr class="separator:a6509bfcd27b21db712061e0b09746380"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a10dd6413249e614107c35187cad09c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a6a10dd6413249e614107c35187cad09c">DumpToFile</a> (std::string filePath)</td></tr>
+<tr class="separator:a6a10dd6413249e614107c35187cad09c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a721d02ae37c37eb81edb683eb00f66bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a721d02ae37c37eb81edb683eb00f66bb">setYear</a> (std::string year, std::vector&lt; std::string &gt; possibleYears={&quot;2016APV&quot;, &quot;2016&quot;, &quot;2017&quot;, &quot;2018&quot;})</td></tr>
+<tr class="separator:a721d02ae37c37eb81edb683eb00f66bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08d2e3e51ca96c1dfea7ad2227b34477"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a08d2e3e51ca96c1dfea7ad2227b34477">RemoveItem</a> (const std::string &amp;itemtag)</td></tr>
+<tr class="separator:a08d2e3e51ca96c1dfea7ad2227b34477"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3862a5e301833db7a449e70765a1b21e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a3862a5e301833db7a449e70765a1b21e">WriteFile</a> (bool forceWrite=false)</td></tr>
+<tr class="separator:a3862a5e301833db7a449e70765a1b21e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd4fe279727e302ab01f9b7b527108a7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#acd4fe279727e302ab01f9b7b527108a7">SetWritePathAndName</a> (const std::string &amp;writePath=&quot;&quot;, const std::string &amp;writeFileName=&quot;&quot;)</td></tr>
+<tr class="separator:acd4fe279727e302ab01f9b7b527108a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e633ec530452f7cc369b308dfe985b7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a1e633ec530452f7cc369b308dfe985b7">SetWriteFile</a> (const bool &amp;write=true, const std::string &amp;writePath=&quot;&quot;, const std::string &amp;writeFileName=&quot;&quot;)</td></tr>
+<tr class="separator:a1e633ec530452f7cc369b308dfe985b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a073e45588379693ecca8f5dd555779fe"><td class="memItemLeft" align="right" valign="top">const char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a073e45588379693ecca8f5dd555779fe">GetCommentChar</a> () const</td></tr>
+<tr class="separator:a073e45588379693ecca8f5dd555779fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4ff104a61b8f80aabe3b6b30be08efd"><td class="memItemLeft" align="right" valign="top">const char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#ab4ff104a61b8f80aabe3b6b30be08efd">GetDelimiterChar</a> () const</td></tr>
+<tr class="separator:ab4ff104a61b8f80aabe3b6b30be08efd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2fc62bd5e150b1c6b2505183a2c5d8b"><td class="memItemLeft" align="right" valign="top">const char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#ac2fc62bd5e150b1c6b2505183a2c5d8b">GetQuoteChar</a> () const</td></tr>
+<tr class="separator:ac2fc62bd5e150b1c6b2505183a2c5d8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04f0a26b0990893e02062959d3405602"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a04f0a26b0990893e02062959d3405602">GetConfigBasePath</a> () const</td></tr>
+<tr class="separator:a04f0a26b0990893e02062959d3405602"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea1d91ea07fda4b99cd0e388677fb9a7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#aea1d91ea07fda4b99cd0e388677fb9a7">GetConfigFilePath</a> () const</td></tr>
+<tr class="separator:aea1d91ea07fda4b99cd0e388677fb9a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77ee47990f2ce0ecf695936e3492e243"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a77ee47990f2ce0ecf695936e3492e243">GetWritePath</a> () const</td></tr>
+<tr class="separator:a77ee47990f2ce0ecf695936e3492e243"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30fee06a6cd19b847183ba387bfe472d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a30fee06a6cd19b847183ba387bfe472d">GetWriteFileName</a> () const</td></tr>
+<tr class="separator:a30fee06a6cd19b847183ba387bfe472d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f5c8cd537048d06abe13fcbe6254001"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a3f5c8cd537048d06abe13fcbe6254001">GetImportIdentifier</a> () const</td></tr>
+<tr class="separator:a3f5c8cd537048d06abe13fcbe6254001"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0881a2932328de0b88bc5dbea7f509b7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a0881a2932328de0b88bc5dbea7f509b7">SetCommentChar</a> (const char commentChar)</td></tr>
+<tr class="separator:a0881a2932328de0b88bc5dbea7f509b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a285483547b8e28e1bd6ccfeb0affc7ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a285483547b8e28e1bd6ccfeb0affc7ef">SetDelimiterChar</a> (const char delimiterChar)</td></tr>
+<tr class="separator:a285483547b8e28e1bd6ccfeb0affc7ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c3b09a3334b691023584fb18a36ab05"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a7c3b09a3334b691023584fb18a36ab05">SetQuoteChar</a> (const char quoteChar)</td></tr>
+<tr class="separator:a7c3b09a3334b691023584fb18a36ab05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9117bf873de26d1aacdbff388ed52a68"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a9117bf873de26d1aacdbff388ed52a68">SetConfigBasePath</a> (const std::string &amp;path)</td></tr>
+<tr class="separator:a9117bf873de26d1aacdbff388ed52a68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf47ac144b65ea055a4c4f10d074dea6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#aaf47ac144b65ea055a4c4f10d074dea6">SetConfigBasePath</a> (const <a class="el" href="classTools_1_1MConfig.html#a7af14b7a2aa9f24f70329ef927379b06">Path</a> &amp;path)</td></tr>
+<tr class="separator:aaf47ac144b65ea055a4c4f10d074dea6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19cf00f81cab27b5390fd0d8e591b659"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a19cf00f81cab27b5390fd0d8e591b659">SetImportIdentifier</a> (const std::string &amp;identfier)</td></tr>
+<tr class="separator:a19cf00f81cab27b5390fd0d8e591b659"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-types"></a>
+Private Types</h2></td></tr>
+<tr class="memitem:a7af14b7a2aa9f24f70329ef927379b06"><td class="memItemLeft" align="right" valign="top">typedef boost::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a7af14b7a2aa9f24f70329ef927379b06">Path</a></td></tr>
+<tr class="separator:a7af14b7a2aa9f24f70329ef927379b06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:abcadcee7014efcd8b9d287b1b5b74720"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#abcadcee7014efcd8b9d287b1b5b74720">ExtractFromQuotes</a> (const std::string &amp;line, const unsigned int lineNum, const <a class="el" href="classTools_1_1MConfig.html#a7af14b7a2aa9f24f70329ef927379b06">Path</a> &amp;filePath)</td></tr>
+<tr class="separator:abcadcee7014efcd8b9d287b1b5b74720"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afabd05a43a27f8446f22076af924dc7e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#afabd05a43a27f8446f22076af924dc7e">FindLongestKey</a> ()</td></tr>
+<tr class="separator:afabd05a43a27f8446f22076af924dc7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25724427c98b44518ab3afff0edd2a1a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTools_1_1MConfig.html#a7af14b7a2aa9f24f70329ef927379b06">Path</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a25724427c98b44518ab3afff0edd2a1a">Init</a> (<a class="el" href="classTools_1_1MConfig.html#a7af14b7a2aa9f24f70329ef927379b06">Path</a> absPath)</td></tr>
+<tr class="separator:a25724427c98b44518ab3afff0edd2a1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a068701b090cd526fc15e0761b6f0a6f8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a068701b090cd526fc15e0761b6f0a6f8">ScanForImports</a> (std::string &amp;line, const unsigned int lineNum, const <a class="el" href="classTools_1_1MConfig.html#a7af14b7a2aa9f24f70329ef927379b06">Path</a> &amp;filePath)</td></tr>
+<tr class="separator:a068701b090cd526fc15e0761b6f0a6f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:ae9ebde8b63838942b873c2ee40b550ab"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#ae9ebde8b63838942b873c2ee40b550ab">m_configInit</a></td></tr>
+<tr class="separator:ae9ebde8b63838942b873c2ee40b550ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46be9534678b83b12d44155d6eb3c186"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a46be9534678b83b12d44155d6eb3c186">m_writeFile</a></td></tr>
+<tr class="separator:a46be9534678b83b12d44155d6eb3c186"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57b2f33a859f79167bedf1af3f285f54"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a57b2f33a859f79167bedf1af3f285f54">m_warnOverwrite</a></td></tr>
+<tr class="separator:a57b2f33a859f79167bedf1af3f285f54"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdb3b25393018a16d683d2f88e29ce16"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#abdb3b25393018a16d683d2f88e29ce16">m_commentChar</a></td></tr>
+<tr class="separator:abdb3b25393018a16d683d2f88e29ce16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f21f077c97bd71b35902f1340dcd2c5"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a3f21f077c97bd71b35902f1340dcd2c5">m_delimiterChar</a></td></tr>
+<tr class="separator:a3f21f077c97bd71b35902f1340dcd2c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad49838b7f273574391dd2ad92e81e500"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#ad49838b7f273574391dd2ad92e81e500">m_quoteChar</a></td></tr>
+<tr class="separator:ad49838b7f273574391dd2ad92e81e500"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a526f8667b164c82ebaeccdc3026605f8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTools_1_1MConfig.html#a7af14b7a2aa9f24f70329ef927379b06">Path</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a526f8667b164c82ebaeccdc3026605f8">m_configBasePath</a></td></tr>
+<tr class="separator:a526f8667b164c82ebaeccdc3026605f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1c36a8276e96e4345bb5b17cdf71aa6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTools_1_1MConfig.html#a7af14b7a2aa9f24f70329ef927379b06">Path</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#ab1c36a8276e96e4345bb5b17cdf71aa6">m_configFilePath</a></td></tr>
+<tr class="separator:ab1c36a8276e96e4345bb5b17cdf71aa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b973d9502366909458f7e4498018cba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTools_1_1MConfig.html#a7af14b7a2aa9f24f70329ef927379b06">Path</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a0b973d9502366909458f7e4498018cba">m_configFileName</a></td></tr>
+<tr class="separator:a0b973d9502366909458f7e4498018cba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d98b218ba97efc23bdd31f13fb12c1b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTools_1_1MConfig.html#a7af14b7a2aa9f24f70329ef927379b06">Path</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a6d98b218ba97efc23bdd31f13fb12c1b">m_writePath</a></td></tr>
+<tr class="separator:a6d98b218ba97efc23bdd31f13fb12c1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53483afdaad016fb780c7e52117673c0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTools_1_1MConfig.html#a7af14b7a2aa9f24f70329ef927379b06">Path</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a53483afdaad016fb780c7e52117673c0">m_writeFileName</a></td></tr>
+<tr class="separator:a53483afdaad016fb780c7e52117673c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1ce5a9c779364eb1a96823c6d72dfd9"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#ad1ce5a9c779364eb1a96823c6d72dfd9">m_importIdentifier</a></td></tr>
+<tr class="separator:ad1ce5a9c779364eb1a96823c6d72dfd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a128c636c930334b34fd619b0c6893fc3"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a128c636c930334b34fd619b0c6893fc3">m_modifiedImportIdentifier1</a></td></tr>
+<tr class="separator:a128c636c930334b34fd619b0c6893fc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0be689352be5b84368d1038cd81ef89"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#aa0be689352be5b84368d1038cd81ef89">m_modifiedImportIdentifier2</a></td></tr>
+<tr class="separator:aa0be689352be5b84368d1038cd81ef89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30f878a6825163670c5f696e6ba081e6"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTools_1_1MConfig.html#a30f878a6825163670c5f696e6ba081e6">m_configMap</a></td></tr>
+<tr class="separator:a30f878a6825163670c5f696e6ba081e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">Member Typedef Documentation</h2>
+<a id="a7af14b7a2aa9f24f70329ef927379b06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7af14b7a2aa9f24f70329ef927379b06">&#9670;&nbsp;</a></span>Path</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef boost::filesystem::path <a class="el" href="classTools_1_1MConfig.html#a7af14b7a2aa9f24f70329ef927379b06">Tools::MConfig::Path</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a343415225fea3dc8ba6499e4447fd214"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a343415225fea3dc8ba6499e4447fd214">&#9670;&nbsp;</a></span>MConfig()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Tools::MConfig::MConfig </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em> = <code>&quot;&quot;</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>configBasePath</em> = <code>&quot;&quot;</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char&#160;</td>
+          <td class="paramname"><em>commentChar</em> = <code>'#'</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char&#160;</td>
+          <td class="paramname"><em>delimiterChar</em> = <code>'='</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char&#160;</td>
+          <td class="paramname"><em>quoteChar</em> = <code>'&quot;'</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>warnOverwrite</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae9337a487c0a8eee2b003a46ad114670"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9337a487c0a8eee2b003a46ad114670">&#9670;&nbsp;</a></span>~MConfig()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Tools::MConfig::~MConfig </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="abca1ac2769e38c48b99daffc97037da7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abca1ac2769e38c48b99daffc97037da7">&#9670;&nbsp;</a></span>AddItem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Tools::MConfig::AddItem </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a19db9c3f003270e9032b0b2fae07f747"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19db9c3f003270e9032b0b2fae07f747">&#9670;&nbsp;</a></span>CheckItem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MConfig::CheckItem </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5e7f03cc51be8da3f218e4e15813b8f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e7f03cc51be8da3f218e4e15813b8f3">&#9670;&nbsp;</a></span>ClearItems()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Tools::MConfig::ClearItems </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6a10dd6413249e614107c35187cad09c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a10dd6413249e614107c35187cad09c">&#9670;&nbsp;</a></span>DumpToFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MConfig::DumpToFile </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>filePath</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abcadcee7014efcd8b9d287b1b5b74720"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abcadcee7014efcd8b9d287b1b5b74720">&#9670;&nbsp;</a></span>ExtractFromQuotes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Tools::MConfig::ExtractFromQuotes </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>line</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const unsigned int&#160;</td>
+          <td class="paramname"><em>lineNum</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classTools_1_1MConfig.html#a7af14b7a2aa9f24f70329ef927379b06">Path</a> &amp;&#160;</td>
+          <td class="paramname"><em>filePath</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afabd05a43a27f8446f22076af924dc7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afabd05a43a27f8446f22076af924dc7e">&#9670;&nbsp;</a></span>FindLongestKey()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Tools::MConfig::FindLongestKey </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a073e45588379693ecca8f5dd555779fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a073e45588379693ecca8f5dd555779fe">&#9670;&nbsp;</a></span>GetCommentChar()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char Tools::MConfig::GetCommentChar </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a04f0a26b0990893e02062959d3405602"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04f0a26b0990893e02062959d3405602">&#9670;&nbsp;</a></span>GetConfigBasePath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Tools::MConfig::GetConfigBasePath </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aea1d91ea07fda4b99cd0e388677fb9a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea1d91ea07fda4b99cd0e388677fb9a7">&#9670;&nbsp;</a></span>GetConfigFilePath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Tools::MConfig::GetConfigFilePath </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab4ff104a61b8f80aabe3b6b30be08efd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4ff104a61b8f80aabe3b6b30be08efd">&#9670;&nbsp;</a></span>GetDelimiterChar()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char Tools::MConfig::GetDelimiterChar </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3f5c8cd537048d06abe13fcbe6254001"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f5c8cd537048d06abe13fcbe6254001">&#9670;&nbsp;</a></span>GetImportIdentifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Tools::MConfig::GetImportIdentifier </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afde7471ccc4236e348dd0184b69b3cc9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afde7471ccc4236e348dd0184b69b3cc9">&#9670;&nbsp;</a></span>GetItem() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">T Tools::MConfig::GetItem </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7c5f527e13b9e8103d18ea9ad39450f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c5f527e13b9e8103d18ea9ad39450f2">&#9670;&nbsp;</a></span>GetItem() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">T Tools::MConfig::GetItem </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T &amp;&#160;</td>
+          <td class="paramname"><em>defaultItem</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac2fc62bd5e150b1c6b2505183a2c5d8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2fc62bd5e150b1c6b2505183a2c5d8b">&#9670;&nbsp;</a></span>GetQuoteChar()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char Tools::MConfig::GetQuoteChar </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a30fee06a6cd19b847183ba387bfe472d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30fee06a6cd19b847183ba387bfe472d">&#9670;&nbsp;</a></span>GetWriteFileName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Tools::MConfig::GetWriteFileName </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a77ee47990f2ce0ecf695936e3492e243"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77ee47990f2ce0ecf695936e3492e243">&#9670;&nbsp;</a></span>GetWritePath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Tools::MConfig::GetWritePath </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afd94b02bdc8d7cc0ce7a0c06ca28bb37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd94b02bdc8d7cc0ce7a0c06ca28bb37">&#9670;&nbsp;</a></span>ImportFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Tools::MConfig::ImportFile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>iPath</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>old_string</em> = <code>&quot;&quot;</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>new_string</em> = <code>&quot;&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a25724427c98b44518ab3afff0edd2a1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25724427c98b44518ab3afff0edd2a1a">&#9670;&nbsp;</a></span>Init()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classTools_1_1MConfig.html#a7af14b7a2aa9f24f70329ef927379b06">Path</a> Tools::MConfig::Init </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classTools_1_1MConfig.html#a7af14b7a2aa9f24f70329ef927379b06">Path</a>&#160;</td>
+          <td class="paramname"><em>absPath</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6509bfcd27b21db712061e0b09746380"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6509bfcd27b21db712061e0b09746380">&#9670;&nbsp;</a></span>Print()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MConfig::Print </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a08d2e3e51ca96c1dfea7ad2227b34477"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08d2e3e51ca96c1dfea7ad2227b34477">&#9670;&nbsp;</a></span>RemoveItem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MConfig::RemoveItem </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>itemtag</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a068701b090cd526fc15e0761b6f0a6f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a068701b090cd526fc15e0761b6f0a6f8">&#9670;&nbsp;</a></span>ScanForImports()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Tools::MConfig::ScanForImports </td>
+          <td>(</td>
+          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramname"><em>line</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const unsigned int&#160;</td>
+          <td class="paramname"><em>lineNum</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classTools_1_1MConfig.html#a7af14b7a2aa9f24f70329ef927379b06">Path</a> &amp;&#160;</td>
+          <td class="paramname"><em>filePath</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0881a2932328de0b88bc5dbea7f509b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0881a2932328de0b88bc5dbea7f509b7">&#9670;&nbsp;</a></span>SetCommentChar()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Tools::MConfig::SetCommentChar </td>
+          <td>(</td>
+          <td class="paramtype">const char&#160;</td>
+          <td class="paramname"><em>commentChar</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aaf47ac144b65ea055a4c4f10d074dea6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf47ac144b65ea055a4c4f10d074dea6">&#9670;&nbsp;</a></span>SetConfigBasePath() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Tools::MConfig::SetConfigBasePath </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classTools_1_1MConfig.html#a7af14b7a2aa9f24f70329ef927379b06">Path</a> &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9117bf873de26d1aacdbff388ed52a68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9117bf873de26d1aacdbff388ed52a68">&#9670;&nbsp;</a></span>SetConfigBasePath() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Tools::MConfig::SetConfigBasePath </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a285483547b8e28e1bd6ccfeb0affc7ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a285483547b8e28e1bd6ccfeb0affc7ef">&#9670;&nbsp;</a></span>SetDelimiterChar()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Tools::MConfig::SetDelimiterChar </td>
+          <td>(</td>
+          <td class="paramtype">const char&#160;</td>
+          <td class="paramname"><em>delimiterChar</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a19cf00f81cab27b5390fd0d8e591b659"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19cf00f81cab27b5390fd0d8e591b659">&#9670;&nbsp;</a></span>SetImportIdentifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Tools::MConfig::SetImportIdentifier </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>identfier</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7c3b09a3334b691023584fb18a36ab05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c3b09a3334b691023584fb18a36ab05">&#9670;&nbsp;</a></span>SetQuoteChar()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Tools::MConfig::SetQuoteChar </td>
+          <td>(</td>
+          <td class="paramtype">const char&#160;</td>
+          <td class="paramname"><em>quoteChar</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1e633ec530452f7cc369b308dfe985b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e633ec530452f7cc369b308dfe985b7">&#9670;&nbsp;</a></span>SetWriteFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Tools::MConfig::SetWriteFile </td>
+          <td>(</td>
+          <td class="paramtype">const bool &amp;&#160;</td>
+          <td class="paramname"><em>write</em> = <code>true</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>writePath</em> = <code>&quot;&quot;</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>writeFileName</em> = <code>&quot;&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acd4fe279727e302ab01f9b7b527108a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd4fe279727e302ab01f9b7b527108a7">&#9670;&nbsp;</a></span>SetWritePathAndName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Tools::MConfig::SetWritePathAndName </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>writePath</em> = <code>&quot;&quot;</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>writeFileName</em> = <code>&quot;&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a721d02ae37c37eb81edb683eb00f66bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a721d02ae37c37eb81edb683eb00f66bb">&#9670;&nbsp;</a></span>setYear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MConfig::setYear </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>year</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::string &gt;&#160;</td>
+          <td class="paramname"><em>possibleYears</em> = <code>{&quot;2016APV&quot;,&#160;&quot;2016&quot;,&#160;&quot;2017&quot;,&#160;&quot;2018&quot;}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3862a5e301833db7a449e70765a1b21e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3862a5e301833db7a449e70765a1b21e">&#9670;&nbsp;</a></span>WriteFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Tools::MConfig::WriteFile </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>forceWrite</em> = <code>false</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="abdb3b25393018a16d683d2f88e29ce16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdb3b25393018a16d683d2f88e29ce16">&#9670;&nbsp;</a></span>m_commentChar</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">char Tools::MConfig::m_commentChar</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a526f8667b164c82ebaeccdc3026605f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a526f8667b164c82ebaeccdc3026605f8">&#9670;&nbsp;</a></span>m_configBasePath</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classTools_1_1MConfig.html#a7af14b7a2aa9f24f70329ef927379b06">Path</a> Tools::MConfig::m_configBasePath</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0b973d9502366909458f7e4498018cba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b973d9502366909458f7e4498018cba">&#9670;&nbsp;</a></span>m_configFileName</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classTools_1_1MConfig.html#a7af14b7a2aa9f24f70329ef927379b06">Path</a> Tools::MConfig::m_configFileName</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab1c36a8276e96e4345bb5b17cdf71aa6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1c36a8276e96e4345bb5b17cdf71aa6">&#9670;&nbsp;</a></span>m_configFilePath</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classTools_1_1MConfig.html#a7af14b7a2aa9f24f70329ef927379b06">Path</a> Tools::MConfig::m_configFilePath</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae9ebde8b63838942b873c2ee40b550ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9ebde8b63838942b873c2ee40b550ab">&#9670;&nbsp;</a></span>m_configInit</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Tools::MConfig::m_configInit</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a30f878a6825163670c5f696e6ba081e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30f878a6825163670c5f696e6ba081e6">&#9670;&nbsp;</a></span>m_configMap</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::map&lt;std::string, std::string&gt; Tools::MConfig::m_configMap</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3f21f077c97bd71b35902f1340dcd2c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f21f077c97bd71b35902f1340dcd2c5">&#9670;&nbsp;</a></span>m_delimiterChar</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">char Tools::MConfig::m_delimiterChar</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad1ce5a9c779364eb1a96823c6d72dfd9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1ce5a9c779364eb1a96823c6d72dfd9">&#9670;&nbsp;</a></span>m_importIdentifier</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Tools::MConfig::m_importIdentifier</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a128c636c930334b34fd619b0c6893fc3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a128c636c930334b34fd619b0c6893fc3">&#9670;&nbsp;</a></span>m_modifiedImportIdentifier1</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Tools::MConfig::m_modifiedImportIdentifier1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa0be689352be5b84368d1038cd81ef89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0be689352be5b84368d1038cd81ef89">&#9670;&nbsp;</a></span>m_modifiedImportIdentifier2</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Tools::MConfig::m_modifiedImportIdentifier2</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad49838b7f273574391dd2ad92e81e500"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad49838b7f273574391dd2ad92e81e500">&#9670;&nbsp;</a></span>m_quoteChar</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">char Tools::MConfig::m_quoteChar</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a57b2f33a859f79167bedf1af3f285f54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57b2f33a859f79167bedf1af3f285f54">&#9670;&nbsp;</a></span>m_warnOverwrite</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Tools::MConfig::m_warnOverwrite</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a46be9534678b83b12d44155d6eb3c186"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46be9534678b83b12d44155d6eb3c186">&#9670;&nbsp;</a></span>m_writeFile</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Tools::MConfig::m_writeFile</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a53483afdaad016fb780c7e52117673c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53483afdaad016fb780c7e52117673c0">&#9670;&nbsp;</a></span>m_writeFileName</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classTools_1_1MConfig.html#a7af14b7a2aa9f24f70329ef927379b06">Path</a> Tools::MConfig::m_writeFileName</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6d98b218ba97efc23bdd31f13fb12c1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d98b218ba97efc23bdd31f13fb12c1b">&#9670;&nbsp;</a></span>m_writePath</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classTools_1_1MConfig.html#a7af14b7a2aa9f24f70329ef927379b06">Path</a> Tools::MConfig::m_writePath</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/.automount/home/home__home1/institut_3a/silva/NanoMUSiC/NanoMUSiC/MUSiC/include/<a class="el" href="MConfig_8hpp_source.html">MConfig.hpp</a></li>
+<li>/.automount/home/home__home1/institut_3a/silva/NanoMUSiC/NanoMUSiC/MUSiC/<a class="el" href="MConfig_8cpp.html">MConfig.cpp</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="namespaceTools.html">Tools</a></li><li class="navelem"><a class="el" href="classTools_1_1MConfig.html">MConfig</a></li>
+    <li class="footer">Generated by
+    <a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.18 </li>
+  </ul>
+</div>
+</body>
+</html>
