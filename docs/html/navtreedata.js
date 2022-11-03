@@ -25,10 +25,21 @@
 var NAVTREE =
 [
   [ "NanoMUSiC", "index.html", [
-    [ "MUSiC - Pxl", "index.html", [
-      [ "Setup the environment (only once)", "index.html#autotoc_md1", null ],
-      [ "Configuring the environment (for every new session)", "index.html#autotoc_md2", null ],
-      [ "Compile the code", "index.html#autotoc_md3", null ]
+    [ "Setup the environment (only once)", "index.html#autotoc_md1", null ],
+    [ "Setup", "md_installation.html", [
+      [ "Dependencies", "md_installation.html#autotoc_md3", [
+        [ "Setup the environment (only once)", "md_installation.html#autotoc_md4", null ],
+        [ "Configuring the environment (for every new session)", "md_installation.html#autotoc_md5", null ],
+        [ "Compilation", "md_installation.html#autotoc_md6", null ],
+        [ "Installations directories", "md_installation.html#autotoc_md7", null ]
+      ] ]
+    ] ],
+    [ "Running the analysis", "md_running.html", [
+      [ "Skim", "md_running.html#autotoc_md12", [
+        [ "Run Config File", "md_running.html#autotoc_md13", [
+          [ "Single process", "md_running.html#autotoc_md14", null ]
+        ] ]
+      ] ]
     ] ],
     [ "How to access the class storage", "md_class_storage.html", null ],
     [ "legacy MUSiC code", "md_legacy_music.html", null ],
@@ -36,7 +47,7 @@ var NAVTREE =
     [ "Handle NanoObjects", "md_NanoObjects.html", null ],
     [ "test_samples", "md_test_samples.html", null ],
     [ "Kinematical distributions of interest", "md_variables_of_interest.html", [
-      [ "Sum pT: $\\sum_{i}|\\vec{p_{i}}_{T}|$", "md_variables_of_interest.html#autotoc_md9", null ]
+      [ "Sum pT: $\\sum_{i}|\\vec{p_{i}}_{T}|$", "md_variables_of_interest.html#autotoc_md20", null ]
     ] ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],

@@ -21,7 +21,7 @@
     <meta name="twitter:description"
         content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
     <!-- END twitter metadata -->
-    <title>NanoMUSiC: NanoMUSiC</title>
+    <title>NanoMUSiC: Running the analysis</title>
     <link href="tabs.css" rel="stylesheet" type="text/css" />
     <link rel="icon" type="image/svg+xml" href="logo.drawio.svg" />
     <script type="text/javascript" src="jquery.js"></script>
@@ -142,7 +142,7 @@ $(function() {
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
-$(document).ready(function(){initNavTree('index.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('md_running.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -162,17 +162,43 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 
 <div class="PageDoc"><div class="header">
   <div class="headertitle">
-<div class="title">NanoMUSiC </div>  </div>
+<div class="title">Running the analysis </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="md__"></a>.automount_home_home__home1_institut_3a_silva_NanoMUSiC_README</p>
-<p>CMS Run2-UL analysis, using NanoAOD.</p>
-<p>Full Documentation:</p>
-<p><a href="https://cmsmusic.github.io/NanoMUSiC/">https://cmsmusic.github.io/NanoMUSiC/</a></p>
-<h1><a class="anchor" id="autotoc_md1"></a>
-Setup the environment (only once)</h1>
-</div></div><!-- PageDoc -->
-</div><!-- contents -->
+<div class="textblock"><p>The nominal MUSiC analysis, following the approach of the Run2016 <a href="https://arxiv.org/abs/2010.02984">arXiv:2010.02984</a>, is divided in three stages:</p>
+<p>1 - Skimming</p>
+<p>Data and MC NanoAOD samples are skimmed in order to:</p><ul>
+<li>Build a <b>per-event</b> class model stored in TTrees, with $pT$, $m_{inv/T}$, $MET$ and weights calculated for all systematics variations and classes.</li>
+<li>The skimmed samples, since is per-event based, can be used to explore other methods of p-value estimations.</li>
+</ul>
+<p>2 - Classification</p>
+<ul>
+<li>Events sharing the same classes are merged and a Event Class Model (<code>TEventClass</code>) is build.</li>
+<li>Data and MC ROOT files are merged in a format compatible with the legacy MUSiC code.</li>
+</ul>
+<p>3 - Scan</p>
+<ul>
+<li>Calculates p-values for integrated distributions.</li>
+<li>Perform the RoI (Region of Interest) Scan, per-class, per-distribution.</li>
+<li>Calculates the p-values for selected RoIs, as well as estimates the Look Elsewhere Effect (LEE).</li>
+<li>Estimates the p-value distribution, corrected by the LEE: p-tilde ($\tilde{p}$-value).</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md12"></a>
+Skim</h1>
+<h2><a class="anchor" id="autotoc_md13"></a>
+Run Config File</h2>
+<p>Inside <code>./config</code>, different run configuration files can by found.</p>
+<h3><a class="anchor" id="autotoc_md14"></a>
+Single process</h3>
+<p>To run a test/debug Skimming:</p>
+<div class="fragment"><div class="line">nano_music --run-config &lt;path_to_config_file&gt;</div>
+</div><!-- fragment --><p>The possible options are:</p>
+<ul>
+<li><code>--batch</code> (optional): will run in batch mode. No colors, pretty-printings or flushes.</li>
+<li><code>--run-config &lt;path_to_config_file&gt;</code> (mandatory): a run config should be provided. </li>
+</ul>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

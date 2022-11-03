@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['legacy_5fmusic_2emd_325',['legacy_music.md',['../legacy__music_8md.html',1,'']]]
+  ['installation_2emd_329',['installation.md',['../installation_8md.html',1,'']]]
 ];

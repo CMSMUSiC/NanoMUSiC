@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['readme_2emd_343',['README.md',['../README_8md.html',1,'']]],
-  ['runlumifilter_2ehpp_344',['RunLumiFilter.hpp',['../RunLumiFilter_8hpp.html',1,'']]]
+  ['pdfalphasweights_2ehpp_347',['PDFAlphaSWeights.hpp',['../PDFAlphaSWeights_8hpp.html',1,'']]]
 ];

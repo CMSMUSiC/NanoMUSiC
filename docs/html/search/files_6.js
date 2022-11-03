@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['pdfalphasweights_2ehpp_342',['PDFAlphaSWeights.hpp',['../PDFAlphaSWeights_8hpp.html',1,'']]]
+  ['objectcorrections_2ehpp_346',['ObjectCorrections.hpp',['../ObjectCorrections_8hpp.html',1,'']]]
 ];
