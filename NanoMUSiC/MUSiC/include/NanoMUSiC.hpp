@@ -12,7 +12,6 @@
 #include <iomanip>
 #include <iostream>
 #include <math.h>
-#include <mutex>
 #include <numeric>
 #include <optional>
 #include <set>
@@ -105,29 +104,6 @@ std::unique_ptr<TFile> file_loader(const std::string &file_path, const bool cach
     std::unique_ptr<TFile> input_root_file(TFile::Open(file_path.c_str()));
     return input_root_file;
 }
-
-// constexpr unsigned int getIntYear(const std::string_view &year)
-// {
-//     if (year == "2016APV" || year == "2016")
-//     {
-//         return 2016;
-//     }
-//     if (year == "2017")
-//     {
-//         return 2017;
-//     }
-//     if (year == "2018")
-//     {
-//         return 2018;
-//     }
-//     return 1; // dummy
-// }
-
-// This function will read a NanoAOD event from a tree and return a pxl::Event
-// How to access data:
-// nano_reader->getVal<UInt_t>("nMuon")
-// nano_reader->getVec<Float_t>("Muon_pt")
-// nano_reader->getVal<Bool_t>("HLT_Mu18_Mu9")
 
 double getCpuTime()
 {

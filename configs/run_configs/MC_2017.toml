@@ -22,7 +22,7 @@ debug = 0
 max_events = -1
 number_of_events_to_skip = 0
 is_data = false                                    # Is Data?
-x_section_file = '$MUSIC_BASE/configs/x_sections.toml'
+x_section_file = '$MUSIC_BASE/configs/xsections_and_lumi/x_sections.toml'
 year = '2017'
 # output_file = '' # if empty, constructed from process
 process = 'DYJetsToLL_M-50_13TeV_AM'
@@ -31,7 +31,7 @@ hash = 'dummyhash'
 cacheread = true
 max_file_load_error_rate = 0.15 # max fraction of file load error (only for MC)
 n_threads = 21
-jets_config_file = '$MUSIC_BASE/configs/jets_2017.toml'
+jets_config_file = '$MUSIC_BASE/configs/objects/jets_2017.toml'
 # input_files = [
 #     '/home/home1/institut_3a/silva/projects/NanoMUSiC_Test_Data/DY_2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
 #     # '/home/home1/institut_3a/silva/projects/NanoMUSiC_Test_Data/DY_2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',

@@ -373,11 +373,7 @@ int main(int argc, char *argv[])
             // fill trigger bits
             music_event.trigger_bits = [&]() {
                 TriggerBits trigger_bits;
-                if (year == "2016APV")
-                {
-                    return trigger_bits.as_uint();
-                }
-                if (year == "2016")
+                if (year == "2016APV" || year == "2016")
                 {
                     return trigger_bits.as_uint();
                 }
@@ -406,7 +402,7 @@ int main(int argc, char *argv[])
             }();
 
             // skip event event if no trigger is fired
-            if (music_event.trigger_bits != 0)
+            if (music_event.trigger_bits == 0)
             {
                 continue;
             }
@@ -414,7 +410,7 @@ int main(int argc, char *argv[])
             //////////////////////////////////////////////////////////////
             //////////////////////////////////////////////////////////////
             // MET event filters
-            // https://twiki.c0ern.ch/twiki/bin/view/CMS/MissingETOptionalFiltersRun2#MET_Filter_Recommendations_for_R
+            // https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFiltersRun2#MET_Filter_Recommendations_for_R
             bool pass_MET_filters = true;
             if (year == "2016APV" || year == "2016")
             {
