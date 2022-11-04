@@ -13,7 +13,7 @@ nano.root
 .vscode/browse.vc.db
 .vscode/browse.vc.db-shm
 .vscode/browse.vc.db-wal
-test_mc_2017/
+test_*
 docs/foo
 test_*
 ##### PYTHON #####
