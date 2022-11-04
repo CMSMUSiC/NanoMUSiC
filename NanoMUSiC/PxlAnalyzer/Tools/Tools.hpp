@@ -72,7 +72,7 @@ class file_not_found : public std::exception
     std::string m_filetype;
 };
 
-// returns the abolute path to file given with a path relative to PXLANALYZER_BASE
+// returns the absolute path to file given with a path relative to PXLANALYZER_BASE
 // returns the given path if it is already absolute (starts with a /)
 std::string musicAbsPath(std::string relPath);
 

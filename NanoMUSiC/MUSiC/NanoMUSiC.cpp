@@ -26,13 +26,6 @@ int main(int argc, char *argv[])
     bool batch_mode = cmdl[{"-b", "--batch"}];
     std::string run_config_file = cmdl({"-c", "--run-config"}).str();
 
-    if (std::getenv("NANOMUSIC_DEBUG"))
-    {
-        std::cout << "[WARNING] running in DEBUG Mode!\n" << std::endl;
-        batch_mode = true;
-        run_config_file = std::string("configs/MC_2017.toml");
-    }
-
     if (show_help || run_config_file == "")
     {
         std::cout << " " << std::endl;
@@ -94,17 +87,17 @@ int main(int argc, char *argv[])
     // read parameters from TOML file
     const auto run_config = TOMLConfig::make_toml_config(run_config_file);
     const auto output_directory = run_config.get<std::string>("output");
-    const auto analysis_config_file = Tools::AbsolutePath(run_config.get<std::string>("config"));
     const auto process = run_config.get<std::string>("process");
     const auto dataset = run_config.get<std::string>("dataset");
     const auto max_events = run_config.get<int>("max_events");
     const auto number_of_events_to_skip = run_config.get<int>("number_of_events_to_skip");
     const auto is_data = run_config.get<bool>("is_data");
     const auto debug = run_config.get<int>("debug");
-    const auto x_section_file = Tools::AbsolutePath(run_config.get<std::string>("x_section_file"));
+    const auto x_section_file = Tools::parse_and_expand_music_base(run_config.get<std::string>("x_section_file"));
     const auto run_hash = run_config.get<std::string>("hash");
     const auto year = run_config.get<std::string>("year");
     const auto cacheread = run_config.get<bool>("cacheread");
+    const auto max_file_load_error_rate = run_config.get<float>("max_file_load_error_rate");
     const auto input_files = run_config.get_vector<std::string>("input_files");
 
     // check year
@@ -119,15 +112,6 @@ int main(int argc, char *argv[])
     const auto jets_config = TOMLConfig::make_toml_config(jets_config_file);
     const auto jets_btag_algo = jets_config.get<std::string>("Jets.btag_algo");
     const auto jets_btag_wp_tight = jets_config.get<float>("jets_btag_wp_tight");
-    if (not std::filesystem::exists(analysis_config_file))
-    {
-        throw Tools::file_not_found(analysis_config_file, "Config file");
-    }
-    else
-        std::cout << "INFO: Using Config file: " << analysis_config_file << std::endl;
-
-    auto config = Tools::MConfig(analysis_config_file);
-    config.setYear(year);
 
     // Get the run config file from main config file.
     const auto golden_json_file =
@@ -138,14 +122,13 @@ int main(int argc, char *argv[])
         if (not std::filesystem::exists(golden_json_file))
         {
             std::stringstream error;
-            error << "golden_json_file '" << golden_json_file << "' ";
-            error << "in config file: '" << analysis_config_file << "' not found!";
+            error << "golden_json_file not found";
             throw Tools::config_error(error.str());
         }
     }
     if (!golden_json_file.empty())
     {
-        std::cout << "INFO: Using Run config file: " << golden_json_file << std::endl;
+        std::cout << "INFO: Using Run/Lumi JSON file: " << golden_json_file << std::endl;
     }
 
     std::cout << " " << std::endl;
@@ -159,10 +142,6 @@ int main(int argc, char *argv[])
     system(("mkdir -p " + output_directory).c_str());
     system(("cd " + output_directory).c_str());
     chdir(output_directory.c_str());
-    system(("cp " + analysis_config_file + " . ").c_str());
-
-    // dump config to file
-    config.DumpToFile("config_full.txt");
 
     if (!golden_json_file.empty())
         system(("cp " + golden_json_file + " . ").c_str());
@@ -220,7 +199,7 @@ int main(int argc, char *argv[])
 
     // file counters
     unsigned int analyzed_files = 0;
-    unsigned int lost_files = 0;
+    int file_load_error = 0; // number of files that could not be opened
 
     // temp cache dir
     std::string cache_dir = "/tmp/music/proc_" + process_hash;
@@ -249,25 +228,41 @@ int main(int argc, char *argv[])
     auto first_file = input_files.at(0);
     std::cout << "Loading first file ..." << std::endl;
     OptionalFuture_t input_root_file_future =
-        std::async(std::launch::async, get_TFile, first_file, cacheread, cache_dir);
+        std::async(std::launch::async, get_TFile, first_file, cacheread, cache_dir, false);
     auto input_root_file = input_root_file_future->get();
     std::cout << "... done." << std::endl;
     for (size_t i = 0; i < input_files.size(); i++)
     {
         if (!input_root_file)
         {
-            std::cout << "ERROR: could not open file" << std::endl;
-            exit(1);
+            if (is_data)
+            {
+                std::cout << "[ERROR]: could not open file" << std::endl;
+                exit(1);
+            }
+            std::cout << "[WARNINIG]: could not open file: " << input_files.at(i) << std::endl;
+            file_load_error++;
+
+            // will exit, if error rate < max
+            if (float(file_load_error) / float(input_files.size()) > max_file_load_error_rate)
+            {
+                std::cout << "Too many file load errors: " << file_load_error << " out of " << input_files.size() << "."
+                          << std::endl;
+                exit(1);
+            }
+
+            // skip file if not Data and error rate < max
+            continue;
         }
         else
-
         {
             time_t rawtime;
             time(&rawtime);
             std::cout << "Opening time: " << ctime(&rawtime);
 
             analyzed_files++;
-            int event_counter_per_file = 0;
+
+            unsigned int event_counter_per_file = 0;
 
             // get "Events" TTree from file
             auto events_tree = std::unique_ptr<TTree>(input_root_file->Get<TTree>("Events"));
@@ -276,7 +271,7 @@ int main(int argc, char *argv[])
             if (i + 1 < input_files.size())
             {
                 input_root_file_future =
-                    std::async(std::launch::async, get_TFile, input_files.at(i + 1), cacheread, cache_dir);
+                    std::async(std::launch::async, get_TFile, input_files.at(i + 1), cacheread, cache_dir, false);
             }
             else
             {
@@ -288,6 +283,7 @@ int main(int argc, char *argv[])
 
             // get NanoAODReader
             auto nano_reader = NanoAODReader(*events_tree);
+            auto entries_in_this_file = events_tree->GetEntriesFast();
 
             //////////////////////////////////////////////////////////////////////////////////////////////////
             //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -304,6 +300,7 @@ int main(int argc, char *argv[])
                 if (number_of_events_to_skip > pre_run_skipped)
                 {
                     pre_run_skipped++;
+                    event_counter_per_file++;
                     continue;
                 }
 
@@ -334,8 +331,8 @@ int main(int argc, char *argv[])
                     }
                 }
 
-                // stop if max number of events to be processed is reaced
-                if (max_events != -1 && event_counter > max_events)
+                // stop if max number of events to be processed is reached
+                if (max_events >= 0 && event_counter > max_events)
                 {
                     break;
                 }
@@ -486,6 +483,7 @@ int main(int argc, char *argv[])
                 //////////////////////////////////////////////////////////////
                 //////////////////////////////////////////////////////////////
                 //////////////////////////////////////////////////////////////
+                // Muon - Filter
                 auto good_muons = NanoObject::Filter(muons, [](const auto &muon) {
                     if (muon.pt() > 20.0)
                     {
@@ -494,6 +492,7 @@ int main(int argc, char *argv[])
                     return false;
                 });
 
+                // Electron - Filter
                 auto good_electrons = NanoObject::Filter(electrons, [](const auto &electron) {
                     if (electron.pt() > 20.0)
                     {
@@ -502,6 +501,7 @@ int main(int argc, char *argv[])
                     return false;
                 });
 
+                // Photon - Filter
                 auto good_photons = NanoObject::Filter(photons, [](const auto &photon) {
                     if (photon.pt() > 20.0)
                     {
@@ -510,6 +510,7 @@ int main(int argc, char *argv[])
                     return false;
                 });
 
+                // Tau - Filter
                 auto good_taus = NanoObject::Filter(taus, [](const auto &tau) {
                     if (tau.pt() > 20.0)
                     {
@@ -518,6 +519,7 @@ int main(int argc, char *argv[])
                     return false;
                 });
 
+                // BJet - Filter
                 auto good_bjets = NanoObject::Filter(bjets, [](const auto &bjet) {
                     if (bjet.pt() > 50.0)
                     {
@@ -526,6 +528,7 @@ int main(int argc, char *argv[])
                     return false;
                 });
 
+                // Jet - Filter
                 auto good_jets = NanoObject::Filter(jets, [](const auto &jet) {
                     if (jet.pt() > 50.0)
                     {
@@ -534,6 +537,7 @@ int main(int argc, char *argv[])
                     return false;
                 });
 
+                // MET - Filter
                 met.set("good_met", [&]() {
                     if (met.pt() > 20.)
                     {
@@ -542,7 +546,7 @@ int main(int argc, char *argv[])
                     return false;
                 }());
 
-                // will hold the number of classes
+                // holds the number of classes for this event
                 auto multiplicities =
                     EventContent::get_multiplicities(good_muons.size(),     /* total number of good muons */
                                                      good_electrons.size(), /* total number of good electrons */
@@ -554,6 +558,7 @@ int main(int argc, char *argv[])
 
                 unsigned long n_classes = ranges::distance(multiplicities.begin(), multiplicities.end());
 
+                // skip event if there are no classes to be analyzed
                 if (n_classes == 0)
                 {
                     continue;
@@ -630,21 +635,19 @@ int main(int argc, char *argv[])
               << skipped << " due to run/ls veto";
     std::cout << ", elapsed CPU time: " << dTime2 - dTime1 << " (" << double(event_counter) / (dTime2 - dTime1)
               << " evts per sec)" << std::endl;
-    if (lost_files >= 0.5 * (lost_files + analyzed_files))
+
+    if (file_load_error > 0)
     {
-        std::cout << "Error: Too many files lost!" << std::endl;
-        throw std::runtime_error("Too many files lost.");
-    }
-    else if (lost_files > 0)
-    {
-        std::cout << "Warning: " << lost_files << " of " << (lost_files + analyzed_files)
+        std::cout << "Warning: " << file_load_error << " of " << (file_load_error + analyzed_files)
                   << " files lost due to timeouts or read errors." << std::endl;
     }
+
     if ((event_counter + skipped) == 0)
     {
         std::cout << "Error: No event analayzed!" << std::endl;
         throw std::runtime_error("No event analayzed!");
     }
+
     std::cout << "\n\n\n" << std::endl;
 
     // write tree to file
@@ -653,6 +656,8 @@ int main(int argc, char *argv[])
     output_tree->Write();
     cutflow_histo.Write();
 
+    // convert the std::list of classes that were touched to a comma separated
+    // string and write it to the the output file
     auto storaged_classes = TObjString(make_class_storage(classes).c_str());
     storaged_classes.Write();
 

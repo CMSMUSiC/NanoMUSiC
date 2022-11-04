@@ -70,8 +70,9 @@ using namespace ranges;
 using namespace ROOT::Math;
 using OptionalFuture_t = std::optional<std::future<std::unique_ptr<TFile>>>;
 
-// (async) TFile getter
-std::unique_ptr<TFile> get_TFile(const std::string &file_path, const bool cacheread, const std::string &cache_dir)
+// (async) TFile download
+std::unique_ptr<TFile> get_TFile(const std::string &file_path, const bool cacheread, const std::string &cache_dir,
+                                 const bool verbose_load)
 {
     std::cout << "Loading file [ " << file_path << " ]" << std::endl;
 
@@ -79,7 +80,16 @@ std::unique_ptr<TFile> get_TFile(const std::string &file_path, const bool cacher
     {
         const auto hash = std::to_string(std::hash<std::string>{}(file_path));
         const auto dest = cache_dir + "/" + hash + ".root";
-        if (TFile::Cp(file_path.c_str(), dest.c_str(), false))
+
+        std::string silent_load = "--silent";
+        if (verbose_load)
+        {
+            silent_load = "";
+        }
+        const std::string command_str = "xrdcp -f " + silent_load + " " + file_path + " " + dest;
+        int download_return_code = std::system(command_str.c_str());
+
+        if (download_return_code == 0)
         {
             std::unique_ptr<TFile> input_root_file(TFile::Open(dest.c_str()));
             return input_root_file;

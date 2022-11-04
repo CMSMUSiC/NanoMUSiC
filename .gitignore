@@ -15,6 +15,7 @@ nano.root
 .vscode/browse.vc.db-wal
 test_mc_2017/
 docs/foo
+test_*
 ##### PYTHON #####
 
 # Byte-compiled / optimized / DLL files

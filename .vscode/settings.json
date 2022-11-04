@@ -80,7 +80,8 @@
     "condition_variable": "cpp",
     "future": "cpp",
     "mutex": "cpp",
-    "span": "cpp"
+    "span": "cpp",
+    "cstdarg": "cpp"
   },
   // "C_Cpp.loggingLevel": "Debug",
   "clang-format.executable": "/.automount/home/home__home1/institut_3a/silva/.local/bin/clang-format",
