@@ -237,7 +237,7 @@ int main(int argc, char *argv[])
     auto first_file = input_files.at(0);
     std::cout << "Loading first file ..." << std::endl;
     OptionalFuture_t input_root_file_future =
-        std::async(std::launch::async, get_TFile, first_file, cacheread, cache_dir, false);
+        std::async(std::launch::async, file_loader, first_file, cacheread, cache_dir, false);
     auto input_root_file = input_root_file_future->get();
     std::cout << "... done." << std::endl;
     for (size_t i = 0; i < input_files.size(); i++)
@@ -279,7 +279,7 @@ int main(int argc, char *argv[])
         if (i + 1 < input_files.size())
         {
             input_root_file_future =
-                std::async(std::launch::async, get_TFile, input_files.at(i + 1), cacheread, cache_dir, false);
+                std::async(std::launch::async, file_loader, input_files.at(i + 1), cacheread, cache_dir, false);
         }
         else
         {
@@ -413,9 +413,42 @@ int main(int argc, char *argv[])
 
             //////////////////////////////////////////////////////////////
             //////////////////////////////////////////////////////////////
-            // FIX ME: Implement the MET event filters
-            //////////////////////////////////////////////////////////////
-            //////////////////////////////////////////////////////////////
+            // MET event filters
+            // https://twiki.c0ern.ch/twiki/bin/view/CMS/MissingETOptionalFiltersRun2#MET_Filter_Recommendations_for_R
+            bool pass_MET_filters = true;
+            if (year == "2016APV" || year == "2016")
+            {
+                pass_MET_filters = pass_MET_filters && nano_reader.getVal<Bool_t>("Flag_goodVertices") &&
+                                   nano_reader.getVal<Bool_t>("Flag_globalSuperTightHalo2016Filter") &&
+                                   nano_reader.getVal<Bool_t>("Flag_HBHENoiseFilter") &&
+                                   nano_reader.getVal<Bool_t>("Flag_HBHENoiseIsoFilter") &&
+                                   nano_reader.getVal<Bool_t>("Flag_EcalDeadCellTriggerPrimitiveFilter") &&
+                                   nano_reader.getVal<Bool_t>("Flag_BadPFMuonFilter") &&
+                                   nano_reader.getVal<Bool_t>("Flag_BadPFMuonDzFilter") &&
+                                   nano_reader.getVal<Bool_t>("Flag_eeBadScFilter");
+                // nano_reader.getVal<Bool_t>("Flag_BadChargedCandidateFilter");
+                // nano_reader.getVal<Bool_t>("Flag_hfNoisyHitsFilter");
+            }
+
+            if (year == "2018" || year == "2017")
+            {
+
+                pass_MET_filters = pass_MET_filters && nano_reader.getVal<Bool_t>("Flag_goodVertices") &&
+                                   nano_reader.getVal<Bool_t>("Flag_globalSuperTightHalo2016Filter") &&
+                                   nano_reader.getVal<Bool_t>("Flag_HBHENoiseFilter") &&
+                                   nano_reader.getVal<Bool_t>("Flag_HBHENoiseIsoFilter") &&
+                                   nano_reader.getVal<Bool_t>("Flag_EcalDeadCellTriggerPrimitiveFilter") &&
+                                   nano_reader.getVal<Bool_t>("Flag_BadPFMuonFilter") &&
+                                   nano_reader.getVal<Bool_t>("Flag_BadPFMuonDzFilter") &&
+                                   nano_reader.getVal<Bool_t>("Flag_eeBadScFilter") &&
+                                   nano_reader.getVal<Bool_t>("Flag_ecalBadCalibFilter");
+                // nano_reader.getVal<Float_t>("Flag_hfNoisyHitsFilter");
+                // nano_reader.getVal<Float_t>("Flag_BadChargedCandidateFilter");
+            }
+            if (!pass_MET_filters)
+            {
+                continue;
+            }
 
             //////////////////////////////////////////////////////////////
             //////////////////////////////////////////////////////////////

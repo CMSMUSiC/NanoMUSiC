@@ -76,8 +76,8 @@ using namespace ROOT::Math;
 using OptionalFuture_t = std::optional<std::future<std::unique_ptr<TFile>>>;
 
 // (async) TFile download
-std::unique_ptr<TFile> get_TFile(const std::string &file_path, const bool cacheread, const std::string &cache_dir,
-                                 const bool verbose_load)
+std::unique_ptr<TFile> file_loader(const std::string &file_path, const bool cacheread, const std::string &cache_dir,
+                                   const bool verbose_load)
 {
     std::cout << "Loading file [ " << file_path << " ]" << std::endl;
 
