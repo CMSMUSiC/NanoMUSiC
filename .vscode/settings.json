@@ -99,7 +99,7 @@
     "Clean": "cd ${workspaceFolder}/build && ninja clean",
     "Configure": "cd ${workspaceFolder}/build && cmake .."
   },
-  "C_Cpp.intelliSenseEngine": "Default",
+  "C_Cpp.intelliSenseEngine": "Tag Parser",
   "C_Cpp.default.intelliSenseMode": "gcc-x86",
   "C_Cpp.autocompleteAddParentheses": true,
   "C_Cpp.files.exclude": {
@@ -131,4 +131,6 @@
   ],
   "cmake.revealLog": "never",
   "notebook.output.textLineLimit": 999,
+  "C_Cpp.intelliSenseCacheSize": 10240,
+  "C_Cpp.intelliSenseMemoryLimit": 16384,
 }

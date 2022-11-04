@@ -164,6 +164,22 @@ NanoObjectCollection Filter(NanoObjectCollection &vec, F &&pred)
     return _out;
 }
 
+template <typename F>
+NanoObjectCollection Filter(const NanoObjectCollection &vec, F &&pred)
+{
+    NanoObjectCollection _out;
+    std::copy_if(vec.begin(), vec.end(), std::back_inserter(_out), pred);
+    return _out;
+}
+
+template <typename F>
+NanoObjectCollection Filter(NanoObjectCollection &&vec, F &&pred)
+{
+    NanoObjectCollection _out;
+    std::copy_if(vec.begin(), vec.end(), std::back_inserter(_out), pred);
+    return _out;
+}
+
 NanoObjectCollection Filter(const NanoObjectCollection &vec, std::vector<int> &conditions)
 {
     if (vec.size() != conditions.size())

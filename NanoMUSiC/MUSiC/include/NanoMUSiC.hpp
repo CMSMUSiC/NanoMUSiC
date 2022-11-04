@@ -12,6 +12,7 @@
 #include <iomanip>
 #include <iostream>
 #include <math.h>
+#include <mutex>
 #include <numeric>
 #include <optional>
 #include <set>
@@ -33,6 +34,7 @@
 // https://github.com/marzer/tomlplusplus
 #include "color.hpp"
 #include "emoji.hpp"
+
 // https://github.com/okdshin/PicoSHA2
 #include "picosha2.hpp"
 #include "toml.hpp"
@@ -40,6 +42,9 @@
 // Comand line Tools
 // https://github.com/adishavit/argh
 #include "argh.h"
+
+// http:://github.com/bshoshany/thread-pool
+#include "BS_thread_pool.hpp"
 
 // Configurarion and filter
 #include "MConfig.hpp"
@@ -203,6 +208,21 @@ std::string make_class_storage(const std::set<unsigned long> &classes)
     str_class_storage.erase(0, 1);
 
     return str_class_storage;
+}
+
+template <typename T>
+T get_and_check_future(std::future<T> &_ftr)
+{
+    try
+    {
+        return _ftr.get();
+    }
+    catch (const std::exception &e)
+    {
+        std::cout << "[ERROR] Caught exception when trying to collect the object filter (async task)." << std::endl;
+        std::cout << e.what() << std::endl;
+        exit(1);
+    }
 }
 
 #endif /*MUSIC_NANOMUSIC*/

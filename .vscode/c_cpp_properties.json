@@ -4,8 +4,8 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/NanoMUSiC/MUSiC/*",
-                "${workspaceFolder}/NanoMUSiC/MUSiC/include/**",
-                "/cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/include/**"
+                "${workspaceFolder}/NanoMUSiC/MUSiC/include/*"
+                // "/cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/include/**"
             ],
             "defines": [],
             "compilerPath": "/cvmfs/sft.cern.ch/lcg/releases/gcc/11.2.0-8a51a/x86_64-centos7/bin/g++",
@@ -15,8 +15,8 @@
             "configurationProvider": "ms-vscode.makefile-tools",
             "browse": {
                 "path": [
-                    "${workspaceFolder}/NanoMUSiC/MUSiC/**",
-                    "${workspaceFolder}/NanoMUSiC/MUSiC/include/**"
+                    "${workspaceFolder}/NanoMUSiC/MUSiC/*",
+                    "${workspaceFolder}/NanoMUSiC/MUSiC/include/*"
                     // "${workspaceFolder}"
                     // "/cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/include/"
                 ],

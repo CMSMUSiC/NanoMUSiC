@@ -29,7 +29,7 @@ dataset = '/foo/bar/abc/NANOAODSIM'
 hash = 'dummyhash'
 cacheread = true
 max_file_load_error_rate = 0.15 # max fraction of file load error (only for MC)
-
+n_threads = 21
 jets_config_file = '$MUSIC_BASE/configs/jets_2017.toml'
 
 input_files = [

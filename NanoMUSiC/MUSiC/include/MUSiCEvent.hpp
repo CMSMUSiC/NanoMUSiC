@@ -118,6 +118,8 @@ class EventWeight : public TObject
 
 class EventContent : public TObject
 {
+    // mutable std::mutex _mtx;
+
   public:
     std::vector<EventWeight> event_weight;
     std::vector<unsigned long> event_class_hash;
@@ -198,6 +200,8 @@ class EventContent : public TObject
 
     void fill(const Multiplicity_t &multiplicity, const std::optional<NanoObject::NanoAODObjects_t> nanoaod_objects)
     {
+        // std::lock_guard<std::mutex> l(_mtx);
+
         if (nanoaod_objects)
         {
             // unpacking ...
