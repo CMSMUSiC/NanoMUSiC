@@ -3,24 +3,25 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/NanoMUSiC/MUSiC/*",
+                "${workspaceFolder}/NanoMUSiC/MUSiC/**",
                 "${workspaceFolder}/NanoMUSiC/MUSiC/include/*"
                 // "/cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/include/**"
             ],
             "defines": [],
             "compilerPath": "/cvmfs/sft.cern.ch/lcg/releases/gcc/11.2.0-8a51a/x86_64-centos7/bin/g++",
+            // "compilerPath": "/usr/bin/gcc",
             "cStandard": "c89",
             "cppStandard": "c++17",
             "intelliSenseMode": "linux-gcc-x64",
             "configurationProvider": "ms-vscode.makefile-tools",
             "browse": {
                 "path": [
-                    "${workspaceFolder}/NanoMUSiC/MUSiC/*",
+                    "${workspaceFolder}/NanoMUSiC/MUSiC/**",
                     "${workspaceFolder}/NanoMUSiC/MUSiC/include/*"
                     // "${workspaceFolder}"
                     // "/cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/include/"
                 ],
-                "limitSymbolsToIncludedHeaders": true,
+                "limitSymbolsToIncludedHeaders": false,
                 "databaseFilename": "${workspaceFolder}/.vscode/browse.vc.db"
             },
             "forcedInclude": []

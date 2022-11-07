@@ -1,9 +1,12 @@
 #ifndef MUSIC_TOOLS
 #define MUSIC_TOOLS
 
+#include <algorithm>
 #include <cstdlib>
 #include <exception>
+#include <iostream>
 #include <map>
+#include <random>
 #include <regex>
 #include <sstream>
 #include <stdexcept>
@@ -27,8 +30,9 @@
 
 #include "TSystem.h" // for ExpandPathName
 
-namespace Tools
+namespace MUSiCTools
 {
+
 typedef boost::filesystem::path Path;
 
 class value_error : public std::runtime_error
@@ -82,15 +86,115 @@ class file_not_found : public std::exception
 
 // returns the abolute path to file given with a path relative to PXLANALYZER_BASE
 // returns the given path if it is already absolute (starts with a /)
-std::string musicAbsPath(std::string relPath);
+std::string musicAbsPath(std::string relPath)
+{
+    if (relPath.substr(0, 1) == "/")
+        return relPath;
+    std::string output;
+    char *pPath = std::getenv("PXLANALYZER_BASE");
+    if (pPath != NULL)
+    {
+        output = std::string(pPath) + "/" + relPath;
+    }
+    else
+    {
+        std::cout << "FATAL: PXLANALYZER_BASE not set!" << std::endl;
+        output = "";
+    }
+    return output;
+}
 
 // Remove comment from line.
-std::string removeComment(std::string line, char const commentChar = '#');
-std::string random_string(size_t length);
+std::string removeComment(std::string line, char const commentChar = '#')
+{
+    if (line.empty())
+    {
+        return line;
+    }
 
-// returb a vector of string identifiers for each physics object type
-std::vector<std::string> getParticleTypeAbbreviations(bool isRec = true);
-std::map<int, std::string> pdg_id_type_map(bool useBJet = false);
+    std::string::size_type pos = line.find_first_of(commentChar);
+    if (pos != std::string::npos)
+    {
+        line.erase(pos);
+    }
+
+    boost::trim(line);
+
+    return line;
+}
+
+std::string random_string(size_t length)
+{
+    auto randchar = []() -> char {
+        const char charset[] = "0123456789"
+                               "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                               "abcdefghijklmnopqrstuvwxyz";
+        const size_t max_index = (sizeof(charset) - 1);
+        return charset[rand() % max_index];
+    };
+    std::string str(length, 0);
+    std::generate_n(str.begin(), length, randchar);
+    return str;
+}
+
+// return a vector of string identifiers for each physics object type
+std::vector<std::string> getParticleTypeAbbreviations(bool isRec = true)
+{
+    std::vector<std::string> partList;
+    partList.push_back("Ele");
+    partList.push_back("Muon");
+    partList.push_back("Tau");
+    partList.push_back("Gamma");
+    partList.push_back("FatJet");
+    partList.push_back("Jet");
+    partList.push_back("MET");
+
+    if (!isRec)
+    {
+        // 3rd generation
+        partList.push_back("Top");
+        partList.push_back("b");
+        // neutrinos
+        partList.push_back("Nu_ele");
+        partList.push_back("Nu_muon");
+        partList.push_back("Nu_tau");
+        // bosons
+        partList.push_back("Gluon");
+        partList.push_back("Z");
+        partList.push_back("W");
+        partList.push_back("H");
+    }
+    return partList;
+}
+
+std::map<int, std::string> pdg_id_type_map(bool useBJet = false)
+{
+    std::map<int, std::string> outMap = std::map<int, std::string>();
+    outMap.emplace(11, "Ele");
+    outMap.emplace(12, "Nu_ele");
+    outMap.emplace(13, "Muon");
+    outMap.emplace(14, "Nu_muon");
+    outMap.emplace(15, "Tau");
+    outMap.emplace(16, "Nu_tau");
+
+    // treat all quarks as jets
+    outMap.emplace(1, "Jet");
+    outMap.emplace(2, "Jet");
+    outMap.emplace(3, "Jet");
+    outMap.emplace(4, "Jet");
+    outMap.emplace(5, "b");
+    outMap.emplace(6, "Top");
+    outMap.emplace(7, "Jet");
+    outMap.emplace(8, "Jet");
+    // Bosons
+    outMap.emplace(21, "Gluon");
+    outMap.emplace(9, "Gluon");
+    outMap.emplace(22, "Gamma");
+    outMap.emplace(23, "Z");
+    outMap.emplace(24, "W");
+    outMap.emplace(25, "H");
+    return outMap;
+}
 
 // return everything you can << into an ostream as a string
 template <class T>
@@ -210,8 +314,26 @@ auto index_range(const int &to)
     return index_range<T>(0, to);
 }
 
-std::string parse_and_expand_music_base(std::string path);
+std::string parse_and_expand_music_base(std::string_view path)
+{
+    return std::regex_replace(std::string(path), std::regex("\\$MUSIC_BASE"), std::string(std::getenv("MUSIC_BASE")));
+}
 
-} // namespace Tools
+template <typename T>
+size_t ArgMin(const std::vector<T> &seq)
+{
+    return std::distance(seq.begin(), std::min_element(seq.begin(), seq.end()));
+}
 
+template <typename T>
+std::optional<T> MinElem(const std::vector<T> &seq)
+{
+    if (seq.size() > 0)
+    {
+        return seq.at(ArgMin(seq));
+    }
+    return std::nullopt;
+}
+
+} // namespace MUSiCTools
 #endif /*MUSIC_TOOLS*/

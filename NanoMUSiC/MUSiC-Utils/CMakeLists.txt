@@ -6,7 +6,7 @@ target_include_directories(TEventClass PUBLIC ./)
 target_compile_options(TEventClass PUBLIC
         -MD
         -MP
-        -O0
+        -O3
         -Wall
         -fPIC
         -fsignaling-nans

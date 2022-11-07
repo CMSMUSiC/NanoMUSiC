@@ -81,7 +81,16 @@
     "future": "cpp",
     "mutex": "cpp",
     "span": "cpp",
-    "cstdarg": "cpp"
+    "cstdarg": "cpp",
+    "coroutine": "cpp",
+    "iterator": "cpp",
+    "memory_resource": "cpp",
+    "random": "cpp",
+    "source_location": "cpp",
+    "cfenv": "cpp",
+    "cinttypes": "cpp",
+    "typeindex": "cpp",
+    "hashtable": "cpp"
   },
   // "C_Cpp.loggingLevel": "Debug",
   "clang-format.executable": "/.automount/home/home__home1/institut_3a/silva/.local/bin/clang-format",
@@ -100,18 +109,11 @@
     "Configure": "cd ${workspaceFolder}/build && cmake .."
   },
   "C_Cpp.intelliSenseEngine": "Tag Parser",
-  "C_Cpp.default.intelliSenseMode": "gcc-x86",
-  "C_Cpp.autocompleteAddParentheses": true,
+  "C_Cpp.default.intelliSenseMode": "gcc-x64",
+  "C_Cpp.autocompleteAddParentheses": false,
   "C_Cpp.files.exclude": {
     "**/.vscode": true,
     "**/.vs": true
-  },
-  "vim.handleKeys": {
-    "<C-c>": false,
-    "<C-d>": false,
-    "<C-a>": false,
-    "<C-b>": false,
-    "<C-f>": false
   },
   "cSpell.words": [
     "bjets",
@@ -133,4 +135,16 @@
   "notebook.output.textLineLimit": 999,
   "C_Cpp.intelliSenseCacheSize": 10240,
   "C_Cpp.intelliSenseMemoryLimit": 16384,
+  "C_Cpp.loggingLevel": "Error",
+  // Controls if quick suggestions should show up while typing
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": true,
+    "strings": true,
+    "Variables": true,
+  },
+  "editor.suggest.localityBonus": true,
+  "editor.wordBasedSuggestionsMode": "allDocuments",
+  "rootFileViewer.darkMode": true,
+  "simpleBrowser.focusLockIndicator.enabled": true
 }

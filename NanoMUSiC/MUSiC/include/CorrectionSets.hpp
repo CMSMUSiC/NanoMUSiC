@@ -7,6 +7,8 @@
 // https://indico.cern.ch/event/1096988/contributions/4615134/attachments/2346047/4000529/Nov21_btaggingSFjsons.pdf
 #include "correction.h"
 
+#include "Configs.hpp"
+
 enum class CorrectionTypes
 {
     PU,
@@ -16,27 +18,27 @@ class Corrector
 {
   public:
     const CorrectionTypes correction_type;
-    const std::string year;
+    const Year year;
     const bool isData;
     correction::Correction::Ref correction_ref;
 
-    const std::map<std::pair<CorrectionTypes, std::string>, std::pair<std::string, std::string>> correction_keys = {
+    const std::map<std::pair<CorrectionTypes, Year>, std::pair<std::string, std::string>> correction_keys = {
         // {{TYPE, YEAR}, {JSON_FILE, CORRECTION_KEY}},
-        {{CorrectionTypes::PU, "2016APV"},
+        {{CorrectionTypes::PU, Year::Run2016APV},
          {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2016preVFP_UL/puWeights.json.gz",
           "Collisions16_UltraLegacy_goldenJSON"}},
-        {{CorrectionTypes::PU, "2016"},
+        {{CorrectionTypes::PU, Year::Run2016},
          {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2016postVFP_UL/puWeights.json.gz",
           "Collisions16_UltraLegacy_goldenJSON"}},
-        {{CorrectionTypes::PU, "2017"},
+        {{CorrectionTypes::PU, Year::Run2017},
          {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2017_UL/puWeights.json.gz",
           "Collisions17_UltraLegacy_goldenJSON"}},
-        {{CorrectionTypes::PU, "2018"},
+        {{CorrectionTypes::PU, Year::Run2018},
          {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2018_UL/puWeights.json.gz",
           "Collisions18_UltraLegacy_goldenJSON"}},
     };
 
-    Corrector(const CorrectionTypes _correction_type, const std::string _year, bool _isData)
+    Corrector(const CorrectionTypes _correction_type, const Year _year, bool _isData)
         : correction_type(_correction_type), year(_year), isData(_isData)
     {
         if (!isData)

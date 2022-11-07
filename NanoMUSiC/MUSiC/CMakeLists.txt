@@ -9,7 +9,7 @@ add_library(NanoAODReader
     NanoAODReader.cpp
 )
 #target_include_directories(NanoAODReader PUBLIC include)
-target_compile_options(NanoAODReader PUBLIC -g -c -O0)
+target_compile_options(NanoAODReader PUBLIC -g -c -O3)
 
 #################################################
 #################################################
@@ -25,7 +25,7 @@ target_include_directories(MUSiCEvent PUBLIC ./)
 target_compile_options(MUSiCEvent PUBLIC
         -MD
         -MP
-        -O0
+        -O3
         -Wall
         -fPIC
         -fsignaling-nans
@@ -57,7 +57,7 @@ install(TARGETS MUSiCEvent DESTINATION ${CMAKE_SOURCE_DIR}/lib)
 # #####################################################
 
 # nano_music (classification)
-add_executable(nano_music NanoMUSiC.cpp MConfig.cpp NanoMUSiC.cpp Tools.cpp )
+add_executable(nano_music NanoMUSiC.cpp NanoMUSiC.cpp)
 # target_link_libraries(nano_music LINK_PUBLIC PxlAnalyzer TEventClass MUSiCEvent)
 target_link_libraries(nano_music LINK_PUBLIC MUSiCEvent NanoAODReader)
 install(TARGETS nano_music DESTINATION ${CMAKE_SOURCE_DIR}/bin)

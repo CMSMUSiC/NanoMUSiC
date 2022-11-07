@@ -10,6 +10,7 @@
 #include <tuple>
 
 // ROOT stuff
+#include "TH1.h"
 #include "TObjString.h"
 #include "TObject.h"
 #include "TTree.h"
@@ -26,10 +27,32 @@
 // #include <range/v3/view/transform.hpp>
 #include <range/v3/all.hpp>
 
+#include "MUSiCTools.hpp"
 #include "NanoObjects.hpp"
-#include "Tools.hpp"
 
 using namespace ranges;
+
+enum CutFlow
+{
+    // ideally, should be kept in order
+    NoCuts,
+    nPV,
+    MetFilters,
+    TriggerCut,
+    TriggerMatch,
+    AtLeastOneClass,
+    kTotalCuts, // --> should be the last one
+};
+
+template <typename T>
+TH1F make_cutflow_histo(T &&output_file, const std::stringstream &output_tree_title)
+{
+    auto cutflow_histo =
+        TH1F("cutflow_histo", output_tree_title.str().c_str(), CutFlow::kTotalCuts, -0.5, CutFlow::kTotalCuts + 0.5);
+    cutflow_histo.Sumw2();
+    cutflow_histo.SetDirectory(std::forward<T>(output_file));
+    return cutflow_histo;
+}
 
 constexpr int MAX_JETS = 6;     // SAME AS 2016 PAPER
 constexpr int MAX_OBJECTS = 99; // SAME AS 2016 PAPER
@@ -51,6 +74,7 @@ enum Weight
     Alpha_S,
     PileUp,
     Lumi,
+    Trigger,
     kTotalWeights, // !!! should always be the last one !!!
 };
 
@@ -66,9 +90,9 @@ enum Variation
     kTotalVariations, // !!! should always be the last one !!!
 };
 
-auto range_variations = Tools::index_range<Variation>(Variation::kTotalVariations);
-auto range_shifts = Tools::index_range<Shift>(Shift::kTotalShifts);
-auto range_weights = Tools::index_range<Weight>(Weight::kTotalWeights);
+auto range_variations = MUSiCTools::index_range<Variation>(Variation::kTotalVariations);
+auto range_shifts = MUSiCTools::index_range<Shift>(Shift::kTotalShifts);
+auto range_weights = MUSiCTools::index_range<Weight>(Weight::kTotalWeights);
 
 class EventWeight : public TObject
 {
@@ -81,7 +105,7 @@ class EventWeight : public TObject
     {
     }
 
-    void set_weight(Weight weight, Shift shift, float value)
+    void set(Weight weight, Shift shift, float value)
     {
         switch (shift)
         {
@@ -97,7 +121,7 @@ class EventWeight : public TObject
         }
     }
 
-    float get_weight(Weight weight = Weight::kTotalWeights, Shift shift = Shift::Nominal)
+    float get(Weight weight = Weight::kTotalWeights, Shift shift = Shift::Nominal)
     {
         auto nominal_weight =
             std::accumulate(weights_nominal.cbegin(), weights_nominal.cend(), 1, std::multiplies<float>());
@@ -121,7 +145,7 @@ class EventContent : public TObject
     // mutable std::mutex _mtx;
 
   public:
-    std::vector<EventWeight> event_weight;
+    // std::vector<EventWeight> event_weight;
     std::vector<unsigned long> event_class_hash;
     std::vector<float> sum_pt;
     std::vector<float> mass;
@@ -164,10 +188,6 @@ class EventContent : public TObject
                                         views::ints(0, std::min(n_met, MAX_OBJECTS) + 1)) |
                views::remove_if([&](const auto &multiplicity) {
                    const auto [i_muons, i_electrons, i_photons, i_taus, i_bjets, i_jets, i_met] = multiplicity;
-
-                   // debug
-                   //    std::cout << i_muons << " - " << i_electrons << " - " << i_photons << " - " << i_taus << " - "
-                   //    << i_bjets << " - " << i_jets << " - " << i_met << std::endl;
 
                    // no taus (for now)
                    if (i_taus > 0)
@@ -224,13 +244,13 @@ class EventContent : public TObject
             mass.emplace_back(20.);
             met.emplace_back(30.);
             auto event_weight_buffer = EventWeight{};
-            for (const auto &weight : range_weights)
-            {
-                event_weight_buffer.set_weight(weight, Shift::Nominal, 1.0);
-                event_weight_buffer.set_weight(weight, Shift::Up, 1.1);
-                event_weight_buffer.set_weight(weight, Shift::Down, 0.9);
-            }
-            event_weight.emplace_back(event_weight_buffer);
+            // for (const auto &weight : range_weights)
+            // {
+            //     event_weight_buffer.set_weight(weight, Shift::Nominal, 1.0);
+            //     event_weight_buffer.set_weight(weight, Shift::Up, 1.1);
+            //     event_weight_buffer.set_weight(weight, Shift::Down, 0.9);
+            // }
+            // event_weight.emplace_back(event_weight_buffer);
             event_class_hash.emplace_back(EventContent::get_class_hash(multiplicity));
         }
     }
@@ -245,7 +265,7 @@ class MUSiCEvent : public TObject
     unsigned int lumi_section = 0;
     unsigned long event_number = 0;
     unsigned int trigger_bits = 0;
-    char n_muons = 10;
+    char n_muons = 0;
     char n_electrons = 0;
     char n_photons = 0;
     char n_taus = 0;
@@ -253,6 +273,7 @@ class MUSiCEvent : public TObject
     char n_jets = 0;
     bool n_met = 0;
     unsigned long n_classes = 0;
+    EventWeight event_weight;
 
     std::array<EventContent, Variation::kTotalVariations> event_content_nominal;
     std::array<EventContent, Variation::kTotalVariations> event_content_up;

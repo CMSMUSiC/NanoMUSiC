@@ -11,6 +11,7 @@
 #include <future>
 #include <iomanip>
 #include <iostream>
+#include <limits>
 #include <math.h>
 #include <numeric>
 #include <optional>
@@ -20,6 +21,7 @@
 #include <sys/time.h>
 #include <thread>
 #include <time.h>
+#include <typeinfo>
 #include <unordered_set>
 
 // ROOT Stuff
@@ -38,7 +40,7 @@
 #include "picosha2.hpp"
 #include "toml.hpp"
 
-// Comand line Tools
+// Comand line tools
 // https://github.com/adishavit/argh
 #include "argh.h"
 
@@ -46,9 +48,9 @@
 #include "BS_thread_pool.hpp"
 
 // Configurarion and filter
-#include "MConfig.hpp"
+// #include "MConfig.hpp"
+#include "MUSiCTools.hpp"
 #include "TOMLConfig.hpp"
-#include "Tools.hpp"
 
 // Filters (lumi, gen phase-space, ...)
 #include "RunLumiFilter.hpp"
@@ -65,10 +67,12 @@
 // #include "PDFAlphaSWeights.hpp"
 
 // MUSiC data models
+#include "Configs.hpp"
 #include "MUSiCEvent.hpp"
 #include "NanoAODReader.hpp"
 #include "NanoObjects.hpp"
 #include "ObjectCorrections.hpp"
+#include "Trigger.hpp"
 
 using namespace ranges;
 using namespace ROOT::Math;
@@ -125,52 +129,7 @@ std::string get_hash256(const std::string &input_string)
     return picosha2::hash256_hex_string(input_string);
 }
 
-enum HLTPaths
-{
-    SingleMuon,
-    SingleElectron,
-    DoubleMuon,
-    DoubleElectron,
-    Tau,
-    BJet,
-    MET,
-    Photon,
-};
-
-struct TriggerBits
-{
-    // will have size = SIZE
-    constexpr static size_t SIZE = sizeof(unsigned int) * 8;
-    std::bitset<SIZE> trigger_bits;
-
-    TriggerBits &set(unsigned int path, bool value)
-    {
-        trigger_bits.set(path, value);
-        return *this;
-    }
-
-    auto as_ulong() const
-    {
-        return trigger_bits.to_ulong();
-    }
-
-    auto as_ulonglong() const
-    {
-        return trigger_bits.to_ullong();
-    }
-
-    auto as_uint() const
-    {
-        return static_cast<unsigned int>(trigger_bits.to_ullong());
-    }
-
-    std::string_view as_string() const
-    {
-        return std::string_view(std::to_string(this->as_ulong()));
-    }
-};
-
-std::string make_class_storage(const std::set<unsigned long> &classes)
+void save_class_storage(const std::set<unsigned long> &classes, std::string output_file_name)
 {
     // expected number of elements: (7*2 + 1) * classes.size()
     // 7 types of objects
@@ -183,7 +142,11 @@ std::string make_class_storage(const std::set<unsigned long> &classes)
     // this will remove the leading comma in the begining of the string
     str_class_storage.erase(0, 1);
 
-    return str_class_storage;
+    output_file_name = std::regex_replace(std::string(output_file_name), std::regex("root"),
+                                          "classes"); // "this is an example string." (1)
+    std::ofstream out(output_file_name);
+    out << str_class_storage;
+    out.close();
 }
 
 template <typename T>
