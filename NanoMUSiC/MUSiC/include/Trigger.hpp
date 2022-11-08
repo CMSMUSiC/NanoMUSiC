@@ -115,7 +115,8 @@ struct TriggerBits
         case Year::Run2018:
             return (trigger_bit & 8);
         default:
-            return false;
+            throw std::runtime_error("Year (" + std::to_string(year) +
+                                     ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
         }
     };
 
@@ -133,7 +134,8 @@ struct TriggerBits
         case Year::Run2018:
             return ((trigger_bit & 1024) || (trigger_bit & 2048));
         default:
-            return false;
+            throw std::runtime_error("Year (" + std::to_string(year) +
+                                     ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
         }
     };
 
@@ -148,7 +150,8 @@ struct TriggerBits
             return SingleMuonHighPtBits(trigger_bit, year);
 
         default:
-            return false;
+            throw std::runtime_error("Year (" + std::to_string(year) +
+                                     ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
         }
     }
 };

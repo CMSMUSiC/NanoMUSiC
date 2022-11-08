@@ -31,7 +31,7 @@ hash = 'dummyhash'
 cacheread = true
 max_file_load_error_rate = 0.15 # max fraction of file load error (only for MC)
 n_threads = 21
-jets_config_file = '$MUSIC_BASE/configs/objects/jets_2017.toml'
+
 # input_files = [
 #     '/home/home1/institut_3a/silva/projects/NanoMUSiC_Test_Data/DY_2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
 #     # '/home/home1/institut_3a/silva/projects/NanoMUSiC_Test_Data/DY_2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',

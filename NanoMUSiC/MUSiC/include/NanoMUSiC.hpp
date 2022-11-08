@@ -78,6 +78,14 @@ using namespace ranges;
 using namespace ROOT::Math;
 using OptionalFuture_t = std::optional<std::future<std::unique_ptr<TFile>>>;
 
+std::string_view get_data_stream(const std::string_view &dataset)
+{
+    auto s = std::string(dataset);
+    std::string delimiter = "/";
+    std::string token = s.substr(1, s.substr(1).find(delimiter));
+    return token.c_str();
+}
+
 // (async) TFile download
 std::unique_ptr<TFile> file_loader(const std::string &file_path, const bool cacheread, const std::string &cache_dir,
                                    const bool verbose_load)
@@ -119,8 +127,7 @@ double getCpuTime()
 constexpr bool is_tenth(int &event_counter)
 {
     return (event_counter < 10 || (event_counter < 100 && event_counter % 10 == 0) ||
-            (event_counter < 1000 && event_counter % 100 == 0) ||
-            (event_counter < 10000 && event_counter % 1000 == 0) ||
+            (event_counter < 1000 && event_counter % 100 == 0) || (event_counter < 10000 && event_counter % 1000 == 0) ||
             (event_counter >= 100000 && event_counter % 10000 == 0));
 }
 

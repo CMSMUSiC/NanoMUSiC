@@ -62,8 +62,7 @@ class unsorted_error : public std::runtime_error
 class file_not_found : public std::exception
 {
   public:
-    file_not_found(std::string const &filename, std::string const &filetype = "")
-        : m_filename(filename), m_filetype(filetype)
+    file_not_found(std::string const &filename, std::string const &filetype = "") : m_filename(filename), m_filetype(filetype)
     {
     }
     ~file_not_found() throw()
@@ -227,8 +226,7 @@ std::string inline fromString<std::string>(const std::string &input)
 // splits the input string at each occurence of sep and puts the parts into the result vector
 // if ignore empty is not set, the output vector will contain default values for repeated separators
 template <class T>
-void splitString(std::vector<T> &result, const std::string &input, const std::string &sep = ",",
-                 bool ignoreEmpty = false)
+void splitString(std::vector<T> &result, const std::string &input, const std::string &sep = ",", bool ignoreEmpty = false)
 {
     result.clear();
     if (ignoreEmpty && input.empty())
@@ -304,8 +302,7 @@ template <typename T = UInt_t>
 auto index_range(const int &from, const int &to)
 {
     using namespace ranges;
-    return views::ints(from, to) |
-           views::transform([](auto i) { return static_cast<T>(std::make_unsigned_t<int>(i)); });
+    return views::ints(from, to) | views::transform([](auto i) { return static_cast<T>(std::make_unsigned_t<int>(i)); });
 }
 
 template <typename T = UInt_t>
@@ -333,6 +330,13 @@ std::optional<T> MinElem(const std::vector<T> &seq)
         return seq.at(ArgMin(seq));
     }
     return std::nullopt;
+}
+
+double generate_uniform()
+{
+    static std::default_random_engine e;
+    static std::uniform_real_distribution<> dis(0, std::nextafter(1, std::numeric_limits<double>::max())); // rage 0 - 1
+    return dis(e);
 }
 
 } // namespace MUSiCTools

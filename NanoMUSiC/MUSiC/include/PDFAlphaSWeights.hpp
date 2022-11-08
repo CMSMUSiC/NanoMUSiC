@@ -5,6 +5,9 @@
 #include "LHAPDF/LHAPDF.h"
 #pragma GCC diagnostic pop
 
+// References:
+// https://cms-pdmv.gitbook.io/project/mccontact/info-for-mc-production-for-ultra-legacy-campaigns-2016-2017-2018#recommendations-on-the-usage-of-pdfs-and-cpx-tunes
+
 namespace PDFAlphaSWeights
 {
 
@@ -42,8 +45,7 @@ std::optional<std::pair<int, int>> get_pdf_ids(const std::unique_ptr<TTree> &eve
             }
             if (match_counter != 2)
             {
-                throw std::runtime_error("Too many of too few matches (" + std::to_string(match_counter) +
-                                         ") to LHAPDF IDs.");
+                throw std::runtime_error("Too many of too few matches (" + std::to_string(match_counter) + ") to LHAPDF IDs.");
             }
         }
         catch (const std::out_of_range &e)

@@ -26,12 +26,11 @@ x_section_file = '$MUSIC_BASE/configs/xsections_and_lumi/x_sections.toml'
 year = '2017'
 # output_file = '' # if empty, constructed from process
 process = 'SingleMuon_2016'
-dataset = '/foo/bar/abc/NANOAODSIM'
+dataset = '/SingleMuon/bar/abc/NANOAODSIM'
 hash = 'dummyhash'
 cacheread = true
 max_file_load_error_rate = 0.15 # max fraction of file load error (only for MC)
 n_threads = 21
-jets_config_file = '$MUSIC_BASE/configs/objects/jets_2017.toml'
 
 
 input_files = [

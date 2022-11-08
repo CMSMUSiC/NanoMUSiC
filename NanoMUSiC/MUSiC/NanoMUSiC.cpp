@@ -180,11 +180,14 @@ int main(int argc, char *argv[])
     std::cout << def << "[Initializing] Cut flow histo ..." << def << std::endl;
     auto cutflow_histo = make_cutflow_histo(output_file.get(), output_tree_title);
 
-    std::cout << def << "[Initializing] Set of classes ..." << def << std::endl;
+    std::cout << def << "[Initializing] classes' set ..." << def << std::endl;
     std::set<unsigned long> classes;
 
     std::cout << def << "[Initializing] Task runners (thread pool) ..." << def << std::endl;
     BS::thread_pool task_runners_pool(n_threads);
+
+    std::cout << def << "[Initializing] Rochester Muon Momentum Corrections ..." << def << std::endl;
+    auto rochester_corrections = Corrector(CorrectionTypes::MuonLowPt, year, is_data);
 
     // performance monitoring
     double dTime1 = getCpuTime(); // Start Time
@@ -439,12 +442,14 @@ int main(int argc, char *argv[])
                 .set(HLTPath::BJet, false)
                 .set(HLTPath::MET, false)
                 .set(HLTPath::Photon, false);
-            if (year == Year::Run2016APV || year == Year::Run2016)
-            {
-            }
-            else if (year == Year::Run2017)
-            {
 
+            switch (year)
+            {
+            case Year::Run2016APV:
+                break;
+            case Year::Run2016:
+                break;
+            case Year::Run2017:
                 trigger_bits.set(HLTPath::SingleMuonLowPt, nano_reader.getVal<Bool_t>("HLT_IsoMu27"))
                     .set(HLTPath::SingleMuonHighPt, nano_reader.getVal<Bool_t>("HLT_Mu50") ||
                                                         nano_reader.getVal<Bool_t>("HLT_TkMu100") ||
@@ -456,15 +461,14 @@ int main(int argc, char *argv[])
                     .set(HLTPath::BJet, false)
                     .set(HLTPath::MET, false)
                     .set(HLTPath::Photon, false);
-            }
-            else if (year == Year::Run2018)
-            {
-            }
-            else
-            {
+                break;
+            case Year::Run2018:
+                break;
+            default:
                 throw std::runtime_error("Year (" + std::to_string(year) +
                                          ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
             }
+
             music_event.trigger_bits = trigger_bits.as_uint();
 
             // skip event event if no trigger is fired
@@ -715,8 +719,9 @@ int main(int argc, char *argv[])
             auto high_pt_good_muons =
                 good_muons | views::remove_if([&](const auto &muon) { return (muon.pt() < ObjConfig::Muons[year].MaxLowPt); });
 
-            // checks for Single Muon - Low pT
-            if (!has_trigger_match && trigger_bits.pass(HLTPath::SingleMuonLowPt))
+            // check for Single Muon - Low pT
+            if (trigger_bits.pass(HLTPath::SingleMuonLowPt) && !has_trigger_match &&
+                (get_data_stream(dataset) == "SingleMuon" || !is_data))
             {
                 auto [_trigger_match, _sf_nominal, _sf_up, _sf_down] =
                     TriggerBits::trigger_matcher(trigger_low_pt_muons, low_pt_good_muons, year);
@@ -729,8 +734,9 @@ int main(int argc, char *argv[])
                 }
             }
 
-            // checks for Single Muon - High pT
-            if (!has_trigger_match && trigger_bits.pass(HLTPath::SingleMuonHighPt))
+            // check for Single Muon - High pT
+            if (trigger_bits.pass(HLTPath::SingleMuonHighPt) && !has_trigger_match &&
+                (get_data_stream(dataset) == "SingleMuon" || !is_data))
             {
                 auto [_trigger_match, _sf_nominal, _sf_up, _sf_down] =
                     TriggerBits::trigger_matcher(trigger_high_pt_muons, high_pt_good_muons, year);
@@ -826,7 +832,6 @@ int main(int argc, char *argv[])
             // loop over variations, shifts and classes (aka multiplicities)
             ranges::for_each(views::cartesian_product(range_variations, range_shifts), [&](const auto &variation_and_shift) {
                 const auto [variation, shift] = variation_and_shift;
-
                 try
                 {
                     // check whether async task is done
