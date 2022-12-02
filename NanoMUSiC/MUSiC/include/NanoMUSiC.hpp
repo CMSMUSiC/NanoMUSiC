@@ -66,13 +66,15 @@
 #include "CorrectionSets.hpp"
 // #include "PDFAlphaSWeights.hpp"
 
-// MUSiC data models
+// MUSiC
 #include "Configs.hpp"
+#include "EventData.hpp"
 #include "MUSiCEvent.hpp"
 #include "NanoAODReader.hpp"
 #include "NanoObjects.hpp"
 #include "ObjectCorrections.hpp"
 #include "Trigger.hpp"
+#include "process_event.hpp"
 
 using namespace ranges;
 using namespace ROOT::Math;

@@ -1,6 +1,20 @@
 #ifndef MUSIC_TRIGGER
 #define MUSIC_TRIGGER
 
+// On: 28.10.2022
+// https://ericniebler.github.io/range-v3
+// https://github.com/ericniebler/range-v3
+// #include <range/v3/algorithm/for_each.hpp>
+// #include <range/v3/numeric/accumulate.hpp>
+// #include <range/v3/view/cartesian_product.hpp>
+// #include <range/v3/view/iota.hpp>
+// #include <range/v3/view/remove_if.hpp>
+// #include <range/v3/view/take.hpp>
+// #include <range/v3/view/transform.hpp>
+#include <range/v3/all.hpp>
+
+using namespace ranges;
+
 enum HLTPath
 {
     SingleMuonLowPt,

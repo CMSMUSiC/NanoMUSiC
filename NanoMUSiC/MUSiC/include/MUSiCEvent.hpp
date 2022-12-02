@@ -34,8 +34,10 @@ using namespace ranges;
 
 enum CutFlow
 {
-    // ideally, should be kept in order
+    // should be kept in order
     NoCuts,
+    GeneratorWeight,
+    RunLumi,
     nPV,
     MetFilters,
     TriggerCut,
@@ -54,8 +56,15 @@ TH1F make_cutflow_histo(T &&output_file, const std::stringstream &output_tree_ti
     return cutflow_histo;
 }
 
-constexpr int MAX_JETS = 6;     // SAME AS 2016 PAPER
-constexpr int MAX_OBJECTS = 99; // SAME AS 2016 PAPER
+TH1F make_temp_cutflow_histo()
+{
+    auto cutflow_histo = TH1F("temp_cutflow_histo", "temp_cutflow_histo", CutFlow::kTotalCuts, -0.5, CutFlow::kTotalCuts + 0.5);
+    cutflow_histo.Sumw2();
+    return cutflow_histo;
+}
+
+constexpr int MAX_JETS = 6; // SAME AS 2016 PAPER
+constexpr int MAX_OBJECTS = 99;
 
 using Multiplicity_t = std::tuple<int, int, int, int, int, int, int>;
 
@@ -80,7 +89,7 @@ enum Weight
 
 enum Variation
 {
-    Default,
+    Default, // !!! should always be the first!!!
     JEC,
     JER,
     MuonScale,
@@ -103,6 +112,12 @@ class EventWeight : public TObject
 
     EventWeight()
     {
+        for (auto &&idx_weight : range_weights)
+        {
+            weights_nominal.at(idx_weight) = 1.;
+            weights_up.at(idx_weight) = 1.;
+            weights_down.at(idx_weight) = 1.;
+        }
     }
 
     void set(Weight weight, Shift shift, float value)
@@ -121,10 +136,16 @@ class EventWeight : public TObject
         }
     }
 
+    void set(Weight weight, float value)
+    {
+        weights_up.at(weight) = value;
+        weights_down.at(weight) = value;
+        weights_nominal.at(weight) = value;
+    }
+
     float get(Weight weight = Weight::kTotalWeights, Shift shift = Shift::Nominal)
     {
-        auto nominal_weight =
-            std::accumulate(weights_nominal.cbegin(), weights_nominal.cend(), 1, std::multiplies<float>());
+        auto nominal_weight = std::accumulate(weights_nominal.cbegin(), weights_nominal.cend(), 1., std::multiplies<float>());
 
         switch (shift)
         {
@@ -142,10 +163,7 @@ class EventWeight : public TObject
 
 class EventContent : public TObject
 {
-    // mutable std::mutex _mtx;
-
   public:
-    // std::vector<EventWeight> event_weight;
     std::vector<unsigned long> event_class_hash;
     std::vector<float> sum_pt;
     std::vector<float> mass;
@@ -166,7 +184,7 @@ class EventContent : public TObject
         return _str;
     }
 
-    static unsigned long get_class_hash(const Multiplicity_t &multiplicity)
+    static unsigned long make_class_hash(const Multiplicity_t &multiplicity)
     {
         const auto [i_muons, i_electrons, i_photons, i_taus, i_bjets, i_jets, i_met] = multiplicity;
 
@@ -179,13 +197,11 @@ class EventContent : public TObject
     static auto get_multiplicities(const int &n_muons, const int &n_electrons, const int &n_photons, const int &n_taus,
                                    const int &n_bjets, const int &n_jets, const int &n_met)
     {
-        return views::cartesian_product(views::ints(0, std::min(n_muons, MAX_OBJECTS) + 1),
-                                        views::ints(0, std::min(n_electrons, MAX_OBJECTS) + 1),
-                                        views::ints(0, std::min(n_photons, MAX_OBJECTS) + 1),
-                                        views::ints(0, std::min(n_taus, MAX_OBJECTS) + 1),
-                                        views::ints(0, std::min(n_bjets, MAX_OBJECTS) + 1),
-                                        views::ints(0, std::min(n_jets, MAX_OBJECTS) + 1),
-                                        views::ints(0, std::min(n_met, MAX_OBJECTS) + 1)) |
+        return views::cartesian_product(
+                   views::ints(0, std::min(n_muons, MAX_OBJECTS) + 1), views::ints(0, std::min(n_electrons, MAX_OBJECTS) + 1),
+                   views::ints(0, std::min(n_photons, MAX_OBJECTS) + 1), views::ints(0, std::min(n_taus, MAX_OBJECTS) + 1),
+                   views::ints(0, std::min(n_bjets, MAX_OBJECTS) + 1), views::ints(0, std::min(n_jets, MAX_OBJECTS) + 1),
+                   views::ints(0, std::min(n_met, MAX_OBJECTS) + 1)) |
                views::remove_if([&](const auto &multiplicity) {
                    const auto [i_muons, i_electrons, i_photons, i_taus, i_bjets, i_jets, i_met] = multiplicity;
 
@@ -220,8 +236,6 @@ class EventContent : public TObject
 
     void fill(const Multiplicity_t &multiplicity, const std::optional<NanoObject::NanoAODObjects_t> nanoaod_objects)
     {
-        // std::lock_guard<std::mutex> l(_mtx);
-
         if (nanoaod_objects)
         {
             // unpacking ...
@@ -237,21 +251,13 @@ class EventContent : public TObject
             auto selected_met = views::single(met_obj) | views::take(i_met);
 
             // FIX ME: add taus
-            sum_pt.emplace_back(ranges::accumulate(views::concat(selected_muons, selected_electrons, selected_photons,
-                                                                 selected_bjets, selected_jets, selected_met) |
-                                                       views::transform([](const auto _muon) { return _muon.pt(); }),
-                                                   0));
+            sum_pt.emplace_back(ranges::accumulate(
+                views::concat(selected_muons, selected_electrons, selected_photons, selected_bjets, selected_jets, selected_met) |
+                    views::transform([](const auto _muon) { return _muon.pt(); }),
+                0));
             mass.emplace_back(20.);
             met.emplace_back(30.);
-            auto event_weight_buffer = EventWeight{};
-            // for (const auto &weight : range_weights)
-            // {
-            //     event_weight_buffer.set_weight(weight, Shift::Nominal, 1.0);
-            //     event_weight_buffer.set_weight(weight, Shift::Up, 1.1);
-            //     event_weight_buffer.set_weight(weight, Shift::Down, 0.9);
-            // }
-            // event_weight.emplace_back(event_weight_buffer);
-            event_class_hash.emplace_back(EventContent::get_class_hash(multiplicity));
+            event_class_hash.emplace_back(EventContent::make_class_hash(multiplicity));
         }
     }
 
@@ -265,36 +271,25 @@ class MUSiCEvent : public TObject
     unsigned int lumi_section = 0;
     unsigned long event_number = 0;
     unsigned int trigger_bits = 0;
-    char n_muons = 0;
-    char n_electrons = 0;
-    char n_photons = 0;
-    char n_taus = 0;
-    char n_bjets = 0;
-    char n_jets = 0;
-    bool n_met = 0;
-    unsigned long n_classes = 0;
     EventWeight event_weight;
-
-    std::array<EventContent, Variation::kTotalVariations> event_content_nominal;
-    std::array<EventContent, Variation::kTotalVariations> event_content_up;
-    std::array<EventContent, Variation::kTotalVariations> event_content_down;
+    std::array<EventContent, Variation::kTotalVariations * 2 + 1> event_contents;
 
     MUSiCEvent()
     {
     }
 
-    void fill(const Variation variation, const Shift shift, const EventContent &&event_content)
+    void fill(const EventContent &event_content, const Variation variation, const Shift shift)
     {
         switch (shift)
         {
         case Shift::Up:
-            event_content_up.at(variation) = event_content;
+            event_contents.at(2 * variation - 1) = event_content;
             break;
         case Shift::Down:
-            event_content_down.at(variation) = event_content;
+            event_contents.at(2 * variation) = event_content;
             break;
         default: // nominal
-            event_content_nominal.at(variation) = event_content;
+            event_contents.at(0) = event_content;
             break;
         }
     }
@@ -304,11 +299,11 @@ class MUSiCEvent : public TObject
         switch (shift)
         {
         case Shift::Up:
-            return event_content_up.at(variation);
+            return event_contents.at(2 * variation - 1);
         case Shift::Down:
-            return event_content_down.at(variation);
+            return event_contents.at(2 * variation);
         default: // nominal
-            return event_content_nominal.at(variation);
+            return event_contents.at(0);
         }
     }
     ClassDef(MUSiCEvent, 1)

@@ -68,12 +68,16 @@ namespace ObjConfig
 //  REF: https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonUL2017
 struct MuonConfig
 {
+    float PreSelPt = 20;
     float MinLowPt = 25;
     float MaxLowPt = 120;
     float MaxAbsEta = 2.4;
     float MaxDeltaRTriggerMatch = 0.1;
-    float TkRelIso_WP = 0.10; // smaller than this
-    float PFRelIso_WP = 0.15; // smaller than this
+    float TkRelIso_WP = 0.10;                   // smaller than this
+    float PFRelIso_WP = 0.15;                   // smaller than this
+    std::string_view TightIdVar = "TightIdVar"; // dummy
+    std::string_view HEEPIdVar = "HEEPIdVar";   // dummy
+    std::string_view IsoVar = "IsoVar";         // dummy
 };
 
 constexpr auto Muon2016APV = MuonConfig{};
@@ -82,12 +86,106 @@ constexpr auto Muon2017 = MuonConfig{.MinLowPt = 28.};
 constexpr auto Muon2018 = MuonConfig{};
 constexpr std::array<MuonConfig, Year::kTotalYears> Muons = {Muon2016APV, Muon2016, Muon2017, Muon2018};
 
+// Electrons
+struct ElectronConfig
+{
+    float PreSelPt = 20;
+    float MinLowPt = 25;
+    float MaxLowPt = 120;
+    float MaxAbsEta = 2.4;
+    float MaxDeltaRTriggerMatch = 0.1;
+    float TkRelIso_WP = 0.10;                   // smaller than this
+    float PFRelIso_WP = 0.15;                   // smaller than this
+    std::string_view TightIdVar = "TightIdVar"; // dummy
+    std::string_view HEEPIdVar = "HEEPIdVar";   // dummy
+    std::string_view IsoVar = "IsoVar";         // dummy
+};
+
+constexpr auto Electron2016APV = ElectronConfig{};
+constexpr auto Electron2016 = ElectronConfig{};
+constexpr auto Electron2017 = ElectronConfig{.MinLowPt = 28.};
+constexpr auto Electron2018 = ElectronConfig{};
+constexpr std::array<ElectronConfig, Year::kTotalYears> Electrons = {Electron2016APV, Electron2016, Electron2017, Electron2018};
+
+// Photons
+struct PhotonConfig
+{
+    float PreSelPt = 20;
+    float MinLowPt = 25;
+    float MaxLowPt = 120;
+    float MaxAbsEta = 2.4;
+    float MaxDeltaRTriggerMatch = 0.1;
+    float TkRelIso_WP = 0.10;                   // smaller than this
+    float PFRelIso_WP = 0.15;                   // smaller than this
+    std::string_view TightIdVar = "TightIdVar"; // dummy
+    std::string_view HEEPIdVar = "HEEPIdVar";   // dummy
+    std::string_view IsoVar = "IsoVar";         // dummy
+};
+
+constexpr auto Photon2016APV = PhotonConfig{};
+constexpr auto Photon2016 = PhotonConfig{};
+constexpr auto Photon2017 = PhotonConfig{.MinLowPt = 28.};
+constexpr auto Photon2018 = PhotonConfig{};
+constexpr std::array<PhotonConfig, Year::kTotalYears> Photons = {Photon2016APV, Photon2016, Photon2017, Photon2018};
+
+// Taus
+struct TauConfig
+{
+    float PreSelPt = 20;
+    float MinLowPt = 25;
+    float MaxLowPt = 120;
+    float MaxAbsEta = 2.4;
+    float MaxDeltaRTriggerMatch = 0.1;
+    float TkRelIso_WP = 0.10;                   // smaller than this
+    float PFRelIso_WP = 0.15;                   // smaller than this
+    std::string_view TightIdVar = "TightIdVar"; // dummy
+    std::string_view HEEPIdVar = "HEEPIdVar";   // dummy
+    std::string_view IsoVar = "IsoVar";         // dummy
+};
+
+constexpr auto Tau2016APV = TauConfig{};
+constexpr auto Tau2016 = TauConfig{};
+constexpr auto Tau2017 = TauConfig{.MinLowPt = 28.};
+constexpr auto Tau2018 = TauConfig{};
+constexpr std::array<TauConfig, Year::kTotalYears> Taus = {Tau2016APV, Tau2016, Tau2017, Tau2018};
+
+// Bjets
+struct BjetsConfig
+{
+    float PreSelPt = 20;
+    float MinLowPt = 25;
+    float MaxLowPt = 120;
+    float MaxAbsEta = 2.4;
+    float MaxDeltaRTriggerMatch = 0.1;
+    float TkRelIso_WP = 0.10;                   // smaller than this
+    float PFRelIso_WP = 0.15;                   // smaller than this
+    std::string_view TightIdVar = "TightIdVar"; // dummy
+    std::string_view HEEPIdVar = "HEEPIdVar";   // dummy
+    std::string_view IsoVar = "IsoVar";         // dummy
+};
+
+constexpr auto Bjets2016APV = BjetsConfig{};
+constexpr auto Bjets2016 = BjetsConfig{};
+constexpr auto Bjets2017 = BjetsConfig{.MinLowPt = 28.};
+constexpr auto Bjets2018 = BjetsConfig{};
+constexpr std::array<BjetsConfig, Year::kTotalYears> Bjets = {Bjets2016APV, Bjets2016, Bjets2017, Bjets2018};
+
 // Jets
 // REF: https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL17#AK4_b_tagging
 struct JetConfig
 {
+    float PreSelPt = 20;
+    float MinLowPt = 25;
+    float MaxLowPt = 120;
+    float MaxAbsEta = 2.4;
+    float MaxDeltaRTriggerMatch = 0.1;
+    float TkRelIso_WP = 0.10;                     // smaller than this
+    float PFRelIso_WP = 0.15;                     // smaller than this
     std::string_view btag_algo = "btagDeepFlavB"; // DeepJet=DeepFlavour
     float btag_wp_tight = 0.7476;
+    std::string_view TightIdVar = "TightIdVar"; // dummy
+    std::string_view HEEPIdVar = "HEEPIdVar";   // dummy
+    std::string_view IsoVar = "IsoVar";         // dummy
 };
 
 constexpr auto Jet2016APV = JetConfig{};
@@ -96,6 +194,29 @@ constexpr auto Jet2017 = JetConfig{};
 constexpr auto Jet2018 = JetConfig{};
 constexpr std::array<JetConfig, Year::kTotalYears> Jets = {Jet2016APV, Jet2016, Jet2017, Jet2018};
 
+// MET
+// REF: https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL17#AK4_b_tagging
+struct METConfig
+{
+    float PreSelPt = 20;
+    float MinLowPt = 25;
+    float MaxLowPt = 120;
+    float MaxAbsEta = 2.4;
+    float MaxDeltaRTriggerMatch = 0.1;
+    float TkRelIso_WP = 0.10;                     // smaller than this
+    float PFRelIso_WP = 0.15;                     // smaller than this
+    std::string_view btag_algo = "btagDeepFlavB"; // DeepMET=DeepFlavour
+    float btag_wp_tight = 0.7476;
+    std::string_view TightIdVar = "TightIdVar"; // dummy
+    std::string_view HEEPIdVar = "HEEPIdVar";   // dummy
+    std::string_view IsoVar = "IsoVar";         // dummy
+};
+
+constexpr auto MET2016APV = METConfig{};
+constexpr auto MET2016 = METConfig{};
+constexpr auto MET2017 = METConfig{};
+constexpr auto MET2018 = METConfig{};
+constexpr std::array<METConfig, Year::kTotalYears> MET = {MET2016APV, MET2016, MET2017, MET2018};
 } // namespace ObjConfig
 
 namespace RunConfig
