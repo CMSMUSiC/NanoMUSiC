@@ -4,15 +4,7 @@
 #include "EventData.hpp"
 #include <vector>
 
-using OptMUSiCEvent_t = std::optional<std::tuple<MUSiCEvent, TH1F, std::set<unsigned long>>>;
-
-struct EventProcessResult
-{
-    MUSiCEvent music_event;
-    TH1F cutflow_histo;
-    std::set<unsigned long> classes;
-    bool is_null = false;
-};
+using EventProcessResult_t = std::array<EventData, total_variations_and_shifts>;
 
 EventData load_event_data(NanoAODReader &nano_reader, const bool &is_data, const Year &year)
 {
@@ -60,54 +52,42 @@ EventData load_event_data(NanoAODReader &nano_reader, const bool &is_data, const
     // end of EventData declaration
 }
 
-EventProcessResult process_event(NanoAODReader &nano_reader, const bool &is_data, const Year &year,
-                                 const RunLumiFilter &run_lumi_filter, Corrector &pu_weight, BS::thread_pool &task_runners_pool)
+EventProcessResult_t process_event(NanoAODReader &nano_reader, const bool &is_data, const Year &year,
+                                   const RunLumiFilter &run_lumi_filter, Corrector &pu_weight, BS::thread_pool &task_runners_pool)
 {
     // holds the data that will be written to the output file
-    auto music_event = MUSiCEvent{};
+    EventProcessResult_t event_process_result;
 
     // holds data for processing only
     // + preliminary selection
     auto event_data = load_event_data(nano_reader, is_data, year)
-                          .set_const_weights(nano_reader, music_event, pu_weight)
-                          .gen_filter(nano_reader, music_event)
-                          .run_lumi_filter(run_lumi_filter, music_event)
-                          .npv_filter(nano_reader, music_event)
-                          .met_filter(nano_reader, music_event)
-                          .trigger_filter(nano_reader, music_event)
-                          .pre_selection(nano_reader, music_event, task_runners_pool);
+                          .set_const_weights(nano_reader, pu_weight)
+                          .generator_filter(nano_reader)
+                          .run_lumi_filter(run_lumi_filter)
+                          .npv_filter(nano_reader)
+                          .met_filter(nano_reader)
+                          .trigger_filter(nano_reader)
+                          .pre_selection(nano_reader, task_runners_pool);
 
-    // launch nominal
-    auto nominal_event_data = EventData::apply_corrections(event_data, Variation::Default, Shift::Nominal)
-                                  .final_selection()
-                                  .trigger_match()
-                                  .set_scale_factors()
-                                  .fill_event_content()
-                                  .has_any_content_filter();
+    // launch variations
+    // loop over variations, shifts and classes (aka multiplicities)
+    ranges::for_each(range_cleanned_variation_and_shifts | views::remove_if([&is_data](auto variation_and_shift) {
+                         const auto [variation, shift] = variation_and_shift;
+                         return is_data && (variation != Variation::Default);
+                     }),
+                     [&](const auto &variation_and_shift) {
+                         const auto [variation, shift] = variation_and_shift;
 
-    if (nominal_event_data)
-    {
-
-        // fill nominal data
-        music_event.fill(nominal_event_data.event_content, Variation::Default, Shift::Nominal);
-
-        // launch variations
-        // loop over variations, shifts and classes (aka multiplicities)
-        ranges::for_each(views::cartesian_product(range_variations, range_shifts), [&](const auto &variation_and_shift) {
-            const auto [variation, shift] = variation_and_shift;
-
-            if (variation != Variation::Default)
-            {
-                // modify objects according to the given variation
-                auto varied_event_data = EventData::apply_corrections(event_data, variation, shift);
-                music_event.fill(varied_event_data.final_selection().fill_event_content().has_any_content_filter().event_content,
-                                 variation, shift);
-            }
-        });
-        // return OptMUSiCEvent_t(std::make_tuple(music_event, nominal_event_data.cutflow_histo, nominal_event_data.classes));
-        return EventProcessResult{music_event, nominal_event_data.cutflow_histo, nominal_event_data.classes};
-    }
-    return EventProcessResult{.is_null = true};
+                         // modify objects according to the given variation
+                         event_process_result.at(variation_shift_to_index(variation, shift)) =
+                             EventData::apply_corrections(event_data, variation, shift)
+                                 .final_selection()
+                                 .trigger_match()
+                                 .set_scale_factors()
+                                 .fill_event_content()
+                                 .has_any_content_filter();
+                     });
+    return event_process_result;
 }
 
 #endif /*MUSIC_PROCESS_EVENTS*/

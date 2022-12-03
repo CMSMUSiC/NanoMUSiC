@@ -32,37 +32,6 @@
 
 using namespace ranges;
 
-enum CutFlow
-{
-    // should be kept in order
-    NoCuts,
-    GeneratorWeight,
-    RunLumi,
-    nPV,
-    MetFilters,
-    TriggerCut,
-    TriggerMatch,
-    AtLeastOneClass,
-    kTotalCuts, // --> should be the last one
-};
-
-template <typename T>
-TH1F make_cutflow_histo(T &&output_file, const std::stringstream &output_tree_title)
-{
-    auto cutflow_histo =
-        TH1F("cutflow_histo", output_tree_title.str().c_str(), CutFlow::kTotalCuts, -0.5, CutFlow::kTotalCuts + 0.5);
-    cutflow_histo.Sumw2();
-    cutflow_histo.SetDirectory(std::forward<T>(output_file));
-    return cutflow_histo;
-}
-
-TH1F make_temp_cutflow_histo()
-{
-    auto cutflow_histo = TH1F("temp_cutflow_histo", "temp_cutflow_histo", CutFlow::kTotalCuts, -0.5, CutFlow::kTotalCuts + 0.5);
-    cutflow_histo.Sumw2();
-    return cutflow_histo;
-}
-
 constexpr int MAX_JETS = 6; // SAME AS 2016 PAPER
 constexpr int MAX_OBJECTS = 99;
 
@@ -74,17 +43,6 @@ enum Shift
     Up,
     Down,
     kTotalShifts, // !!! should always be the last one !!!
-};
-
-enum Weight
-{
-    Generator,
-    PDF,
-    Alpha_S,
-    PileUp,
-    Lumi,
-    Trigger,
-    kTotalWeights, // !!! should always be the last one !!!
 };
 
 enum Variation
@@ -99,9 +57,80 @@ enum Variation
     kTotalVariations, // !!! should always be the last one !!!
 };
 
+constexpr unsigned int total_variations_and_shifts = Variation::kTotalVariations * 2 + 1;
+
+unsigned int variation_shift_to_index(Variation variation, Shift shift)
+{
+    switch (shift)
+    {
+    case Shift::Up:
+        return (2 * variation - 1);
+    case Shift::Down:
+        return (2 * variation);
+    default: // nominal
+        return 0;
+    }
+}
+
+enum Weight
+{
+    Generator,
+    PDF,
+    Alpha_S,
+    PileUp,
+    Lumi,
+    Trigger,
+    kTotalWeights, // !!! should always be the last one !!!
+};
+
 auto range_variations = MUSiCTools::index_range<Variation>(Variation::kTotalVariations);
 auto range_shifts = MUSiCTools::index_range<Shift>(Shift::kTotalShifts);
+auto range_cleanned_variation_and_shifts = views::cartesian_product(range_variations, range_shifts) |
+                                           views::remove_if([](auto variation_and_shift) {
+                                               const auto [variation, shift] = variation_and_shift;
+                                               return (variation == Variation::Default && shift == Shift::Up);
+                                           }) |
+                                           views::remove_if([](auto variation_and_shift) {
+                                               const auto [variation, shift] = variation_and_shift;
+                                               return (variation == Variation::Default && shift == Shift::Down);
+                                           });
+
 auto range_weights = MUSiCTools::index_range<Weight>(Weight::kTotalWeights);
+
+enum CutFlow
+{
+    // should be kept in order
+    NoCuts,
+    GeneratorWeight,
+    RunLumi,
+    nPV,
+    MetFilters,
+    TriggerCut,
+    TriggerMatch,
+    AtLeastOneClass,
+    kTotalCuts, // --> should be the last one
+};
+
+TH1F imp_make_cutflow_histo(unsigned int index)
+{
+    std::string histo_name = "cutflow_histo" + std::to_string(index);
+    auto cutflow_histo = TH1F(histo_name.c_str(), histo_name.c_str(), CutFlow::kTotalCuts, -0.5, CutFlow::kTotalCuts + 0.5);
+    cutflow_histo.Sumw2();
+    return cutflow_histo;
+}
+
+template <typename T>
+std::array<TH1F, total_variations_and_shifts> make_cutflow_histos(T &&output_file, const std::stringstream &output_tree_title)
+{
+    std::array<TH1F, total_variations_and_shifts> cutflow_histos;
+    for (size_t i = 0; i < cutflow_histos.size(); i++)
+    {
+        cutflow_histos.at(i) = imp_make_cutflow_histo(i);
+        cutflow_histos.at(i).SetDirectory(std::forward<T>(output_file));
+    }
+
+    return cutflow_histos;
+}
 
 class EventWeight : public TObject
 {
@@ -164,6 +193,7 @@ class EventWeight : public TObject
 class EventContent : public TObject
 {
   public:
+    EventWeight event_weight;
     std::vector<unsigned long> event_class_hash;
     std::vector<float> sum_pt;
     std::vector<float> mass;
@@ -271,40 +301,25 @@ class MUSiCEvent : public TObject
     unsigned int lumi_section = 0;
     unsigned long event_number = 0;
     unsigned int trigger_bits = 0;
-    EventWeight event_weight;
-    std::array<EventContent, Variation::kTotalVariations * 2 + 1> event_contents;
+    std::array<EventContent, total_variations_and_shifts> event_contents;
 
     MUSiCEvent()
     {
     }
 
-    void fill(const EventContent &event_content, const Variation variation, const Shift shift)
+    void fill(EventContent &&event_content, const Variation variation, const Shift shift)
     {
-        switch (shift)
-        {
-        case Shift::Up:
-            event_contents.at(2 * variation - 1) = event_content;
-            break;
-        case Shift::Down:
-            event_contents.at(2 * variation) = event_content;
-            break;
-        default: // nominal
-            event_contents.at(0) = event_content;
-            break;
-        }
+        event_contents.at(variation_shift_to_index(variation, shift)) = event_content;
+    }
+
+    void fill(EventContent &&event_content, unsigned int index)
+    {
+        event_contents.at(index) = event_content;
     }
 
     EventContent get(const Variation variation = Variation::Default, const Shift shift = Shift::Nominal)
     {
-        switch (shift)
-        {
-        case Shift::Up:
-            return event_contents.at(2 * variation - 1);
-        case Shift::Down:
-            return event_contents.at(2 * variation);
-        default: // nominal
-            return event_contents.at(0);
-        }
+        return event_contents.at(variation_shift_to_index(variation, shift));
     }
     ClassDef(MUSiCEvent, 1)
 };

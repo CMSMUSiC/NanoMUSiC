@@ -4,30 +4,10 @@
 #include "MUSiCEvent.hpp"
 #include "NanoObjects.hpp"
 
-// enum Shift
-// {
-//     Nominal,
-//     Up,
-//     Down,
-//     kTotalShifts, // !!! should always be the last one !!!
-// };
-// enum Variation
-// {
-//     Default,
-//     JEC,
-//     JER,
-//     MuonScale,
-//     MuonResolution,
-//     ElectronScale,
-//     ElectronResolution,
-//     kTotalVariations, // !!! should always be the last one !!!
-// };
-
 auto default_corr = [](const Shift &shift, const NanoObject::NanoObjectCollection &muons,
-                       const NanoObject::NanoObjectCollection &electrons,
-                       const NanoObject::NanoObjectCollection &photons, const NanoObject::NanoObjectCollection &taus,
-                       const NanoObject::NanoObjectCollection &bjets, const NanoObject::NanoObjectCollection &jets,
-                       const NanoObject::NanoObject &met) {
+                       const NanoObject::NanoObjectCollection &electrons, const NanoObject::NanoObjectCollection &photons,
+                       const NanoObject::NanoObjectCollection &taus, const NanoObject::NanoObjectCollection &bjets,
+                       const NanoObject::NanoObjectCollection &jets, const NanoObject::NanoObject &met) {
     return std::make_tuple(muons, electrons, photons, taus, bjets, jets, met);
 };
 

@@ -138,7 +138,7 @@ std::string get_hash256(const std::string &input_string)
     return picosha2::hash256_hex_string(input_string);
 }
 
-void save_class_storage(const std::set<unsigned long> &classes, std::string output_file_name)
+void save_class_storage(const std::set<unsigned long> &classes, std::string output_file_name, unsigned int index)
 {
     // expected number of elements: (7*2 + 1) * classes.size()
     // 7 types of objects
@@ -151,8 +151,7 @@ void save_class_storage(const std::set<unsigned long> &classes, std::string outp
     // this will remove the leading comma in the begining of the string
     str_class_storage.erase(0, 1);
 
-    output_file_name = std::regex_replace(std::string(output_file_name), std::regex("root"),
-                                          "classes"); // "this is an example string." (1)
+    output_file_name = std::regex_replace(std::string(output_file_name), std::regex("root"), std::to_string(index) + ".classes");
     std::ofstream out(output_file_name);
     out << str_class_storage;
     out.close();

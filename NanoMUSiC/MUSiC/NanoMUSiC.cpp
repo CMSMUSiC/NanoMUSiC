@@ -178,10 +178,10 @@ int main(int argc, char *argv[])
     output_tree->Branch("music_event", &music_event, 256000, 99);
 
     std::cout << def << "[Initializing] Cut flow histo ..." << def << std::endl;
-    auto cutflow_histo = make_cutflow_histo(output_file.get(), output_tree_title);
+    auto cutflow_histos = make_cutflow_histos(output_file.get(), output_tree_title);
 
     std::cout << def << "[Initializing] classes' set ..." << def << std::endl;
-    std::set<unsigned long> classes;
+    std::array<std::set<unsigned long>, total_variations_and_shifts> classes;
 
     std::cout << def << "[Initializing] Task runners (thread pool) ..." << def << std::endl;
     BS::thread_pool task_runners_pool(n_threads);
@@ -340,14 +340,25 @@ int main(int argc, char *argv[])
             event_counter_per_file++;
 
             auto process_result = process_event(nano_reader, is_data, year, run_lumi_filter, pu_weight, task_runners_pool);
-            if (!process_result.is_null)
-            {
-                music_event = process_result.music_event;
-                cutflow_histo = cutflow_histo + process_result.cutflow_histo;
-                classes.merge(process_result.classes);
 
-                // save data into output tree
-                output_tree->Fill();
+            for (unsigned int idx = 0; idx < process_result.size(); idx++)
+            {
+                auto res = process_result.at(idx);
+                if (res)
+                {
+                    music_event.run = res.run;
+                    music_event.lumi_section = res.lumi_section;
+                    music_event.event_number = res.event_number;
+                    music_event.trigger_bits = res.trigger_bits.as_ulong();
+                    music_event.fill(std::move(res.event_content), idx);
+
+                    cutflow_histos.at(idx) = cutflow_histos.at(idx) + res.cutflow_histo;
+
+                    classes.at(idx).merge(res.classes);
+
+                    // save data into output tree
+                    output_tree->Fill();
+                }
             }
         }
         //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -409,11 +420,17 @@ int main(int argc, char *argv[])
     std::cout << def << "[Finalizing] Output file, cutflow and tree ..." << def << std::endl;
     output_file->cd();
     output_tree->Write();
-    cutflow_histo.Write();
+    for (auto histo : cutflow_histos)
+    {
+        histo.Write();
+    }
 
     // convert the std::list of classes that were touched to a comma separated
     // string and write it to the the outputfile.classes
-    save_class_storage(classes, output_file_name);
+    for (unsigned int i = 0; i < classes.size(); i++)
+    {
+        save_class_storage(classes.at(i), output_file_name, i);
+    }
 
     PrintProcessInfo();
     return 0;

@@ -26,12 +26,12 @@ class EventData
     bool is_null = true;
 
   public:
-    TH1F cutflow_histo = make_temp_cutflow_histo();
+    TH1F cutflow_histo = imp_make_cutflow_histo();
     bool is_data = true;
     Year year = Year::kTotalYears;
-    UInt_t run = -1;
-    UInt_t lumi_section = -1;
-    ULong64_t event_number = -1;
+    UInt_t run = 0;
+    UInt_t lumi_section = 0;
+    ULong64_t event_number = 0;
     TriggerBits trigger_bits;
     NanoObject::NanoObjectCollection muons;
     NanoObject::NanoObjectCollection electrons;
@@ -75,29 +75,29 @@ class EventData
         this->is_null = true;
     }
 
-    EventData &set_const_weights(NanoAODReader &nano_reader, MUSiCEvent &music_event, Corrector &pu_weight)
+    EventData &set_const_weights(NanoAODReader &nano_reader, Corrector &pu_weight)
     {
         // set generator weight
         // should be called before any EventData method
         if (is_data)
         {
-            music_event.event_weight.set(Weight::Generator, 1.);
-            music_event.event_weight.set(Weight::PileUp, 1.);
+            event_content.event_weight.set(Weight::Generator, 1.);
+            event_content.event_weight.set(Weight::PileUp, 1.);
         }
         else
         {
-            music_event.event_weight.set(Weight::Generator, nano_reader.getVal<Float_t>("genWeight"));
-            music_event.event_weight.set(Weight::PileUp, Shift::Nominal,
-                                         pu_weight({nano_reader.getVal<Float_t>("Pileup_nTrueInt"), "nominal"}));
-            music_event.event_weight.set(Weight::PileUp, Shift::Up,
-                                         pu_weight({nano_reader.getVal<Float_t>("Pileup_nTrueInt"), "up"}));
-            music_event.event_weight.set(Weight::PileUp, Shift::Down,
-                                         pu_weight({nano_reader.getVal<Float_t>("Pileup_nTrueInt"), "down"}));
+            event_content.event_weight.set(Weight::Generator, nano_reader.getVal<Float_t>("genWeight"));
+            event_content.event_weight.set(Weight::PileUp, Shift::Nominal,
+                                           pu_weight({nano_reader.getVal<Float_t>("Pileup_nTrueInt"), "nominal"}));
+            event_content.event_weight.set(Weight::PileUp, Shift::Up,
+                                           pu_weight({nano_reader.getVal<Float_t>("Pileup_nTrueInt"), "up"}));
+            event_content.event_weight.set(Weight::PileUp, Shift::Down,
+                                           pu_weight({nano_reader.getVal<Float_t>("Pileup_nTrueInt"), "down"}));
         }
         return *this;
     }
 
-    EventData &gen_filter(NanoAODReader &nano_reader, MUSiCEvent &music_event)
+    EventData &generator_filter(NanoAODReader &nano_reader)
     {
         if (*this)
         {
@@ -121,7 +121,7 @@ class EventData
             if (is_good_gen)
             {
                 cutflow_histo.Fill(CutFlow::NoCuts, 1.);
-                cutflow_histo.Fill(CutFlow::GeneratorWeight, music_event.event_weight.get());
+                cutflow_histo.Fill(CutFlow::GeneratorWeight, event_content.event_weight.get());
                 return *this;
             }
             set_null();
@@ -129,13 +129,13 @@ class EventData
         return *this;
     }
 
-    EventData &run_lumi_filter(const RunLumiFilter &run_lumi_filter, MUSiCEvent &music_event)
+    EventData &run_lumi_filter(const RunLumiFilter &run_lumi_filter)
     {
         if (*this)
         {
             if (run_lumi_filter(run, lumi_section, is_data))
             {
-                cutflow_histo.Fill(CutFlow::RunLumi, music_event.event_weight.get());
+                cutflow_histo.Fill(CutFlow::RunLumi, event_content.event_weight.get());
                 return *this;
             }
             set_null();
@@ -143,13 +143,13 @@ class EventData
         return *this;
     }
 
-    EventData &npv_filter(NanoAODReader &nano_reader, MUSiCEvent &music_event)
+    EventData &npv_filter(NanoAODReader &nano_reader)
     {
         if (*this)
         {
             if (nano_reader.getVal<Int_t>("PV_npvsGood") > 0)
             {
-                cutflow_histo.Fill(CutFlow::nPV, music_event.event_weight.get());
+                cutflow_histo.Fill(CutFlow::nPV, event_content.event_weight.get());
                 return *this;
             }
             set_null();
@@ -157,7 +157,7 @@ class EventData
         return *this;
     }
 
-    EventData &met_filter(NanoAODReader &nano_reader, MUSiCEvent &music_event)
+    EventData &met_filter(NanoAODReader &nano_reader)
     {
         if (*this)
         {
@@ -204,7 +204,7 @@ class EventData
             }
             if (pass_MET_filters)
             {
-                cutflow_histo.Fill(CutFlow::MetFilters, music_event.event_weight.get());
+                cutflow_histo.Fill(CutFlow::MetFilters, event_content.event_weight.get());
                 return *this;
             }
             set_null();
@@ -212,7 +212,7 @@ class EventData
         return *this;
     }
 
-    EventData &trigger_filter(NanoAODReader &nano_reader, MUSiCEvent &music_event)
+    EventData &trigger_filter(NanoAODReader &nano_reader)
     {
         if (*this)
         {
@@ -221,7 +221,6 @@ class EventData
             // fill trigger bits
             ////////////////////////////////////////////////////////////
             ////////////////////////////////////////////////////////////
-            TriggerBits trigger_bits;
             trigger_bits.set(HLTPath::SingleMuonLowPt, false)
                 .set(HLTPath::SingleMuonHighPt, false)
                 .set(HLTPath::SingleElectron, false)
@@ -258,12 +257,10 @@ class EventData
                                          ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
             }
 
-            music_event.trigger_bits = trigger_bits.as_uint();
-
             // skip event event if no trigger is fired
             if (trigger_bits.any())
             {
-                cutflow_histo.Fill(CutFlow::TriggerCut, music_event.event_weight.get());
+                cutflow_histo.Fill(CutFlow::TriggerCut, event_content.event_weight.get());
                 return *this;
             }
             set_null();
@@ -427,7 +424,7 @@ class EventData
             },
             met);
     }
-    EventData &pre_selection(NanoAODReader &nano_reader, MUSiCEvent &music_event, BS::thread_pool &task_runners_pool)
+    EventData &pre_selection(NanoAODReader &nano_reader, BS::thread_pool &task_runners_pool)
     {
         if (*this)
         {
@@ -503,14 +500,19 @@ class EventData
         return *this;
     }
 
-    static EventData apply_corrections(EventData _event_data, const Variation &variation, const Shift &shift)
+    static EventData apply_corrections(EventData event_data, const Variation &variation, const Shift &shift)
     {
-        if (_event_data)
+        if (event_data)
         {
-            auto _new_event_data = EventData(_event_data);
-            return _new_event_data;
+            auto new_event_data = EventData(event_data);
+
+            //////////////////////////////////////////////////
+            // FIX ME: apply corrections
+            //////////////////////////////////////////////////
+
+            return new_event_data;
         }
-        return _event_data;
+        return event_data;
     }
 };
 
