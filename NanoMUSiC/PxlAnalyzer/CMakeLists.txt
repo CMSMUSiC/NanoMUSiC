@@ -87,4 +87,4 @@ add_library(PxlAnalyzer
     Main/TOMLConfig.cpp
 )
 target_include_directories(PxlAnalyzer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_compile_options(PxlAnalyzer PUBLIC -g -c)
+target_compile_options(PxlAnalyzer PUBLIC -g -c -Wno-narrowing)

@@ -26,7 +26,7 @@ class EventData
     bool is_null = true;
 
   public:
-    TH1F cutflow_histo = imp_make_cutflow_histo();
+    TH1F cutflow_histo = imp_make_cutflow_histo(-1);
     bool is_data = true;
     Year year = Year::kTotalYears;
     UInt_t run = 0;

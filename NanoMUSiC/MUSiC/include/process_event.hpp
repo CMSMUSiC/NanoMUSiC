@@ -60,17 +60,19 @@ EventProcessResult_t process_event(NanoAODReader &nano_reader, const bool &is_da
 
     // holds data for processing only
     // + preliminary selection
-    auto event_data = load_event_data(nano_reader, is_data, year)
-                          .set_const_weights(nano_reader, pu_weight)
-                          .generator_filter(nano_reader)
-                          .run_lumi_filter(run_lumi_filter)
-                          .npv_filter(nano_reader)
-                          .met_filter(nano_reader)
-                          .trigger_filter(nano_reader)
-                          .pre_selection(nano_reader, task_runners_pool);
+    EventData event_data = load_event_data(nano_reader, is_data, year)
+                               .set_const_weights(nano_reader, pu_weight)
+                               .generator_filter(nano_reader)
+                               .run_lumi_filter(run_lumi_filter)
+                               .npv_filter(nano_reader)
+                               .met_filter(nano_reader)
+                               .trigger_filter(nano_reader)
+                               .pre_selection(nano_reader, task_runners_pool);
 
     // launch variations
     // loop over variations, shifts and classes (aka multiplicities)
+
+    std::array<std::future<EventData>, total_variations_and_shifts> variations_futures;
     ranges::for_each(range_cleanned_variation_and_shifts | views::remove_if([&is_data](auto variation_and_shift) {
                          const auto [variation, shift] = variation_and_shift;
                          return is_data && (variation != Variation::Default);
@@ -79,13 +81,28 @@ EventProcessResult_t process_event(NanoAODReader &nano_reader, const bool &is_da
                          const auto [variation, shift] = variation_and_shift;
 
                          // modify objects according to the given variation
-                         event_process_result.at(variation_shift_to_index(variation, shift)) =
-                             EventData::apply_corrections(event_data, variation, shift)
+                         auto variation_task = [](auto event_data, auto variation, auto shift) {
+                             return EventData::apply_corrections(event_data, variation, shift)
                                  .final_selection()
                                  .trigger_match()
                                  .set_scale_factors()
                                  .fill_event_content()
                                  .has_any_content_filter();
+                         };
+                         auto idx = variation_shift_to_index(variation, shift);
+                         variations_futures.at(idx) = task_runners_pool.submit(variation_task, event_data, variation, shift);
+                     });
+
+    ranges::for_each(range_cleanned_variation_and_shifts | views::remove_if([&is_data](auto variation_and_shift) {
+                         const auto [variation, shift] = variation_and_shift;
+                         return is_data && (variation != Variation::Default);
+                     }),
+                     [&](const auto &variation_and_shift) {
+                         const auto [variation, shift] = variation_and_shift;
+
+                         // modify objects according to the given variation
+                         auto idx = variation_shift_to_index(variation, shift);
+                         event_process_result.at(idx) = variations_futures.at(idx).get();
                      });
     return event_process_result;
 }

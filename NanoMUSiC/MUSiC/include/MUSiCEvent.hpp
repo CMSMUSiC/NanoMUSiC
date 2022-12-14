@@ -111,9 +111,20 @@ enum CutFlow
     kTotalCuts, // --> should be the last one
 };
 
-TH1F imp_make_cutflow_histo(unsigned int index)
+TH1F imp_make_cutflow_histo(int index)
 {
-    std::string histo_name = "cutflow_histo" + std::to_string(index);
+
+    std::string histo_name = "cutflow_histo";
+
+    if (index == -1)
+    {
+        histo_name = "temp_cutflow_histo";
+    }
+    else
+    {
+        histo_name = "cutflow_histo" + std::to_string(index);
+    }
+
     auto cutflow_histo = TH1F(histo_name.c_str(), histo_name.c_str(), CutFlow::kTotalCuts, -0.5, CutFlow::kTotalCuts + 0.5);
     cutflow_histo.Sumw2();
     return cutflow_histo;

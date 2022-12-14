@@ -5,9 +5,9 @@ The instructions here described are designed tested for the computing environmen
 
 # Dependencies
 
-There are no dependencies on CMSSW. The needed softwares are provided by LCG views (view 102 - `/cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/setup.sh`).
+There are no dependencies on CMSSW. The needed softwares are provided by LCG views (view 102b - `/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/setup.sh`).
 
-LCG list of available software: https://lcginfo.cern.ch/release_packages/x86_64-centos7-gcc11-opt/102/
+LCG list of available software: https://lcginfo.cern.ch/release_packages/x86_64-centos7-gcc11-opt/102b/
 
 ## Setup the environment (only once)
 

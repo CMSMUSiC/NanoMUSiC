@@ -8,7 +8,7 @@
                 // "/cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/include/**"
             ],
             "defines": [],
-            "compilerPath": "/cvmfs/sft.cern.ch/lcg/releases/gcc/11.2.0-8a51a/x86_64-centos7/bin/g++",
+            "compilerPath": "/cvmfs/sft.cern.ch/lcg/releases/gcc/12.1.0-57c96/x86_64-centos7/bin/g++",
             // "compilerPath": "/usr/bin/gcc",
             "cStandard": "c89",
             "cppStandard": "c++17",
