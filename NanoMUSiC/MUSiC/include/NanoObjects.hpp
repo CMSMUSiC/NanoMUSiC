@@ -104,8 +104,7 @@ class NanoObject
 
 // factory function
 template <typename... Args>
-NanoObject make_object(float &&pt, float &&eta, float &&phi, float &&mass,
-                       std::pair<std::string_view, Args> &&...features)
+NanoObject make_object(float &&pt, float &&eta, float &&phi, float &&mass, std::pair<std::string_view, Args> &&...features)
 {
     auto _features = std::make_tuple(features...);
     std::map<std::string_view, std::any> _buffer;
@@ -371,8 +370,7 @@ std::pair<std::string_view, T> make_feature(std::string_view &&_feature, T &&_ve
 // factory function (particle-like)
 template <typename... Args>
 NanoObjectCollection make_collection(std::vector<float> &&pt, std::vector<float> &&eta, std::vector<float> &&phi,
-                                     std::vector<float> &&mass,
-                                     std::pair<std::string_view, std::vector<Args>> &&...features)
+                                     std::vector<float> &&mass, std::pair<std::string_view, std::vector<Args>> &&...features)
 {
     auto _features = std::make_tuple(features...);
     auto _features_buffer = std::vector<std::map<std::string_view, std::any>>(pt.size());
@@ -393,11 +391,11 @@ NanoObjectCollection make_collection(std::vector<float> &&pt, std::vector<float>
 
 // mass as constant (value)
 template <typename... Args>
-NanoObjectCollection make_collection(std::vector<float> &&pt, std::vector<float> &&eta, std::vector<float> &&phi,
-                                     float mass, std::pair<std::string_view, std::vector<Args>> &&...features)
+NanoObjectCollection make_collection(std::vector<float> &&pt, std::vector<float> &&eta, std::vector<float> &&phi, float mass,
+                                     std::pair<std::string_view, std::vector<Args>> &&...features)
 {
-    return make_collection(std::move(pt), std::move(eta), std::move(phi),
-                           std::move(std::vector<float>(pt.size(), mass)), std::move(features)...);
+    return make_collection(std::move(pt), std::move(eta), std::move(phi), std::move(std::vector<float>(pt.size(), mass)),
+                           std::move(features)...);
 }
 
 } // namespace NanoObject

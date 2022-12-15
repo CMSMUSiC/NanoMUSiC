@@ -57,6 +57,8 @@
 
 // ROOT Stuff
 #include "Math/Vector4D.h"
+#include "ROOT/RDataFrame.hxx"
+#include "ROOT/RVec.hxx"
 #include "TFile.h"
 #include "TH1.h"
 #include "TObjString.h"
@@ -78,7 +80,11 @@
 
 using namespace ranges;
 using namespace ROOT::Math;
+using namespace ROOT::VecOps;
+
 using OptionalFuture_t = std::optional<std::future<std::unique_ptr<TFile>>>;
+
+constexpr double MUON_MASS = 105.6583755 / 1000.;
 
 std::string_view get_data_stream(const std::string_view &dataset)
 {

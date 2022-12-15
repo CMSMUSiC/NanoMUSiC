@@ -218,3 +218,4 @@ hsimpleReader.C
 NanoMUSiC/bin/
 foo.txt
 bar.C
+ref_rdataframe_slot.cpp
