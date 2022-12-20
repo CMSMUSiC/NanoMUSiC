@@ -152,24 +152,24 @@ int main(int argc, char *argv[])
     std::cout << green << "Initializing ..." << def << std::endl;
     std::cout << " " << std::endl;
 
-    std::cout << def << "[Initializing] Run Lumi Filter ..." << def << std::endl;
+    std::cout << def << "[ Initializing ] Run Lumi Filter ..." << def << std::endl;
     auto run_lumi_filter = RunLumiFilter(golden_json_file);
 
-    std::cout << def << "[Initializing] PU corrections ..." << def << std::endl;
+    std::cout << def << "[ Initializing ] PU corrections ..." << def << std::endl;
     auto pu_weight = Corrector(CorrectionTypes::PU, year, is_data);
 
     // read cross-sections files
-    std::cout << def << "[Initializing] X-Sections ..." << def << std::endl;
+    std::cout << def << "[ Initializing ] X-Sections ..." << def << std::endl;
     const auto x_sections = TOMLConfig::make_toml_config(x_section_file);
 
-    std::cout << def << "[Initializing] Thread pool (" << n_threads << " threads) ..." << def << std::endl;
+    std::cout << def << "[ Initializing ] Thread pool (" << n_threads << " threads) ..." << def << std::endl;
     ROOT::EnableImplicitMT(n_threads);
 
-    std::cout << def << "[Initializing] Rochester Muon Momentum Corrections ..." << def << std::endl;
+    std::cout << def << "[ Initializing ] Rochester Muon Momentum Corrections ..." << def << std::endl;
     auto rochester_corrections = Corrector(CorrectionTypes::MuonLowPt, year, is_data);
 
     // performance monitoring
-    std::cout << def << "[Initializing] Performance Monitoring ..." << def << std::endl;
+    std::cout << def << "[ Initializing ] Performance Monitoring ..." << def << std::endl;
     auto event_counter = RVec<unsigned int>(n_threads);
     auto event_counter_mutexes = std::vector<std::mutex>(n_threads);
 
@@ -387,7 +387,7 @@ int main(int argc, char *argv[])
     // music_event_vec
     // cutflow_histos_vec
     // classes_vec
-    std::cout << yellow << "[Finalizing] Output file, cutflow and tree ..." << def << std::endl;
+    std::cout << yellow << "[ Finalizing ] Output file, cutflow and tree ..." << def << std::endl;
     std::vector<std::thread> output_writers;
     for (std::size_t i_slot = 0; i_slot < n_threads; i_slot++)
     {
@@ -433,7 +433,7 @@ int main(int argc, char *argv[])
             i_slot));
     }
 
-    std::cout << yellow << "[Finalizing] Waiting for data to be written ...\n" << def << std::endl;
+    std::cout << yellow << "[ Finalizing ] Waiting for data to be written ...\n" << def << std::endl;
     for (auto &writer : output_writers)
     {
         writer.join();
