@@ -12,43 +12,43 @@ EventData load_event_data(NanoAODReader &nano_reader, const bool &is_data, const
         is_data, year, nano_reader.getVal<UInt_t>("run"), nano_reader.getVal<UInt_t>("luminosityBlock"),
         nano_reader.getVal<ULong64_t>("event"), TriggerBits{},
         // Muons
-        NanoObject::make_collection(
+        NanoObjects::make_collection(
             nano_reader.getVec<Float_t>("Muon_pt"), nano_reader.getVec<Float_t>("Muon_eta"),
             nano_reader.getVec<Float_t>("Muon_phi"), nano_reader.getVec<Float_t>("Muon_mass"),
-            NanoObject::make_feature("tightId", nano_reader.getVecOfBools("Muon_tightId")),
-            NanoObject::make_feature("highPtId", nano_reader.getVec<UChar_t>("Muon_highPtId")),
-            NanoObject::make_feature("pfRelIso03_all", nano_reader.getVec<Float_t>("Muon_pfRelIso03_all")),
-            NanoObject::make_feature("tkRelIso", nano_reader.getVec<Float_t>("Muon_tkRelIso"))),
+            NanoObjects::make_feature("tightId", nano_reader.getVecOfBools("Muon_tightId")),
+            NanoObjects::make_feature("highPtId", nano_reader.getVec<UChar_t>("Muon_highPtId")),
+            NanoObjects::make_feature("pfRelIso03_all", nano_reader.getVec<Float_t>("Muon_pfRelIso03_all")),
+            NanoObjects::make_feature("tkRelIso", nano_reader.getVec<Float_t>("Muon_tkRelIso"))),
         // Electrons
-        NanoObject::make_collection(nano_reader.getVec<Float_t>("Electron_pt"), nano_reader.getVec<Float_t>("Electron_eta"),
-                                    nano_reader.getVec<Float_t>("Electron_phi"), nano_reader.getVec<Float_t>("Electron_mass")),
+        NanoObjects::make_collection(nano_reader.getVec<Float_t>("Electron_pt"), nano_reader.getVec<Float_t>("Electron_eta"),
+                                     nano_reader.getVec<Float_t>("Electron_phi"), nano_reader.getVec<Float_t>("Electron_mass")),
         // Photons
-        NanoObject::make_collection(nano_reader.getVec<Float_t>("Photon_pt"), nano_reader.getVec<Float_t>("Photon_eta"),
-                                    nano_reader.getVec<Float_t>("Photon_phi"), nano_reader.getVec<Float_t>("Photon_mass")),
+        NanoObjects::make_collection(nano_reader.getVec<Float_t>("Photon_pt"), nano_reader.getVec<Float_t>("Photon_eta"),
+                                     nano_reader.getVec<Float_t>("Photon_phi"), nano_reader.getVec<Float_t>("Photon_mass")),
         // Taus
-        NanoObject::make_collection(nano_reader.getVec<Float_t>("Tau_pt"), nano_reader.getVec<Float_t>("Tau_eta"),
-                                    nano_reader.getVec<Float_t>("Tau_phi"), nano_reader.getVec<Float_t>("Tau_mass")),
+        NanoObjects::make_collection(nano_reader.getVec<Float_t>("Tau_pt"), nano_reader.getVec<Float_t>("Tau_eta"),
+                                     nano_reader.getVec<Float_t>("Tau_phi"), nano_reader.getVec<Float_t>("Tau_mass")),
         // BJets
         // FIX ME: bjets should have: ObjConfig::Jets[year].btag_wp_tight
-        NanoObject::make_collection(
+        NanoObjects::make_collection(
             nano_reader.getVec<Float_t>("Jet_pt"), nano_reader.getVec<Float_t>("Jet_eta"), nano_reader.getVec<Float_t>("Jet_phi"),
             nano_reader.getVec<Float_t>("Jet_mass"),
-            NanoObject::make_feature(
+            NanoObjects::make_feature(
                 std::string(ObjConfig::Jets[year].btag_algo),
                 nano_reader.getVec<Float_t>(std::string("Jet_") + std::string(ObjConfig::Jets[year].btag_algo)))),
         // Jets
         // FIX ME: jets should NOT have: ObjConfig::Jets[year].btag_wp_tight
-        NanoObject::make_collection(
+        NanoObjects::make_collection(
             nano_reader.getVec<Float_t>("Jet_pt"), nano_reader.getVec<Float_t>("Jet_eta"), nano_reader.getVec<Float_t>("Jet_phi"),
             nano_reader.getVec<Float_t>("Jet_mass"),
-            NanoObject::make_feature(
+            NanoObjects::make_feature(
                 std::string(ObjConfig::Jets[year].btag_algo),
                 nano_reader.getVec<Float_t>(std::string("Jet_") + std::string(ObjConfig::Jets[year].btag_algo)))),
         // MET
-        NanoObject::make_object(
+        NanoObjects::make_object(
             nano_reader.getVal<Float_t>("MET_pt"), nano_reader.getVal<Float_t>("MET_phi"),
-            NanoObject::make_feature("significance", nano_reader.getVal<Float_t>("MET_significance")),
-            NanoObject::make_feature("MetUnclustEnUpDeltaX", nano_reader.getVal<Float_t>("MET_MetUnclustEnUpDeltaX"))));
+            NanoObjects::make_feature("significance", nano_reader.getVal<Float_t>("MET_significance")),
+            NanoObjects::make_feature("MetUnclustEnUpDeltaX", nano_reader.getVal<Float_t>("MET_MetUnclustEnUpDeltaX"))));
     // end of EventData declaration
 }
 

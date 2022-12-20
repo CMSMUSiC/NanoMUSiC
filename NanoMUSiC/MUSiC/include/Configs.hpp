@@ -168,7 +168,7 @@ constexpr auto Bjets2016APV = BjetsConfig{};
 constexpr auto Bjets2016 = BjetsConfig{};
 constexpr auto Bjets2017 = BjetsConfig{.MinLowPt = 28.};
 constexpr auto Bjets2018 = BjetsConfig{};
-constexpr std::array<BjetsConfig, Year::kTotalYears> Bjets = {Bjets2016APV, Bjets2016, Bjets2017, Bjets2018};
+constexpr std::array<BjetsConfig, Year::kTotalYears> BJets = {Bjets2016APV, Bjets2016, Bjets2017, Bjets2018};
 
 // Jets
 // REF: https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL17#AK4_b_tagging

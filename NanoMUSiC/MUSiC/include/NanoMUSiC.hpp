@@ -2,6 +2,7 @@
 #define MUSIC_NANOMUSIC
 
 #include <algorithm>
+#include <any>
 #include <bitset>
 #include <chrono>
 #include <csignal>
@@ -13,6 +14,7 @@
 #include <iostream>
 #include <limits>
 #include <math.h>
+// #include <mutex>
 #include <numeric>
 #include <optional>
 #include <set>
@@ -26,6 +28,9 @@
 
 // ROOT Stuff
 #include "Math/Vector4D.h"
+#include "Math/VectorUtil.h"
+#include "ROOT/RDataFrame.hxx"
+#include "ROOT/RVec.hxx"
 #include "TFile.h"
 #include "TH1.h"
 #include "TObjString.h"
@@ -45,7 +50,7 @@
 #include "argh.h"
 
 // http:://github.com/bshoshany/thread-pool
-#include "BS_thread_pool.hpp"
+// #include "BS_thread_pool.hpp"
 
 // Configurarion and filter
 // #include "MConfig.hpp"
@@ -55,36 +60,24 @@
 // Filters (lumi, gen phase-space, ...)
 #include "RunLumiFilter.hpp"
 
-// ROOT Stuff
-#include "Math/Vector4D.h"
-#include "ROOT/RDataFrame.hxx"
-#include "ROOT/RVec.hxx"
-#include "TFile.h"
-#include "TH1.h"
-#include "TObjString.h"
-#include "TTree.h"
-
 // Corrections and weighters
 #include "CorrectionSets.hpp"
 // #include "PDFAlphaSWeights.hpp"
 
 // MUSiC
 #include "Configs.hpp"
-#include "EventData.hpp"
 #include "MUSiCEvent.hpp"
-#include "NanoAODReader.hpp"
 #include "NanoObjects.hpp"
-#include "ObjectCorrections.hpp"
+// #include "ObjectCorrections.hpp"
+#include "EventData.hpp"
 #include "Trigger.hpp"
-#include "process_event.hpp"
 
+using namespace std::chrono_literals;
 using namespace ranges;
 using namespace ROOT::Math;
 using namespace ROOT::VecOps;
 
 using OptionalFuture_t = std::optional<std::future<std::unique_ptr<TFile>>>;
-
-constexpr double MUON_MASS = 105.6583755 / 1000.;
 
 std::string_view get_data_stream(const std::string_view &dataset)
 {
@@ -144,7 +137,8 @@ std::string get_hash256(const std::string &input_string)
     return picosha2::hash256_hex_string(input_string);
 }
 
-void save_class_storage(const std::set<unsigned long> &classes, std::string output_file_name, unsigned int index)
+void save_class_storage(const std::set<unsigned long> &classes, std::string output_file_name, unsigned int slot,
+                        unsigned int index)
 {
     // expected number of elements: (7*2 + 1) * classes.size()
     // 7 types of objects
@@ -157,7 +151,7 @@ void save_class_storage(const std::set<unsigned long> &classes, std::string outp
     // this will remove the leading comma in the begining of the string
     str_class_storage.erase(0, 1);
 
-    output_file_name = std::regex_replace(std::string(output_file_name), std::regex("root"), std::to_string(index) + ".classes");
+    output_file_name = output_file_name.append(std::to_string(index) + "_" + std::to_string(slot) + ".classes");
     std::ofstream out(output_file_name);
     out << str_class_storage;
     out.close();

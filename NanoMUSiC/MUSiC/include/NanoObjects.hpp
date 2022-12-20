@@ -1,403 +1,259 @@
 #ifndef MUSIC_NANOOBJECTS
 #define MUSIC_NANOOBJECTS
 
-#include <any>
-#include <iostream>
-#include <sstream>
-#include <string>
+#include "ROOT/RVec.hxx"
 
-#include "Math/Vector4D.h"
-#include "Math/VectorUtil.h"
+constexpr double Muon_mass = 105.6583755 / 1000.;
+constexpr double Electron_mass = 0.51099895000 / 1000.;
+constexpr double Tau_mass = 1776.86 / 1000.;
 
-namespace NanoObject
+using namespace ROOT::VecOps;
+
+namespace NanoObjects
 {
-using namespace ROOT::Math;
 
-class NanoObject
+struct EventInfo
 {
-  public:
-    NanoObject(float _pt = 0, float _eta = 0, float _phi = 0, float _mass = 0,
-               std::map<std::string_view, std::any> _features = {})
-        : p4(PtEtaPhiMVector(_pt, _eta, _phi, _mass)), features(_features)
-    {
-    }
-    // NanoObject(NanoObject &&) = default;
-    // NanoObject(const NanoObject &) = default;
-    // NanoObject &operator=(NanoObject &&) = default;
-    // NanoObject &operator=(const NanoObject &) = default;
-    // ~NanoObject()
-    // {
-    // }
+    std::reference_wrapper<const UInt_t> run;
+    std::reference_wrapper<const UInt_t> lumi;
+    std::reference_wrapper<const ULong64_t> event;
+    std::reference_wrapper<const float> Pileup_nTrueInt;
+    std::reference_wrapper<const float> genWeight;
+    std::reference_wrapper<const int> PV_npvsGood;
+    std::reference_wrapper<const bool> Flag_goodVertices;
+    std::reference_wrapper<const bool> Flag_globalSuperTightHalo2016Filter;
+    std::reference_wrapper<const bool> Flag_HBHENoiseFilter;
+    std::reference_wrapper<const bool> Flag_HBHENoiseIsoFilter;
+    std::reference_wrapper<const bool> Flag_EcalDeadCellTriggerPrimitiveFilter;
+    std::reference_wrapper<const bool> Flag_BadPFMuonFilter;
+    std::reference_wrapper<const bool> Flag_BadPFMuonDzFilter;
+    std::reference_wrapper<const bool> Flag_eeBadScFilter;
+    std::reference_wrapper<const bool> Flag_ecalBadCalibFilter;
+    std::reference_wrapper<const bool> HLT_IsoMu27;
+    std::reference_wrapper<const bool> HLT_Mu50;
+    std::reference_wrapper<const bool> HLT_TkMu100;
+    std::reference_wrapper<const bool> HLT_OldMu100;
 
-    // custom members
-    PtEtaPhiMVector p4;
-    std::map<std::string_view, std::any> features;
-
-    template <typename T>
-    void set(std::string_view &&feature_name, T feature_value)
+    EventInfo(const UInt_t &_run = 0, const UInt_t &_lumi = 0, const ULong64_t &_event = 0, const float &_Pileup_nTrueInt = 0,
+              const float &_genWeight = 1., const int &_PV_npvsGood = 0, const bool &_Flag_goodVertices = false,
+              const bool &_Flag_globalSuperTightHalo2016Filter = false, const bool &_Flag_HBHENoiseFilter = false,
+              const bool &_Flag_HBHENoiseIsoFilter = false, const bool &_Flag_EcalDeadCellTriggerPrimitiveFilter = false,
+              const bool &_Flag_BadPFMuonFilter = false, const bool &_Flag_BadPFMuonDzFilter = false,
+              const bool &_Flag_eeBadScFilter = false, const bool &_Flag_ecalBadCalibFilter = false,
+              const bool &_HLT_IsoMu27 = false, const bool &_HLT_Mu50 = false, const bool &_HLT_TkMu100 = false,
+              const bool &_HLT_OldMu100 = false)
+        : run(_run), lumi(_lumi), event(_event), Pileup_nTrueInt(_Pileup_nTrueInt), genWeight(_genWeight),
+          PV_npvsGood(_PV_npvsGood), Flag_goodVertices(_Flag_goodVertices),
+          Flag_globalSuperTightHalo2016Filter(_Flag_globalSuperTightHalo2016Filter), Flag_HBHENoiseFilter(_Flag_HBHENoiseFilter),
+          Flag_HBHENoiseIsoFilter(_Flag_HBHENoiseIsoFilter),
+          Flag_EcalDeadCellTriggerPrimitiveFilter(_Flag_EcalDeadCellTriggerPrimitiveFilter),
+          Flag_BadPFMuonFilter(_Flag_BadPFMuonFilter), Flag_BadPFMuonDzFilter(_Flag_BadPFMuonDzFilter),
+          Flag_eeBadScFilter(_Flag_eeBadScFilter), Flag_ecalBadCalibFilter(_Flag_ecalBadCalibFilter), HLT_IsoMu27(_HLT_IsoMu27),
+          HLT_Mu50(_HLT_Mu50), HLT_TkMu100(_HLT_TkMu100), HLT_OldMu100(_HLT_OldMu100)
     {
-        features[feature_name] = feature_value;
-    }
-
-    template <typename TypeToCast>
-    TypeToCast get(std::string_view feature_name) const
-    {
-        if (features.find(feature_name) != features.end())
-        {
-            try
-            {
-                return std::any_cast<TypeToCast>(features.at(feature_name));
-            }
-            catch (const std::bad_any_cast &e)
-            {
-                std::cout << "[ERROR] Caught exception when trying to cast: " << feature_name << std::endl;
-                std::cout << e.what() << std::endl;
-                exit(1);
-            }
-        }
-        else
-        {
-            throw std::runtime_error(std::string("The request feature (") + std::string(feature_name) +
-                                     ") is not set for this object.");
-        }
-    }
-
-    unsigned int index() const
-    {
-        if (features.find("index") != features.end())
-        {
-            return get<unsigned int>("index");
-        }
-        else
-        {
-            return -1;
-        }
-    }
-
-    float pt() const
-    {
-        return p4.pt();
-    }
-    float eta() const
-    {
-        return p4.eta();
-    }
-    float phi() const
-    {
-        return p4.phi();
-    }
-    float mass() const
-    {
-        return p4.mass();
-    }
-    float e() const
-    {
-        return p4.e();
-    }
-
-    friend auto operator<<(std::ostream &os, const NanoObject &m) -> std::ostream &
-    {
-        os << "NanoObject: " << m.p4;
-        return os;
     }
 };
 
-// factory function
-template <typename... Args>
-NanoObject make_object(float &&pt, float &&eta, float &&phi, float &&mass, std::pair<std::string_view, Args> &&...features)
+struct Muons
 {
-    auto _features = std::make_tuple(features...);
-    std::map<std::string_view, std::any> _buffer;
-    std::apply([&](auto &&...args) { ((_buffer[args.first] = args.second), ...); }, _features);
 
-    return NanoObject{pt, eta, phi, mass, _buffer};
-}
+    std::size_t size;
+    std::reference_wrapper<const RVec<float>> pt;
+    std::reference_wrapper<const RVec<float>> eta;
+    std::reference_wrapper<const RVec<float>> phi;
+    // std::reference_wrapper<const RVec<float>> mass;
+    std::reference_wrapper<const RVec<bool>> tightId;
+    std::reference_wrapper<const RVec<UChar_t>> highPtId;
+    std::reference_wrapper<const RVec<float>> pfRelIso03_all;
+    std::reference_wrapper<const RVec<float>> tkRelIso;
 
-// met-like object
-template <typename... Args>
-NanoObject make_object(float &&pt, float &&phi, std::pair<std::string_view, Args> &&...features)
-{
-    return make_object(std::move(pt), std::move(0.0), std::move(phi), std::move(0.0), std::move(features)...);
-}
-
-// event-wise object
-template <typename... Args>
-NanoObject make_object(std::pair<std::string_view, Args> &&...features)
-{
-    return make_object(std::move(0.0), std::move(0.0), std::move(0.0), std::move(0.0), std::move(features)...);
-}
-
-float DeltaR(const NanoObject &trg_obj, const NanoObject &obj)
-{
-    return ROOT::Math::VectorUtil::DeltaR(trg_obj.p4, obj.p4);
-}
-
-float RelativePt(const NanoObject &trg_obj, const NanoObject &obj)
-{
-    return std::fabs(trg_obj.pt() - obj.pt()) / obj.pt();
-}
-
-// NanoObjects
-using NanoObjectCollection = std::vector<NanoObject>;
-using NanoAODObjects_t = std::tuple<NanoObjectCollection, /*Muons*/
-                                    NanoObjectCollection, /*Electrons*/
-                                    NanoObjectCollection, /*Photons*/
-                                    NanoObjectCollection, /*Taus*/
-                                    NanoObjectCollection, /*BJets*/
-                                    NanoObjectCollection, /*Jets*/
-                                    NanoObject /*MET*/>;
-
-template <typename ResType, typename F, typename G, typename H>
-std::vector<ResType> Where(const NanoObjectCollection &vec, F &&conditional_pred, G &&if_true_pred, H &&if_false_pred)
-{
-    std::vector<ResType> _out(vec.size());
-    std::transform(vec.cbegin(), vec.cend(), _out.begin(), [&](const auto &item) {
-        if (conditional_pred(item))
-        {
-            return if_true_pred(item);
-        }
-        return if_false_pred(item);
-    });
-    return _out;
-}
-
-template <typename F>
-std::vector<int> BuildMask(const NanoObjectCollection &vec, F &&pred)
-{
-    std::vector<int> _out(vec.size());
-    std::transform(vec.cbegin(), vec.cend(), _out.begin(), [&](const auto &item) {
-        if (pred(item))
-        {
-            return 1;
-        }
-        return 0;
-    });
-    return _out;
-}
-
-template <typename F>
-NanoObjectCollection Filter(NanoObjectCollection &vec, F &&pred)
-{
-    NanoObjectCollection _out;
-    std::copy_if(vec.begin(), vec.end(), std::back_inserter(_out), pred);
-    return _out;
-}
-
-template <typename F>
-NanoObjectCollection Filter(NanoObjectCollection &&vec, F &&pred)
-{
-    NanoObjectCollection _out;
-    std::copy_if(vec.begin(), vec.end(), std::back_inserter(_out), pred);
-    return _out;
-}
-
-template <typename F>
-NanoObjectCollection Filter(const NanoObjectCollection &vec, F &&pred)
-{
-    NanoObjectCollection _out;
-    std::copy_if(vec.begin(), vec.end(), std::back_inserter(_out), pred);
-    return _out;
-}
-
-NanoObjectCollection Filter(const NanoObjectCollection &vec, std::vector<int> &conditions)
-{
-    if (vec.size() != conditions.size())
+    Muons(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {},
+          const RVec<bool> &_tightId = {}, const RVec<UChar_t> &_highPtId = {}, const RVec<float> &_pfRelIso03_all = {},
+          const RVec<float> &_tkRelIso = {})
+        : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi), tightId(_tightId), highPtId(_highPtId),
+          pfRelIso03_all(_pfRelIso03_all), tkRelIso(_tkRelIso)
     {
-        throw std::runtime_error("Conditions vector is shorter than NanoObjectCollection.");
+        // if (eta.get().size() != size || phi.get().size() != size || tightId.get().size() != size ||
+        //     highPtId.get().size() != size || pfRelIso03_all.get().size() != size || tkRelIso.get().size() != size)
+        // {
+        //     throw std::runtime_error("Provided input RVecs for Muons don't match in size.");
+        // }
     }
 
-    NanoObjectCollection _out;
-    _out.reserve(vec.size());
-    for (unsigned int i = 0; i < vec.size(); i++)
+    // template <typename T, typename = std::enable_if<std::is_convertible<T, bool>::value>>
+    // Muons filter(RVec<T> filter_mask)
+    // {
+    //     return Muons(pt[filter_mask], eta[filter_mask], phi[filter_mask], tightId[filter_mask], highPtId[filter_mask],
+    //                  pfRelIso03_all[filter_mask], tkRelIso[filter_mask]);
+    // }
+
+    // // be carefull!!! This is slower than calling filter (the method above)...
+    // template <typename T>
+    // auto operator[](T &&filter_mask)
+    // {
+    //     return filter(std::forward<T>(filter_mask));
+    // }
+};
+
+struct Electrons
+{
+    std::size_t size;
+    std::reference_wrapper<const RVec<float>> pt;
+    std::reference_wrapper<const RVec<float>> eta;
+    std::reference_wrapper<const RVec<float>> phi;
+    // std::reference_wrapper<const RVec<float>> mass;
+
+    Electrons(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {})
+        : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi)
     {
-        if (conditions.at(i))
-        {
-            _out.emplace_back(vec.at(i));
-        }
-    }
-    _out.shrink_to_fit();
-    return _out;
-}
-
-NanoObjectCollection Take(const NanoObjectCollection &vec, const std::vector<int> &indices)
-{
-    if (vec.size() < indices.size())
-    {
-        throw std::runtime_error("Indices vector is larger than NanoObjectCollection.");
-    }
-
-    NanoObjectCollection _out;
-    _out.reserve(vec.size());
-    for (unsigned int i = 0; i < indices.size(); i++)
-    {
-        _out.emplace_back(vec.at(indices.at(i)));
-    }
-    _out.shrink_to_fit();
-    return _out;
-}
-
-template <typename T>
-std::vector<T> GetFeature(NanoObjectCollection &collection, std::string_view &&feature_name)
-{
-    std::vector<T> _buffer;
-    for (auto &obj : collection)
-    {
-        _buffer.emplace_back(obj.get<T>(feature_name));
-    }
-    return _buffer;
-}
-
-template <typename T>
-void SetFeature(NanoObjectCollection &collection, std::string_view &&feature_name, std::vector<T> feature_values)
-{
-    for (unsigned int i = 0; i < feature_values.size(); i++)
-    {
-        collection[i].set<T>(std::move(feature_name), feature_values[i]);
-    }
-}
-
-std::vector<unsigned int> Indices(NanoObjectCollection &collection)
-{
-    return GetFeature<unsigned int>(collection, "index");
-}
-
-NanoObject GetByIndex(NanoObjectCollection &collection, unsigned int _index)
-{
-    // TODO: use binary search
-    for (auto &obj : collection)
-    {
-        if (obj.index() == _index)
-        {
-            return obj;
-        }
-    }
-    return NanoObject();
-}
-
-template <typename T>
-auto Repr(const std::vector<T> &vec)
-{
-    std::ostringstream _buff;
-    _buff << "{ ";
-    std::for_each(vec.cbegin(), vec.cend(), [&](const auto &item) {
-        _buff << "[ ";
-        _buff << item;
-        _buff << " ]";
-    });
-    _buff << " }";
-    return _buff.str();
-}
-
-auto Repr(NanoObjectCollection &collection)
-{
-    std::ostringstream _buff;
-    _buff << "{ ";
-    std::for_each(collection.cbegin(), collection.cend(), [&](auto &obj) {
-        _buff << "[ ";
-        _buff << obj;
-        _buff << " ]";
-    });
-    _buff << " }";
-    return _buff.str();
-}
-
-std::vector<float> Pt(NanoObjectCollection &collection)
-{
-    std::vector<float> _buffer;
-    for (auto &obj : collection)
-    {
-        _buffer.emplace_back(obj.pt());
-    }
-    return _buffer;
-}
-
-std::vector<float> Eta(NanoObjectCollection &collection)
-{
-    std::vector<float> _buffer;
-    for (auto &obj : collection)
-    {
-        _buffer.emplace_back(obj.eta());
-    }
-    return _buffer;
-}
-
-std::vector<float> Phi(NanoObjectCollection &collection)
-{
-    std::vector<float> _buffer;
-    for (auto &obj : collection)
-    {
-        _buffer.emplace_back(obj.phi());
-    }
-    return _buffer;
-}
-
-std::vector<float> Mass(NanoObjectCollection &collection)
-{
-    std::vector<float> _buffer;
-    for (auto &obj : collection)
-    {
-        _buffer.emplace_back(obj.mass());
-    }
-    return _buffer;
-}
-
-std::vector<float> E(NanoObjectCollection &collection)
-{
-    std::vector<float> _buffer;
-    for (auto &obj : collection)
-    {
-        _buffer.emplace_back(obj.e());
-    }
-    return _buffer;
-}
-
-template <typename T>
-void _unroll_and_fill(std::vector<std::map<std::string_view, std::any>> &_features_buffer,
-                      std::pair<std::string_view, std::vector<T>> &&features)
-{
-    for (unsigned int i = 0; i < features.second.size(); i++)
-    {
-        _features_buffer[i][features.first] = features.second[i];
-    }
-}
-
-template <typename T>
-std::pair<std::string_view, T> make_feature(std::string_view &&_feature, T &&_vec)
-{
-    return std::make_pair(std::move(_feature), std::move(_vec));
-}
-
-// factory function (particle-like)
-template <typename... Args>
-NanoObjectCollection make_collection(std::vector<float> &&pt, std::vector<float> &&eta, std::vector<float> &&phi,
-                                     std::vector<float> &&mass, std::pair<std::string_view, std::vector<Args>> &&...features)
-{
-    auto _features = std::make_tuple(features...);
-    auto _features_buffer = std::vector<std::map<std::string_view, std::any>>(pt.size());
-    std::apply([&](auto &&...args) { (_unroll_and_fill(_features_buffer, std::move(args)), ...); }, _features);
-
-    NanoObjectCollection _tmp_collection;
-    for (size_t i = 0; i < pt.size(); i++)
-    {
-        _tmp_collection.emplace_back(pt.at(i), eta.at(i), phi.at(i), mass.at(i), _features_buffer.at(i));
+        // if (eta.get().size() != size || phi.get().size() != size)
+        // {
+        //     throw std::runtime_error("Provided input RVecs for Electrons don't match in size.");
+        // }
     }
 
-    auto _indices = std::vector<unsigned int>(_tmp_collection.size());
-    std::iota(_indices.begin(), _indices.end(), 0);
-    SetFeature(_tmp_collection, "index", _indices);
+    // template <typename T, typename = std::enable_if<std::is_convertible<T, bool>::value>>
+    // Electrons filter(RVec<T> filter_mask)
+    // {
+    //     return Electrons(pt[filter_mask], eta[filter_mask], phi[filter_mask]);
+    // }
 
-    return _tmp_collection;
-}
+    // // be carefull!!! This is slow!
+    // template <typename T>
+    // auto operator[](T &&filter_mask)
+    // {
+    //     return filter(std::forward<T>(filter_mask));
+    // }
+};
 
-// mass as constant (value)
-template <typename... Args>
-NanoObjectCollection make_collection(std::vector<float> &&pt, std::vector<float> &&eta, std::vector<float> &&phi, float mass,
-                                     std::pair<std::string_view, std::vector<Args>> &&...features)
+struct Photons
 {
-    return make_collection(std::move(pt), std::move(eta), std::move(phi), std::move(std::vector<float>(pt.size(), mass)),
-                           std::move(features)...);
-}
+    std::size_t size;
+    std::reference_wrapper<const RVec<float>> pt;
+    std::reference_wrapper<const RVec<float>> eta;
+    std::reference_wrapper<const RVec<float>> phi;
+    // std::reference_wrapper<const RVec<float>> mass;
 
-} // namespace NanoObject
+    Photons(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {})
+        : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi)
+    {
+        // if (eta.get().size() != size || phi.get().size() != size)
+        // {
+        //     throw std::runtime_error("Provided input RVecs for Photons don't match in size.");
+        // }
+    }
+
+    // template <typename T, typename = std::enable_if<std::is_convertible<T, bool>::value>>
+    // Photons filter(RVec<T> filter_mask)
+    // {
+    //     return Photons(pt[filter_mask], eta[filter_mask], phi[filter_mask]);
+    // }
+
+    // // be carefull!!! This is slow!
+    // template <typename T>
+    // auto operator[](T &&filter_mask)
+    // {
+    //     return filter(std::forward<T>(filter_mask));
+    // }
+};
+
+struct Taus
+{
+    std::size_t size;
+    std::reference_wrapper<const RVec<float>> pt;
+    std::reference_wrapper<const RVec<float>> eta;
+    std::reference_wrapper<const RVec<float>> phi;
+    // std::reference_wrapper<const RVec<float>> mass;
+
+    Taus(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {})
+        : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi)
+    {
+        // if (eta.get().size() != size || phi.get().size() != size)
+        // {
+        //     throw std::runtime_error("Provided input RVecs for Taus don't match in size.");
+        // }
+    }
+
+    // template <typename T, typename = std::enable_if<std::is_convertible<T, bool>::value>>
+    // Taus filter(RVec<T> filter_mask)
+    // {
+    //     return Taus(pt[filter_mask], eta[filter_mask], phi[filter_mask]);
+    // }
+
+    // // be carefull!!! This is slow!
+    // template <typename T>
+    // auto operator[](T &&filter_mask)
+    // {
+    //     return filter(std::forward<T>(filter_mask));
+    // }
+};
+
+struct Jets
+{
+    std::size_t size;
+    std::reference_wrapper<const RVec<float>> pt;
+    std::reference_wrapper<const RVec<float>> eta;
+    std::reference_wrapper<const RVec<float>> phi;
+    // std::reference_wrapper<const RVec<float>> mass;
+
+    Jets(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {})
+        : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi)
+    {
+        // if (eta.get().size() != size || phi.get().size() != size)
+        // {
+        //     throw std::runtime_error("Provided input RVecs for Jets don't match in size.");
+        // }
+    }
+
+    // template <typename T, typename = std::enable_if<std::is_convertible<T, bool>::value>>
+    // Jets filter(RVec<T> filter_mask)
+    // {
+    //     return Jets(pt[filter_mask], eta[filter_mask], phi[filter_mask]);
+    // }
+
+    // // be carefull!!! This is slow!
+    // template <typename T>
+    // auto operator[](T &&filter_mask)
+    // {
+    //     return filter(std::forward<T>(filter_mask));
+    // }
+};
+
+using BJets = Jets;
+
+struct MET
+{
+    std::size_t size;
+    std::reference_wrapper<const RVec<float>> pt;
+    std::reference_wrapper<const RVec<float>> eta;
+    std::reference_wrapper<const RVec<float>> phi;
+    // std::reference_wrapper<const RVec<float>> mass;
+
+    MET(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {})
+        : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi)
+    {
+        // if ((size > 1) || (eta.get().size() != size || phi.get().size() != size))
+        // {
+        //     throw std::runtime_error("Provided input RVecs for MET has size greater than 1. Not physical!");
+        // }
+    }
+
+    // template <typename T, typename = std::enable_if<std::is_convertible<T, bool>::value>>
+    // MET filter(RVec<T> filter_mask)
+    // {
+    //     return MET(pt[filter_mask], phi[filter_mask]);
+    // }
+
+    // // be carefull!!! This is slow!
+    // template <typename T>
+    // auto operator[](T &&filter_mask)
+    // {
+    //     return filter(std::forward<T>(filter_mask));
+    // }
+};
+
+using NanoAODObjects_t = std::tuple<Muons, Electrons, Photons, Taus, BJets, Jets, MET>;
+
+} // namespace NanoObjects
 
 #endif /*MUSIC_NANOOBJECTS*/

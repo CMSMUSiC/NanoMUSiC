@@ -89,21 +89,22 @@ int main(int argc, char *argv[])
     const auto output_directory = run_config.get<std::string>("output");
     const auto process = run_config.get<std::string>("process");
     const auto dataset = run_config.get<std::string>("dataset");
-    const auto max_events = run_config.get<int>("max_events");
-    const auto number_of_events_to_skip = run_config.get<int>("number_of_events_to_skip");
+    // const auto max_events = run_config.get<int>("max_events");
+    // const auto number_of_events_to_skip = run_config.get<int>("number_of_events_to_skip");
     const auto is_data = run_config.get<bool>("is_data");
     // const auto debug = run_config.get<int>("debug");
     const auto x_section_file = MUSiCTools::parse_and_expand_music_base(run_config.get<std::string>("x_section_file"));
     const auto run_hash = run_config.get<std::string>("hash");
     const auto year_str = run_config.get<std::string>("year");
-    const auto cacheread = run_config.get<bool>("cacheread");
-    const auto max_file_load_error_rate = run_config.get<float>("max_file_load_error_rate");
+    // const auto cacheread = run_config.get<bool>(cacheread");
+    // const auto max_file_load_error_rate = run_config.get<float>("max_file_load_error_rate");
     const auto input_files = run_config.get_vector<std::string>("input_files");
-    const auto n_threads = run_config.get<int>("n_threads");
-    if (n_threads < 1)
+    const auto _n_threads = run_config.get<int>("n_threads");
+    if (_n_threads < 1)
     {
-        throw std::runtime_error("The provided number of threads (" + std::to_string(n_threads) + ") should be at least 1.");
+        throw std::runtime_error("The provided number of threads (" + std::to_string(_n_threads) + ") should be at least 1.");
     }
+    std::size_t n_threads = std::min(_n_threads, static_cast<int>(input_files.size()));
 
     // get year as enum
     auto year = get_runyear(year_str);
@@ -161,275 +162,281 @@ int main(int argc, char *argv[])
     std::cout << def << "[Initializing] X-Sections ..." << def << std::endl;
     const auto x_sections = TOMLConfig::make_toml_config(x_section_file);
 
-    std::cout << def << "[Initializing] Output file ..." << def << std::endl;
-    const std::string process_hash = get_hash256(std::accumulate(input_files.begin(), input_files.end(), std::string("")));
-    const auto output_file_name = "nano_music_" + process + "_" + year_str + "_" + process_hash + ".root";
-    std::unique_ptr<TFile> output_file(TFile::Open(output_file_name.c_str(), "RECREATE"));
-
-    std::cout << def << "[Initializing] Output tree ..." << def << std::endl;
-    std::ifstream t(run_config_file);
-    std::stringstream output_tree_title;
-    output_tree_title << t.rdbuf();
-    auto output_tree = std::make_unique<TTree>("nano_music", output_tree_title.str().c_str());
-    output_tree->SetDirectory(output_file.get());
-
-    std::cout << def << "[Initializing] Output tree branches ..." << def << std::endl;
-    auto music_event = MUSiCEvent{};
-    output_tree->Branch("music_event", &music_event, 256000, 99);
-
-    std::cout << def << "[Initializing] Cut flow histo ..." << def << std::endl;
-    auto cutflow_histos = make_cutflow_histos(output_file.get(), output_tree_title);
-
-    std::cout << def << "[Initializing] classes' set ..." << def << std::endl;
-    std::array<std::set<unsigned long>, total_variations_and_shifts> classes;
-
-    std::cout << def << "[Initializing] Task runners (thread pool) ..." << def << std::endl;
-    BS::thread_pool task_runners_pool(n_threads);
+    std::cout << def << "[Initializing] Thread pool (" << n_threads << " threads) ..." << def << std::endl;
+    ROOT::EnableImplicitMT(n_threads);
 
     std::cout << def << "[Initializing] Rochester Muon Momentum Corrections ..." << def << std::endl;
     auto rochester_corrections = Corrector(CorrectionTypes::MuonLowPt, year, is_data);
 
     // performance monitoring
-    double dTime1 = getCpuTime(); // Start Time
-    int event_counter = -1;       // Event counter
-    unsigned int skipped = 0;     // number of events skipped from run/lumi_section config
-    int pre_run_skipped = 0;      // number of events skipped due to skipped option
+    std::cout << def << "[Initializing] Performance Monitoring ..." << def << std::endl;
+    auto event_counter = RVec<unsigned int>(n_threads);
+    auto event_counter_mutexes = std::vector<std::mutex>(n_threads);
 
-    // file counters
-    unsigned int analyzed_files = 0;
-    int file_load_error = 0; // number of files that could not be opened
-
-    // temp cache dir
-    std::string cache_dir = "/tmp/music/proc_" + process_hash;
-    if (cacheread)
+    const std::string process_hash = get_hash256(std::accumulate(input_files.begin(), input_files.end(), std::string("")));
+    auto output_file_vec = std::vector<std::unique_ptr<TFile>>(n_threads);
+    auto output_tree_vec = std::vector<std::unique_ptr<TTree>>(n_threads);
+    auto music_event_vec = std::vector<MUSiCEvent>(n_threads);
+    auto cutflow_histos_vec = std::vector<std::array<TH1F, total_variations_and_shifts>>(n_threads);
+    auto classes_vec = std::vector<std::array<std::set<unsigned long>, total_variations_and_shifts>>(n_threads);
+    for (std::size_t i = 0; i < n_threads; i++)
     {
-        std::cout << " " << std::endl;
-        std::cout << " " << std::endl;
-        std::cout << " " << std::endl;
-        std::cout << yellow << "Preparing cache directory for NanoAOD files: " << def << std::endl;
-        system(("rm -rf " + cache_dir).c_str());
-        system(("mkdir -p " + cache_dir).c_str());
-        std::cout << cache_dir << std::endl;
+        // output file
+        const auto output_file_name =
+            "nano_music_" + process + "_" + year_str + "_" + process_hash + "_" + std::to_string(i) + ".root";
+        output_file_vec.at(i) = std::unique_ptr<TFile>(TFile::Open(output_file_name.c_str(), "RECREATE"));
+
+        // output tree
+        std::ifstream t(run_config_file);
+        std::stringstream output_tree_title;
+        output_tree_title << t.rdbuf();
+        output_tree_vec.at(i) = std::make_unique<TTree>("nano_music", output_tree_title.str().c_str());
+        output_tree_vec.at(i)->SetDirectory(output_file_vec.at(i).get());
+
+        // tree branches
+        music_event_vec.at(i) = MUSiCEvent{};
+        output_tree_vec.at(i)->Branch("music_event", &(music_event_vec.at(i)), 256000, 99);
+
+        // cutflow histo
+        cutflow_histos_vec.at(i) = make_cutflow_histos(output_file_vec.at(i).get());
     }
+
+    // output storages
+    std::cout << def << "[Initializing] Temporary output storages ..." << def << std::endl;
+    using EventProcessResult_t = std::array<EventData, total_variations_and_shifts>;
+    auto process_results = RVec<RVec<EventProcessResult_t>>(n_threads);
+
+    // load RDataFrame
+    std::vector<std::string> colls = {
+        // event info
+        "run", "luminosityBlock", "event", "Pileup_nTrueInt", "genWeight", "PV_npvsGood", "Flag_goodVertices",
+        "Flag_globalSuperTightHalo2016Filter", "Flag_HBHENoiseFilter", "Flag_HBHENoiseIsoFilter",
+        "Flag_EcalDeadCellTriggerPrimitiveFilter", "Flag_BadPFMuonFilter", "Flag_BadPFMuonDzFilter", "Flag_eeBadScFilter",
+        "Flag_ecalBadCalibFilter", "HLT_IsoMu27", "HLT_Mu50", "HLT_TkMu100", "HLT_OldMu100",
+
+        // muons
+        "Muon_pt", "Muon_eta", "Muon_phi", "Muon_tightId", "Muon_highPtId", "Muon_pfRelIso03_all", "Muon_tkRelIso",
+
+        // electrons
+        "Electron_pt", "Electron_eta", "Electron_phi",
+
+        // photons
+        "Photon_pt", "Photon_eta", "Photon_phi",
+
+        // taus
+        "Tau_pt", "Tau_eta", "Tau_phi",
+
+        // jets
+        "Jet_pt", "Jet_eta", "Jet_phi",
+
+        // met
+        "MET_pt", "MET_phi"
+
+    };
+    auto df = ROOT::RDataFrame("Events", input_files, colls);
+    //////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////       [ BEGIN ]      //////////////////////////////////////
+    //////////////////////////////////////   loop over events   //////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////
+    auto event_processor = [&](unsigned int slot,
+                               // event info
+                               const UInt_t &run, const UInt_t &lumi, const ULong64_t &event_number, const float &Pileup_nTrueInt,
+                               const float &genWeight, const int &PV_npvsGood, const bool &Flag_goodVertices,
+                               const bool &Flag_globalSuperTightHalo2016Filter, const bool &Flag_HBHENoiseFilter,
+                               const bool &Flag_HBHENoiseIsoFilter, const bool &Flag_EcalDeadCellTriggerPrimitiveFilter,
+                               const bool &Flag_BadPFMuonFilter, const bool &Flag_BadPFMuonDzFilter,
+                               const bool &Flag_eeBadScFilter, const bool &Flag_ecalBadCalibFilter, const bool &HLT_IsoMu27,
+                               const bool &HLT_Mu50, const bool &HLT_TkMu100, const bool &HLT_OldMu100,
+
+                               // muons
+                               const RVec<float> &Muon_pt, const RVec<float> &Muon_eta, const RVec<float> &Muon_phi,
+                               const RVec<bool> &Muon_tightId, const RVec<UChar_t> &Muon_highPtId,
+                               const RVec<float> &Muon_pfRelIso03_all, const RVec<float> &Muon_tkRelIso,
+
+                               // electrons
+                               const RVec<float> &Electron_pt, const RVec<float> &Electron_eta, const RVec<float> &Electron_phi,
+
+                               // photons
+                               const RVec<float> &Photon_pt, const RVec<float> &Photon_eta, const RVec<float> &Photon_phi,
+
+                               // taus
+                               const RVec<float> &Tau_pt, const RVec<float> &Tau_eta, const RVec<float> &Tau_phi,
+
+                               // jets
+                               const RVec<float> &Jet_pt, const RVec<float> &Jet_eta, const RVec<float> &Jet_phi,
+
+                               // met
+                               const float &MET_pt, const float &MET_phi) {
+        {
+            const std::lock_guard<std::mutex> lock(event_counter_mutexes[slot]);
+            event_counter[slot]++;
+        }
+
+        // temporaries
+        RVec<float> temp_met_pt = {MET_pt};
+        RVec<float> temp_met_eta = RVec<float>(1, 0.);
+        RVec<float> temp_met_phi = {MET_phi};
+
+        auto event_data = EventData(
+            NanoObjects::EventInfo(run, lumi, event_number, Pileup_nTrueInt, genWeight, PV_npvsGood, Flag_goodVertices,
+                                   Flag_globalSuperTightHalo2016Filter, Flag_HBHENoiseFilter, Flag_HBHENoiseIsoFilter,
+                                   Flag_EcalDeadCellTriggerPrimitiveFilter, Flag_BadPFMuonFilter, Flag_BadPFMuonDzFilter,
+                                   Flag_eeBadScFilter, Flag_ecalBadCalibFilter, HLT_IsoMu27, HLT_Mu50, HLT_TkMu100, HLT_OldMu100),
+            NanoObjects::Muons(Muon_pt, Muon_eta, Muon_phi, Muon_tightId, Muon_highPtId, Muon_pfRelIso03_all, Muon_tkRelIso),
+            NanoObjects::Electrons(Electron_pt, Electron_eta, Electron_phi),
+            NanoObjects::Photons(Photon_pt, Photon_eta, Photon_phi), NanoObjects::Taus(Tau_pt, Tau_eta, Tau_phi),
+            NanoObjects::BJets(Jet_pt, Jet_eta, Jet_phi), NanoObjects::Jets(Jet_pt, Jet_eta, Jet_phi),
+            NanoObjects::MET(temp_met_pt, temp_met_eta, temp_met_phi), is_data, year);
+
+        event_data = event_data.set_const_weights(pu_weight)
+                         .generator_filter(cutflow_histos_vec[slot])
+                         .run_lumi_filter(cutflow_histos_vec[slot], run_lumi_filter)
+                         .npv_filter(cutflow_histos_vec[slot])
+                         .met_filter(cutflow_histos_vec[slot])
+                         .trigger_filter(cutflow_histos_vec[slot])
+                         .pre_selection();
+
+        // launch variations
+
+        // loop over variations, shifts and classes (aka multiplicities)
+        EventProcessResult_t _process_result_buffer;
+        std::array<std::future<EventData>, total_variations_and_shifts> variations_futures;
+        ranges::for_each(range_cleanned_variation_and_shifts | views::remove_if([&is_data](auto variation_and_shift) {
+                             const auto [variation, shift] = variation_and_shift;
+                             return is_data && (variation != Variation::Default);
+                         }),
+                         [&](const auto &variation_and_shift) {
+                             const auto [variation, shift] = variation_and_shift;
+
+                             // modify objects according to the given variation
+                             _process_result_buffer.at(variation_shift_to_index(variation, shift)) =
+                                 EventData::apply_corrections(event_data, variation, shift)
+                                     .final_selection()
+                                     .trigger_match()
+                                     .set_scale_factors()
+                                     .fill_event_content()
+                                     .has_any_content_filter();
+                         });
+        process_results.at(slot).push_back(_process_result_buffer);
+    };
 
     std::cout << " " << std::endl;
     std::cout << green << "Starting Classification ..." << def << std::endl;
     std::cout << " " << std::endl;
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////       [ BEGIN ]      //////////////////////////////////////
-    //////////////////////////////////////    loop over files   //////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////////
-    auto first_file = input_files.at(0);
-    std::cout << "Loading first file ..." << std::endl;
-    OptionalFuture_t input_root_file_future = std::async(std::launch::async, file_loader, first_file, cacheread, cache_dir, true);
-    auto input_root_file = input_root_file_future->get();
-    std::cout << "... done." << std::endl;
-    for (size_t idx_file = 0; idx_file < input_files.size(); idx_file++)
-    {
-        // after first file iteration, load next file
-        if (input_root_file_future && idx_file > 0)
+    std::cout << acqua << "Launching monitoring thread ..." << def << std::endl;
+    double dTime1 = getCpuTime(); // Start Timer
+    bool run_monitoring = true;
+    std::thread monitoring_thread([&]() {
+        unsigned int processed_events_counter = 0;
+        while (run_monitoring)
         {
-            std::cout << "Getting next file ..." << std::endl;
-            input_root_file = input_root_file_future->get();
-        }
-
-        if (!input_root_file)
-        {
-            if (is_data)
+            // will sleep for 5s
+            std::this_thread::sleep_for(5000ms);
+            for (std::size_t i_slot = 0; i_slot < n_threads; i_slot++)
             {
-                std::cout << "[ERROR]: could not open file" << std::endl;
-                exit(1);
-            }
-            std::cout << "[WARNINIG]: could not open file: " << input_files.at(idx_file) << std::endl;
-            file_load_error++;
-
-            // will exit, if error rate < max
-            if (float(file_load_error) / float(input_files.size()) > max_file_load_error_rate)
-            {
-                std::cout << "Too many file load errors: " << file_load_error << " out of " << input_files.size() << "."
-                          << std::endl;
-                exit(1);
-            }
-
-            // skip file if not Data and error rate < max
-            continue;
-        }
-
-        time_t rawtime;
-        time(&rawtime);
-        std::cout << "Opening time: " << ctime(&rawtime);
-
-        analyzed_files++;
-
-        unsigned int event_counter_per_file = 0;
-
-        // get "Events" TTree from file
-        auto events_tree = std::unique_ptr<TTree>(input_root_file->Get<TTree>("Events"));
-        // launch new thread
-        if (idx_file + 1 < input_files.size())
-        {
-            input_root_file_future =
-                std::async(std::launch::async, file_loader, input_files.at(idx_file + 1), cacheread, cache_dir, true);
-        }
-        else
-        {
-            std::cout << "End of file list ..." << std::endl;
-            input_root_file_future = std::nullopt;
-        }
-
-        std::cout << def << yellow << "Analyzing: " << input_files.at(idx_file) << def << std::endl;
-
-        // get NanoAODReader
-        auto nano_reader = NanoAODReader(*events_tree);
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////       [ BEGIN ]      //////////////////////////////////////
-        //////////////////////////////////////   loop over events   //////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////////////////////////
-        double dTime_0 = getCpuTime();
-        unsigned int event_counter_buffer = 0;
-
-        while (nano_reader.next())
-        {
-            event_counter++;
-            // if set, skip first events
-            if (number_of_events_to_skip > pre_run_skipped)
-            {
-                pre_run_skipped++;
-                event_counter_per_file++;
-                continue;
-            }
-
-            if (event_counter > 0)
-            {
-                // print every tenth
-                if (is_tenth(event_counter))
                 {
-                    auto _now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-                    std::cout << "\n[INFO] - " << std::strtok(std::ctime(&_now), "\n") << " - ";
-                    if (pre_run_skipped == 0)
-                    {
-                        std::cout << event_counter << " Events analyzed (" << skipped << " skipped)";
-                    }
-                    else
-                    {
-                        std::cout << event_counter << " Events analyzed (" << pre_run_skipped << " + " << skipped << " skipped)";
-                    }
-
-                    std::cout << " - Processing rate: " << double(event_counter - event_counter_buffer) / (getCpuTime() - dTime_0)
-                              << " Events/s" << std::endl;
-                    event_counter_buffer = event_counter;
-                    dTime_0 = getCpuTime();
-
-                    PrintProcessInfo();
+                    const std::lock_guard<std::mutex> lock(event_counter_mutexes[i_slot]);
+                    processed_events_counter += event_counter[i_slot];
                 }
             }
 
-            // stop if max number of events to be processed is reached
-            if (max_events >= 0 && event_counter > max_events)
-            {
-                break;
-            }
-
-            event_counter_per_file++;
-
-            auto process_result = process_event(nano_reader, is_data, year, run_lumi_filter, pu_weight, task_runners_pool);
-
-            for (unsigned int idx = 0; idx < process_result.size(); idx++)
-            {
-                auto res = process_result.at(idx);
-                if (res)
-                {
-                    music_event.run = res.run;
-                    music_event.lumi_section = res.lumi_section;
-                    music_event.event_number = res.event_number;
-                    music_event.trigger_bits = res.trigger_bits.as_ulong();
-                    music_event.fill(std::move(res.event_content), idx);
-
-                    cutflow_histos.at(idx) = cutflow_histos.at(idx) + res.cutflow_histo;
-
-                    classes.at(idx).merge(res.classes);
-
-                    // save data into output tree
-                    output_tree->Fill();
-                }
-            }
+            double dTime2 = getCpuTime();
+            std::cout << "[ Performance Monitoring ] Analyzed " << processed_events_counter << " events"
+                      << ", elapsed CPU time: " << dTime2 - dTime1 << "sec ("
+                      << double(processed_events_counter) / (dTime2 - dTime1) << " evts per sec)" << std::endl;
+            processed_events_counter = 0;
         }
-        //////////////////////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////       [ END ]        //////////////////////////////////////
-        //////////////////////////////////////   loop over events   //////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////////////////////////
+    });
 
-        // flushes the output_tree to the output_file every input_file
-        if (output_tree->GetEntriesFast() > 0)
-        {
-            output_tree->AutoSave();
-        }
+    std::cout << green << "\nLaunching event loop ..." << def << std::endl;
+    df.ForeachSlot(event_processor, colls);
+    run_monitoring = false;
+    monitoring_thread.join();
+    std::cout << green << "Event loop done ..." << def << std::endl;
 
-        // stop if max number of events to be processed is reaced
-        if (max_events != -1 && event_counter > max_events)
-        {
-            break;
-        }
-
-        // clear cache dir
-        if (cacheread)
-        {
-            std::cout << yellow << "Cleaning NanoAOD cache ..." << def << std::endl;
-            std::string cached_file_path = input_root_file->GetName();
-            system(("rm -rf " + cached_file_path).c_str()); // FIX-ME!!
-        }
-    }
     //////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////        [ END ]       //////////////////////////////////////
-    //////////////////////////////////////    loop over files   //////////////////////////////////////
+    //////////////////////////////////////       [ END ]        //////////////////////////////////////
+    //////////////////////////////////////   loop over events   //////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////
+
+    std::cout << " " << std::endl;
+    std::cout << green << "Classification done ..." << def << std::endl;
+    std::cout << " " << std::endl;
 
     double dTime2 = getCpuTime();
-    std::cout << "Analyzed " << event_counter << " Events, skipped " << pre_run_skipped << " first events and " << skipped
-              << " due to run/ls veto";
-    std::cout << ", elapsed CPU time: " << dTime2 - dTime1 << " (" << double(event_counter) / (dTime2 - dTime1)
-              << " evts per sec)" << std::endl;
+    std::cout << cyan << "[ Final Performance Report ] Analyzed " << Sum(event_counter) << " events";
+    std::cout << ", elapsed CPU time: " << dTime2 - dTime1 << "sec (" << double(Sum(event_counter)) / (dTime2 - dTime1)
+              << " evts per sec)" << def << std::endl;
 
-    if (file_load_error > 0)
+    if (Sum(event_counter) == 0)
     {
-        std::cout << "Warning: " << file_load_error << " of " << (file_load_error + analyzed_files)
-                  << " files lost due to timeouts or read errors." << std::endl;
+        std::cout << "Error: No event analyzed!" << std::endl;
+        throw std::runtime_error("No event analyzed!");
     }
 
-    if ((event_counter + skipped) == 0)
+    std::cout << "\n" << std::endl;
+
+    // writes data to disk
+    // output_file_vec
+    // output_tree_vec
+    // music_event_vec
+    // cutflow_histos_vec
+    // classes_vec
+    std::cout << yellow << "[Finalizing] Output file, cutflow and tree ..." << def << std::endl;
+    std::vector<std::thread> output_writers;
+    for (std::size_t i_slot = 0; i_slot < n_threads; i_slot++)
     {
-        std::cout << "Error: No event analayzed!" << std::endl;
-        throw std::runtime_error("No event analayzed!");
+        output_writers.push_back(std::thread(
+            [&](auto slot) {
+                for (std::size_t i_evt = 0; i_evt < process_results.at(slot).size(); i_evt++)
+                {
+                    for (std::size_t idx = 0; idx < process_results.at(slot).at(i_evt).size(); idx++)
+                    {
+                        auto res = process_results.at(slot).at(i_evt).at(idx);
+                        if (res)
+                        {
+                            music_event_vec.at(slot).run = res.event_info.run;
+                            music_event_vec.at(slot).lumi_section = res.event_info.lumi;
+                            music_event_vec.at(slot).event_number = res.event_info.event;
+                            music_event_vec.at(slot).trigger_bits = res.trigger_bits.as_ulong();
+                            music_event_vec.at(slot).fill(std::move(res.event_content), idx);
+
+                            classes_vec.at(slot).at(idx).merge(res.classes);
+                        }
+                    }
+                    // save data into output tree
+                    output_tree_vec.at(slot)->Fill();
+                }
+
+                // write outputs to disk
+                output_file_vec.at(slot)->cd();
+                output_tree_vec.at(slot)->Write();
+                for (auto &histo : cutflow_histos_vec.at(slot))
+                {
+                    histo.Write();
+                }
+
+                // convert the std::list of classes that were touched to a comma separated
+                // string and write it to the the outputfile.classes
+                for (std::size_t i = 0; i < classes_vec.at(slot).size(); i++)
+                {
+                    const auto output_file_name =
+                        "nano_music_" + process + "_" + year_str + "_" + process_hash + "_" + std::to_string(i);
+                    save_class_storage(classes_vec.at(slot).at(i), output_file_name, slot, i);
+                }
+            },
+            i_slot));
     }
 
-    std::cout << "\n\n\n" << std::endl;
-
-    // write tree to file
-    std::cout << def << "[Finalizing] Output file, cutflow and tree ..." << def << std::endl;
-    output_file->cd();
-    output_tree->Write();
-    for (auto histo : cutflow_histos)
+    std::cout << yellow << "[Finalizing] Waiting for data to be written ...\n" << def << std::endl;
+    for (auto &writer : output_writers)
     {
-        histo.Write();
-    }
-
-    // convert the std::list of classes that were touched to a comma separated
-    // string and write it to the the outputfile.classes
-    for (unsigned int i = 0; i < classes.size(); i++)
-    {
-        save_class_storage(classes.at(i), output_file_name, i);
+        writer.join();
     }
 
     PrintProcessInfo();

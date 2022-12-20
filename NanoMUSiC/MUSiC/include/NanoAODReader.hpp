@@ -94,9 +94,9 @@ class NanoAODReader
             if (GetTypeName(typeid(T)) != type_temp_)
             {
 
-                throw std::runtime_error(
-                    "--> ERROR: Trying to read branch \"" + valueName + "\" as \"" + GetTypeName(typeid(T)) +
-                    "\" is not the same type defiend for this branch. Expected type is: \"" + fType[valueName] + "\".");
+                throw std::runtime_error("--> ERROR: Trying to read branch \"" + valueName + "\" as \"" + GetTypeName(typeid(T)) +
+                                         "\" is not the same type defiend for this branch. Expected type is: \"" +
+                                         fType[valueName] + "\".");
             }
         }
         catch (std::runtime_error &e)
@@ -164,10 +164,9 @@ class NanoAODReader
 
             if (GetTypeName(typeid(T)) != type_temp_)
             {
-                throw std::runtime_error("--> ERROR: Trying to read branch \"" + vectorName + "\" as \"" +
-                                         GetTypeName(typeid(T)) +
-                                         "\" is not the same type defiend for this branch. Expected type is: \"" +
-                                         fType[vectorName] + "\".");
+                throw std::runtime_error(
+                    "--> ERROR: Trying to read branch \"" + vectorName + "\" as \"" + GetTypeName(typeid(T)) +
+                    "\" is not the same type defiend for this branch. Expected type is: \"" + fType[vectorName] + "\".");
             }
         }
         catch (std::runtime_error &e)
@@ -236,10 +235,9 @@ class NanoAODReader
 
             if (GetTypeName(typeid(bool)) != type_temp_)
             {
-                throw std::runtime_error("--> ERROR: Trying to read branch \"" + vectorName + "\" as \"" +
-                                         GetTypeName(typeid(Bool_t)) +
-                                         "\" is not the same type defined for this branch. Expected type is: \"" +
-                                         fType[vectorName] + "\".");
+                throw std::runtime_error(
+                    "--> ERROR: Trying to read branch \"" + vectorName + "\" as \"" + GetTypeName(typeid(Bool_t)) +
+                    "\" is not the same type defined for this branch. Expected type is: \"" + fType[vectorName] + "\".");
             }
         }
         catch (std::runtime_error &e)
@@ -252,7 +250,7 @@ class NanoAODReader
         std::vector<UInt_t> _buffer;
         for (const auto &elem : *array_temp_)
         {
-            _buffer.emplace_back(elem);
+            _buffer.push_back(elem);
         }
         return _buffer;
     }

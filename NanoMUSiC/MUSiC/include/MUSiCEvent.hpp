@@ -131,7 +131,7 @@ TH1F imp_make_cutflow_histo(int index)
 }
 
 template <typename T>
-std::array<TH1F, total_variations_and_shifts> make_cutflow_histos(T &&output_file, const std::stringstream &output_tree_title)
+std::array<TH1F, total_variations_and_shifts> make_cutflow_histos(T &&output_file)
 {
     std::array<TH1F, total_variations_and_shifts> cutflow_histos;
     for (size_t i = 0; i < cutflow_histos.size(); i++)
@@ -275,7 +275,7 @@ class EventContent : public TObject
                });
     }
 
-    void fill(const Multiplicity_t &multiplicity, const std::optional<NanoObject::NanoAODObjects_t> nanoaod_objects)
+    void fill(const Multiplicity_t &multiplicity, const std::optional<NanoObjects::NanoAODObjects_t> nanoaod_objects)
     {
         if (nanoaod_objects)
         {
@@ -283,22 +283,24 @@ class EventContent : public TObject
             const auto [i_muons, i_electrons, i_photons, i_taus, i_bjets, i_jets, i_met] = multiplicity;
             const auto [muons, electrons, photons, taus, bjets, jets, met_obj] = *nanoaod_objects;
 
-            auto selected_muons = muons | views::take(i_muons);
-            auto selected_electrons = electrons | views::take(i_electrons);
-            auto selected_photons = photons | views::take(i_photons);
-            // auto selected_taus = taus | views::take(i_taus);
-            auto selected_bjets = bjets | views::take(i_bjets);
-            auto selected_jets = jets | views::take(i_jets);
-            auto selected_met = views::single(met_obj) | views::take(i_met);
+            // auto selected_muons = NanoObjects::Take(muons, i_muons);
+            // auto selected_electrons = NanoObjects::Take(electrons, i_electrons);
+            // auto selected_photons = NanoObjects::Take(photons, i_photons);
+            // // auto selected_taus = NanoObjects::Take(taus, i_taus);
+            // auto selected_bjets = NanoObjects::Take(bjets, i_bjets);
+            // auto selected_jets = NanoObjects::Take(jets, i_jets);
+            // auto selected_met = NanoObjects::Take(met_obj, i_met);
 
             // FIX ME: add taus
-            sum_pt.emplace_back(ranges::accumulate(
-                views::concat(selected_muons, selected_electrons, selected_photons, selected_bjets, selected_jets, selected_met) |
-                    views::transform([](const auto _muon) { return _muon.pt(); }),
-                0));
-            mass.emplace_back(20.);
-            met.emplace_back(30.);
-            event_class_hash.emplace_back(EventContent::make_class_hash(multiplicity));
+            sum_pt.push_back(10.);
+            // sum_pt.push_back(ranges::accumulate(
+            //     views::concat(selected_muons, selected_electrons, selected_photons, selected_bjets, selected_jets,
+            //     selected_met) |
+            //         views::transform([](const auto _muon) { return _muon.pt(); }),
+            //     0));
+            mass.push_back(20.);
+            met.push_back(30.);
+            event_class_hash.push_back(EventContent::make_class_hash(multiplicity));
         }
     }
 

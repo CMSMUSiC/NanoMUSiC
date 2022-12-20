@@ -4,10 +4,10 @@
 #include "MUSiCEvent.hpp"
 #include "NanoObjects.hpp"
 
-auto default_corr = [](const Shift &shift, const NanoObject::NanoObjectCollection &muons,
-                       const NanoObject::NanoObjectCollection &electrons, const NanoObject::NanoObjectCollection &photons,
-                       const NanoObject::NanoObjectCollection &taus, const NanoObject::NanoObjectCollection &bjets,
-                       const NanoObject::NanoObjectCollection &jets, const NanoObject::NanoObject &met) {
+auto default_corr = [](const Shift &shift, const NanoObjects::NanoObjectCollection &muons,
+                       const NanoObjects::NanoObjectCollection &electrons, const NanoObjects::NanoObjectCollection &photons,
+                       const NanoObjects::NanoObjectCollection &taus, const NanoObjects::NanoObjectCollection &bjets,
+                       const NanoObjects::NanoObjectCollection &jets, const NanoObjects::NanoObject &met) {
     return std::make_tuple(muons, electrons, photons, taus, bjets, jets, met);
 };
 
@@ -38,11 +38,11 @@ auto get_correction(const Variation &variation)
     }
 }
 
-std::optional<NanoObject::NanoAODObjects_t> apply_variation(
-    const Variation &variation, const Shift &shift, const bool &is_data, const NanoObject::NanoObjectCollection &muons,
-    const NanoObject::NanoObjectCollection &electrons, const NanoObject::NanoObjectCollection &photons,
-    const NanoObject::NanoObjectCollection &taus, const NanoObject::NanoObjectCollection &bjets,
-    const NanoObject::NanoObjectCollection &jets, const NanoObject::NanoObject &met)
+std::optional<NanoObjects::NanoAODObjects_t> apply_variation(
+    const Variation &variation, const Shift &shift, const bool &is_data, const NanoObjects::NanoObjectCollection &muons,
+    const NanoObjects::NanoObjectCollection &electrons, const NanoObjects::NanoObjectCollection &photons,
+    const NanoObjects::NanoObjectCollection &taus, const NanoObjects::NanoObjectCollection &bjets,
+    const NanoObjects::NanoObjectCollection &jets, const NanoObjects::NanoObject &met)
 {
     // for now, just pass forward
     if (shift == Shift::Nominal || !is_data)

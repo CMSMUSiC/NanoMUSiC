@@ -14,6 +14,7 @@
 #include <range/v3/all.hpp>
 
 using namespace ranges;
+using namespace ROOT::VecOps;
 
 enum HLTPath
 {
@@ -72,40 +73,50 @@ struct TriggerBits
     }
 
     template <typename T1, typename T2>
-    static constexpr std::pair<std::vector<float>, std::vector<float>> get_matches(T1 &&obj1_coll, T2 &&obj2_coll)
+    static constexpr std::pair<RVec<float>, RVec<float>> get_matches(T1 &&trigger_objects, T2 &&nano_objects)
     {
-        auto obj2_coll_size = ranges::distance(obj2_coll.begin(), obj2_coll.end());
-        auto matches_distances = std::vector<float>(obj2_coll_size, std::numeric_limits<float>::max());
-        auto matches_relative_pT = std::vector<float>(obj2_coll_size, std::numeric_limits<float>::max());
-        for (const auto &obj1 : obj1_coll)
+        auto matches_distances = RVec<float>(nano_objects.size, std::numeric_limits<float>::max());
+        auto matches_relative_pT = RVec<float>(nano_objects.size, std::numeric_limits<float>::max());
+
+        auto combinations = Combinations(trigger_objects, nano_objects);
+        auto trigger_idx = combinations[0];
+        auto nano_idx = combinations[1];
+
+        DeltaR(Take(trigger_objects.eta, trigger_idx), Take(trigger_objects.phi, trigger_idx), Take(nano_objects.eta, nano_idx),
+               Take(nano_objects.phi, nano_idx));
+
+        for (std::size_t trigger_idx = 0; trigger_idx < trigger_objects.size; trigger_idx++)
         {
-            for (const auto &idx_obj2 : views::enumerate(obj2_coll))
+            for (std::size_t nano_idx = 0; nano_idx < nano_objects.size; nano_idx++)
             {
-                auto [idx, obj2] = idx_obj2;
-                matches_distances.at(idx) = std::min(NanoObject::DeltaR(obj1, obj2), matches_distances.at(idx));
-                matches_relative_pT.at(idx) = std::min(NanoObject::RelativePt(obj1, obj2), matches_relative_pT.at(idx));
+                matches_distances.at(nano_idx) = std::min(DeltaR(trigger_objects.eta[trigger_idx], nano_objects.eta[nano_idx],
+                                                                 trigger_objects.phi[trigger_idx], nano_objects.phi[nano_idx]),
+                                                          matches_distances.at(nano_idx));
+                matches_relative_pT.at(nano_idx) =
+                    std::min(std::fabs(trigger_objects.pt[trigger_idx] - nano_objects.pt[nano_idx]) / (nano_objects.pt[nano_idx]),
+                             matches_relative_pT.at(nano_idx));
             }
         }
         return std::make_pair(matches_distances, matches_relative_pT);
     }
 
     template <typename T1, typename T2>
-    static constexpr std::tuple<bool, float, float, float> trigger_matcher(T1 trigger_objs, T2 nano_objs, Year &year)
+    static constexpr std::tuple<bool, float, float, float> trigger_matcher(T1 trigger_objs, T2 nano_objects, Year &year)
     {
-        bool _has_match = false;
-        float _trigger_sf_nominal = 1.0;
-        float _trigger_sf_up = 1.0;
-        float _trigger_sf_down = 1.0;
-        auto [matches_distances, matches_rel_pT] = TriggerBits::get_matches(trigger_objs, nano_objs);
+        bool has_match = false;
+        float trigger_sf_nominal = 1.0;
+        float trigger_sf_up = 1.0;
+        float trigger_sf_down = 1.0;
+        auto [matches_distances, matches_rel_pT] = TriggerBits::get_matches(trigger_objs, nano_objects);
         if (MUSiCTools::MinElem(matches_distances).value_or(std::numeric_limits<float>::max()) <
             ObjConfig::Muons[year].MaxDeltaRTriggerMatch)
         {
-            _has_match = true;
+            has_match = true;
             //////////////////////////////////////////////////////////////
             // FIX ME: Here it should evaluate the trigger SF.
             //////////////////////////////////////////////////////////////
         }
-        return std::make_tuple(_has_match, _trigger_sf_nominal, _trigger_sf_up, _trigger_sf_down);
+        return std::make_tuple(has_match, trigger_sf_nominal, trigger_sf_up, trigger_sf_down);
     }
 
     // Run2017 configurations

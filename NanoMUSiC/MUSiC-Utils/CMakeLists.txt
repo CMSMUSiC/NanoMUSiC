@@ -8,6 +8,7 @@ target_compile_options(TEventClass PUBLIC
         -MP
         -O3
         -Wall
+        -march=native 
         -fPIC
         -fsignaling-nans
         -funsafe-math-optimizations

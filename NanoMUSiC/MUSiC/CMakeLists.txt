@@ -27,6 +27,7 @@ target_compile_options(MUSiCEvent PUBLIC
         -MP
         -O3
         -Wall
+        -march=native 
         -fPIC
         -fsignaling-nans
         -funsafe-math-optimizations
@@ -59,7 +60,8 @@ install(TARGETS MUSiCEvent DESTINATION ${CMAKE_SOURCE_DIR}/lib)
 # nano_music (classification)
 add_executable(nano_music NanoMUSiC.cpp external/roccor/RoccoR.cc )
 # target_link_libraries(nano_music LINK_PUBLIC PxlAnalyzer TEventClass MUSiCEvent)
-target_link_libraries(nano_music LINK_PUBLIC MUSiCEvent NanoAODReader)
+#target_link_libraries(nano_music LINK_PUBLIC MUSiCEvent NanoAODReader)
+target_link_libraries(nano_music LINK_PUBLIC MUSiCEvent)
 install(TARGETS nano_music DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 
 # MC
