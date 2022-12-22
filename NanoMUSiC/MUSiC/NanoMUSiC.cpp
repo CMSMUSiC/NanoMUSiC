@@ -92,6 +92,8 @@ int main(int argc, char *argv[])
     // const auto max_events = run_config.get<int>("max_events");
     // const auto number_of_events_to_skip = run_config.get<int>("number_of_events_to_skip");
     const auto is_data = run_config.get<bool>("is_data");
+    const auto is_crab_job = run_config.get<bool>("is_crab_job");
+
     // const auto debug = run_config.get<int>("debug");
     const auto x_section_file = MUSiCTools::parse_and_expand_music_base(run_config.get<std::string>("x_section_file"));
     const auto run_hash = run_config.get<std::string>("hash");
@@ -182,8 +184,12 @@ int main(int argc, char *argv[])
     for (std::size_t i = 0; i < n_threads; i++)
     {
         // output file
-        const auto output_file_name =
+        std::string output_file_name =
             "nano_music_" + process + "_" + year_str + "_" + process_hash + "_" + std::to_string(i) + ".root";
+        if (is_crab_job)
+        {
+            output_file_name = "nano_music_" + process + "_" + year_str + "_" + std::to_string(i) + ".root ";
+        }
         output_file_vec.at(i) = std::unique_ptr<TFile>(TFile::Open(output_file_name.c_str(), "RECREATE"));
 
         // output tree
@@ -425,9 +431,14 @@ int main(int argc, char *argv[])
                 // string and write it to the the outputfile.classes
                 for (std::size_t i = 0; i < classes_vec.at(slot).size(); i++)
                 {
-                    const auto output_file_name =
-                        "nano_music_" + process + "_" + year_str + "_" + process_hash + "_" + std::to_string(i);
-                    save_class_storage(classes_vec.at(slot).at(i), output_file_name, slot, i);
+                    std::string output_file_name = "nano_music_" + process + "_" + year_str + "_" + process_hash + "_" +
+                                                   std::to_string(i) + "_" + std::to_string(slot) + ".classes";
+                    if (is_crab_job)
+                    {
+                        output_file_name = "nano_music_" + process + "_" + year_str + "_" + std::to_string(i) + "_" +
+                                           std::to_string(slot) + ".classes";
+                    }
+                    save_class_storage(classes_vec.at(slot).at(i), output_file_name);
                 }
             },
             i_slot));

@@ -77,8 +77,6 @@ using namespace ranges;
 using namespace ROOT::Math;
 using namespace ROOT::VecOps;
 
-using OptionalFuture_t = std::optional<std::future<std::unique_ptr<TFile>>>;
-
 std::string_view get_data_stream(const std::string_view &dataset)
 {
     auto s = std::string(dataset);
@@ -88,6 +86,7 @@ std::string_view get_data_stream(const std::string_view &dataset)
 }
 
 // (async) TFile download
+using OptionalFuture_t = std::optional<std::future<std::unique_ptr<TFile>>>;
 std::unique_ptr<TFile> file_loader(const std::string &file_path, const bool cacheread, const std::string &cache_dir,
                                    const bool verbose_load)
 {
@@ -137,8 +136,7 @@ std::string get_hash256(const std::string &input_string)
     return picosha2::hash256_hex_string(input_string);
 }
 
-void save_class_storage(const std::set<unsigned long> &classes, std::string output_file_name, unsigned int slot,
-                        unsigned int index)
+void save_class_storage(const std::set<unsigned long> &classes, std::string output_file_name)
 {
     // expected number of elements: (7*2 + 1) * classes.size()
     // 7 types of objects
@@ -151,7 +149,7 @@ void save_class_storage(const std::set<unsigned long> &classes, std::string outp
     // this will remove the leading comma in the begining of the string
     str_class_storage.erase(0, 1);
 
-    output_file_name = output_file_name.append(std::to_string(index) + "_" + std::to_string(slot) + ".classes");
+    output_file_name = output_file_name;
     std::ofstream out(output_file_name);
     out << str_class_storage;
     out.close();

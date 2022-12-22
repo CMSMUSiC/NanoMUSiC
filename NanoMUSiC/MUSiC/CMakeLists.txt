@@ -27,7 +27,6 @@ target_compile_options(MUSiCEvent PUBLIC
         -MP
         -O3
         -Wall
-        -march=native 
         -fPIC
         -fsignaling-nans
         -funsafe-math-optimizations

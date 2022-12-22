@@ -16,7 +16,7 @@ export CMAKE_GENERATOR=Ninja
 export MUSIC_BASE=$SCRIPTDIR
 
 # Set dummy SCRAM_ARCH. needed for LHAPDF.
-export SCRAM_ARCH=slc7_amd64_gcc11
+export SCRAM_ARCH=slc7_amd64_gcc12
 
 # This is a TAPAS set_env script. Source it before usage of TAPAS.
 export LD_LIBRARY_PATH=$SCRIPTDIR/lib:$LD_LIBRARY_PATH
@@ -58,7 +58,5 @@ cd $SCRIPTDIR
 # set PATH
 export PATH=$PATH:$SCRIPTDIR/bin;
 export PATH=$PATH:$SCRIPTDIR/scripts;
+# export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-CRAB;
 
-# control whether MUSiC envs are set
-# to be used by Makefile
-export MUSIC_IS_SET_ENV=1
