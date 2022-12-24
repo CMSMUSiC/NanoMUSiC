@@ -1,0 +1,230 @@
+# Debug levels are:
+#    - 0: Display only ERRORS/EXCEPTIONS
+#    - 1: Display also WARNINGS
+#    - 2: Display also INFO
+#    - 3: Display also DEBUG
+#    - 4: Display also verbose DEBUG
+
+# By default, debug = 1, means only WARNINGS will be displayed.
+# (ERRORS should always be handled with help of exceptions!)
+
+# The debug information is meant to be written to stderr.
+# Additionally there is "normal" program output that goes to stdout.
+
+# The output formatting should be the following:
+# "[<LEVEL>] (<invoking_class>): <message>"
+# e.g.:
+# "[DEBUG] (ParticleMatcher): Something's fishy!"
+# Please keep to that.
+
+output = 'test_mc_2017'
+debug = 1
+max_events = -1
+number_of_events_to_skip = 0
+is_data = false                                    # Is Data?
+x_section_file = '$MUSIC_BASE/configs/xsections_and_lumi/x_sections.toml'
+year = '2017'
+# output_file = '' # if empty, constructed from process
+process = 'DYJetsToLL_M-50_13TeV_AM'
+dataset = '/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM'
+hash = 'dummyhash'
+cacheread = true
+is_crab_job = false
+max_file_load_error_rate = 0.15 # max fraction of file load error (only for MC)
+n_threads = 121
+
+# input_files = [
+#     '/home/home1/institut_3a/silva/projects/NanoMUSiC_Test_Data/DY_2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+#     # '/home/home1/institut_3a/silva/projects/NanoMUSiC_Test_Data/DY_2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+#     # '/home/home1/institut_3a/silva/projects/NanoMUSiC_Test_Data/DY_2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+# ]
+
+# input_files = [
+#     'root://xrootd-cms.infn.it///store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/100000/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+#     'root://xrootd-cms.infn.it///store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/100000/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+#     'root://xrootd-cms.infn.it///store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/230000/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+# ]
+
+input_files = [
+    '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    ]
+
+
+# input_files = [
+#     '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+#     '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+#     '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+# ]
+
+# input_files = [
+#     'root://xrootd-cms.infn.it///store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/100000/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+#     'root://xrootd-cms.infn.it///store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/100000/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+#     'root://xrootd-cms.infn.it///store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/230000/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+# ]
+# input_files = [
+#     'root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/100000/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
+#     'root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/100000/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+#     'root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/230000/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+# ]
+

@@ -178,6 +178,7 @@ int main(int argc, char *argv[])
     const std::string process_hash = get_hash256(std::accumulate(input_files.begin(), input_files.end(), std::string("")));
     auto output_file_vec = std::vector<std::unique_ptr<TFile>>(n_threads);
     auto output_tree_vec = std::vector<std::unique_ptr<TTree>>(n_threads);
+
     auto music_event_vec = std::vector<MUSiCEvent>(n_threads);
     auto cutflow_histos_vec = std::vector<std::array<TH1F, total_variations_and_shifts>>(n_threads);
     auto classes_vec = std::vector<std::array<std::set<unsigned long>, total_variations_and_shifts>>(n_threads);
@@ -188,7 +189,7 @@ int main(int argc, char *argv[])
             "nano_music_" + process + "_" + year_str + "_" + process_hash + "_" + std::to_string(i) + ".root";
         if (is_crab_job)
         {
-            output_file_name = "nano_music_" + process + "_" + year_str + "_" + std::to_string(i) + ".root ";
+            output_file_name = "nano_music.root";
         }
         output_file_vec.at(i) = std::unique_ptr<TFile>(TFile::Open(output_file_name.c_str(), "RECREATE"));
 
@@ -208,7 +209,7 @@ int main(int argc, char *argv[])
     }
 
     // output storages
-    std::cout << def << "[Initializing] Temporary output storages ..." << def << std::endl;
+    std::cout << def << "[ Initializing ] Temporary output storages ..." << def << std::endl;
     using EventProcessResult_t = std::array<EventData, total_variations_and_shifts>;
     auto process_results = RVec<RVec<EventProcessResult_t>>(n_threads);
 
@@ -325,7 +326,25 @@ int main(int argc, char *argv[])
                                      .fill_event_content()
                                      .has_any_content_filter();
                          });
-        process_results.at(slot).push_back(_process_result_buffer);
+        //  write to tree
+        // process_results.at(slot).push_back(_process_result_buffer);
+        for (std::size_t idx_variation = 0; idx_variation < _process_result_buffer.size(); idx_variation++)
+        {
+            auto res = _process_result_buffer.at(idx_variation);
+            if (res)
+            {
+                music_event_vec.at(slot) = MUSiCEvent{};
+                music_event_vec.at(slot).run = res.event_info.run;
+                music_event_vec.at(slot).lumi_section = res.event_info.lumi;
+                music_event_vec.at(slot).event_number = res.event_info.event;
+                music_event_vec.at(slot).trigger_bits = res.trigger_bits.as_ulong();
+                music_event_vec.at(slot).fill(std::move(res.event_content), idx_variation);
+
+                classes_vec.at(slot).at(idx_variation).merge(res.classes);
+            }
+        }
+        // save data into output tree
+        output_tree_vec.at(slot)->Fill();
     };
 
     std::cout << " " << std::endl;
@@ -339,8 +358,10 @@ int main(int argc, char *argv[])
         unsigned int processed_events_counter = 0;
         while (run_monitoring)
         {
-            // will sleep for 5s
+            // will sleep for 5 sec
             std::this_thread::sleep_for(5000ms);
+
+            // loop over threads and count the number of processed events
             for (std::size_t i_slot = 0; i_slot < n_threads; i_slot++)
             {
                 {
@@ -350,9 +371,10 @@ int main(int argc, char *argv[])
             }
 
             double dTime2 = getCpuTime();
-            std::cout << "[ Performance Monitoring ] Analyzed " << processed_events_counter << " events"
+            std::cout << "\n[ Performance Monitoring ] Analyzed " << processed_events_counter << " events"
                       << ", elapsed CPU time: " << dTime2 - dTime1 << "sec ("
                       << double(processed_events_counter) / (dTime2 - dTime1) << " evts per sec)" << std::endl;
+            PrintProcessInfo();
             processed_events_counter = 0;
         }
     });
@@ -399,26 +421,6 @@ int main(int argc, char *argv[])
     {
         output_writers.push_back(std::thread(
             [&](auto slot) {
-                for (std::size_t i_evt = 0; i_evt < process_results.at(slot).size(); i_evt++)
-                {
-                    for (std::size_t idx = 0; idx < process_results.at(slot).at(i_evt).size(); idx++)
-                    {
-                        auto res = process_results.at(slot).at(i_evt).at(idx);
-                        if (res)
-                        {
-                            music_event_vec.at(slot).run = res.event_info.run;
-                            music_event_vec.at(slot).lumi_section = res.event_info.lumi;
-                            music_event_vec.at(slot).event_number = res.event_info.event;
-                            music_event_vec.at(slot).trigger_bits = res.trigger_bits.as_ulong();
-                            music_event_vec.at(slot).fill(std::move(res.event_content), idx);
-
-                            classes_vec.at(slot).at(idx).merge(res.classes);
-                        }
-                    }
-                    // save data into output tree
-                    output_tree_vec.at(slot)->Fill();
-                }
-
                 // write outputs to disk
                 output_file_vec.at(slot)->cd();
                 output_tree_vec.at(slot)->Write();

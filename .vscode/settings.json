@@ -146,5 +146,9 @@
   "editor.suggest.localityBonus": true,
   "editor.wordBasedSuggestionsMode": "allDocuments",
   "rootFileViewer.darkMode": true,
-  "simpleBrowser.focusLockIndicator.enabled": true
+  "simpleBrowser.focusLockIndicator.enabled": true,
+  "python.analysis.typeCheckingMode": "basic",
+  "python.formatting.blackArgs": [
+    "--quiet"
+  ]
 }
