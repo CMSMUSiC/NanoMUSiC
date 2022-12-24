@@ -1,22 +1,3 @@
-# Debug levels are:
-#    - 0: Display only ERRORS/EXCEPTIONS
-#    - 1: Display also WARNINGS
-#    - 2: Display also INFO
-#    - 3: Display also DEBUG
-#    - 4: Display also verbose DEBUG
-
-# By default, debug = 1, means only WARNINGS will be displayed.
-# (ERRORS should always be handled with help of exceptions!)
-
-# The debug information is meant to be written to stderr.
-# Additionally there is "normal" program output that goes to stdout.
-
-# The output formatting should be the following:
-# "[<LEVEL>] (<invoking_class>): <message>"
-# e.g.:
-# "[DEBUG] (ParticleMatcher): Something's fishy!"
-# Please keep to that.
-
 debug = 1
 output = 'test_data_2017'
 max_events = -1
@@ -29,6 +10,7 @@ process = 'SingleMuonX_2017'
 dataset = '/SingleMuonX/bar/abc/NANOAOD'
 hash = 'dummyhash'
 cacheread = true
+is_crab_job = false
 max_file_load_error_rate = 0.15 # max fraction of file load error (only for MC)
 n_threads = 21
 

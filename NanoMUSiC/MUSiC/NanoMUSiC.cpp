@@ -230,7 +230,7 @@ int main(int argc, char *argv[])
     auto process_results = RVec<RVec<EventProcessResult_t>>(n_threads);
 
     // load RDataFrame
-    std::vector<std::string> colls = {
+    std::vector<std::string> columns = {
         // event info
         "run", "luminosityBlock", "event", "Pileup_nTrueInt", "genWeight", "PV_npvsGood", "Flag_goodVertices",
         "Flag_globalSuperTightHalo2016Filter", "Flag_HBHENoiseFilter", "Flag_HBHENoiseIsoFilter",
@@ -256,7 +256,15 @@ int main(int argc, char *argv[])
         "MET_pt", "MET_phi"
 
     };
-    auto df = ROOT::RDataFrame("Events", input_files, colls);
+
+    // clean Data columns
+    if (is_data)
+    {
+        columns.erase(std::remove(columns.begin(), columns.end(), "genWeight"), columns.end());
+        columns.erase(std::remove(columns.begin(), columns.end(), "Pileup_nTrueInt"), columns.end());
+    }
+
+    auto df = ROOT::RDataFrame("Events", input_files, columns);
     //////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////       [ BEGIN ]      //////////////////////////////////////
@@ -363,6 +371,115 @@ int main(int argc, char *argv[])
         output_tree_vec.at(slot)->Fill();
     };
 
+    auto event_processor_MC =
+        [&](unsigned int slot,
+            // event info
+            const UInt_t &run, const UInt_t &lumi, const ULong64_t &event_number, const float &Pileup_nTrueInt,
+            const float &genWeight, const int &PV_npvsGood, const bool &Flag_goodVertices,
+            const bool &Flag_globalSuperTightHalo2016Filter, const bool &Flag_HBHENoiseFilter,
+            const bool &Flag_HBHENoiseIsoFilter, const bool &Flag_EcalDeadCellTriggerPrimitiveFilter,
+            const bool &Flag_BadPFMuonFilter, const bool &Flag_BadPFMuonDzFilter, const bool &Flag_eeBadScFilter,
+            const bool &Flag_ecalBadCalibFilter, const bool &HLT_IsoMu27, const bool &HLT_Mu50, const bool &HLT_TkMu100,
+            const bool &HLT_OldMu100,
+
+            // muons
+            const RVec<float> &Muon_pt, const RVec<float> &Muon_eta, const RVec<float> &Muon_phi, const RVec<bool> &Muon_tightId,
+            const RVec<UChar_t> &Muon_highPtId, const RVec<float> &Muon_pfRelIso03_all, const RVec<float> &Muon_tkRelIso,
+
+            // electrons
+            const RVec<float> &Electron_pt, const RVec<float> &Electron_eta, const RVec<float> &Electron_phi,
+
+            // photons
+            const RVec<float> &Photon_pt, const RVec<float> &Photon_eta, const RVec<float> &Photon_phi,
+
+            // taus
+            const RVec<float> &Tau_pt, const RVec<float> &Tau_eta, const RVec<float> &Tau_phi,
+
+            // jets
+            const RVec<float> &Jet_pt, const RVec<float> &Jet_eta, const RVec<float> &Jet_phi,
+
+            // met
+            const float &MET_pt, const float &MET_phi) {
+            event_processor(slot,
+                            // event info
+                            run, lumi, event_number, Pileup_nTrueInt, genWeight, PV_npvsGood, Flag_goodVertices,
+                            Flag_globalSuperTightHalo2016Filter, Flag_HBHENoiseFilter, Flag_HBHENoiseIsoFilter,
+                            Flag_EcalDeadCellTriggerPrimitiveFilter, Flag_BadPFMuonFilter, Flag_BadPFMuonDzFilter,
+                            Flag_eeBadScFilter, Flag_ecalBadCalibFilter, HLT_IsoMu27, HLT_Mu50, HLT_TkMu100, HLT_OldMu100,
+
+                            // muons
+                            Muon_pt, Muon_eta, Muon_phi, Muon_tightId, Muon_highPtId, Muon_pfRelIso03_all, Muon_tkRelIso,
+
+                            // electrons
+                            Electron_pt, Electron_eta, Electron_phi,
+
+                            // photons
+                            Photon_pt, Photon_eta, Photon_phi,
+
+                            // taus
+                            Tau_pt, Tau_eta, Tau_phi,
+
+                            // jets
+                            Jet_pt, Jet_eta, Jet_phi,
+
+                            // met
+                            MET_pt, MET_phi);
+        };
+
+    auto event_processor_Data =
+        [&](unsigned int slot,
+            // event info
+            const UInt_t &run, const UInt_t &lumi, const ULong64_t &event_number, const int &PV_npvsGood,
+            const bool &Flag_goodVertices, const bool &Flag_globalSuperTightHalo2016Filter, const bool &Flag_HBHENoiseFilter,
+            const bool &Flag_HBHENoiseIsoFilter, const bool &Flag_EcalDeadCellTriggerPrimitiveFilter,
+            const bool &Flag_BadPFMuonFilter, const bool &Flag_BadPFMuonDzFilter, const bool &Flag_eeBadScFilter,
+            const bool &Flag_ecalBadCalibFilter, const bool &HLT_IsoMu27, const bool &HLT_Mu50, const bool &HLT_TkMu100,
+            const bool &HLT_OldMu100,
+
+            // muons
+            const RVec<float> &Muon_pt, const RVec<float> &Muon_eta, const RVec<float> &Muon_phi, const RVec<bool> &Muon_tightId,
+            const RVec<UChar_t> &Muon_highPtId, const RVec<float> &Muon_pfRelIso03_all, const RVec<float> &Muon_tkRelIso,
+
+            // electrons
+            const RVec<float> &Electron_pt, const RVec<float> &Electron_eta, const RVec<float> &Electron_phi,
+
+            // photons
+            const RVec<float> &Photon_pt, const RVec<float> &Photon_eta, const RVec<float> &Photon_phi,
+
+            // taus
+            const RVec<float> &Tau_pt, const RVec<float> &Tau_eta, const RVec<float> &Tau_phi,
+
+            // jets
+            const RVec<float> &Jet_pt, const RVec<float> &Jet_eta, const RVec<float> &Jet_phi,
+
+            // met
+            const float &MET_pt, const float &MET_phi) {
+            event_processor(slot,
+                            // event info
+                            run, lumi, event_number, 1., 1., PV_npvsGood, Flag_goodVertices, Flag_globalSuperTightHalo2016Filter,
+                            Flag_HBHENoiseFilter, Flag_HBHENoiseIsoFilter, Flag_EcalDeadCellTriggerPrimitiveFilter,
+                            Flag_BadPFMuonFilter, Flag_BadPFMuonDzFilter, Flag_eeBadScFilter, Flag_ecalBadCalibFilter,
+                            HLT_IsoMu27, HLT_Mu50, HLT_TkMu100, HLT_OldMu100,
+
+                            // muons
+                            Muon_pt, Muon_eta, Muon_phi, Muon_tightId, Muon_highPtId, Muon_pfRelIso03_all, Muon_tkRelIso,
+
+                            // electrons
+                            Electron_pt, Electron_eta, Electron_phi,
+
+                            // photons
+                            Photon_pt, Photon_eta, Photon_phi,
+
+                            // taus
+                            Tau_pt, Tau_eta, Tau_phi,
+
+                            // jets
+                            Jet_pt, Jet_eta, Jet_phi,
+
+                            // met
+                            MET_pt, MET_phi);
+        };
+
     std::cout << " " << std::endl;
     std::cout << green << "Starting Classification ..." << def << std::endl;
     std::cout << " " << std::endl;
@@ -396,7 +513,14 @@ int main(int argc, char *argv[])
     });
 
     std::cout << green << "\nLaunching event loop ..." << def << std::endl;
-    // df.ForeachSlot(event_processor, colls);
+    if (is_data)
+    {
+        df.ForeachSlot(event_processor_Data, columns);
+    }
+    else
+    {
+        df.ForeachSlot(event_processor_MC, columns);
+    }
     run_monitoring = false;
     monitoring_thread.join();
     std::cout << green << "Event loop done ..." << def << std::endl;
