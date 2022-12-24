@@ -122,7 +122,7 @@ TH1F imp_make_cutflow_histo(int index)
     }
     else
     {
-        histo_name = "cutflow_histo" + std::to_string(index);
+        histo_name = "cutflow_histo_" + std::to_string(index);
     }
 
     auto cutflow_histo = TH1F(histo_name.c_str(), histo_name.c_str(), CutFlow::kTotalCuts, -0.5, CutFlow::kTotalCuts + 0.5);

@@ -52,7 +52,7 @@ def print_colored(status):
     else: 
         return f"{status.capitalize()}"
 
-def monitor(dir, idx):
+def monitor(dir, idx, total_task):
     with suppress_stdout():
         res = crabCommand("status", dir=dir)
 
@@ -63,7 +63,8 @@ def monitor(dir, idx):
     monitoring_url = f"https://cmsweb.cern.ch/crabserver/ui/task/{proxiedWebDir}"
     if idx == 0:
         clear()
-    print(f"\n{bcolors.HEADER}{'='*20}{bcolors.ENDC}")
+    
+    print(f"\n{bcolors.HEADER}===================={bcolors.ENDC}{bcolors.BOLD} CRAB Task: [{idx+1}/{total_task}] {bcolors.ENDC}{bcolors.ENDC}{bcolors.HEADER}===================={bcolors.ENDC}")
     print(f"Task directory: {bcolors.BOLD}{dir}{bcolors.ENDC}")
     print(f"Input Dataset: {bcolors.BOLD}{inputDataset}{bcolors.ENDC}")
     print(f"Task status: {print_colored(task_status)}")
@@ -75,11 +76,28 @@ def monitor(dir, idx):
         print(f"{bcolors.WARNING}Resubmit command:{bcolors.ENDC}")
         print(f"crab resubmit -d {dir}")
     
+def next_command():
+    next_cmd = "invalid"
+    while next_cmd == "invalid":
+        cmd = input(f"{bcolors.BOLD}\nCommand: (q) quit - (<ENTER>) reload{bcolors.ENDC}: ")
+        if cmd == "q":
+            exit(0)
+        elif cmd == "r":
+            print("Reloading ...")
+            return "reload"
+        else:
+            print("[ ERROR ] Invalid option.")
+
 def main():
     while(True):
         for idx, dir in enumerate(get_crab_dirs()):
-            monitor(dir, idx)
-        sleep(5)
+            monitor(dir, idx, len(get_crab_dirs()))
+        if next_command() == "reload":
+            pass
+
+
+            
+        
 
 if __name__=="__main__":
     main()

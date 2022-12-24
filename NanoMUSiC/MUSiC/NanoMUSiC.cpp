@@ -149,6 +149,9 @@ int main(int argc, char *argv[])
     // save other configs with output
     system(("cp " + x_section_file + " . ").c_str());
 
+    // copy rootlogon.C
+    system(("cp " + MUSiCTools::parse_and_expand_music_base("$MUSIC_BASE/rootlogon.C") + " . ").c_str());
+
     // Init the run config
     std::cout << " " << std::endl;
     std::cout << green << "Initializing ..." << def << std::endl;
@@ -178,34 +181,47 @@ int main(int argc, char *argv[])
     const std::string process_hash = get_hash256(std::accumulate(input_files.begin(), input_files.end(), std::string("")));
     auto output_file_vec = std::vector<std::unique_ptr<TFile>>(n_threads);
     auto output_tree_vec = std::vector<std::unique_ptr<TTree>>(n_threads);
+    auto classes_tree_vec = std::vector<std::unique_ptr<TTree>>(n_threads);
 
     auto music_event_vec = std::vector<MUSiCEvent>(n_threads);
     auto cutflow_histos_vec = std::vector<std::array<TH1F, total_variations_and_shifts>>(n_threads);
     auto classes_vec = std::vector<std::array<std::set<unsigned long>, total_variations_and_shifts>>(n_threads);
-    for (std::size_t i = 0; i < n_threads; i++)
+    auto classes_to_save_vec = std::vector<std::vector<unsigned long>>(n_threads);
+    auto number_of_classes_vec = std::vector<unsigned long>(n_threads);
+    auto variation_id_vec = std::vector<unsigned int>(n_threads);
+
+    for (std::size_t slot = 0; slot < n_threads; slot++)
     {
         // output file
         std::string output_file_name =
-            "nano_music_" + process + "_" + year_str + "_" + process_hash + "_" + std::to_string(i) + ".root";
+            "nano_music_" + process + "_" + year_str + "_" + process_hash + "_" + std::to_string(slot) + ".root";
         if (is_crab_job)
         {
             output_file_name = "nano_music.root";
         }
-        output_file_vec.at(i) = std::unique_ptr<TFile>(TFile::Open(output_file_name.c_str(), "RECREATE"));
+        output_file_vec.at(slot) = std::unique_ptr<TFile>(TFile::Open(output_file_name.c_str(), "RECREATE"));
 
         // output tree
         std::ifstream t(run_config_file);
         std::stringstream output_tree_title;
         output_tree_title << t.rdbuf();
-        output_tree_vec.at(i) = std::make_unique<TTree>("nano_music", output_tree_title.str().c_str());
-        output_tree_vec.at(i)->SetDirectory(output_file_vec.at(i).get());
+        output_tree_vec.at(slot) = std::make_unique<TTree>("nano_music", output_tree_title.str().c_str());
+        output_tree_vec.at(slot)->SetDirectory(output_file_vec.at(slot).get());
+
+        // classes tree
+        classes_tree_vec.at(slot) = std::make_unique<TTree>(
+            "nano_music_classes", "Classes tree: each entry corresponds to a variation. and each is a class.");
+        classes_tree_vec.at(slot)->SetDirectory(output_file_vec.at(slot).get());
 
         // tree branches
-        music_event_vec.at(i) = MUSiCEvent{};
-        output_tree_vec.at(i)->Branch("music_event", &(music_event_vec.at(i)), 256000, 99);
+        music_event_vec.at(slot) = MUSiCEvent{};
+        output_tree_vec.at(slot)->Branch("music_event", &(music_event_vec.at(slot)), 256000, 99);
+        classes_tree_vec.at(slot)->Branch("classes", &(classes_to_save_vec.at(slot)));
+        classes_tree_vec.at(slot)->Branch("nClasses", &(number_of_classes_vec.at(slot)));
+        classes_tree_vec.at(slot)->Branch("variation_id", &(variation_id_vec.at(slot)));
 
         // cutflow histo
-        cutflow_histos_vec.at(i) = make_cutflow_histos(output_file_vec.at(i).get());
+        cutflow_histos_vec.at(slot) = make_cutflow_histos(output_file_vec.at(slot).get());
     }
 
     // output storages
@@ -358,8 +374,8 @@ int main(int argc, char *argv[])
         unsigned int processed_events_counter = 0;
         while (run_monitoring)
         {
-            // will sleep for 5 sec
-            std::this_thread::sleep_for(5000ms);
+            // will sleep for 10 sec
+            std::this_thread::sleep_for(10000ms);
 
             // loop over threads and count the number of processed events
             for (std::size_t i_slot = 0; i_slot < n_threads; i_slot++)
@@ -380,7 +396,7 @@ int main(int argc, char *argv[])
     });
 
     std::cout << green << "\nLaunching event loop ..." << def << std::endl;
-    df.ForeachSlot(event_processor, colls);
+    // df.ForeachSlot(event_processor, colls);
     run_monitoring = false;
     monitoring_thread.join();
     std::cout << green << "Event loop done ..." << def << std::endl;
@@ -403,18 +419,13 @@ int main(int argc, char *argv[])
 
     if (Sum(event_counter) == 0)
     {
-        std::cout << "Error: No event analyzed!" << std::endl;
-        throw std::runtime_error("No event analyzed!");
+        std::cout << "Error: No event was analyzed!" << std::endl;
+        throw std::runtime_error("No event was analyzed!");
     }
 
     std::cout << "\n" << std::endl;
 
     // writes data to disk
-    // output_file_vec
-    // output_tree_vec
-    // music_event_vec
-    // cutflow_histos_vec
-    // classes_vec
     std::cout << yellow << "[ Finalizing ] Output file, cutflow and tree ..." << def << std::endl;
     std::vector<std::thread> output_writers;
     for (std::size_t i_slot = 0; i_slot < n_threads; i_slot++)
@@ -429,19 +440,18 @@ int main(int argc, char *argv[])
                     histo.Write();
                 }
 
-                // convert the std::list of classes that were touched to a comma separated
-                // string and write it to the the outputfile.classes
-                for (std::size_t i = 0; i < classes_vec.at(slot).size(); i++)
+                // convert the std::set<unsigned long> of classes that were touched a std::vector<unsigned long>
+                for (std::size_t idx_var = 0; idx_var < classes_vec.at(slot).size(); idx_var++)
                 {
-                    std::string output_file_name = "nano_music_" + process + "_" + year_str + "_" + process_hash + "_" +
-                                                   std::to_string(i) + "_" + std::to_string(slot) + ".classes";
-                    if (is_crab_job)
-                    {
-                        output_file_name = "nano_music_" + process + "_" + year_str + "_" + std::to_string(i) + "_" +
-                                           std::to_string(slot) + ".classes";
-                    }
-                    save_class_storage(classes_vec.at(slot).at(i), output_file_name);
+                    classes_to_save_vec.at(slot) = std::vector<unsigned long>(classes_vec.at(slot).at(idx_var).begin(),
+                                                                              classes_vec.at(slot).at(idx_var).end());
+                    number_of_classes_vec.at(slot) = classes_to_save_vec.at(slot).size();
+                    variation_id_vec.at(slot) = idx_var;
+                    classes_tree_vec.at(slot)->Fill();
                 }
+                // saves into the output root file
+                output_file_vec.at(slot)->cd();
+                classes_tree_vec.at(slot)->Write();
             },
             i_slot));
     }
