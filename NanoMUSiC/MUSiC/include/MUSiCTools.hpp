@@ -297,20 +297,6 @@ inline std::string AbsolutePath(Path const &path)
     return complete(AbsPath).string();
 }
 
-// Helper function to get a integer iterator
-template <typename T = UInt_t>
-auto index_range(const int &from, const int &to)
-{
-    using namespace ranges;
-    return views::ints(from, to) | views::transform([](auto i) { return static_cast<T>(std::make_unsigned_t<int>(i)); });
-}
-
-template <typename T = UInt_t>
-auto index_range(const int &to)
-{
-    return index_range<T>(0, to);
-}
-
 std::string parse_and_expand_music_base(std::string_view path)
 {
     return std::regex_replace(std::string(path), std::regex("\\$MUSIC_BASE"), std::string(std::getenv("MUSIC_BASE")));

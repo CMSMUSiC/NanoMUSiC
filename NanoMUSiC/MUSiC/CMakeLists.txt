@@ -13,16 +13,16 @@ target_compile_options(NanoAODReader PUBLIC -g -c -O3)
 
 #################################################
 #################################################
-# MUSiCEvent
+# Outputs
 #################################################
 #################################################
 
-add_library(MUSiCEvent SHARED
-        include/MUSiCEvent.hpp
+add_library(Outputs SHARED
+        include/Outputs.hpp
 )
 
-target_include_directories(MUSiCEvent PUBLIC ./)
-target_compile_options(MUSiCEvent PUBLIC
+target_include_directories(Outputs PUBLIC ./)
+target_compile_options(Outputs PUBLIC
         -MD
         -MP
         -O3
@@ -41,15 +41,15 @@ target_compile_options(MUSiCEvent PUBLIC
         -ffloat-store
 )
 
-target_link_options(MUSiCEvent PRIVATE -lz -fno-associative-math)
+target_link_options(Outputs PRIVATE -lz -fno-associative-math)
 
-message(STATUS "Generating MUSiCEvent dictionaries ...")
-ROOT_GENERATE_DICTIONARY(MUSiCEventDict include/MUSiCEvent.hpp MODULE MUSiCEvent LINKDEF include/MUSiCEventLinkDef.hpp)
+message(STATUS "Generating Outputs dictionaries ...")
+ROOT_GENERATE_DICTIONARY(OutputsDict include/Outputs.hpp MODULE Outputs LINKDEF include/OutputsLinkDef.hpp)
 message(STATUS "Done.")
 
-install(TARGETS MUSiCEventDict DESTINATION ${CMAKE_SOURCE_DIR}/lib)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libMUSiCEvent_rdict.pcm DESTINATION ${CMAKE_SOURCE_DIR}/lib)
-install(TARGETS MUSiCEvent DESTINATION ${CMAKE_SOURCE_DIR}/lib)
+install(TARGETS OutputsDict DESTINATION ${CMAKE_SOURCE_DIR}/lib)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libOutputs_rdict.pcm DESTINATION ${CMAKE_SOURCE_DIR}/lib)
+install(TARGETS Outputs DESTINATION ${CMAKE_SOURCE_DIR}/lib)
 
 
 # #####################################################
@@ -58,9 +58,9 @@ install(TARGETS MUSiCEvent DESTINATION ${CMAKE_SOURCE_DIR}/lib)
 
 # nano_music (classification)
 add_executable(nano_music NanoMUSiC.cpp external/roccor/RoccoR.cc )
-# target_link_libraries(nano_music LINK_PUBLIC PxlAnalyzer TEventClass MUSiCEvent)
-#target_link_libraries(nano_music LINK_PUBLIC MUSiCEvent NanoAODReader)
-target_link_libraries(nano_music LINK_PUBLIC MUSiCEvent)
+# target_link_libraries(nano_music LINK_PUBLIC PxlAnalyzer TEventClass Outputs)
+#target_link_libraries(nano_music LINK_PUBLIC Outputs NanoAODReader)
+target_link_libraries(nano_music LINK_PUBLIC Outputs)
 install(TARGETS nano_music DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 
 # MC

@@ -4,17 +4,15 @@
 // On: 28.10.2022
 // https://ericniebler.github.io/range-v3
 // https://github.com/ericniebler/range-v3
-// #include <range/v3/algorithm/for_each.hpp>
-// #include <range/v3/numeric/accumulate.hpp>
-// #include <range/v3/view/cartesian_product.hpp>
-// #include <range/v3/view/iota.hpp>
-// #include <range/v3/view/remove_if.hpp>
-// #include <range/v3/view/take.hpp>
-// #include <range/v3/view/transform.hpp>
 #include <range/v3/all.hpp>
 
-#include "MUSiCEvent.hpp"
+#include <fmt/core.h>
+#include <fmt/ostream.h>
+#include <fmt/ranges.h>
+// using fmt::print;
+
 #include "NanoObjects.hpp"
+#include "Outputs.hpp"
 #include "Trigger.hpp"
 
 using namespace ranges;
@@ -41,75 +39,141 @@ class EventData
     RVec<int> good_bjets_mask;
     RVec<int> good_jets_mask;
     RVec<int> good_met_mask;
-    std::set<unsigned long> classes;
-    EventContent event_content;
     bool is_data = true;
     Year year = Year::kTotalYears;
-
-    EventData()
-    {
-    }
+    unsigned int idx_var;
 
     EventData(NanoObjects::EventInfo &&_event_info, NanoObjects::Muons &&_muons, NanoObjects::Electrons &&_electrons,
               NanoObjects::Photons &&_photons, NanoObjects::Taus &&_taus, NanoObjects::BJets &&_bjets, NanoObjects::Jets &&_jets,
-              NanoObjects::MET &&_met, const bool &_is_data, const Year &_year)
+              NanoObjects::MET &&_met, const bool &_is_data, const Year &_year, Variation variation = Variation::Default,
+              Shift shift = Shift::Nominal)
         : is_null(false), event_info(_event_info), muons(_muons), electrons(_electrons), photons(_photons), taus(_taus),
-          bjets(_bjets), jets(_jets), met(_met), is_data(_is_data), year(_year)
+          bjets(_bjets), jets(_jets), met(_met), is_data(_is_data), year(_year),
+          idx_var(variation_and_shift_to_index(variation, shift))
     {
+        if (idx_var < 0 || idx_var > Outputs::kTotalVariationsAndShifts)
+        {
+            throw std::runtime_error("[ERROR] \"idx_var\" is out of range.");
+        }
     }
 
+    // is it a null event
     operator bool() const
     {
-        return is_null;
+        return !is_null;
     }
 
-    // nullify the event
+    // null-ify the event
     void set_null()
     {
         this->is_null = true;
     }
 
-    // unnullify - not sure when/if it would be needed, but...
+    // un-null-ify - not sure when/if it would be needed, but...
     void unset_null()
     {
         this->is_null = true;
     }
 
-    void fill_cutflow_histo(TH1F &cutflow_histo, const CutFlow &cut, const float &weight)
+    void set_variation_and_shift(const Variation &variation, const Shift &shift)
     {
-        cutflow_histo.Fill(cut, weight);
+        this->idx_var = variation_and_shift_to_index(variation, shift);
     }
 
-    void fill_cutflow_histo(std::array<TH1F, total_variations_and_shifts> &cutflow_histos, const CutFlow &cut,
-                            const float &weight)
+    template <typename T>
+    std::string to_string_with_zero_padding(T &value, std::size_t total_length = 2)
     {
-        for (auto histo : cutflow_histos)
+        std::string _str = std::to_string(value);
+        if (_str.length() < total_length)
         {
-            histo.Fill(cut, weight);
+            _str.insert(0, "0");
         }
+        return _str;
     }
 
-    EventData &set_const_weights(Corrector &pu_weight)
+    template <typename T>
+    unsigned long make_class_hash(const T multiplicity)
     {
-        // set generator weight
-        // should be called before any EventData method
-        if (is_data)
+        const auto [n_muons, n_electrons, n_photons, n_taus, n_bjets, n_jets, n_met] = multiplicity;
+        return make_class_hash(n_muons, n_electrons, n_photons, n_taus, n_bjets, n_jets, n_met);
+    }
+
+    unsigned long make_class_hash(const int &n_muons, const int &n_electrons, const int &n_photons, const int &n_taus,
+                                  const int &n_bjets, const int &n_jets, const int &n_met)
+    {
+        return std::stoul("9" + to_string_with_zero_padding(n_muons) + to_string_with_zero_padding(n_electrons) +
+                          to_string_with_zero_padding(n_photons) + to_string_with_zero_padding(n_taus) +
+                          to_string_with_zero_padding(n_bjets) + to_string_with_zero_padding(n_jets) +
+                          to_string_with_zero_padding(n_met));
+    }
+
+    auto make_multiplicity_range(const int &n_muons, const int &n_electrons, const int &n_photons, const int &n_taus,
+                                 const int &n_bjets, const int &n_jets, const int &n_met)
+    {
+        return views::cartesian_product(
+                   views::ints(0, std::min(n_muons, MAX_OBJECTS) + 1), views::ints(0, std::min(n_electrons, MAX_OBJECTS) + 1),
+                   views::ints(0, std::min(n_photons, MAX_OBJECTS) + 1), views::ints(0, std::min(n_taus, MAX_OBJECTS) + 1),
+                   views::ints(0, std::min(n_bjets, MAX_OBJECTS) + 1), views::ints(0, std::min(n_jets, MAX_OBJECTS) + 1),
+                   views::ints(0, std::min(n_met, MAX_OBJECTS) + 1)) |
+               views::remove_if([&](const auto &multiplicity) {
+                   const auto [i_muons, i_electrons, i_photons, i_taus, i_bjets, i_jets, i_met] = multiplicity;
+
+                   // no taus (for now)
+                   if (i_taus > 0)
+                   {
+                       return true;
+                   }
+
+                   // MET filter
+                   if (i_met > 1)
+                   {
+                       return true;
+                   }
+
+                   // at least one muon or one electron
+                   if (i_muons == 0 && i_electrons == 0)
+                   {
+                       return true;
+                   }
+
+                   // no more than MAX_JETS
+                   if (i_jets > MAX_JETS)
+                   {
+                       return true;
+                   }
+
+                   // default --> accepted
+                   return false;
+               });
+    }
+
+    EventData &set_const_weights(Outputs &outputs, Corrector &pu_weight)
+    {
+        if (*this)
         {
-            event_content.event_weight.set(Weight::Generator, 1.);
-            event_content.event_weight.set(Weight::PileUp, 1.);
-        }
-        else
-        {
-            event_content.event_weight.set(Weight::Generator, event_info.genWeight);
-            event_content.event_weight.set(Weight::PileUp, Shift::Nominal, pu_weight({event_info.Pileup_nTrueInt, "nominal"}));
-            event_content.event_weight.set(Weight::PileUp, Shift::Up, pu_weight({event_info.Pileup_nTrueInt, "up"}));
-            event_content.event_weight.set(Weight::PileUp, Shift::Down, pu_weight({event_info.Pileup_nTrueInt, "down"}));
+            // fmt::print("DEBUG - set_const_weights");
+            // set generator weight
+            // should be called before any EventData method
+            if (is_data)
+            {
+                outputs.event_weight[idx_var].set(Weight::Generator, 1.);
+                outputs.event_weight[idx_var].set(Weight::PileUp, 1.);
+            }
+            else
+            {
+                outputs.event_weight[idx_var].set(Weight::Generator, event_info.genWeight.get());
+                outputs.event_weight[idx_var].set(Weight::PileUp, Shift::Nominal,
+                                                  pu_weight({event_info.Pileup_nTrueInt.get(), "nominal"}));
+                outputs.event_weight[idx_var].set(Weight::PileUp, Shift::Up, pu_weight({event_info.Pileup_nTrueInt.get(), "up"}));
+                outputs.event_weight[idx_var].set(Weight::PileUp, Shift::Down,
+                                                  pu_weight({event_info.Pileup_nTrueInt.get(), "down"}));
+            }
+            return *this;
         }
         return *this;
     }
 
-    template <typename T>
-    EventData &generator_filter(T &&cutflow_histo)
+    EventData &generator_filter(Outputs &outputs)
     {
         if (*this)
         {
@@ -125,15 +189,12 @@ class EventData
                     is_good_gen = true;
                 }
             }
-            // if Data
-            else
-            {
-                is_good_gen = true;
-            }
+
             if (is_good_gen)
             {
-                fill_cutflow_histo(std::forward<T>(cutflow_histo), CutFlow::NoCuts, 1.);
-                fill_cutflow_histo(std::forward<T>(cutflow_histo), CutFlow::GeneratorWeight, event_content.event_weight.get());
+                // fmt::print("DEBUG - generator_filter");
+                outputs.fill_default_cutflow_histos(CutFlow::NoCuts, 1.);
+                outputs.fill_default_cutflow_histos(CutFlow::GeneratorWeight, outputs.event_weight[idx_var].get());
                 return *this;
             }
             set_null();
@@ -141,14 +202,14 @@ class EventData
         return *this;
     }
 
-    template <typename T>
-    EventData &run_lumi_filter(T &&cutflow_histo, const RunLumiFilter &run_lumi_filter)
+    EventData &run_lumi_filter(Outputs &outputs, const RunLumiFilter &run_lumi_filter)
     {
         if (*this)
         {
-            if (run_lumi_filter(event_info.run, event_info.lumi, is_data))
+            if (run_lumi_filter(event_info.run.get(), event_info.lumi.get(), is_data))
             {
-                fill_cutflow_histo(std::forward<T>(cutflow_histo), CutFlow::RunLumi, event_content.event_weight.get());
+                // fmt::print("DEBUG - run_lumi_filter");
+                outputs.fill_default_cutflow_histos(CutFlow::RunLumi, outputs.event_weight[idx_var].get());
                 return *this;
             }
             set_null();
@@ -156,14 +217,14 @@ class EventData
         return *this;
     }
 
-    template <typename T>
-    EventData &npv_filter(T &&cutflow_histo)
+    EventData &npv_filter(Outputs &outputs)
     {
         if (*this)
         {
-            if (event_info.PV_npvsGood > 0)
+            if (event_info.PV_npvsGood.get() > 0)
             {
-                fill_cutflow_histo(std::forward<T>(cutflow_histo), CutFlow::nPV, event_content.event_weight.get());
+                // fmt::print("DEBUG - PV_npvsGood");
+                outputs.fill_default_cutflow_histos(CutFlow::nPV, outputs.event_weight[idx_var].get());
                 return *this;
             }
             set_null();
@@ -171,8 +232,7 @@ class EventData
         return *this;
     }
 
-    template <typename T>
-    EventData &met_filter(T &&cutflow_histo)
+    EventData &met_filter(Outputs &outputs)
     {
         if (*this)
         {
@@ -187,39 +247,41 @@ class EventData
             {
                 // clang-format off
                 pass_MET_filters = pass_MET_filters
-                                   && event_info.Flag_goodVertices
-                                   && event_info.Flag_globalSuperTightHalo2016Filter
-                                   && event_info.Flag_HBHENoiseFilter
-                                   && event_info.Flag_HBHENoiseIsoFilter
-                                   && event_info.Flag_EcalDeadCellTriggerPrimitiveFilter
-                                   && event_info.Flag_BadPFMuonFilter
-                                   && event_info.Flag_BadPFMuonDzFilter
-                                   && event_info.Flag_eeBadScFilter;
+                                   && event_info.Flag_goodVertices.get()
+                                   && event_info.Flag_globalSuperTightHalo2016Filter.get()
+                                   && event_info.Flag_HBHENoiseFilter.get()
+                                   && event_info.Flag_HBHENoiseIsoFilter.get()
+                                   && event_info.Flag_EcalDeadCellTriggerPrimitiveFilter.get()
+                                   && event_info.Flag_BadPFMuonFilter.get()
+                                   && event_info.Flag_BadPFMuonDzFilter.get()
+                                   && event_info.Flag_eeBadScFilter.get();
                 // clang-format on
-                // event_info.Flag_BadChargedCandidateFilter;
-                // event_info.Flag_hfNoisyHitsFilter;
+                // event_info.Flag_BadChargedCandidateFilter.get();
+                // event_info.Flag_hfNoisyHitsFilter.get();
             }
 
             if (year == Year::Run2017 || year == Year::Run2018)
             {
                 // clang-format off
                 pass_MET_filters = pass_MET_filters
-                                   && event_info.Flag_goodVertices
-                                   && event_info.Flag_globalSuperTightHalo2016Filter
-                                   && event_info.Flag_HBHENoiseFilter
-                                   && event_info.Flag_HBHENoiseIsoFilter
-                                   && event_info.Flag_EcalDeadCellTriggerPrimitiveFilter
-                                   && event_info.Flag_BadPFMuonFilter
-                                   && event_info.Flag_BadPFMuonDzFilter
-                                   && event_info.Flag_eeBadScFilter
-                                   && event_info.Flag_ecalBadCalibFilter;
+                                   && event_info.Flag_goodVertices.get()
+                                   && event_info.Flag_globalSuperTightHalo2016Filter.get()
+                                   && event_info.Flag_HBHENoiseFilter.get()
+                                   && event_info.Flag_HBHENoiseIsoFilter.get()
+                                   && event_info.Flag_EcalDeadCellTriggerPrimitiveFilter.get()
+                                   && event_info.Flag_BadPFMuonFilter.get()
+                                   && event_info.Flag_BadPFMuonDzFilter.get()
+                                   && event_info.Flag_eeBadScFilter.get()
+                                   && event_info.Flag_ecalBadCalibFilter.get();
                 // clang-format on
-                // event_info.Flag_hfNoisyHitsFilter;
-                // event_info.Flag_BadChargedCandidateFilter;
+                // event_info.Flag_hfNoisyHitsFilter.get();
+                // event_info.Flag_BadChargedCandidateFilter.get();
             }
+
             if (pass_MET_filters)
             {
-                fill_cutflow_histo(std::forward<T>(cutflow_histo), CutFlow::MetFilters, event_content.event_weight.get());
+                // fmt::print("DEBUG - met_filter");
+                outputs.fill_default_cutflow_histos(CutFlow::MetFilters, outputs.event_weight[idx_var].get());
                 return *this;
             }
             set_null();
@@ -227,8 +289,7 @@ class EventData
         return *this;
     }
 
-    template <typename T>
-    EventData &trigger_filter(T &&cutflow_histo)
+    EventData &trigger_filter(Outputs &outputs)
     {
         if (*this)
         {
@@ -254,8 +315,9 @@ class EventData
             case Year::Run2016:
                 break;
             case Year::Run2017:
-                trigger_bits.set(HLTPath::SingleMuonLowPt, event_info.HLT_IsoMu27)
-                    .set(HLTPath::SingleMuonHighPt, event_info.HLT_Mu50 || event_info.HLT_TkMu100 || event_info.HLT_OldMu100)
+                trigger_bits.set(HLTPath::SingleMuonLowPt, event_info.HLT_IsoMu27.get())
+                    .set(HLTPath::SingleMuonHighPt,
+                         event_info.HLT_Mu50.get() || event_info.HLT_TkMu100.get() || event_info.HLT_OldMu100.get())
                     .set(HLTPath::SingleElectron, false)
                     .set(HLTPath::DoubleMuon, false)
                     .set(HLTPath::DoubleElectron, false)
@@ -274,7 +336,8 @@ class EventData
             // skip event event if no trigger is fired
             if (trigger_bits.any())
             {
-                fill_cutflow_histo(std::forward<T>(cutflow_histo), CutFlow::TriggerCut, event_content.event_weight.get());
+                // fmt::print("DEBUG - trigger_filter");
+                outputs.fill_default_cutflow_histos(CutFlow::TriggerCut, outputs.event_weight[idx_var].get());
                 return *this;
             }
             set_null();
@@ -283,7 +346,7 @@ class EventData
     }
 
     // Muon - Filter
-    auto get_muons_filter_mask()
+    auto get_muons_pre_selection_mask()
     {
         auto low_pt_mask = muons.pt.get() >= ObjConfig::Muons[year].PreSelPt &&
                            muons.pt.get() < ObjConfig::Muons[year].MaxLowPt &&
@@ -298,37 +361,37 @@ class EventData
     }
 
     // Electrons
-    auto get_electrons_filter_mask()
+    auto get_electrons_pre_selection_mask()
     {
         return electrons.pt.get() >= ObjConfig::Electrons[year].PreSelPt;
     }
 
     // Photons
-    auto get_photons_filter_mask()
+    auto get_photons_pre_selection_mask()
     {
         return photons.pt.get() >= ObjConfig::Photons[year].PreSelPt;
     }
 
     // Taus
-    auto get_taus_filter_mask()
+    auto get_taus_pre_selection_mask()
     {
         return taus.pt.get() >= ObjConfig::Taus[year].PreSelPt;
     }
 
     // BJets
-    auto get_bjets_filter_mask()
+    auto get_bjets_pre_selection_mask()
     {
         return bjets.pt.get() >= ObjConfig::BJets[year].PreSelPt;
     }
 
     // Jets
-    auto get_jets_filter_mask()
+    auto get_jets_pre_selection_mask()
     {
         return jets.pt.get() >= ObjConfig::Jets[year].PreSelPt;
     }
 
     // MET
-    auto get_met_filter_mask()
+    auto get_met_pre_selection_mask()
     {
         return met.pt.get() >= ObjConfig::MET[year].PreSelPt;
     }
@@ -338,13 +401,13 @@ class EventData
         if (*this)
         {
             // launch pre-selection tasks
-            good_muons_mask = get_muons_filter_mask();
-            good_electrons_mask = get_electrons_filter_mask();
-            good_photons_mask = get_photons_filter_mask();
-            good_taus_mask = get_taus_filter_mask();
-            good_bjets_mask = get_bjets_filter_mask();
-            good_jets_mask = get_jets_filter_mask();
-            good_met_mask = get_met_filter_mask();
+            good_muons_mask = get_muons_pre_selection_mask();
+            good_electrons_mask = get_electrons_pre_selection_mask();
+            good_photons_mask = get_photons_pre_selection_mask();
+            good_taus_mask = get_taus_pre_selection_mask();
+            good_bjets_mask = get_bjets_pre_selection_mask();
+            good_jets_mask = get_jets_pre_selection_mask();
+            good_met_mask = get_met_pre_selection_mask();
 
             // muons = muons.filter(good_muons_mask);
             // electrons = electrons.filter(good_electrons_mask);
@@ -385,34 +448,73 @@ class EventData
         return *this;
     }
 
-    EventData &fill_event_content()
+    EventData &has_at_least_one_class_filter()
     {
-        if (*this)
-        {
-            return *this;
-        }
-        return *this;
-    }
+        // auto classes_size = distance(make_multiplicity_range(
+        //     VecOps::Sum(good_muons_mask), VecOps::Sum(good_electrons_mask), VecOps::Sum(good_photons_mask),
+        //     VecOps::Sum(good_taus_mask), VecOps::Sum(good_bjets_mask), VecOps::Sum(good_jets_mask),
+        //     VecOps::Sum(good_met_mask)));
 
-    EventData &has_any_content_filter()
-    {
+        // fmt::print("DEBUG - ObjConfig::Muons[year].PreSelPt: {}\n", ObjConfig::Muons[year].PreSelPt);
+        // fmt::print("DEBUG - muons.pt: {}\n", muons.pt.get());
+        // fmt::print("DEBUG - good_muons_mask: {}\n", good_muons_mask);
+        // fmt::print("DEBUG - Classes size: {}\n", classes_size);
+
+        // if (classes_size > 0)
+        // {
+        //     fmt::print("DEBUG - Hellow!! \n");
+        //     for (auto &&multiplicity :
+        //          make_multiplicity_range(VecOps::Sum(good_muons_mask), VecOps::Sum(good_electrons_mask),
+        //                                  VecOps::Sum(good_photons_mask), VecOps::Sum(good_taus_mask),
+        //                                  VecOps::Sum(good_bjets_mask), VecOps::Sum(good_jets_mask),
+        //                                  VecOps::Sum(good_met_mask)))
+        //     {
+        //         const auto [i_muons, i_electrons, i_photons, i_taus, i_bjets, i_jets, i_met] = multiplicity;
+
+        //         fmt::print("DEBUG - Muons: {} - Electrons: {} - Photons: {} - Taus: {} - BJets: {} - Jets: {} - MET: {} \n",
+        //                    i_muons, i_electrons, i_photons, i_taus, i_bjets, i_jets, i_met);
+        //     }
+        // }
+
         if (*this)
         {
-            if (event_content.event_class_hash.size() > 0)
+            if (distance(make_multiplicity_range(VecOps::Sum(good_muons_mask), VecOps::Sum(good_electrons_mask),
+                                                 VecOps::Sum(good_photons_mask), VecOps::Sum(good_taus_mask),
+                                                 VecOps::Sum(good_bjets_mask), VecOps::Sum(good_jets_mask),
+                                                 VecOps::Sum(good_met_mask))) > 0)
             {
                 return *this;
             }
-            set_null();
+        }
+        return *this;
+    }
+
+    EventData &fill_event_content(Outputs &outputs)
+    {
+        if (*this)
+        {
+            outputs.run.at(idx_var) = 2;
+            outputs.lumi_section.at(idx_var) = 2;
+            outputs.event_number.at(idx_var) = 2;
+            outputs.trigger_bits.at(idx_var) = 2;
+            // outputs.event_weight.at(idx_var)
+            outputs.nClasses.at(idx_var) = 3;
+            outputs.classes.at(idx_var) = {1, 2, 3};
+            outputs.sum_pt.at(idx_var) = {1, 2, 3};
+            outputs.invariant_mass.at(idx_var) = {1, 2, 3};
+            outputs.met.at(idx_var) = {1, 2, 3};
+
             return *this;
         }
         return *this;
     }
 
-    static EventData apply_corrections(EventData event_data, const Variation &variation, const Shift &shift)
+    static EventData apply_corrections(const EventData &event_data, const Variation &variation, const Shift &shift)
     {
         if (event_data)
         {
             auto new_event_data = EventData(event_data);
+            new_event_data.set_variation_and_shift(variation, shift);
 
             //////////////////////////////////////////////////
             // FIX ME: apply corrections

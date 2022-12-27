@@ -1,20 +1,5 @@
 #include "NanoMUSiC.hpp"
 
-void PrintProcessInfo()
-{
-    auto info = ProcInfo_t();
-    gSystem->GetProcInfo(&info);
-    std::cout.precision(1);
-    std::cout << std::fixed;
-    std::cout << "-------------" << std::endl;
-    std::cout << "Process info:" << std::endl;
-    std::cout << "-------------" << std::endl;
-    std::cout << "CPU time elapsed: " << info.fCpuUser << " s" << std::endl;
-    std::cout << "Sys time elapsed: " << info.fCpuSys << " s" << std::endl;
-    std::cout << "Resident memory:  " << info.fMemResident / 1024. << " MB" << std::endl;
-    std::cout << "Virtual memory:   " << info.fMemVirtual / 1024. << " MB" << std::endl;
-}
-
 int main(int argc, char *argv[])
 {
     TDirectory::AddDirectory(kFALSE); // Force ROOT to give directories in our hand - Yes, we can
@@ -24,7 +9,7 @@ int main(int argc, char *argv[])
     argh::parser cmdl(argc, argv, argh::parser::PREFER_PARAM_FOR_UNREG_OPTION);
     const bool show_help = cmdl[{"-h", "--help"}];
     bool batch_mode = cmdl[{"-b", "--batch"}];
-    std::string run_config_file = cmdl({"-c", "--run-config"}).str();
+    const std::string run_config_file = cmdl({"-c", "--run-config"}).str();
 
     if (show_help || run_config_file == "")
     {
@@ -48,14 +33,7 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    // set colors
-    Color::Modifier yellow(Color::FG_YELLOW, batch_mode);
-    Color::Modifier green(Color::FG_GREEN, batch_mode);
-    Color::Modifier blue(Color::FG_BLUE, batch_mode);
-    Color::Modifier cyan(Color::FG_CYAN, batch_mode);
-    Color::Modifier acqua(Color::FG_ACQUA, batch_mode);
-    Color::Modifier red(Color::FG_RED, batch_mode);
-    Color::Modifier def(Color::FG_DEFAULT, batch_mode);
+    const auto colors = Color::Colors(batch_mode);
 
     // print pretty stuff
     if (!batch_mode)
@@ -66,170 +44,71 @@ int main(int argc, char *argv[])
         std::cout << " " << std::endl;
         std::cout << " " << std::endl;
         std::cout << " " << std::endl;
-        std::cout << acqua << "        ███    ███ ██    ██ ███████ ██  ██████ " << def << std::endl;
-        std::cout << acqua << "        ████  ████ ██    ██ ██      ██ ██      " << def << std::endl;
-        std::cout << acqua << "        ██ ████ ██ ██    ██ ███████ ██ ██      " << def << std::endl;
-        std::cout << acqua << "        ██  ██  ██ ██    ██      ██ ██ ██      " << def << std::endl;
-        std::cout << acqua << "        ██      ██  ██████  ███████ ██  ██████ " << def << std::endl;
+        std::cout << colors.acqua << "        ███    ███ ██    ██ ███████ ██  ██████ " << colors.def << std::endl;
+        std::cout << colors.acqua << "        ████  ████ ██    ██ ██      ██ ██      " << colors.def << std::endl;
+        std::cout << colors.acqua << "        ██ ████ ██ ██    ██ ███████ ██ ██      " << colors.def << std::endl;
+        std::cout << colors.acqua << "        ██  ██  ██ ██    ██      ██ ██ ██      " << colors.def << std::endl;
+        std::cout << colors.acqua << "        ██      ██  ██████  ███████ ██  ██████ " << colors.def << std::endl;
     }
 
     std::cout << " " << std::endl;
     std::cout << " " << std::endl;
-    std::cout << acqua << "        MUSiC - Model Unspecific Search in CMS" << def << std::endl;
-    std::cout << acqua << emojicpp::emojize("              :signal_strength: Run2 - Ultra Legacy :signal_strength:") << def
-              << std::endl;
+    std::cout << colors.acqua << "        MUSiC - Model Unspecific Search in CMS" << colors.def << std::endl;
+    std::cout << colors.acqua << emojicpp::emojize("              :signal_strength: Run2 - Ultra Legacy :signal_strength:")
+              << colors.def << std::endl;
     std::cout << " " << std::endl;
 
     std::cout << " " << std::endl;
-    std::cout << yellow << "Checking run configuration [" << run_config_file << "] ..." << def << std::endl;
+    std::cout << colors.yellow << "Checking run configuration [" << run_config_file << "] ..." << colors.def << std::endl;
     std::cout << " " << std::endl;
 
-    // read parameters from TOML file
-    const auto run_config = TOMLConfig::make_toml_config(run_config_file);
-    const auto output_directory = run_config.get<std::string>("output");
-    const auto process = run_config.get<std::string>("process");
-    const auto dataset = run_config.get<std::string>("dataset");
-    // const auto max_events = run_config.get<int>("max_events");
-    // const auto number_of_events_to_skip = run_config.get<int>("number_of_events_to_skip");
-    const auto is_data = run_config.get<bool>("is_data");
-    const auto is_crab_job = run_config.get<bool>("is_crab_job");
-
-    // const auto debug = run_config.get<int>("debug");
-    const auto x_section_file = MUSiCTools::parse_and_expand_music_base(run_config.get<std::string>("x_section_file"));
-    const auto run_hash = run_config.get<std::string>("hash");
-    const auto year_str = run_config.get<std::string>("year");
-    // const auto cacheread = run_config.get<bool>(cacheread");
-    // const auto max_file_load_error_rate = run_config.get<float>("max_file_load_error_rate");
-    const auto input_files = run_config.get_vector<std::string>("input_files");
-    const auto _n_threads = run_config.get<int>("n_threads");
-    if (_n_threads < 1)
-    {
-        throw std::runtime_error("The provided number of threads (" + std::to_string(_n_threads) + ") should be at least 1.");
-    }
-    std::size_t n_threads = std::min(_n_threads, static_cast<int>(input_files.size()));
-
-    // get year as enum
-    auto year = get_runyear(year_str);
-
-    // Get the run config file from main config file.
-    const auto golden_json_file = MUSiCTools::parse_and_expand_music_base(RunConfig::Runs[year].golden_json);
-
-    if (is_data)
-    {
-        if (not std::filesystem::exists(golden_json_file))
-        {
-            std::stringstream error;
-            error << "golden_json_file not found";
-            throw MUSiCTools::config_error(error.str());
-        }
-    }
-    if (!golden_json_file.empty())
-    {
-        std::cout << "INFO: Using Run/Lumi JSON file: " << golden_json_file << std::endl;
-    }
+    const auto configuration = TaskConfiguration(run_config_file);
 
     std::cout << " " << std::endl;
-    std::cout << yellow << "Preparing output buffer ..." << def << std::endl;
+    std::cout << colors.yellow << "Preparing output buffer ..." << colors.def << std::endl;
+    prepare_output_buffer(configuration);
     std::cout << " " << std::endl;
-
-    const std::string startDir = getcwd(NULL, 0);
-
-    // (Re)create output_directory dir and cd into it.
-    system(("rm -rf " + output_directory).c_str());
-    system(("mkdir -p " + output_directory).c_str());
-    system(("cd " + output_directory).c_str());
-    chdir(output_directory.c_str());
-
-    if (!golden_json_file.empty())
-        system(("cp " + golden_json_file + " . ").c_str());
-
-    if (is_data)
-        system("mkdir -p Event-lists");
-
-    // save other configs with output
-    system(("cp " + x_section_file + " . ").c_str());
-
-    // copy rootlogon.C
-    system(("cp " + MUSiCTools::parse_and_expand_music_base("$MUSIC_BASE/rootlogon.C") + " . ").c_str());
 
     // Init the run config
     std::cout << " " << std::endl;
-    std::cout << green << "Initializing ..." << def << std::endl;
+    std::cout << colors.green << "Initializing ..." << colors.def << std::endl;
     std::cout << " " << std::endl;
 
-    std::cout << def << "[ Initializing ] Run Lumi Filter ..." << def << std::endl;
-    auto run_lumi_filter = RunLumiFilter(golden_json_file);
+    std::cout << colors.def << "[ Initializing ] Run Lumi Filter ..." << colors.def << std::endl;
+    auto run_lumi_filter = RunLumiFilter(configuration.golden_json_file);
 
-    std::cout << def << "[ Initializing ] PU corrections ..." << def << std::endl;
-    auto pu_weight = Corrector(CorrectionTypes::PU, year, is_data);
+    std::cout << colors.def << "[ Initializing ] PU corrections ..." << colors.def << std::endl;
+    auto pu_weight = Corrector(CorrectionTypes::PU, configuration.year, configuration.is_data);
 
     // read cross-sections files
-    std::cout << def << "[ Initializing ] X-Sections ..." << def << std::endl;
-    const auto x_sections = TOMLConfig::make_toml_config(x_section_file);
+    std::cout << colors.def << "[ Initializing ] X-Sections ..." << colors.def << std::endl;
+    const auto x_sections = TOMLConfig::make_toml_config(configuration.x_section_file);
 
-    std::cout << def << "[ Initializing ] Thread pool (" << n_threads << " threads) ..." << def << std::endl;
-    ROOT::EnableImplicitMT(n_threads);
+    std::cout << colors.def << "[ Initializing ] Thread pool (" << configuration.n_threads << " threads) ..." << colors.def
+              << std::endl;
+    ROOT::EnableImplicitMT(configuration.n_threads);
 
-    std::cout << def << "[ Initializing ] Rochester Muon Momentum Corrections ..." << def << std::endl;
-    auto rochester_corrections = Corrector(CorrectionTypes::MuonLowPt, year, is_data);
+    std::cout << colors.def << "[ Initializing ] Rochester Muon Momentum Corrections ..." << colors.def << std::endl;
+    auto rochester_corrections = Corrector(CorrectionTypes::MuonLowPt, configuration.year, configuration.is_data);
 
     // performance monitoring
-    std::cout << def << "[ Initializing ] Performance Monitoring ..." << def << std::endl;
-    auto event_counter = RVec<unsigned int>(n_threads);
-    auto event_counter_mutexes = std::vector<std::mutex>(n_threads);
+    std::cout << colors.def << "[ Initializing ] Performance Monitoring ..." << colors.def << std::endl;
+    auto event_counter = RVec<unsigned int>(configuration.n_threads);
+    auto event_counter_mutexes = std::vector<std::mutex>(configuration.n_threads);
 
-    const std::string process_hash = get_hash256(std::accumulate(input_files.begin(), input_files.end(), std::string("")));
-    auto output_file_vec = std::vector<std::unique_ptr<TFile>>(n_threads);
-    auto output_tree_vec = std::vector<std::unique_ptr<TTree>>(n_threads);
-    auto classes_tree_vec = std::vector<std::unique_ptr<TTree>>(n_threads);
-
-    auto music_event_vec = std::vector<MUSiCEvent>(n_threads);
-    auto cutflow_histos_vec = std::vector<std::array<TH1F, total_variations_and_shifts>>(n_threads);
-    auto classes_vec = std::vector<std::array<std::set<unsigned long>, total_variations_and_shifts>>(n_threads);
-    auto classes_to_save_vec = std::vector<std::vector<unsigned long>>(n_threads);
-    auto number_of_classes_vec = std::vector<unsigned long>(n_threads);
-    auto variation_id_vec = std::vector<unsigned int>(n_threads);
-
-    for (std::size_t slot = 0; slot < n_threads; slot++)
+    // build outputs
+    std::vector<Outputs> outputs;
+    for (auto &&slot : RangesHelpers::index_range(configuration.n_threads))
     {
-        // output file
+        // fmt::print("DEBUG - slot: {}\n", slot);
         std::string output_file_name =
-            "nano_music_" + process + "_" + year_str + "_" + process_hash + "_" + std::to_string(slot) + ".root";
-        if (is_crab_job)
-        {
-            output_file_name = "nano_music.root";
-        }
-        output_file_vec.at(slot) = std::unique_ptr<TFile>(TFile::Open(output_file_name.c_str(), "RECREATE"));
-
-        // output tree
-        std::ifstream t(run_config_file);
-        std::stringstream output_tree_title;
-        output_tree_title << t.rdbuf();
-        output_tree_vec.at(slot) = std::make_unique<TTree>("nano_music", output_tree_title.str().c_str());
-        output_tree_vec.at(slot)->SetDirectory(output_file_vec.at(slot).get());
-
-        // classes tree
-        classes_tree_vec.at(slot) = std::make_unique<TTree>(
-            "nano_music_classes", "Classes tree: each entry corresponds to a variation. and each is a class.");
-        classes_tree_vec.at(slot)->SetDirectory(output_file_vec.at(slot).get());
-
-        // tree branches
-        music_event_vec.at(slot) = MUSiCEvent{};
-        output_tree_vec.at(slot)->Branch("music_event", &(music_event_vec.at(slot)), 256000, 99);
-        classes_tree_vec.at(slot)->Branch("classes", &(classes_to_save_vec.at(slot)));
-        classes_tree_vec.at(slot)->Branch("nClasses", &(number_of_classes_vec.at(slot)));
-        classes_tree_vec.at(slot)->Branch("variation_id", &(variation_id_vec.at(slot)));
-
-        // cutflow histo
-        cutflow_histos_vec.at(slot) = make_cutflow_histos(output_file_vec.at(slot).get());
+            configuration.is_crab_job
+                ? "nano_music.root"
+                : "nano_music_" + configuration.process + "_" + configuration.year_str + "_" + std::to_string(slot) + ".root";
+        outputs.emplace_back(output_file_name);
     }
 
-    // output storages
-    std::cout << def << "[ Initializing ] Temporary output storages ..." << def << std::endl;
-    using EventProcessResult_t = std::array<EventData, total_variations_and_shifts>;
-    auto process_results = RVec<RVec<EventProcessResult_t>>(n_threads);
-
-    // load RDataFrame
+    // define columns to be processed
     std::vector<std::string> columns = {
         // event info
         "run", "luminosityBlock", "event", "Pileup_nTrueInt", "genWeight", "PV_npvsGood", "Flag_goodVertices",
@@ -257,14 +136,15 @@ int main(int argc, char *argv[])
 
     };
 
-    // clean Data columns
-    if (is_data)
+    // clear columns for Data processing
+    if (configuration.is_data)
     {
         columns.erase(std::remove(columns.begin(), columns.end(), "genWeight"), columns.end());
         columns.erase(std::remove(columns.begin(), columns.end(), "Pileup_nTrueInt"), columns.end());
     }
 
-    auto df = ROOT::RDataFrame("Events", input_files, columns);
+    // create RDataFrame
+    auto df = ROOT::RDataFrame("Events", configuration.input_files, columns);
     //////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////       [ BEGIN ]      //////////////////////////////////////
@@ -300,75 +180,77 @@ int main(int argc, char *argv[])
 
                                // met
                                const float &MET_pt, const float &MET_phi) {
+        // increment the number of processed events
         {
-            const std::lock_guard<std::mutex> lock(event_counter_mutexes[slot]);
-            event_counter[slot]++;
+            const std::lock_guard<std::mutex> lock(event_counter_mutexes.at(slot));
+            event_counter.at(slot)++;
         }
+
+        // clear outputs
+        outputs.at(slot).clear_event_trees();
 
         // temporaries
         RVec<float> temp_met_pt = {MET_pt};
-        RVec<float> temp_met_eta = RVec<float>(1, 0.);
+        RVec<float> temp_met_eta = {0.};
         RVec<float> temp_met_phi = {MET_phi};
 
+        // build event data
         auto event_data = EventData(
+            // event info
             NanoObjects::EventInfo(run, lumi, event_number, Pileup_nTrueInt, genWeight, PV_npvsGood, Flag_goodVertices,
                                    Flag_globalSuperTightHalo2016Filter, Flag_HBHENoiseFilter, Flag_HBHENoiseIsoFilter,
                                    Flag_EcalDeadCellTriggerPrimitiveFilter, Flag_BadPFMuonFilter, Flag_BadPFMuonDzFilter,
                                    Flag_eeBadScFilter, Flag_ecalBadCalibFilter, HLT_IsoMu27, HLT_Mu50, HLT_TkMu100, HLT_OldMu100),
+            // muons
             NanoObjects::Muons(Muon_pt, Muon_eta, Muon_phi, Muon_tightId, Muon_highPtId, Muon_pfRelIso03_all, Muon_tkRelIso),
+            // electrons
             NanoObjects::Electrons(Electron_pt, Electron_eta, Electron_phi),
-            NanoObjects::Photons(Photon_pt, Photon_eta, Photon_phi), NanoObjects::Taus(Tau_pt, Tau_eta, Tau_phi),
-            NanoObjects::BJets(Jet_pt, Jet_eta, Jet_phi), NanoObjects::Jets(Jet_pt, Jet_eta, Jet_phi),
-            NanoObjects::MET(temp_met_pt, temp_met_eta, temp_met_phi), is_data, year);
+            // photons
+            NanoObjects::Photons(Photon_pt, Photon_eta, Photon_phi),
+            // taus
+            NanoObjects::Taus(Tau_pt, Tau_eta, Tau_phi),
+            // bjets
+            NanoObjects::BJets(Jet_pt, Jet_eta, Jet_phi),
+            // jets
+            NanoObjects::Jets(Jet_pt, Jet_eta, Jet_phi),
+            // met
+            NanoObjects::MET(temp_met_pt, temp_met_eta, temp_met_phi),
+            // non-event data
+            configuration.is_data, configuration.year, Variation::Default, Shift::Nominal);
 
-        event_data = event_data.set_const_weights(pu_weight)
-                         .generator_filter(cutflow_histos_vec[slot])
-                         .run_lumi_filter(cutflow_histos_vec[slot], run_lumi_filter)
-                         .npv_filter(cutflow_histos_vec[slot])
-                         .met_filter(cutflow_histos_vec[slot])
-                         .trigger_filter(cutflow_histos_vec[slot])
+        event_data = event_data.set_const_weights(outputs.at(slot), pu_weight)
+                         .generator_filter(outputs.at(slot))
+                         .run_lumi_filter(outputs.at(slot), run_lumi_filter)
+                         .npv_filter(outputs.at(slot))
+                         .met_filter(outputs.at(slot))
+                         .trigger_filter(outputs.at(slot))
                          .pre_selection();
 
-        // launch variations
-
         // loop over variations, shifts and classes (aka multiplicities)
-        EventProcessResult_t _process_result_buffer;
-        std::array<std::future<EventData>, total_variations_and_shifts> variations_futures;
-        ranges::for_each(range_cleanned_variation_and_shifts | views::remove_if([&is_data](auto variation_and_shift) {
-                             const auto [variation, shift] = variation_and_shift;
-                             return is_data && (variation != Variation::Default);
-                         }),
-                         [&](const auto &variation_and_shift) {
-                             const auto [variation, shift] = variation_and_shift;
-
-                             // modify objects according to the given variation
-                             _process_result_buffer.at(variation_shift_to_index(variation, shift)) =
-                                 EventData::apply_corrections(event_data, variation, shift)
-                                     .final_selection()
-                                     .trigger_match()
-                                     .set_scale_factors()
-                                     .fill_event_content()
-                                     .has_any_content_filter();
-                         });
-        //  write to tree
-        // process_results.at(slot).push_back(_process_result_buffer);
-        for (std::size_t idx_variation = 0; idx_variation < _process_result_buffer.size(); idx_variation++)
+        // the range::view was cleanned to skip all variations for Data
+        for (const auto &variation_and_shift :
+             RangesHelpers::VariationsAndShifts | views::remove_if([&](auto variation_and_shift) {
+                 const auto [variation, shift] = variation_and_shift;
+                 return (configuration.is_data) && (variation != Variation::Default);
+             }))
         {
-            auto res = _process_result_buffer.at(idx_variation);
-            if (res)
-            {
-                music_event_vec.at(slot) = MUSiCEvent{};
-                music_event_vec.at(slot).run = res.event_info.run;
-                music_event_vec.at(slot).lumi_section = res.event_info.lumi;
-                music_event_vec.at(slot).event_number = res.event_info.event;
-                music_event_vec.at(slot).trigger_bits = res.trigger_bits.as_ulong();
-                music_event_vec.at(slot).fill(std::move(res.event_content), idx_variation);
+            const auto [variation, shift] = variation_and_shift;
 
-                classes_vec.at(slot).at(idx_variation).merge(res.classes);
+            // modify objects according to the given variation
+            auto corrected_event_data = EventData::apply_corrections(event_data, variation, shift)
+                                            .final_selection()
+                                            .trigger_match()
+                                            .set_scale_factors()
+                                            .has_at_least_one_class_filter()
+                                            .fill_event_content(outputs.at(slot));
+
+            // fill output event tree
+            if (corrected_event_data)
+            {
+                auto idx_var = corrected_event_data.idx_var;
+                outputs.at(slot).fill_event_tree(idx_var);
             }
         }
-        // save data into output tree
-        output_tree_vec.at(slot)->Fill();
     };
 
     auto event_processor_MC =
@@ -481,11 +363,13 @@ int main(int argc, char *argv[])
         };
 
     std::cout << " " << std::endl;
-    std::cout << green << "Starting Classification ..." << def << std::endl;
+    std::cout << colors.green << "Starting Classification ..." << colors.def << std::endl;
     std::cout << " " << std::endl;
 
-    std::cout << acqua << "Launching monitoring thread ..." << def << std::endl;
+    std::cout << colors.acqua << "Launching monitoring thread ..." << colors.def << std::endl;
     double dTime1 = getCpuTime(); // Start Timer
+
+    // monitoring thread will run while this is true
     bool run_monitoring = true;
     std::thread monitoring_thread([&]() {
         unsigned int processed_events_counter = 0;
@@ -495,7 +379,7 @@ int main(int argc, char *argv[])
             std::this_thread::sleep_for(10000ms);
 
             // loop over threads and count the number of processed events
-            for (std::size_t i_slot = 0; i_slot < n_threads; i_slot++)
+            for (std::size_t i_slot = 0; i_slot < configuration.n_threads; i_slot++)
             {
                 {
                     const std::lock_guard<std::mutex> lock(event_counter_mutexes[i_slot]);
@@ -512,8 +396,9 @@ int main(int argc, char *argv[])
         }
     });
 
-    std::cout << green << "\nLaunching event loop ..." << def << std::endl;
-    if (is_data)
+    // launch event loop for Data or MC
+    std::cout << colors.green << "\nLaunching event loop ..." << colors.def << std::endl;
+    if (configuration.is_data)
     {
         df.ForeachSlot(event_processor_Data, columns);
     }
@@ -521,9 +406,12 @@ int main(int argc, char *argv[])
     {
         df.ForeachSlot(event_processor_MC, columns);
     }
+
+    // stop run monitoring
     run_monitoring = false;
     monitoring_thread.join();
-    std::cout << green << "Event loop done ..." << def << std::endl;
+
+    std::cout << colors.green << "Event loop done ..." << colors.def << std::endl;
 
     //////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -533,59 +421,19 @@ int main(int argc, char *argv[])
     //////////////////////////////////////////////////////////////////////////////////////////////////
 
     std::cout << " " << std::endl;
-    std::cout << green << "Classification done ..." << def << std::endl;
+    std::cout << colors.green << "Classification done ..." << colors.def << std::endl;
     std::cout << " " << std::endl;
 
-    double dTime2 = getCpuTime();
-    std::cout << cyan << "[ Final Performance Report ] Analyzed " << Sum(event_counter) << " events";
-    std::cout << ", elapsed CPU time: " << dTime2 - dTime1 << "sec (" << double(Sum(event_counter)) / (dTime2 - dTime1)
-              << " evts per sec)" << def << std::endl;
-
-    if (Sum(event_counter) == 0)
-    {
-        std::cout << "Error: No event was analyzed!" << std::endl;
-        throw std::runtime_error("No event was analyzed!");
-    }
-
-    std::cout << "\n" << std::endl;
+    // show final performance report
+    print_final_report(dTime1, event_counter);
 
     // writes data to disk
-    std::cout << yellow << "[ Finalizing ] Output file, cutflow and tree ..." << def << std::endl;
-    std::vector<std::thread> output_writers;
-    for (std::size_t i_slot = 0; i_slot < n_threads; i_slot++)
-    {
-        output_writers.push_back(std::thread(
-            [&](auto slot) {
-                // write outputs to disk
-                output_file_vec.at(slot)->cd();
-                output_tree_vec.at(slot)->Write();
-                for (auto &histo : cutflow_histos_vec.at(slot))
-                {
-                    histo.Write();
-                }
-
-                // convert the std::set<unsigned long> of classes that were touched a std::vector<unsigned long>
-                for (std::size_t idx_var = 0; idx_var < classes_vec.at(slot).size(); idx_var++)
-                {
-                    classes_to_save_vec.at(slot) = std::vector<unsigned long>(classes_vec.at(slot).at(idx_var).begin(),
-                                                                              classes_vec.at(slot).at(idx_var).end());
-                    number_of_classes_vec.at(slot) = classes_to_save_vec.at(slot).size();
-                    variation_id_vec.at(slot) = idx_var;
-                    classes_tree_vec.at(slot)->Fill();
-                }
-                // saves into the output root file
-                output_file_vec.at(slot)->cd();
-                classes_tree_vec.at(slot)->Write();
-            },
-            i_slot));
-    }
-
-    std::cout << yellow << "[ Finalizing ] Waiting for data to be written ...\n" << def << std::endl;
-    for (auto &writer : output_writers)
-    {
-        writer.join();
-    }
+    std::cout << colors.yellow << "[ Finalizing ] Output files, cutflow histograms and event data trees ..." << colors.def
+              << std::endl;
+    Outputs::write_data(outputs);
 
     PrintProcessInfo();
+    std::cout << colors.green << "\nDone ..." << colors.def << std::endl;
+
     return 0;
 }

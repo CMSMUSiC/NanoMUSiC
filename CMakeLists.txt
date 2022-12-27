@@ -71,6 +71,7 @@ add_link_options(
     -lboost_serialization
     -lboost_program_options
     -lLHAPDF
+    -lfmt
     -L${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-Utils/lib
     -O3
     -lz

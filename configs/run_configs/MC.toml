@@ -12,7 +12,7 @@ hash = 'dummyhash'
 cacheread = true
 is_crab_job = false
 max_file_load_error_rate = 0.15 # max fraction of file load error (only for MC)
-n_threads = 121
+n_threads = 1
 
 # input_files = [
 #     '/home/home1/institut_3a/silva/projects/NanoMUSiC_Test_Data/DY_2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
@@ -28,8 +28,8 @@ n_threads = 121
 
 input_files = [
     '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04426F83-BF53-0440-B2D1-F2DD9AB96EB8.root',
-    '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
-    '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/04620FA2-DB18-7F4A-B30C-BAFD1C5B673D.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/A295E63F-D6E2-B744-9A83-ACE9D7DF5791.root',
     ]
 
 

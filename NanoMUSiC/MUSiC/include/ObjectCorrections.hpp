@@ -1,8 +1,8 @@
 #ifndef MUSIC_OBJECTCORRECTIONS
 #define MUSIC_OBJECTCORRECTIONS
 
-#include "MUSiCEvent.hpp"
 #include "NanoObjects.hpp"
+#include "Outputs.hpp"
 
 auto default_corr = [](const Shift &shift, const NanoObjects::NanoObjectCollection &muons,
                        const NanoObjects::NanoObjectCollection &electrons, const NanoObjects::NanoObjectCollection &photons,

@@ -7,6 +7,7 @@ constexpr double Muon_mass = 105.6583755 / 1000.;
 constexpr double Electron_mass = 0.51099895000 / 1000.;
 constexpr double Tau_mass = 1776.86 / 1000.;
 
+using namespace ROOT;
 using namespace ROOT::VecOps;
 
 namespace NanoObjects

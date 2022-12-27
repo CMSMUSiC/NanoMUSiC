@@ -14,7 +14,6 @@
 #include <iostream>
 #include <limits>
 #include <math.h>
-// #include <mutex>
 #include <numeric>
 #include <optional>
 #include <set>
@@ -38,22 +37,19 @@
 
 // toml++ v3.1.0
 // https://github.com/marzer/tomlplusplus
+#include "toml.hpp"
+
 #include "color.hpp"
 #include "emoji.hpp"
-
-// https://github.com/okdshin/PicoSHA2
-#include "picosha2.hpp"
-#include "toml.hpp"
 
 // Comand line tools
 // https://github.com/adishavit/argh
 #include "argh.h"
 
-// http:://github.com/bshoshany/thread-pool
-// #include "BS_thread_pool.hpp"
+#include <fmt/core.h>
+// using fmt::print;
 
 // Configurarion and filter
-// #include "MConfig.hpp"
 #include "MUSiCTools.hpp"
 #include "TOMLConfig.hpp"
 
@@ -66,8 +62,8 @@
 
 // MUSiC
 #include "Configs.hpp"
-#include "MUSiCEvent.hpp"
 #include "NanoObjects.hpp"
+#include "Outputs.hpp"
 // #include "ObjectCorrections.hpp"
 #include "EventData.hpp"
 #include "Trigger.hpp"
@@ -76,6 +72,21 @@ using namespace std::chrono_literals;
 using namespace ranges;
 using namespace ROOT::Math;
 using namespace ROOT::VecOps;
+
+void PrintProcessInfo()
+{
+    auto info = ProcInfo_t();
+    gSystem->GetProcInfo(&info);
+    std::cout.precision(1);
+    std::cout << std::fixed;
+    std::cout << "-------------" << std::endl;
+    std::cout << "Process info:" << std::endl;
+    std::cout << "-------------" << std::endl;
+    std::cout << "CPU time elapsed: " << info.fCpuUser << " s" << std::endl;
+    std::cout << "Sys time elapsed: " << info.fCpuSys << " s" << std::endl;
+    std::cout << "Resident memory:  " << info.fMemResident / 1024. << " MB" << std::endl;
+    std::cout << "Virtual memory:   " << info.fMemVirtual / 1024. << " MB" << std::endl;
+}
 
 std::string_view get_data_stream(const std::string_view &dataset)
 {
@@ -131,11 +142,6 @@ constexpr bool is_tenth(int &event_counter)
             (event_counter >= 100000 && event_counter % 10000 == 0));
 }
 
-std::string get_hash256(const std::string &input_string)
-{
-    return picosha2::hash256_hex_string(input_string);
-}
-
 void save_class_storage(const std::set<unsigned long> &classes, std::string output_file_name)
 {
     // expected number of elements: (7*2 + 1) * classes.size()
@@ -168,6 +174,43 @@ T get_and_check_future(std::future<T> &_ftr)
         std::cout << e.what() << std::endl;
         exit(1);
     }
+}
+void prepare_output_buffer(const TaskConfiguration &configuration)
+{
+    const std::string startDir = getcwd(NULL, 0);
+
+    // (Re)create output_directory dir and cd into it.
+    system(("rm -rf " + configuration.output_directory).c_str());
+    system(("mkdir -p " + configuration.output_directory).c_str());
+    system(("cd " + configuration.output_directory).c_str());
+    chdir(configuration.output_directory.c_str());
+
+    if (!configuration.golden_json_file.empty())
+        system(("cp " + configuration.golden_json_file + " . ").c_str());
+
+    if (configuration.is_data)
+        system("mkdir -p Event-lists");
+
+    // save other configs with output
+    system(("cp " + configuration.x_section_file + " . ").c_str());
+
+    // copy rootlogon.C
+    system(("cp " + MUSiCTools::parse_and_expand_music_base("$MUSIC_BASE/rootlogon.C") + " . ").c_str());
+}
+
+void print_final_report(const double &dTime1, const RVec<unsigned int> &event_counter)
+{
+    double dTime2 = getCpuTime();
+    std::cout << "[ Final Performance Report ] Analyzed " << Sum(event_counter) << " events";
+    std::cout << ", elapsed CPU time: " << dTime2 - dTime1 << "sec (" << double(Sum(event_counter)) / (dTime2 - dTime1)
+              << " evts per sec)" << std::endl;
+
+    if (Sum(event_counter) == 0)
+    {
+        std::cout << "Error: No event was analyzed!" << std::endl;
+        throw std::runtime_error("No event was analyzed!");
+    }
+    std::cout << " " << std::endl;
 }
 
 #endif /*MUSIC_NANOMUSIC*/

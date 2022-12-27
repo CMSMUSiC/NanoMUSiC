@@ -233,14 +233,53 @@ constexpr auto Run2017 = RunConfig{.golden_json = "$MUSIC_BASE/configs/golden_js
 constexpr auto Run2018 = RunConfig{.golden_json = "$MUSIC_BASE/configs/golden_jsons/Run2018.txt"};
 constexpr std::array<RunConfig, Year::kTotalYears> Runs = {Run2016APV, Run2016, Run2017, Run2018};
 
-// constexpr auto my_muon_filter = [](const auto &muon) {
-//     if (muon > 25.)
-//     {
-//         return true;
-//     }
-//     return false;
-// };
-
 } // namespace RunConfig
+
+class TaskConfiguration
+{
+  public:
+    const std::string run_config_file;
+    const TOMLConfig run_config;
+    const std::string output_directory;
+    const std::string process;
+    const std::string dataset;
+    const bool is_data;
+    const bool is_crab_job;
+    const std::string x_section_file;
+    const std::string run_hash;
+    const std::string year_str;
+    const std::vector<std::string> input_files;
+    const int _n_threads;
+    const std::size_t n_threads;
+    const Year year;
+    const std::string golden_json_file;
+
+    TaskConfiguration(const std::string _run_config_file)
+        : run_config_file(_run_config_file), run_config(TOMLConfig::make_toml_config(run_config_file)),
+          output_directory(run_config.get<std::string>("output")), process(run_config.get<std::string>("process")),
+          dataset(run_config.get<std::string>("dataset")), is_data(run_config.get<bool>("is_data")),
+          is_crab_job(run_config.get<bool>("is_crab_job")),
+          x_section_file(MUSiCTools::parse_and_expand_music_base(run_config.get<std::string>("x_section_file"))),
+          run_hash(run_config.get<std::string>("hash")), year_str(run_config.get<std::string>("year")),
+          input_files(run_config.get_vector<std::string>("input_files")), _n_threads(run_config.get<int>("n_threads")),
+          n_threads(std::min(_n_threads, static_cast<int>(input_files.size()))), year(get_runyear(year_str)),
+          golden_json_file(MUSiCTools::parse_and_expand_music_base(RunConfig::Runs[year].golden_json))
+
+    {
+        if (is_data)
+        {
+            if (not std::filesystem::exists(golden_json_file))
+            {
+                std::stringstream error;
+                error << "golden_json_file not found";
+                throw MUSiCTools::config_error(error.str());
+            }
+        }
+        if (!golden_json_file.empty())
+        {
+            std::cout << "INFO: Using Run/Lumi JSON file: " << golden_json_file << std::endl;
+        }
+    }
+};
 
 #endif /*MUSIC_CONFIG*/
