@@ -154,19 +154,14 @@ class EventData
             // fmt::print("DEBUG - set_const_weights");
             // set generator weight
             // should be called before any EventData method
-            if (is_data)
+            if (!is_data)
             {
-                outputs.event_weight[idx_var].set(Weight::Generator, 1.);
-                outputs.event_weight[idx_var].set(Weight::PileUp, 1.);
-            }
-            else
-            {
-                outputs.event_weight[idx_var].set(Weight::Generator, event_info.genWeight.get());
-                outputs.event_weight[idx_var].set(Weight::PileUp, Shift::Nominal,
-                                                  pu_weight({event_info.Pileup_nTrueInt.get(), "nominal"}));
-                outputs.event_weight[idx_var].set(Weight::PileUp, Shift::Up, pu_weight({event_info.Pileup_nTrueInt.get(), "up"}));
-                outputs.event_weight[idx_var].set(Weight::PileUp, Shift::Down,
-                                                  pu_weight({event_info.Pileup_nTrueInt.get(), "down"}));
+                outputs.set_event_weight(idx_var, Weight::Generator, event_info.genWeight.get());
+                outputs.set_event_weight(idx_var, Weight::PileUp, Shift::Nominal,
+                                         pu_weight({event_info.Pileup_nTrueInt.get(), "nominal"}));
+                outputs.set_event_weight(idx_var, Weight::PileUp, Shift::Up, pu_weight({event_info.Pileup_nTrueInt.get(), "up"}));
+                outputs.set_event_weight(idx_var, Weight::PileUp, Shift::Down,
+                                         pu_weight({event_info.Pileup_nTrueInt.get(), "down"}));
             }
             return *this;
         }
@@ -194,7 +189,7 @@ class EventData
             {
                 // fmt::print("DEBUG - generator_filter");
                 outputs.fill_default_cutflow_histos(CutFlow::NoCuts, 1.);
-                outputs.fill_default_cutflow_histos(CutFlow::GeneratorWeight, outputs.event_weight[idx_var].get());
+                outputs.fill_default_cutflow_histos(CutFlow::GeneratorWeight, outputs.get_event_weight(idx_var));
                 return *this;
             }
             set_null();
@@ -209,7 +204,7 @@ class EventData
             if (run_lumi_filter(event_info.run.get(), event_info.lumi.get(), is_data))
             {
                 // fmt::print("DEBUG - run_lumi_filter");
-                outputs.fill_default_cutflow_histos(CutFlow::RunLumi, outputs.event_weight[idx_var].get());
+                outputs.fill_default_cutflow_histos(CutFlow::RunLumi, outputs.get_event_weight(idx_var));
                 return *this;
             }
             set_null();
@@ -224,7 +219,7 @@ class EventData
             if (event_info.PV_npvsGood.get() > 0)
             {
                 // fmt::print("DEBUG - PV_npvsGood");
-                outputs.fill_default_cutflow_histos(CutFlow::nPV, outputs.event_weight[idx_var].get());
+                outputs.fill_default_cutflow_histos(CutFlow::nPV, outputs.get_event_weight(idx_var));
                 return *this;
             }
             set_null();
@@ -281,7 +276,7 @@ class EventData
             if (pass_MET_filters)
             {
                 // fmt::print("DEBUG - met_filter");
-                outputs.fill_default_cutflow_histos(CutFlow::MetFilters, outputs.event_weight[idx_var].get());
+                outputs.fill_default_cutflow_histos(CutFlow::MetFilters, outputs.get_event_weight(idx_var));
                 return *this;
             }
             set_null();
@@ -337,7 +332,7 @@ class EventData
             if (trigger_bits.any())
             {
                 // fmt::print("DEBUG - trigger_filter");
-                outputs.fill_default_cutflow_histos(CutFlow::TriggerCut, outputs.event_weight[idx_var].get());
+                outputs.fill_default_cutflow_histos(CutFlow::TriggerCut, outputs.get_event_weight(idx_var));
                 return *this;
             }
             set_null();
@@ -497,7 +492,9 @@ class EventData
             outputs.lumi_section.at(idx_var) = 2;
             outputs.event_number.at(idx_var) = 2;
             outputs.trigger_bits.at(idx_var) = 2;
-            // outputs.event_weight.at(idx_var)
+            // outputs.weights_nominal.at(idx_var) = {1, 2, 3};
+            // outputs.weights_up.at(idx_var) = {1, 2, 3};
+            // outputs.weights_down.at(idx_var) = {1, 2, 3};
             outputs.nClasses.at(idx_var) = 3;
             outputs.classes.at(idx_var) = {1, 2, 3};
             outputs.sum_pt.at(idx_var) = {1, 2, 3};

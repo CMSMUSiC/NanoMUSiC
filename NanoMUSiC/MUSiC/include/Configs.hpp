@@ -249,8 +249,6 @@ class TaskConfiguration
     const std::string run_hash;
     const std::string year_str;
     const std::vector<std::string> input_files;
-    const int _n_threads;
-    const std::size_t n_threads;
     const Year year;
     const std::string golden_json_file;
 
@@ -261,8 +259,7 @@ class TaskConfiguration
           is_crab_job(run_config.get<bool>("is_crab_job")),
           x_section_file(MUSiCTools::parse_and_expand_music_base(run_config.get<std::string>("x_section_file"))),
           run_hash(run_config.get<std::string>("hash")), year_str(run_config.get<std::string>("year")),
-          input_files(run_config.get_vector<std::string>("input_files")), _n_threads(run_config.get<int>("n_threads")),
-          n_threads(std::min(_n_threads, static_cast<int>(input_files.size()))), year(get_runyear(year_str)),
+          input_files(run_config.get_vector<std::string>("input_files")), year(get_runyear(year_str)),
           golden_json_file(MUSiCTools::parse_and_expand_music_base(RunConfig::Runs[year].golden_json))
 
     {

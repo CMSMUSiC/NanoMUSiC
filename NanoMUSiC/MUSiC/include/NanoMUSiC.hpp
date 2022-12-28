@@ -65,6 +65,7 @@
 #include "NanoObjects.hpp"
 #include "Outputs.hpp"
 // #include "ObjectCorrections.hpp"
+#include "Enumerate.hpp"
 #include "EventData.hpp"
 #include "Trigger.hpp"
 
@@ -142,7 +143,7 @@ constexpr bool is_tenth(int &event_counter)
             (event_counter >= 100000 && event_counter % 10000 == 0));
 }
 
-void save_class_storage(const std::set<unsigned long> &classes, std::string output_file_name)
+void save_class_storage(const std::unordered_set<unsigned long> &classes, std::string output_file_name)
 {
     // expected number of elements: (7*2 + 1) * classes.size()
     // 7 types of objects
@@ -198,14 +199,14 @@ void prepare_output_buffer(const TaskConfiguration &configuration)
     system(("cp " + MUSiCTools::parse_and_expand_music_base("$MUSIC_BASE/rootlogon.C") + " . ").c_str());
 }
 
-void print_final_report(const double &dTime1, const RVec<unsigned int> &event_counter)
+void print_final_report(const double &dTime1, const unsigned long &event_counter)
 {
     double dTime2 = getCpuTime();
-    std::cout << "[ Final Performance Report ] Analyzed " << Sum(event_counter) << " events";
-    std::cout << ", elapsed CPU time: " << dTime2 - dTime1 << "sec (" << double(Sum(event_counter)) / (dTime2 - dTime1)
+    std::cout << "[ Final Performance Report ] Analyzed " << event_counter << " events";
+    std::cout << ", elapsed CPU time: " << dTime2 - dTime1 << "sec (" << double(event_counter) / (dTime2 - dTime1)
               << " evts per sec)" << std::endl;
 
-    if (Sum(event_counter) == 0)
+    if (event_counter == 0)
     {
         std::cout << "Error: No event was analyzed!" << std::endl;
         throw std::runtime_error("No event was analyzed!");
