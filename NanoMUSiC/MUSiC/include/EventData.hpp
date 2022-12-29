@@ -45,11 +45,11 @@ class EventData
 
     EventData(NanoObjects::EventInfo &&_event_info, NanoObjects::Muons &&_muons, NanoObjects::Electrons &&_electrons,
               NanoObjects::Photons &&_photons, NanoObjects::Taus &&_taus, NanoObjects::BJets &&_bjets, NanoObjects::Jets &&_jets,
-              NanoObjects::MET &&_met, const bool &_is_data, const Year &_year, Variation variation = Variation::Default,
-              Shift shift = Shift::Nominal)
+              NanoObjects::MET &&_met, const bool &_is_data, const Year &_year, std::string_view variation = "Default",
+              std::string_view shift = "Nominal")
         : is_null(false), event_info(_event_info), muons(_muons), electrons(_electrons), photons(_photons), taus(_taus),
           bjets(_bjets), jets(_jets), met(_met), is_data(_is_data), year(_year),
-          idx_var(variation_and_shift_to_index(variation, shift))
+          idx_var(Outputs::variation_to_index(variation, shift))
     {
         if (idx_var < 0 || idx_var > Outputs::kTotalVariationsAndShifts)
         {
@@ -75,9 +75,9 @@ class EventData
         this->is_null = true;
     }
 
-    void set_variation_and_shift(const Variation &variation, const Shift &shift)
+    void set_variation_and_shift(const std::string_view &variation, const std::string_view &shift)
     {
-        this->idx_var = variation_and_shift_to_index(variation, shift);
+        this->idx_var = Outputs::variation_to_index(variation, shift);
     }
 
     template <typename T>
@@ -156,12 +156,10 @@ class EventData
             // should be called before any EventData method
             if (!is_data)
             {
-                outputs.set_event_weight(idx_var, Weight::Generator, event_info.genWeight.get());
-                outputs.set_event_weight(idx_var, Weight::PileUp, Shift::Nominal,
-                                         pu_weight({event_info.Pileup_nTrueInt.get(), "nominal"}));
-                outputs.set_event_weight(idx_var, Weight::PileUp, Shift::Up, pu_weight({event_info.Pileup_nTrueInt.get(), "up"}));
-                outputs.set_event_weight(idx_var, Weight::PileUp, Shift::Down,
-                                         pu_weight({event_info.Pileup_nTrueInt.get(), "down"}));
+                outputs.set_event_weight(idx_var, "Generator", event_info.genWeight.get());
+                outputs.set_event_weight(idx_var, "PileUp", "Nominal", pu_weight({event_info.Pileup_nTrueInt.get(), "nominal"}));
+                outputs.set_event_weight(idx_var, "PileUp", "Up", pu_weight({event_info.Pileup_nTrueInt.get(), "up"}));
+                outputs.set_event_weight(idx_var, "PileUp", "Down", pu_weight({event_info.Pileup_nTrueInt.get(), "down"}));
             }
             return *this;
         }
@@ -188,8 +186,8 @@ class EventData
             if (is_good_gen)
             {
                 // fmt::print("DEBUG - generator_filter");
-                outputs.fill_default_cutflow_histos(CutFlow::NoCuts, 1.);
-                outputs.fill_default_cutflow_histos(CutFlow::GeneratorWeight, outputs.get_event_weight(idx_var));
+                outputs.fill_default_cutflow_histos("NoCuts", 1.);
+                outputs.fill_default_cutflow_histos("GeneratorWeight", outputs.get_event_weight(idx_var));
                 return *this;
             }
             set_null();
@@ -204,7 +202,7 @@ class EventData
             if (run_lumi_filter(event_info.run.get(), event_info.lumi.get(), is_data))
             {
                 // fmt::print("DEBUG - run_lumi_filter");
-                outputs.fill_default_cutflow_histos(CutFlow::RunLumi, outputs.get_event_weight(idx_var));
+                outputs.fill_default_cutflow_histos("RunLumi", outputs.get_event_weight(idx_var));
                 return *this;
             }
             set_null();
@@ -219,7 +217,7 @@ class EventData
             if (event_info.PV_npvsGood.get() > 0)
             {
                 // fmt::print("DEBUG - PV_npvsGood");
-                outputs.fill_default_cutflow_histos(CutFlow::nPV, outputs.get_event_weight(idx_var));
+                outputs.fill_default_cutflow_histos("nPV", outputs.get_event_weight(idx_var));
                 return *this;
             }
             set_null();
@@ -276,7 +274,7 @@ class EventData
             if (pass_MET_filters)
             {
                 // fmt::print("DEBUG - met_filter");
-                outputs.fill_default_cutflow_histos(CutFlow::MetFilters, outputs.get_event_weight(idx_var));
+                outputs.fill_default_cutflow_histos("MetFilters", outputs.get_event_weight(idx_var));
                 return *this;
             }
             set_null();
@@ -332,7 +330,7 @@ class EventData
             if (trigger_bits.any())
             {
                 // fmt::print("DEBUG - trigger_filter");
-                outputs.fill_default_cutflow_histos(CutFlow::TriggerCut, outputs.get_event_weight(idx_var));
+                outputs.fill_default_cutflow_histos("TriggerCut", outputs.get_event_weight(idx_var));
                 return *this;
             }
             set_null();
@@ -506,7 +504,8 @@ class EventData
         return *this;
     }
 
-    static EventData apply_corrections(const EventData &event_data, const Variation &variation, const Shift &shift)
+    static EventData apply_corrections(const EventData &event_data, const std::string_view &variation,
+                                       const std::string_view &shift)
     {
         if (event_data)
         {

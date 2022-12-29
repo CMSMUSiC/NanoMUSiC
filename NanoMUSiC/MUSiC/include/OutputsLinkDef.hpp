@@ -8,11 +8,11 @@
 #pragma link C++ nestedtypedefs;
 // #pragma link C++ class Outputs + ;
 // #pragma link C++ class EventContent + ;
-#pragma link C++ class EventWeight + ;
+// #pragma link C++ class EventWeight + ;
 // #pragma link C++ class NanoObject + ;
-#pragma link C++ enum Variations + ;
-#pragma link C++ enum rm - rf * +;
-#pragma link C++ enum Weight + ;
-#pragma link C++ class vector < EventWeight> + ;
-#pragma link C++ class set < unsigned long> + ;
+// #pragma link C++ enum Variation + ;
+// #pragma link C++ enum Shift +;
+// #pragma link C++ enum Weight + ;
+// #pragma link C++ class vector < EventWeight> + ;
+#pragma link C++ class unordered_set < unsigned long> + ;
 #endif

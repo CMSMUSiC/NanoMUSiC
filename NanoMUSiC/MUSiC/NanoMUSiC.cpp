@@ -202,7 +202,7 @@ int main(int argc, char *argv[])
             // met
             NanoObjects::MET(temp_met_pt, temp_met_eta, temp_met_phi),
             // non-event data
-            configuration.is_data, configuration.year, Variation::Default, Shift::Nominal);
+            configuration.is_data, configuration.year, "Default", "Nominal");
 
         event_data = event_data.set_const_weights(outputs, pu_weight)
                          .generator_filter(outputs)
@@ -215,9 +215,9 @@ int main(int argc, char *argv[])
         // loop over variations, shifts and classes (aka multiplicities)
         // the range::view was cleanned to skip all variations for Data
         for (const auto &variation_and_shift :
-             RangesHelpers::VariationsAndShifts | views::remove_if([&](auto variation_and_shift) {
+             Outputs::VariationsAndShiftsRange | views::remove_if([&](auto variation_and_shift) {
                  const auto [variation, shift] = variation_and_shift;
-                 return (configuration.is_data) && (variation != Variation::Default);
+                 return (configuration.is_data) && (variation != "Default");
              }))
         {
             const auto [variation, shift] = variation_and_shift;
