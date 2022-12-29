@@ -187,14 +187,19 @@ class Outputs
 
         // general case
         std::size_t idx_variation = (index + 1) / 2;
-        std::size_t idx_shift = index % (idx_variation + 1) + 1;
+        std::size_t idx_shift = index - 2 * idx_variation + 2;
         return std::make_pair(Outputs::Variations[idx_variation], Outputs::Shifts[idx_shift]);
     }
-    static inline auto VariationsAndShiftsRange =
-        views::cartesian_product(Outputs::Variations, Outputs::Shifts) | views::remove_if([](auto variation_and_shift) {
-            const auto [variation, shift] = variation_and_shift;
-            return (variation == "Default" && (shift == "Up" || shift == "Down"));
-        });
+
+    static inline auto VariationsAndShiftsRange = views::cartesian_product(Outputs::Variations, Outputs::Shifts) |
+                                                  views::remove_if([](auto variation_and_shift) {
+                                                      const auto [variation, shift] = variation_and_shift;
+                                                      return (variation == "Default" && (shift == "Up" || shift == "Down"));
+                                                  }) |
+                                                  views::remove_if([](auto variation_and_shift) {
+                                                      const auto [variation, shift] = variation_and_shift;
+                                                      return (variation != "Default" && shift == "Nominal");
+                                                  });
 
     static constexpr unsigned int kTotalVariationsAndShifts = (Outputs::kTotalVariations - 1) * 2 + 1;
     static inline const auto VariationsAndShiftsIndexRange = RangesHelpers::index_range<unsigned long>(kTotalVariationsAndShifts);
@@ -402,7 +407,7 @@ class Outputs
         {
             output_trees.at(idx_var)->Write();
             const auto [variation, shift] = index_to_variation(idx_var);
-            variations_str += fmt::format("Index: {} - Variation: {} - Shift: {}", idx_var, variation, shift);
+            variations_str += fmt::format("Index: {} - Variation: {} - Shift: {}; ", idx_var, variation, shift);
             output_file->WriteObject(&set_of_classes.at(idx_var), ("set_of_classes_" + std::to_string(idx_var)).c_str());
             cutflow_histos.at(idx_var).Write();
         }

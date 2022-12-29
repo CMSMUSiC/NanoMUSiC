@@ -1,23 +1,15 @@
-debug = 1
 output = 'test_data_2017'
-max_events = -1
-number_of_events_to_skip = 0
 is_data = true                                    # Is Data?
 x_section_file = '$MUSIC_BASE/configs/xsections_and_lumi/x_sections.toml'
 year = '2017'
-# output_file = '' # if empty, constructed from process
 process = 'SingleMuonX_2017'
 dataset = '/SingleMuonX/bar/abc/NANOAOD'
-hash = 'dummyhash'
-cacheread = true
-is_crab_job = false
-max_file_load_error_rate = 0.15 # max fraction of file load error (only for MC)
-n_threads = 21
+s_crab_job = false
 
 
 input_files = [
     '/home/home1/institut_3a/silva/projects/music/test_data/SingleMuon2017/037CED2F-27B3-DB4A-9A9D-C588589EDCE7.root',
-    '/home/home1/institut_3a/silva/projects/music/test_data/SingleMuon2017/056C66FC-4143-4546-9861-D089AFFB4E55.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/SingleMuon2017/056C66FC-4143-4546-9861-D089AFFB4E55.root',
 ]
 
 # input_files = [
