@@ -70,7 +70,7 @@
 #include "Trigger.hpp"
 
 using namespace std::chrono_literals;
-using namespace ranges;
+// using namespace ranges;
 using namespace ROOT::Math;
 using namespace ROOT::VecOps;
 
@@ -194,9 +194,6 @@ void prepare_output_buffer(const TaskConfiguration &configuration)
 
     // save other configs with output
     system(("cp " + configuration.x_section_file + " . ").c_str());
-
-    // copy rootlogon.C
-    system(("cp " + MUSiCTools::parse_and_expand_music_base("$MUSIC_BASE/rootlogon.C") + " . ").c_str());
 }
 
 void print_final_report(const double &dTime1, const unsigned long &event_counter)

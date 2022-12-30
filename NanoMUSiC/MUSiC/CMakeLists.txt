@@ -8,59 +8,47 @@
 add_library(NanoAODReader
     NanoAODReader.cpp
 )
-#target_include_directories(NanoAODReader PUBLIC include)
 target_compile_options(NanoAODReader PUBLIC -g -c -O3)
 
-#################################################
-#################################################
-# Outputs
-#################################################
-#################################################
+# #####################################################
+# #####################################################
+# NanoMUSiC (Skimmer) 
+# #####################################################
+# #####################################################
 
-add_library(Outputs SHARED
-        include/Outputs.hpp
+# correctionlib compilation and linking flags
+execute_process(COMMAND correction config --cflags --ldflags --rpath OUTPUT_VARIABLE CORRECTIONLIB_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+separate_arguments(CORRECTIONLIB_FLAGS)
+
+# compilation options
+execute_process(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+separate_arguments(ROOT_CFLAGS)
+add_compile_options(${ROOT_CFLAGS} ${CORRECTIONLIB_FLAGS} -fdiagnostics-color=always -MD -MP -O3 -Wall -fconcepts-ts -pthread -m64 -ffloat-store)
+
+# root linker options
+execute_process(COMMAND root-config --ldflags OUTPUT_VARIABLE ROOT_LDFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+separate_arguments(ROOT_LDFLAGS)
+
+# root libs
+execute_process(COMMAND root-config --libs OUTPUT_VARIABLE ROOT_LIBS OUTPUT_STRIP_TRAILING_WHITESPACE)
+separate_arguments(ROOT_LIBS)
+
+add_link_options(
+    -fdiagnostics-color=always
+    ${ROOT_LDFLAGS}
+    ${ROOT_LIBS}
+    ${CORRECTIONLIB_FLAGS}
+    -L${LCG_BASE}/lib
+    -L${LCG_BASE}/lib64
+    -lLHAPDF
+    -lfmt
+    #-L${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-Utils/lib
+    -lz
+    -lstdc++fs
 )
 
-target_include_directories(Outputs PUBLIC ./)
-target_compile_options(Outputs PUBLIC
-        -MD
-        -MP
-        -O3
-        -Wall
-        -fPIC
-        -fsignaling-nans
-        -funsafe-math-optimizations
-        -fno-rounding-math
-        -fno-signaling-nans
-        -fcx-limited-range
-        -fno-associative-math
-        -DMYPXLANA=EventClassFactory/AnalysisComposer.hpp
-        -pthread
-        -std=c++17
-        -m64
-        -ffloat-store
-)
-
-target_link_options(Outputs PRIVATE -lz -fno-associative-math)
-
-message(STATUS "Generating Outputs dictionaries ...")
-ROOT_GENERATE_DICTIONARY(OutputsDict include/Outputs.hpp MODULE Outputs LINKDEF include/OutputsLinkDef.hpp)
-message(STATUS "Done.")
-
-install(TARGETS OutputsDict DESTINATION ${CMAKE_SOURCE_DIR}/lib)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libOutputs_rdict.pcm DESTINATION ${CMAKE_SOURCE_DIR}/lib)
-install(TARGETS Outputs DESTINATION ${CMAKE_SOURCE_DIR}/lib)
-
-
-# #####################################################
-# #####################################################
-# #####################################################
-
-# nano_music (classification)
 add_executable(nano_music NanoMUSiC.cpp external/roccor/RoccoR.cc )
-# target_link_libraries(nano_music LINK_PUBLIC PxlAnalyzer TEventClass Outputs)
-#target_link_libraries(nano_music LINK_PUBLIC Outputs NanoAODReader)
-target_link_libraries(nano_music LINK_PUBLIC Outputs)
+target_link_libraries(nano_music LINK_PUBLIC)
 install(TARGETS nano_music DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 
 # MC
@@ -78,6 +66,10 @@ add_test(NAME test_nano_music_2018_Data COMMAND nano_music --batch --run-config 
 # #####################################################
 # #####################################################
 # #####################################################
+
+add_link_options(
+     -lboost_program_options
+)
 
 # nanoaod_content_printer
 add_executable(nanoaod_content_printer nanoaod_content_printer.cpp)

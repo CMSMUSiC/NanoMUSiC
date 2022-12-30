@@ -14,137 +14,44 @@
 #include <vector>
 
 // ROOT stuff
+#include "ROOT/RVec.hxx"
 #include "TFile.h"
 #include "TH1.h"
 #include "TObjString.h"
 #include "TObject.h"
 #include "TTree.h"
 
-// On: 28.10.2022
-// https://ericniebler.github.io/range-v3
-// https://github.com/ericniebler/range-v3
-#include <range/v3/all.hpp>
-
 #include <fmt/core.h>
 #include <fmt/ostream.h>
 #include <fmt/ranges.h>
-// using fmt::print;
 
 #include "Enumerate.hpp"
 #include "MUSiCTools.hpp"
 #include "NanoObjects.hpp"
 
-using namespace ranges;
+using namespace ROOT;
+using namespace ROOT::VecOps;
 
-constexpr int MAX_JETS = 6; // SAME AS 2016 PAPER
-constexpr int MAX_OBJECTS = 99;
-
-// enum Shift
-// {
-//     Nominal,
-//     Up,
-//     Down,
-//     kTotalShifts, // !!! should always be the last one !!!
-// };
-
-// enum Variation
-// {
-//     Default, // !!! should always be the first!!!
-//     JEC,
-//     JER,
-//     MuonScale,
-//     MuonResolution,
-//     ElectronScale,
-//     ElectronResolution,
-//     kTotalVariations, // !!! should always be the last one !!!
-// };
-
-// enum Weight
-// {
-//     Generator,
-//     PDF,
-//     Alpha_S,
-//     PileUp,
-//     Lumi,
-//     Trigger,
-//     kTotalWeights, // !!! should always be the last one !!!
-// };
-
-namespace RangesHelpers
+namespace IndexHelpers
 {
-
-// Helper function to get a integer iterator
-template <typename T = UInt_t>
-constexpr auto index_range(const int &from, const int &to)
+const std::vector<long> make_index(long first, long last)
 {
-    using namespace ranges;
-    return views::ints(from, to) | views::transform([](auto i) { return static_cast<T>(std::make_unsigned_t<int>(i)); });
+    auto vec = std::vector<long>(last - first + 1);
+    long item = first;
+    for (std::size_t i = 0; i < vec.size(); i++)
+    {
+        vec[i] = item;
+        item++;
+    }
+    return vec;
 }
 
-template <typename T = UInt_t>
-constexpr auto index_range(const int &to)
+const std::vector<long> make_index(long lenght)
 {
-    return index_range<T>(0, to);
+    return make_index(0, lenght - 1);
 }
 
-// const auto Variations = index_range<Variation>(Variation::kTotalVariations);
-// const auto Shifts = index_range<Shift>(Shift::kTotalShifts);
-// auto VariationsAndShifts = views::cartesian_product(Variations, Shifts) | views::remove_if([](auto variation_and_shift) {
-//                                const auto [variation, shift] = variation_and_shift;
-//                                return (variation == Variation::Default && (shift == Shift::Up || shift == Shift::Down));
-//                            }) |
-//                            views::remove_if([](auto variation_and_shift) {
-//                                const auto [variation, shift] = variation_and_shift;
-//                                return (variation == Variation::kTotalVariations);
-//                            }) |
-//                            views::remove_if([](auto variation_and_shift) {
-//                                const auto [variation, shift] = variation_and_shift;
-//                                return (shift == Shift::kTotalShifts);
-//                            });
-
-// const auto Weights = index_range<Weight>(Weight::kTotalWeights);
-} // namespace RangesHelpers
-
-// enum CutFlow
-// {
-//     // should be kept in order
-//     NoCuts,
-//     GeneratorWeight,
-//     RunLumi,
-//     nPV,
-//     MetFilters,
-//     TriggerCut,
-//     TriggerMatch,
-//     AtLeastOneClass,
-//     kTotalCuts, // --> should be the last one
-// };
-
-//     void (const Multiplicity_t &multiplicity, const std::optional<NanoObjects::NanoAODObjects_t> nanoaod_objects)
-//     {
-//         if (nanoaod_objects)
-//         {
-//             // unpacking ...
-//             const auto [i_muons, i_electrons, i_photons, i_taus, i_bjets, i_jets, i_met] = multiplicity;
-//             const auto [muons, electrons, photons, taus, bjets, jets, met_obj] = *nanoaod_objects;
-
-//             // auto selected_muons = NanoObjects::Take(muons, i_muons);
-//             // auto selected_electrons = NanoObjects::Take(electrons, i_electrons);
-//             // auto selected_photons = NanoObjects::Take(photons, i_photons);
-//             // // auto selected_taus = NanoObjects::Take(taus, i_taus);
-//             // auto selected_bjets = NanoObjects::Take(bjets, i_bjets);
-//             // auto selected_jets = NanoObjects::Take(jets, i_jets);
-//             // auto selected_met = NanoObjects::Take(met_obj, i_met);
-
-//             // FIX ME: add taus
-//             sum_pt.push_back(10.);
-//             // sum_pt.push_back(ranges::accumulate(
-//             //     views::concat(selected_muons, selected_electrons, selected_photons, selected_bjets, selected_jets,
-//             //     selected_met) |
-//             //         views::transform([](const auto _muon) { return _muon.pt(); }),
-//             //     0));
-//             mass.push_back(20.);
-//             met.push_back(30.);
-//             event_class_hash.push_back(EventContent::make_class_hash(multiplicity));
+} // namespace IndexHelpers
 
 class Outputs
 {
@@ -156,164 +63,154 @@ class Outputs
     static constexpr auto Cuts = make_enumerate("NoCuts", "GeneratorWeight", "RunLumi", "nPV", "MetFilters", "TriggerCut",
                                                 "TriggerMatch", "AtLeastOneClass");
     static constexpr auto Weights = make_enumerate("Generator", "PDF", "Alpha_S", "PileUp", "Lumi", "Trigger");
-    static constexpr auto Variations =
-        make_enumerate("Default", "JEC", "JER", "MuonScale", "MuonResolution", "ElectronScale", "ElectronResolution");
+    // static constexpr auto Variations =
+    //     make_enumerate("Default", "JEC", "JER", "MuonScale", "MuonResolution", "ElectronScale", "ElectronResolution");
     static constexpr auto Shifts = make_enumerate("Nominal", "Up", "Down");
 
     static constexpr auto kTotalCuts = Outputs::Cuts.size();
     static constexpr auto kTotalWeights = Outputs::Weights.size();
-    static constexpr auto kTotalVariations = Outputs::Variations.size();
+    // static constexpr auto kTotalVariations = Outputs::Variations.size();
     static constexpr auto kTotalshifts = Outputs::Shifts.size();
-
-    static unsigned int variation_to_index(std::string_view variation, std::string_view shift)
-    {
-        // default case
-        if (variation == "Default")
-        {
-            return 0;
-        }
-
-        // general case
-        return 2 * Outputs::Variations.index_of(variation) - 2 + Outputs::Shifts.index_of(shift);
-    }
-
-    static std::pair<std::string_view, std::string_view> index_to_variation(std::size_t index)
-    {
-        // default case
-        if (index == 0)
-        {
-            return std::make_pair(Outputs::Variations[0], Outputs::Shifts[0]);
-        }
-
-        // general case
-        std::size_t idx_variation = (index + 1) / 2;
-        std::size_t idx_shift = index - 2 * idx_variation + 2;
-        return std::make_pair(Outputs::Variations[idx_variation], Outputs::Shifts[idx_shift]);
-    }
-
-    static inline auto VariationsAndShiftsRange = views::cartesian_product(Outputs::Variations, Outputs::Shifts) |
-                                                  views::remove_if([](auto variation_and_shift) {
-                                                      const auto [variation, shift] = variation_and_shift;
-                                                      return (variation == "Default" && (shift == "Up" || shift == "Down"));
-                                                  }) |
-                                                  views::remove_if([](auto variation_and_shift) {
-                                                      const auto [variation, shift] = variation_and_shift;
-                                                      return (variation != "Default" && shift == "Nominal");
-                                                  });
-
-    static constexpr unsigned int kTotalVariationsAndShifts = (Outputs::kTotalVariations - 1) * 2 + 1;
-    static inline const auto VariationsAndShiftsIndexRange = RangesHelpers::index_range<unsigned long>(kTotalVariationsAndShifts);
 
     // output file
     std::unique_ptr<TFile> output_file;
 
     // output event trees
-    std::array<std::unique_ptr<TTree>, kTotalVariationsAndShifts> output_trees;
+    std::unique_ptr<TTree> output_tree;
 
     // output data per event
-    std::array<unsigned int, kTotalVariationsAndShifts> run;
-    std::array<unsigned int, kTotalVariationsAndShifts> lumi_section;
-    std::array<unsigned long, kTotalVariationsAndShifts> event_number;
-    std::array<unsigned long, kTotalVariationsAndShifts> trigger_bits;
-    std::array<std::array<float, kTotalWeights>, kTotalVariationsAndShifts> weights_nominal;
-    std::array<std::array<float, kTotalWeights>, kTotalVariationsAndShifts> weights_up;
-    std::array<std::array<float, kTotalWeights>, kTotalVariationsAndShifts> weights_down;
-    std::array<unsigned long, kTotalVariationsAndShifts> nClasses;
-    std::array<std::vector<unsigned long>, kTotalVariationsAndShifts> classes;
-    std::array<std::vector<float>, kTotalVariationsAndShifts> sum_pt;
-    std::array<std::vector<float>, kTotalVariationsAndShifts> invariant_mass;
-    std::array<std::vector<float>, kTotalVariationsAndShifts> met;
+    unsigned int run;
+    unsigned int lumi_section;
+    unsigned long event_number;
+    unsigned long trigger_bits;
 
-    // set of classes (unique classes)
-    std::array<std::unordered_set<unsigned long>, kTotalVariationsAndShifts> set_of_classes;
+    std::array<float, kTotalWeights> weights_nominal;
+    std::array<float, kTotalWeights> weights_up;
+    std::array<float, kTotalWeights> weights_down;
+
+    unsigned int nMuon;
+    RVec<float> Muon_pt;
+    RVec<float> Muon_eta;
+    RVec<float> Muon_phi;
+
+    unsigned int nElectron;
+    RVec<float> Electron_pt;
+    RVec<float> Electron_eta;
+    RVec<float> Electron_phi;
+
+    unsigned int nPhoton;
+    RVec<float> Photon_pt;
+    RVec<float> Photon_eta;
+    RVec<float> Photon_phi;
+
+    unsigned int nTau;
+    RVec<float> Tau_pt;
+    RVec<float> Tau_eta;
+    RVec<float> Tau_phi;
+
+    unsigned int nBJet;
+    RVec<float> BJet_pt;
+    RVec<float> BJet_eta;
+    RVec<float> BJet_phi;
+
+    unsigned int nJet;
+    RVec<float> Jet_pt;
+    RVec<float> Jet_eta;
+    RVec<float> Jet_phi;
+
+    unsigned int nMET;
+    RVec<float> MET_pt;
+    RVec<float> MET_phi;
 
     // cutflow
-    std::array<TH1F, kTotalVariationsAndShifts> cutflow_histos;
+    TH1F cutflow_histo;
 
     Outputs(const std::string _filename)
         : filename(_filename), output_file(std::unique_ptr<TFile>(TFile::Open(filename.c_str(), "RECREATE")))
     {
-        // fmt::print("DEBUG - TotalVariationsAndShifts: {}\n", kTotalVariationsAndShifts);
-        for (auto &&idx_var : VariationsAndShiftsIndexRange)
-        {
-            const auto [variation, shift] = index_to_variation(idx_var);
-            // make event trees
-            const std::string output_title = fmt::format("Variation: {} - Shift: {}", variation, shift);
-            output_trees.at(idx_var) =
-                std::make_unique<TTree>(("nano_music_" + std::to_string(idx_var)).c_str(), output_title.c_str());
-            output_trees.at(idx_var)->SetDirectory(output_file.get());
 
-            // tree branches
-            output_trees.at(idx_var)->Branch("run", &run.at(idx_var));
-            output_trees.at(idx_var)->Branch("lumi_section", &lumi_section.at(idx_var));
-            output_trees.at(idx_var)->Branch("event_number", &event_number.at(idx_var));
-            output_trees.at(idx_var)->Branch("trigger_bits", &trigger_bits.at(idx_var));
-            output_trees.at(idx_var)->Branch("weights_nominal", &weights_nominal.at(idx_var));
-            output_trees.at(idx_var)->Branch("weights_up", &weights_up.at(idx_var));
-            output_trees.at(idx_var)->Branch("weights_down", &weights_down.at(idx_var));
-            output_trees.at(idx_var)->Branch("nClasses", &nClasses.at(idx_var));
-            output_trees.at(idx_var)->Branch("classes", &classes.at(idx_var));
-            output_trees.at(idx_var)->Branch("sum_pt", &sum_pt.at(idx_var));
-            output_trees.at(idx_var)->Branch("invariant_mass", &invariant_mass.at(idx_var));
-            output_trees.at(idx_var)->Branch("met", &met.at(idx_var));
+        output_tree = std::make_unique<TTree>("nano_music", "nano_music");
+        output_tree->SetDirectory(output_file.get());
 
-            // make cutflow histos
-            const std::string histo_name = "cutflow_" + std::to_string(idx_var);
-            cutflow_histos.at(idx_var) = TH1F(histo_name.c_str(), output_title.c_str(), kTotalCuts, -0.5, kTotalCuts + 0.5);
-            cutflow_histos.at(idx_var).Sumw2();
-            cutflow_histos.at(idx_var).SetDirectory(output_file.get());
-        }
+        // tree branches
+        output_tree->Branch("run", &run);
+        output_tree->Branch("lumi_section", &lumi_section);
+        output_tree->Branch("event_number", &event_number);
+        output_tree->Branch("trigger_bits", &trigger_bits);
+        output_tree->Branch("weights_nominal", &weights_nominal);
+        output_tree->Branch("weights_up", &weights_up);
+        output_tree->Branch("weights_down", &weights_down);
+        output_tree->Branch("nMuon", &nMuon);
+        output_tree->Branch("Muon_pt", &Muon_pt);
+        output_tree->Branch("Muon_eta", &Muon_eta);
+        output_tree->Branch("Muon_phi", &Muon_phi);
+        output_tree->Branch("nElectron", &nElectron);
+        output_tree->Branch("Electron_pt", &Electron_pt);
+        output_tree->Branch("Electron_eta", &Electron_eta);
+        output_tree->Branch("Electron_phi", &Electron_phi);
+        output_tree->Branch("nPhoton", &nPhoton);
+        output_tree->Branch("Photon_pt", &Photon_pt);
+        output_tree->Branch("Photon_eta", &Photon_eta);
+        output_tree->Branch("Photon_phi", &Photon_phi);
+        output_tree->Branch("nTau", &nTau);
+        output_tree->Branch("Tau_pt", &Tau_pt);
+        output_tree->Branch("Tau_eta", &Tau_eta);
+        output_tree->Branch("Tau_phi", &Tau_phi);
+        output_tree->Branch("nBJet", &nBJet);
+        output_tree->Branch("BJet_pt", &BJet_pt);
+        output_tree->Branch("BJet_eta", &BJet_eta);
+        output_tree->Branch("BJet_phi", &BJet_phi);
+        output_tree->Branch("nJet", &nJet);
+        output_tree->Branch("Jet_pt", &Jet_pt);
+        output_tree->Branch("Jet_eta", &Jet_eta);
+        output_tree->Branch("Jet_phi", &Jet_phi);
+        output_tree->Branch("nMET", &nMET);
+        output_tree->Branch("MET_pt", &MET_pt);
+        output_tree->Branch("MET_phi", &MET_phi);
+
+        // make cutflow histos
+        const std::string histo_name = "cutflow";
+        cutflow_histo = TH1F("cutflow", "cutflow", kTotalCuts, -0.5, kTotalCuts + 0.5);
+        cutflow_histo.Sumw2();
+        cutflow_histo.SetDirectory(output_file.get());
     }
 
-    void set_event_weight(unsigned int idx_var, std::string_view weight, std::string_view shift, float value)
+    void set_event_weight(std::string_view weight, std::string_view shift, float value)
     {
         if (shift == "Up")
         {
-            weights_up.at(idx_var).at(Outputs::Weights.index_of(weight)) = value;
+            weights_up.at(Outputs::Weights.index_of(weight)) = value;
         }
         else if (shift == "Down")
         {
-
-            weights_down.at(idx_var).at(Outputs::Weights.index_of(weight)) = value;
+            weights_down.at(Outputs::Weights.index_of(weight)) = value;
         }
         else
         {
-            weights_nominal.at(idx_var).at(Outputs::Weights.index_of(weight)) = value;
+            weights_nominal.at(Outputs::Weights.index_of(weight)) = value;
         }
     }
 
-    void set_event_weight(std::string_view variation, std::string_view var_shift, std::string_view weight, std::string_view shift,
-                          float value)
+    void set_event_weight(std::string_view weight, float value)
     {
-        return set_event_weight(variation_to_index(variation, var_shift), weight, shift, value);
+        weights_up.at(Outputs::Weights.index_of(weight)) = value;
+        weights_down.at(Outputs::Weights.index_of(weight)) = value;
+        weights_nominal.at(Outputs::Weights.index_of(weight)) = value;
     }
 
-    void set_event_weight(unsigned int idx_var, std::string_view weight, float value)
+    float get_event_weight(std::string_view weight = "", std::string_view shift = "Nominal")
     {
-        weights_up.at(idx_var).at(Outputs::Weights.index_of(weight)) = value;
-        weights_down.at(idx_var).at(Outputs::Weights.index_of(weight)) = value;
-        weights_nominal.at(idx_var).at(Outputs::Weights.index_of(weight)) = value;
-    }
-
-    void set_event_weight(std::string_view variation, std::string_view var_shift, std::string_view weight, float value)
-    {
-        return set_event_weight(variation_to_index(variation, var_shift), weight, value);
-    }
-
-    float get_event_weight(unsigned int idx_var, std::string_view weight = "", std::string_view shift = "Nominal")
-    {
-        auto nominal_weight =
-            std::reduce(weights_nominal.at(idx_var).cbegin(), weights_nominal.at(idx_var).cend(), 1., std::multiplies<float>());
+        auto nominal_weight = std::reduce(weights_nominal.cbegin(), weights_nominal.cend(), 1., std::multiplies<float>());
 
         if (shift == "Up")
         {
-            return weights_up.at(idx_var).at(Outputs::Weights.index_of(weight)) /
-                   weights_nominal.at(idx_var).at(Outputs::Weights.index_of(weight)) * nominal_weight;
+            return weights_up.at(Outputs::Weights.index_of(weight)) / weights_nominal.at(Outputs::Weights.index_of(weight)) *
+                   nominal_weight;
         }
         else if (shift == "Down")
         {
-            return weights_down.at(idx_var).at(Outputs::Weights.index_of(weight)) /
-                   weights_nominal.at(idx_var).at(Outputs::Weights.index_of(weight)) * nominal_weight;
+            return weights_down.at(Outputs::Weights.index_of(weight)) / weights_nominal.at(Outputs::Weights.index_of(weight)) *
+                   nominal_weight;
         }
         else
         {
@@ -321,98 +218,115 @@ class Outputs
         }
     }
 
-    float get_event_weight(std::string_view variation, std::string_view var_shift, std::string_view weight = "",
-                           std::string_view shift = "Nominal")
-    {
-        return get_event_weight(variation_to_index(variation, var_shift), weight, shift);
-    }
-
     // clear event tree
-    void clear_event_tree(unsigned int idx_var)
+    void clear_event_tree()
     {
-        run.at(idx_var) = 0;
-        lumi_section.at(idx_var) = 0;
-        event_number.at(idx_var) = 0;
-        trigger_bits.at(idx_var) = 0;
+        run = 0;
+        lumi_section = 0;
+        event_number = 0;
+        trigger_bits = 0;
 
         for (auto &&idx_weight : Outputs::Weights)
         {
-            weights_nominal.at(idx_var).at(Outputs::Weights.index_of(idx_weight)) = 1.;
-            weights_up.at(idx_var).at(Outputs::Weights.index_of(idx_weight)) = 1.;
-            weights_down.at(idx_var).at(Outputs::Weights.index_of(idx_weight)) = 1.;
+            weights_nominal.at(Outputs::Weights.index_of(idx_weight)) = 1.;
+            weights_up.at(Outputs::Weights.index_of(idx_weight)) = 1.;
+            weights_down.at(Outputs::Weights.index_of(idx_weight)) = 1.;
         }
 
-        nClasses.at(idx_var) = 0;
-        classes.at(idx_var).clear();
-        sum_pt.at(idx_var).clear();
-        invariant_mass.at(idx_var).clear();
-        met.at(idx_var).clear();
+        nMuon = 0;
+        Muon_pt.clear();
+        Muon_eta.clear();
+        Muon_phi.clear();
+
+        nElectron = 0;
+        Electron_pt.clear();
+        Electron_eta.clear();
+        Electron_phi.clear();
+
+        nPhoton = 0;
+        Photon_pt.clear();
+        Photon_eta.clear();
+        Photon_phi.clear();
+
+        nTau = 0;
+        Tau_pt.clear();
+        Tau_eta.clear();
+        Tau_phi.clear();
+
+        nBJet = 0;
+        BJet_pt.clear();
+        BJet_eta.clear();
+        BJet_phi.clear();
+
+        nJet = 0;
+        Jet_pt.clear();
+        Jet_eta.clear();
+        Jet_phi.clear();
+
+        nMET = 0;
+        MET_pt.clear();
+        MET_phi.clear();
     }
 
-    // fill event trees
-    void clear_event_trees()
+    void fill_event_tree()
     {
-        for (auto &&idx_var : VariationsAndShiftsIndexRange)
-        {
-            clear_event_tree(idx_var);
-        }
-    }
-
-    // fill event tree
-    void fill_event_tree(unsigned long idx_var)
-    {
-        output_trees.at(idx_var)->Fill();
-        for (const auto &reconstructed_class : classes.at(idx_var))
-        {
-            set_of_classes.at(idx_var).insert(reconstructed_class);
-        }
-    }
-
-    // fill event trees
-    void fill_event_trees()
-    {
-        for (auto &&idx_var : VariationsAndShiftsIndexRange)
-        {
-            fill_event_tree(idx_var);
-        }
-    }
-
-    // fill (unique) classes
-    void fill_classes(unsigned long idx_var, unsigned long _class)
-    {
-        set_of_classes.at(idx_var).insert(_class);
+        output_tree->Fill();
     }
 
     // fill cutflow
-    void fill_cutflow_histo(unsigned long idx_var, std::string_view cut, float weight)
+    void fill_cutflow_histo(std::string_view cut, float weight)
     {
-        cutflow_histos.at(idx_var).Fill(Outputs::Cuts.index_of(cut), weight);
+        cutflow_histo.Fill(Outputs::Cuts.index_of(cut), weight);
     }
 
-    // fill Default cutflow histograms
-    void fill_default_cutflow_histos(std::string_view cut, float weight)
+    void fill_branches(RVec<float> &&_muon_pt, RVec<float> &&_muon_eta, RVec<float> &&_muon_phi, RVec<float> &&_electron_pt,
+                       RVec<float> &&_electron_eta, RVec<float> &&_electron_phi, RVec<float> &&_photon_pt,
+                       RVec<float> &&_photon_eta, RVec<float> &&_photon_phi, RVec<float> &&_tau_pt, RVec<float> &&_tau_eta,
+                       RVec<float> &&_tau_phi, RVec<float> &&_bjet_pt, RVec<float> &&_bjet_eta, RVec<float> &&_bjet_phi,
+                       RVec<float> &&_jet_pt, RVec<float> &&_jet_eta, RVec<float> &&_jet_phi, RVec<float> &&_met_pt,
+                       RVec<float> &&_met_phi)
     {
-        for (auto &&idx_var : VariationsAndShiftsIndexRange)
-        {
-            cutflow_histos.at(idx_var).Fill(Outputs::Cuts.index_of(cut), weight);
-        }
+        Muon_pt = std::move(_muon_pt);
+        Muon_eta = std::move(_muon_eta);
+        Muon_phi = std::move(_muon_phi);
+        nMuon = Muon_pt.size();
+
+        Electron_pt = std::move(_electron_pt);
+        Electron_eta = std::move(_electron_eta);
+        Electron_phi = std::move(_electron_phi);
+        nElectron = Electron_pt.size();
+
+        Photon_pt = std::move(_photon_pt);
+        Photon_eta = std::move(_photon_eta);
+        Photon_phi = std::move(_photon_phi);
+        nPhoton = Photon_pt.size();
+
+        Tau_pt = std::move(_tau_pt);
+        Tau_eta = std::move(_tau_eta);
+        Tau_phi = std::move(_tau_phi);
+        nTau = Tau_pt.size();
+
+        BJet_pt = std::move(_bjet_pt);
+        BJet_eta = std::move(_bjet_eta);
+        BJet_phi = std::move(_bjet_phi);
+        nBJet = BJet_pt.size();
+
+        Jet_pt = std::move(_jet_pt);
+        Jet_eta = std::move(_jet_eta);
+        Jet_phi = std::move(_jet_phi);
+        nJet = Jet_pt.size();
+
+        MET_pt = std::move(_met_pt);
+        MET_phi = std::move(_met_phi);
+        nMET = MET_pt.size();
     }
 
     // save storaged data
     void write_data()
     {
         output_file->cd();
-        std::string variations_str = "";
-        for (auto &&idx_var : VariationsAndShiftsIndexRange)
-        {
-            output_trees.at(idx_var)->Write();
-            const auto [variation, shift] = index_to_variation(idx_var);
-            variations_str += fmt::format("Index: {} - Variation: {} - Shift: {}; ", idx_var, variation, shift);
-            output_file->WriteObject(&set_of_classes.at(idx_var), ("set_of_classes_" + std::to_string(idx_var)).c_str());
-            cutflow_histos.at(idx_var).Write();
-        }
-        auto variations_obj_str = TObjString(variations_str.c_str());
-        output_file->WriteObject(&variations_obj_str, "indexes_variations_shifts");
+        output_tree->Write();
+        cutflow_histo.Write();
     }
 };
 

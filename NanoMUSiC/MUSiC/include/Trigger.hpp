@@ -11,9 +11,9 @@
 // #include <range/v3/view/remove_if.hpp>
 // #include <range/v3/view/take.hpp>
 // #include <range/v3/view/transform.hpp>
-#include <range/v3/all.hpp>
+// #include <range/v3/all.hpp>
 
-using namespace ranges;
+// using namespace ranges;
 using namespace ROOT::VecOps;
 
 enum HLTPath

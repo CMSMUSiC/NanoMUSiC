@@ -173,9 +173,9 @@ int main(int argc, char *argv[])
         event_counter++;
 
         // clear outputs
-        outputs.clear_event_trees();
+        outputs.clear_event_tree();
 
-        // temporaries
+        // MET - temporaries
         RVec<float> temp_met_pt = {MET_pt};
         RVec<float> temp_met_eta = {0.};
         RVec<float> temp_met_phi = {MET_phi};
@@ -202,7 +202,7 @@ int main(int argc, char *argv[])
             // met
             NanoObjects::MET(temp_met_pt, temp_met_eta, temp_met_phi),
             // non-event data
-            configuration.is_data, configuration.year, "Default", "Nominal");
+            configuration.is_data, configuration.year);
 
         event_data = event_data.set_const_weights(outputs, pu_weight)
                          .generator_filter(outputs)
@@ -210,32 +210,24 @@ int main(int argc, char *argv[])
                          .npv_filter(outputs)
                          .met_filter(outputs)
                          .trigger_filter(outputs)
-                         .pre_selection();
+                         .object_selection()
+                         .trigger_match_filter()
+                         .set_scale_factors()
+                         .muon_corrections()
+                         .electron_corrections()
+                         .photon_corrections()
+                         .tau_corrections()
+                         .bjet_corrections()
+                         .jet_corrections()
+                         .met_corrections()
+                         .has_selected_objects_filter(outputs)
+                         .fill_event_content(outputs);
 
-        // loop over variations, shifts and classes (aka multiplicities)
-        // the range::view was cleanned to skip all variations for Data
-        for (const auto &variation_and_shift :
-             Outputs::VariationsAndShiftsRange | views::remove_if([&](auto variation_and_shift) {
-                 const auto [variation, shift] = variation_and_shift;
-                 return (configuration.is_data) && (variation != "Default");
-             }))
+        // fill output event tree
+        if (event_data)
         {
-            const auto [variation, shift] = variation_and_shift;
 
-            // modify objects according to the given variation
-            auto corrected_event_data = EventData::apply_corrections(event_data, variation, shift)
-                                            .final_selection()
-                                            .trigger_match()
-                                            .set_scale_factors()
-                                            .has_at_least_one_class_filter()
-                                            .fill_event_content(outputs);
-
-            // fill output event tree
-            if (corrected_event_data)
-            {
-                auto idx_var = corrected_event_data.idx_var;
-                outputs.fill_event_tree(idx_var);
-            }
+            outputs.fill_event_tree();
         }
 
         // process monitoring

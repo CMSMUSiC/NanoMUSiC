@@ -62,7 +62,6 @@ struct Muons
     std::reference_wrapper<const RVec<float>> pt;
     std::reference_wrapper<const RVec<float>> eta;
     std::reference_wrapper<const RVec<float>> phi;
-    // std::reference_wrapper<const RVec<float>> mass;
     std::reference_wrapper<const RVec<bool>> tightId;
     std::reference_wrapper<const RVec<UChar_t>> highPtId;
     std::reference_wrapper<const RVec<float>> pfRelIso03_all;
@@ -74,11 +73,6 @@ struct Muons
         : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi), tightId(_tightId), highPtId(_highPtId),
           pfRelIso03_all(_pfRelIso03_all), tkRelIso(_tkRelIso)
     {
-        // if (eta.get().size() != size || phi.get().size() != size || tightId.get().size() != size ||
-        //     highPtId.get().size() != size || pfRelIso03_all.get().size() != size || tkRelIso.get().size() != size)
-        // {
-        //     throw std::runtime_error("Provided input RVecs for Muons don't match in size.");
-        // }
     }
 
     // template <typename T, typename = std::enable_if<std::is_convertible<T, bool>::value>>
@@ -102,15 +96,10 @@ struct Electrons
     std::reference_wrapper<const RVec<float>> pt;
     std::reference_wrapper<const RVec<float>> eta;
     std::reference_wrapper<const RVec<float>> phi;
-    // std::reference_wrapper<const RVec<float>> mass;
 
     Electrons(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {})
         : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi)
     {
-        // if (eta.get().size() != size || phi.get().size() != size)
-        // {
-        //     throw std::runtime_error("Provided input RVecs for Electrons don't match in size.");
-        // }
     }
 
     // template <typename T, typename = std::enable_if<std::is_convertible<T, bool>::value>>
@@ -133,15 +122,10 @@ struct Photons
     std::reference_wrapper<const RVec<float>> pt;
     std::reference_wrapper<const RVec<float>> eta;
     std::reference_wrapper<const RVec<float>> phi;
-    // std::reference_wrapper<const RVec<float>> mass;
 
     Photons(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {})
         : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi)
     {
-        // if (eta.get().size() != size || phi.get().size() != size)
-        // {
-        //     throw std::runtime_error("Provided input RVecs for Photons don't match in size.");
-        // }
     }
 
     // template <typename T, typename = std::enable_if<std::is_convertible<T, bool>::value>>
@@ -164,15 +148,10 @@ struct Taus
     std::reference_wrapper<const RVec<float>> pt;
     std::reference_wrapper<const RVec<float>> eta;
     std::reference_wrapper<const RVec<float>> phi;
-    // std::reference_wrapper<const RVec<float>> mass;
 
     Taus(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {})
         : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi)
     {
-        // if (eta.get().size() != size || phi.get().size() != size)
-        // {
-        //     throw std::runtime_error("Provided input RVecs for Taus don't match in size.");
-        // }
     }
 
     // template <typename T, typename = std::enable_if<std::is_convertible<T, bool>::value>>
@@ -195,15 +174,10 @@ struct Jets
     std::reference_wrapper<const RVec<float>> pt;
     std::reference_wrapper<const RVec<float>> eta;
     std::reference_wrapper<const RVec<float>> phi;
-    // std::reference_wrapper<const RVec<float>> mass;
 
     Jets(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {})
         : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi)
     {
-        // if (eta.get().size() != size || phi.get().size() != size)
-        // {
-        //     throw std::runtime_error("Provided input RVecs for Jets don't match in size.");
-        // }
     }
 
     // template <typename T, typename = std::enable_if<std::is_convertible<T, bool>::value>>
@@ -228,15 +202,10 @@ struct MET
     std::reference_wrapper<const RVec<float>> pt;
     std::reference_wrapper<const RVec<float>> eta;
     std::reference_wrapper<const RVec<float>> phi;
-    // std::reference_wrapper<const RVec<float>> mass;
 
     MET(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {})
         : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi)
     {
-        // if ((size > 1) || (eta.get().size() != size || phi.get().size() != size))
-        // {
-        //     throw std::runtime_error("Provided input RVecs for MET has size greater than 1. Not physical!");
-        // }
     }
 
     // template <typename T, typename = std::enable_if<std::is_convertible<T, bool>::value>>
