@@ -6,4 +6,4 @@ Full Documentation:
 
 https://cmsmusic.github.io/NanoMUSiC/
 
-## Setup the environment (only once)
+

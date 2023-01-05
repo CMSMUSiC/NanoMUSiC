@@ -1,39 +1,17 @@
 #ifndef MUSIC_TRIGGER
 #define MUSIC_TRIGGER
 
-// On: 28.10.2022
-// https://ericniebler.github.io/range-v3
-// https://github.com/ericniebler/range-v3
-// #include <range/v3/algorithm/for_each.hpp>
-// #include <range/v3/numeric/accumulate.hpp>
-// #include <range/v3/view/cartesian_product.hpp>
-// #include <range/v3/view/iota.hpp>
-// #include <range/v3/view/remove_if.hpp>
-// #include <range/v3/view/take.hpp>
-// #include <range/v3/view/transform.hpp>
-// #include <range/v3/all.hpp>
-
-// using namespace ranges;
+#include "Enumerate.hpp"
 using namespace ROOT::VecOps;
-
-enum HLTPath
-{
-    SingleMuonLowPt,
-    SingleMuonHighPt,
-    SingleElectron,
-    DoubleMuon,
-    DoubleElectron,
-    Tau,
-    BJet,
-    MET,
-    Photon,
-    kTotalPaths, // --> should be the last one!
-};
 
 struct TriggerBits
 {
+    static constexpr auto HLTPath = make_enumerate("SingleMuonLowPt", "SingleMuonHighPt", "SingleElectron", "DoubleMuon",
+                                                   "DoubleElectron", "Photon", "Tau", "BJet", "MET");
+    static constexpr auto kTotalPaths = HLTPath.size();
+
     // will have size = SIZE
-    constexpr static size_t SIZE = sizeof(unsigned int) * 8;
+    static constexpr size_t SIZE = sizeof(unsigned int) * 8;
     std::bitset<SIZE> trigger_bits;
 
     TriggerBits &set(unsigned int path, bool value)
@@ -42,12 +20,12 @@ struct TriggerBits
         return *this;
     }
 
-    bool pass(unsigned int path)
+    bool pass(unsigned int path) const
     {
         return trigger_bits.test(path);
     }
 
-    bool any()
+    bool any() const
     {
         return trigger_bits.any();
     }
@@ -164,17 +142,19 @@ struct TriggerBits
         }
     };
 
-    static constexpr bool check_bit(const int &trigger_bit, const HLTPath &path, const Year &year)
+    bool check_bit(const std::string_view &path, const Year &year) const
     {
-        switch (path)
+
+        if (path == "SingleMuonLowPt")
         {
-        case HLTPath::SingleMuonLowPt:
-            return SingleMuonLowPtBits(trigger_bit, year);
-
-        case HLTPath::SingleMuonHighPt:
-            return SingleMuonHighPtBits(trigger_bit, year);
-
-        default:
+            return SingleMuonLowPtBits(this->as_uint(), year);
+        }
+        else if (path == "SingleMuonHighPt")
+        {
+            return SingleMuonHighPtBits(this->as_uint(), year);
+        }
+        else
+        {
             throw std::runtime_error("Year (" + std::to_string(year) +
                                      ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
         }

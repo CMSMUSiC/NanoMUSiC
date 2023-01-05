@@ -332,15 +332,15 @@ class EventData
             // fill trigger bits
             ////////////////////////////////////////////////////////////
             ////////////////////////////////////////////////////////////
-            trigger_bits.set(HLTPath::SingleMuonLowPt, false)
-                .set(HLTPath::SingleMuonHighPt, false)
-                .set(HLTPath::SingleElectron, false)
-                .set(HLTPath::DoubleMuon, false)
-                .set(HLTPath::DoubleElectron, false)
-                .set(HLTPath::Tau, false)
-                .set(HLTPath::BJet, false)
-                .set(HLTPath::MET, false)
-                .set(HLTPath::Photon, false);
+            trigger_bits.set(TriggerBits::HLTPath.index_of("SingleMuonLowPt"), false)
+                .set(TriggerBits::HLTPath.index_of("SingleMuonHighPt"), false)
+                .set(TriggerBits::HLTPath.index_of("SingleElectron"), false)
+                .set(TriggerBits::HLTPath.index_of("DoubleMuon"), false)
+                .set(TriggerBits::HLTPath.index_of("DoubleElectron"), false)
+                .set(TriggerBits::HLTPath.index_of("Photon"), false)
+                .set(TriggerBits::HLTPath.index_of("Tau"), false)
+                .set(TriggerBits::HLTPath.index_of("BJet"), false)
+                .set(TriggerBits::HLTPath.index_of("MET"), false);
 
             switch (year)
             {
@@ -349,16 +349,16 @@ class EventData
             case Year::Run2016:
                 break;
             case Year::Run2017:
-                trigger_bits.set(HLTPath::SingleMuonLowPt, event_info.HLT_IsoMu27.get())
-                    .set(HLTPath::SingleMuonHighPt,
+                trigger_bits.set(TriggerBits::HLTPath.index_of("SingleMuonLowPt"), event_info.HLT_IsoMu27.get())
+                    .set(TriggerBits::HLTPath.index_of("SingleMuonHighPt"),
                          event_info.HLT_Mu50.get() || event_info.HLT_TkMu100.get() || event_info.HLT_OldMu100.get())
-                    .set(HLTPath::SingleElectron, false)
-                    .set(HLTPath::DoubleMuon, false)
-                    .set(HLTPath::DoubleElectron, false)
-                    .set(HLTPath::Tau, false)
-                    .set(HLTPath::BJet, false)
-                    .set(HLTPath::MET, false)
-                    .set(HLTPath::Photon, false);
+                    .set(TriggerBits::HLTPath.index_of("SingleElectron"), false)
+                    .set(TriggerBits::HLTPath.index_of("DoubleMuon"), false)
+                    .set(TriggerBits::HLTPath.index_of("DoubleElectron"), false)
+                    .set(TriggerBits::HLTPath.index_of("Tau"), false)
+                    .set(TriggerBits::HLTPath.index_of("BJet"), false)
+                    .set(TriggerBits::HLTPath.index_of("MET"), false)
+                    .set(TriggerBits::HLTPath.index_of("Photon"), false);
                 break;
             case Year::Run2018:
                 break;
@@ -466,7 +466,7 @@ class EventData
         return *this;
     }
 
-    EventData &trigger_match_filter()
+    EventData &trigger_match_filter(Outputs &outputs)
     {
         if (*this)
         {

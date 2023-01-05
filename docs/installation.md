@@ -3,7 +3,7 @@
 
 The instructions here described are designed tested for the computing environment of RWTH-3A. In principle, it should be no problem to setup and run the analysis code at other sites, with CentOS7 and CVMFS mounted,e.g. `lxplus`.
 
-# Dependencies
+## Dependencies
 
 There are no dependencies on CMSSW. The needed softwares are provided by LCG views (view 102b - `/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/setup.sh`).
 
