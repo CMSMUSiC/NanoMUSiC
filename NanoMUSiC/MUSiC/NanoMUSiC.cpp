@@ -235,10 +235,7 @@ int main(int argc, char *argv[])
             (event_counter < 1000 && event_counter % 100 == 0) || (event_counter < 10000 && event_counter % 1000 == 0) ||
             (event_counter >= 10000 && event_counter % 10000 == 0))
         {
-            double dTime2 = getCpuTime();
-            std::cout << "\n[ Performance Monitoring ] Analyzed " << event_counter << " events"
-                      << ", elapsed CPU time: " << dTime2 - dTime1 << "sec (" << double(event_counter) / (dTime2 - dTime1)
-                      << " evts per sec)" << std::endl;
+            print_report(dTime1, event_counter, outputs.cutflow_histo);
             PrintProcessInfo();
         }
     };
@@ -384,7 +381,7 @@ int main(int argc, char *argv[])
     std::cout << " " << std::endl;
 
     // show final performance report
-    print_final_report(dTime1, event_counter);
+    print_report(dTime1, event_counter, outputs.cutflow_histo, true);
 
     // writes data to disk
     std::cout << colors.yellow << "[ Finalizing ] Output file, cutflow histograms and event data trees ..." << colors.def

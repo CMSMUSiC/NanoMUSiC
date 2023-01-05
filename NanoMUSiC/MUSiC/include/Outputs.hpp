@@ -60,8 +60,8 @@ class Outputs
 
   public:
     // variations, shifts, weights and cuts
-    static constexpr auto Cuts = make_enumerate("NoCuts", "GeneratorWeight", "RunLumi", "nPV", "MetFilters", "TriggerCut",
-                                                "TriggerMatch", "AtLeastOneClass");
+    static constexpr auto Cuts = make_enumerate("NoCuts", "GeneratorWeight", "RunLumi", "nPV", "METFilters", "TriggerCut",
+                                                "TriggerMatch", "AtLeastOneSelectedObject");
     static constexpr auto Weights = make_enumerate("Generator", "PDF", "Alpha_S", "PileUp", "Lumi", "Trigger");
     // static constexpr auto Variations =
     //     make_enumerate("Default", "JEC", "JER", "MuonScale", "MuonResolution", "ElectronScale", "ElectronResolution");
@@ -170,7 +170,7 @@ class Outputs
 
         // make cutflow histos
         const std::string histo_name = "cutflow";
-        cutflow_histo = TH1F("cutflow", "cutflow", kTotalCuts, -0.5, kTotalCuts + 0.5);
+        cutflow_histo = TH1F("cutflow", "cutflow", kTotalCuts, -0.5, kTotalCuts - 0.5);
         cutflow_histo.Sumw2();
         cutflow_histo.SetDirectory(output_file.get());
     }

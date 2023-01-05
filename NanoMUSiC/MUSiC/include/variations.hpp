@@ -38,7 +38,7 @@ namespace Variations
 
 // variations, shifts, weights and cuts
 constexpr auto Cuts =
-    make_enumerate("NoCuts", "GeneratorWeight", "RunLumi", "nPV", "MetFilters", "TriggerCut", "TriggerMatch", "AtLeastOneClass");
+    make_enumerate("NoCuts", "GeneratorWeight", "RunLumi", "nPV", "METFilters", "TriggerCut", "TriggerMatch", "AtLeastOneClass");
 constexpr auto Weights = make_enumerate("Generator", "PDF", "Alpha_S", "PileUp", "Lumi", "Trigger");
 constexpr auto Variations =
     make_enumerate("Default", "JEC", "JER", "MuonScale", "MuonResolution", "ElectronScale", "ElectronResolution");

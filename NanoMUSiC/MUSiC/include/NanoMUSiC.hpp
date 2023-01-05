@@ -196,14 +196,24 @@ void prepare_output_buffer(const TaskConfiguration &configuration)
     system(("cp " + configuration.x_section_file + " . ").c_str());
 }
 
-void print_final_report(const double &dTime1, const unsigned long &event_counter)
+void print_report(const double &dTime1, const unsigned long &event_counter, TH1F &cutflow_histo, bool is_final = false)
 {
     double dTime2 = getCpuTime();
-    std::cout << "[ Final Performance Report ] Analyzed " << event_counter << " events";
+    std::string final_str = is_final ? "Final " : "";
+    std::cout << "\n[ " << final_str << "Process Report ] Analyzed " << event_counter << " events";
     std::cout << ", elapsed CPU time: " << dTime2 - dTime1 << "sec (" << double(event_counter) / (dTime2 - dTime1)
               << " evts per sec)" << std::endl;
 
-    if (event_counter == 0)
+    // print cutflow
+    auto cutflow = cutflow_histo;
+    fmt::print("\n ########## Cutflow: ##########\n");
+    for (auto &&cut : IndexHelpers::make_index(Outputs::kTotalCuts))
+    {
+        fmt::print("--> {}: {:0.2f}%\n", Outputs::Cuts[cut], cutflow.GetBinContent(cut + 1) / cutflow.GetBinContent(2) * 100);
+    }
+    fmt::print("###############################\n");
+
+    if (event_counter == 0 && !is_final)
     {
         std::cout << "Error: No event was analyzed!" << std::endl;
         throw std::runtime_error("No event was analyzed!");

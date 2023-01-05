@@ -187,7 +187,7 @@ class EventData
     {
         if (*this)
         {
-            // fmt::print("DEBUG - set_const_weights");
+            // // fmt::print("\nDEBUG - set_const_weights");
             if (!is_data)
             {
                 outputs.set_event_weight("Generator", event_info.genWeight.get());
@@ -218,28 +218,30 @@ class EventData
             }
             if (is_good_gen)
             {
-                // fmt::print("DEBUG - generator_filter");
+                // // fmt::print("\nDEBUG - generator_filter");
                 outputs.fill_cutflow_histo("NoCuts", 1.);
                 outputs.fill_cutflow_histo("GeneratorWeight", outputs.get_event_weight());
                 return *this;
             }
             set_null();
+            // fmt::print("\nDEBUG - DID NOT PASS generator FILTER");
             return *this;
         }
         return *this;
     }
 
-    EventData &run_lumi_filter(Outputs &outputs, const RunLumiFilter &run_lumi_filter)
+    EventData &run_lumi_filter(Outputs &outputs, const RunLumiFilter &_run_lumi_filter)
     {
         if (*this)
         {
-            if (run_lumi_filter(event_info.run.get(), event_info.lumi.get(), is_data))
+            if (_run_lumi_filter(event_info.run.get(), event_info.lumi.get(), is_data))
             {
-                // fmt::print("DEBUG - run_lumi_filter");
+                // // fmt::print("\nDEBUG - run_lumi_filter");
                 outputs.fill_cutflow_histo("RunLumi", outputs.get_event_weight());
                 return *this;
             }
             set_null();
+            // fmt::print("\nDEBUG - DID NOT PASS RUN_LUMI FILTER: {} - {}", event_info.run.get(), event_info.lumi.get());
             return *this;
         }
         return *this;
@@ -251,11 +253,12 @@ class EventData
         {
             if (event_info.PV_npvsGood.get() > 0)
             {
-                // fmt::print("DEBUG - PV_npvsGood");
+                // // fmt::print("\nDEBUG - PV_npvsGood");
                 outputs.fill_cutflow_histo("nPV", outputs.get_event_weight());
                 return *this;
             }
             set_null();
+            // fmt::print("\nDEBUG - DID NOT PASS n_pv FILTER");
             return *this;
         }
         return *this;
@@ -309,11 +312,12 @@ class EventData
 
             if (pass_MET_filters)
             {
-                // fmt::print("DEBUG - met_filter");
-                outputs.fill_cutflow_histo("MetFilters", outputs.get_event_weight());
+                // // fmt::print("\nDEBUG - met_filter");
+                outputs.fill_cutflow_histo("METFilters", outputs.get_event_weight());
                 return *this;
             }
             set_null();
+            // fmt::print("\nDEBUG - DID NOT PASS met FILTER");
             return *this;
         }
         return *this;
@@ -366,11 +370,12 @@ class EventData
             // skip event event if no trigger is fired
             if (trigger_bits.any())
             {
-                // fmt::print("DEBUG - trigger_filter");
+                // // fmt::print("\nDEBUG - trigger_filter");
                 outputs.fill_cutflow_histo("TriggerCut", outputs.get_event_weight());
                 return *this;
             }
             set_null();
+            // fmt::print("\nDEBUG - DID NOT PASS hlt_trigger FILTER");
             return *this;
         }
         return *this;
@@ -468,9 +473,11 @@ class EventData
             bool has_trigger_match = true;
             if (has_trigger_match)
             {
+                outputs.fill_cutflow_histo("TriggerMatch", outputs.get_event_weight());
                 return *this;
             }
             set_null();
+            // fmt::print("\nDEBUG - DID NOT PASS triggermatch FILTER");
             return *this;
         }
         return *this;
@@ -551,9 +558,11 @@ class EventData
                 VecOps::Sum(good_taus_mask) > 0 || VecOps::Sum(good_bjets_mask) > 0 || VecOps::Sum(good_jets_mask) > 0 ||
                 VecOps::Sum(good_met_mask))
             {
+                outputs.fill_cutflow_histo("AtLeastOneSelectedObject", outputs.get_event_weight());
                 return *this;
             }
             set_null();
+            // fmt::print("\nDEBUG - DID NOT PASS has_selected_objects_filter FILTER");
             return *this;
         }
         return *this;
