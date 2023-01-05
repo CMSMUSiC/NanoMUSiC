@@ -181,28 +181,28 @@ int main(int argc, char *argv[])
         RVec<float> temp_met_phi = {MET_phi};
 
         // build event data
-        auto event_data = EventData(
-            // event info
-            NanoObjects::EventInfo(run, lumi, event_number, Pileup_nTrueInt, genWeight, PV_npvsGood, Flag_goodVertices,
-                                   Flag_globalSuperTightHalo2016Filter, Flag_HBHENoiseFilter, Flag_HBHENoiseIsoFilter,
-                                   Flag_EcalDeadCellTriggerPrimitiveFilter, Flag_BadPFMuonFilter, Flag_BadPFMuonDzFilter,
-                                   Flag_eeBadScFilter, Flag_ecalBadCalibFilter, HLT_IsoMu27, HLT_Mu50, HLT_TkMu100, HLT_OldMu100),
-            // muons
-            NanoObjects::Muons(Muon_pt, Muon_eta, Muon_phi, Muon_tightId, Muon_highPtId, Muon_pfRelIso03_all, Muon_tkRelIso),
-            // electrons
-            NanoObjects::Electrons(Electron_pt, Electron_eta, Electron_phi),
-            // photons
-            NanoObjects::Photons(Photon_pt, Photon_eta, Photon_phi),
-            // taus
-            NanoObjects::Taus(Tau_pt, Tau_eta, Tau_phi),
-            // bjets
-            NanoObjects::BJets(Jet_pt, Jet_eta, Jet_phi),
-            // jets
-            NanoObjects::Jets(Jet_pt, Jet_eta, Jet_phi),
-            // met
-            NanoObjects::MET(temp_met_pt, temp_met_eta, temp_met_phi),
-            // non-event data
-            configuration.is_data, configuration.year);
+        auto event_data = EventData(configuration.is_data, configuration.year)
+                              // event info
+                              .set_event_info(NanoObjects::EventInfo(
+                                  run, lumi, event_number, Pileup_nTrueInt, genWeight, PV_npvsGood, Flag_goodVertices,
+                                  Flag_globalSuperTightHalo2016Filter, Flag_HBHENoiseFilter, Flag_HBHENoiseIsoFilter,
+                                  Flag_EcalDeadCellTriggerPrimitiveFilter, Flag_BadPFMuonFilter, Flag_BadPFMuonDzFilter,
+                                  Flag_eeBadScFilter, Flag_ecalBadCalibFilter, HLT_IsoMu27, HLT_Mu50, HLT_TkMu100, HLT_OldMu100))
+                              // muons
+                              .set_muons(NanoObjects::Muons(Muon_pt, Muon_eta, Muon_phi, Muon_tightId, Muon_highPtId,
+                                                            Muon_pfRelIso03_all, Muon_tkRelIso))
+                              // electrons
+                              .set_electrons(NanoObjects::Electrons(Electron_pt, Electron_eta, Electron_phi))
+                              // photons
+                              .set_photons(NanoObjects::Photons(Photon_pt, Photon_eta, Photon_phi))
+                              // taus
+                              .set_taus(NanoObjects::Taus(Tau_pt, Tau_eta, Tau_phi))
+                              // bjets
+                              .set_bjets(NanoObjects::BJets(Jet_pt, Jet_eta, Jet_phi))
+                              // jets
+                              .set_jets(NanoObjects::Jets(Jet_pt, Jet_eta, Jet_phi))
+                              // met
+                              .set_met(NanoObjects::MET(temp_met_pt, temp_met_eta, temp_met_phi));
 
         event_data = event_data.set_const_weights(outputs, pu_weight)
                          .generator_filter(outputs)

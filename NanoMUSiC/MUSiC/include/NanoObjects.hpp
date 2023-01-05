@@ -57,7 +57,6 @@ struct EventInfo
 
 struct Muons
 {
-
     std::size_t size;
     std::reference_wrapper<const RVec<float>> pt;
     std::reference_wrapper<const RVec<float>> eta;

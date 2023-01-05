@@ -42,16 +42,125 @@ class EventData
     bool is_data = true;
     Year year = Year::kTotalYears;
 
-    EventData(NanoObjects::EventInfo &&_event_info, NanoObjects::Muons &&_muons, NanoObjects::Electrons &&_electrons,
-              NanoObjects::Photons &&_photons, NanoObjects::Taus &&_taus, NanoObjects::BJets &&_bjets, NanoObjects::Jets &&_jets,
-              NanoObjects::MET &&_met, const bool &_is_data, const Year &_year, std::string_view variation = "Default",
-              std::string_view shift = "Nominal")
-        : is_null(false), event_info(_event_info), muons(_muons), good_muons_mask(RVec<int>(muons.size, 1)),
-          electrons(_electrons), good_electrons_mask(RVec<int>(electrons.size, 1)), photons(_photons),
-          good_photons_mask(RVec<int>(photons.size, 1)), taus(_taus), good_taus_mask(RVec<int>(taus.size, 1)), bjets(_bjets),
-          good_bjets_mask(RVec<int>(bjets.size, 1)), jets(_jets), good_jets_mask(RVec<int>(jets.size, 1)), met(_met),
-          good_met_mask(RVec<int>(met.size, 1)), is_data(_is_data), year(_year)
+    EventData(const bool &_is_data, const Year &_year, std::string_view variation = "Default", std::string_view shift = "Nominal")
+        : is_null(false), is_data(_is_data), year(_year)
     {
+    }
+
+    // builder interface
+    EventData &set_event_info(NanoObjects::EventInfo &&_event_info)
+    {
+        if (*this)
+        {
+            event_info = _event_info;
+            return *this;
+        }
+        return *this;
+    }
+
+    EventData &set_muons(NanoObjects::Muons &&_muons, RVec<int> &&mask)
+    {
+        if (*this)
+        {
+            muons = _muons;
+            good_muons_mask = mask;
+            return *this;
+        }
+        return *this;
+    }
+    EventData &set_muons(NanoObjects::Muons &&_muons)
+    {
+        return set_muons(std::move(_muons), RVec<int>(_muons.size, 1));
+    }
+
+    EventData &set_electrons(NanoObjects::Electrons &&_electrons, RVec<int> &&mask)
+    {
+        if (*this)
+        {
+            electrons = _electrons;
+            good_electrons_mask = mask;
+            return *this;
+        }
+        return *this;
+    }
+    EventData &set_electrons(NanoObjects::Electrons &&_electrons)
+    {
+        return set_electrons(std::move(_electrons), RVec<int>(_electrons.size, 1));
+    }
+
+    EventData &set_photons(NanoObjects::Photons &&_photons, RVec<int> &&mask)
+    {
+        if (*this)
+        {
+            photons = _photons;
+            good_photons_mask = mask;
+            return *this;
+        }
+        return *this;
+    }
+    EventData &set_photons(NanoObjects::Photons &&_photons)
+    {
+        return set_photons(std::move(_photons), RVec<int>(_photons.size, 1));
+    }
+
+    EventData &set_taus(NanoObjects::Taus &&_taus, RVec<int> &&mask)
+    {
+        if (*this)
+        {
+            taus = _taus;
+            good_taus_mask = mask;
+            return *this;
+        }
+        return *this;
+    }
+    EventData &set_taus(NanoObjects::Taus &&_taus)
+    {
+        return set_taus(std::move(_taus), RVec<int>(_taus.size, 1));
+    }
+
+    EventData &set_bjets(NanoObjects::BJets &&_bjets, RVec<int> &&mask)
+    {
+        if (*this)
+        {
+            bjets = _bjets;
+            good_bjets_mask = mask;
+            return *this;
+        }
+        return *this;
+    }
+    EventData &set_bjets(NanoObjects::BJets &&_bjets)
+    {
+        return set_bjets(std::move(_bjets), RVec<int>(_bjets.size, 1));
+    }
+
+    EventData &set_jets(NanoObjects::Jets &&_jets, RVec<int> &&mask)
+    {
+        if (*this)
+        {
+            jets = _jets;
+            good_jets_mask = mask;
+            return *this;
+        }
+        return *this;
+    }
+    EventData &set_jets(NanoObjects::Jets &&_jets)
+    {
+        return set_jets(std::move(_jets), RVec<int>(_jets.size, 1));
+    }
+
+    EventData &set_met(NanoObjects::MET &&_met, RVec<int> &&mask)
+    {
+        if (*this)
+        {
+            met = _met;
+            good_met_mask = mask;
+            return *this;
+        }
+        return *this;
+    }
+    EventData &set_met(NanoObjects::MET &&_met)
+    {
+        return set_met(std::move(_met), RVec<int>(_met.size, 1));
     }
 
     // is it a null event
