@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['legacy_5fmusic_2emd_330',['legacy_music.md',['../legacy__music_8md.html',1,'']]]
+  ['music_2ecpp_458',['music.cpp',['../music_8cpp.html',1,'']]],
+  ['music_2ehpp_459',['music.hpp',['../music_8hpp.html',1,'']]],
+  ['musictools_2ehpp_460',['MUSiCTools.hpp',['../MUSiCTools_8hpp.html',1,'']]]
 ];

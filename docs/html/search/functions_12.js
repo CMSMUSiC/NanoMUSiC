@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['unsorted_5ferror_504',['unsorted_error',['../classTools_1_1unsorted__error.html#a17c49c7d749f66456fc9b84e7356808e',1,'Tools::unsorted_error']]]
+  ['value_5ferror_647',['value_error',['../classMUSiCTools_1_1value__error.html#a0c6557c56b198036a04287bf70fe41c4',1,'MUSiCTools::value_error']]],
+  ['variation_5fto_5findex_648',['variation_to_index',['../namespaceVariations.html#a5fa6577d928294598f239958fb344efc',1,'Variations']]]
 ];

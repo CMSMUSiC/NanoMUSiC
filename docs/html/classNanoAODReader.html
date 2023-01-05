@@ -49,8 +49,11 @@
     extensions: ["tex2jax.js"],
     jax: ["input/TeX","output/HTML-CSS"],
 });
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
 </script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_CHTML/MathJax.js"></script>
     <link href="doxygen.css" rel="stylesheet" type="text/css" />
     <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="custom.css" rel="stylesheet" type="text/css"/>
@@ -107,7 +110,7 @@
                         <td id="projectalign" style="padding-left: 0.5em;">
                             <div id="projectname">NanoMUSiC
                             </div>
-                            <div id="projectbrief">CMS MUSiC with NanoAOD</div>
+                            <div id="projectbrief">CMS MUSiC using NanoAOD</div>
                         </td>
                     </tr>
                 </tbody>
@@ -197,12 +200,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0fb2493dae0db7c237b2ed79ddbec5cd"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a0fb2493dae0db7c237b2ed79ddbec5cd"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classNanoAODReader.html#a0fb2493dae0db7c237b2ed79ddbec5cd">getVal</a> (std::string valueName)</td></tr>
 <tr class="separator:a0fb2493dae0db7c237b2ed79ddbec5cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acf429b48d5c52b5d9f304ce27eea0b80"><td class="memTemplParams" colspan="2">template&lt;class T , class T2  = T&gt; </td></tr>
+<tr class="memitem:acf429b48d5c52b5d9f304ce27eea0b80"><td class="memTemplParams" colspan="2">template&lt;typename T , typename T2  = T&gt; </td></tr>
 <tr class="memitem:acf429b48d5c52b5d9f304ce27eea0b80"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; T2 &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classNanoAODReader.html#acf429b48d5c52b5d9f304ce27eea0b80">getVec</a> (std::string vectorName)</td></tr>
 <tr class="separator:acf429b48d5c52b5d9f304ce27eea0b80"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a68b096b1493a22cac381e9f783731fe4"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
-<tr class="memitem:a68b096b1493a22cac381e9f783731fe4"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; UInt_t &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classNanoAODReader.html#a68b096b1493a22cac381e9f783731fe4">getVec</a> (std::string vectorName)</td></tr>
-<tr class="separator:a68b096b1493a22cac381e9f783731fe4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4ab362d5044d08a3fc9218b7206a934"><td class="memItemLeft" align="right" valign="top">std::vector&lt; UInt_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNanoAODReader.html#aa4ab362d5044d08a3fc9218b7206a934">getVecOfBools</a> (std::string vectorName)</td></tr>
+<tr class="separator:aa4ab362d5044d08a3fc9218b7206a934"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -398,19 +400,19 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="a68b096b1493a22cac381e9f783731fe4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a68b096b1493a22cac381e9f783731fe4">&#9670;&nbsp;</a></span>getVec() <span class="overload">[1/2]</span></h2>
+<a id="acf429b48d5c52b5d9f304ce27eea0b80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf429b48d5c52b5d9f304ce27eea0b80">&#9670;&nbsp;</a></span>getVec()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;&gt; </div>
+template&lt;typename T , typename T2  = T&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;UInt_t&gt; NanoAODReader::getVec </td>
+          <td class="memname">std::vector&lt;T2&gt; NanoAODReader::getVec </td>
           <td>(</td>
           <td class="paramtype">std::string&#160;</td>
           <td class="paramname"><em>vectorName</em></td><td>)</td>
@@ -426,19 +428,17 @@ template&lt;&gt; </div>
 
 </div>
 </div>
-<a id="acf429b48d5c52b5d9f304ce27eea0b80"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acf429b48d5c52b5d9f304ce27eea0b80">&#9670;&nbsp;</a></span>getVec() <span class="overload">[2/2]</span></h2>
+<a id="aa4ab362d5044d08a3fc9218b7206a934"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4ab362d5044d08a3fc9218b7206a934">&#9670;&nbsp;</a></span>getVecOfBools()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;class T , class T2  = T&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;T2&gt; NanoAODReader::getVec </td>
+          <td class="memname">std::vector&lt;UInt_t&gt; NanoAODReader::getVecOfBools </td>
           <td>(</td>
           <td class="paramtype">std::string&#160;</td>
           <td class="paramname"><em>vectorName</em></td><td>)</td>

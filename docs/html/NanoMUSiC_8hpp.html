@@ -49,8 +49,11 @@
     extensions: ["tex2jax.js"],
     jax: ["input/TeX","output/HTML-CSS"],
 });
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
 </script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_CHTML/MathJax.js"></script>
     <link href="doxygen.css" rel="stylesheet" type="text/css" />
     <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="custom.css" rel="stylesheet" type="text/css"/>
@@ -107,7 +110,7 @@
                         <td id="projectalign" style="padding-left: 0.5em;">
                             <div id="projectname">NanoMUSiC
                             </div>
-                            <div id="projectbrief">CMS MUSiC with NanoAOD</div>
+                            <div id="projectbrief">CMS MUSiC using NanoAOD</div>
                         </td>
                     </tr>
                 </tbody>
@@ -162,15 +165,14 @@ $(document).ready(function(){initNavTree('NanoMUSiC_8hpp.html',''); initResizabl
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
-<a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">NanoMUSiC.hpp File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;any&gt;</code><br />
 <code>#include &lt;bitset&gt;</code><br />
 <code>#include &lt;chrono&gt;</code><br />
 <code>#include &lt;csignal&gt;</code><br />
@@ -180,6 +182,7 @@ $(document).ready(function(){initNavTree('NanoMUSiC_8hpp.html',''); initResizabl
 <code>#include &lt;future&gt;</code><br />
 <code>#include &lt;iomanip&gt;</code><br />
 <code>#include &lt;iostream&gt;</code><br />
+<code>#include &lt;limits&gt;</code><br />
 <code>#include &lt;math.h&gt;</code><br />
 <code>#include &lt;numeric&gt;</code><br />
 <code>#include &lt;optional&gt;</code><br />
@@ -189,67 +192,60 @@ $(document).ready(function(){initNavTree('NanoMUSiC_8hpp.html',''); initResizabl
 <code>#include &lt;sys/time.h&gt;</code><br />
 <code>#include &lt;thread&gt;</code><br />
 <code>#include &lt;time.h&gt;</code><br />
+<code>#include &lt;typeinfo&gt;</code><br />
 <code>#include &lt;unordered_set&gt;</code><br />
 <code>#include &quot;Math/Vector4D.h&quot;</code><br />
+<code>#include &quot;Math/VectorUtil.h&quot;</code><br />
+<code>#include &quot;ROOT/RDataFrame.hxx&quot;</code><br />
+<code>#include &quot;ROOT/RVec.hxx&quot;</code><br />
 <code>#include &quot;TFile.h&quot;</code><br />
 <code>#include &quot;TH1.h&quot;</code><br />
 <code>#include &quot;TObjString.h&quot;</code><br />
 <code>#include &quot;TTree.h&quot;</code><br />
+<code>#include &quot;toml.hpp&quot;</code><br />
 <code>#include &quot;color.hpp&quot;</code><br />
 <code>#include &quot;emoji.hpp&quot;</code><br />
-<code>#include &quot;picosha2.hpp&quot;</code><br />
-<code>#include &quot;toml.hpp&quot;</code><br />
 <code>#include &quot;argh.h&quot;</code><br />
-<code>#include &quot;<a class="el" href="MConfig_8hpp_source.html">MConfig.hpp</a>&quot;</code><br />
+<code>#include &lt;fmt/core.h&gt;</code><br />
+<code>#include &quot;<a class="el" href="MUSiCTools_8hpp_source.html">MUSiCTools.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="TOMLConfig_8hpp_source.html">TOMLConfig.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="Tools_8hpp_source.html">Tools.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="RunLumiFilter_8hpp_source.html">RunLumiFilter.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="CorrectionSets_8hpp_source.html">CorrectionSets.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="MUSiCEvent_8hpp_source.html">MUSiCEvent.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="NanoAODReader_8hpp_source.html">NanoAODReader.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Configs_8hpp_source.html">Configs.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="NanoObjects_8hpp_source.html">NanoObjects.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="ObjectCorrections_8hpp_source.html">ObjectCorrections.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Outputs_8hpp_source.html">Outputs.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Enumerate_8hpp_source.html">Enumerate.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="EventData_8hpp_source.html">EventData.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Trigger_8hpp_source.html">Trigger.hpp</a>&quot;</code><br />
 </div>
 <p><a href="NanoMUSiC_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTriggerBits.html">TriggerBits</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:a80e365d8190775175a4620a81aaa3185"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#a80e365d8190775175a4620a81aaa3185">OptionalFuture_t</a> = std::optional&lt; std::future&lt; std::unique_ptr&lt; TFile &gt; &gt;&gt;</td></tr>
 <tr class="separator:a80e365d8190775175a4620a81aaa3185"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
-Enumerations</h2></td></tr>
-<tr class="memitem:ac2ac05f71ee2a95e9789b72fc542ee31"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#ac2ac05f71ee2a95e9789b72fc542ee31">HLTPaths</a> { <br />
-&#160;&#160;<a class="el" href="NanoMUSiC_8hpp.html#ac2ac05f71ee2a95e9789b72fc542ee31a9d8f8c15d8b108c34705c311ca2f35ac">SingleMuon</a>, 
-<a class="el" href="NanoMUSiC_8hpp.html#ac2ac05f71ee2a95e9789b72fc542ee31ac9a12ca98cf16cd32f8cf85ed66d4006">SingleElectron</a>, 
-<a class="el" href="NanoMUSiC_8hpp.html#ac2ac05f71ee2a95e9789b72fc542ee31a7d3ea9e343bf0d02039ae2cd185f4864">DoubleMuon</a>, 
-<a class="el" href="NanoMUSiC_8hpp.html#ac2ac05f71ee2a95e9789b72fc542ee31aa95b4de37c94151d3ad74d468a7b0fc5">DoubleElectron</a>, 
-<br />
-&#160;&#160;<a class="el" href="NanoMUSiC_8hpp.html#ac2ac05f71ee2a95e9789b72fc542ee31aa90650603aebf993df8d39db96357b02">Tau</a>, 
-<a class="el" href="NanoMUSiC_8hpp.html#ac2ac05f71ee2a95e9789b72fc542ee31a6fc46830f86eeca9c0e6a634c35e70b9">BJet</a>, 
-<a class="el" href="NanoMUSiC_8hpp.html#ac2ac05f71ee2a95e9789b72fc542ee31ae06932408cafd29884daf8533ba507fb">MET</a>, 
-<a class="el" href="NanoMUSiC_8hpp.html#ac2ac05f71ee2a95e9789b72fc542ee31a4db1999f5b69af0438bdaae51d011336">Photon</a>
-<br />
- }</td></tr>
-<tr class="separator:ac2ac05f71ee2a95e9789b72fc542ee31"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:af26d2df35eee0d22b7ce58ed8f3638d5"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; TFile &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#af26d2df35eee0d22b7ce58ed8f3638d5">get_TFile</a> (const std::string &amp;file_path, const bool cacheread, const std::string &amp;cache_dir)</td></tr>
-<tr class="separator:af26d2df35eee0d22b7ce58ed8f3638d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1cebcc2da734541f7cf005033722cb43"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#a1cebcc2da734541f7cf005033722cb43">PrintProcessInfo</a> ()</td></tr>
+<tr class="separator:a1cebcc2da734541f7cf005033722cb43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a308ca4e62678b26a996284060effbd12"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#a308ca4e62678b26a996284060effbd12">get_data_stream</a> (const std::string_view &amp;dataset)</td></tr>
+<tr class="separator:a308ca4e62678b26a996284060effbd12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ef88d1206645b82f5a36dc4db0c0b3e"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; TFile &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#a0ef88d1206645b82f5a36dc4db0c0b3e">file_loader</a> (const std::string &amp;file_path, const bool cacheread, const std::string &amp;cache_dir, const bool verbose_load)</td></tr>
+<tr class="separator:a0ef88d1206645b82f5a36dc4db0c0b3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79075a862a5c485c83147cba22ffe704"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#a79075a862a5c485c83147cba22ffe704">getCpuTime</a> ()</td></tr>
 <tr class="separator:a79075a862a5c485c83147cba22ffe704"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5199675223743e214c6a4ce51945297"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#aa5199675223743e214c6a4ce51945297">is_tenth</a> (int &amp;event_counter)</td></tr>
 <tr class="separator:aa5199675223743e214c6a4ce51945297"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a36d60c12d4ef6737bb8cf04d055854c4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#a36d60c12d4ef6737bb8cf04d055854c4">get_hash256</a> (const std::string &amp;input_string)</td></tr>
-<tr class="separator:a36d60c12d4ef6737bb8cf04d055854c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeaf5d13eab782a4abe3550474eed3af5"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#aeaf5d13eab782a4abe3550474eed3af5">make_class_storage</a> (const std::set&lt; unsigned long &gt; &amp;classes)</td></tr>
-<tr class="separator:aeaf5d13eab782a4abe3550474eed3af5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad14d9498758231e468bfe95357612c32"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#ad14d9498758231e468bfe95357612c32">save_class_storage</a> (const std::unordered_set&lt; unsigned long &gt; &amp;classes, std::string output_file_name)</td></tr>
+<tr class="separator:ad14d9498758231e468bfe95357612c32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b3eebbf38729c8d55ad8c67324a02c8"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a9b3eebbf38729c8d55ad8c67324a02c8"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#a9b3eebbf38729c8d55ad8c67324a02c8">get_and_check_future</a> (std::future&lt; T &gt; &amp;_ftr)</td></tr>
+<tr class="separator:a9b3eebbf38729c8d55ad8c67324a02c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1b03d412e02df069024d445cf782b46"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#af1b03d412e02df069024d445cf782b46">prepare_output_buffer</a> (const <a class="el" href="classTaskConfiguration.html">TaskConfiguration</a> &amp;configuration)</td></tr>
+<tr class="separator:af1b03d412e02df069024d445cf782b46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41ec02e286c1ee820f743c2ec2347efe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#a41ec02e286c1ee820f743c2ec2347efe">print_report</a> (const double &amp;dTime1, const unsigned long &amp;event_counter, TH1F &amp;cutflow_histo, bool is_final=false)</td></tr>
+<tr class="separator:a41ec02e286c1ee820f743c2ec2347efe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="a80e365d8190775175a4620a81aaa3185"></a>
@@ -266,58 +262,15 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<h2 class="groupheader">Enumeration Type Documentation</h2>
-<a id="ac2ac05f71ee2a95e9789b72fc542ee31"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac2ac05f71ee2a95e9789b72fc542ee31">&#9670;&nbsp;</a></span>HLTPaths</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="NanoMUSiC_8hpp.html#ac2ac05f71ee2a95e9789b72fc542ee31">HLTPaths</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ac2ac05f71ee2a95e9789b72fc542ee31a9d8f8c15d8b108c34705c311ca2f35ac"></a>SingleMuon&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ac2ac05f71ee2a95e9789b72fc542ee31ac9a12ca98cf16cd32f8cf85ed66d4006"></a>SingleElectron&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ac2ac05f71ee2a95e9789b72fc542ee31a7d3ea9e343bf0d02039ae2cd185f4864"></a>DoubleMuon&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ac2ac05f71ee2a95e9789b72fc542ee31aa95b4de37c94151d3ad74d468a7b0fc5"></a>DoubleElectron&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ac2ac05f71ee2a95e9789b72fc542ee31aa90650603aebf993df8d39db96357b02"></a>Tau&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ac2ac05f71ee2a95e9789b72fc542ee31a6fc46830f86eeca9c0e6a634c35e70b9"></a>BJet&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ac2ac05f71ee2a95e9789b72fc542ee31ae06932408cafd29884daf8533ba507fb"></a>MET&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ac2ac05f71ee2a95e9789b72fc542ee31a4db1999f5b69af0438bdaae51d011336"></a>Photon&#160;</td><td class="fielddoc"></td></tr>
-</table>
-
-</div>
-</div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a36d60c12d4ef6737bb8cf04d055854c4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a36d60c12d4ef6737bb8cf04d055854c4">&#9670;&nbsp;</a></span>get_hash256()</h2>
+<a id="a0ef88d1206645b82f5a36dc4db0c0b3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ef88d1206645b82f5a36dc4db0c0b3e">&#9670;&nbsp;</a></span>file_loader()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::string get_hash256 </td>
-          <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>input_string</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="af26d2df35eee0d22b7ce58ed8f3638d5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af26d2df35eee0d22b7ce58ed8f3638d5">&#9670;&nbsp;</a></span>get_TFile()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::unique_ptr&lt;TFile&gt; get_TFile </td>
+          <td class="memname">std::unique_ptr&lt;TFile&gt; file_loader </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>file_path</em>, </td>
@@ -332,12 +285,56 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>cache_dir</em>&#160;</td>
+          <td class="paramname"><em>cache_dir</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>verbose_load</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
           <td>)</td>
           <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9b3eebbf38729c8d55ad8c67324a02c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b3eebbf38729c8d55ad8c67324a02c8">&#9670;&nbsp;</a></span>get_and_check_future()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">T get_and_check_future </td>
+          <td>(</td>
+          <td class="paramtype">std::future&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>_ftr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a308ca4e62678b26a996284060effbd12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a308ca4e62678b26a996284060effbd12">&#9670;&nbsp;</a></span>get_data_stream()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view get_data_stream </td>
+          <td>(</td>
+          <td class="paramtype">const std::string_view &amp;&#160;</td>
+          <td class="paramname"><em>dataset</em></td><td>)</td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -387,18 +384,103 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aeaf5d13eab782a4abe3550474eed3af5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aeaf5d13eab782a4abe3550474eed3af5">&#9670;&nbsp;</a></span>make_class_storage()</h2>
+<a id="af1b03d412e02df069024d445cf782b46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1b03d412e02df069024d445cf782b46">&#9670;&nbsp;</a></span>prepare_output_buffer()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::string make_class_storage </td>
+          <td class="memname">void prepare_output_buffer </td>
           <td>(</td>
-          <td class="paramtype">const std::set&lt; unsigned long &gt; &amp;&#160;</td>
-          <td class="paramname"><em>classes</em></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="classTaskConfiguration.html">TaskConfiguration</a> &amp;&#160;</td>
+          <td class="paramname"><em>configuration</em></td><td>)</td>
           <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a41ec02e286c1ee820f743c2ec2347efe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41ec02e286c1ee820f743c2ec2347efe">&#9670;&nbsp;</a></span>print_report()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void print_report </td>
+          <td>(</td>
+          <td class="paramtype">const double &amp;&#160;</td>
+          <td class="paramname"><em>dTime1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const unsigned long &amp;&#160;</td>
+          <td class="paramname"><em>event_counter</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">TH1F &amp;&#160;</td>
+          <td class="paramname"><em>cutflow_histo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>is_final</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1cebcc2da734541f7cf005033722cb43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1cebcc2da734541f7cf005033722cb43">&#9670;&nbsp;</a></span>PrintProcessInfo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void PrintProcessInfo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad14d9498758231e468bfe95357612c32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad14d9498758231e468bfe95357612c32">&#9670;&nbsp;</a></span>save_class_storage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void save_class_storage </td>
+          <td>(</td>
+          <td class="paramtype">const std::unordered_set&lt; unsigned long &gt; &amp;&#160;</td>
+          <td class="paramname"><em>classes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>output_file_name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">

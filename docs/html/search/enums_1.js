@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['hltpaths_587',['HLTPaths',['../NanoMUSiC_8hpp.html#ac2ac05f71ee2a95e9789b72fc542ee31',1,'NanoMUSiC.hpp']]]
+  ['year_841',['Year',['../Configs_8hpp.html#ae49013585f0536b639fe09828864fe37',1,'Configs.hpp']]]
 ];

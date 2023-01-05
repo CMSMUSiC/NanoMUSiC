@@ -49,8 +49,11 @@
     extensions: ["tex2jax.js"],
     jax: ["input/TeX","output/HTML-CSS"],
 });
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
 </script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_CHTML/MathJax.js"></script>
     <link href="doxygen.css" rel="stylesheet" type="text/css" />
     <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="custom.css" rel="stylesheet" type="text/css"/>
@@ -107,7 +110,7 @@
                         <td id="projectalign" style="padding-left: 0.5em;">
                             <div id="projectname">NanoMUSiC
                             </div>
-                            <div id="projectbrief">CMS MUSiC with NanoAOD</div>
+                            <div id="projectbrief">CMS MUSiC using NanoAOD</div>
                         </td>
                     </tr>
                 </tbody>
@@ -163,7 +166,7 @@ $(document).ready(function(){initNavTree('functions_rela.html',''); initResizabl
 <div class="contents">
 &#160;<ul>
 <li>operator&lt;&lt;
-: <a class="el" href="classNanoObject_1_1NanoObject.html#a0413e27004bbe7b816b4ad440c198720">NanoObject::NanoObject</a>
+: <a class="el" href="classEnumerate.html#af2e9a39c411d7e2cc83514dae7df116d">Enumerate&lt; T &gt;</a>
 </li>
 </ul>
 </div><!-- contents -->

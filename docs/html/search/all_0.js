@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['_5funroll_5fand_5ffill_0',['_unroll_and_fill',['../namespaceNanoObject.html#a6e5f3a3cc561929a355db76fc8a5003d',1,'NanoObject']]]
+  ['_5fimp1_5fnumber_5fof_5fduplicates_0',['_imp1_number_of_duplicates',['../Enumerate_8hpp.html#afc210e28676a4c82aec8547d8d66f94e',1,'Enumerate.hpp']]],
+  ['_5fimp2_5fnumber_5fof_5fduplicates_1',['_imp2_number_of_duplicates',['../Enumerate_8hpp.html#abe7adbcaeab1f0e0cb01fcf750c6dc89',1,'Enumerate.hpp']]]
 ];

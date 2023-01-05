@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['nanoobject_322',['NanoObject',['../namespaceNanoObject.html',1,'']]]
+  ['indexhelpers_439',['IndexHelpers',['../namespaceIndexHelpers.html',1,'']]]
 ];

@@ -1,8 +1,22 @@
 var searchData=
 [
-  ['random_5fstring_480',['random_string',['../namespaceTools.html#a1a488ac515c63bc9f3b0f3778c7b3981',1,'Tools']]],
-  ['removecomment_481',['removeComment',['../namespaceTools.html#a50243b657b62c7ca509f1f1cb54049c6',1,'Tools']]],
-  ['removeitem_482',['RemoveItem',['../classTools_1_1MConfig.html#a08d2e3e51ca96c1dfea7ad2227b34477',1,'Tools::MConfig']]],
-  ['repr_483',['Repr',['../namespaceNanoObject.html#addcc6a0bd88e05a334f8133a5e32e941',1,'NanoObject::Repr(const std::vector&lt; T &gt; &amp;vec)'],['../namespaceNanoObject.html#abd59a5ebbb2fd08bcbe743d215ad040e',1,'NanoObject::Repr(NanoObjectCollection &amp;collection)']]],
-  ['runlumifilter_484',['RunLumiFilter',['../classRunLumiFilter.html#ae880ca319ec1b9d3d5cf1518bf6e9bac',1,'RunLumiFilter']]]
+  ['save_5fclass_5fstorage_618',['save_class_storage',['../NanoMUSiC_8hpp.html#ad14d9498758231e468bfe95357612c32',1,'NanoMUSiC.hpp']]],
+  ['set_619',['set',['../structTriggerBits.html#aa2f54ea6ab4df09ec7d39f2ebd897d24',1,'TriggerBits']]],
+  ['set_5fbjets_620',['set_bjets',['../classEventData.html#a432f0fc38b2dcd1e58d216a381c4f8a2',1,'EventData::set_bjets(NanoObjects::BJets &amp;&amp;_bjets, RVec&lt; int &gt; &amp;&amp;mask)'],['../classEventData.html#aa255bd03d10c47b585ccb25158cce509',1,'EventData::set_bjets(NanoObjects::BJets &amp;&amp;_bjets)']]],
+  ['set_5fconst_5fweights_621',['set_const_weights',['../classEventData.html#a8b9193b33b2ebb65f57360fd9bd9c729',1,'EventData']]],
+  ['set_5felectrons_622',['set_electrons',['../classEventData.html#a059b642c137d1aba6b3c4e9608d940c5',1,'EventData::set_electrons(NanoObjects::Electrons &amp;&amp;_electrons, RVec&lt; int &gt; &amp;&amp;mask)'],['../classEventData.html#af5d191e99ae6243f061f6eb2efc33a25',1,'EventData::set_electrons(NanoObjects::Electrons &amp;&amp;_electrons)']]],
+  ['set_5fevent_5finfo_623',['set_event_info',['../classEventData.html#a9d303a0ea8cb2f361775287693ecad57',1,'EventData']]],
+  ['set_5fevent_5fweight_624',['set_event_weight',['../classOutputs.html#a69572992ca7a94789e24cb519fd3e478',1,'Outputs::set_event_weight(std::string_view weight, std::string_view shift, float value)'],['../classOutputs.html#aa9d13b02c883deb78cde20f639ce87d8',1,'Outputs::set_event_weight(std::string_view weight, float value)']]],
+  ['set_5fjets_625',['set_jets',['../classEventData.html#a8e2df4dff518204ce77854006d6c8697',1,'EventData::set_jets(NanoObjects::Jets &amp;&amp;_jets, RVec&lt; int &gt; &amp;&amp;mask)'],['../classEventData.html#a15e702c1c9c0579d12de892df49a97f3',1,'EventData::set_jets(NanoObjects::Jets &amp;&amp;_jets)']]],
+  ['set_5fmet_626',['set_met',['../classEventData.html#a7e1fef4f2b7f2c5b1db20d69e25b9feb',1,'EventData::set_met(NanoObjects::MET &amp;&amp;_met, RVec&lt; int &gt; &amp;&amp;mask)'],['../classEventData.html#a1e68908d0e50665509326b28f1a9c862',1,'EventData::set_met(NanoObjects::MET &amp;&amp;_met)']]],
+  ['set_5fmuons_627',['set_muons',['../classEventData.html#aef34f9941fd462497a19b659b9ce8b82',1,'EventData::set_muons(NanoObjects::Muons &amp;&amp;_muons, RVec&lt; int &gt; &amp;&amp;mask)'],['../classEventData.html#ad1fd5b949e794aed40522b222d0d3d19',1,'EventData::set_muons(NanoObjects::Muons &amp;&amp;_muons)']]],
+  ['set_5fnull_628',['set_null',['../classEventData.html#a17bfe015a30a3e9b39e40dccc9b45f0c',1,'EventData']]],
+  ['set_5fphotons_629',['set_photons',['../classEventData.html#a57ef09eb5f51eb054f145139bd7a9728',1,'EventData::set_photons(NanoObjects::Photons &amp;&amp;_photons, RVec&lt; int &gt; &amp;&amp;mask)'],['../classEventData.html#aced378c6fd21e75a17559b6c69ad0a5c',1,'EventData::set_photons(NanoObjects::Photons &amp;&amp;_photons)']]],
+  ['set_5fscale_5ffactors_630',['set_scale_factors',['../classEventData.html#a9236b3984d97ec804dc40cc5c3449bec',1,'EventData']]],
+  ['set_5ftaus_631',['set_taus',['../classEventData.html#a4cd7c12814fd3d37dd36d88eb01548a3',1,'EventData::set_taus(NanoObjects::Taus &amp;&amp;_taus, RVec&lt; int &gt; &amp;&amp;mask)'],['../classEventData.html#adfdb5f4123deeb40737a40f5baf7e3dc',1,'EventData::set_taus(NanoObjects::Taus &amp;&amp;_taus)']]],
+  ['simple_5freplace_632',['simple_replace',['../NanoAODReader_8hpp.html#aca44e3190d6bd70346b5ebe64930c73f',1,'simple_replace(std::string &amp;str_in, const std::string &amp;str_old, const std::string &amp;str_new):&#160;NanoAODReader.cpp'],['../NanoAODReader_8cpp.html#aca44e3190d6bd70346b5ebe64930c73f',1,'simple_replace(std::string &amp;str_in, const std::string &amp;str_old, const std::string &amp;str_new):&#160;NanoAODReader.cpp']]],
+  ['singlemuonhighptbits_633',['SingleMuonHighPtBits',['../structTriggerBits.html#a1b544aab0c89989dceec4a5ad3883ca7',1,'TriggerBits']]],
+  ['singlemuonlowptbits_634',['SingleMuonLowPtBits',['../structTriggerBits.html#a921a4405b24cc0c6b99361cdf2c94084',1,'TriggerBits']]],
+  ['size_635',['size',['../classEnumerate.html#a21ffb06ee1cf8e893d10a310b9a474fe',1,'Enumerate']]],
+  ['splitstring_636',['splitString',['../namespaceMUSiCTools.html#a119c9536b86a44728a641852ba18280e',1,'MUSiCTools::splitString(std::vector&lt; T &gt; &amp;result, const std::string &amp;input, const std::string &amp;sep=&quot;,&quot;, bool ignoreEmpty=false)'],['../namespaceMUSiCTools.html#a14303b5e5b6239d91da709f9d4eb10c8',1,'MUSiCTools::splitString(const std::string &amp;input, const bool ignoreEmpty=false, const std::string sep=&quot;,&quot;)']]]
 ];

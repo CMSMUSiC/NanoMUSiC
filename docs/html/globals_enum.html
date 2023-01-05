@@ -49,8 +49,11 @@
     extensions: ["tex2jax.js"],
     jax: ["input/TeX","output/HTML-CSS"],
 });
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
 </script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_CHTML/MathJax.js"></script>
     <link href="doxygen.css" rel="stylesheet" type="text/css" />
     <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="custom.css" rel="stylesheet" type="text/css"/>
@@ -107,7 +110,7 @@
                         <td id="projectalign" style="padding-left: 0.5em;">
                             <div id="projectname">NanoMUSiC
                             </div>
-                            <div id="projectbrief">CMS MUSiC with NanoAOD</div>
+                            <div id="projectbrief">CMS MUSiC using NanoAOD</div>
                         </td>
                     </tr>
                 </tbody>
@@ -165,17 +168,8 @@ $(document).ready(function(){initNavTree('globals_enum.html',''); initResizable(
 <li>CorrectionTypes
 : <a class="el" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934">CorrectionSets.hpp</a>
 </li>
-<li>HLTPaths
-: <a class="el" href="NanoMUSiC_8hpp.html#ac2ac05f71ee2a95e9789b72fc542ee31">NanoMUSiC.hpp</a>
-</li>
-<li>Shift
-: <a class="el" href="MUSiCEvent_8hpp.html#aabddd589ce7fd3d829e15265d92dbedc">MUSiCEvent.hpp</a>
-</li>
-<li>Variation
-: <a class="el" href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74">MUSiCEvent.hpp</a>
-</li>
-<li>Weight
-: <a class="el" href="MUSiCEvent_8hpp.html#add354b854a8899ddb39fc9d57bbe22e3">MUSiCEvent.hpp</a>
+<li>Year
+: <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Configs.hpp</a>
 </li>
 </ul>
 </div><!-- contents -->

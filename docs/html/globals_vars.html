@@ -49,8 +49,11 @@
     extensions: ["tex2jax.js"],
     jax: ["input/TeX","output/HTML-CSS"],
 });
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
 </script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_CHTML/MathJax.js"></script>
     <link href="doxygen.css" rel="stylesheet" type="text/css" />
     <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="custom.css" rel="stylesheet" type="text/css"/>
@@ -107,7 +110,7 @@
                         <td id="projectalign" style="padding-left: 0.5em;">
                             <div id="projectname">NanoMUSiC
                             </div>
-                            <div id="projectbrief">CMS MUSiC with NanoAOD</div>
+                            <div id="projectbrief">CMS MUSiC using NanoAOD</div>
                         </td>
                     </tr>
                 </tbody>
@@ -165,23 +168,14 @@ $(document).ready(function(){initNavTree('globals_vars.html',''); initResizable(
 <li>default_corr
 : <a class="el" href="ObjectCorrections_8hpp.html#a04497c0b3f78c14664ca2bf1a10eb15e">ObjectCorrections.hpp</a>
 </li>
-<li>MAX_JETS
-: <a class="el" href="MUSiCEvent_8hpp.html#a60baa2ab832f95ea81d5e6a1a2d93e4e">MUSiCEvent.hpp</a>
+<li>Electron_mass
+: <a class="el" href="NanoObjects_8hpp.html#a6ee01d2abcf09c215eb107afb3b32553">NanoObjects.hpp</a>
 </li>
-<li>MAX_OBJECTS
-: <a class="el" href="MUSiCEvent_8hpp.html#a411d3b8cb183aeff71bdb0ee9d89f721">MUSiCEvent.hpp</a>
+<li>Muon_mass
+: <a class="el" href="NanoObjects_8hpp.html#aa9c26cf095d6377423966e074c6a749b">NanoObjects.hpp</a>
 </li>
-<li>music_content
-: <a class="el" href="test__MUSiCEvent_8cpp.html#a997110d9138ac6ac51e29f141f27ea04">test_MUSiCEvent.cpp</a>
-</li>
-<li>range_shifts
-: <a class="el" href="MUSiCEvent_8hpp.html#af49941be6ea69f720e3f4e6414b04a7f">MUSiCEvent.hpp</a>
-</li>
-<li>range_variations
-: <a class="el" href="MUSiCEvent_8hpp.html#ac0c4ecfcece9dd39ed86b3fc8b156e4b">MUSiCEvent.hpp</a>
-</li>
-<li>range_weights
-: <a class="el" href="MUSiCEvent_8hpp.html#a96266aab95c073be00040b71bcda4a79">MUSiCEvent.hpp</a>
+<li>Tau_mass
+: <a class="el" href="NanoObjects_8hpp.html#af02de5597170f1d260d92a1c6b58eadc">NanoObjects.hpp</a>
 </li>
 </ul>
 </div><!-- contents -->

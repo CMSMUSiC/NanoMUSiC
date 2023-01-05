@@ -49,8 +49,11 @@
     extensions: ["tex2jax.js"],
     jax: ["input/TeX","output/HTML-CSS"],
 });
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
 </script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_CHTML/MathJax.js"></script>
     <link href="doxygen.css" rel="stylesheet" type="text/css" />
     <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="custom.css" rel="stylesheet" type="text/css"/>
@@ -107,7 +110,7 @@
                         <td id="projectalign" style="padding-left: 0.5em;">
                             <div id="projectname">NanoMUSiC
                             </div>
-                            <div id="projectbrief">CMS MUSiC with NanoAOD</div>
+                            <div id="projectbrief">CMS MUSiC using NanoAOD</div>
                         </td>
                     </tr>
                 </tbody>
@@ -163,7 +166,20 @@ $(document).ready(function(){initNavTree('globals_func.html',''); initResizable(
 <div class="contents">
 &#160;
 
+<h3><a id="index__5F"></a>- _ -</h3><ul>
+<li>_imp1_number_of_duplicates()
+: <a class="el" href="Enumerate_8hpp.html#afc210e28676a4c82aec8547d8d66f94e">Enumerate.hpp</a>
+</li>
+<li>_imp2_number_of_duplicates()
+: <a class="el" href="Enumerate_8hpp.html#abe7adbcaeab1f0e0cb01fcf750c6dc89">Enumerate.hpp</a>
+</li>
+</ul>
+
+
 <h3><a id="index_a"></a>- a -</h3><ul>
+<li>add_library()
+: <a class="el" href="CMakeLists_8txt.html#aaff313e49ba5d9b317a35bebb3deccd1">CMakeLists.txt</a>
+</li>
 <li>analyseMETFilter()
 : <a class="el" href="nano2pxl__utils_8hpp.html#a710a6692fae11b221ac9c6132d81a1be">nano2pxl_utils.hpp</a>
 </li>
@@ -243,34 +259,30 @@ $(document).ready(function(){initNavTree('globals_func.html',''); initResizable(
 : <a class="el" href="nano2pxl__utils_8hpp.html#a30b67fd9952b1e1df318f9f69ee91364">nano2pxl_utils.hpp</a>
 </li>
 <li>apply_variation()
-: <a class="el" href="ObjectCorrections_8hpp.html#ac7cf72bb7898e272f192c8a8d933acdf">ObjectCorrections.hpp</a>
-</li>
-</ul>
-
-
-<h3><a id="index_b"></a>- b -</h3><ul>
-<li>Branch()
-: <a class="el" href="test__MUSiCEvent_8cpp.html#a5c8e9f783316a3c35b5395755cf36b6c">test_MUSiCEvent.cpp</a>
+: <a class="el" href="ObjectCorrections_8hpp.html#afba9be3810be85144cdacd5b088521ee">ObjectCorrections.hpp</a>
 </li>
 </ul>
 
 
 <h3><a id="index_f"></a>- f -</h3><ul>
-<li>f()
-: <a class="el" href="test__MUSiCEvent_8cpp.html#a9646d17834a218eca5ffeb339f48055f">test_MUSiCEvent.cpp</a>
+<li>file_loader()
+: <a class="el" href="NanoMUSiC_8hpp.html#a0ef88d1206645b82f5a36dc4db0c0b3e">NanoMUSiC.hpp</a>
 </li>
 </ul>
 
 
 <h3><a id="index_g"></a>- g -</h3><ul>
+<li>get_and_check_future()
+: <a class="el" href="NanoMUSiC_8hpp.html#a9b3eebbf38729c8d55ad8c67324a02c8">NanoMUSiC.hpp</a>
+</li>
 <li>get_correction()
 : <a class="el" href="ObjectCorrections_8hpp.html#ac4076d8fbfca239615dddaa4839ce73d">ObjectCorrections.hpp</a>
 </li>
-<li>get_hash256()
-: <a class="el" href="NanoMUSiC_8hpp.html#a36d60c12d4ef6737bb8cf04d055854c4">NanoMUSiC.hpp</a>
+<li>get_data_stream()
+: <a class="el" href="NanoMUSiC_8hpp.html#a308ca4e62678b26a996284060effbd12">NanoMUSiC.hpp</a>
 </li>
-<li>get_TFile()
-: <a class="el" href="NanoMUSiC_8hpp.html#af26d2df35eee0d22b7ce58ed8f3638d5">NanoMUSiC.hpp</a>
+<li>get_runyear()
+: <a class="el" href="Configs_8hpp.html#a85b6de68703d4e9d78cc25d31006aefd">Configs.hpp</a>
 </li>
 <li>getCpuTime()
 : <a class="el" href="NanoMUSiC_8hpp.html#a79075a862a5c485c83147cba22ffe704">NanoMUSiC.hpp</a>
@@ -288,21 +300,14 @@ $(document).ready(function(){initNavTree('globals_func.html',''); initResizable(
 </ul>
 
 
-<h3><a id="index_l"></a>- l -</h3><ul>
-<li>Load()
-: <a class="el" href="test__MUSiCEvent_8cpp.html#aed7ed09dec8a0e713f29d5de6e501a3e">test_MUSiCEvent.cpp</a>
-</li>
-</ul>
-
-
 <h3><a id="index_m"></a>- m -</h3><ul>
 <li>main()
 : <a class="el" href="music_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97">music.cpp</a>
 , <a class="el" href="nanoaod__content__printer_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97">nanoaod_content_printer.cpp</a>
 , <a class="el" href="NanoMUSiC_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97">NanoMUSiC.cpp</a>
 </li>
-<li>make_class_storage()
-: <a class="el" href="NanoMUSiC_8hpp.html#aeaf5d13eab782a4abe3550474eed3af5">NanoMUSiC.hpp</a>
+<li>make_enumerate()
+: <a class="el" href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">Enumerate.hpp</a>
 </li>
 <li>make_pxlevent()
 : <a class="el" href="music_8hpp.html#a905e9a8dd7de3a26727d27450d05cf18">music.hpp</a>
@@ -310,25 +315,34 @@ $(document).ready(function(){initNavTree('globals_func.html',''); initResizable(
 </ul>
 
 
+<h3><a id="index_n"></a>- n -</h3><ul>
+<li>number_of_duplicates()
+: <a class="el" href="Enumerate_8hpp.html#aa1f77dfb8da10faa62500af8a7048402">Enumerate.hpp</a>
+</li>
+</ul>
+
+
 <h3><a id="index_p"></a>- p -</h3><ul>
+<li>prepare_output_buffer()
+: <a class="el" href="NanoMUSiC_8hpp.html#af1b03d412e02df069024d445cf782b46">NanoMUSiC.hpp</a>
+</li>
+<li>print_report()
+: <a class="el" href="NanoMUSiC_8hpp.html#a41ec02e286c1ee820f743c2ec2347efe">NanoMUSiC.hpp</a>
+</li>
 <li>PrintProcessInfo()
-: <a class="el" href="music_8cpp.html#a1cebcc2da734541f7cf005033722cb43">music.cpp</a>
-, <a class="el" href="NanoMUSiC_8cpp.html#a1cebcc2da734541f7cf005033722cb43">NanoMUSiC.cpp</a>
+: <a class="el" href="NanoMUSiC_8hpp.html#a1cebcc2da734541f7cf005033722cb43">NanoMUSiC.hpp</a>
+, <a class="el" href="music_8cpp.html#a1cebcc2da734541f7cf005033722cb43">music.cpp</a>
 </li>
 </ul>
 
 
 <h3><a id="index_s"></a>- s -</h3><ul>
-<li>simple_replace()
-: <a class="el" href="NanoAODReader_8hpp.html#aca44e3190d6bd70346b5ebe64930c73f">NanoAODReader.hpp</a>
-, <a class="el" href="NanoAODReader_8cpp.html#aca44e3190d6bd70346b5ebe64930c73f">NanoAODReader.cpp</a>
+<li>save_class_storage()
+: <a class="el" href="NanoMUSiC_8hpp.html#ad14d9498758231e468bfe95357612c32">NanoMUSiC.hpp</a>
 </li>
-</ul>
-
-
-<h3><a id="index_t"></a>- t -</h3><ul>
-<li>t2()
-: <a class="el" href="test__MUSiCEvent_8cpp.html#a0033e6e8a46bbcd9fb32e0e2593fc4ad">test_MUSiCEvent.cpp</a>
+<li>simple_replace()
+: <a class="el" href="NanoAODReader_8cpp.html#aca44e3190d6bd70346b5ebe64930c73f">NanoAODReader.cpp</a>
+, <a class="el" href="NanoAODReader_8hpp.html#aca44e3190d6bd70346b5ebe64930c73f">NanoAODReader.hpp</a>
 </li>
 </ul>
 </div><!-- contents -->

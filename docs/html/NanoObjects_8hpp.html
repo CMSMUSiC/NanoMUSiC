@@ -49,8 +49,11 @@
     extensions: ["tex2jax.js"],
     jax: ["input/TeX","output/HTML-CSS"],
 });
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
 </script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_CHTML/MathJax.js"></script>
     <link href="doxygen.css" rel="stylesheet" type="text/css" />
     <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="custom.css" rel="stylesheet" type="text/css"/>
@@ -107,7 +110,7 @@
                         <td id="projectalign" style="padding-left: 0.5em;">
                             <div id="projectname">NanoMUSiC
                             </div>
-                            <div id="projectbrief">CMS MUSiC with NanoAOD</div>
+                            <div id="projectbrief">CMS MUSiC using NanoAOD</div>
                         </td>
                     </tr>
                 </tbody>
@@ -165,101 +168,120 @@ $(document).ready(function(){initNavTree('NanoObjects_8hpp.html',''); initResiza
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
-<a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">NanoObjects.hpp File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;any&gt;</code><br />
-<code>#include &lt;iostream&gt;</code><br />
-<code>#include &lt;sstream&gt;</code><br />
-<code>#include &lt;string&gt;</code><br />
-<code>#include &quot;Math/Vector4D.h&quot;</code><br />
+<div class="textblock"><code>#include &quot;ROOT/RVec.hxx&quot;</code><br />
 </div>
 <p><a href="NanoObjects_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNanoObject_1_1NanoObject.html">NanoObject::NanoObject</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNanoObjects_1_1EventInfo.html">NanoObjects::EventInfo</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNanoObjects_1_1Muons.html">NanoObjects::Muons</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNanoObjects_1_1Electrons.html">NanoObjects::Electrons</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNanoObjects_1_1Photons.html">NanoObjects::Photons</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNanoObjects_1_1Taus.html">NanoObjects::Taus</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNanoObjects_1_1Jets.html">NanoObjects::Jets</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNanoObjects_1_1MET.html">NanoObjects::MET</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Namespaces</h2></td></tr>
-<tr class="memitem:namespaceNanoObject"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNanoObject.html">NanoObject</a></td></tr>
+<tr class="memitem:namespaceNanoObjects"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNanoObjects.html">NanoObjects</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:afb1956f463886afafc2f00c4552745ed"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNanoObject.html#afb1956f463886afafc2f00c4552745ed">NanoObject::NanoObjectCollection</a> = std::vector&lt; NanoObject &gt;</td></tr>
-<tr class="separator:afb1956f463886afafc2f00c4552745ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a85e25d67a42e4ad256f4c8558d5020c2"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNanoObject.html#a85e25d67a42e4ad256f4c8558d5020c2">NanoObject::NanoAODObjects_t</a> = std::tuple&lt; NanoObjectCollection, NanoObjectCollection, NanoObjectCollection, NanoObjectCollection, NanoObjectCollection, NanoObjectCollection, NanoObject &gt;</td></tr>
-<tr class="separator:a85e25d67a42e4ad256f4c8558d5020c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:a2685b18d5511a53efca3dcd3e7d7e82e"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
-<tr class="memitem:a2685b18d5511a53efca3dcd3e7d7e82e"><td class="memTemplItemLeft" align="right" valign="top">NanoObject&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNanoObject.html#a2685b18d5511a53efca3dcd3e7d7e82e">NanoObject::make_object</a> (float &amp;&amp;pt, float &amp;&amp;eta, float &amp;&amp;phi, float &amp;&amp;mass, std::pair&lt; const char *, Args &gt; &amp;&amp;...features)</td></tr>
-<tr class="separator:a2685b18d5511a53efca3dcd3e7d7e82e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8067bc4542f0b6d6e5f56a799604fa3f"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
-<tr class="memitem:a8067bc4542f0b6d6e5f56a799604fa3f"><td class="memTemplItemLeft" align="right" valign="top">NanoObject&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNanoObject.html#a8067bc4542f0b6d6e5f56a799604fa3f">NanoObject::make_object</a> (float &amp;&amp;pt, float &amp;&amp;phi, std::pair&lt; const char *, Args &gt; &amp;&amp;...features)</td></tr>
-<tr class="separator:a8067bc4542f0b6d6e5f56a799604fa3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5cc7f91fdab71352b7d9db07643c63d0"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
-<tr class="memitem:a5cc7f91fdab71352b7d9db07643c63d0"><td class="memTemplItemLeft" align="right" valign="top">NanoObject&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNanoObject.html#a5cc7f91fdab71352b7d9db07643c63d0">NanoObject::make_object</a> (std::pair&lt; const char *, Args &gt; &amp;&amp;...features)</td></tr>
-<tr class="separator:a5cc7f91fdab71352b7d9db07643c63d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a089c569b89f654da088ecdf6940aa20d"><td class="memTemplParams" colspan="2">template&lt;typename ResType , typename F , typename G , typename H &gt; </td></tr>
-<tr class="memitem:a089c569b89f654da088ecdf6940aa20d"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; ResType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNanoObject.html#a089c569b89f654da088ecdf6940aa20d">NanoObject::Where</a> (const NanoObjectCollection &amp;vec, F &amp;&amp;conditional_pred, G &amp;&amp;if_true_pred, H &amp;&amp;if_false_pred)</td></tr>
-<tr class="separator:a089c569b89f654da088ecdf6940aa20d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a73b2ab8273218835e239966d8e654f51"><td class="memTemplParams" colspan="2">template&lt;typename F &gt; </td></tr>
-<tr class="memitem:a73b2ab8273218835e239966d8e654f51"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNanoObject.html#a73b2ab8273218835e239966d8e654f51">NanoObject::BuildMask</a> (const NanoObjectCollection &amp;vec, F &amp;&amp;pred)</td></tr>
-<tr class="separator:a73b2ab8273218835e239966d8e654f51"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9e3cfbb46b2456ef1610e2770a58480a"><td class="memTemplParams" colspan="2">template&lt;typename F &gt; </td></tr>
-<tr class="memitem:a9e3cfbb46b2456ef1610e2770a58480a"><td class="memTemplItemLeft" align="right" valign="top">NanoObjectCollection&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNanoObject.html#a9e3cfbb46b2456ef1610e2770a58480a">NanoObject::Filter</a> (NanoObjectCollection &amp;vec, F &amp;&amp;pred)</td></tr>
-<tr class="separator:a9e3cfbb46b2456ef1610e2770a58480a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a54420210c96d2f918ea87b184fee10ee"><td class="memItemLeft" align="right" valign="top">NanoObjectCollection&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNanoObject.html#a54420210c96d2f918ea87b184fee10ee">NanoObject::Filter</a> (const NanoObjectCollection &amp;vec, std::vector&lt; int &gt; &amp;conditions)</td></tr>
-<tr class="separator:a54420210c96d2f918ea87b184fee10ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f09b6b77f3c787a4b2e668c581c360a"><td class="memItemLeft" align="right" valign="top">NanoObjectCollection&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNanoObject.html#a8f09b6b77f3c787a4b2e668c581c360a">NanoObject::Take</a> (const NanoObjectCollection &amp;vec, const std::vector&lt; int &gt; &amp;indices)</td></tr>
-<tr class="separator:a8f09b6b77f3c787a4b2e668c581c360a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa25552f451b16fefdc532be0728ffd7f"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:aa25552f451b16fefdc532be0728ffd7f"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNanoObject.html#aa25552f451b16fefdc532be0728ffd7f">NanoObject::GetFeature</a> (NanoObjectCollection &amp;collection, std::string feature_name)</td></tr>
-<tr class="separator:aa25552f451b16fefdc532be0728ffd7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a16e9e7bb483e8a143f5df460fe2511c3"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a16e9e7bb483e8a143f5df460fe2511c3"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNanoObject.html#a16e9e7bb483e8a143f5df460fe2511c3">NanoObject::SetFeature</a> (NanoObjectCollection &amp;collection, std::string &amp;&amp;feature_name, std::vector&lt; T &gt; feature_values)</td></tr>
-<tr class="separator:a16e9e7bb483e8a143f5df460fe2511c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf55a5566a33d2ce8eec56b9dbfd2927"><td class="memItemLeft" align="right" valign="top">std::vector&lt; unsigned int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNanoObject.html#abf55a5566a33d2ce8eec56b9dbfd2927">NanoObject::Indices</a> (NanoObjectCollection &amp;collection)</td></tr>
-<tr class="separator:abf55a5566a33d2ce8eec56b9dbfd2927"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae5eb1f0426c944720c66230a3a52b316"><td class="memItemLeft" align="right" valign="top">NanoObject&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNanoObject.html#ae5eb1f0426c944720c66230a3a52b316">NanoObject::GetByIndex</a> (NanoObjectCollection &amp;collection, unsigned int _index)</td></tr>
-<tr class="separator:ae5eb1f0426c944720c66230a3a52b316"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:addcc6a0bd88e05a334f8133a5e32e941"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:addcc6a0bd88e05a334f8133a5e32e941"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNanoObject.html#addcc6a0bd88e05a334f8133a5e32e941">NanoObject::Repr</a> (const std::vector&lt; T &gt; &amp;vec)</td></tr>
-<tr class="separator:addcc6a0bd88e05a334f8133a5e32e941"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abd59a5ebbb2fd08bcbe743d215ad040e"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNanoObject.html#abd59a5ebbb2fd08bcbe743d215ad040e">NanoObject::Repr</a> (NanoObjectCollection &amp;collection)</td></tr>
-<tr class="separator:abd59a5ebbb2fd08bcbe743d215ad040e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a61b0ec817799927dd4edb5e008ae59d9"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNanoObject.html#a61b0ec817799927dd4edb5e008ae59d9">NanoObject::Pt</a> (NanoObjectCollection &amp;collection)</td></tr>
-<tr class="separator:a61b0ec817799927dd4edb5e008ae59d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3706396ccb3a15c35db1f7091283f67f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNanoObject.html#a3706396ccb3a15c35db1f7091283f67f">NanoObject::Eta</a> (NanoObjectCollection &amp;collection)</td></tr>
-<tr class="separator:a3706396ccb3a15c35db1f7091283f67f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7b7186cf5337a05aa0c8e79c08a49762"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNanoObject.html#a7b7186cf5337a05aa0c8e79c08a49762">NanoObject::Phi</a> (NanoObjectCollection &amp;collection)</td></tr>
-<tr class="separator:a7b7186cf5337a05aa0c8e79c08a49762"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa761d9d2645fc85ea1c1b3920fa1bab0"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNanoObject.html#aa761d9d2645fc85ea1c1b3920fa1bab0">NanoObject::Mass</a> (NanoObjectCollection &amp;collection)</td></tr>
-<tr class="separator:aa761d9d2645fc85ea1c1b3920fa1bab0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7b0ff8740b2644a4d9cb74f742d94eb7"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNanoObject.html#a7b0ff8740b2644a4d9cb74f742d94eb7">NanoObject::E</a> (NanoObjectCollection &amp;collection)</td></tr>
-<tr class="separator:a7b0ff8740b2644a4d9cb74f742d94eb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6e5f3a3cc561929a355db76fc8a5003d"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a6e5f3a3cc561929a355db76fc8a5003d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNanoObject.html#a6e5f3a3cc561929a355db76fc8a5003d">NanoObject::_unroll_and_fill</a> (std::vector&lt; std::map&lt; std::string, std::any &gt;&gt; &amp;_features_buffer, std::pair&lt; const char *, std::vector&lt; T &gt;&gt; &amp;&amp;features)</td></tr>
-<tr class="separator:a6e5f3a3cc561929a355db76fc8a5003d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab6a19ff943c256e96a08130369610ed7"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
-<tr class="memitem:ab6a19ff943c256e96a08130369610ed7"><td class="memTemplItemLeft" align="right" valign="top">NanoObjectCollection&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNanoObject.html#ab6a19ff943c256e96a08130369610ed7">NanoObject::make_collection</a> (std::vector&lt; float &gt; &amp;&amp;pt, std::vector&lt; float &gt; &amp;&amp;eta, std::vector&lt; float &gt; &amp;&amp;phi, std::vector&lt; float &gt; &amp;&amp;mass, std::pair&lt; const char *, std::vector&lt; Args &gt;&gt; &amp;&amp;...features)</td></tr>
-<tr class="separator:ab6a19ff943c256e96a08130369610ed7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0efc3c63869c537c8a8f83f2e4ca76dc"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
-<tr class="memitem:a0efc3c63869c537c8a8f83f2e4ca76dc"><td class="memTemplItemLeft" align="right" valign="top">NanoObjectCollection&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceNanoObject.html#a0efc3c63869c537c8a8f83f2e4ca76dc">NanoObject::make_collection</a> (std::vector&lt; float &gt; &amp;&amp;pt, std::vector&lt; float &gt; &amp;&amp;eta, std::vector&lt; float &gt; &amp;&amp;phi, float mass, std::pair&lt; const char *, Args &gt; &amp;&amp;...features)</td></tr>
-<tr class="separator:a0efc3c63869c537c8a8f83f2e4ca76dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7be87612d389c646e9a31974fa6a3d8b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNanoObjects.html#a7be87612d389c646e9a31974fa6a3d8b">NanoObjects::BJets</a> = Jets</td></tr>
+<tr class="separator:a7be87612d389c646e9a31974fa6a3d8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0aa103dc78a6067354bc625c0ca06cae"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNanoObjects.html#a0aa103dc78a6067354bc625c0ca06cae">NanoObjects::NanoAODObjects_t</a> = std::tuple&lt; Muons, Electrons, Photons, Taus, BJets, Jets, MET &gt;</td></tr>
+<tr class="separator:a0aa103dc78a6067354bc625c0ca06cae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:aa388addf65f7004a3b26fb71fbc24e8b"><td class="memItemLeft" align="right" valign="top">constexpr double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNanoObject.html#aa388addf65f7004a3b26fb71fbc24e8b">NanoObject::MUON_MASS</a> = 105.6583755 / 1000.0</td></tr>
-<tr class="separator:aa388addf65f7004a3b26fb71fbc24e8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9c26cf095d6377423966e074c6a749b"><td class="memItemLeft" align="right" valign="top">constexpr double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NanoObjects_8hpp.html#aa9c26cf095d6377423966e074c6a749b">Muon_mass</a> = 105.6583755 / 1000.</td></tr>
+<tr class="separator:aa9c26cf095d6377423966e074c6a749b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ee01d2abcf09c215eb107afb3b32553"><td class="memItemLeft" align="right" valign="top">constexpr double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NanoObjects_8hpp.html#a6ee01d2abcf09c215eb107afb3b32553">Electron_mass</a> = 0.51099895000 / 1000.</td></tr>
+<tr class="separator:a6ee01d2abcf09c215eb107afb3b32553"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af02de5597170f1d260d92a1c6b58eadc"><td class="memItemLeft" align="right" valign="top">constexpr double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NanoObjects_8hpp.html#af02de5597170f1d260d92a1c6b58eadc">Tau_mass</a> = 1776.86 / 1000.</td></tr>
+<tr class="separator:af02de5597170f1d260d92a1c6b58eadc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="a6ee01d2abcf09c215eb107afb3b32553"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ee01d2abcf09c215eb107afb3b32553">&#9670;&nbsp;</a></span>Electron_mass</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr double Electron_mass = 0.51099895000 / 1000.</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa9c26cf095d6377423966e074c6a749b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9c26cf095d6377423966e074c6a749b">&#9670;&nbsp;</a></span>Muon_mass</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr double Muon_mass = 105.6583755 / 1000.</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af02de5597170f1d260d92a1c6b58eadc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af02de5597170f1d260d92a1c6b58eadc">&#9670;&nbsp;</a></span>Tau_mass</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr double Tau_mass = 1776.86 / 1000.</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

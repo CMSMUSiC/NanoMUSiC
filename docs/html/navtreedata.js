@@ -25,29 +25,33 @@
 var NAVTREE =
 [
   [ "NanoMUSiC", "index.html", [
-    [ "Setup the environment (only once)", "index.html#autotoc_md1", null ],
     [ "Setup", "md_installation.html", [
-      [ "Dependencies", "md_installation.html#autotoc_md3", [
-        [ "Setup the environment (only once)", "md_installation.html#autotoc_md4", null ],
-        [ "Configuring the environment (for every new session)", "md_installation.html#autotoc_md5", null ],
-        [ "Compilation", "md_installation.html#autotoc_md6", null ],
-        [ "Installations directories", "md_installation.html#autotoc_md7", null ]
-      ] ]
+      [ "Dependencies", "md_installation.html#autotoc_md2", null ],
+      [ "Setup the environment (only once)", "md_installation.html#autotoc_md3", null ],
+      [ "Configuring the environment (for every new session)", "md_installation.html#autotoc_md4", null ],
+      [ "Compilation", "md_installation.html#autotoc_md5", null ],
+      [ "Installations directories", "md_installation.html#autotoc_md6", null ]
     ] ],
     [ "Running the analysis", "md_running.html", [
-      [ "Skim", "md_running.html#autotoc_md12", [
-        [ "Run Config File", "md_running.html#autotoc_md13", [
-          [ "Single process", "md_running.html#autotoc_md14", null ]
+      [ "Skim", "md_running.html#autotoc_md8", [
+        [ "Run Config File", "md_running.html#autotoc_md9", [
+          [ "Single process", "md_running.html#autotoc_md10", null ]
         ] ]
       ] ]
     ] ],
-    [ "How to access the class storage", "md_class_storage.html", null ],
-    [ "legacy MUSiC code", "md_legacy_music.html", null ],
-    [ "Read data from NanoAODReader", "md_NanoAODReader.html", null ],
-    [ "Handle NanoObjects", "md_NanoObjects.html", null ],
-    [ "test_samples", "md_test_samples.html", null ],
-    [ "Kinematical distributions of interest", "md_variables_of_interest.html", [
-      [ "Sum pT: $\\sum_{i}|\\vec{p_{i}}_{T}|$", "md_variables_of_interest.html#autotoc_md20", null ]
+    [ "NanoAOD file Content", "md_nanoaod_content.html", [
+      [ "MC", "md_nanoaod_content.html#autotoc_md12", [
+        [ "2016APV", "md_nanoaod_content.html#autotoc_md13", null ],
+        [ "2016", "md_nanoaod_content.html#autotoc_md14", null ],
+        [ "2017", "md_nanoaod_content.html#autotoc_md15", null ],
+        [ "2018", "md_nanoaod_content.html#autotoc_md16", null ]
+      ] ],
+      [ "Data", "md_nanoaod_content.html#autotoc_md17", [
+        [ "2016APV", "md_nanoaod_content.html#autotoc_md18", null ],
+        [ "2016", "md_nanoaod_content.html#autotoc_md19", null ],
+        [ "2017", "md_nanoaod_content.html#autotoc_md20", null ],
+        [ "2018", "md_nanoaod_content.html#autotoc_md21", null ]
+      ] ]
     ] ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
@@ -63,9 +67,9 @@ var NAVTREE =
       [ "Class Index", "classes.html", null ],
       [ "Class Hierarchy", "hierarchy.html", "hierarchy" ],
       [ "Class Members", "functions.html", [
-        [ "All", "functions.html", null ],
+        [ "All", "functions.html", "functions_dup" ],
         [ "Functions", "functions_func.html", null ],
-        [ "Variables", "functions_vars.html", null ],
+        [ "Variables", "functions_vars.html", "functions_vars" ],
         [ "Typedefs", "functions_type.html", null ],
         [ "Related Functions", "functions_rela.html", null ]
       ] ]
@@ -78,8 +82,7 @@ var NAVTREE =
         [ "Variables", "globals_vars.html", null ],
         [ "Typedefs", "globals_type.html", null ],
         [ "Enumerations", "globals_enum.html", null ],
-        [ "Enumerator", "globals_eval.html", null ],
-        [ "Macros", "globals_defs.html", null ]
+        [ "Enumerator", "globals_eval.html", null ]
       ] ]
     ] ]
   ] ]
@@ -87,8 +90,9 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"CorrectionSets_8hpp.html",
-"classTools_1_1MConfig.html#a6a10dd6413249e614107c35187cad09c"
+"Configs_8hpp.html",
+"classNanoAODReader.html#a0fb2493dae0db7c237b2ed79ddbec5cd",
+"process__event_8hpp_source.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

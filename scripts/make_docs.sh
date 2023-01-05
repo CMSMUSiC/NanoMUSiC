@@ -3,3 +3,4 @@
 cd $MUSIC_BASE
 cd docs
 doxygen
+cd -

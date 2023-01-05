@@ -49,8 +49,11 @@
     extensions: ["tex2jax.js"],
     jax: ["input/TeX","output/HTML-CSS"],
 });
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
 </script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_CHTML/MathJax.js"></script>
     <link href="doxygen.css" rel="stylesheet" type="text/css" />
     <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="custom.css" rel="stylesheet" type="text/css"/>
@@ -107,7 +110,7 @@
                         <td id="projectalign" style="padding-left: 0.5em;">
                             <div id="projectname">NanoMUSiC
                             </div>
-                            <div id="projectbrief">CMS MUSiC with NanoAOD</div>
+                            <div id="projectbrief">CMS MUSiC using NanoAOD</div>
                         </td>
                     </tr>
                 </tbody>
@@ -162,83 +165,20 @@ $(document).ready(function(){initNavTree('globals_eval.html',''); initResizable(
 
 <div class="contents">
 &#160;<ul>
-<li>Alpha_S
-: <a class="el" href="MUSiCEvent_8hpp.html#add354b854a8899ddb39fc9d57bbe22e3acafe9180c395cd9f8245db05fbe02775">MUSiCEvent.hpp</a>
+<li>kTotalYears
+: <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abfd3e8c0a2e269807b0b07d3cc6ad62c">Configs.hpp</a>
 </li>
-<li>BJet
-: <a class="el" href="NanoMUSiC_8hpp.html#ac2ac05f71ee2a95e9789b72fc542ee31a6fc46830f86eeca9c0e6a634c35e70b9">NanoMUSiC.hpp</a>
+<li>Run2016
+: <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abd2434cf3747e405569bbf500407c664">Configs.hpp</a>
 </li>
-<li>Default
-: <a class="el" href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74a79935518a3889663d8688b6b01fff051">MUSiCEvent.hpp</a>
+<li>Run2016APV
+: <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37acdd64c4ab6df0b9123e861c6a553ff52">Configs.hpp</a>
 </li>
-<li>DoubleElectron
-: <a class="el" href="NanoMUSiC_8hpp.html#ac2ac05f71ee2a95e9789b72fc542ee31aa95b4de37c94151d3ad74d468a7b0fc5">NanoMUSiC.hpp</a>
+<li>Run2017
+: <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37a46f3a28d72133d1d36182be3a3938bb5">Configs.hpp</a>
 </li>
-<li>DoubleMuon
-: <a class="el" href="NanoMUSiC_8hpp.html#ac2ac05f71ee2a95e9789b72fc542ee31a7d3ea9e343bf0d02039ae2cd185f4864">NanoMUSiC.hpp</a>
-</li>
-<li>Down
-: <a class="el" href="MUSiCEvent_8hpp.html#aabddd589ce7fd3d829e15265d92dbedcabcf8c79e9a5f5f9d606fb35645a0fb27">MUSiCEvent.hpp</a>
-</li>
-<li>ElectronResolution
-: <a class="el" href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74a05408fe655617978a3201a2f30b764e4">MUSiCEvent.hpp</a>
-</li>
-<li>ElectronScale
-: <a class="el" href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74abe1415248a4c1f4205ed801dea8d2202">MUSiCEvent.hpp</a>
-</li>
-<li>Generator
-: <a class="el" href="MUSiCEvent_8hpp.html#add354b854a8899ddb39fc9d57bbe22e3a541409fe48e9b6a03685901b949d1031">MUSiCEvent.hpp</a>
-</li>
-<li>JEC
-: <a class="el" href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74a92f1ffd7762eac16d6f0976bbe29ebac">MUSiCEvent.hpp</a>
-</li>
-<li>JER
-: <a class="el" href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74aaf25b552033cd97a660ce9dea75098ca">MUSiCEvent.hpp</a>
-</li>
-<li>kTotalShifts
-: <a class="el" href="MUSiCEvent_8hpp.html#aabddd589ce7fd3d829e15265d92dbedca386cdc7164070d591669646d76eeaa15">MUSiCEvent.hpp</a>
-</li>
-<li>kTotalVariations
-: <a class="el" href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74ab5ff28459072e5927f2934e10c78d259">MUSiCEvent.hpp</a>
-</li>
-<li>kTotalWeights
-: <a class="el" href="MUSiCEvent_8hpp.html#add354b854a8899ddb39fc9d57bbe22e3a16b16efbc26f5b2c218e51546724f3f4">MUSiCEvent.hpp</a>
-</li>
-<li>Lumi
-: <a class="el" href="MUSiCEvent_8hpp.html#add354b854a8899ddb39fc9d57bbe22e3a8cbd5b7133ebbcda95f4e88bc21b9809">MUSiCEvent.hpp</a>
-</li>
-<li>MET
-: <a class="el" href="NanoMUSiC_8hpp.html#ac2ac05f71ee2a95e9789b72fc542ee31ae06932408cafd29884daf8533ba507fb">NanoMUSiC.hpp</a>
-</li>
-<li>MuonResolution
-: <a class="el" href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74adac1f18c9c790a2724eda4bec139b6f3">MUSiCEvent.hpp</a>
-</li>
-<li>MuonScale
-: <a class="el" href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74abe47cf18bc7528fcf2e80e6b6669bcd4">MUSiCEvent.hpp</a>
-</li>
-<li>Nominal
-: <a class="el" href="MUSiCEvent_8hpp.html#aabddd589ce7fd3d829e15265d92dbedca57c029c232152bd83003039d6d34c6dc">MUSiCEvent.hpp</a>
-</li>
-<li>PDF
-: <a class="el" href="MUSiCEvent_8hpp.html#add354b854a8899ddb39fc9d57bbe22e3a720cd43d342ea9926f03e2283c8de04f">MUSiCEvent.hpp</a>
-</li>
-<li>Photon
-: <a class="el" href="NanoMUSiC_8hpp.html#ac2ac05f71ee2a95e9789b72fc542ee31a4db1999f5b69af0438bdaae51d011336">NanoMUSiC.hpp</a>
-</li>
-<li>PileUp
-: <a class="el" href="MUSiCEvent_8hpp.html#add354b854a8899ddb39fc9d57bbe22e3a51dc47e538b7d87e971e479230d091fe">MUSiCEvent.hpp</a>
-</li>
-<li>SingleElectron
-: <a class="el" href="NanoMUSiC_8hpp.html#ac2ac05f71ee2a95e9789b72fc542ee31ac9a12ca98cf16cd32f8cf85ed66d4006">NanoMUSiC.hpp</a>
-</li>
-<li>SingleMuon
-: <a class="el" href="NanoMUSiC_8hpp.html#ac2ac05f71ee2a95e9789b72fc542ee31a9d8f8c15d8b108c34705c311ca2f35ac">NanoMUSiC.hpp</a>
-</li>
-<li>Tau
-: <a class="el" href="NanoMUSiC_8hpp.html#ac2ac05f71ee2a95e9789b72fc542ee31aa90650603aebf993df8d39db96357b02">NanoMUSiC.hpp</a>
-</li>
-<li>Up
-: <a class="el" href="MUSiCEvent_8hpp.html#aabddd589ce7fd3d829e15265d92dbedca57a7edcbc04d6175683383cad5c3e0a2">MUSiCEvent.hpp</a>
+<li>Run2018
+: <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37a4574676bc1f98656ba6d813ba595ffc0">Configs.hpp</a>
 </li>
 </ul>
 </div><!-- contents -->

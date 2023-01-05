@@ -4,8 +4,14 @@ The nominal MUSiC analysis, following the approach of the Run2016 [arXiv:2010.02
 
 1 - Skimming
 
+$\left( \sum_{k=1}^n a_k b_k \right)^2 \leq \left( \sum_{k=1}^n a_k^2 \right) \left( \sum_{k=1}^n b_k^2 \right)$
+
+When \(a \ne 0\), there are two solutions to \(ax^2 + bx + c = 0\) and they are
+$$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$
+
+
 Data and MC NanoAOD samples are skimmed in order to:
-- Build a **per-event** class model stored in TTrees, with $pT$, $m_{inv/T}$, $MET$ and weights calculated for all systematics variations and classes.
+- Build a **per-event** class model stored in TTrees, with \(p_{T}\), \($m_{inv/T}$\), $MET$ and weights calculated for all systematics variations and classes.
 - The skimmed samples, since is per-event based, can be used to explore other methods of p-value estimations.
 
 2 - Classification

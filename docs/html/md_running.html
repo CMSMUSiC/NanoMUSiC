@@ -49,8 +49,11 @@
     extensions: ["tex2jax.js"],
     jax: ["input/TeX","output/HTML-CSS"],
 });
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
 </script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_CHTML/MathJax.js"></script>
     <link href="doxygen.css" rel="stylesheet" type="text/css" />
     <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="custom.css" rel="stylesheet" type="text/css"/>
@@ -107,7 +110,7 @@
                         <td id="projectalign" style="padding-left: 0.5em;">
                             <div id="projectname">NanoMUSiC
                             </div>
-                            <div id="projectbrief">CMS MUSiC with NanoAOD</div>
+                            <div id="projectbrief">CMS MUSiC using NanoAOD</div>
                         </td>
                     </tr>
                 </tbody>
@@ -167,8 +170,10 @@ $(document).ready(function(){initNavTree('md_running.html',''); initResizable();
 <div class="contents">
 <div class="textblock"><p>The nominal MUSiC analysis, following the approach of the Run2016 <a href="https://arxiv.org/abs/2010.02984">arXiv:2010.02984</a>, is divided in three stages:</p>
 <p>1 - Skimming</p>
+<p>$\left( \sum_{k=1}^n a_k b_k \right)^2 \leq \left( \sum_{k=1}^n a_k^2 \right) \left( \sum_{k=1}^n b_k^2 \right)$</p>
+<p>When (a \ne 0), there are two solutions to (ax^2 + bx + c = 0) and they are $$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$</p>
 <p>Data and MC NanoAOD samples are skimmed in order to:</p><ul>
-<li>Build a <b>per-event</b> class model stored in TTrees, with $pT$, $m_{inv/T}$, $MET$ and weights calculated for all systematics variations and classes.</li>
+<li>Build a <b>per-event</b> class model stored in TTrees, with (p_{T}), ($m_{inv/T}$), $MET$ and weights calculated for all systematics variations and classes.</li>
 <li>The skimmed samples, since is per-event based, can be used to explore other methods of p-value estimations.</li>
 </ul>
 <p>2 - Classification</p>
@@ -183,12 +188,12 @@ $(document).ready(function(){initNavTree('md_running.html',''); initResizable();
 <li>Calculates the p-values for selected RoIs, as well as estimates the Look Elsewhere Effect (LEE).</li>
 <li>Estimates the p-value distribution, corrected by the LEE: p-tilde ($\tilde{p}$-value).</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md12"></a>
+<h1><a class="anchor" id="autotoc_md8"></a>
 Skim</h1>
-<h2><a class="anchor" id="autotoc_md13"></a>
+<h2><a class="anchor" id="autotoc_md9"></a>
 Run Config File</h2>
 <p>Inside <code>./config</code>, different run configuration files can by found.</p>
-<h3><a class="anchor" id="autotoc_md14"></a>
+<h3><a class="anchor" id="autotoc_md10"></a>
 Single process</h3>
 <p>To run a test/debug Skimming:</p>
 <div class="fragment"><div class="line">nano_music --run-config &lt;path_to_config_file&gt;</div>

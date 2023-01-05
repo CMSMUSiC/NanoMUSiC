@@ -49,8 +49,11 @@
     extensions: ["tex2jax.js"],
     jax: ["input/TeX","output/HTML-CSS"],
 });
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
 </script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_CHTML/MathJax.js"></script>
     <link href="doxygen.css" rel="stylesheet" type="text/css" />
     <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="custom.css" rel="stylesheet" type="text/css"/>
@@ -107,7 +110,7 @@
                         <td id="projectalign" style="padding-left: 0.5em;">
                             <div id="projectname">NanoMUSiC
                             </div>
-                            <div id="projectbrief">CMS MUSiC with NanoAOD</div>
+                            <div id="projectbrief">CMS MUSiC using NanoAOD</div>
                         </td>
                     </tr>
                 </tbody>
@@ -166,20 +169,20 @@ $(document).ready(function(){initNavTree('md_installation.html',''); initResizab
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>The instructions here described are designed tested for the computing environment of RWTH-3A. In principle, it should be no problem to setup and run the analysis code at other sites, with CentOS7 and CVMFS mounted,e.g. <code>lxplus</code>.</p>
-<h1><a class="anchor" id="autotoc_md3"></a>
+<h1><a class="anchor" id="autotoc_md2"></a>
 Dependencies</h1>
-<p>There are no dependencies on CMSSW. The needed softwares are provided by LCG views (view 102 - <code>/cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/setup.sh</code>).</p>
-<p>LCG list of available software: <a href="https://lcginfo.cern.ch/release_packages/x86_64-centos7-gcc11-opt/102/">https://lcginfo.cern.ch/release_packages/x86_64-centos7-gcc11-opt/102/</a></p>
-<h2><a class="anchor" id="autotoc_md4"></a>
-Setup the environment (only once)</h2>
+<p>There are no dependencies on CMSSW. The needed softwares are provided by LCG views (view 102b - <code>/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/setup.sh</code>).</p>
+<p>LCG list of available software: <a href="https://lcginfo.cern.ch/release_packages/x86_64-centos7-gcc11-opt/102b/">https://lcginfo.cern.ch/release_packages/x86_64-centos7-gcc11-opt/102b/</a></p>
+<h1><a class="anchor" id="autotoc_md3"></a>
+Setup the environment (only once)</h1>
 <div class="fragment"><div class="line">git clone git@github.com:CMSMUSiC/NanoMUSiC.git</div>
 <div class="line">cd NanoMUSiC</div>
 <div class="line">./setup_music.sh</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md5"></a>
-Configuring the environment (for every new session)</h2>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md4"></a>
+Configuring the environment (for every new session)</h1>
 <div class="fragment"><div class="line">source music_setenv.sh</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md6"></a>
-Compilation</h2>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md5"></a>
+Compilation</h1>
 <div class="fragment"><div class="line">cd build</div>
 </div><!-- fragment --><p>If it does not exists, just create it (<code>mkdir build</code>). You can play around with this directory at will.</p>
 <p>To configure and build (and install):</p>
@@ -188,20 +191,17 @@ Compilation</h2>
 </div><!-- fragment --><p>Other options are:</p>
 <ul>
 <li><code>ninja lut</code> &rarr; Only creates the p-values LUTs. Usually takes some time to run, but, in principle, one should do it only right before start a classification.</li>
-<li><code>make_docs</code> &rarr; Produces the documentation for github.io.</li>
+<li><code>make_docs.sh</code> &rarr; Produces this documentation.</li>
 <li><code>ninja clean</code> &rarr; Clear compilations.</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md7"></a>
-Installations directories</h2>
-<h4><a class="anchor" id="autotoc_md8"></a>
-Executables</h4>
-<p><code>bin/</code></p>
-<h4><a class="anchor" id="autotoc_md9"></a>
-Shared libraries</h4>
-<p><code>libs/</code></p>
-<h4><a class="anchor" id="autotoc_md10"></a>
-Other useful scripts</h4>
-<p><code>scripts/</code> </p>
+<h1><a class="anchor" id="autotoc_md6"></a>
+Installations directories</h1>
+<ul>
+<li>Executables: <code>bin/</code> <br  />
+</li>
+<li>Shared libraries: <code>libs/</code></li>
+<li>Useful scripts: <code>scripts/</code> </li>
+</ul>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->

@@ -49,8 +49,11 @@
     extensions: ["tex2jax.js"],
     jax: ["input/TeX","output/HTML-CSS"],
 });
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
 </script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_CHTML/MathJax.js"></script>
     <link href="doxygen.css" rel="stylesheet" type="text/css" />
     <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="custom.css" rel="stylesheet" type="text/css"/>
@@ -107,7 +110,7 @@
                         <td id="projectalign" style="padding-left: 0.5em;">
                             <div id="projectname">NanoMUSiC
                             </div>
-                            <div id="projectbrief">CMS MUSiC with NanoAOD</div>
+                            <div id="projectbrief">CMS MUSiC using NanoAOD</div>
                         </td>
                     </tr>
                 </tbody>
@@ -162,14 +165,17 @@ $(document).ready(function(){initNavTree('globals_type.html',''); initResizable(
 
 <div class="contents">
 &#160;<ul>
+<li>CorrectionlibRef_t
+: <a class="el" href="CorrectionSets_8hpp.html#af1b8b92794ed34f64d7e63cb40dba657">CorrectionSets.hpp</a>
+</li>
 <li>json
 : <a class="el" href="RunLumiFilter_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">RunLumiFilter.hpp</a>
 </li>
-<li>Multiplicity_t
-: <a class="el" href="MUSiCEvent_8hpp.html#a376e34e0d5b8dcd3f42e4be0904bd47c">MUSiCEvent.hpp</a>
-</li>
 <li>OptionalFuture_t
 : <a class="el" href="NanoMUSiC_8hpp.html#a80e365d8190775175a4620a81aaa3185">NanoMUSiC.hpp</a>
+</li>
+<li>RochesterCorrection_t
+: <a class="el" href="CorrectionSets_8hpp.html#a92123307785577bd95f7bbc9fbc4462a">CorrectionSets.hpp</a>
 </li>
 </ul>
 </div><!-- contents -->

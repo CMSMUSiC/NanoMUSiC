@@ -49,8 +49,11 @@
     extensions: ["tex2jax.js"],
     jax: ["input/TeX","output/HTML-CSS"],
 });
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
 </script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_CHTML/MathJax.js"></script>
     <link href="doxygen.css" rel="stylesheet" type="text/css" />
     <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="custom.css" rel="stylesheet" type="text/css"/>
@@ -107,7 +110,7 @@
                         <td id="projectalign" style="padding-left: 0.5em;">
                             <div id="projectname">NanoMUSiC
                             </div>
-                            <div id="projectbrief">CMS MUSiC with NanoAOD</div>
+                            <div id="projectbrief">CMS MUSiC using NanoAOD</div>
                         </td>
                     </tr>
                 </tbody>
@@ -168,97 +171,66 @@ $(document).ready(function(){initNavTree('ObjectCorrections_8hpp_source.html',''
 <a href="ObjectCorrections_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef MUSIC_OBJECTCORRECTIONS</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define MUSIC_OBJECTCORRECTIONS</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160; </div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="MUSiCEvent_8hpp.html">MUSiCEvent.hpp</a>&quot;</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="NanoObjects_8hpp.html">NanoObjects.hpp</a>&quot;</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="NanoObjects_8hpp.html">NanoObjects.hpp</a>&quot;</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="Outputs_8hpp.html">Outputs.hpp</a>&quot;</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160; </div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">// enum Shift</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment">// {</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">//     Nominal,</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment">//     Up,</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment">//     Down,</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment">//     kTotalShifts, // !!! should always be the last one !!!</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment">// };</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment">// enum Variation</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment">// {</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment">//     Default,</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment">//     JEC,</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">//     JER,</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">//     MuonScale,</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">//     MuonResolution,</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">//     ElectronScale,</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">//     ElectronResolution,</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">//     kTotalVariations, // !!! should always be the last one !!!</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment">// };</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
-<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="ObjectCorrections_8hpp.html#a04497c0b3f78c14664ca2bf1a10eb15e">   26</a></span>&#160;<span class="keyword">auto</span> <a class="code" href="ObjectCorrections_8hpp.html#a04497c0b3f78c14664ca2bf1a10eb15e">default_corr</a> = [](<span class="keyword">const</span> <a class="code" href="MUSiCEvent_8hpp.html#aabddd589ce7fd3d829e15265d92dbedc">Shift</a> &amp;shift, <span class="keyword">const</span> <a class="code" href="namespaceNanoObject.html#afb1956f463886afafc2f00c4552745ed">NanoObject::NanoObjectCollection</a> &amp;muons,</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;                       <span class="keyword">const</span> <a class="code" href="namespaceNanoObject.html#afb1956f463886afafc2f00c4552745ed">NanoObject::NanoObjectCollection</a> &amp;electrons,</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;                       <span class="keyword">const</span> <a class="code" href="namespaceNanoObject.html#afb1956f463886afafc2f00c4552745ed">NanoObject::NanoObjectCollection</a> &amp;photons, <span class="keyword">const</span> <a class="code" href="namespaceNanoObject.html#afb1956f463886afafc2f00c4552745ed">NanoObject::NanoObjectCollection</a> &amp;taus,</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;                       <span class="keyword">const</span> <a class="code" href="namespaceNanoObject.html#afb1956f463886afafc2f00c4552745ed">NanoObject::NanoObjectCollection</a> &amp;bjets, <span class="keyword">const</span> <a class="code" href="namespaceNanoObject.html#afb1956f463886afafc2f00c4552745ed">NanoObject::NanoObjectCollection</a> &amp;jets,</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;                       <span class="keyword">const</span> <a class="code" href="classNanoObject_1_1NanoObject.html">NanoObject::NanoObject</a> &amp;met) {</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keywordflow">return</span> std::make_tuple(muons, electrons, photons, taus, bjets, jets, met);</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;};</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160; </div>
-<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="ObjectCorrections_8hpp.html#ac4076d8fbfca239615dddaa4839ce73d">   34</a></span>&#160;<span class="keyword">auto</span> <a class="code" href="ObjectCorrections_8hpp.html#ac4076d8fbfca239615dddaa4839ce73d">get_correction</a>(<span class="keyword">const</span> <a class="code" href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74">Variation</a> &amp;variation)</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;{</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keywordflow">switch</span> (variation)</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    {</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74a92f1ffd7762eac16d6f0976bbe29ebac">Variation::JEC</a>:</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="ObjectCorrections_8hpp.html#a04497c0b3f78c14664ca2bf1a10eb15e">default_corr</a>;</div>
+<div class="line"><a name="l00007"></a><span class="lineno"><a class="line" href="ObjectCorrections_8hpp.html#a04497c0b3f78c14664ca2bf1a10eb15e">    7</a></span>&#160;<span class="keyword">auto</span> <a class="code" href="ObjectCorrections_8hpp.html#a04497c0b3f78c14664ca2bf1a10eb15e">default_corr</a> = [](<span class="keyword">const</span> Shift &amp;shift, <span class="keyword">const</span> NanoObjects::NanoObjectCollection &amp;muons,</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;                       <span class="keyword">const</span> NanoObjects::NanoObjectCollection &amp;electrons, <span class="keyword">const</span> NanoObjects::NanoObjectCollection &amp;photons,</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;                       <span class="keyword">const</span> NanoObjects::NanoObjectCollection &amp;taus, <span class="keyword">const</span> NanoObjects::NanoObjectCollection &amp;bjets,</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;                       <span class="keyword">const</span> NanoObjects::NanoObjectCollection &amp;jets, <span class="keyword">const</span> NanoObjects::NanoObject &amp;met) {</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    <span class="keywordflow">return</span> std::make_tuple(muons, electrons, photons, taus, bjets, jets, met);</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;};</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
+<div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="ObjectCorrections_8hpp.html#ac4076d8fbfca239615dddaa4839ce73d">   14</a></span>&#160;<span class="keyword">auto</span> <a class="code" href="ObjectCorrections_8hpp.html#ac4076d8fbfca239615dddaa4839ce73d">get_correction</a>(<span class="keyword">const</span> Variation &amp;variation)</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;{</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    <span class="keywordflow">switch</span> (variation)</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    {</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="keywordflow">case</span> Variation::JEC:</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="ObjectCorrections_8hpp.html#a04497c0b3f78c14664ca2bf1a10eb15e">default_corr</a>;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <span class="keywordflow">case</span> Variation::JER:</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="ObjectCorrections_8hpp.html#a04497c0b3f78c14664ca2bf1a10eb15e">default_corr</a>;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <span class="keywordflow">case</span> Variation::MuonScale:</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="ObjectCorrections_8hpp.html#a04497c0b3f78c14664ca2bf1a10eb15e">default_corr</a>;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keywordflow">case</span> Variation::MuonResolution:</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="ObjectCorrections_8hpp.html#a04497c0b3f78c14664ca2bf1a10eb15e">default_corr</a>;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="keywordflow">case</span> Variation::ElectronScale:</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="ObjectCorrections_8hpp.html#a04497c0b3f78c14664ca2bf1a10eb15e">default_corr</a>;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keywordflow">case</span> Variation::ElectronResolution:</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="ObjectCorrections_8hpp.html#a04497c0b3f78c14664ca2bf1a10eb15e">default_corr</a>;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keywordflow">default</span>: <span class="comment">// Default (nominal)</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="ObjectCorrections_8hpp.html#a04497c0b3f78c14664ca2bf1a10eb15e">default_corr</a>;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    }</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;}</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; </div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74aaf25b552033cd97a660ce9dea75098ca">Variation::JER</a>:</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="ObjectCorrections_8hpp.html#a04497c0b3f78c14664ca2bf1a10eb15e">default_corr</a>;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74abe47cf18bc7528fcf2e80e6b6669bcd4">Variation::MuonScale</a>:</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="ObjectCorrections_8hpp.html#a04497c0b3f78c14664ca2bf1a10eb15e">default_corr</a>;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74adac1f18c9c790a2724eda4bec139b6f3">Variation::MuonResolution</a>:</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="ObjectCorrections_8hpp.html#a04497c0b3f78c14664ca2bf1a10eb15e">default_corr</a>;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74abe1415248a4c1f4205ed801dea8d2202">Variation::ElectronScale</a>:</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="ObjectCorrections_8hpp.html#a04497c0b3f78c14664ca2bf1a10eb15e">default_corr</a>;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keywordflow">case</span> <a class="code" href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74a05408fe655617978a3201a2f30b764e4">Variation::ElectronResolution</a>:</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="ObjectCorrections_8hpp.html#a04497c0b3f78c14664ca2bf1a10eb15e">default_corr</a>;</div>
+<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="ObjectCorrections_8hpp.html#afba9be3810be85144cdacd5b088521ee">   41</a></span>&#160;std::optional&lt;NanoObjects::NanoAODObjects_t&gt; <a class="code" href="ObjectCorrections_8hpp.html#afba9be3810be85144cdacd5b088521ee">apply_variation</a>(</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keyword">const</span> Variation &amp;variation, <span class="keyword">const</span> Shift &amp;shift, <span class="keyword">const</span> <span class="keywordtype">bool</span> &amp;is_data, <span class="keyword">const</span> NanoObjects::NanoObjectCollection &amp;muons,</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keyword">const</span> NanoObjects::NanoObjectCollection &amp;electrons, <span class="keyword">const</span> NanoObjects::NanoObjectCollection &amp;photons,</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keyword">const</span> NanoObjects::NanoObjectCollection &amp;taus, <span class="keyword">const</span> NanoObjects::NanoObjectCollection &amp;bjets,</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keyword">const</span> NanoObjects::NanoObjectCollection &amp;jets, <span class="keyword">const</span> NanoObjects::NanoObject &amp;met)</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;{</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="comment">// for now, just pass forward</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keywordflow">if</span> (shift == Shift::Nominal || !is_data)</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    {</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        <span class="keyword">auto</span> correction_func = <a class="code" href="ObjectCorrections_8hpp.html#ac4076d8fbfca239615dddaa4839ce73d">get_correction</a>(variation);</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        <span class="keywordflow">return</span> correction_func(shift, muons, electrons, photons, taus, bjets, jets, met);</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    }</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keywordflow">return</span> std::nullopt;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;}</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keywordflow">default</span>: <span class="comment">// Default (nominal)</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="ObjectCorrections_8hpp.html#a04497c0b3f78c14664ca2bf1a10eb15e">default_corr</a>;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    }</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;}</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
-<div class="line"><a name="l00061"></a><span class="lineno"><a class="line" href="ObjectCorrections_8hpp.html#ac7cf72bb7898e272f192c8a8d933acdf">   61</a></span>&#160;std::optional&lt;NanoObject::NanoAODObjects_t&gt; <a class="code" href="ObjectCorrections_8hpp.html#ac7cf72bb7898e272f192c8a8d933acdf">apply_variation</a>(</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keyword">const</span> <a class="code" href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74">Variation</a> &amp;variation, <span class="keyword">const</span> <a class="code" href="MUSiCEvent_8hpp.html#aabddd589ce7fd3d829e15265d92dbedc">Shift</a> &amp;shift, <span class="keyword">const</span> <span class="keywordtype">bool</span> &amp;is_data, <span class="keyword">const</span> <a class="code" href="namespaceNanoObject.html#afb1956f463886afafc2f00c4552745ed">NanoObject::NanoObjectCollection</a> &amp;muons,</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keyword">const</span> <a class="code" href="namespaceNanoObject.html#afb1956f463886afafc2f00c4552745ed">NanoObject::NanoObjectCollection</a> &amp;electrons, <span class="keyword">const</span> <a class="code" href="namespaceNanoObject.html#afb1956f463886afafc2f00c4552745ed">NanoObject::NanoObjectCollection</a> &amp;photons,</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keyword">const</span> <a class="code" href="namespaceNanoObject.html#afb1956f463886afafc2f00c4552745ed">NanoObject::NanoObjectCollection</a> &amp;taus, <span class="keyword">const</span> <a class="code" href="namespaceNanoObject.html#afb1956f463886afafc2f00c4552745ed">NanoObject::NanoObjectCollection</a> &amp;bjets,</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keyword">const</span> <a class="code" href="namespaceNanoObject.html#afb1956f463886afafc2f00c4552745ed">NanoObject::NanoObjectCollection</a> &amp;jets, <span class="keyword">const</span> <a class="code" href="classNanoObject_1_1NanoObject.html">NanoObject::NanoObject</a> &amp;met)</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;{</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="comment">// for now, just pass forward</span></div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="keywordflow">if</span> (shift == <a class="code" href="MUSiCEvent_8hpp.html#aabddd589ce7fd3d829e15265d92dbedca57c029c232152bd83003039d6d34c6dc">Shift::Nominal</a> || !is_data)</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    {</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        <span class="keyword">auto</span> correction_func = <a class="code" href="ObjectCorrections_8hpp.html#ac4076d8fbfca239615dddaa4839ce73d">get_correction</a>(variation);</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        <span class="keywordflow">return</span> correction_func(shift, muons, electrons, photons, taus, bjets, jets, met);</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    }</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keywordflow">return</span> std::nullopt;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;}</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/*MUSIC_OBJECTCORRECTIONS*/</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/*MUSIC_OBJECTCORRECTIONS*/</span><span class="preprocessor"></span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
-<div class="ttc" id="aMUSiCEvent_8hpp_html_a4a8a5602a15f2d608ba6f1f5e05caa74aaf25b552033cd97a660ce9dea75098ca"><div class="ttname"><a href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74aaf25b552033cd97a660ce9dea75098ca">JER</a></div><div class="ttdeci">@ JER</div><div class="ttdef"><b>Definition:</b> MUSiCEvent.hpp:61</div></div>
-<div class="ttc" id="aObjectCorrections_8hpp_html_ac7cf72bb7898e272f192c8a8d933acdf"><div class="ttname"><a href="ObjectCorrections_8hpp.html#ac7cf72bb7898e272f192c8a8d933acdf">apply_variation</a></div><div class="ttdeci">std::optional&lt; NanoObject::NanoAODObjects_t &gt; apply_variation(const Variation &amp;variation, const Shift &amp;shift, const bool &amp;is_data, const NanoObject::NanoObjectCollection &amp;muons, const NanoObject::NanoObjectCollection &amp;electrons, const NanoObject::NanoObjectCollection &amp;photons, const NanoObject::NanoObjectCollection &amp;taus, const NanoObject::NanoObjectCollection &amp;bjets, const NanoObject::NanoObjectCollection &amp;jets, const NanoObject::NanoObject &amp;met)</div><div class="ttdef"><b>Definition:</b> ObjectCorrections.hpp:61</div></div>
-<div class="ttc" id="aObjectCorrections_8hpp_html_a04497c0b3f78c14664ca2bf1a10eb15e"><div class="ttname"><a href="ObjectCorrections_8hpp.html#a04497c0b3f78c14664ca2bf1a10eb15e">default_corr</a></div><div class="ttdeci">auto default_corr</div><div class="ttdef"><b>Definition:</b> ObjectCorrections.hpp:26</div></div>
-<div class="ttc" id="anamespaceNanoObject_html_afb1956f463886afafc2f00c4552745ed"><div class="ttname"><a href="namespaceNanoObject.html#afb1956f463886afafc2f00c4552745ed">NanoObject::NanoObjectCollection</a></div><div class="ttdeci">std::vector&lt; NanoObject &gt; NanoObjectCollection</div><div class="ttdef"><b>Definition:</b> NanoObjects.hpp:122</div></div>
-<div class="ttc" id="aMUSiCEvent_8hpp_html_a4a8a5602a15f2d608ba6f1f5e05caa74abe1415248a4c1f4205ed801dea8d2202"><div class="ttname"><a href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74abe1415248a4c1f4205ed801dea8d2202">ElectronScale</a></div><div class="ttdeci">@ ElectronScale</div><div class="ttdef"><b>Definition:</b> MUSiCEvent.hpp:64</div></div>
-<div class="ttc" id="aMUSiCEvent_8hpp_html_aabddd589ce7fd3d829e15265d92dbedca57c029c232152bd83003039d6d34c6dc"><div class="ttname"><a href="MUSiCEvent_8hpp.html#aabddd589ce7fd3d829e15265d92dbedca57c029c232152bd83003039d6d34c6dc">Nominal</a></div><div class="ttdeci">@ Nominal</div><div class="ttdef"><b>Definition:</b> MUSiCEvent.hpp:41</div></div>
-<div class="ttc" id="aMUSiCEvent_8hpp_html_aabddd589ce7fd3d829e15265d92dbedc"><div class="ttname"><a href="MUSiCEvent_8hpp.html#aabddd589ce7fd3d829e15265d92dbedc">Shift</a></div><div class="ttdeci">Shift</div><div class="ttdef"><b>Definition:</b> MUSiCEvent.hpp:40</div></div>
-<div class="ttc" id="aMUSiCEvent_8hpp_html_a4a8a5602a15f2d608ba6f1f5e05caa74a92f1ffd7762eac16d6f0976bbe29ebac"><div class="ttname"><a href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74a92f1ffd7762eac16d6f0976bbe29ebac">JEC</a></div><div class="ttdeci">@ JEC</div><div class="ttdef"><b>Definition:</b> MUSiCEvent.hpp:60</div></div>
+<div class="ttc" id="aObjectCorrections_8hpp_html_afba9be3810be85144cdacd5b088521ee"><div class="ttname"><a href="ObjectCorrections_8hpp.html#afba9be3810be85144cdacd5b088521ee">apply_variation</a></div><div class="ttdeci">std::optional&lt; NanoObjects::NanoAODObjects_t &gt; apply_variation(const Variation &amp;variation, const Shift &amp;shift, const bool &amp;is_data, const NanoObjects::NanoObjectCollection &amp;muons, const NanoObjects::NanoObjectCollection &amp;electrons, const NanoObjects::NanoObjectCollection &amp;photons, const NanoObjects::NanoObjectCollection &amp;taus, const NanoObjects::NanoObjectCollection &amp;bjets, const NanoObjects::NanoObjectCollection &amp;jets, const NanoObjects::NanoObject &amp;met)</div><div class="ttdef"><b>Definition:</b> ObjectCorrections.hpp:41</div></div>
+<div class="ttc" id="aObjectCorrections_8hpp_html_a04497c0b3f78c14664ca2bf1a10eb15e"><div class="ttname"><a href="ObjectCorrections_8hpp.html#a04497c0b3f78c14664ca2bf1a10eb15e">default_corr</a></div><div class="ttdeci">auto default_corr</div><div class="ttdef"><b>Definition:</b> ObjectCorrections.hpp:7</div></div>
+<div class="ttc" id="aOutputs_8hpp_html"><div class="ttname"><a href="Outputs_8hpp.html">Outputs.hpp</a></div></div>
 <div class="ttc" id="aNanoObjects_8hpp_html"><div class="ttname"><a href="NanoObjects_8hpp.html">NanoObjects.hpp</a></div></div>
-<div class="ttc" id="aMUSiCEvent_8hpp_html_a4a8a5602a15f2d608ba6f1f5e05caa74a05408fe655617978a3201a2f30b764e4"><div class="ttname"><a href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74a05408fe655617978a3201a2f30b764e4">ElectronResolution</a></div><div class="ttdeci">@ ElectronResolution</div><div class="ttdef"><b>Definition:</b> MUSiCEvent.hpp:65</div></div>
-<div class="ttc" id="aMUSiCEvent_8hpp_html"><div class="ttname"><a href="MUSiCEvent_8hpp.html">MUSiCEvent.hpp</a></div></div>
-<div class="ttc" id="aMUSiCEvent_8hpp_html_a4a8a5602a15f2d608ba6f1f5e05caa74abe47cf18bc7528fcf2e80e6b6669bcd4"><div class="ttname"><a href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74abe47cf18bc7528fcf2e80e6b6669bcd4">MuonScale</a></div><div class="ttdeci">@ MuonScale</div><div class="ttdef"><b>Definition:</b> MUSiCEvent.hpp:62</div></div>
-<div class="ttc" id="aMUSiCEvent_8hpp_html_a4a8a5602a15f2d608ba6f1f5e05caa74adac1f18c9c790a2724eda4bec139b6f3"><div class="ttname"><a href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74adac1f18c9c790a2724eda4bec139b6f3">MuonResolution</a></div><div class="ttdeci">@ MuonResolution</div><div class="ttdef"><b>Definition:</b> MUSiCEvent.hpp:63</div></div>
-<div class="ttc" id="aclassNanoObject_1_1NanoObject_html"><div class="ttname"><a href="classNanoObject_1_1NanoObject.html">NanoObject::NanoObject</a></div><div class="ttdef"><b>Definition:</b> NanoObjects.hpp:18</div></div>
-<div class="ttc" id="aObjectCorrections_8hpp_html_ac4076d8fbfca239615dddaa4839ce73d"><div class="ttname"><a href="ObjectCorrections_8hpp.html#ac4076d8fbfca239615dddaa4839ce73d">get_correction</a></div><div class="ttdeci">auto get_correction(const Variation &amp;variation)</div><div class="ttdef"><b>Definition:</b> ObjectCorrections.hpp:34</div></div>
-<div class="ttc" id="aMUSiCEvent_8hpp_html_a4a8a5602a15f2d608ba6f1f5e05caa74"><div class="ttname"><a href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74">Variation</a></div><div class="ttdeci">Variation</div><div class="ttdef"><b>Definition:</b> MUSiCEvent.hpp:58</div></div>
+<div class="ttc" id="aObjectCorrections_8hpp_html_ac4076d8fbfca239615dddaa4839ce73d"><div class="ttname"><a href="ObjectCorrections_8hpp.html#ac4076d8fbfca239615dddaa4839ce73d">get_correction</a></div><div class="ttdeci">auto get_correction(const Variation &amp;variation)</div><div class="ttdef"><b>Definition:</b> ObjectCorrections.hpp:14</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

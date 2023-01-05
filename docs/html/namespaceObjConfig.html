@@ -1,0 +1,1048 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    <meta name="generator" content="Doxygen 1.8.18" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- BEGIN opengraph metadata -->
+    <meta property="og:title" content="Doxygen Awesome" />
+    <meta property="og:image"
+        content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+    <meta property="og:description"
+        content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+    <meta property="og:url" content="https://jothepro.github.io/doxygen-awesome-css/" />
+    <!-- END opengraph metadata -->
+    <!-- BEGIN twitter metadata -->
+    <meta name="twitter:image:src"
+        content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+    <meta name="twitter:title" content="Doxygen Awesome" />
+    <meta name="twitter:description"
+        content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+    <!-- END twitter metadata -->
+    <title>NanoMUSiC: ObjConfig Namespace Reference</title>
+    <link href="tabs.css" rel="stylesheet" type="text/css" />
+    <link rel="icon" type="image/svg+xml" href="logo.drawio.svg" />
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="dynsections.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+    <script type="text/javascript" src="toggle-alternative-theme.js"></script>
+    <script type="text/javascript">
+        DoxygenAwesomeFragmentCopyButton.init()
+        DoxygenAwesomeDarkModeToggle.init()
+        DoxygenAwesomeParagraphLink.init()
+        DoxygenAwesomeInteractiveToc.init()
+    </script>
+    <link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+    <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_CHTML/MathJax.js"></script>
+    <link href="doxygen.css" rel="stylesheet" type="text/css" />
+    <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-alternative.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+    <!-- https://tholman.com/github-corners/ -->
+    <a href="https://github.com/cmsmusic/nanomusic" class="github-corner" title="View source on GitHub" target="_blank">
+        <svg viewBox="0 0 250 250" width="40" height="40"
+            style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+            <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+            <path
+                d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+                fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+            <path
+                d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+                fill="currentColor" class="octo-body"></path>
+        </svg></a>
+    <style>
+        .github-corner:hover .octo-arm {
+            animation: octocat-wave 560ms ease-in-out
+        }
+        @keyframes octocat-wave {
+            0%,
+            100% {
+                transform: rotate(0)
+            }
+            20%,
+            60% {
+                transform: rotate(-25deg)
+            }
+            40%,
+            80% {
+                transform: rotate(10deg)
+            }
+        }
+        @media (max-width:500px) {
+            .github-corner:hover .octo-arm {
+                animation: none
+            }
+            .github-corner .octo-arm {
+                animation: octocat-wave 560ms ease-in-out
+            }
+        }
+    </style>
+    <div id="top">
+        <!-- do not remove this div, it is closed by doxygen! -->
+        <div id="titlearea">
+            <table cellspacing="0" cellpadding="0">
+                <tbody>
+                    <tr style="height: 56px;">
+                        <td id="projectalign" style="padding-left: 0.5em;">
+                            <div id="projectname">NanoMUSiC
+                            </div>
+                            <div id="projectbrief">CMS MUSiC using NanoAOD</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- end header part --><!-- Generated by Doxygen 1.8.18 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'Search');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(document).ready(function(){initNavTree('namespaceObjConfig.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#var-members">Variables</a>  </div>
+  <div class="headertitle">
+<div class="title">ObjConfig Namespace Reference</div>  </div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structObjConfig_1_1BjetsConfig.html">BjetsConfig</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structObjConfig_1_1ElectronConfig.html">ElectronConfig</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structObjConfig_1_1JetConfig.html">JetConfig</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structObjConfig_1_1METConfig.html">METConfig</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structObjConfig_1_1MuonConfig.html">MuonConfig</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structObjConfig_1_1PhotonConfig.html">PhotonConfig</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structObjConfig_1_1TauConfig.html">TauConfig</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:ad4e1cfb9b93034c238ab627ab35a21a6"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#ad4e1cfb9b93034c238ab627ab35a21a6">Muon2016APV</a> = <a class="el" href="structObjConfig_1_1MuonConfig.html">MuonConfig</a>{}</td></tr>
+<tr class="separator:ad4e1cfb9b93034c238ab627ab35a21a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab46f42728104c7577db1cc223b80e09b"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#ab46f42728104c7577db1cc223b80e09b">Muon2016</a> = <a class="el" href="structObjConfig_1_1MuonConfig.html">MuonConfig</a>{}</td></tr>
+<tr class="separator:ab46f42728104c7577db1cc223b80e09b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc3e4bf0db07b566e6006e5d80949986"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#abc3e4bf0db07b566e6006e5d80949986">Muon2017</a> = <a class="el" href="structObjConfig_1_1MuonConfig.html">MuonConfig</a>{.MinLowPt = 28.}</td></tr>
+<tr class="separator:abc3e4bf0db07b566e6006e5d80949986"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a41a72e5c8e55e55344b3023641d721"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a9a41a72e5c8e55e55344b3023641d721">Muon2018</a> = <a class="el" href="structObjConfig_1_1MuonConfig.html">MuonConfig</a>{}</td></tr>
+<tr class="separator:a9a41a72e5c8e55e55344b3023641d721"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a697527b2bf71df6610702752f72bfce4"><td class="memItemLeft" align="right" valign="top">constexpr std::array&lt; <a class="el" href="structObjConfig_1_1MuonConfig.html">MuonConfig</a>, <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abfd3e8c0a2e269807b0b07d3cc6ad62c">Year::kTotalYears</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a697527b2bf71df6610702752f72bfce4">Muons</a> = {<a class="el" href="namespaceObjConfig.html#ad4e1cfb9b93034c238ab627ab35a21a6">Muon2016APV</a>, <a class="el" href="namespaceObjConfig.html#ab46f42728104c7577db1cc223b80e09b">Muon2016</a>, <a class="el" href="namespaceObjConfig.html#abc3e4bf0db07b566e6006e5d80949986">Muon2017</a>, <a class="el" href="namespaceObjConfig.html#a9a41a72e5c8e55e55344b3023641d721">Muon2018</a>}</td></tr>
+<tr class="separator:a697527b2bf71df6610702752f72bfce4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5502e44d308316e66839a4a4d4c92034"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a5502e44d308316e66839a4a4d4c92034">Electron2016APV</a> = <a class="el" href="structObjConfig_1_1ElectronConfig.html">ElectronConfig</a>{}</td></tr>
+<tr class="separator:a5502e44d308316e66839a4a4d4c92034"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89592b76685f21502f61606f4a079a9c"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a89592b76685f21502f61606f4a079a9c">Electron2016</a> = <a class="el" href="structObjConfig_1_1ElectronConfig.html">ElectronConfig</a>{}</td></tr>
+<tr class="separator:a89592b76685f21502f61606f4a079a9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23b2448c7fa0b3ff9271f5a736b6c7c5"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a23b2448c7fa0b3ff9271f5a736b6c7c5">Electron2017</a> = <a class="el" href="structObjConfig_1_1ElectronConfig.html">ElectronConfig</a>{.MinLowPt = 28.}</td></tr>
+<tr class="separator:a23b2448c7fa0b3ff9271f5a736b6c7c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8269df68489a6bfdac9413feef1e9592"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a8269df68489a6bfdac9413feef1e9592">Electron2018</a> = <a class="el" href="structObjConfig_1_1ElectronConfig.html">ElectronConfig</a>{}</td></tr>
+<tr class="separator:a8269df68489a6bfdac9413feef1e9592"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1e0f92bafff876ee0c5547377cceaa3"><td class="memItemLeft" align="right" valign="top">constexpr std::array&lt; <a class="el" href="structObjConfig_1_1ElectronConfig.html">ElectronConfig</a>, <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abfd3e8c0a2e269807b0b07d3cc6ad62c">Year::kTotalYears</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#aa1e0f92bafff876ee0c5547377cceaa3">Electrons</a> = {<a class="el" href="namespaceObjConfig.html#a5502e44d308316e66839a4a4d4c92034">Electron2016APV</a>, <a class="el" href="namespaceObjConfig.html#a89592b76685f21502f61606f4a079a9c">Electron2016</a>, <a class="el" href="namespaceObjConfig.html#a23b2448c7fa0b3ff9271f5a736b6c7c5">Electron2017</a>, <a class="el" href="namespaceObjConfig.html#a8269df68489a6bfdac9413feef1e9592">Electron2018</a>}</td></tr>
+<tr class="separator:aa1e0f92bafff876ee0c5547377cceaa3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c94c43453578a05a4594b31c600c4ae"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a2c94c43453578a05a4594b31c600c4ae">Photon2016APV</a> = <a class="el" href="structObjConfig_1_1PhotonConfig.html">PhotonConfig</a>{}</td></tr>
+<tr class="separator:a2c94c43453578a05a4594b31c600c4ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac357df9579d6c38a1316f648bfb65fac"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#ac357df9579d6c38a1316f648bfb65fac">Photon2016</a> = <a class="el" href="structObjConfig_1_1PhotonConfig.html">PhotonConfig</a>{}</td></tr>
+<tr class="separator:ac357df9579d6c38a1316f648bfb65fac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3ecd1bb18d8def1acf126662db71529"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#ad3ecd1bb18d8def1acf126662db71529">Photon2017</a> = <a class="el" href="structObjConfig_1_1PhotonConfig.html">PhotonConfig</a>{.MinLowPt = 28.}</td></tr>
+<tr class="separator:ad3ecd1bb18d8def1acf126662db71529"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11cb011b88330b27dcf1f6b90f6f8053"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a11cb011b88330b27dcf1f6b90f6f8053">Photon2018</a> = <a class="el" href="structObjConfig_1_1PhotonConfig.html">PhotonConfig</a>{}</td></tr>
+<tr class="separator:a11cb011b88330b27dcf1f6b90f6f8053"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe4bb9071706833d3fff20fc91b1fbf9"><td class="memItemLeft" align="right" valign="top">constexpr std::array&lt; <a class="el" href="structObjConfig_1_1PhotonConfig.html">PhotonConfig</a>, <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abfd3e8c0a2e269807b0b07d3cc6ad62c">Year::kTotalYears</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#afe4bb9071706833d3fff20fc91b1fbf9">Photons</a> = {<a class="el" href="namespaceObjConfig.html#a2c94c43453578a05a4594b31c600c4ae">Photon2016APV</a>, <a class="el" href="namespaceObjConfig.html#ac357df9579d6c38a1316f648bfb65fac">Photon2016</a>, <a class="el" href="namespaceObjConfig.html#ad3ecd1bb18d8def1acf126662db71529">Photon2017</a>, <a class="el" href="namespaceObjConfig.html#a11cb011b88330b27dcf1f6b90f6f8053">Photon2018</a>}</td></tr>
+<tr class="separator:afe4bb9071706833d3fff20fc91b1fbf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4290728edcbb440f36cf613b410394a"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#ac4290728edcbb440f36cf613b410394a">Tau2016APV</a> = <a class="el" href="structObjConfig_1_1TauConfig.html">TauConfig</a>{}</td></tr>
+<tr class="separator:ac4290728edcbb440f36cf613b410394a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7173280d0c86303237242fc5e4906cc9"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a7173280d0c86303237242fc5e4906cc9">Tau2016</a> = <a class="el" href="structObjConfig_1_1TauConfig.html">TauConfig</a>{}</td></tr>
+<tr class="separator:a7173280d0c86303237242fc5e4906cc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1035b4960705276118f3f838132caa17"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a1035b4960705276118f3f838132caa17">Tau2017</a> = <a class="el" href="structObjConfig_1_1TauConfig.html">TauConfig</a>{.MinLowPt = 28.}</td></tr>
+<tr class="separator:a1035b4960705276118f3f838132caa17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af288d635abe7f71e7ec01e09f75f7926"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#af288d635abe7f71e7ec01e09f75f7926">Tau2018</a> = <a class="el" href="structObjConfig_1_1TauConfig.html">TauConfig</a>{}</td></tr>
+<tr class="separator:af288d635abe7f71e7ec01e09f75f7926"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f5c435c8ba15409e77c02a916d075ac"><td class="memItemLeft" align="right" valign="top">constexpr std::array&lt; <a class="el" href="structObjConfig_1_1TauConfig.html">TauConfig</a>, <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abfd3e8c0a2e269807b0b07d3cc6ad62c">Year::kTotalYears</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a7f5c435c8ba15409e77c02a916d075ac">Taus</a> = {<a class="el" href="namespaceObjConfig.html#ac4290728edcbb440f36cf613b410394a">Tau2016APV</a>, <a class="el" href="namespaceObjConfig.html#a7173280d0c86303237242fc5e4906cc9">Tau2016</a>, <a class="el" href="namespaceObjConfig.html#a1035b4960705276118f3f838132caa17">Tau2017</a>, <a class="el" href="namespaceObjConfig.html#af288d635abe7f71e7ec01e09f75f7926">Tau2018</a>}</td></tr>
+<tr class="separator:a7f5c435c8ba15409e77c02a916d075ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27230779f387f21354f8c0ae33c0e0a5"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a27230779f387f21354f8c0ae33c0e0a5">Bjets2016APV</a> = <a class="el" href="structObjConfig_1_1BjetsConfig.html">BjetsConfig</a>{}</td></tr>
+<tr class="separator:a27230779f387f21354f8c0ae33c0e0a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aede2d0f9e6783cf805606e73beeaf92d"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#aede2d0f9e6783cf805606e73beeaf92d">Bjets2016</a> = <a class="el" href="structObjConfig_1_1BjetsConfig.html">BjetsConfig</a>{}</td></tr>
+<tr class="separator:aede2d0f9e6783cf805606e73beeaf92d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1869324596201ecc35343da445c1988"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#ae1869324596201ecc35343da445c1988">Bjets2017</a> = <a class="el" href="structObjConfig_1_1BjetsConfig.html">BjetsConfig</a>{.MinLowPt = 28.}</td></tr>
+<tr class="separator:ae1869324596201ecc35343da445c1988"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0e217bf79fc1623de7b071c0e0589f8"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#ac0e217bf79fc1623de7b071c0e0589f8">Bjets2018</a> = <a class="el" href="structObjConfig_1_1BjetsConfig.html">BjetsConfig</a>{}</td></tr>
+<tr class="separator:ac0e217bf79fc1623de7b071c0e0589f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcac5b1ca0a14bad328559f7f3ec6d53"><td class="memItemLeft" align="right" valign="top">constexpr std::array&lt; <a class="el" href="structObjConfig_1_1BjetsConfig.html">BjetsConfig</a>, <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abfd3e8c0a2e269807b0b07d3cc6ad62c">Year::kTotalYears</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#afcac5b1ca0a14bad328559f7f3ec6d53">BJets</a> = {<a class="el" href="namespaceObjConfig.html#a27230779f387f21354f8c0ae33c0e0a5">Bjets2016APV</a>, <a class="el" href="namespaceObjConfig.html#aede2d0f9e6783cf805606e73beeaf92d">Bjets2016</a>, <a class="el" href="namespaceObjConfig.html#ae1869324596201ecc35343da445c1988">Bjets2017</a>, <a class="el" href="namespaceObjConfig.html#ac0e217bf79fc1623de7b071c0e0589f8">Bjets2018</a>}</td></tr>
+<tr class="separator:afcac5b1ca0a14bad328559f7f3ec6d53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cd1a7972f985bbd4bed7a53aa41127c"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a4cd1a7972f985bbd4bed7a53aa41127c">Jet2016APV</a> = <a class="el" href="structObjConfig_1_1JetConfig.html">JetConfig</a>{}</td></tr>
+<tr class="separator:a4cd1a7972f985bbd4bed7a53aa41127c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0c3eb7f51055a6251a12dba623c29a0"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#aa0c3eb7f51055a6251a12dba623c29a0">Jet2016</a> = <a class="el" href="structObjConfig_1_1JetConfig.html">JetConfig</a>{}</td></tr>
+<tr class="separator:aa0c3eb7f51055a6251a12dba623c29a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a200cb319f03866ad3d144993e1c8b82f"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a200cb319f03866ad3d144993e1c8b82f">Jet2017</a> = <a class="el" href="structObjConfig_1_1JetConfig.html">JetConfig</a>{}</td></tr>
+<tr class="separator:a200cb319f03866ad3d144993e1c8b82f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa25b904c9954d6ccd0510e490b7aa2b"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#afa25b904c9954d6ccd0510e490b7aa2b">Jet2018</a> = <a class="el" href="structObjConfig_1_1JetConfig.html">JetConfig</a>{}</td></tr>
+<tr class="separator:afa25b904c9954d6ccd0510e490b7aa2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6e980438b2782165952b19d6d62e4a9"><td class="memItemLeft" align="right" valign="top">constexpr std::array&lt; <a class="el" href="structObjConfig_1_1JetConfig.html">JetConfig</a>, <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abfd3e8c0a2e269807b0b07d3cc6ad62c">Year::kTotalYears</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#ab6e980438b2782165952b19d6d62e4a9">Jets</a> = {<a class="el" href="namespaceObjConfig.html#a4cd1a7972f985bbd4bed7a53aa41127c">Jet2016APV</a>, <a class="el" href="namespaceObjConfig.html#aa0c3eb7f51055a6251a12dba623c29a0">Jet2016</a>, <a class="el" href="namespaceObjConfig.html#a200cb319f03866ad3d144993e1c8b82f">Jet2017</a>, <a class="el" href="namespaceObjConfig.html#afa25b904c9954d6ccd0510e490b7aa2b">Jet2018</a>}</td></tr>
+<tr class="separator:ab6e980438b2782165952b19d6d62e4a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a963b1ff13c635d60d7275857a20ae460"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a963b1ff13c635d60d7275857a20ae460">MET2016APV</a> = <a class="el" href="structObjConfig_1_1METConfig.html">METConfig</a>{}</td></tr>
+<tr class="separator:a963b1ff13c635d60d7275857a20ae460"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b2a61aa250de8719a83f6a2ad31c403"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a6b2a61aa250de8719a83f6a2ad31c403">MET2016</a> = <a class="el" href="structObjConfig_1_1METConfig.html">METConfig</a>{}</td></tr>
+<tr class="separator:a6b2a61aa250de8719a83f6a2ad31c403"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaeb95a6eade98df8fa513a1bfc962b26"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#aaeb95a6eade98df8fa513a1bfc962b26">MET2017</a> = <a class="el" href="structObjConfig_1_1METConfig.html">METConfig</a>{}</td></tr>
+<tr class="separator:aaeb95a6eade98df8fa513a1bfc962b26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ed7b9c93ed9ad550cf7bc28f4371811"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a5ed7b9c93ed9ad550cf7bc28f4371811">MET2018</a> = <a class="el" href="structObjConfig_1_1METConfig.html">METConfig</a>{}</td></tr>
+<tr class="separator:a5ed7b9c93ed9ad550cf7bc28f4371811"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29c19765ccfd10c37e0f1885467c097d"><td class="memItemLeft" align="right" valign="top">constexpr std::array&lt; <a class="el" href="structObjConfig_1_1METConfig.html">METConfig</a>, <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abfd3e8c0a2e269807b0b07d3cc6ad62c">Year::kTotalYears</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a29c19765ccfd10c37e0f1885467c097d">MET</a> = {<a class="el" href="namespaceObjConfig.html#a963b1ff13c635d60d7275857a20ae460">MET2016APV</a>, <a class="el" href="namespaceObjConfig.html#a6b2a61aa250de8719a83f6a2ad31c403">MET2016</a>, <a class="el" href="namespaceObjConfig.html#aaeb95a6eade98df8fa513a1bfc962b26">MET2017</a>, <a class="el" href="namespaceObjConfig.html#a5ed7b9c93ed9ad550cf7bc28f4371811">MET2018</a>}</td></tr>
+<tr class="separator:a29c19765ccfd10c37e0f1885467c097d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="afcac5b1ca0a14bad328559f7f3ec6d53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcac5b1ca0a14bad328559f7f3ec6d53">&#9670;&nbsp;</a></span>BJets</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::array&lt;<a class="el" href="structObjConfig_1_1BjetsConfig.html">BjetsConfig</a>, <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abfd3e8c0a2e269807b0b07d3cc6ad62c">Year::kTotalYears</a>&gt; ObjConfig::BJets = {<a class="el" href="namespaceObjConfig.html#a27230779f387f21354f8c0ae33c0e0a5">Bjets2016APV</a>, <a class="el" href="namespaceObjConfig.html#aede2d0f9e6783cf805606e73beeaf92d">Bjets2016</a>, <a class="el" href="namespaceObjConfig.html#ae1869324596201ecc35343da445c1988">Bjets2017</a>, <a class="el" href="namespaceObjConfig.html#ac0e217bf79fc1623de7b071c0e0589f8">Bjets2018</a>}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aede2d0f9e6783cf805606e73beeaf92d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aede2d0f9e6783cf805606e73beeaf92d">&#9670;&nbsp;</a></span>Bjets2016</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto ObjConfig::Bjets2016 = <a class="el" href="structObjConfig_1_1BjetsConfig.html">BjetsConfig</a>{}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a27230779f387f21354f8c0ae33c0e0a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27230779f387f21354f8c0ae33c0e0a5">&#9670;&nbsp;</a></span>Bjets2016APV</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto ObjConfig::Bjets2016APV = <a class="el" href="structObjConfig_1_1BjetsConfig.html">BjetsConfig</a>{}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae1869324596201ecc35343da445c1988"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1869324596201ecc35343da445c1988">&#9670;&nbsp;</a></span>Bjets2017</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto ObjConfig::Bjets2017 = <a class="el" href="structObjConfig_1_1BjetsConfig.html">BjetsConfig</a>{.MinLowPt = 28.}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac0e217bf79fc1623de7b071c0e0589f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0e217bf79fc1623de7b071c0e0589f8">&#9670;&nbsp;</a></span>Bjets2018</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto ObjConfig::Bjets2018 = <a class="el" href="structObjConfig_1_1BjetsConfig.html">BjetsConfig</a>{}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a89592b76685f21502f61606f4a079a9c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89592b76685f21502f61606f4a079a9c">&#9670;&nbsp;</a></span>Electron2016</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto ObjConfig::Electron2016 = <a class="el" href="structObjConfig_1_1ElectronConfig.html">ElectronConfig</a>{}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5502e44d308316e66839a4a4d4c92034"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5502e44d308316e66839a4a4d4c92034">&#9670;&nbsp;</a></span>Electron2016APV</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto ObjConfig::Electron2016APV = <a class="el" href="structObjConfig_1_1ElectronConfig.html">ElectronConfig</a>{}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a23b2448c7fa0b3ff9271f5a736b6c7c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23b2448c7fa0b3ff9271f5a736b6c7c5">&#9670;&nbsp;</a></span>Electron2017</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto ObjConfig::Electron2017 = <a class="el" href="structObjConfig_1_1ElectronConfig.html">ElectronConfig</a>{.MinLowPt = 28.}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8269df68489a6bfdac9413feef1e9592"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8269df68489a6bfdac9413feef1e9592">&#9670;&nbsp;</a></span>Electron2018</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto ObjConfig::Electron2018 = <a class="el" href="structObjConfig_1_1ElectronConfig.html">ElectronConfig</a>{}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa1e0f92bafff876ee0c5547377cceaa3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1e0f92bafff876ee0c5547377cceaa3">&#9670;&nbsp;</a></span>Electrons</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::array&lt;<a class="el" href="structObjConfig_1_1ElectronConfig.html">ElectronConfig</a>, <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abfd3e8c0a2e269807b0b07d3cc6ad62c">Year::kTotalYears</a>&gt; ObjConfig::Electrons = {<a class="el" href="namespaceObjConfig.html#a5502e44d308316e66839a4a4d4c92034">Electron2016APV</a>, <a class="el" href="namespaceObjConfig.html#a89592b76685f21502f61606f4a079a9c">Electron2016</a>, <a class="el" href="namespaceObjConfig.html#a23b2448c7fa0b3ff9271f5a736b6c7c5">Electron2017</a>, <a class="el" href="namespaceObjConfig.html#a8269df68489a6bfdac9413feef1e9592">Electron2018</a>}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa0c3eb7f51055a6251a12dba623c29a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0c3eb7f51055a6251a12dba623c29a0">&#9670;&nbsp;</a></span>Jet2016</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto ObjConfig::Jet2016 = <a class="el" href="structObjConfig_1_1JetConfig.html">JetConfig</a>{}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4cd1a7972f985bbd4bed7a53aa41127c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cd1a7972f985bbd4bed7a53aa41127c">&#9670;&nbsp;</a></span>Jet2016APV</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto ObjConfig::Jet2016APV = <a class="el" href="structObjConfig_1_1JetConfig.html">JetConfig</a>{}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a200cb319f03866ad3d144993e1c8b82f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a200cb319f03866ad3d144993e1c8b82f">&#9670;&nbsp;</a></span>Jet2017</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto ObjConfig::Jet2017 = <a class="el" href="structObjConfig_1_1JetConfig.html">JetConfig</a>{}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afa25b904c9954d6ccd0510e490b7aa2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa25b904c9954d6ccd0510e490b7aa2b">&#9670;&nbsp;</a></span>Jet2018</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto ObjConfig::Jet2018 = <a class="el" href="structObjConfig_1_1JetConfig.html">JetConfig</a>{}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab6e980438b2782165952b19d6d62e4a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6e980438b2782165952b19d6d62e4a9">&#9670;&nbsp;</a></span>Jets</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::array&lt;<a class="el" href="structObjConfig_1_1JetConfig.html">JetConfig</a>, <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abfd3e8c0a2e269807b0b07d3cc6ad62c">Year::kTotalYears</a>&gt; ObjConfig::Jets = {<a class="el" href="namespaceObjConfig.html#a4cd1a7972f985bbd4bed7a53aa41127c">Jet2016APV</a>, <a class="el" href="namespaceObjConfig.html#aa0c3eb7f51055a6251a12dba623c29a0">Jet2016</a>, <a class="el" href="namespaceObjConfig.html#a200cb319f03866ad3d144993e1c8b82f">Jet2017</a>, <a class="el" href="namespaceObjConfig.html#afa25b904c9954d6ccd0510e490b7aa2b">Jet2018</a>}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a29c19765ccfd10c37e0f1885467c097d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29c19765ccfd10c37e0f1885467c097d">&#9670;&nbsp;</a></span>MET</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::array&lt;<a class="el" href="structObjConfig_1_1METConfig.html">METConfig</a>, <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abfd3e8c0a2e269807b0b07d3cc6ad62c">Year::kTotalYears</a>&gt; ObjConfig::MET = {<a class="el" href="namespaceObjConfig.html#a963b1ff13c635d60d7275857a20ae460">MET2016APV</a>, <a class="el" href="namespaceObjConfig.html#a6b2a61aa250de8719a83f6a2ad31c403">MET2016</a>, <a class="el" href="namespaceObjConfig.html#aaeb95a6eade98df8fa513a1bfc962b26">MET2017</a>, <a class="el" href="namespaceObjConfig.html#a5ed7b9c93ed9ad550cf7bc28f4371811">MET2018</a>}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6b2a61aa250de8719a83f6a2ad31c403"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b2a61aa250de8719a83f6a2ad31c403">&#9670;&nbsp;</a></span>MET2016</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto ObjConfig::MET2016 = <a class="el" href="structObjConfig_1_1METConfig.html">METConfig</a>{}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a963b1ff13c635d60d7275857a20ae460"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a963b1ff13c635d60d7275857a20ae460">&#9670;&nbsp;</a></span>MET2016APV</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto ObjConfig::MET2016APV = <a class="el" href="structObjConfig_1_1METConfig.html">METConfig</a>{}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aaeb95a6eade98df8fa513a1bfc962b26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaeb95a6eade98df8fa513a1bfc962b26">&#9670;&nbsp;</a></span>MET2017</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto ObjConfig::MET2017 = <a class="el" href="structObjConfig_1_1METConfig.html">METConfig</a>{}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5ed7b9c93ed9ad550cf7bc28f4371811"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ed7b9c93ed9ad550cf7bc28f4371811">&#9670;&nbsp;</a></span>MET2018</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto ObjConfig::MET2018 = <a class="el" href="structObjConfig_1_1METConfig.html">METConfig</a>{}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab46f42728104c7577db1cc223b80e09b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab46f42728104c7577db1cc223b80e09b">&#9670;&nbsp;</a></span>Muon2016</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto ObjConfig::Muon2016 = <a class="el" href="structObjConfig_1_1MuonConfig.html">MuonConfig</a>{}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad4e1cfb9b93034c238ab627ab35a21a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4e1cfb9b93034c238ab627ab35a21a6">&#9670;&nbsp;</a></span>Muon2016APV</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto ObjConfig::Muon2016APV = <a class="el" href="structObjConfig_1_1MuonConfig.html">MuonConfig</a>{}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abc3e4bf0db07b566e6006e5d80949986"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc3e4bf0db07b566e6006e5d80949986">&#9670;&nbsp;</a></span>Muon2017</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto ObjConfig::Muon2017 = <a class="el" href="structObjConfig_1_1MuonConfig.html">MuonConfig</a>{.MinLowPt = 28.}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9a41a72e5c8e55e55344b3023641d721"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a41a72e5c8e55e55344b3023641d721">&#9670;&nbsp;</a></span>Muon2018</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto ObjConfig::Muon2018 = <a class="el" href="structObjConfig_1_1MuonConfig.html">MuonConfig</a>{}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a697527b2bf71df6610702752f72bfce4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a697527b2bf71df6610702752f72bfce4">&#9670;&nbsp;</a></span>Muons</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::array&lt;<a class="el" href="structObjConfig_1_1MuonConfig.html">MuonConfig</a>, <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abfd3e8c0a2e269807b0b07d3cc6ad62c">Year::kTotalYears</a>&gt; ObjConfig::Muons = {<a class="el" href="namespaceObjConfig.html#ad4e1cfb9b93034c238ab627ab35a21a6">Muon2016APV</a>, <a class="el" href="namespaceObjConfig.html#ab46f42728104c7577db1cc223b80e09b">Muon2016</a>, <a class="el" href="namespaceObjConfig.html#abc3e4bf0db07b566e6006e5d80949986">Muon2017</a>, <a class="el" href="namespaceObjConfig.html#a9a41a72e5c8e55e55344b3023641d721">Muon2018</a>}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac357df9579d6c38a1316f648bfb65fac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac357df9579d6c38a1316f648bfb65fac">&#9670;&nbsp;</a></span>Photon2016</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto ObjConfig::Photon2016 = <a class="el" href="structObjConfig_1_1PhotonConfig.html">PhotonConfig</a>{}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2c94c43453578a05a4594b31c600c4ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c94c43453578a05a4594b31c600c4ae">&#9670;&nbsp;</a></span>Photon2016APV</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto ObjConfig::Photon2016APV = <a class="el" href="structObjConfig_1_1PhotonConfig.html">PhotonConfig</a>{}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad3ecd1bb18d8def1acf126662db71529"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3ecd1bb18d8def1acf126662db71529">&#9670;&nbsp;</a></span>Photon2017</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto ObjConfig::Photon2017 = <a class="el" href="structObjConfig_1_1PhotonConfig.html">PhotonConfig</a>{.MinLowPt = 28.}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a11cb011b88330b27dcf1f6b90f6f8053"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11cb011b88330b27dcf1f6b90f6f8053">&#9670;&nbsp;</a></span>Photon2018</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto ObjConfig::Photon2018 = <a class="el" href="structObjConfig_1_1PhotonConfig.html">PhotonConfig</a>{}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afe4bb9071706833d3fff20fc91b1fbf9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe4bb9071706833d3fff20fc91b1fbf9">&#9670;&nbsp;</a></span>Photons</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::array&lt;<a class="el" href="structObjConfig_1_1PhotonConfig.html">PhotonConfig</a>, <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abfd3e8c0a2e269807b0b07d3cc6ad62c">Year::kTotalYears</a>&gt; ObjConfig::Photons = {<a class="el" href="namespaceObjConfig.html#a2c94c43453578a05a4594b31c600c4ae">Photon2016APV</a>, <a class="el" href="namespaceObjConfig.html#ac357df9579d6c38a1316f648bfb65fac">Photon2016</a>, <a class="el" href="namespaceObjConfig.html#ad3ecd1bb18d8def1acf126662db71529">Photon2017</a>, <a class="el" href="namespaceObjConfig.html#a11cb011b88330b27dcf1f6b90f6f8053">Photon2018</a>}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7173280d0c86303237242fc5e4906cc9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7173280d0c86303237242fc5e4906cc9">&#9670;&nbsp;</a></span>Tau2016</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto ObjConfig::Tau2016 = <a class="el" href="structObjConfig_1_1TauConfig.html">TauConfig</a>{}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac4290728edcbb440f36cf613b410394a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4290728edcbb440f36cf613b410394a">&#9670;&nbsp;</a></span>Tau2016APV</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto ObjConfig::Tau2016APV = <a class="el" href="structObjConfig_1_1TauConfig.html">TauConfig</a>{}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1035b4960705276118f3f838132caa17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1035b4960705276118f3f838132caa17">&#9670;&nbsp;</a></span>Tau2017</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto ObjConfig::Tau2017 = <a class="el" href="structObjConfig_1_1TauConfig.html">TauConfig</a>{.MinLowPt = 28.}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af288d635abe7f71e7ec01e09f75f7926"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af288d635abe7f71e7ec01e09f75f7926">&#9670;&nbsp;</a></span>Tau2018</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto ObjConfig::Tau2018 = <a class="el" href="structObjConfig_1_1TauConfig.html">TauConfig</a>{}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7f5c435c8ba15409e77c02a916d075ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f5c435c8ba15409e77c02a916d075ac">&#9670;&nbsp;</a></span>Taus</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::array&lt;<a class="el" href="structObjConfig_1_1TauConfig.html">TauConfig</a>, <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abfd3e8c0a2e269807b0b07d3cc6ad62c">Year::kTotalYears</a>&gt; ObjConfig::Taus = {<a class="el" href="namespaceObjConfig.html#ac4290728edcbb440f36cf613b410394a">Tau2016APV</a>, <a class="el" href="namespaceObjConfig.html#a7173280d0c86303237242fc5e4906cc9">Tau2016</a>, <a class="el" href="namespaceObjConfig.html#a1035b4960705276118f3f838132caa17">Tau2017</a>, <a class="el" href="namespaceObjConfig.html#af288d635abe7f71e7ec01e09f75f7926">Tau2018</a>}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="namespaceObjConfig.html">ObjConfig</a></li>
+    <li class="footer">Generated by
+    <a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.18 </li>
+  </ul>
+</div>
+</body>
+</html>

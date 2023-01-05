@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['config_5ferror_307',['config_error',['../classTools_1_1config__error.html',1,'Tools']]],
-  ['corrector_308',['Corrector',['../classCorrector.html',1,'']]]
+  ['bjetsconfig_410',['BjetsConfig',['../structObjConfig_1_1BjetsConfig.html',1,'ObjConfig']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['alpha_5fs_591',['Alpha_S',['../MUSiCEvent_8hpp.html#add354b854a8899ddb39fc9d57bbe22e3acafe9180c395cd9f8245db05fbe02775',1,'MUSiCEvent.hpp']]]
+  ['ktotalyears_842',['kTotalYears',['../Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abfd3e8c0a2e269807b0b07d3cc6ad62c',1,'Configs.hpp']]]
 ];

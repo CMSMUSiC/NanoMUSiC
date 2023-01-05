@@ -49,8 +49,11 @@
     extensions: ["tex2jax.js"],
     jax: ["input/TeX","output/HTML-CSS"],
 });
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
 </script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_CHTML/MathJax.js"></script>
     <link href="doxygen.css" rel="stylesheet" type="text/css" />
     <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="custom.css" rel="stylesheet" type="text/css"/>
@@ -107,7 +110,7 @@
                         <td id="projectalign" style="padding-left: 0.5em;">
                             <div id="projectname">NanoMUSiC
                             </div>
-                            <div id="projectbrief">CMS MUSiC with NanoAOD</div>
+                            <div id="projectbrief">CMS MUSiC using NanoAOD</div>
                         </td>
                     </tr>
                 </tbody>
@@ -162,8 +165,11 @@ $(document).ready(function(){initNavTree('functions_type.html',''); initResizabl
 
 <div class="contents">
 &#160;<ul>
-<li>Path
-: <a class="el" href="classTools_1_1MConfig.html#a7af14b7a2aa9f24f70329ef927379b06">Tools::MConfig</a>
+<li>const_iterator
+: <a class="el" href="classEnumerate.html#a82e17966a00f0f4ce4bb80f0ceda6d37">Enumerate&lt; T &gt;</a>
+</li>
+<li>CT
+: <a class="el" href="classEnumerate.html#aabea0708e54d2d9837a9b9e446e240b4">Enumerate&lt; T &gt;</a>
 </li>
 </ul>
 </div><!-- contents -->

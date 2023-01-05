@@ -34,6 +34,11 @@ using namespace ROOT::VecOps;
 
 namespace IndexHelpers
 {
+
+////////////////////////////////////////////////////////////////////////////////
+/// Create a 1-Dim histogram with variable bins of type float
+///
+/// (see TH1::TH1 for explanation of parameters)
 const std::vector<long> make_index(long first, long last)
 {
     auto vec = std::vector<long>(last - first + 1);

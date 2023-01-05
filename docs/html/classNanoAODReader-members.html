@@ -49,8 +49,11 @@
     extensions: ["tex2jax.js"],
     jax: ["input/TeX","output/HTML-CSS"],
 });
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
 </script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_CHTML/MathJax.js"></script>
     <link href="doxygen.css" rel="stylesheet" type="text/css" />
     <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="custom.css" rel="stylesheet" type="text/css"/>
@@ -107,7 +110,7 @@
                         <td id="projectalign" style="padding-left: 0.5em;">
                             <div id="projectname">NanoMUSiC
                             </div>
-                            <div id="projectbrief">CMS MUSiC with NanoAOD</div>
+                            <div id="projectbrief">CMS MUSiC using NanoAOD</div>
                         </td>
                     </tr>
                 </tbody>
@@ -181,7 +184,7 @@ $(document).ready(function(){initNavTree('classNanoAODReader.html',''); initResi
   <tr class="even"><td class="entry"><a class="el" href="classNanoAODReader.html#afdc76e8cc3f4fc2b9e9d2ef8474da9af">GetTypeName</a>(const std::type_info &amp;ti)</td><td class="entry"><a class="el" href="classNanoAODReader.html">NanoAODReader</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="classNanoAODReader.html#a0fb2493dae0db7c237b2ed79ddbec5cd">getVal</a>(std::string valueName)</td><td class="entry"><a class="el" href="classNanoAODReader.html">NanoAODReader</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classNanoAODReader.html#acf429b48d5c52b5d9f304ce27eea0b80">getVec</a>(std::string vectorName)</td><td class="entry"><a class="el" href="classNanoAODReader.html">NanoAODReader</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="classNanoAODReader.html#a68b096b1493a22cac381e9f783731fe4">getVec</a>(std::string vectorName)</td><td class="entry"><a class="el" href="classNanoAODReader.html">NanoAODReader</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="classNanoAODReader.html#aa4ab362d5044d08a3fc9218b7206a934">getVecOfBools</a>(std::string vectorName)</td><td class="entry"><a class="el" href="classNanoAODReader.html">NanoAODReader</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classNanoAODReader.html#ae9365d7247be2409309262b303a4cda0">NanoAODReader</a>(TTree &amp;tree)</td><td class="entry"><a class="el" href="classNanoAODReader.html">NanoAODReader</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="classNanoAODReader.html#a1da261c2457ed53cd1fa52c3805accc4">next</a>()</td><td class="entry"><a class="el" href="classNanoAODReader.html">NanoAODReader</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classNanoAODReader.html#a068552411e809a188e48d6d5edea9a08">printContent</a>()</td><td class="entry"><a class="el" href="classNanoAODReader.html">NanoAODReader</a></td><td class="entry"></td></tr>

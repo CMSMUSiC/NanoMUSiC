@@ -49,8 +49,11 @@
     extensions: ["tex2jax.js"],
     jax: ["input/TeX","output/HTML-CSS"],
 });
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
 </script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_CHTML/MathJax.js"></script>
     <link href="doxygen.css" rel="stylesheet" type="text/css" />
     <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="custom.css" rel="stylesheet" type="text/css"/>
@@ -107,7 +110,7 @@
                         <td id="projectalign" style="padding-left: 0.5em;">
                             <div id="projectname">NanoMUSiC
                             </div>
-                            <div id="projectbrief">CMS MUSiC with NanoAOD</div>
+                            <div id="projectbrief">CMS MUSiC using NanoAOD</div>
                         </td>
                     </tr>
                 </tbody>
@@ -168,13 +171,22 @@ $(document).ready(function(){initNavTree('structTriggerBits.html',''); initResiz
 
 <p>This is the complete list of members for <a class="el" href="structTriggerBits.html">TriggerBits</a>, including all inherited members.</p>
 <table class="directory">
-  <tr class="even"><td class="entry"><a class="el" href="structTriggerBits.html#a3e2b290fe5d72062c1b472b334dc5876">as_string</a>() const</td><td class="entry"><a class="el" href="structTriggerBits.html">TriggerBits</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="structTriggerBits.html#afdfa9971a644e4d85192e87e7212ef1d">as_uint</a>() const</td><td class="entry"><a class="el" href="structTriggerBits.html">TriggerBits</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="structTriggerBits.html#a3e80e353e7cb528e12af000a24366b04">as_ulong</a>() const</td><td class="entry"><a class="el" href="structTriggerBits.html">TriggerBits</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="structTriggerBits.html#a50e328439bfd76fef43b7af69007e627">as_ulonglong</a>() const</td><td class="entry"><a class="el" href="structTriggerBits.html">TriggerBits</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structTriggerBits.html#afc81a42df8a6b8055389c6d76e510ad7">any</a>() const</td><td class="entry"><a class="el" href="structTriggerBits.html">TriggerBits</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="structTriggerBits.html#a3e2b290fe5d72062c1b472b334dc5876">as_string</a>() const</td><td class="entry"><a class="el" href="structTriggerBits.html">TriggerBits</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structTriggerBits.html#afdfa9971a644e4d85192e87e7212ef1d">as_uint</a>() const</td><td class="entry"><a class="el" href="structTriggerBits.html">TriggerBits</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="structTriggerBits.html#a3e80e353e7cb528e12af000a24366b04">as_ulong</a>() const</td><td class="entry"><a class="el" href="structTriggerBits.html">TriggerBits</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structTriggerBits.html#a50e328439bfd76fef43b7af69007e627">as_ulonglong</a>() const</td><td class="entry"><a class="el" href="structTriggerBits.html">TriggerBits</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="structTriggerBits.html#ae5c95fa3b52e2d4229efe95db897cedc">check_bit</a>(const std::string_view &amp;path, const Year &amp;year) const</td><td class="entry"><a class="el" href="structTriggerBits.html">TriggerBits</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structTriggerBits.html#af39033975344314b49990947b3e01e69">get_matches</a>(T1 &amp;&amp;trigger_objects, T2 &amp;&amp;nano_objects)</td><td class="entry"><a class="el" href="structTriggerBits.html">TriggerBits</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr><td class="entry"><a class="el" href="structTriggerBits.html#ad1ed6a2cc26da7bfdbb2981bd6f4b771">HLTPath</a></td><td class="entry"><a class="el" href="structTriggerBits.html">TriggerBits</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structTriggerBits.html#a60e4b2bafefa1eca4bf54acf5c42913c">kTotalPaths</a></td><td class="entry"><a class="el" href="structTriggerBits.html">TriggerBits</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr><td class="entry"><a class="el" href="structTriggerBits.html#a2e58baad0df7cb569cd80107a5c5e731">pass</a>(unsigned int path) const</td><td class="entry"><a class="el" href="structTriggerBits.html">TriggerBits</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="structTriggerBits.html#aa2f54ea6ab4df09ec7d39f2ebd897d24">set</a>(unsigned int path, bool value)</td><td class="entry"><a class="el" href="structTriggerBits.html">TriggerBits</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="structTriggerBits.html#afb490579667b250d56bf7336d798d10a">SIZE</a></td><td class="entry"><a class="el" href="structTriggerBits.html">TriggerBits</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr><td class="entry"><a class="el" href="structTriggerBits.html#a1b544aab0c89989dceec4a5ad3883ca7">SingleMuonHighPtBits</a>(const int &amp;trigger_bit, const Year &amp;year)</td><td class="entry"><a class="el" href="structTriggerBits.html">TriggerBits</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structTriggerBits.html#a921a4405b24cc0c6b99361cdf2c94084">SingleMuonLowPtBits</a>(const int &amp;trigger_bit, const Year &amp;year)</td><td class="entry"><a class="el" href="structTriggerBits.html">TriggerBits</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr><td class="entry"><a class="el" href="structTriggerBits.html#ae05d89cb687144ae516ea502c68c4bae">SIZE</a></td><td class="entry"><a class="el" href="structTriggerBits.html">TriggerBits</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="structTriggerBits.html#a4d46f2f04c9ff72cae66676c955517a4">trigger_bits</a></td><td class="entry"><a class="el" href="structTriggerBits.html">TriggerBits</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="structTriggerBits.html#ae8141aa07062177ac87acc4e6dd5a425">trigger_matcher</a>(T1 trigger_objs, T2 nano_objects, Year &amp;year)</td><td class="entry"><a class="el" href="structTriggerBits.html">TriggerBits</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
 </table></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

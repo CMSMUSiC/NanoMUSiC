@@ -49,8 +49,11 @@
     extensions: ["tex2jax.js"],
     jax: ["input/TeX","output/HTML-CSS"],
 });
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
 </script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_CHTML/MathJax.js"></script>
     <link href="doxygen.css" rel="stylesheet" type="text/css" />
     <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="custom.css" rel="stylesheet" type="text/css"/>
@@ -107,7 +110,7 @@
                         <td id="projectalign" style="padding-left: 0.5em;">
                             <div id="projectname">NanoMUSiC
                             </div>
-                            <div id="projectbrief">CMS MUSiC with NanoAOD</div>
+                            <div id="projectbrief">CMS MUSiC using NanoAOD</div>
                         </td>
                     </tr>
                 </tbody>
@@ -163,12 +166,15 @@ $(document).ready(function(){initNavTree('CorrectionSets_8hpp.html',''); initRes
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
 <div class="title">CorrectionSets.hpp File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;correction.h&quot;</code><br />
+<code>#include &quot;roccor/RoccoR.h&quot;</code><br />
+<code>#include &quot;<a class="el" href="Configs_8hpp_source.html">Configs.hpp</a>&quot;</code><br />
 </div>
 <p><a href="CorrectionSets_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -177,12 +183,49 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html">Corrector</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:af1b8b92794ed34f64d7e63cb40dba657"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CorrectionSets_8hpp.html#af1b8b92794ed34f64d7e63cb40dba657">CorrectionlibRef_t</a> = correction::Correction::Ref</td></tr>
+<tr class="separator:af1b8b92794ed34f64d7e63cb40dba657"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92123307785577bd95f7bbc9fbc4462a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CorrectionSets_8hpp.html#a92123307785577bd95f7bbc9fbc4462a">RochesterCorrection_t</a> = RoccoR</td></tr>
+<tr class="separator:a92123307785577bd95f7bbc9fbc4462a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:a91da7242fa6e7bbdfa52592fe7b6b934"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934">CorrectionTypes</a> { <a class="el" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934abfd2343910378a1b537c3c8036a5c07e">CorrectionTypes::PU</a>
+<tr class="memitem:a91da7242fa6e7bbdfa52592fe7b6b934"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934">CorrectionTypes</a> { <a class="el" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934abfd2343910378a1b537c3c8036a5c07e">CorrectionTypes::PU</a>, 
+<a class="el" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934ab8b5d0c91bd1f06360fb4cc1d639a070">CorrectionTypes::MuonLowPt</a>
  }</td></tr>
 <tr class="separator:a91da7242fa6e7bbdfa52592fe7b6b934"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Typedef Documentation</h2>
+<a id="af1b8b92794ed34f64d7e63cb40dba657"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1b8b92794ed34f64d7e63cb40dba657">&#9670;&nbsp;</a></span>CorrectionlibRef_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="CorrectionSets_8hpp.html#af1b8b92794ed34f64d7e63cb40dba657">CorrectionlibRef_t</a> =  correction::Correction::Ref</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a92123307785577bd95f7bbc9fbc4462a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92123307785577bd95f7bbc9fbc4462a">&#9670;&nbsp;</a></span>RochesterCorrection_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="CorrectionSets_8hpp.html#a92123307785577bd95f7bbc9fbc4462a">RochesterCorrection_t</a> =  RoccoR</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
 <a id="a91da7242fa6e7bbdfa52592fe7b6b934"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a91da7242fa6e7bbdfa52592fe7b6b934">&#9670;&nbsp;</a></span>CorrectionTypes</h2>
@@ -205,6 +248,7 @@ Enumerations</h2></td></tr>
 </div><div class="memdoc">
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a91da7242fa6e7bbdfa52592fe7b6b934abfd2343910378a1b537c3c8036a5c07e"></a>PU&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a91da7242fa6e7bbdfa52592fe7b6b934ab8b5d0c91bd1f06360fb4cc1d639a070"></a>MuonLowPt&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
 </div>

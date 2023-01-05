@@ -824,29 +824,31 @@ WARN_LOGFILE           =
 # Note: If this tag is empty the current directory is searched.
 
 INPUT                  = ../NanoMUSiC/MUSiC \
+                         index.md \
+                         installation.md \
+                         running.md \
+                         nanoaod_content.md \
+                        #  /nanoaod_content_Data_2016APV.md \
+                        #  nanoaod_content/nanoaod_content_Data_2016.md \
+                        #  nanoaod_content/nanoaod_content_Data_2016.txt \
+                        #  nanoaod_content/nanoaod_content_Data_2017.md \
+                        #  nanoaod_content/nanoaod_content_Data_2018.md \
+                        #  nanoaod_content/nanoaod_content_MC_2016APV.md \
+                        #  nanoaod_content/nanoaod_content_MC_2016.md \
+                        #  nanoaod_content/nanoaod_content_MC_2017.md \
+                        #  nanoaod_content/nanoaod_content_MC_2018.md \
+                        #  gen_status_flags.txt \
+                        #  NanoAODReader.md \
+                        #  NanoObjects.md \
+                        #  pdf_recommendatios.md \
+                        #  test_samples.md \
+                        #  variables_of_interest.md 
                         #  MUSiC-Configs \
                         #  MUSiC-RoIScanner \
                         #  MUSiC-Utils \
                         #  PlotLib \
                         #  PxlAnalyzer \
                         #  tools \
-                         ../README.md \
-                         installation.md \
-                         running.md \
-                         gen_status_flags.txt \
-                         nanoaod_content/nanoaod_content_Data_2016APV.md \
-                         nanoaod_content/nanoaod_content_Data_2016.md \
-                         nanoaod_content/nanoaod_content_Data_2017.md \
-                         nanoaod_content/nanoaod_content_Data_2018.md \
-                         nanoaod_content/nanoaod_content_MC_2016APV.md \
-                         nanoaod_content/nanoaod_content_MC_2016.md \
-                         nanoaod_content/nanoaod_content_MC_2017.md \
-                         nanoaod_content/nanoaod_content_MC_2018.md \
-                         NanoAODReader.md \
-                         NanoObjects.md \
-                         pdf_recommendatios.md \
-                         test_samples.md \
-                         variables_of_interest.md 
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -934,7 +936,8 @@ RECURSIVE              = YES
 # Note that relative paths are relative to the directory from which doxygen is
 # run.
 
-EXCLUDE                = ../NanoMUSiC/MUSiC/external
+EXCLUDE                = ../NanoMUSiC/MUSiC/external \
+
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded
@@ -950,8 +953,8 @@ EXCLUDE_SYMLINKS       = NO
 # Note that the wildcards are matched against the file with absolute path, so to
 # exclude all test directories for example use the pattern */test/*
 
-EXCLUDE_PATTERNS       =
-
+EXCLUDE_PATTERNS       = *BKP*.cpp \
+                         *BKP*.hpp
 # The EXCLUDE_SYMBOLS tag can be used to specify one or more symbol names
 # (namespaces, classes, functions, etc.) that should be excluded from the
 # output. The symbol name can be a fully qualified name, a word, or if the
@@ -967,7 +970,7 @@ EXCLUDE_SYMBOLS        =
 # that contain example code fragments that are included (see the \include
 # command).
 
-EXAMPLE_PATH           =
+EXAMPLE_PATH           = nanoaod_content
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp and
@@ -1043,7 +1046,7 @@ FILTER_SOURCE_PATTERNS =
 # (index.html). This can be useful if you have a project on for instance GitHub
 # and want to reuse the introduction page also for the doxygen output.
 
-USE_MDFILE_AS_MAINPAGE = ../README.md
+USE_MDFILE_AS_MAINPAGE = index.md
 
 #---------------------------------------------------------------------------
 # Configuration options related to source browsing
@@ -1310,7 +1313,7 @@ HTML_DYNAMIC_MENUS     = YES
 # The default value is: NO.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_DYNAMIC_SECTIONS  = NO
+HTML_DYNAMIC_SECTIONS  = YES
 
 # With HTML_INDEX_NUM_ENTRIES one can control the preferred number of entries
 # shown in the various tree structured indices initially; the user can expand
@@ -1428,7 +1431,7 @@ BINARY_TOC             = NO
 # The default value is: NO.
 # This tag requires that the tag GENERATE_HTMLHELP is set to YES.
 
-TOC_EXPAND             = NO
+TOC_EXPAND             = YES
 
 # If the GENERATE_QHP tag is set to YES and both QHP_NAMESPACE and
 # QHP_VIRTUAL_FOLDER are set, an additional index file will be generated that
@@ -1634,7 +1637,9 @@ MATHJAX_FORMAT         = HTML-CSS
 # The default value is: https://cdn.jsdelivr.net/npm/mathjax@2.
 # This tag requires that the tag USE_MATHJAX is set to YES.
 
-MATHJAX_RELPATH        = https://cdn.jsdelivr.net/npm/mathjax@2
+# MATHJAX_RELPATH        = https://cdn.jsdelivr.net/npm/mathjax@2
+MATHJAX_RELPATH        = https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_CHTML 
+# MATHJAX_RELPATH        = http://cdn.mathjax.org/mathjax/latest
 
 # The MATHJAX_EXTENSIONS tag can be used to specify one or more MathJax
 # extension names that should be enabled during MathJax rendering. For example
@@ -1649,7 +1654,7 @@ MATHJAX_EXTENSIONS     =
 # example see the documentation.
 # This tag requires that the tag USE_MATHJAX is set to YES.
 
-MATHJAX_CODEFILE       =
+MATHJAX_CODEFILE       = mathjax_codefile.js
 
 # When the SEARCHENGINE tag is enabled doxygen will generate a search box for
 # the HTML output. The underlying search engine uses javascript and DHTML and

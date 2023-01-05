@@ -49,8 +49,11 @@
     extensions: ["tex2jax.js"],
     jax: ["input/TeX","output/HTML-CSS"],
 });
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
 </script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_CHTML/MathJax.js"></script>
     <link href="doxygen.css" rel="stylesheet" type="text/css" />
     <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="custom.css" rel="stylesheet" type="text/css"/>
@@ -107,7 +110,7 @@
                         <td id="projectalign" style="padding-left: 0.5em;">
                             <div id="projectname">NanoMUSiC
                             </div>
-                            <div id="projectbrief">CMS MUSiC with NanoAOD</div>
+                            <div id="projectbrief">CMS MUSiC using NanoAOD</div>
                         </td>
                     </tr>
                 </tbody>
@@ -165,12 +168,7 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 <div class="title">NanoMUSiC </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="md__"></a>.automount_home_home__home1_institut_3a_silva_NanoMUSiC_README</p>
-<p>CMS Run2-UL analysis, using NanoAOD.</p>
-<p>Full Documentation:</p>
-<p><a href="https://cmsmusic.github.io/NanoMUSiC/">https://cmsmusic.github.io/NanoMUSiC/</a></p>
-<h1><a class="anchor" id="autotoc_md1"></a>
-Setup the environment (only once)</h1>
+<div class="textblock"><p><a class="anchor" id="md_index"></a> CMS Run2-UL analysis, using NanoAOD. </p>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
 </div><!-- doc-content -->

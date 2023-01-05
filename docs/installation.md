@@ -42,19 +42,11 @@ ninja install
 Other options are:
 
 - `ninja lut` &rarr; Only creates the p-values LUTs. Usually takes some time to run, but, in principle, one should do it only right before start a classification.
-- `make_docs` &rarr; Produces the documentation for github.io.
+- `make_docs.sh` &rarr; Produces this documentation.
 - `ninja clean` &rarr; Clear compilations. 
 
 ## Installations directories
 
-#### Executables
-
-`bin/`
-
-#### Shared libraries
-
-`libs/`
-
-#### Other useful scripts
-
-`scripts/`
+- Executables: `bin/`  
+- Shared libraries: `libs/`
+- Useful scripts: `scripts/`

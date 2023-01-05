@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['value_5ferror_320',['value_error',['../classTools_1_1value__error.html',1,'Tools']]]
+  ['photonconfig_427',['PhotonConfig',['../structObjConfig_1_1PhotonConfig.html',1,'ObjConfig']]],
+  ['photons_428',['Photons',['../structNanoObjects_1_1Photons.html',1,'NanoObjects']]]
 ];

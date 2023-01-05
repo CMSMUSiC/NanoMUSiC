@@ -49,8 +49,11 @@
     extensions: ["tex2jax.js"],
     jax: ["input/TeX","output/HTML-CSS"],
 });
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
 </script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_CHTML/MathJax.js"></script>
     <link href="doxygen.css" rel="stylesheet" type="text/css" />
     <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="custom.css" rel="stylesheet" type="text/css"/>
@@ -107,7 +110,7 @@
                         <td id="projectalign" style="padding-left: 0.5em;">
                             <div id="projectname">NanoMUSiC
                             </div>
-                            <div id="projectbrief">CMS MUSiC with NanoAOD</div>
+                            <div id="projectbrief">CMS MUSiC using NanoAOD</div>
                         </td>
                     </tr>
                 </tbody>
@@ -163,9 +166,19 @@ $(document).ready(function(){initNavTree('globals.html',''); initResizable(); })
 <div class="contents">
 <div class="textblock">Here is a list of all file members with links to the files they belong to:</div>
 
+<h3><a id="index__5F"></a>- _ -</h3><ul>
+<li>_imp1_number_of_duplicates()
+: <a class="el" href="Enumerate_8hpp.html#afc210e28676a4c82aec8547d8d66f94e">Enumerate.hpp</a>
+</li>
+<li>_imp2_number_of_duplicates()
+: <a class="el" href="Enumerate_8hpp.html#abe7adbcaeab1f0e0cb01fcf750c6dc89">Enumerate.hpp</a>
+</li>
+</ul>
+
+
 <h3><a id="index_a"></a>- a -</h3><ul>
-<li>Alpha_S
-: <a class="el" href="MUSiCEvent_8hpp.html#add354b854a8899ddb39fc9d57bbe22e3acafe9180c395cd9f8245db05fbe02775">MUSiCEvent.hpp</a>
+<li>add_library()
+: <a class="el" href="CMakeLists_8txt.html#aaff313e49ba5d9b317a35bebb3deccd1">CMakeLists.txt</a>
 </li>
 <li>analyseMETFilter()
 : <a class="el" href="nano2pxl__utils_8hpp.html#a710a6692fae11b221ac9c6132d81a1be">nano2pxl_utils.hpp</a>
@@ -246,22 +259,15 @@ $(document).ready(function(){initNavTree('globals.html',''); initResizable(); })
 : <a class="el" href="nano2pxl__utils_8hpp.html#a30b67fd9952b1e1df318f9f69ee91364">nano2pxl_utils.hpp</a>
 </li>
 <li>apply_variation()
-: <a class="el" href="ObjectCorrections_8hpp.html#ac7cf72bb7898e272f192c8a8d933acdf">ObjectCorrections.hpp</a>
-</li>
-</ul>
-
-
-<h3><a id="index_b"></a>- b -</h3><ul>
-<li>BJet
-: <a class="el" href="NanoMUSiC_8hpp.html#ac2ac05f71ee2a95e9789b72fc542ee31a6fc46830f86eeca9c0e6a634c35e70b9">NanoMUSiC.hpp</a>
-</li>
-<li>Branch()
-: <a class="el" href="test__MUSiCEvent_8cpp.html#a5c8e9f783316a3c35b5395755cf36b6c">test_MUSiCEvent.cpp</a>
+: <a class="el" href="ObjectCorrections_8hpp.html#afba9be3810be85144cdacd5b088521ee">ObjectCorrections.hpp</a>
 </li>
 </ul>
 
 
 <h3><a id="index_c"></a>- c -</h3><ul>
+<li>CorrectionlibRef_t
+: <a class="el" href="CorrectionSets_8hpp.html#af1b8b92794ed34f64d7e63cb40dba657">CorrectionSets.hpp</a>
+</li>
 <li>CorrectionTypes
 : <a class="el" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934">CorrectionSets.hpp</a>
 </li>
@@ -269,72 +275,44 @@ $(document).ready(function(){initNavTree('globals.html',''); initResizable(); })
 
 
 <h3><a id="index_d"></a>- d -</h3><ul>
-<li>Default
-: <a class="el" href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74a79935518a3889663d8688b6b01fff051">MUSiCEvent.hpp</a>
-</li>
 <li>default_corr
 : <a class="el" href="ObjectCorrections_8hpp.html#a04497c0b3f78c14664ca2bf1a10eb15e">ObjectCorrections.hpp</a>
-</li>
-<li>DoubleElectron
-: <a class="el" href="NanoMUSiC_8hpp.html#ac2ac05f71ee2a95e9789b72fc542ee31aa95b4de37c94151d3ad74d468a7b0fc5">NanoMUSiC.hpp</a>
-</li>
-<li>DoubleMuon
-: <a class="el" href="NanoMUSiC_8hpp.html#ac2ac05f71ee2a95e9789b72fc542ee31a7d3ea9e343bf0d02039ae2cd185f4864">NanoMUSiC.hpp</a>
-</li>
-<li>Down
-: <a class="el" href="MUSiCEvent_8hpp.html#aabddd589ce7fd3d829e15265d92dbedcabcf8c79e9a5f5f9d606fb35645a0fb27">MUSiCEvent.hpp</a>
 </li>
 </ul>
 
 
 <h3><a id="index_e"></a>- e -</h3><ul>
-<li>ElectronResolution
-: <a class="el" href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74a05408fe655617978a3201a2f30b764e4">MUSiCEvent.hpp</a>
-</li>
-<li>ElectronScale
-: <a class="el" href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74abe1415248a4c1f4205ed801dea8d2202">MUSiCEvent.hpp</a>
+<li>Electron_mass
+: <a class="el" href="NanoObjects_8hpp.html#a6ee01d2abcf09c215eb107afb3b32553">NanoObjects.hpp</a>
 </li>
 </ul>
 
 
 <h3><a id="index_f"></a>- f -</h3><ul>
-<li>f()
-: <a class="el" href="test__MUSiCEvent_8cpp.html#a9646d17834a218eca5ffeb339f48055f">test_MUSiCEvent.cpp</a>
+<li>file_loader()
+: <a class="el" href="NanoMUSiC_8hpp.html#a0ef88d1206645b82f5a36dc4db0c0b3e">NanoMUSiC.hpp</a>
 </li>
 </ul>
 
 
 <h3><a id="index_g"></a>- g -</h3><ul>
-<li>GCC_DIAG_OFF
-: <a class="el" href="MConfig_8hpp.html#a646972e87fa873eb9da1adf5e8651c18">MConfig.hpp</a>
-</li>
-<li>GCC_DIAG_ON
-: <a class="el" href="MConfig_8hpp.html#a449bfc1762077f4e7698b86e187f05a4">MConfig.hpp</a>
-</li>
-<li>Generator
-: <a class="el" href="MUSiCEvent_8hpp.html#add354b854a8899ddb39fc9d57bbe22e3a541409fe48e9b6a03685901b949d1031">MUSiCEvent.hpp</a>
+<li>get_and_check_future()
+: <a class="el" href="NanoMUSiC_8hpp.html#a9b3eebbf38729c8d55ad8c67324a02c8">NanoMUSiC.hpp</a>
 </li>
 <li>get_correction()
 : <a class="el" href="ObjectCorrections_8hpp.html#ac4076d8fbfca239615dddaa4839ce73d">ObjectCorrections.hpp</a>
 </li>
-<li>get_hash256()
-: <a class="el" href="NanoMUSiC_8hpp.html#a36d60c12d4ef6737bb8cf04d055854c4">NanoMUSiC.hpp</a>
+<li>get_data_stream()
+: <a class="el" href="NanoMUSiC_8hpp.html#a308ca4e62678b26a996284060effbd12">NanoMUSiC.hpp</a>
 </li>
-<li>get_TFile()
-: <a class="el" href="NanoMUSiC_8hpp.html#af26d2df35eee0d22b7ce58ed8f3638d5">NanoMUSiC.hpp</a>
+<li>get_runyear()
+: <a class="el" href="Configs_8hpp.html#a85b6de68703d4e9d78cc25d31006aefd">Configs.hpp</a>
 </li>
 <li>getCpuTime()
 : <a class="el" href="NanoMUSiC_8hpp.html#a79075a862a5c485c83147cba22ffe704">NanoMUSiC.hpp</a>
 </li>
 <li>getIntYear()
 : <a class="el" href="music_8hpp.html#a7f681cc87c8855e0d3be4e29f2410cd7">music.hpp</a>
-</li>
-</ul>
-
-
-<h3><a id="index_h"></a>- h -</h3><ul>
-<li>HLTPaths
-: <a class="el" href="NanoMUSiC_8hpp.html#ac2ac05f71ee2a95e9789b72fc542ee31">NanoMUSiC.hpp</a>
 </li>
 </ul>
 
@@ -347,12 +325,6 @@ $(document).ready(function(){initNavTree('globals.html',''); initResizable(); })
 
 
 <h3><a id="index_j"></a>- j -</h3><ul>
-<li>JEC
-: <a class="el" href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74a92f1ffd7762eac16d6f0976bbe29ebac">MUSiCEvent.hpp</a>
-</li>
-<li>JER
-: <a class="el" href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74aaf25b552033cd97a660ce9dea75098ca">MUSiCEvent.hpp</a>
-</li>
 <li>json
 : <a class="el" href="RunLumiFilter_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">RunLumiFilter.hpp</a>
 </li>
@@ -360,24 +332,8 @@ $(document).ready(function(){initNavTree('globals.html',''); initResizable(); })
 
 
 <h3><a id="index_k"></a>- k -</h3><ul>
-<li>kTotalShifts
-: <a class="el" href="MUSiCEvent_8hpp.html#aabddd589ce7fd3d829e15265d92dbedca386cdc7164070d591669646d76eeaa15">MUSiCEvent.hpp</a>
-</li>
-<li>kTotalVariations
-: <a class="el" href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74ab5ff28459072e5927f2934e10c78d259">MUSiCEvent.hpp</a>
-</li>
-<li>kTotalWeights
-: <a class="el" href="MUSiCEvent_8hpp.html#add354b854a8899ddb39fc9d57bbe22e3a16b16efbc26f5b2c218e51546724f3f4">MUSiCEvent.hpp</a>
-</li>
-</ul>
-
-
-<h3><a id="index_l"></a>- l -</h3><ul>
-<li>Load()
-: <a class="el" href="test__MUSiCEvent_8cpp.html#aed7ed09dec8a0e713f29d5de6e501a3e">test_MUSiCEvent.cpp</a>
-</li>
-<li>Lumi
-: <a class="el" href="MUSiCEvent_8hpp.html#add354b854a8899ddb39fc9d57bbe22e3a8cbd5b7133ebbcda95f4e88bc21b9809">MUSiCEvent.hpp</a>
+<li>kTotalYears
+: <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abfd3e8c0a2e269807b0b07d3cc6ad62c">Configs.hpp</a>
 </li>
 </ul>
 
@@ -388,39 +344,21 @@ $(document).ready(function(){initNavTree('globals.html',''); initResizable(); })
 , <a class="el" href="nanoaod__content__printer_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97">nanoaod_content_printer.cpp</a>
 , <a class="el" href="NanoMUSiC_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97">NanoMUSiC.cpp</a>
 </li>
-<li>make_class_storage()
-: <a class="el" href="NanoMUSiC_8hpp.html#aeaf5d13eab782a4abe3550474eed3af5">NanoMUSiC.hpp</a>
+<li>make_enumerate()
+: <a class="el" href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">Enumerate.hpp</a>
 </li>
 <li>make_pxlevent()
 : <a class="el" href="music_8hpp.html#a905e9a8dd7de3a26727d27450d05cf18">music.hpp</a>
 </li>
-<li>MAX_JETS
-: <a class="el" href="MUSiCEvent_8hpp.html#a60baa2ab832f95ea81d5e6a1a2d93e4e">MUSiCEvent.hpp</a>
-</li>
-<li>MAX_OBJECTS
-: <a class="el" href="MUSiCEvent_8hpp.html#a411d3b8cb183aeff71bdb0ee9d89f721">MUSiCEvent.hpp</a>
-</li>
-<li>MET
-: <a class="el" href="NanoMUSiC_8hpp.html#ac2ac05f71ee2a95e9789b72fc542ee31ae06932408cafd29884daf8533ba507fb">NanoMUSiC.hpp</a>
-</li>
-<li>Multiplicity_t
-: <a class="el" href="MUSiCEvent_8hpp.html#a376e34e0d5b8dcd3f42e4be0904bd47c">MUSiCEvent.hpp</a>
-</li>
-<li>MuonResolution
-: <a class="el" href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74adac1f18c9c790a2724eda4bec139b6f3">MUSiCEvent.hpp</a>
-</li>
-<li>MuonScale
-: <a class="el" href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74abe47cf18bc7528fcf2e80e6b6669bcd4">MUSiCEvent.hpp</a>
-</li>
-<li>music_content
-: <a class="el" href="test__MUSiCEvent_8cpp.html#a997110d9138ac6ac51e29f141f27ea04">test_MUSiCEvent.cpp</a>
+<li>Muon_mass
+: <a class="el" href="NanoObjects_8hpp.html#aa9c26cf095d6377423966e074c6a749b">NanoObjects.hpp</a>
 </li>
 </ul>
 
 
 <h3><a id="index_n"></a>- n -</h3><ul>
-<li>Nominal
-: <a class="el" href="MUSiCEvent_8hpp.html#aabddd589ce7fd3d829e15265d92dbedca57c029c232152bd83003039d6d34c6dc">MUSiCEvent.hpp</a>
+<li>number_of_duplicates()
+: <a class="el" href="Enumerate_8hpp.html#aa1f77dfb8da10faa62500af8a7048402">Enumerate.hpp</a>
 </li>
 </ul>
 
@@ -433,79 +371,59 @@ $(document).ready(function(){initNavTree('globals.html',''); initResizable(); })
 
 
 <h3><a id="index_p"></a>- p -</h3><ul>
-<li>PDF
-: <a class="el" href="MUSiCEvent_8hpp.html#add354b854a8899ddb39fc9d57bbe22e3a720cd43d342ea9926f03e2283c8de04f">MUSiCEvent.hpp</a>
+<li>prepare_output_buffer()
+: <a class="el" href="NanoMUSiC_8hpp.html#af1b03d412e02df069024d445cf782b46">NanoMUSiC.hpp</a>
 </li>
-<li>Photon
-: <a class="el" href="NanoMUSiC_8hpp.html#ac2ac05f71ee2a95e9789b72fc542ee31a4db1999f5b69af0438bdaae51d011336">NanoMUSiC.hpp</a>
-</li>
-<li>PileUp
-: <a class="el" href="MUSiCEvent_8hpp.html#add354b854a8899ddb39fc9d57bbe22e3a51dc47e538b7d87e971e479230d091fe">MUSiCEvent.hpp</a>
+<li>print_report()
+: <a class="el" href="NanoMUSiC_8hpp.html#a41ec02e286c1ee820f743c2ec2347efe">NanoMUSiC.hpp</a>
 </li>
 <li>PrintProcessInfo()
-: <a class="el" href="music_8cpp.html#a1cebcc2da734541f7cf005033722cb43">music.cpp</a>
-, <a class="el" href="NanoMUSiC_8cpp.html#a1cebcc2da734541f7cf005033722cb43">NanoMUSiC.cpp</a>
+: <a class="el" href="NanoMUSiC_8hpp.html#a1cebcc2da734541f7cf005033722cb43">NanoMUSiC.hpp</a>
+, <a class="el" href="music_8cpp.html#a1cebcc2da734541f7cf005033722cb43">music.cpp</a>
 </li>
 </ul>
 
 
 <h3><a id="index_r"></a>- r -</h3><ul>
-<li>range_shifts
-: <a class="el" href="MUSiCEvent_8hpp.html#af49941be6ea69f720e3f4e6414b04a7f">MUSiCEvent.hpp</a>
+<li>RochesterCorrection_t
+: <a class="el" href="CorrectionSets_8hpp.html#a92123307785577bd95f7bbc9fbc4462a">CorrectionSets.hpp</a>
 </li>
-<li>range_variations
-: <a class="el" href="MUSiCEvent_8hpp.html#ac0c4ecfcece9dd39ed86b3fc8b156e4b">MUSiCEvent.hpp</a>
+<li>Run2016
+: <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abd2434cf3747e405569bbf500407c664">Configs.hpp</a>
 </li>
-<li>range_weights
-: <a class="el" href="MUSiCEvent_8hpp.html#a96266aab95c073be00040b71bcda4a79">MUSiCEvent.hpp</a>
+<li>Run2016APV
+: <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37acdd64c4ab6df0b9123e861c6a553ff52">Configs.hpp</a>
+</li>
+<li>Run2017
+: <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37a46f3a28d72133d1d36182be3a3938bb5">Configs.hpp</a>
+</li>
+<li>Run2018
+: <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37a4574676bc1f98656ba6d813ba595ffc0">Configs.hpp</a>
 </li>
 </ul>
 
 
 <h3><a id="index_s"></a>- s -</h3><ul>
-<li>Shift
-: <a class="el" href="MUSiCEvent_8hpp.html#aabddd589ce7fd3d829e15265d92dbedc">MUSiCEvent.hpp</a>
+<li>save_class_storage()
+: <a class="el" href="NanoMUSiC_8hpp.html#ad14d9498758231e468bfe95357612c32">NanoMUSiC.hpp</a>
 </li>
 <li>simple_replace()
 : <a class="el" href="NanoAODReader_8hpp.html#aca44e3190d6bd70346b5ebe64930c73f">NanoAODReader.hpp</a>
 , <a class="el" href="NanoAODReader_8cpp.html#aca44e3190d6bd70346b5ebe64930c73f">NanoAODReader.cpp</a>
 </li>
-<li>SingleElectron
-: <a class="el" href="NanoMUSiC_8hpp.html#ac2ac05f71ee2a95e9789b72fc542ee31ac9a12ca98cf16cd32f8cf85ed66d4006">NanoMUSiC.hpp</a>
-</li>
-<li>SingleMuon
-: <a class="el" href="NanoMUSiC_8hpp.html#ac2ac05f71ee2a95e9789b72fc542ee31a9d8f8c15d8b108c34705c311ca2f35ac">NanoMUSiC.hpp</a>
-</li>
 </ul>
 
 
 <h3><a id="index_t"></a>- t -</h3><ul>
-<li>t2()
-: <a class="el" href="test__MUSiCEvent_8cpp.html#a0033e6e8a46bbcd9fb32e0e2593fc4ad">test_MUSiCEvent.cpp</a>
-</li>
-<li>Tau
-: <a class="el" href="NanoMUSiC_8hpp.html#ac2ac05f71ee2a95e9789b72fc542ee31aa90650603aebf993df8d39db96357b02">NanoMUSiC.hpp</a>
+<li>Tau_mass
+: <a class="el" href="NanoObjects_8hpp.html#af02de5597170f1d260d92a1c6b58eadc">NanoObjects.hpp</a>
 </li>
 </ul>
 
 
-<h3><a id="index_u"></a>- u -</h3><ul>
-<li>Up
-: <a class="el" href="MUSiCEvent_8hpp.html#aabddd589ce7fd3d829e15265d92dbedca57a7edcbc04d6175683383cad5c3e0a2">MUSiCEvent.hpp</a>
-</li>
-</ul>
-
-
-<h3><a id="index_v"></a>- v -</h3><ul>
-<li>Variation
-: <a class="el" href="MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74">MUSiCEvent.hpp</a>
-</li>
-</ul>
-
-
-<h3><a id="index_w"></a>- w -</h3><ul>
-<li>Weight
-: <a class="el" href="MUSiCEvent_8hpp.html#add354b854a8899ddb39fc9d57bbe22e3">MUSiCEvent.hpp</a>
+<h3><a id="index_y"></a>- y -</h3><ul>
+<li>Year
+: <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Configs.hpp</a>
 </li>
 </ul>
 </div><!-- contents -->

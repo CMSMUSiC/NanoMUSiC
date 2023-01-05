@@ -49,8 +49,11 @@
     extensions: ["tex2jax.js"],
     jax: ["input/TeX","output/HTML-CSS"],
 });
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
 </script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_CHTML/MathJax.js"></script>
     <link href="doxygen.css" rel="stylesheet" type="text/css" />
     <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="custom.css" rel="stylesheet" type="text/css"/>
@@ -107,7 +110,7 @@
                         <td id="projectalign" style="padding-left: 0.5em;">
                             <div id="projectname">NanoMUSiC
                             </div>
-                            <div id="projectbrief">CMS MUSiC with NanoAOD</div>
+                            <div id="projectbrief">CMS MUSiC using NanoAOD</div>
                         </td>
                     </tr>
                 </tbody>
@@ -174,28 +177,34 @@ $(document).ready(function(){initNavTree('classCorrector.html',''); initResizabl
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a86d466d818280332537d1034f66e4050"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#a86d466d818280332537d1034f66e4050">Corrector</a> (const <a class="el" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934">CorrectionTypes</a> _correction_type, const std::string _year, bool _isData)</td></tr>
-<tr class="separator:a86d466d818280332537d1034f66e4050"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a744d1c90f721f29855a5f59c20c1bec4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#a744d1c90f721f29855a5f59c20c1bec4">Corrector</a> (const <a class="el" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934">CorrectionTypes</a> _correction_type, const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> _year, bool _isData)</td></tr>
+<tr class="separator:a744d1c90f721f29855a5f59c20c1bec4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af505991ef5f78a7b81de2329e02ca632"><td class="memTemplParams" colspan="2">template&lt;class T  = const std::vector&lt;std::variant&lt;int, double, std::string&gt;&gt;&gt; </td></tr>
 <tr class="memitem:af505991ef5f78a7b81de2329e02ca632"><td class="memTemplItemLeft" align="right" valign="top">double&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classCorrector.html#af505991ef5f78a7b81de2329e02ca632">operator()</a> (T &amp;&amp;values)</td></tr>
 <tr class="separator:af505991ef5f78a7b81de2329e02ca632"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42813137e804ca7f581dda7c7dbd80db"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#a42813137e804ca7f581dda7c7dbd80db">operator()</a> (int Q, double pt, double eta, double phi, int s=0, int m=0)</td></tr>
+<tr class="separator:a42813137e804ca7f581dda7c7dbd80db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add266d4df732136f411f52fe0aa75a8d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#add266d4df732136f411f52fe0aa75a8d">operator()</a> (int Q, double pt, double eta, double phi, double genPt, int s=0, int m=0)</td></tr>
+<tr class="separator:add266d4df732136f411f52fe0aa75a8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad13d0991c3a470ac6892d7f38e60e418"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#ad13d0991c3a470ac6892d7f38e60e418">operator()</a> (int Q, double pt, double eta, double phi, int n, double u, int s=0, int m=0)</td></tr>
+<tr class="separator:ad13d0991c3a470ac6892d7f38e60e418"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:ab03d759230a761e21481d9acc29c84a9"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934">CorrectionTypes</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#ab03d759230a761e21481d9acc29c84a9">correction_type</a></td></tr>
 <tr class="separator:ab03d759230a761e21481d9acc29c84a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2f640db0e9e5c08b0b1dbf5a213a13c9"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#a2f640db0e9e5c08b0b1dbf5a213a13c9">year</a></td></tr>
-<tr class="separator:a2f640db0e9e5c08b0b1dbf5a213a13c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e1405aa9bd95e389386f7ba4d9954ab"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#a4e1405aa9bd95e389386f7ba4d9954ab">year</a></td></tr>
+<tr class="separator:a4e1405aa9bd95e389386f7ba4d9954ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7794af190442216b77ec4e6d2bc43523"><td class="memItemLeft" align="right" valign="top">const bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#a7794af190442216b77ec4e6d2bc43523">isData</a></td></tr>
 <tr class="separator:a7794af190442216b77ec4e6d2bc43523"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abb101b78ec99abc2ff6ce57a41bc9ae0"><td class="memItemLeft" align="right" valign="top">correction::Correction::Ref&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#abb101b78ec99abc2ff6ce57a41bc9ae0">correction_ref</a></td></tr>
-<tr class="separator:abb101b78ec99abc2ff6ce57a41bc9ae0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0d95755ab90ceebc5bc59623a7e9ceb5"><td class="memItemLeft" align="right" valign="top">const std::map&lt; std::pair&lt; <a class="el" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934">CorrectionTypes</a>, std::string &gt;, std::pair&lt; std::string, std::string &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#a0d95755ab90ceebc5bc59623a7e9ceb5">correction_keys</a></td></tr>
-<tr class="separator:a0d95755ab90ceebc5bc59623a7e9ceb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b5ebe507f50525f6cd6276b491204fa"><td class="memItemLeft" align="right" valign="top">std::variant&lt; <a class="el" href="CorrectionSets_8hpp.html#af1b8b92794ed34f64d7e63cb40dba657">CorrectionlibRef_t</a>, <a class="el" href="CorrectionSets_8hpp.html#a92123307785577bd95f7bbc9fbc4462a">RochesterCorrection_t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#a1b5ebe507f50525f6cd6276b491204fa">correction_ref</a></td></tr>
+<tr class="separator:a1b5ebe507f50525f6cd6276b491204fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f816cd28e1708277f207c19c33f63a8"><td class="memItemLeft" align="right" valign="top">const std::map&lt; std::pair&lt; <a class="el" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934">CorrectionTypes</a>, <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &gt;, std::pair&lt; std::string, std::string &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#a5f816cd28e1708277f207c19c33f63a8">correction_keys</a></td></tr>
+<tr class="separator:a5f816cd28e1708277f207c19c33f63a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a86d466d818280332537d1034f66e4050"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a86d466d818280332537d1034f66e4050">&#9670;&nbsp;</a></span>Corrector()</h2>
+<a id="a744d1c90f721f29855a5f59c20c1bec4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a744d1c90f721f29855a5f59c20c1bec4">&#9670;&nbsp;</a></span>Corrector()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -212,7 +221,7 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::string&#160;</td>
+          <td class="paramtype">const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a>&#160;</td>
           <td class="paramname"><em>_year</em>, </td>
         </tr>
         <tr>
@@ -237,8 +246,206 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="add266d4df732136f411f52fe0aa75a8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add266d4df732136f411f52fe0aa75a8d">&#9670;&nbsp;</a></span>operator()() <span class="overload">[1/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double Corrector::operator() </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>Q</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>pt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>eta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>phi</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>genPt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>s</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>m</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad13d0991c3a470ac6892d7f38e60e418"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad13d0991c3a470ac6892d7f38e60e418">&#9670;&nbsp;</a></span>operator()() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double Corrector::operator() </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>Q</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>pt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>eta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>phi</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>u</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>s</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>m</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a42813137e804ca7f581dda7c7dbd80db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42813137e804ca7f581dda7c7dbd80db">&#9670;&nbsp;</a></span>operator()() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double Corrector::operator() </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>Q</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>pt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>eta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>phi</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>s</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>m</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="af505991ef5f78a7b81de2329e02ca632"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af505991ef5f78a7b81de2329e02ca632">&#9670;&nbsp;</a></span>operator()()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#af505991ef5f78a7b81de2329e02ca632">&#9670;&nbsp;</a></span>operator()() <span class="overload">[4/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -266,43 +473,55 @@ template&lt;class T  = const std::vector&lt;std::variant&lt;int, double, std::st
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="a0d95755ab90ceebc5bc59623a7e9ceb5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0d95755ab90ceebc5bc59623a7e9ceb5">&#9670;&nbsp;</a></span>correction_keys</h2>
+<a id="a5f816cd28e1708277f207c19c33f63a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f816cd28e1708277f207c19c33f63a8">&#9670;&nbsp;</a></span>correction_keys</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const std::map&lt;std::pair&lt;<a class="el" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934">CorrectionTypes</a>, std::string&gt;, std::pair&lt;std::string, std::string&gt; &gt; Corrector::correction_keys</td>
+          <td class="memname">const std::map&lt;std::pair&lt;<a class="el" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934">CorrectionTypes</a>, <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a>&gt;, std::pair&lt;std::string, std::string&gt; &gt; Corrector::correction_keys</td>
         </tr>
       </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= {</div>
 <div class="line">        </div>
-<div class="line">        {{<a class="code" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934abfd2343910378a1b537c3c8036a5c07e">CorrectionTypes::PU</a>, <span class="stringliteral">&quot;2016APV&quot;</span>},</div>
+<div class="line">        </div>
+<div class="line">        {{<a class="code" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934abfd2343910378a1b537c3c8036a5c07e">CorrectionTypes::PU</a>, <a class="code" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37acdd64c4ab6df0b9123e861c6a553ff52">Year::Run2016APV</a>},</div>
 <div class="line">         {<span class="stringliteral">&quot;/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2016preVFP_UL/puWeights.json.gz&quot;</span>,</div>
 <div class="line">          <span class="stringliteral">&quot;Collisions16_UltraLegacy_goldenJSON&quot;</span>}},</div>
-<div class="line">        {{<a class="code" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934abfd2343910378a1b537c3c8036a5c07e">CorrectionTypes::PU</a>, <span class="stringliteral">&quot;2016&quot;</span>},</div>
+<div class="line">        {{<a class="code" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934abfd2343910378a1b537c3c8036a5c07e">CorrectionTypes::PU</a>, <a class="code" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abd2434cf3747e405569bbf500407c664">Year::Run2016</a>},</div>
 <div class="line">         {<span class="stringliteral">&quot;/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2016postVFP_UL/puWeights.json.gz&quot;</span>,</div>
 <div class="line">          <span class="stringliteral">&quot;Collisions16_UltraLegacy_goldenJSON&quot;</span>}},</div>
-<div class="line">        {{<a class="code" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934abfd2343910378a1b537c3c8036a5c07e">CorrectionTypes::PU</a>, <span class="stringliteral">&quot;2017&quot;</span>},</div>
+<div class="line">        {{<a class="code" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934abfd2343910378a1b537c3c8036a5c07e">CorrectionTypes::PU</a>, <a class="code" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37a46f3a28d72133d1d36182be3a3938bb5">Year::Run2017</a>},</div>
 <div class="line">         {<span class="stringliteral">&quot;/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2017_UL/puWeights.json.gz&quot;</span>,</div>
 <div class="line">          <span class="stringliteral">&quot;Collisions17_UltraLegacy_goldenJSON&quot;</span>}},</div>
-<div class="line">        {{<a class="code" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934abfd2343910378a1b537c3c8036a5c07e">CorrectionTypes::PU</a>, <span class="stringliteral">&quot;2018&quot;</span>},</div>
+<div class="line">        {{<a class="code" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934abfd2343910378a1b537c3c8036a5c07e">CorrectionTypes::PU</a>, <a class="code" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37a4574676bc1f98656ba6d813ba595ffc0">Year::Run2018</a>},</div>
 <div class="line">         {<span class="stringliteral">&quot;/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2018_UL/puWeights.json.gz&quot;</span>,</div>
 <div class="line">          <span class="stringliteral">&quot;Collisions18_UltraLegacy_goldenJSON&quot;</span>}},</div>
+<div class="line"> </div>
+<div class="line">        </div>
+<div class="line">        </div>
+<div class="line">        {{<a class="code" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934ab8b5d0c91bd1f06360fb4cc1d639a070">CorrectionTypes::MuonLowPt</a>, <a class="code" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37acdd64c4ab6df0b9123e861c6a553ff52">Year::Run2016APV</a>},</div>
+<div class="line">         {<a class="code" href="namespaceMUSiCTools.html#a0ae45aa4b4a382989271999a86e0d0d8">MUSiCTools::parse_and_expand_music_base</a>((<span class="stringliteral">&quot;$MUSIC_BASE/NanoMUSiC/MUSiC/external/roccor/RoccoR2016UL.txt&quot;</span>)), <span class="stringliteral">&quot;&quot;</span>}},</div>
+<div class="line">        {{<a class="code" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934ab8b5d0c91bd1f06360fb4cc1d639a070">CorrectionTypes::MuonLowPt</a>, <a class="code" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abd2434cf3747e405569bbf500407c664">Year::Run2016</a>},</div>
+<div class="line">         {<a class="code" href="namespaceMUSiCTools.html#a0ae45aa4b4a382989271999a86e0d0d8">MUSiCTools::parse_and_expand_music_base</a>((<span class="stringliteral">&quot;$MUSIC_BASE/NanoMUSiC/MUSiC/external/roccor/RoccoR2016UL.txt&quot;</span>)), <span class="stringliteral">&quot;&quot;</span>}},</div>
+<div class="line">        {{<a class="code" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934ab8b5d0c91bd1f06360fb4cc1d639a070">CorrectionTypes::MuonLowPt</a>, <a class="code" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37a46f3a28d72133d1d36182be3a3938bb5">Year::Run2017</a>},</div>
+<div class="line">         {<a class="code" href="namespaceMUSiCTools.html#a0ae45aa4b4a382989271999a86e0d0d8">MUSiCTools::parse_and_expand_music_base</a>((<span class="stringliteral">&quot;$MUSIC_BASE/NanoMUSiC/MUSiC/external/roccor/RoccoR2017UL.txt&quot;</span>)), <span class="stringliteral">&quot;&quot;</span>}},</div>
+<div class="line">        {{<a class="code" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934ab8b5d0c91bd1f06360fb4cc1d639a070">CorrectionTypes::MuonLowPt</a>, <a class="code" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37a4574676bc1f98656ba6d813ba595ffc0">Year::Run2018</a>},</div>
+<div class="line">         {<a class="code" href="namespaceMUSiCTools.html#a0ae45aa4b4a382989271999a86e0d0d8">MUSiCTools::parse_and_expand_music_base</a>((<span class="stringliteral">&quot;$MUSIC_BASE/NanoMUSiC/MUSiC/external/roccor/RoccoR2018UL.txt&quot;</span>)), <span class="stringliteral">&quot;&quot;</span>}},</div>
 <div class="line">    }</div>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="abb101b78ec99abc2ff6ce57a41bc9ae0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abb101b78ec99abc2ff6ce57a41bc9ae0">&#9670;&nbsp;</a></span>correction_ref</h2>
+<a id="a1b5ebe507f50525f6cd6276b491204fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b5ebe507f50525f6cd6276b491204fa">&#9670;&nbsp;</a></span>correction_ref</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">correction::Correction::Ref Corrector::correction_ref</td>
+          <td class="memname">std::variant&lt;<a class="el" href="CorrectionSets_8hpp.html#af1b8b92794ed34f64d7e63cb40dba657">CorrectionlibRef_t</a>, <a class="el" href="CorrectionSets_8hpp.html#a92123307785577bd95f7bbc9fbc4462a">RochesterCorrection_t</a>&gt; Corrector::correction_ref</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -337,14 +556,14 @@ template&lt;class T  = const std::vector&lt;std::variant&lt;int, double, std::st
 
 </div>
 </div>
-<a id="a2f640db0e9e5c08b0b1dbf5a213a13c9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2f640db0e9e5c08b0b1dbf5a213a13c9">&#9670;&nbsp;</a></span>year</h2>
+<a id="a4e1405aa9bd95e389386f7ba4d9954ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e1405aa9bd95e389386f7ba4d9954ab">&#9670;&nbsp;</a></span>year</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const std::string Corrector::year</td>
+          <td class="memname">const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> Corrector::year</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -356,7 +575,13 @@ template&lt;class T  = const std::vector&lt;std::variant&lt;int, double, std::st
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<div class="ttc" id="aConfigs_8hpp_html_ae49013585f0536b639fe09828864fe37acdd64c4ab6df0b9123e861c6a553ff52"><div class="ttname"><a href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37acdd64c4ab6df0b9123e861c6a553ff52">Run2016APV</a></div><div class="ttdeci">@ Run2016APV</div><div class="ttdef"><b>Definition:</b> Configs.hpp:30</div></div>
+<div class="ttc" id="aConfigs_8hpp_html_ae49013585f0536b639fe09828864fe37a46f3a28d72133d1d36182be3a3938bb5"><div class="ttname"><a href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37a46f3a28d72133d1d36182be3a3938bb5">Run2017</a></div><div class="ttdeci">@ Run2017</div><div class="ttdef"><b>Definition:</b> Configs.hpp:32</div></div>
+<div class="ttc" id="anamespaceMUSiCTools_html_a0ae45aa4b4a382989271999a86e0d0d8"><div class="ttname"><a href="namespaceMUSiCTools.html#a0ae45aa4b4a382989271999a86e0d0d8">MUSiCTools::parse_and_expand_music_base</a></div><div class="ttdeci">std::string parse_and_expand_music_base(std::string_view path)</div><div class="ttdef"><b>Definition:</b> MUSiCTools.hpp:300</div></div>
+<div class="ttc" id="aCorrectionSets_8hpp_html_a91da7242fa6e7bbdfa52592fe7b6b934ab8b5d0c91bd1f06360fb4cc1d639a070"><div class="ttname"><a href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934ab8b5d0c91bd1f06360fb4cc1d639a070">CorrectionTypes::MuonLowPt</a></div><div class="ttdeci">@ MuonLowPt</div></div>
 <div class="ttc" id="aCorrectionSets_8hpp_html_a91da7242fa6e7bbdfa52592fe7b6b934abfd2343910378a1b537c3c8036a5c07e"><div class="ttname"><a href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934abfd2343910378a1b537c3c8036a5c07e">CorrectionTypes::PU</a></div><div class="ttdeci">@ PU</div></div>
+<div class="ttc" id="aConfigs_8hpp_html_ae49013585f0536b639fe09828864fe37a4574676bc1f98656ba6d813ba595ffc0"><div class="ttname"><a href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37a4574676bc1f98656ba6d813ba595ffc0">Run2018</a></div><div class="ttdeci">@ Run2018</div><div class="ttdef"><b>Definition:</b> Configs.hpp:33</div></div>
+<div class="ttc" id="aConfigs_8hpp_html_ae49013585f0536b639fe09828864fe37abd2434cf3747e405569bbf500407c664"><div class="ttname"><a href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abd2434cf3747e405569bbf500407c664">Run2016</a></div><div class="ttdeci">@ Run2016</div><div class="ttdef"><b>Definition:</b> Configs.hpp:31</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

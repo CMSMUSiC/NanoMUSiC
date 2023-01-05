@@ -49,8 +49,11 @@
     extensions: ["tex2jax.js"],
     jax: ["input/TeX","output/HTML-CSS"],
 });
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
 </script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_CHTML/MathJax.js"></script>
     <link href="doxygen.css" rel="stylesheet" type="text/css" />
     <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="custom.css" rel="stylesheet" type="text/css"/>
@@ -107,7 +110,7 @@
                         <td id="projectalign" style="padding-left: 0.5em;">
                             <div id="projectname">NanoMUSiC
                             </div>
-                            <div id="projectbrief">CMS MUSiC with NanoAOD</div>
+                            <div id="projectbrief">CMS MUSiC using NanoAOD</div>
                         </td>
                     </tr>
                 </tbody>
@@ -162,14 +165,14 @@ $(document).ready(function(){initNavTree('namespacemembers_type.html',''); initR
 
 <div class="contents">
 &#160;<ul>
-<li>NanoAODObjects_t
-: <a class="el" href="namespaceNanoObject.html#a85e25d67a42e4ad256f4c8558d5020c2">NanoObject</a>
+<li>BJets
+: <a class="el" href="namespaceNanoObjects.html#a7be87612d389c646e9a31974fa6a3d8b">NanoObjects</a>
 </li>
-<li>NanoObjectCollection
-: <a class="el" href="namespaceNanoObject.html#afb1956f463886afafc2f00c4552745ed">NanoObject</a>
+<li>NanoAODObjects_t
+: <a class="el" href="namespaceNanoObjects.html#a0aa103dc78a6067354bc625c0ca06cae">NanoObjects</a>
 </li>
 <li>Path
-: <a class="el" href="namespaceTools.html#ad75b68ac70e81e850dbfe8cc5ececdb4">Tools</a>
+: <a class="el" href="namespaceMUSiCTools.html#a58b8f4ae2ccaa5f53dc7de43bc3bea4d">MUSiCTools</a>
 </li>
 </ul>
 </div><!-- contents -->

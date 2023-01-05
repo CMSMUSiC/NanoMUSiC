@@ -49,8 +49,11 @@
     extensions: ["tex2jax.js"],
     jax: ["input/TeX","output/HTML-CSS"],
 });
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
 </script>
-<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_CHTML/MathJax.js"></script>
     <link href="doxygen.css" rel="stylesheet" type="text/css" />
     <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 <link href="custom.css" rel="stylesheet" type="text/css"/>
@@ -107,7 +110,7 @@
                         <td id="projectalign" style="padding-left: 0.5em;">
                             <div id="projectname">NanoMUSiC
                             </div>
-                            <div id="projectbrief">CMS MUSiC with NanoAOD</div>
+                            <div id="projectbrief">CMS MUSiC using NanoAOD</div>
                         </td>
                     </tr>
                 </tbody>
@@ -161,56 +164,25 @@ $(document).ready(function(){initNavTree('namespacemembers_func.html',''); initR
 </div>
 
 <div class="contents">
-&#160;
-
-<h3><a id="index__5F"></a>- _ -</h3><ul>
-<li>_unroll_and_fill()
-: <a class="el" href="namespaceNanoObject.html#a6e5f3a3cc561929a355db76fc8a5003d">NanoObject</a>
-</li>
-</ul>
-
-
-<h3><a id="index_a"></a>- a -</h3><ul>
+&#160;<ul>
 <li>AbsolutePath()
-: <a class="el" href="namespaceTools.html#af7ec4031cb991f4e2b1a599a5804c899">Tools</a>
+: <a class="el" href="namespaceMUSiCTools.html#aad86e4c5a743b214fe453e384c0a9b50">MUSiCTools</a>
 </li>
-</ul>
-
-
-<h3><a id="index_b"></a>- b -</h3><ul>
-<li>BuildMask()
-: <a class="el" href="namespaceNanoObject.html#a73b2ab8273218835e239966d8e654f51">NanoObject</a>
-</li>
-</ul>
-
-
-<h3><a id="index_e"></a>- e -</h3><ul>
-<li>E()
-: <a class="el" href="namespaceNanoObject.html#a7b0ff8740b2644a4d9cb74f742d94eb7">NanoObject</a>
-</li>
-<li>Eta()
-: <a class="el" href="namespaceNanoObject.html#a3706396ccb3a15c35db1f7091283f67f">NanoObject</a>
+<li>ArgMin()
+: <a class="el" href="namespaceMUSiCTools.html#acf12b2c7412c24791ebc82ecd362fb62">MUSiCTools</a>
 </li>
 <li>ExpandPath()
-: <a class="el" href="namespaceTools.html#adc60a3d4a2e21756bf526f4724d61469">Tools</a>
-</li>
-</ul>
-
-
-<h3><a id="index_f"></a>- f -</h3><ul>
-<li>Filter()
-: <a class="el" href="namespaceNanoObject.html#a9e3cfbb46b2456ef1610e2770a58480a">NanoObject</a>
+: <a class="el" href="namespaceMUSiCTools.html#af5cae0ebb174d0a0626c6a303613fc40">MUSiCTools</a>
 </li>
 <li>fromString()
-: <a class="el" href="namespaceTools.html#a33e5fdbeef6c18029b7b35ed8363d46e">Tools</a>
+: <a class="el" href="namespaceMUSiCTools.html#a062f9fcb985e59df0035be3b165d7b75">MUSiCTools</a>
 </li>
 <li>fromString&lt; std::string &gt;()
-: <a class="el" href="namespaceTools.html#ab89a06dc9302e2de99efb673a9c9cc91">Tools</a>
+: <a class="el" href="namespaceMUSiCTools.html#a3f81db6f136f61d764328327286dcdc8">MUSiCTools</a>
 </li>
-</ul>
-
-
-<h3><a id="index_g"></a>- g -</h3><ul>
+<li>generate_uniform()
+: <a class="el" href="namespaceMUSiCTools.html#abca9594acbd472979c2fe70a9c5ca586">MUSiCTools</a>
+</li>
 <li>get_pdf_ids()
 : <a class="el" href="namespacePDFAlphaSWeights.html#a9e34caf4dd955b8c34964d4e79fee6c9">PDFAlphaSWeights</a>
 </li>
@@ -226,109 +198,44 @@ $(document).ready(function(){initNavTree('namespacemembers_func.html',''); initR
 <li>get_pdfset_name_by_id()
 : <a class="el" href="namespacePDFAlphaSWeights.html#ae8df4687e31557b0347619e05a524099">PDFAlphaSWeights</a>
 </li>
-<li>GetByIndex()
-: <a class="el" href="namespaceNanoObject.html#ae5eb1f0426c944720c66230a3a52b316">NanoObject</a>
-</li>
-<li>getConfigParticleMap()
-: <a class="el" href="namespaceTools.html#a78ff41210e7d97d09872fb8e221d97fa">Tools</a>
-</li>
-<li>getConfigParticleReverseMap()
-: <a class="el" href="namespaceTools.html#ab83000996657097563d13304dc44216d">Tools</a>
-</li>
-<li>GetFeature()
-: <a class="el" href="namespaceNanoObject.html#aa25552f451b16fefdc532be0728ffd7f">NanoObject</a>
-</li>
 <li>getParticleTypeAbbreviations()
-: <a class="el" href="namespaceTools.html#a7f7a1427c71264da4d2c038b5ca7096d">Tools</a>
+: <a class="el" href="namespaceMUSiCTools.html#a5981ef04a7bf65c7cca43fe6f3d6d1bd">MUSiCTools</a>
 </li>
-</ul>
-
-
-<h3><a id="index_h"></a>- h -</h3><ul>
 <li>has_pdf_weight()
 : <a class="el" href="namespacePDFAlphaSWeights.html#adc72012ac04ff409d853467188e0e039">PDFAlphaSWeights</a>
 </li>
-</ul>
-
-
-<h3><a id="index_i"></a>- i -</h3><ul>
-<li>index_range()
-: <a class="el" href="namespaceTools.html#aa2436ff21902f6f6901ab2c8c7021955">Tools</a>
+<li>index_to_variation()
+: <a class="el" href="namespaceVariations.html#af009677f6c42aa52fd27a192e7d1c5fb">Variations</a>
 </li>
-<li>Indices()
-: <a class="el" href="namespaceNanoObject.html#abf55a5566a33d2ce8eec56b9dbfd2927">NanoObject</a>
+<li>make_index()
+: <a class="el" href="namespaceIndexHelpers.html#a9c43c532475e760b0a4ed53967da273b">IndexHelpers</a>
 </li>
-</ul>
-
-
-<h3><a id="index_m"></a>- m -</h3><ul>
-<li>make_collection()
-: <a class="el" href="namespaceNanoObject.html#ab6a19ff943c256e96a08130369610ed7">NanoObject</a>
-</li>
-<li>make_object()
-: <a class="el" href="namespaceNanoObject.html#a5cc7f91fdab71352b7d9db07643c63d0">NanoObject</a>
-</li>
-<li>Mass()
-: <a class="el" href="namespaceNanoObject.html#aa761d9d2645fc85ea1c1b3920fa1bab0">NanoObject</a>
+<li>MinElem()
+: <a class="el" href="namespaceMUSiCTools.html#ad05c9d6183d9e0e09a672d23cfc0524a">MUSiCTools</a>
 </li>
 <li>musicAbsPath()
-: <a class="el" href="namespaceTools.html#a7db58becf00acaa3519fab94e4f6665d">Tools</a>
+: <a class="el" href="namespaceMUSiCTools.html#a6144a4d037630293e8345ff3e8d190f1">MUSiCTools</a>
 </li>
-</ul>
-
-
-<h3><a id="index_p"></a>- p -</h3><ul>
 <li>parse_and_expand_music_base()
-: <a class="el" href="namespaceTools.html#ab23c7d737c43eef7157ed283bee69461">Tools</a>
+: <a class="el" href="namespaceMUSiCTools.html#a0ae45aa4b4a382989271999a86e0d0d8">MUSiCTools</a>
 </li>
 <li>pdg_id_type_map()
-: <a class="el" href="namespaceTools.html#a72840a5c0ef521779e2d958122b8a3f0">Tools</a>
+: <a class="el" href="namespaceMUSiCTools.html#a4d6bc62839c838e30c785b4b7eecb955">MUSiCTools</a>
 </li>
-<li>Phi()
-: <a class="el" href="namespaceNanoObject.html#a7b7186cf5337a05aa0c8e79c08a49762">NanoObject</a>
-</li>
-<li>Pt()
-: <a class="el" href="namespaceNanoObject.html#a61b0ec817799927dd4edb5e008ae59d9">NanoObject</a>
-</li>
-</ul>
-
-
-<h3><a id="index_r"></a>- r -</h3><ul>
 <li>random_string()
-: <a class="el" href="namespaceTools.html#a1a488ac515c63bc9f3b0f3778c7b3981">Tools</a>
+: <a class="el" href="namespaceMUSiCTools.html#a057862fd8ccc2a8fede3d6c8b4a7a063">MUSiCTools</a>
 </li>
 <li>removeComment()
-: <a class="el" href="namespaceTools.html#a50243b657b62c7ca509f1f1cb54049c6">Tools</a>
-</li>
-<li>Repr()
-: <a class="el" href="namespaceNanoObject.html#addcc6a0bd88e05a334f8133a5e32e941">NanoObject</a>
-</li>
-</ul>
-
-
-<h3><a id="index_s"></a>- s -</h3><ul>
-<li>SetFeature()
-: <a class="el" href="namespaceNanoObject.html#a16e9e7bb483e8a143f5df460fe2511c3">NanoObject</a>
+: <a class="el" href="namespaceMUSiCTools.html#a46f01ef84ca1e885fb98be088196d86d">MUSiCTools</a>
 </li>
 <li>splitString()
-: <a class="el" href="namespaceTools.html#afa894c72e8a81fc63c03f0edb6b41f32">Tools</a>
-</li>
-</ul>
-
-
-<h3><a id="index_t"></a>- t -</h3><ul>
-<li>Take()
-: <a class="el" href="namespaceNanoObject.html#a8f09b6b77f3c787a4b2e668c581c360a">NanoObject</a>
+: <a class="el" href="namespaceMUSiCTools.html#a119c9536b86a44728a641852ba18280e">MUSiCTools</a>
 </li>
 <li>toString()
-: <a class="el" href="namespaceTools.html#a1ac8c9ccc5ea2292e2a5b004a3225baf">Tools</a>
+: <a class="el" href="namespaceMUSiCTools.html#ad618d52734e8c29c83bce57b8fde32dc">MUSiCTools</a>
 </li>
-</ul>
-
-
-<h3><a id="index_w"></a>- w -</h3><ul>
-<li>Where()
-: <a class="el" href="namespaceNanoObject.html#a089c569b89f654da088ecdf6940aa20d">NanoObject</a>
+<li>variation_to_index()
+: <a class="el" href="namespaceVariations.html#a5fa6577d928294598f239958fb344efc">Variations</a>
 </li>
 </ul>
 </div><!-- contents -->
