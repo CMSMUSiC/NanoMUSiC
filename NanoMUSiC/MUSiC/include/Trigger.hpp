@@ -44,7 +44,8 @@ struct TriggerBits
     {
         return static_cast<unsigned int>(trigger_bits.to_ullong());
     }
-
+    // TODO: CONCERTAR ...
+    //  : OIDSA
     std::string_view as_string() const
     {
         return std::string_view(std::to_string(this->as_ulong()));
@@ -91,7 +92,7 @@ struct TriggerBits
         {
             has_match = true;
             //////////////////////////////////////////////////////////////
-            // FIX ME: Here it should evaluate the trigger SF.
+            // FIXME: Here it should evaluate the trigger SF.
             //////////////////////////////////////////////////////////////
         }
         return std::make_tuple(has_match, trigger_sf_nominal, trigger_sf_up, trigger_sf_down);

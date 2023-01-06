@@ -209,7 +209,7 @@ class EventData
             if (!is_data)
             {
                 /////////////////////////////////////////////////
-                // FIX ME: check if it is good gen event
+                // FIXME: check if it is good gen event
                 /////////////////////////////////////////////////
                 if (true)
                 {

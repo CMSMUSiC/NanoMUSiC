@@ -80,8 +80,8 @@ int main(int argc, char *argv[])
     std::cout << " " << std::endl;
     std::cout << " " << std::endl;
     std::cout << acqua << "        MUSiC - Model Unspecific Search in CMS" << def << std::endl;
-    std::cout << acqua << emojicpp::emojize("              :signal_strength: Run2 - Ultra Legacy :signal_strength:")
-              << def << std::endl;
+    std::cout << acqua << emojicpp::emojize("              :signal_strength: Run2 - Ultra Legacy :signal_strength:") << def
+              << std::endl;
     std::cout << " " << std::endl;
 
     std::cout << " " << std::endl;
@@ -97,8 +97,7 @@ int main(int argc, char *argv[])
         }
         catch (const toml::parse_error &err)
         {
-            std::cerr << red << "ERROR: Config file [" << run_config_file << "] parsing failed.\n"
-                      << err << def << "\n";
+            std::cerr << red << "ERROR: Config file [" << run_config_file << "] parsing failed.\n" << err << def << "\n";
             exit(-1);
         }
     }();
@@ -255,8 +254,8 @@ int main(int argc, char *argv[])
     unsigned int lost_files = 0;
 
     // temp cache dir
-    string process_hash = std::to_string(
-        std::hash<std::string>{}(std::accumulate(input_files.begin(), input_files.end(), std::string(""))));
+    string process_hash =
+        std::to_string(std::hash<std::string>{}(std::accumulate(input_files.begin(), input_files.end(), std::string(""))));
     std::string cache_dir = "/tmp/music/proc_" + process_hash;
     if (cacheread)
     {
@@ -264,7 +263,7 @@ int main(int argc, char *argv[])
         std::cout << " " << std::endl;
         std::cout << " " << std::endl;
         std::cout << yellow << "Preparing cache directory for NanoAOD files: " << def << std::endl;
-        system(("rm -rf " + cache_dir).c_str()); // <-- FIX me!!
+        system(("rm -rf " + cache_dir).c_str()); // <-- FIXME!!
         std::cout << cache_dir << std::endl;
     }
 
@@ -302,8 +301,7 @@ int main(int argc, char *argv[])
         int event_counter_per_file = 0;
 
         // get "Events" TTree from file
-        std::unique_ptr<TTree> events_tree =
-            std::unique_ptr<TTree>(dynamic_cast<TTree *>(input_root_file->Get("Events")));
+        std::unique_ptr<TTree> events_tree = std::unique_ptr<TTree>(dynamic_cast<TTree *>(input_root_file->Get("Events")));
 
         // get NanoAODReader
         auto nano_reader = NanoAODReader(*events_tree);
@@ -311,8 +309,7 @@ int main(int argc, char *argv[])
         // loop over events
         while (nano_reader.next())
         {
-            std::unique_ptr<pxl::Event> event_ptr =
-                make_pxlevent(e, nano_reader, year, process, dataset, is_data, debug);
+            std::unique_ptr<pxl::Event> event_ptr = make_pxlevent(e, nano_reader, year, process, dataset, is_data, debug);
 
             event_counter_per_file++;
             if (!event_ptr)
@@ -427,8 +424,7 @@ int main(int argc, char *argv[])
                 // Sometimes events have missing PDF information (mainly POWHEG).
                 // This is checked in the skimmer and if PDF weights are missing, the event is tagged
                 if (config.GetItem<bool>("General.usePDF") and config.GetItem<bool>("PDF.SkipIncomplete") and
-                    GenEvtView->hasUserRecord("Incomplete_PDF_weights") and
-                    GenEvtView->getUserRecord("Incomplete_PDF_weights"))
+                    GenEvtView->hasUserRecord("Incomplete_PDF_weights") and GenEvtView->getUserRecord("Incomplete_PDF_weights"))
                 {
                     skipped++;
                     //
@@ -521,7 +517,7 @@ int main(int argc, char *argv[])
             event_class_factory.analyseEvent(event_ptr.get());
 
             e++;
-            // std::cout << e << " <--- Event number " << std::endl; //<<-- FIX me?!?
+            // std::cout << e << " <--- Event number " << std::endl; //<<-- FIXME?!?
             if (e < 10 || (e < 100 && e % 10 == 0) || (e < 1000 && e % 100 == 0) || (e < 10000 && e % 1000 == 0) ||
                 (e >= 10000 && e % 10000 == 0))
             {
@@ -531,8 +527,7 @@ int main(int argc, char *argv[])
                 }
                 else
                 {
-                    std::cout << e << " Events analyzed (" << pre_run_skipped << " + " << skipped << " skipped)"
-                              << std::endl;
+                    std::cout << e << " Events analyzed (" << pre_run_skipped << " + " << skipped << " skipped)" << std::endl;
                 }
             }
             // stop if max number of events to be processed is reaced
@@ -556,7 +551,7 @@ int main(int argc, char *argv[])
 
         // clear cache dir
         if (cacheread)
-        // if (false) // <-- FIX ME!
+        // if (false) // <-- FIXME!
         {
             std::cout << yellow << "Cleaning NanoAOD cache directory..." << def << std::endl;
             system(("rm -rf " + cache_dir + "/*").c_str());
