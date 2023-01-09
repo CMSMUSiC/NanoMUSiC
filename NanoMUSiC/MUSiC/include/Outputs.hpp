@@ -78,6 +78,7 @@ class Outputs
     static constexpr auto kTotalshifts = Outputs::Shifts.size();
 
     static constexpr unsigned int kMaxObjects = 100;
+    static constexpr unsigned int buffer_size = 2560000;
 
     // output file
     std::unique_ptr<TFile> output_file;
@@ -139,6 +140,7 @@ class Outputs
     {
 
         output_tree = std::make_unique<TTree>("nano_music", "nano_music");
+        // output_tree->SetAutoFlush(std::numeric_limits<long long>::max());
         output_tree->SetDirectory(output_file.get());
 
         // tree branches
@@ -160,31 +162,31 @@ class Outputs
         output_tree->Branch("nMET", &nMET, "nMET/i");
 
         // weights
-        output_tree->Branch("weights_nominal", weights_nominal.data(), "weights_nominal[kTotalWeights]/F");
-        // output_tree->Branch("weights_up", weights_up.data(), "weights_up[kTotalWeights]/F");
-        // output_tree->Branch("weights_down", weights_down.data(), "weights_down[kTotalWeights]/F");
+        output_tree->Branch("weights_nominal", weights_nominal.data(), "weights_nominal[kTotalWeights]/F", buffer_size);
+        output_tree->Branch("weights_up", weights_up.data(), "weights_up[kTotalWeights]/F", buffer_size);
+        output_tree->Branch("weights_down", weights_down.data(), "weights_down[kTotalWeights]/F", buffer_size);
 
-        // // physical objects
-        // output_tree->Branch("Muon_pt", Muon_pt.data(), "Muon_pt[nMuon]/F");
-        // output_tree->Branch("Muon_eta", Muon_eta.data(), "Muon_eta[nMuon]/F");
-        // output_tree->Branch("Muon_phi", Muon_phi.data(), "Muon_phi[nMuon]/F");
-        // output_tree->Branch("Electron_pt", Electron_pt.data(), "Electron_pt[nElectron]/F");
-        // output_tree->Branch("Electron_eta", Electron_eta.data(), "Electron_eta[nElectron]/F");
-        // output_tree->Branch("Electron_phi", Electron_phi.data(), "Electron_phi[nElectron]/F");
-        // output_tree->Branch("Photon_pt", Photon_pt.data(), "Photon_pt[nPhoton]/F");
-        // output_tree->Branch("Photon_eta", Photon_eta.data(), "Photon_eta[nPhoton]/F");
-        // output_tree->Branch("Photon_phi", Photon_phi.data(), "Photon_phi[nPhoton]/F");
-        // output_tree->Branch("Tau_pt", Tau_pt.data(), "Tau_pt[nTau]/F");
-        // output_tree->Branch("Tau_eta", Tau_eta.data(), "Tau_eta[nTau]/F");
-        // output_tree->Branch("Tau_phi", Tau_phi.data(), "Tau_phi[nTau]/F");
-        // output_tree->Branch("BJet_pt", BJet_pt.data(), "BJet_pt[nBJet]/F");
-        // output_tree->Branch("BJet_eta", BJet_eta.data(), "BJet_eta[nBJet]/F");
-        // output_tree->Branch("BJet_phi", BJet_phi.data(), "BJet_phi[nBJet]/F");
-        // output_tree->Branch("Jet_pt", Jet_pt.data(), "Jet_pt[nJet]/F");
-        // output_tree->Branch("Jet_eta", Jet_eta.data(), "Jet_eta[nJet]/F");
-        // output_tree->Branch("Jet_phi", Jet_phi.data(), "Jet_phi[nJet]/F");
-        // output_tree->Branch("MET_pt", MET_pt.data(), "MET_pt[nMET]/F");
-        // output_tree->Branch("MET_phi", MET_phi.data(), "MET_phi[nMET]/F");
+        // physical objects
+        output_tree->Branch("Muon_pt", Muon_pt.data(), "Muon_pt[nMuon]/F", buffer_size);
+        output_tree->Branch("Muon_eta", Muon_eta.data(), "Muon_eta[nMuon]/F", buffer_size);
+        output_tree->Branch("Muon_phi", Muon_phi.data(), "Muon_phi[nMuon]/F", buffer_size);
+        output_tree->Branch("Electron_pt", Electron_pt.data(), "Electron_pt[nElectron]/F", buffer_size);
+        output_tree->Branch("Electron_eta", Electron_eta.data(), "Electron_eta[nElectron]/F", buffer_size);
+        output_tree->Branch("Electron_phi", Electron_phi.data(), "Electron_phi[nElectron]/F", buffer_size);
+        output_tree->Branch("Photon_pt", Photon_pt.data(), "Photon_pt[nPhoton]/F", buffer_size);
+        output_tree->Branch("Photon_eta", Photon_eta.data(), "Photon_eta[nPhoton]/F", buffer_size);
+        output_tree->Branch("Photon_phi", Photon_phi.data(), "Photon_phi[nPhoton]/F", buffer_size);
+        output_tree->Branch("Tau_pt", Tau_pt.data(), "Tau_pt[nTau]/F", buffer_size);
+        output_tree->Branch("Tau_eta", Tau_eta.data(), "Tau_eta[nTau]/F", buffer_size);
+        output_tree->Branch("Tau_phi", Tau_phi.data(), "Tau_phi[nTau]/F", buffer_size);
+        output_tree->Branch("BJet_pt", BJet_pt.data(), "BJet_pt[nBJet]/F", buffer_size);
+        output_tree->Branch("BJet_eta", BJet_eta.data(), "BJet_eta[nBJet]/F", buffer_size);
+        output_tree->Branch("BJet_phi", BJet_phi.data(), "BJet_phi[nBJet]/F", buffer_size);
+        output_tree->Branch("Jet_pt", Jet_pt.data(), "Jet_pt[nJet]/F", buffer_size);
+        output_tree->Branch("Jet_eta", Jet_eta.data(), "Jet_eta[nJet]/F", buffer_size);
+        output_tree->Branch("Jet_phi", Jet_phi.data(), "Jet_phi[nJet]/F", buffer_size);
+        output_tree->Branch("MET_pt", MET_pt.data(), "MET_pt[nMET]/F", buffer_size);
+        output_tree->Branch("MET_phi", MET_phi.data(), "MET_phi[nMET]/F", buffer_size);
 
         // make cutflow histos
         const std::string histo_name = "cutflow";
