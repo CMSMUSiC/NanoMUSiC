@@ -1202,7 +1202,7 @@ HTML_FILE_EXTENSION    = .html
 # of the possible markers and block names see the documentation.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_HEADER            = doxygen-custom/header.html
+HTML_HEADER            = header.html
 
 # The HTML_FOOTER tag can be used to specify a user-defined HTML footer for each
 # generated HTML page. If the tag is left blank doxygen will generate a standard
@@ -1224,11 +1224,9 @@ HTML_FOOTER            =
 # obsolete.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_EXTRA_STYLESHEET  = doxygen-awesome.css \
-                         doxygen-custom/custom.css \
-                         doxygen-awesome-sidebar-only.css \
-                         doxygen-awesome-sidebar-only-darkmode-toggle.css \
-                         doxygen-custom/custom-alternative.css \
+HTML_EXTRA_STYLESHEET  = doxygen-awesome.css 
+                        #  doxygen-awesome-sidebar-only.css 
+                        #  doxygen-awesome-sidebar-only-darkmode-toggle.css
 
 # The HTML_EXTRA_STYLESHEET tag can be used to specify additional user-defined
 # cascading style sheets that are included after the standard style sheets
@@ -1241,11 +1239,10 @@ HTML_EXTRA_STYLESHEET  = doxygen-awesome.css \
 # list). For an example see the documentation.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_EXTRA_FILES       = doxygen-awesome-darkmode-toggle.js \
-                         doxygen-awesome-fragment-copy-button.js \
-                         doxygen-awesome-paragraph-link.js \
-                         doxygen-custom/toggle-alternative-theme.js \
-                         doxygen-awesome-interactive-toc.js
+HTML_EXTRA_FILES       = doxygen-awesome-fragment-copy-button.js \
+                         doxygen-awesome-paragraph-link.js 
+                        #  doxygen-awesome-interactive-toc.js
+                        #  doxygen-custom/toggle-alternative-theme.js \
 
 # The HTML_EXTRA_FILES tag can be used to specify one or more extra images or
 # other source files which should be copied to the HTML output directory. Note
@@ -1542,7 +1539,7 @@ DISABLE_INDEX          = NO
 # The default value is: NO.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-GENERATE_TREEVIEW      = NO
+GENERATE_TREEVIEW      = YES
 
 # The ENUM_VALUES_PER_LINE tag can be used to set the number of enum values that
 # doxygen will group on one line in the generated HTML documentation.
@@ -1637,8 +1634,8 @@ MATHJAX_FORMAT         = HTML-CSS
 # The default value is: https://cdn.jsdelivr.net/npm/mathjax@2.
 # This tag requires that the tag USE_MATHJAX is set to YES.
 
-# MATHJAX_RELPATH        = https://cdn.jsdelivr.net/npm/mathjax@2
-MATHJAX_RELPATH        = https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_CHTML 
+MATHJAX_RELPATH        = https://cdn.jsdelivr.net/npm/mathjax@2
+# MATHJAX_RELPATH        = https://cdn.jsdelivr.net/npm/mathjax@2/
 # MATHJAX_RELPATH        = http://cdn.mathjax.org/mathjax/latest
 
 # The MATHJAX_EXTENSIONS tag can be used to specify one or more MathJax
