@@ -6,6 +6,9 @@ project(NANOMUSIC CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+set(R__HAS_VDT 0)
+
 # Look for ROOT. As long as an installation is available in the environment, this should succeed.
 message(STATUS "Looking for ROOT")
 find_package(ROOT REQUIRED COMPONENTS RIO)
@@ -44,7 +47,7 @@ include_directories(
 # # compilation options
 # execute_process(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
 # separate_arguments(ROOT_CFLAGS)
-# add_compile_options(${ROOT_CFLAGS} ${CORRECTIONLIB_FLAGS} -fdiagnostics-color=always -MD -MP -O3 -Wall -fconcepts-ts -pthread -m64 -ffloat-store)
+# add_compile_options(${ROOT_CFLAGS} ${CORRECTIONLIB_FLAGS} -fdiagnostics-color=always -MD -MP -O3 -Wall -pthread -m64 -ffloat-store)
 # 
 # # root linker options
 # execute_process(COMMAND root-config --ldflags OUTPUT_VARIABLE ROOT_LDFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)

@@ -1,23 +1,221 @@
 #ifndef MUSIC_TRIGGER
 #define MUSIC_TRIGGER
 
+#include <string>
+#include <string_view>
+
+#include <fmt/core.h>
+
+#include "CorrectionSets.hpp"
 #include "Enumerate.hpp"
+
+#include "ROOT/RVec.hxx"
+using namespace ROOT;
 using namespace ROOT::VecOps;
+// using namespace std::literals::string_view_literals;
+using namespace std::literals;
+
+namespace Trigger
+{
+constexpr auto HLTPath = make_enumerate( //
+    "SingleMuonLowPt"sv,                 //
+    "SingleMuonHighPt"sv,                //
+    "SingleElectron"sv,                  //
+    "DoubleMuon"sv,                      //
+    "DoubleElectron"sv,                  //
+    "Photon"sv,                          //
+    "Tau"sv,                             //
+    "BJet"sv,                            //
+    "Jet"sv,                             //
+    "MET"sv);
+constexpr auto kTotalPaths = HLTPath.size();
+
+std::string get_year_for_muon_sf(Year year)
+{
+    switch (year)
+    {
+    case Year::Run2016APV:
+        return "2016preVFP_UL"s;
+    case Year::Run2016:
+        return "2016postVFP_UL"s;
+    case Year::Run2017:
+        return "2017_UL"s;
+    case Year::Run2018:
+        return "2018_UL"s;
+    default:
+        throw std::runtime_error("Year (" + std::to_string(year) +
+                                 ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
+    }
+}
+
+template <typename T1, typename T2>
+std::pair<RVec<float>, RVec<float>> get_matches(const T1 &trigger_objects_pt,  //
+                                                const T1 &trigger_objects_eta, //
+                                                const T1 &trigger_objects_phi, //
+                                                const T2 &nano_objects_pt,     //
+                                                const T2 &nano_objects_eta,    //
+                                                const T2 &nano_objects_phi)
+{
+    auto matches_distances = RVec<float>(nano_objects_pt.size(), std::numeric_limits<float>::max());
+    auto matches_relative_pT = RVec<float>(nano_objects_pt.size(), std::numeric_limits<float>::max());
+
+    for (std::size_t idx = 0; idx < nano_objects_pt.size(); idx++)
+    {
+        // DeltaR
+        matches_distances.at(idx) = VecOps::Min(VecOps::sqrt(                               //
+            VecOps::pow((trigger_objects_eta - nano_objects_eta[idx]), 2.)                  //
+            + VecOps::pow(VecOps::DeltaPhi(trigger_objects_phi, nano_objects_phi[idx]), 2.) //
+            ));
+
+        // Relative pT diff
+        matches_relative_pT.at(idx) =
+            VecOps::Min(VecOps::abs(nano_objects_pt[idx] - trigger_objects_phi) / (nano_objects_pt[idx]));
+    }
+
+    return std::make_pair(matches_distances, matches_relative_pT);
+}
+
+template <typename T1, typename T2>
+constexpr std::tuple<bool, float, float> trigger_matcher(const T1 &trigger_objects_pt,  //
+                                                         const T1 &trigger_objects_eta, //
+                                                         const T1 &trigger_objects_phi, //
+                                                         const T2 &nano_objects_pt,     //
+                                                         const T2 &nano_objects_eta,    //
+                                                         const T2 &nano_objects_phi,    //
+                                                         const float max_delta_r)
+{
+    bool has_trigger_match = false;
+    float matched_nanoobject_pt = 0.;
+    float matched_nanoobject_eta = 0.;
+
+    if (nano_objects_pt.size() > 0 and trigger_objects_pt.size() > 0)
+    {
+        auto [matches_distances, matches_rel_pT] = get_matches(trigger_objects_pt,  //
+                                                               trigger_objects_eta, //
+                                                               trigger_objects_phi, //
+                                                               nano_objects_pt,     //
+                                                               nano_objects_eta,    //
+                                                               nano_objects_phi);
+
+        auto good_delta_r = matches_distances <= max_delta_r;
+        if (VecOps::Any(good_delta_r))
+        {
+            has_trigger_match = true;
+
+            // if there is any match, them we take the first object.
+            // it should be the largest pT
+            matched_nanoobject_pt = nano_objects_pt[0];
+            matched_nanoobject_eta = nano_objects_eta[0];
+        }
+    }
+
+    //////////////////////////////////////////////////////
+    // DEBUG
+    // fmt::print("###### DEBUG ############\n");
+    // fmt::print("Has a match? : {}\n", has_trigger_match);
+    // fmt::print("Distances: : {}\n", matches_distances);
+    // fmt::print("Rel_pT: : {}\n", matches_rel_pT);
+    ///////////////////////////////////////
+
+    return std::make_tuple(has_trigger_match, matched_nanoobject_pt, matched_nanoobject_eta);
+}
+
+RVec<int> check_bit(const RVec<int> &trigger_bits, const int &bit)
+{
+    return (trigger_bits & bit) / bit;
+}
+
+///////////////////////////////////////////////////////////
+/// Check the `trigger_bit` of a given TrigObj for Single Muon - Low pT
+// Run2017 configurations
+// hltL3crIsoL1sMu22Or25L1f0L2f10QL3f27QL3trkIsoFiltered0p07 -> HLT_IsoMu27 - bit: 8
+// hltL3crIsoL1sSingleMu22L1f0L2f10QL3f24QL3trkIsoFiltered0p07 -> HLT_IsoMu24 - bit: 8
+///
+RVec<int> SingleMuonLowPtBits(const RVec<int> &triggerobj_bit, const Year &year)
+{
+    switch (year)
+    {
+    case Year::Run2016APV:
+        return check_bit(triggerobj_bit, 8);
+    case Year::Run2016:
+        return check_bit(triggerobj_bit, 8);
+    case Year::Run2017:
+        return check_bit(triggerobj_bit, 8);
+    case Year::Run2018:
+        return check_bit(triggerobj_bit, 8);
+    default:
+        throw std::runtime_error("Year (" + std::to_string(year) +
+                                 ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
+    }
+};
+
+///////////////////////////////////////////////////////////
+/// Check the `trigger_bit` of a given TrigObj for Single Muon - High pT
+// Run2017 configurations
+// hltL3fL1sMu22Or25L1f0L2f10QL3Filtered50Q -> HLT_Mu50 - bit: 1024
+// hltL3fL1sMu22Or25L1f0L2f10QL3Filtered100Q -> HLT_OldMu100 - bit: 2048
+// hltL3fL1sMu25f0TkFiltered100Q -> HLT_OldMu100 - bit: 2048
+///
+RVec<int> SingleMuonHighPtBits(const RVec<int> &triggerobj_bit, const Year &year)
+{
+    switch (year)
+    {
+    case Year::Run2016APV:
+        return (check_bit(triggerobj_bit, 1024) | check_bit(triggerobj_bit, 2048));
+    case Year::Run2016:
+        return (check_bit(triggerobj_bit, 1024) | check_bit(triggerobj_bit, 2048));
+    case Year::Run2017:
+        return (check_bit(triggerobj_bit, 1024) | check_bit(triggerobj_bit, 2048));
+    case Year::Run2018:
+        return (check_bit(triggerobj_bit, 1024) | check_bit(triggerobj_bit, 2048));
+    default:
+        throw std::runtime_error("Year (" + std::to_string(year) +
+                                 ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
+    }
+};
+
+////////////////////////////////////////////////////////////////////////
+/// Check the `trigger_bit` of a given TrigObj, `path` and `year`.
+///
+RVec<int> check_trigger_bit(const RVec<int> &triggerobj_bit, const std::string_view &path, const Year &year)
+{
+    if (path == std::string_view("SingleMuonLowPt"))
+    {
+        return SingleMuonLowPtBits(triggerobj_bit, year);
+    }
+    else if (path == std::string_view("SingleMuonHighPt"))
+    {
+        return SingleMuonHighPtBits(triggerobj_bit, year);
+    }
+    else
+    {
+        throw std::runtime_error("Year (" + std::to_string(year) +
+                                 ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
+    }
+}
+
+} // namespace Trigger
 
 struct TriggerBits
 {
-    static constexpr auto HLTPath = make_enumerate("SingleMuonLowPt", "SingleMuonHighPt", "SingleElectron", "DoubleMuon",
-                                                   "DoubleElectron", "Photon", "Tau", "BJet", "MET");
-    static constexpr auto kTotalPaths = HLTPath.size();
 
-    // will have size = SIZE
-    static constexpr size_t SIZE = sizeof(unsigned int) * 8;
-    std::bitset<SIZE> trigger_bits;
+    std::bitset<Trigger::kTotalPaths> trigger_bits;
 
     TriggerBits &set(unsigned int path, bool value)
     {
         trigger_bits.set(path, value);
         return *this;
+    }
+
+    TriggerBits &set(const std::string_view &path, bool value)
+    {
+        trigger_bits.set(Trigger::HLTPath.index_of(path), value);
+        return *this;
+    }
+
+    bool pass(const std::string_view &path) const
+    {
+        return trigger_bits.test(Trigger::HLTPath.index_of(path));
     }
 
     bool pass(unsigned int path) const
@@ -44,121 +242,10 @@ struct TriggerBits
     {
         return static_cast<unsigned int>(trigger_bits.to_ullong());
     }
-    // TODO: CONCERTAR ...
-    //  : OIDSA
+
     std::string_view as_string() const
     {
-        return std::string_view(std::to_string(this->as_ulong()));
-    }
-
-    template <typename T1, typename T2>
-    static constexpr std::pair<RVec<float>, RVec<float>> get_matches(T1 &&trigger_objects, T2 &&nano_objects)
-    {
-        auto matches_distances = RVec<float>(nano_objects.size, std::numeric_limits<float>::max());
-        auto matches_relative_pT = RVec<float>(nano_objects.size, std::numeric_limits<float>::max());
-
-        auto combinations = Combinations(trigger_objects, nano_objects);
-        auto trigger_idx = combinations[0];
-        auto nano_idx = combinations[1];
-
-        DeltaR(Take(trigger_objects.eta, trigger_idx), Take(trigger_objects.phi, trigger_idx), Take(nano_objects.eta, nano_idx),
-               Take(nano_objects.phi, nano_idx));
-
-        for (std::size_t trigger_idx = 0; trigger_idx < trigger_objects.size; trigger_idx++)
-        {
-            for (std::size_t nano_idx = 0; nano_idx < nano_objects.size; nano_idx++)
-            {
-                matches_distances.at(nano_idx) = std::min(DeltaR(trigger_objects.eta[trigger_idx], nano_objects.eta[nano_idx],
-                                                                 trigger_objects.phi[trigger_idx], nano_objects.phi[nano_idx]),
-                                                          matches_distances.at(nano_idx));
-                matches_relative_pT.at(nano_idx) =
-                    std::min(std::fabs(trigger_objects.pt[trigger_idx] - nano_objects.pt[nano_idx]) / (nano_objects.pt[nano_idx]),
-                             matches_relative_pT.at(nano_idx));
-            }
-        }
-        return std::make_pair(matches_distances, matches_relative_pT);
-    }
-
-    template <typename T1, typename T2>
-    static constexpr std::tuple<bool, float, float, float> trigger_matcher(T1 trigger_objs, T2 nano_objects, Year &year)
-    {
-        bool has_match = false;
-        float trigger_sf_nominal = 1.0;
-        float trigger_sf_up = 1.0;
-        float trigger_sf_down = 1.0;
-        auto [matches_distances, matches_rel_pT] = TriggerBits::get_matches(trigger_objs, nano_objects);
-        if (MUSiCTools::MinElem(matches_distances).value_or(std::numeric_limits<float>::max()) <
-            ObjConfig::Muons[year].MaxDeltaRTriggerMatch)
-        {
-            has_match = true;
-            //////////////////////////////////////////////////////////////
-            // FIXME: Here it should evaluate the trigger SF.
-            //////////////////////////////////////////////////////////////
-        }
-        return std::make_tuple(has_match, trigger_sf_nominal, trigger_sf_up, trigger_sf_down);
-    }
-
-    // Run2017 configurations
-    // hltL3crIsoL1sMu22Or25L1f0L2f10QL3f27QL3trkIsoFiltered0p07 -> HLT_IsoMu27 - bit: 8
-    // hltL3crIsoL1sSingleMu22L1f0L2f10QL3f24QL3trkIsoFiltered0p07 -> HLT_IsoMu24 - bit: 8
-    // hltL3fL1sMu22Or25L1f0L2f10QL3Filtered50Q -> HLT_Mu50 - bit: 1024
-    // hltL3fL1sMu22Or25L1f0L2f10QL3Filtered100Q -> HLT_OldMu100 - bit: 2048
-    // hltL3fL1sMu25f0TkFiltered100Q -> HLT_OldMu100 - bit: 2048
-
-    // Single Muon - Low pT
-    static constexpr bool SingleMuonLowPtBits(const int &trigger_bit, const Year &year)
-    {
-        switch (year)
-        {
-        case Year::Run2016APV:
-            return (trigger_bit & 8);
-        case Year::Run2016:
-            return (trigger_bit & 8);
-        case Year::Run2017:
-            return (trigger_bit & 8);
-        case Year::Run2018:
-            return (trigger_bit & 8);
-        default:
-            throw std::runtime_error("Year (" + std::to_string(year) +
-                                     ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
-        }
-    };
-
-    // Single Muon - High pT
-    static constexpr bool SingleMuonHighPtBits(const int &trigger_bit, const Year &year)
-    {
-        switch (year)
-        {
-        case Year::Run2016APV:
-            return ((trigger_bit & 1024) || (trigger_bit & 2048));
-        case Year::Run2016:
-            return ((trigger_bit & 1024) || (trigger_bit & 2048));
-        case Year::Run2017:
-            return ((trigger_bit & 1024) || (trigger_bit & 2048));
-        case Year::Run2018:
-            return ((trigger_bit & 1024) || (trigger_bit & 2048));
-        default:
-            throw std::runtime_error("Year (" + std::to_string(year) +
-                                     ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
-        }
-    };
-
-    bool check_bit(const std::string_view &path, const Year &year) const
-    {
-
-        if (path == "SingleMuonLowPt")
-        {
-            return SingleMuonLowPtBits(this->as_uint(), year);
-        }
-        else if (path == "SingleMuonHighPt")
-        {
-            return SingleMuonHighPtBits(this->as_uint(), year);
-        }
-        else
-        {
-            throw std::runtime_error("Year (" + std::to_string(year) +
-                                     ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
-        }
+        return trigger_bits.to_string();
     }
 };
 

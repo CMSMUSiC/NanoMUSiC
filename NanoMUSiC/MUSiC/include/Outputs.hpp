@@ -37,7 +37,7 @@ namespace IndexHelpers
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Creates a iterable range of integers in the interval [first, last].
-const std::vector<long> make_index(long first, long last)
+inline const std::vector<long> make_index(long first, long last)
 {
     auto vec = std::vector<long>(last - first + 1);
     long item = first;
@@ -51,7 +51,7 @@ const std::vector<long> make_index(long first, long last)
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Creates a iterable range of integers in the interval [0 (zero), length[.
-const std::vector<long> make_index(long lenght)
+inline const std::vector<long> make_index(long lenght)
 {
     return make_index(0, lenght - 1);
 }
@@ -65,11 +65,12 @@ class Outputs
 
   public:
     // variations, shifts, weights and cuts
-    static constexpr auto Cuts = make_enumerate("NoCuts", "GeneratorWeight", "RunLumi", "nPV", "METFilters", "TriggerCut",
-                                                "TriggerMatch", "AtLeastOneSelectedObject");
+    static constexpr auto Cuts = make_enumerate("NoCuts", "GeneratorWeight", "RunLumi", "nPV", "METFilters",
+                                                "TriggerCut", "AtLeastOneSelectedObject", "TriggerMatch");
     static constexpr auto Weights = make_enumerate("Generator", "PDF", "Alpha_S", "PileUp", "Lumi", "Trigger");
     // static constexpr auto Variations =
-    //     make_enumerate("Default", "JEC", "JER", "MuonScale", "MuonResolution", "ElectronScale", "ElectronResolution");
+    //     make_enumerate("Default", "JEC", "JER", "MuonScale", "MuonResolution", "ElectronScale",
+    //     "ElectronResolution");
     static constexpr auto Shifts = make_enumerate("Nominal", "Up", "Down");
 
     static constexpr auto kTotalCuts = Outputs::Cuts.size();
@@ -220,17 +221,18 @@ class Outputs
 
     float get_event_weight(std::string_view weight = "", std::string_view shift = "Nominal")
     {
-        auto nominal_weight = std::reduce(weights_nominal.cbegin(), weights_nominal.cend(), 1., std::multiplies<float>());
+        auto nominal_weight =
+            std::reduce(weights_nominal.cbegin(), weights_nominal.cend(), 1., std::multiplies<float>());
 
         if (shift == "Up")
         {
-            return weights_up.at(Outputs::Weights.index_of(weight)) / weights_nominal.at(Outputs::Weights.index_of(weight)) *
-                   nominal_weight;
+            return weights_up.at(Outputs::Weights.index_of(weight)) /
+                   weights_nominal.at(Outputs::Weights.index_of(weight)) * nominal_weight;
         }
         else if (shift == "Down")
         {
-            return weights_down.at(Outputs::Weights.index_of(weight)) / weights_nominal.at(Outputs::Weights.index_of(weight)) *
-                   nominal_weight;
+            return weights_down.at(Outputs::Weights.index_of(weight)) /
+                   weights_nominal.at(Outputs::Weights.index_of(weight)) * nominal_weight;
         }
         else
         {
@@ -285,12 +287,12 @@ class Outputs
         MET_phi.fill(0);
     }
 
-    void fill_branches(RVec<float> &&_muon_pt, RVec<float> &&_muon_eta, RVec<float> &&_muon_phi, RVec<float> &&_electron_pt,
-                       RVec<float> &&_electron_eta, RVec<float> &&_electron_phi, RVec<float> &&_photon_pt,
-                       RVec<float> &&_photon_eta, RVec<float> &&_photon_phi, RVec<float> &&_tau_pt, RVec<float> &&_tau_eta,
-                       RVec<float> &&_tau_phi, RVec<float> &&_bjet_pt, RVec<float> &&_bjet_eta, RVec<float> &&_bjet_phi,
-                       RVec<float> &&_jet_pt, RVec<float> &&_jet_eta, RVec<float> &&_jet_phi, RVec<float> &&_met_pt,
-                       RVec<float> &&_met_phi)
+    void fill_branches(RVec<float> &&_muon_pt, RVec<float> &&_muon_eta, RVec<float> &&_muon_phi,
+                       RVec<float> &&_electron_pt, RVec<float> &&_electron_eta, RVec<float> &&_electron_phi,
+                       RVec<float> &&_photon_pt, RVec<float> &&_photon_eta, RVec<float> &&_photon_phi,
+                       RVec<float> &&_tau_pt, RVec<float> &&_tau_eta, RVec<float> &&_tau_phi, RVec<float> &&_bjet_pt,
+                       RVec<float> &&_bjet_eta, RVec<float> &&_bjet_phi, RVec<float> &&_jet_pt, RVec<float> &&_jet_eta,
+                       RVec<float> &&_jet_phi, RVec<float> &&_met_pt, RVec<float> &&_met_phi)
     {
 
         nMuon = _muon_pt.size();

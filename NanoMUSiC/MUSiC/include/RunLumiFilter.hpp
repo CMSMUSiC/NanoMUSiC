@@ -1,5 +1,11 @@
-#include "json.hpp"
+#ifndef RUNLUMIFILTER_HPP
+#define RUNLUMIFILTER_HPP
+
+#include <fstream>
+#include <iostream>
 #include <string>
+
+#include "json.hpp"
 using json = nlohmann::json;
 
 class RunLumiFilter
@@ -68,7 +74,7 @@ class RunLumiFilter
     }
 
     // implemented only for backward compatibility
-    auto operator()(const unsigned long &run_number, const unsigned long &lumi) const
+    auto operator()(const unsigned long &run_number, const unsigned long &lumi) -> bool const
     {
 
         if (dummy_json)
@@ -97,3 +103,4 @@ class RunLumiFilter
         return is_good_run_lumi;
     }
 };
+#endif // !RUNLUMIFILTER_HPP

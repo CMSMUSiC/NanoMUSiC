@@ -62,7 +62,8 @@ class unsorted_error : public std::runtime_error
 class file_not_found : public std::exception
 {
   public:
-    file_not_found(std::string const &filename, std::string const &filetype = "") : m_filename(filename), m_filetype(filetype)
+    file_not_found(std::string const &filename, std::string const &filetype = "")
+        : m_filename(filename), m_filetype(filetype)
     {
     }
     ~file_not_found() throw()
@@ -125,9 +126,10 @@ std::string removeComment(std::string line, char const commentChar = '#')
 std::string random_string(size_t length)
 {
     auto randchar = []() -> char {
-        const char charset[] = "0123456789"
-                               "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                               "abcdefghijklmnopqrstuvwxyz";
+        const char charset[] =
+            "0123456789"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "abcdefghijklmnopqrstuvwxyz";
         const size_t max_index = (sizeof(charset) - 1);
         return charset[rand() % max_index];
     };
@@ -226,7 +228,8 @@ std::string inline fromString<std::string>(const std::string &input)
 // splits the input string at each occurence of sep and puts the parts into the result vector
 // if ignore empty is not set, the output vector will contain default values for repeated separators
 template <class T>
-void splitString(std::vector<T> &result, const std::string &input, const std::string &sep = ",", bool ignoreEmpty = false)
+void splitString(std::vector<T> &result, const std::string &input, const std::string &sep = ",",
+                 bool ignoreEmpty = false)
 {
     result.clear();
     if (ignoreEmpty && input.empty())

@@ -47,7 +47,6 @@
 #include "argh.h"
 
 #include <fmt/core.h>
-// using fmt::print;
 
 // Configurarion and filter
 #include "MUSiCTools.hpp"
@@ -74,7 +73,7 @@ using namespace std::chrono_literals;
 using namespace ROOT::Math;
 using namespace ROOT::VecOps;
 
-void PrintProcessInfo()
+inline void PrintProcessInfo()
 {
     auto info = ProcInfo_t();
     gSystem->GetProcInfo(&info);
@@ -89,7 +88,7 @@ void PrintProcessInfo()
     std::cout << "Virtual memory:   " << info.fMemVirtual / 1024. << " MB" << std::endl;
 }
 
-std::string_view get_data_stream(const std::string_view &dataset)
+inline std::string_view get_data_stream(const std::string_view &dataset)
 {
     auto s = std::string(dataset);
     std::string delimiter = "/";
@@ -139,7 +138,8 @@ double getCpuTime()
 constexpr bool is_tenth(int &event_counter)
 {
     return (event_counter < 10 || (event_counter < 100 && event_counter % 10 == 0) ||
-            (event_counter < 1000 && event_counter % 100 == 0) || (event_counter < 10000 && event_counter % 1000 == 0) ||
+            (event_counter < 1000 && event_counter % 100 == 0) ||
+            (event_counter < 10000 && event_counter % 1000 == 0) ||
             (event_counter >= 100000 && event_counter % 10000 == 0));
 }
 
@@ -206,12 +206,16 @@ void print_report(const double &dTime1, const unsigned long &event_counter, TH1F
 
     // print cutflow
     auto cutflow = cutflow_histo;
-    fmt::print("\n ########## Cutflow: ##########\n");
+    fmt::print("\n=====================================\n");
+    fmt::print("               Cutflow:              \n");
+    fmt::print("-------------------------------------\n");
     for (auto &&cut : IndexHelpers::make_index(Outputs::kTotalCuts))
     {
-        fmt::print("--> {}: {:0.2f}%\n", Outputs::Cuts[cut], cutflow.GetBinContent(cut + 1) / cutflow.GetBinContent(2) * 100);
+        fmt::print(" {:25}: {: >6.2f} %\n", Outputs::Cuts[cut],
+                   cutflow.GetBinContent(cut + 1) / cutflow.GetBinContent(2) * 100);
+        // fmt::print("--> {:8}: {:>0.2f}|\n", s);
     }
-    fmt::print("###############################\n");
+    fmt::print("=====================================\n");
 
     if (event_counter == 0 && !is_final)
     {
