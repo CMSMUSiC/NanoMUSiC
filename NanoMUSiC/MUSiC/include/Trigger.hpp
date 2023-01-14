@@ -4,10 +4,10 @@
 #include <string>
 #include <string_view>
 
-#include <fmt/core.h>
-
 #include "CorrectionSets.hpp"
 #include "Enumerate.hpp"
+
+#include <fmt/core.h>
 
 #include "ROOT/RVec.hxx"
 using namespace ROOT;

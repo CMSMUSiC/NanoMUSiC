@@ -543,14 +543,14 @@ class EventData
         if (*this)
         {
 
-            if (                                         //
-                (VecOps::Sum(good_muons_mask) > 0) |     //
-                (VecOps::Sum(good_electrons_mask) > 0) | //
-                (VecOps::Sum(good_photons_mask) > 0) |   //
-                (VecOps::Sum(good_taus_mask) > 0) |      //
-                (VecOps::Sum(good_bjets_mask) > 0) |     //
-                (VecOps::Sum(good_jets_mask) > 0) |      //
-                (VecOps::Sum(good_met_mask) > 0)         //
+            if (                                          //
+                (VecOps::Sum(good_muons_mask) > 0) ||     //
+                (VecOps::Sum(good_electrons_mask) > 0) || //
+                (VecOps::Sum(good_photons_mask) > 0) ||   //
+                (VecOps::Sum(good_taus_mask) > 0) ||      //
+                (VecOps::Sum(good_bjets_mask) > 0) ||     //
+                (VecOps::Sum(good_jets_mask) > 0) ||      //
+                (VecOps::Sum(good_met_mask) > 0)          //
             )
             {
                 outputs.fill_cutflow_histo("AtLeastOneSelectedObject", outputs.get_event_weight());

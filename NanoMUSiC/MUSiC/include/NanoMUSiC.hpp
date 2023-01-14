@@ -14,11 +14,13 @@
 #include <iostream>
 #include <limits>
 #include <math.h>
+#include <memory>
 #include <numeric>
 #include <optional>
 #include <set>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <sys/time.h>
 #include <thread>
 #include <time.h>
@@ -88,18 +90,10 @@ inline void PrintProcessInfo()
     std::cout << "Virtual memory:   " << info.fMemVirtual / 1024. << " MB" << std::endl;
 }
 
-inline std::string_view get_data_stream(const std::string_view &dataset)
-{
-    auto s = std::string(dataset);
-    std::string delimiter = "/";
-    std::string token = s.substr(1, s.substr(1).find(delimiter));
-    return token.c_str();
-}
-
 // (async) TFile download
 using OptionalFuture_t = std::optional<std::future<std::unique_ptr<TFile>>>;
-std::unique_ptr<TFile> file_loader(const std::string &file_path, const bool cacheread, const std::string &cache_dir,
-                                   const bool verbose_load)
+inline std::unique_ptr<TFile> file_loader(const std::string &file_path, const bool cacheread,
+                                          const std::string &cache_dir, const bool verbose_load)
 {
     std::cout << "Loading file [ " << file_path << " ]" << std::endl;
 
@@ -128,7 +122,7 @@ std::unique_ptr<TFile> file_loader(const std::string &file_path, const bool cach
     return input_root_file;
 }
 
-double getCpuTime()
+inline double getCpuTime()
 {
     struct timeval tv;
     gettimeofday(&tv, NULL);
@@ -141,25 +135,6 @@ constexpr bool is_tenth(int &event_counter)
             (event_counter < 1000 && event_counter % 100 == 0) ||
             (event_counter < 10000 && event_counter % 1000 == 0) ||
             (event_counter >= 100000 && event_counter % 10000 == 0));
-}
-
-void save_class_storage(const std::unordered_set<unsigned long> &classes, std::string output_file_name)
-{
-    // expected number of elements: (7*2 + 1) * classes.size()
-    // 7 types of objects
-    // 2 digits per object
-    // classes.size(): number of classes
-    std::string str_class_storage =
-        std::accumulate(classes.begin(), classes.end(), std::string(""),
-                        [](std::string a, unsigned long b) { return std::move(a) + ',' + std::to_string(b); });
-
-    // this will remove the leading comma in the begining of the string
-    str_class_storage.erase(0, 1);
-
-    output_file_name = output_file_name;
-    std::ofstream out(output_file_name);
-    out << str_class_storage;
-    out.close();
 }
 
 template <typename T>
@@ -176,7 +151,7 @@ T get_and_check_future(std::future<T> &_ftr)
         exit(1);
     }
 }
-void prepare_output_buffer(const TaskConfiguration &configuration)
+inline void prepare_output_buffer(const TaskConfiguration &configuration)
 {
     const std::string startDir = getcwd(NULL, 0);
 
@@ -196,7 +171,8 @@ void prepare_output_buffer(const TaskConfiguration &configuration)
     system(("cp " + configuration.x_section_file + " . ").c_str());
 }
 
-void print_report(const double &dTime1, const unsigned long &event_counter, TH1F &cutflow_histo, bool is_final = false)
+inline void print_report(const double &dTime1, const unsigned long &event_counter, TH1F &cutflow_histo,
+                         bool is_final = false)
 {
     double dTime2 = getCpuTime();
     std::string final_str = is_final ? "Final " : "";

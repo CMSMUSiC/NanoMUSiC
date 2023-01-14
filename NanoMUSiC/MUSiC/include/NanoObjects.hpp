@@ -1,7 +1,7 @@
 #ifndef MUSIC_NANOOBJECTS
 #define MUSIC_NANOOBJECTS
 
-#include "ROOT/RVec.hxx"
+#include <ROOT/RVec.hxx>
 
 constexpr float Muon_mass = 105.6583755 / 1000.;
 constexpr float Electron_mass = 0.51099895000 / 1000.;

@@ -57,7 +57,7 @@ enum Year
     kTotalYears, // <-- should always be the last one!!
 };
 
-auto get_runyear(const std::string &year_str) -> Year
+inline auto get_runyear(const std::string &year_str) -> Year
 {
     // check year
     if (year_str != "2016APV" && year_str != "2016" && year_str != "2017" && year_str != "2018")
@@ -263,7 +263,7 @@ constexpr auto TriggerStreamRedList = //
     );
 
 // get data_stream from process
-std::string_view get_trigger_stream(bool is_data, const std::string &process)
+inline std::string_view get_trigger_stream(bool is_data, const std::string &process)
 {
     using namespace std::literals;
     if (not is_data)
@@ -301,7 +301,6 @@ class TaskConfiguration
     const bool is_data;
     const bool is_crab_job;
     const std::string x_section_file;
-    const std::string run_hash;
     const std::string year_str;
     const std::vector<std::string> input_files;
     const Year year;
@@ -314,10 +313,9 @@ class TaskConfiguration
           dataset(run_config.get<std::string>("dataset")), is_data(run_config.get<bool>("is_data")),
           is_crab_job(run_config.get<bool>("is_crab_job")),
           x_section_file(MUSiCTools::parse_and_expand_music_base(run_config.get<std::string>("x_section_file"))),
-          run_hash(run_config.get<std::string>("hash")), year_str(run_config.get<std::string>("year")),
-          input_files(run_config.get_vector<std::string>("input_files")), year(get_runyear(year_str)),
+          year_str(run_config.get<std::string>("year")), input_files(run_config.get_vector<std::string>("input_files")),
+          year(get_runyear(year_str)),
           golden_json_file(MUSiCTools::parse_and_expand_music_base(RunConfig::Runs[year].golden_json))
-
     {
         if (is_data)
         {

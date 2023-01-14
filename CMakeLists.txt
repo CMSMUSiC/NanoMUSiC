@@ -5,9 +5,7 @@ project(NANOMUSIC CXX)
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-
-set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
-set(R__HAS_VDT 0)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Look for ROOT. As long as an installation is available in the environment, this should succeed.
 message(STATUS "Looking for ROOT")

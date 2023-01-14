@@ -202,83 +202,83 @@ int main(int argc, char *argv[])
             const RVec<float> &TrigObj_pt, const RVec<float> &TrigObj_eta, const RVec<float> &TrigObj_phi,
             const RVec<int> &TrigObj_id, const RVec<int> &TrigObj_filterBits
 
-        ) {
-            event_counter++;
+            ) -> void {
+        event_counter++;
 
-            // clear outputs buffers
-            outputs.clear_event_tree();
+        // clear outputs buffers
+        outputs.clear_event_tree();
 
-            // MET - temporaries
-            const RVec<float> temp_met_pt = {MET_pt};
-            const RVec<float> temp_met_eta = {0.};
-            const RVec<float> temp_met_phi = {MET_phi};
+        // MET - temporaries
+        const RVec<float> temp_met_pt = {MET_pt};
+        const RVec<float> temp_met_eta = {0.};
+        const RVec<float> temp_met_phi = {MET_phi};
 
-            // build event data
-            auto event_data =
-                EventData(configuration.is_data, configuration.year, configuration.trigger_stream)
-                    // event info
-                    .set_event_info(NanoObjects::EventInfo(
-                        run, lumi, event_number, Pileup_nTrueInt, genWeight, PV_npvsGood, Flag_goodVertices,
-                        Flag_globalSuperTightHalo2016Filter, Flag_HBHENoiseFilter, Flag_HBHENoiseIsoFilter,
-                        Flag_EcalDeadCellTriggerPrimitiveFilter, Flag_BadPFMuonFilter, Flag_BadPFMuonDzFilter,
-                        Flag_eeBadScFilter, Flag_ecalBadCalibFilter, HLT_IsoMu27, HLT_Mu50, HLT_TkMu100, HLT_OldMu100))
-                    // muons
-                    .set_muons(NanoObjects::Muons(Muon_pt, Muon_eta, Muon_phi, Muon_tightId, Muon_highPtId,
-                                                  Muon_pfRelIso03_all, Muon_tkRelIso))
-                    // electrons
-                    .set_electrons(NanoObjects::Electrons(Electron_pt, Electron_eta, Electron_phi))
-                    // photons
-                    .set_photons(NanoObjects::Photons(Photon_pt, Photon_eta, Photon_phi))
-                    // taus
-                    .set_taus(NanoObjects::Taus(Tau_pt, Tau_eta, Tau_phi))
-                    // bjets
-                    .set_bjets(NanoObjects::BJets(Jet_pt, Jet_eta, Jet_phi))
-                    // jets
-                    .set_jets(NanoObjects::Jets(Jet_pt, Jet_eta, Jet_phi))
-                    // met
-                    .set_met(NanoObjects::MET(temp_met_pt, temp_met_eta, temp_met_phi))
-                    // trgobjs
-                    .set_trgobjs(
-                        NanoObjects::TrgObjs(TrigObj_pt, TrigObj_eta, TrigObj_phi, TrigObj_id, TrigObj_filterBits));
+        // build event data
+        auto event_data =
+            EventData(configuration.is_data, configuration.year, configuration.trigger_stream)
+                // event info
+                .set_event_info(NanoObjects::EventInfo(
+                    run, lumi, event_number, Pileup_nTrueInt, genWeight, PV_npvsGood, Flag_goodVertices,
+                    Flag_globalSuperTightHalo2016Filter, Flag_HBHENoiseFilter, Flag_HBHENoiseIsoFilter,
+                    Flag_EcalDeadCellTriggerPrimitiveFilter, Flag_BadPFMuonFilter, Flag_BadPFMuonDzFilter,
+                    Flag_eeBadScFilter, Flag_ecalBadCalibFilter, HLT_IsoMu27, HLT_Mu50, HLT_TkMu100, HLT_OldMu100))
+                // muons
+                .set_muons(NanoObjects::Muons(Muon_pt, Muon_eta, Muon_phi, Muon_tightId, Muon_highPtId,
+                                              Muon_pfRelIso03_all, Muon_tkRelIso))
+                // electrons
+                .set_electrons(NanoObjects::Electrons(Electron_pt, Electron_eta, Electron_phi))
+                // photons
+                .set_photons(NanoObjects::Photons(Photon_pt, Photon_eta, Photon_phi))
+                // taus
+                .set_taus(NanoObjects::Taus(Tau_pt, Tau_eta, Tau_phi))
+                // bjets
+                .set_bjets(NanoObjects::BJets(Jet_pt, Jet_eta, Jet_phi))
+                // jets
+                .set_jets(NanoObjects::Jets(Jet_pt, Jet_eta, Jet_phi))
+                // met
+                .set_met(NanoObjects::MET(temp_met_pt, temp_met_eta, temp_met_phi))
+                // trgobjs
+                .set_trgobjs(
+                    NanoObjects::TrgObjs(TrigObj_pt, TrigObj_eta, TrigObj_phi, TrigObj_id, TrigObj_filterBits));
 
-            event_data = //
-                event_data.set_const_weights(outputs, pu_weight)
-                    .generator_filter(outputs)
-                    .run_lumi_filter(outputs, run_lumi_filter)
-                    .npv_filter(outputs)
-                    .met_filter(outputs)
-                    .set_trigger_bits()
-                    .trigger_filter(outputs)
-                    .object_selection()
-                    .has_selected_objects_filter(outputs)
-                    .trigger_match_filter(outputs, trigger_sf_correctors)
-                    .set_scale_factors(outputs)
-                    .muon_corrections()
-                    .electron_corrections()
-                    .photon_corrections()
-                    .tau_corrections()
-                    .bjet_corrections()
-                    .jet_corrections()
-                    .met_corrections()
-                    .fill_event_content(outputs);
+        event_data = //
+            event_data.set_const_weights(outputs, pu_weight)
+                .generator_filter(outputs)
+                .run_lumi_filter(outputs, run_lumi_filter)
+                .npv_filter(outputs)
+                .met_filter(outputs)
+                .set_trigger_bits()
+                .trigger_filter(outputs)
+                .object_selection()
+                .has_selected_objects_filter(outputs)
+                .trigger_match_filter(outputs, trigger_sf_correctors)
+                .set_scale_factors(outputs)
+                .muon_corrections()
+                .electron_corrections()
+                .photon_corrections()
+                .tau_corrections()
+                .bjet_corrections()
+                .jet_corrections()
+                .met_corrections()
+                .fill_event_content(outputs);
 
-            // fill output event tree
-            if (event_data)
-            {
+        // fill output event tree
+        if (event_data)
+        {
 
-                outputs.fill_event_tree();
-            }
+            outputs.fill_event_tree();
+        }
 
-            // process monitoring
-            if (event_counter < 10 || (event_counter < 100 && event_counter % 10 == 0) ||
-                (event_counter < 1000 && event_counter % 100 == 0) ||
-                (event_counter < 10000 && event_counter % 1000 == 0) ||
-                (event_counter >= 10000 && event_counter % 10000 == 0))
-            {
-                print_report(dTime1, event_counter, outputs.cutflow_histo);
-                PrintProcessInfo();
-            }
-        };
+        // process monitoring
+        if (event_counter < 10 || (event_counter < 100 && event_counter % 10 == 0) ||
+            (event_counter < 1000 && event_counter % 100 == 0) ||
+            (event_counter < 10000 && event_counter % 1000 == 0) ||
+            (event_counter >= 10000 && event_counter % 10000 == 0))
+        {
+            print_report(dTime1, event_counter, outputs.cutflow_histo);
+            PrintProcessInfo();
+        }
+    };
 
     auto event_processor_MC =
         [&](
