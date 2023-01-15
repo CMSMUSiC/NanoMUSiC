@@ -65,6 +65,7 @@ inline TOMLConfig::TOMLConfig(const toml::table &_toml_config, const std::string
     : toml_config(_toml_config), toml_config_file(_toml_config_file)
 {
 }
+
 inline const TOMLConfig TOMLConfig::make_toml_config(const std::string &_toml_config_file)
 {
     try
