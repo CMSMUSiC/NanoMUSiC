@@ -53,15 +53,25 @@ def get_color(_char):
         return (0, 0, 0, 0)
 
 
+# music_str = []
+# music_str.append("112   555 12    55  23455 34  2345")
+# music_str.append("112   555 12    55 123455 34 12345")
+# music_str.append("1123 4555 12    55 12        12   ")
+# music_str.append("11 344 55 12    55 12345  34 12   ")
+# music_str.append("11 344 55 12    55  23455 34 12   ")
+# music_str.append("11  4  55 12334455     55 34 12   ")
+# music_str.append("11     55 12334455 123455 34 12345")
+# music_str.append("11     55  233445  12345  34  2345")
+
 music_str = []
-music_str.append("112   555 12    55  23455 34  2345")
-music_str.append("112   555 12    55 123455 34 12345")
-music_str.append("1123 4555 12    55 12        12   ")
-music_str.append("11 334 55 12    55 12345  34 12   ")
-music_str.append("11 334 55 12    55  23455 34 12   ")
-music_str.append("11  3  55 12334455     55 34 12   ")
-music_str.append("11     55 12334455 123455 34 12345")
-music_str.append("11     55  233445  12345  34  2345")
+music_str.append("555   555 55    55  55555 45  5555")
+music_str.append("555   555 55    55 555555 32 55555")
+music_str.append("4444 4444 44    44 44        44   ")
+music_str.append("44 444 44 44    44 44444  44 44   ")
+music_str.append("33 333 33 33    33  33333 33 33   ")
+music_str.append("33  3  33 33333333     33 33 33   ")
+music_str.append("22     22 22222222 222222 22 22222")
+music_str.append("11     11  111111  11111  11  1111")
 
 line_length = len(music_str[0])
 for line in music_str:
@@ -122,19 +132,19 @@ def print_layer(context, layer):
 def main():
     print("Building image ...")
 
-    with cairo.SVGSurface("music.svg", WIDTH, HEIGHT) as surface:
+    with cairo.SVGSurface("music_t.svg", WIDTH, HEIGHT) as surface:
         # background
-        context = cairo.Context(surface)
-        roundrect(context, 0, 0, WIDTH, HEIGHT, 10)
-        context.set_source_rgba(
-            scale_color(1),
-            scale_color(31),
-            scale_color(38),
-            1,
-        )
-        context.fill()
-        context.scale(WIDTH, HEIGHT)
-        context.save()
+        # context = cairo.Context(surface)
+        # roundrect(context, 0, 0, WIDTH, HEIGHT, 10)
+        # context.set_source_rgba(
+        #     scale_color(1),
+        #     scale_color(31),
+        #     scale_color(38),
+        #     1,
+        # )
+        # context.fill()
+        # context.scale(WIDTH, HEIGHT)
+        # context.save()
 
         # foreground
         context = cairo.Context(surface)
