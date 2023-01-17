@@ -1,0 +1,123 @@
+
+## General Settings
+Gamma.use = 1
+Gamma.ID.Tag = 1
+Gamma.CB.usebool = 1
+Gamma.MVA.usebool = 0
+
+import "$PXLANA/ConfigFiles/Objects/GammaID/CBLoose.cff"
+import "$PXLANA/ConfigFiles/Objects/GammaID/MVA.cff"
+
+## IDs
+# Supported ID types:
+#   - "OVERRIDE"       --> Nothing applied but kinematics
+#   - "CutBased2012"   --> https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedPhotonID2012
+#   - "Phys14Loose"    --> https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedPhotonIdentificationRun2
+#   - "Phys14Medium"   --> "
+#   - "Phys14Tight"    --> " (= cutBasedPhotonID-PHYS14-PU20bx25-V2-standalone-tight )
+#   - "Spring15Loose"  --> " (for now only 50ns IDs!!!)
+#   - "Spring15Medium" --> "
+#   - "Spring15Tight"  --> "
+#   - "Spring15Loose25ns"
+#   - "Spring15Medium25ns"
+#   - "Spring15Tight25ns"
+Gamma.ID.Type = OVERRIDE
+
+Gamma.Type.Gen       = "gen"
+Gamma.Type.Rec       = "Gamma"
+Gamma.pt.min         = 25
+Gamma.eta.Barrel.max = 1.442
+Gamma.eta.Endcap.min = 1.56
+Gamma.eta.Endcap.max = 2.5
+Gamma.barrel.only = 0
+Gamma.endcap.only = 0
+Gamma.DeltaR.max     = 0.4
+
+## Very special selections: Check if you need them!
+Gamma.UseConverted = 0
+Gamma.UseElectronVeto = 0
+Gamma.UsePixelSeed = 0
+Gamma.RejectOutOfTime = 0
+# Set CorrFactor.max = -1 to deactivate
+Gamma.CorrFactor.max = -1
+# SpikeCleaning
+# Dunno who included the following. "me" added switch that can be turned on if needed.
+Gamma.SpikeCleaning.use = 0
+Gamma.Barrel.SigmaIetaIeta.min = 0.001
+Gamma.Barrel.SigmaIetaIeta.max = 0.011
+Gamma.Endcap.SigmaIetaIeta.max = 0.031
+
+
+# CutBasedPhotonID2012 (Not validated by "me")
+# See also:
+# https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedPhotonID2012
+# Use the following set of cuts?
+# NOT UPDATED TO UL17
+Gamma.Rho.Label = fixedGridRhoFastjetAll
+# Barrel values:
+Gamma.Barrel.ElectronVeto.Require = 1
+Gamma.Barrel.HoEm2012.max = 0.05
+Gamma.Barrel.PFIsoChargedHadron.max = 0.7
+Gamma.Barrel.PFIsoNeutralHadron.Offset = 0.4
+Gamma.Barrel.PFIsoNeutralHadron.Slope = 0.04
+Gamma.Barrel.PFIsoPhoton.Offset = 0.5
+Gamma.Barrel.PFIsoPhoton.Slope = 0.005
+# Endcap values:
+Gamma.Endcap.ElectronVeto.Require = 1
+Gamma.Endcap.HoEm2012.max = 0.05
+Gamma.Endcap.PFIsoChargedHadron.max = 0.5
+Gamma.Endcap.PFIsoNeutralHadron.Offset = 1.5
+Gamma.Endcap.PFIsoNeutralHadron.Slope = 0.04
+Gamma.Endcap.PFIsoPhoton.Offset = 1.0
+Gamma.Endcap.PFIsoPhoton.Slope = 0.005
+# end CutBasedPhotonID2012
+
+# Errors:
+# No direct comparison between data and MC.
+# Use the uncertainties provided in CMS-EXO-11-034, Fig. 3, Eq. 1.
+Gamma.Error.Fakes = 0.4
+
+############################################################
+## Effective area based Iso correction aka rho correction ##
+############################################################
+# See the documentation of BinnedMapping to understand the following config options.
+#
+# All values from:
+# https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedPhotonID2012#Effective_Areas_for_rho_correcti
+# (r20: 2013-01-10)
+# UL17: https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedPhotonIdentificationRun2
+
+#Gamma.EffectiveArea.File = "$PXLANALYZER_BASE/ConfigFiles/PhotonEffectiveArea.txt"
+
+# If true, the given eta values are considered abolute.
+# No negative values allowed!
+#UPDATED TO UL17
+Gamma.EffArea.abs_eta = 1
+
+Gamma.EffArea.eta_edges = 0.0, 1.0, 1.479, 2.0, 2.2, 2.3, 2.4
+
+Gamma.EffArea.EA_charged_hadrons = 0., 0., 0., 0., 0., 0., 0.
+Gamma.EffArea.EA_neutral_hadrons = 0.0668, 0.1054, 0.0786, 0.0233, 0.0078, 0.0028, 0.0137
+Gamma.EffArea.EA_photons = 0.1113, 0.0953, 0.0619, 0.0837, 0.1070, 0.1212, 0.1466
+
+Gamma.ScaleFactors = ID
+
+# import all infos for scale factors
+import "$PXLANA/ConfigFiles/Objects/ScaleFactors/gamma_sf.cff"
+
+#################
+## Sytematics  ##
+#################
+# lowered kinematics cuts for systematics used to allow particles to
+# shift from unselected to selected after the shift
+Gamma.Syst.pt.min = 15
+Gamma.Syst.eta.Barrel.max = 1.442
+Gamma.Syst.eta.Endcap.min = 1.56
+Gamma.Syst.eta.Endcap.max = 2.8
+
+#possible systematic options:
+Gamma.Syst.Types = Scale
+# Scale uncert values from CMS-EGM-14-001
+# Using more conservative value for outer barrel
+Gamma.Syst.Scale.Barrel = 0.0015
+Gamma.Syst.Scale.Endcap = 0.003

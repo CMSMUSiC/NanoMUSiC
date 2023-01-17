@@ -1,0 +1,10 @@
+[
+    {
+        "name": "GCC 11.2.0",
+        "compilers": {
+            "C": "/cvmfs/sft.cern.ch/lcg/releases/gcc/12.1.0-57c96/x86_64-centos7/bin/gcc",
+            "CXX": "/cvmfs/sft.cern.ch/lcg/releases/gcc/12.1.0-57c96/x86_64-centos7/bin/g++"
+        },
+        "environmentSetupScript": "/.automount/home/home__home1/institut_3a/silva/NanoMUSiC/music_setenv.sh"
+    }
+]

@@ -1,0 +1,13 @@
+PDF.SkipIncomplete = 1
+
+PDF.Prod.Name = "NNPDF30_lo_as_0130"
+
+PDF.PDFAsCombinedLabels = NNPDF30_nlo_nf_5_pdfas, NNPDF30_nlo_nf_4_pdfas
+PDF.PDFAsCentral.Name = "NNPDF30_nlo_as_0118"
+PDF.PDFAsDownShifted.Name = "NNPDF30_nlo_as_0117"
+PDF.PDFAsUpShifted.Name = "NNPDF30_nlo_as_0119"
+PDF.CTEQ.Names  = "CT10,CT10as"
+PDF.MSTW.Names  = "MSTW2008nlo68cl,MSTW2008nlo68cl_asmz+68cl,MSTW2008nlo68cl_asmz-68cl"
+PDF.NNPDF.Names = "NNPDF23_nlo_as_0116,NNPDF23_nlo_as_0117,NNPDF23_nlo_as_0118,NNPDF23_nlo_as_0119,NNPDF23_nlo_as_0120,NNPDF23_nlo_as_0121,NNPDF23_nlo_as_0122"
+# The order of NNPDF.Nums must correspond to the order of NNPDF.Names!
+PDF.NNPDF.Nums = 1,4,12,16,12,4,1

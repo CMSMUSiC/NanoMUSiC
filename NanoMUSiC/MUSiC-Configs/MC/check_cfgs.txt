@@ -1,0 +1,34 @@
+Start checking the files
+mcargs_DY_MG $PWD/configs/MC_DY_MG.cfg
+
+mcargs_DY_Pt_AM $PWD/configs/MC_DY_Pt_AM.cfg
+
+mcargs $PWD/configs/MC.cfg -x $PWD/scales.txt
+
+mcargs_w_bulk $PWD/configs/MC_WJetsToLNu_13TeVMLM_MG.cfg
+
+mcargs_w_pt $PWD/configs/MC_WJetsToLNu_13TeV_Pt_AM.cfg
+
+mcargs_p8_WToTauNu100 $PWD/configs/MC_WToTauNu_M-200_13TeV_P8.cfg
+
+mcargs_p8_WToTauNu200 $PWD/configs/MC_WToTauNu_M-200_13TeV_P8.cfg
+
+mcargs_mg $PWD/configs/MC_madgraph.cfg -x $PWD/scales.txt
+
+mcargs_WWTo2L2Nu $PWD/configs/MC_WWTo2L2Nu.cfg -x $PWD/scales.txt
+
+mcargs_DiphoJets $PWD/configs/MC_DiPhotonJets_MGG-80toInf_13TeV_AM.cfg -x $PWD/scales.txt
+
+mcargs_TT_PH $PWD/configs/MC_TT_PH.cfg -x $PWD/scales.txt
+
+mcargs_qcd $PWD/configs/MC_QCD.cfg
+
+Finish checking the files
+
+
+{'WGToLNuG_01J_5f_PtG_300_13TeV_AM': '$PWD/configs/MC.cfg -x $PWD/scales.txt', 'WGToLNuG_01J_5f_PtG_130_13TeV_AM': '$PWD/configs/MC.cfg -x $PWD/scales.txt', 'WGToLNuG_01J_5f_PtG_500_13TeV_AM': '$PWD/configs/MC.cfg -x $PWD/scales.txt', 'WGToLNuG_13TeV_MG': '$PWD/configs/MC.cfg -x $PWD/scales.txt'}
+{'ZToMuMu_M_200_400_13TeV_PH': '$PWD/configs/MC.cfg -x $PWD/scales.txt', 'ZToMuMu_M_3500_4500_13TeV_PH': '$PWD/configs/MC.cfg -x $PWD/scales.txt', 'ZToMuMu_M_800_1400_13TeV_PH': '$PWD/configs/MC.cfg -x $PWD/scales.txt', 'DYJetsToLL_M-10to50_13TeV_MG': '$PWD/configs/MC_DY_MG.cfg', 'DYJetsToLL_M-50_13TeV_ext1_MG': '$PWD/configs/MC_DY_MG.cfg', 'DYJetsToLL_Pt-650ToInf_MatchEWPDG20_13TeV_AM': '$PWD/configs/MC_DY_Pt_AM.cfg', 'DYJetsToLL_Pt-100To250_MatchEWPDG20_13TeV_AM': '$PWD/configs/MC_DY_Pt_AM.cfg', 'DYToEE_M-50_13TeV_PH': '$PWD/configs/MC.cfg -x $PWD/scales.txt', 'DYJetsToLL_Pt-50To100_MatchEWPDG20_13TeV_AM': '$PWD/configs/MC_DY_Pt_AM.cfg', 'ZToMuMu_M_50_120_13TeV_PH': '$PWD/configs/MC.cfg -x $PWD/scales.txt', 'ZToMuMu_M_2300_3500_13TeV_PH': '$PWD/configs/MC.cfg -x $PWD/scales.txt', 'ZToMuMu_M_6000_Inf_13TeV_PH': '$PWD/configs/MC.cfg -x $PWD/scales.txt', 'ZToMuMu_M_400_800_13TeV_PH': '$PWD/configs/MC.cfg -x $PWD/scales.txt', 'DYJetsToLL_M-50_13TeV_MG': '$PWD/configs/MC_DY_MG.cfg', 'DYJetsToLL_Pt-250To400_MatchEWPDG20_13TeV_AM': '$PWD/configs/MC_DY_Pt_AM.cfg', 'ZToMuMu_M_120_200_13TeV_PH': '$PWD/configs/MC.cfg -x $PWD/scales.txt', 'ZToMuMu_M_1400_2300_13TeV_PH': '$PWD/configs/MC.cfg -x $PWD/scales.txt', 'ZToMuMu_M_4500_6000_13TeV_PH': '$PWD/configs/MC.cfg -x $PWD/scales.txt', 'DYJetsToLL_Pt-400To650_MatchEWPDG20_13TeV_AM': '$PWD/configs/MC_DY_Pt_AM.cfg'}
+
+{'WGToLNuG_01J_5f_PtG_300_13TeV_AM': '$PWD/configs/MC.cfg -x $PWD/scales.txt', 'WGToLNuG_01J_5f_PtG_130_13TeV_AM': '$PWD/configs/MC.cfg -x $PWD/scales.txt', 'WGToLNuG_01J_5f_PtG_500_13TeV_AM': '$PWD/configs/MC.cfg -x $PWD/scales.txt', 'WGToLNuG_13TeV_MG': '$PWD/configs/MC.cfg -x $PWD/scales.txt'}
+{'ZToMuMu_M_200_400_13TeV_PH': '$PWD/configs/MC.cfg -x $PWD/scales.txt', 'ZToMuMu_M_3500_4500_13TeV_PH': '$PWD/configs/MC.cfg -x $PWD/scales.txt', 'ZToMuMu_M_800_1400_13TeV_PH': '$PWD/configs/MC.cfg -x $PWD/scales.txt', 'DYJetsToLL_M-10to50_13TeV_MG': '$PWD/configs/MC_DY_MG.cfg', 'DYJetsToLL_M-50_13TeV_ext1_MG': '$PWD/configs/MC_DY_MG.cfg', 'DYJetsToLL_Pt-650ToInf_MatchEWPDG20_13TeV_AM': '$PWD/configs/MC_DY_Pt_AM.cfg', 'DYJetsToLL_Pt-100To250_MatchEWPDG20_13TeV_AM': '$PWD/configs/MC_DY_Pt_AM.cfg', 'DYToEE_M-50_13TeV_PH': '$PWD/configs/MC.cfg -x $PWD/scales.txt', 'DYJetsToLL_Pt-50To100_MatchEWPDG20_13TeV_AM': '$PWD/configs/MC_DY_Pt_AM.cfg', 'ZToMuMu_M_50_120_13TeV_PH': '$PWD/configs/MC.cfg -x $PWD/scales.txt', 'ZToMuMu_M_2300_3500_13TeV_PH': '$PWD/configs/MC.cfg -x $PWD/scales.txt', 'ZToMuMu_M_6000_Inf_13TeV_PH': '$PWD/configs/MC.cfg -x $PWD/scales.txt', 'ZToMuMu_M_400_800_13TeV_PH': '$PWD/configs/MC.cfg -x $PWD/scales.txt', 'DYJetsToLL_M-50_13TeV_MG': '$PWD/configs/MC_DY_MG.cfg', 'DYJetsToLL_Pt-250To400_MatchEWPDG20_13TeV_AM': '$PWD/configs/MC_DY_Pt_AM.cfg', 'ZToMuMu_M_120_200_13TeV_PH': '$PWD/configs/MC.cfg -x $PWD/scales.txt', 'ZToMuMu_M_1400_2300_13TeV_PH': '$PWD/configs/MC.cfg -x $PWD/scales.txt', 'ZToMuMu_M_4500_6000_13TeV_PH': '$PWD/configs/MC.cfg -x $PWD/scales.txt', 'DYJetsToLL_Pt-400To650_MatchEWPDG20_13TeV_AM': '$PWD/configs/MC_DY_Pt_AM.cfg'}
+None

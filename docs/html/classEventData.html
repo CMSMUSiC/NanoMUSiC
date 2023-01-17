@@ -1,0 +1,1868 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    <meta name="generator" content="Doxygen 1.8.18" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- BEGIN opengraph metadata -->
+    <meta property="og:title" content="Doxygen Awesome" />
+    <meta property="og:image"
+        content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+    <meta property="og:description"
+        content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+    <meta property="og:url" content="https://jothepro.github.io/doxygen-awesome-css/" />
+    <!-- END opengraph metadata -->
+    <!-- BEGIN twitter metadata -->
+    <meta name="twitter:image:src"
+        content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+    <meta name="twitter:title" content="Doxygen Awesome" />
+    <meta name="twitter:description"
+        content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+    <!-- END twitter metadata -->
+    <title>NanoMUSiC: EventData Class Reference</title>
+    <link href="tabs.css" rel="stylesheet" type="text/css" />
+    <link rel="icon" type="image/svg+xml" href="logo.drawio.svg" />
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="dynsections.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+    <script type="text/javascript" src="toggle-alternative-theme.js"></script>
+    <script type="text/javascript">
+        DoxygenAwesomeFragmentCopyButton.init()
+        DoxygenAwesomeDarkModeToggle.init()
+        DoxygenAwesomeParagraphLink.init()
+        DoxygenAwesomeInteractiveToc.init()
+    </script>
+    <link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+    <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+    <link href="doxygen.css" rel="stylesheet" type="text/css" />
+    <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+    <!-- https://tholman.com/github-corners/ -->
+    <a href="https://github.com/cmsmusic/nanomusic" class="github-corner" title="View source on GitHub" target="_blank">
+        <svg viewBox="0 0 250 250" width="40" height="40"
+            style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+            <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+            <path
+                d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+                fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+            <path
+                d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+                fill="currentColor" class="octo-body"></path>
+        </svg></a>
+    <style>
+        .github-corner:hover .octo-arm {
+            animation: octocat-wave 560ms ease-in-out
+        }
+        @keyframes octocat-wave {
+            0%,
+            100% {
+                transform: rotate(0)
+            }
+            20%,
+            60% {
+                transform: rotate(-25deg)
+            }
+            40%,
+            80% {
+                transform: rotate(10deg)
+            }
+        }
+        @media (max-width:500px) {
+            .github-corner:hover .octo-arm {
+                animation: none
+            }
+            .github-corner .octo-arm {
+                animation: octocat-wave 560ms ease-in-out
+            }
+        }
+    </style>
+    <div id="top">
+        <!-- do not remove this div, it is closed by doxygen! -->
+        <div id="titlearea">
+            <table cellspacing="0" cellpadding="0">
+                <tbody>
+                    <tr style="height: 56px;">
+                        <td id="projectalign" style="padding-left: 0.5em;">
+                            <div id="projectname">NanoMUSiC
+                            </div>
+                            <div id="projectbrief">CMS MUSiC using NanoAOD</div>
+                            <div> <a href="https://github.com/cmsmusic/nanomusic" class="github-corner"
+                                    title="View source on GitHub" target="_blank">Github repo</a></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- end header part --><!-- Generated by Doxygen 1.8.18 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'Search');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(document).ready(function(){initNavTree('classEventData.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classEventData-members.html">List of all members</a>  </div>
+  <div class="headertitle">
+<div class="title">EventData Class Reference</div>  </div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="EventData_8hpp_source.html">EventData.hpp</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:ab51041578f0574d1fc28df3486cac251"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#ab51041578f0574d1fc28df3486cac251">EventData</a> (const bool &amp;_is_data, const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;_year, std::string_view variation=&quot;Default&quot;, std::string_view shift=&quot;Nominal&quot;)</td></tr>
+<tr class="separator:ab51041578f0574d1fc28df3486cac251"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d303a0ea8cb2f361775287693ecad57"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a9d303a0ea8cb2f361775287693ecad57">set_event_info</a> (<a class="el" href="structNanoObjects_1_1EventInfo.html">NanoObjects::EventInfo</a> &amp;&amp;_event_info)</td></tr>
+<tr class="separator:a9d303a0ea8cb2f361775287693ecad57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef34f9941fd462497a19b659b9ce8b82"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#aef34f9941fd462497a19b659b9ce8b82">set_muons</a> (<a class="el" href="structNanoObjects_1_1Muons.html">NanoObjects::Muons</a> &amp;&amp;_muons, RVec&lt; int &gt; &amp;&amp;mask)</td></tr>
+<tr class="separator:aef34f9941fd462497a19b659b9ce8b82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1fd5b949e794aed40522b222d0d3d19"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#ad1fd5b949e794aed40522b222d0d3d19">set_muons</a> (<a class="el" href="structNanoObjects_1_1Muons.html">NanoObjects::Muons</a> &amp;&amp;_muons)</td></tr>
+<tr class="separator:ad1fd5b949e794aed40522b222d0d3d19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a059b642c137d1aba6b3c4e9608d940c5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a059b642c137d1aba6b3c4e9608d940c5">set_electrons</a> (<a class="el" href="structNanoObjects_1_1Electrons.html">NanoObjects::Electrons</a> &amp;&amp;_electrons, RVec&lt; int &gt; &amp;&amp;mask)</td></tr>
+<tr class="separator:a059b642c137d1aba6b3c4e9608d940c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5d191e99ae6243f061f6eb2efc33a25"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#af5d191e99ae6243f061f6eb2efc33a25">set_electrons</a> (<a class="el" href="structNanoObjects_1_1Electrons.html">NanoObjects::Electrons</a> &amp;&amp;_electrons)</td></tr>
+<tr class="separator:af5d191e99ae6243f061f6eb2efc33a25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57ef09eb5f51eb054f145139bd7a9728"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a57ef09eb5f51eb054f145139bd7a9728">set_photons</a> (<a class="el" href="structNanoObjects_1_1Photons.html">NanoObjects::Photons</a> &amp;&amp;_photons, RVec&lt; int &gt; &amp;&amp;mask)</td></tr>
+<tr class="separator:a57ef09eb5f51eb054f145139bd7a9728"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aced378c6fd21e75a17559b6c69ad0a5c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#aced378c6fd21e75a17559b6c69ad0a5c">set_photons</a> (<a class="el" href="structNanoObjects_1_1Photons.html">NanoObjects::Photons</a> &amp;&amp;_photons)</td></tr>
+<tr class="separator:aced378c6fd21e75a17559b6c69ad0a5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cd7c12814fd3d37dd36d88eb01548a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a4cd7c12814fd3d37dd36d88eb01548a3">set_taus</a> (<a class="el" href="structNanoObjects_1_1Taus.html">NanoObjects::Taus</a> &amp;&amp;_taus, RVec&lt; int &gt; &amp;&amp;mask)</td></tr>
+<tr class="separator:a4cd7c12814fd3d37dd36d88eb01548a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adfdb5f4123deeb40737a40f5baf7e3dc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#adfdb5f4123deeb40737a40f5baf7e3dc">set_taus</a> (<a class="el" href="structNanoObjects_1_1Taus.html">NanoObjects::Taus</a> &amp;&amp;_taus)</td></tr>
+<tr class="separator:adfdb5f4123deeb40737a40f5baf7e3dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a432f0fc38b2dcd1e58d216a381c4f8a2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a432f0fc38b2dcd1e58d216a381c4f8a2">set_bjets</a> (<a class="el" href="namespaceNanoObjects.html#a7be87612d389c646e9a31974fa6a3d8b">NanoObjects::BJets</a> &amp;&amp;_bjets, RVec&lt; int &gt; &amp;&amp;mask)</td></tr>
+<tr class="separator:a432f0fc38b2dcd1e58d216a381c4f8a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa255bd03d10c47b585ccb25158cce509"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#aa255bd03d10c47b585ccb25158cce509">set_bjets</a> (<a class="el" href="namespaceNanoObjects.html#a7be87612d389c646e9a31974fa6a3d8b">NanoObjects::BJets</a> &amp;&amp;_bjets)</td></tr>
+<tr class="separator:aa255bd03d10c47b585ccb25158cce509"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e2df4dff518204ce77854006d6c8697"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a8e2df4dff518204ce77854006d6c8697">set_jets</a> (<a class="el" href="structNanoObjects_1_1Jets.html">NanoObjects::Jets</a> &amp;&amp;_jets, RVec&lt; int &gt; &amp;&amp;mask)</td></tr>
+<tr class="separator:a8e2df4dff518204ce77854006d6c8697"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15e702c1c9c0579d12de892df49a97f3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a15e702c1c9c0579d12de892df49a97f3">set_jets</a> (<a class="el" href="structNanoObjects_1_1Jets.html">NanoObjects::Jets</a> &amp;&amp;_jets)</td></tr>
+<tr class="separator:a15e702c1c9c0579d12de892df49a97f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e1fef4f2b7f2c5b1db20d69e25b9feb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a7e1fef4f2b7f2c5b1db20d69e25b9feb">set_met</a> (<a class="el" href="structNanoObjects_1_1MET.html">NanoObjects::MET</a> &amp;&amp;_met, RVec&lt; int &gt; &amp;&amp;mask)</td></tr>
+<tr class="separator:a7e1fef4f2b7f2c5b1db20d69e25b9feb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e68908d0e50665509326b28f1a9c862"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a1e68908d0e50665509326b28f1a9c862">set_met</a> (<a class="el" href="structNanoObjects_1_1MET.html">NanoObjects::MET</a> &amp;&amp;_met)</td></tr>
+<tr class="separator:a1e68908d0e50665509326b28f1a9c862"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01ed84187a22b855c554f1e1d8dcc08d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a01ed84187a22b855c554f1e1d8dcc08d">operator bool</a> () const</td></tr>
+<tr class="separator:a01ed84187a22b855c554f1e1d8dcc08d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17bfe015a30a3e9b39e40dccc9b45f0c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a17bfe015a30a3e9b39e40dccc9b45f0c">set_null</a> ()</td></tr>
+<tr class="separator:a17bfe015a30a3e9b39e40dccc9b45f0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e7aa84ed7898124b187d9a02d247076"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a9e7aa84ed7898124b187d9a02d247076">unset_null</a> ()</td></tr>
+<tr class="separator:a9e7aa84ed7898124b187d9a02d247076"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b9193b33b2ebb65f57360fd9bd9c729"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a8b9193b33b2ebb65f57360fd9bd9c729">set_const_weights</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs, <a class="el" href="classCorrector.html">Corrector</a> &amp;pu_weight)</td></tr>
+<tr class="separator:a8b9193b33b2ebb65f57360fd9bd9c729"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab41cc18c5562bc6102c3ddd17e8de7d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#aab41cc18c5562bc6102c3ddd17e8de7d">generator_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs)</td></tr>
+<tr class="separator:aab41cc18c5562bc6102c3ddd17e8de7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44cf3290cb2a0afe083b7a885c0a438b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a44cf3290cb2a0afe083b7a885c0a438b">run_lumi_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs, const <a class="el" href="classRunLumiFilter.html">RunLumiFilter</a> &amp;_run_lumi_filter)</td></tr>
+<tr class="separator:a44cf3290cb2a0afe083b7a885c0a438b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ca942eb8490142fde15317675796210"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a7ca942eb8490142fde15317675796210">npv_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs)</td></tr>
+<tr class="separator:a7ca942eb8490142fde15317675796210"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae19056feebc614db13cf4c43120efaec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#ae19056feebc614db13cf4c43120efaec">met_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs)</td></tr>
+<tr class="separator:ae19056feebc614db13cf4c43120efaec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a31021edfe264f1ad6e4effdb6b5aa3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a4a31021edfe264f1ad6e4effdb6b5aa3">trigger_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs)</td></tr>
+<tr class="separator:a4a31021edfe264f1ad6e4effdb6b5aa3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a950a9e1073b8061b0263ae13650d169d"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a950a9e1073b8061b0263ae13650d169d">get_muons_selection_mask</a> ()</td></tr>
+<tr class="separator:a950a9e1073b8061b0263ae13650d169d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb53a8dd64414d03cf53cfc4e925e3c4"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#adb53a8dd64414d03cf53cfc4e925e3c4">get_electrons_selection_mask</a> ()</td></tr>
+<tr class="separator:adb53a8dd64414d03cf53cfc4e925e3c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbeab1cd3835d54a0386a7bac5c6216e"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#acbeab1cd3835d54a0386a7bac5c6216e">get_photons_selection_mask</a> ()</td></tr>
+<tr class="separator:acbeab1cd3835d54a0386a7bac5c6216e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ae463e374342c8ca8c9c36e8d2be7e5"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a7ae463e374342c8ca8c9c36e8d2be7e5">get_taus_selection_mask</a> ()</td></tr>
+<tr class="separator:a7ae463e374342c8ca8c9c36e8d2be7e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0bc3ff53e61bc403e572e57fdf2bf85"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#aa0bc3ff53e61bc403e572e57fdf2bf85">get_bjets_selection_mask</a> ()</td></tr>
+<tr class="separator:aa0bc3ff53e61bc403e572e57fdf2bf85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a482b4ae5f66e7b3df72d63c0013fd919"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a482b4ae5f66e7b3df72d63c0013fd919">get_jets_selection_mask</a> ()</td></tr>
+<tr class="separator:a482b4ae5f66e7b3df72d63c0013fd919"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca95abcb1bd3ef47151a8deb13fce03d"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#aca95abcb1bd3ef47151a8deb13fce03d">get_met_selection_mask</a> ()</td></tr>
+<tr class="separator:aca95abcb1bd3ef47151a8deb13fce03d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13b2095832e126ffb5b961e85927c213"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a13b2095832e126ffb5b961e85927c213">object_selection</a> ()</td></tr>
+<tr class="separator:a13b2095832e126ffb5b961e85927c213"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1219b1d61a18f978b54d85b112848662"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a1219b1d61a18f978b54d85b112848662">final_selection</a> ()</td></tr>
+<tr class="separator:a1219b1d61a18f978b54d85b112848662"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9e39f1152346ed90ee6789965f0d66b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#ae9e39f1152346ed90ee6789965f0d66b">trigger_match_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs)</td></tr>
+<tr class="separator:ae9e39f1152346ed90ee6789965f0d66b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9236b3984d97ec804dc40cc5c3449bec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a9236b3984d97ec804dc40cc5c3449bec">set_scale_factors</a> ()</td></tr>
+<tr class="separator:a9236b3984d97ec804dc40cc5c3449bec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae032f5e9f3dc21e4f2f4776e1e6780bb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#ae032f5e9f3dc21e4f2f4776e1e6780bb">muon_corrections</a> ()</td></tr>
+<tr class="separator:ae032f5e9f3dc21e4f2f4776e1e6780bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02a1c8c1de594722e96f59e3d7fb70f8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a02a1c8c1de594722e96f59e3d7fb70f8">electron_corrections</a> ()</td></tr>
+<tr class="separator:a02a1c8c1de594722e96f59e3d7fb70f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbb5f4b044a6ad056d2d3f5bea5a51af"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#adbb5f4b044a6ad056d2d3f5bea5a51af">photon_corrections</a> ()</td></tr>
+<tr class="separator:adbb5f4b044a6ad056d2d3f5bea5a51af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a7fd313316f373672d008cada484044"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a8a7fd313316f373672d008cada484044">tau_corrections</a> ()</td></tr>
+<tr class="separator:a8a7fd313316f373672d008cada484044"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade0aab576a15a8f635a52486c433c039"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#ade0aab576a15a8f635a52486c433c039">bjet_corrections</a> ()</td></tr>
+<tr class="separator:ade0aab576a15a8f635a52486c433c039"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb49193c48e0711de6f8427cc0c6e477"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#acb49193c48e0711de6f8427cc0c6e477">jet_corrections</a> ()</td></tr>
+<tr class="separator:acb49193c48e0711de6f8427cc0c6e477"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ab1f712396be3e0b2f51f0ecccf0c64"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a6ab1f712396be3e0b2f51f0ecccf0c64">met_corrections</a> ()</td></tr>
+<tr class="separator:a6ab1f712396be3e0b2f51f0ecccf0c64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2aabd74356947ed9ed5343f9f6b2b7a2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a2aabd74356947ed9ed5343f9f6b2b7a2">has_selected_objects_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs)</td></tr>
+<tr class="separator:a2aabd74356947ed9ed5343f9f6b2b7a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abfe44fa9c96b79866e2f69312014213d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#abfe44fa9c96b79866e2f69312014213d">fill_event_content</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs)</td></tr>
+<tr class="separator:abfe44fa9c96b79866e2f69312014213d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:aaf332eea6443c1897461f058fa32c2a4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structTriggerBits.html">TriggerBits</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#aaf332eea6443c1897461f058fa32c2a4">trigger_bits</a></td></tr>
+<tr class="separator:aaf332eea6443c1897461f058fa32c2a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf739a6f16adb04784efd9440353f0de"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNanoObjects_1_1EventInfo.html">NanoObjects::EventInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#aaf739a6f16adb04784efd9440353f0de">event_info</a></td></tr>
+<tr class="separator:aaf739a6f16adb04784efd9440353f0de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0cd7c3f2ca17c0fb8d962f47ff902869"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNanoObjects_1_1Muons.html">NanoObjects::Muons</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a0cd7c3f2ca17c0fb8d962f47ff902869">muons</a></td></tr>
+<tr class="separator:a0cd7c3f2ca17c0fb8d962f47ff902869"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47b29912cf5e762706dfb82ef2a3a697"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a47b29912cf5e762706dfb82ef2a3a697">good_muons_mask</a></td></tr>
+<tr class="separator:a47b29912cf5e762706dfb82ef2a3a697"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa0332e6c9d6a115ca0af4f10c26ca9b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNanoObjects_1_1Electrons.html">NanoObjects::Electrons</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#afa0332e6c9d6a115ca0af4f10c26ca9b">electrons</a></td></tr>
+<tr class="separator:afa0332e6c9d6a115ca0af4f10c26ca9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66c3e773aad8b7d71ea8779b7eba031a"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a66c3e773aad8b7d71ea8779b7eba031a">good_electrons_mask</a></td></tr>
+<tr class="separator:a66c3e773aad8b7d71ea8779b7eba031a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a947da6836b1d216058e79adbcf79f8eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNanoObjects_1_1Photons.html">NanoObjects::Photons</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a947da6836b1d216058e79adbcf79f8eb">photons</a></td></tr>
+<tr class="separator:a947da6836b1d216058e79adbcf79f8eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7859ba7e37194978a8fd73d32de7cabd"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a7859ba7e37194978a8fd73d32de7cabd">good_photons_mask</a></td></tr>
+<tr class="separator:a7859ba7e37194978a8fd73d32de7cabd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0e1cf8f3645a0ea6ed8c204a7d18511"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNanoObjects_1_1Taus.html">NanoObjects::Taus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#af0e1cf8f3645a0ea6ed8c204a7d18511">taus</a></td></tr>
+<tr class="separator:af0e1cf8f3645a0ea6ed8c204a7d18511"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72e46a8442a9501ca9d5520b86be6805"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a72e46a8442a9501ca9d5520b86be6805">good_taus_mask</a></td></tr>
+<tr class="separator:a72e46a8442a9501ca9d5520b86be6805"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1286371ddebe8d0578df3dd5e17c2a66"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceNanoObjects.html#a7be87612d389c646e9a31974fa6a3d8b">NanoObjects::BJets</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a1286371ddebe8d0578df3dd5e17c2a66">bjets</a></td></tr>
+<tr class="separator:a1286371ddebe8d0578df3dd5e17c2a66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa438fb5f9dbd498476372cb13967c726"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#aa438fb5f9dbd498476372cb13967c726">good_bjets_mask</a></td></tr>
+<tr class="separator:aa438fb5f9dbd498476372cb13967c726"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a303650c4cc597138c370790fc7722f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNanoObjects_1_1Jets.html">NanoObjects::Jets</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a2a303650c4cc597138c370790fc7722f">jets</a></td></tr>
+<tr class="separator:a2a303650c4cc597138c370790fc7722f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a805cdf4b693c5dc08db056b262f780ac"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a805cdf4b693c5dc08db056b262f780ac">good_jets_mask</a></td></tr>
+<tr class="separator:a805cdf4b693c5dc08db056b262f780ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2b170044b06d826b8aa1a8319305933"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNanoObjects_1_1MET.html">NanoObjects::MET</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#ad2b170044b06d826b8aa1a8319305933">met</a></td></tr>
+<tr class="separator:ad2b170044b06d826b8aa1a8319305933"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b74fee7f93e4f5ea5df2cb309245fd6"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a6b74fee7f93e4f5ea5df2cb309245fd6">good_met_mask</a></td></tr>
+<tr class="separator:a6b74fee7f93e4f5ea5df2cb309245fd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91c3c5c10ee4a176066a84716496e7b1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a91c3c5c10ee4a176066a84716496e7b1">is_data</a> = true</td></tr>
+<tr class="separator:a91c3c5c10ee4a176066a84716496e7b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ac82e0ba143e9390c9c5011f6555788"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a0ac82e0ba143e9390c9c5011f6555788">year</a> = <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abfd3e8c0a2e269807b0b07d3cc6ad62c">Year::kTotalYears</a></td></tr>
+<tr class="separator:a0ac82e0ba143e9390c9c5011f6555788"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a7434374ae697bc801f9b09f4ffa45e8e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a7434374ae697bc801f9b09f4ffa45e8e">is_null</a> = true</td></tr>
+<tr class="separator:a7434374ae697bc801f9b09f4ffa45e8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ab51041578f0574d1fc28df3486cac251"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab51041578f0574d1fc28df3486cac251">&#9670;&nbsp;</a></span>EventData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">EventData::EventData </td>
+          <td>(</td>
+          <td class="paramtype">const bool &amp;&#160;</td>
+          <td class="paramname"><em>_is_data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;&#160;</td>
+          <td class="paramname"><em>_year</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>variation</em> = <code>&quot;Default&quot;</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>shift</em> = <code>&quot;Nominal&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="ade0aab576a15a8f635a52486c433c039"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade0aab576a15a8f635a52486c433c039">&#9670;&nbsp;</a></span>bjet_corrections()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::bjet_corrections </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a02a1c8c1de594722e96f59e3d7fb70f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02a1c8c1de594722e96f59e3d7fb70f8">&#9670;&nbsp;</a></span>electron_corrections()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::electron_corrections </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abfe44fa9c96b79866e2f69312014213d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abfe44fa9c96b79866e2f69312014213d">&#9670;&nbsp;</a></span>fill_event_content()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::fill_event_content </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1219b1d61a18f978b54d85b112848662"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1219b1d61a18f978b54d85b112848662">&#9670;&nbsp;</a></span>final_selection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::final_selection </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aab41cc18c5562bc6102c3ddd17e8de7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab41cc18c5562bc6102c3ddd17e8de7d">&#9670;&nbsp;</a></span>generator_filter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::generator_filter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa0bc3ff53e61bc403e572e57fdf2bf85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0bc3ff53e61bc403e572e57fdf2bf85">&#9670;&nbsp;</a></span>get_bjets_selection_mask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventData::get_bjets_selection_mask </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adb53a8dd64414d03cf53cfc4e925e3c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb53a8dd64414d03cf53cfc4e925e3c4">&#9670;&nbsp;</a></span>get_electrons_selection_mask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventData::get_electrons_selection_mask </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a482b4ae5f66e7b3df72d63c0013fd919"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a482b4ae5f66e7b3df72d63c0013fd919">&#9670;&nbsp;</a></span>get_jets_selection_mask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventData::get_jets_selection_mask </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aca95abcb1bd3ef47151a8deb13fce03d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca95abcb1bd3ef47151a8deb13fce03d">&#9670;&nbsp;</a></span>get_met_selection_mask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventData::get_met_selection_mask </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a950a9e1073b8061b0263ae13650d169d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a950a9e1073b8061b0263ae13650d169d">&#9670;&nbsp;</a></span>get_muons_selection_mask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventData::get_muons_selection_mask </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acbeab1cd3835d54a0386a7bac5c6216e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbeab1cd3835d54a0386a7bac5c6216e">&#9670;&nbsp;</a></span>get_photons_selection_mask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventData::get_photons_selection_mask </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7ae463e374342c8ca8c9c36e8d2be7e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ae463e374342c8ca8c9c36e8d2be7e5">&#9670;&nbsp;</a></span>get_taus_selection_mask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventData::get_taus_selection_mask </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2aabd74356947ed9ed5343f9f6b2b7a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2aabd74356947ed9ed5343f9f6b2b7a2">&#9670;&nbsp;</a></span>has_selected_objects_filter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::has_selected_objects_filter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acb49193c48e0711de6f8427cc0c6e477"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb49193c48e0711de6f8427cc0c6e477">&#9670;&nbsp;</a></span>jet_corrections()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::jet_corrections </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6ab1f712396be3e0b2f51f0ecccf0c64"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ab1f712396be3e0b2f51f0ecccf0c64">&#9670;&nbsp;</a></span>met_corrections()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::met_corrections </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae19056feebc614db13cf4c43120efaec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae19056feebc614db13cf4c43120efaec">&#9670;&nbsp;</a></span>met_filter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::met_filter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae032f5e9f3dc21e4f2f4776e1e6780bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae032f5e9f3dc21e4f2f4776e1e6780bb">&#9670;&nbsp;</a></span>muon_corrections()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::muon_corrections </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7ca942eb8490142fde15317675796210"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ca942eb8490142fde15317675796210">&#9670;&nbsp;</a></span>npv_filter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::npv_filter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a13b2095832e126ffb5b961e85927c213"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13b2095832e126ffb5b961e85927c213">&#9670;&nbsp;</a></span>object_selection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::object_selection </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a01ed84187a22b855c554f1e1d8dcc08d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01ed84187a22b855c554f1e1d8dcc08d">&#9670;&nbsp;</a></span>operator bool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">EventData::operator bool </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adbb5f4b044a6ad056d2d3f5bea5a51af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adbb5f4b044a6ad056d2d3f5bea5a51af">&#9670;&nbsp;</a></span>photon_corrections()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::photon_corrections </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a44cf3290cb2a0afe083b7a885c0a438b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44cf3290cb2a0afe083b7a885c0a438b">&#9670;&nbsp;</a></span>run_lumi_filter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::run_lumi_filter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classRunLumiFilter.html">RunLumiFilter</a> &amp;&#160;</td>
+          <td class="paramname"><em>_run_lumi_filter</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa255bd03d10c47b585ccb25158cce509"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa255bd03d10c47b585ccb25158cce509">&#9670;&nbsp;</a></span>set_bjets() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::set_bjets </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceNanoObjects.html#a7be87612d389c646e9a31974fa6a3d8b">NanoObjects::BJets</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_bjets</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a432f0fc38b2dcd1e58d216a381c4f8a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a432f0fc38b2dcd1e58d216a381c4f8a2">&#9670;&nbsp;</a></span>set_bjets() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::set_bjets </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceNanoObjects.html#a7be87612d389c646e9a31974fa6a3d8b">NanoObjects::BJets</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_bjets</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">RVec&lt; int &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>mask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8b9193b33b2ebb65f57360fd9bd9c729"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b9193b33b2ebb65f57360fd9bd9c729">&#9670;&nbsp;</a></span>set_const_weights()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::set_const_weights </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classCorrector.html">Corrector</a> &amp;&#160;</td>
+          <td class="paramname"><em>pu_weight</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af5d191e99ae6243f061f6eb2efc33a25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5d191e99ae6243f061f6eb2efc33a25">&#9670;&nbsp;</a></span>set_electrons() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::set_electrons </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1Electrons.html">NanoObjects::Electrons</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_electrons</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a059b642c137d1aba6b3c4e9608d940c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a059b642c137d1aba6b3c4e9608d940c5">&#9670;&nbsp;</a></span>set_electrons() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::set_electrons </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1Electrons.html">NanoObjects::Electrons</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_electrons</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">RVec&lt; int &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>mask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9d303a0ea8cb2f361775287693ecad57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d303a0ea8cb2f361775287693ecad57">&#9670;&nbsp;</a></span>set_event_info()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::set_event_info </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1EventInfo.html">NanoObjects::EventInfo</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_event_info</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a15e702c1c9c0579d12de892df49a97f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15e702c1c9c0579d12de892df49a97f3">&#9670;&nbsp;</a></span>set_jets() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::set_jets </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1Jets.html">NanoObjects::Jets</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_jets</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8e2df4dff518204ce77854006d6c8697"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e2df4dff518204ce77854006d6c8697">&#9670;&nbsp;</a></span>set_jets() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::set_jets </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1Jets.html">NanoObjects::Jets</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_jets</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">RVec&lt; int &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>mask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1e68908d0e50665509326b28f1a9c862"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e68908d0e50665509326b28f1a9c862">&#9670;&nbsp;</a></span>set_met() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::set_met </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1MET.html">NanoObjects::MET</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_met</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7e1fef4f2b7f2c5b1db20d69e25b9feb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e1fef4f2b7f2c5b1db20d69e25b9feb">&#9670;&nbsp;</a></span>set_met() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::set_met </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1MET.html">NanoObjects::MET</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_met</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">RVec&lt; int &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>mask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad1fd5b949e794aed40522b222d0d3d19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1fd5b949e794aed40522b222d0d3d19">&#9670;&nbsp;</a></span>set_muons() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::set_muons </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1Muons.html">NanoObjects::Muons</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_muons</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aef34f9941fd462497a19b659b9ce8b82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef34f9941fd462497a19b659b9ce8b82">&#9670;&nbsp;</a></span>set_muons() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::set_muons </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1Muons.html">NanoObjects::Muons</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_muons</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">RVec&lt; int &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>mask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a17bfe015a30a3e9b39e40dccc9b45f0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17bfe015a30a3e9b39e40dccc9b45f0c">&#9670;&nbsp;</a></span>set_null()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void EventData::set_null </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aced378c6fd21e75a17559b6c69ad0a5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aced378c6fd21e75a17559b6c69ad0a5c">&#9670;&nbsp;</a></span>set_photons() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::set_photons </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1Photons.html">NanoObjects::Photons</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_photons</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a57ef09eb5f51eb054f145139bd7a9728"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57ef09eb5f51eb054f145139bd7a9728">&#9670;&nbsp;</a></span>set_photons() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::set_photons </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1Photons.html">NanoObjects::Photons</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_photons</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">RVec&lt; int &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>mask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9236b3984d97ec804dc40cc5c3449bec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9236b3984d97ec804dc40cc5c3449bec">&#9670;&nbsp;</a></span>set_scale_factors()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::set_scale_factors </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adfdb5f4123deeb40737a40f5baf7e3dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adfdb5f4123deeb40737a40f5baf7e3dc">&#9670;&nbsp;</a></span>set_taus() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::set_taus </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1Taus.html">NanoObjects::Taus</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_taus</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4cd7c12814fd3d37dd36d88eb01548a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cd7c12814fd3d37dd36d88eb01548a3">&#9670;&nbsp;</a></span>set_taus() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::set_taus </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1Taus.html">NanoObjects::Taus</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_taus</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">RVec&lt; int &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>mask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8a7fd313316f373672d008cada484044"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a7fd313316f373672d008cada484044">&#9670;&nbsp;</a></span>tau_corrections()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::tau_corrections </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4a31021edfe264f1ad6e4effdb6b5aa3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a31021edfe264f1ad6e4effdb6b5aa3">&#9670;&nbsp;</a></span>trigger_filter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::trigger_filter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae9e39f1152346ed90ee6789965f0d66b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9e39f1152346ed90ee6789965f0d66b">&#9670;&nbsp;</a></span>trigger_match_filter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::trigger_match_filter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9e7aa84ed7898124b187d9a02d247076"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e7aa84ed7898124b187d9a02d247076">&#9670;&nbsp;</a></span>unset_null()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void EventData::unset_null </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a1286371ddebe8d0578df3dd5e17c2a66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1286371ddebe8d0578df3dd5e17c2a66">&#9670;&nbsp;</a></span>bjets</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceNanoObjects.html#a7be87612d389c646e9a31974fa6a3d8b">NanoObjects::BJets</a> EventData::bjets</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afa0332e6c9d6a115ca0af4f10c26ca9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa0332e6c9d6a115ca0af4f10c26ca9b">&#9670;&nbsp;</a></span>electrons</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structNanoObjects_1_1Electrons.html">NanoObjects::Electrons</a> EventData::electrons</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aaf739a6f16adb04784efd9440353f0de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf739a6f16adb04784efd9440353f0de">&#9670;&nbsp;</a></span>event_info</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structNanoObjects_1_1EventInfo.html">NanoObjects::EventInfo</a> EventData::event_info</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa438fb5f9dbd498476372cb13967c726"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa438fb5f9dbd498476372cb13967c726">&#9670;&nbsp;</a></span>good_bjets_mask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">RVec&lt;int&gt; EventData::good_bjets_mask</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a66c3e773aad8b7d71ea8779b7eba031a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66c3e773aad8b7d71ea8779b7eba031a">&#9670;&nbsp;</a></span>good_electrons_mask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">RVec&lt;int&gt; EventData::good_electrons_mask</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a805cdf4b693c5dc08db056b262f780ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a805cdf4b693c5dc08db056b262f780ac">&#9670;&nbsp;</a></span>good_jets_mask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">RVec&lt;int&gt; EventData::good_jets_mask</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6b74fee7f93e4f5ea5df2cb309245fd6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b74fee7f93e4f5ea5df2cb309245fd6">&#9670;&nbsp;</a></span>good_met_mask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">RVec&lt;int&gt; EventData::good_met_mask</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a47b29912cf5e762706dfb82ef2a3a697"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47b29912cf5e762706dfb82ef2a3a697">&#9670;&nbsp;</a></span>good_muons_mask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">RVec&lt;int&gt; EventData::good_muons_mask</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7859ba7e37194978a8fd73d32de7cabd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7859ba7e37194978a8fd73d32de7cabd">&#9670;&nbsp;</a></span>good_photons_mask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">RVec&lt;int&gt; EventData::good_photons_mask</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a72e46a8442a9501ca9d5520b86be6805"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72e46a8442a9501ca9d5520b86be6805">&#9670;&nbsp;</a></span>good_taus_mask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">RVec&lt;int&gt; EventData::good_taus_mask</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a91c3c5c10ee4a176066a84716496e7b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91c3c5c10ee4a176066a84716496e7b1">&#9670;&nbsp;</a></span>is_data</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool EventData::is_data = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7434374ae697bc801f9b09f4ffa45e8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7434374ae697bc801f9b09f4ffa45e8e">&#9670;&nbsp;</a></span>is_null</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool EventData::is_null = true</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2a303650c4cc597138c370790fc7722f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a303650c4cc597138c370790fc7722f">&#9670;&nbsp;</a></span>jets</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structNanoObjects_1_1Jets.html">NanoObjects::Jets</a> EventData::jets</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad2b170044b06d826b8aa1a8319305933"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2b170044b06d826b8aa1a8319305933">&#9670;&nbsp;</a></span>met</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structNanoObjects_1_1MET.html">NanoObjects::MET</a> EventData::met</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0cd7c3f2ca17c0fb8d962f47ff902869"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0cd7c3f2ca17c0fb8d962f47ff902869">&#9670;&nbsp;</a></span>muons</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structNanoObjects_1_1Muons.html">NanoObjects::Muons</a> EventData::muons</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a947da6836b1d216058e79adbcf79f8eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a947da6836b1d216058e79adbcf79f8eb">&#9670;&nbsp;</a></span>photons</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structNanoObjects_1_1Photons.html">NanoObjects::Photons</a> EventData::photons</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af0e1cf8f3645a0ea6ed8c204a7d18511"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0e1cf8f3645a0ea6ed8c204a7d18511">&#9670;&nbsp;</a></span>taus</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structNanoObjects_1_1Taus.html">NanoObjects::Taus</a> EventData::taus</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aaf332eea6443c1897461f058fa32c2a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf332eea6443c1897461f058fa32c2a4">&#9670;&nbsp;</a></span>trigger_bits</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structTriggerBits.html">TriggerBits</a> EventData::trigger_bits</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0ac82e0ba143e9390c9c5011f6555788"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ac82e0ba143e9390c9c5011f6555788">&#9670;&nbsp;</a></span>year</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> EventData::year = <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abfd3e8c0a2e269807b0b07d3cc6ad62c">Year::kTotalYears</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
+<li>/.automount/home/home__home1/institut_3a/silva/NanoMUSiC/NanoMUSiC/MUSiC/include/<a class="el" href="EventData_8hpp_source.html">EventData.hpp</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="classEventData.html">EventData</a></li>
+    <li class="footer">Generated by
+    <a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.18 </li>
+  </ul>
+</div>
+</body>
+</html>

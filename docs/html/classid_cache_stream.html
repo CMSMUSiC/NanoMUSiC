@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8"/>
+  <title>idCacheStream class | NanoMUSiC MUSiC analysis code, for NanoAOD samples</title>
+  <link href="favicon-dark.png" rel="icon" type="image/png"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <meta content="#22272e" name="theme-color"/>
+  <link href="poxy.css" referrerpolicy="no-referrer" rel="stylesheet"/>
+  <script src="poxy.js"></script>
+  <script>initialize_theme("dark");</script>
+  <meta content="NanoMUSiC" name="twitter:title"/>
+  <meta content="NanoMUSiC" property="og:title"/>
+  <meta content="NanoMUSiC" itemprop="name"/>
+  <meta content="MUSiC Team @ RWTH Aachen 3A" name="author"/>
+  <meta content="MUSiC Team @ RWTH Aachen 3A" property="article:author"/>
+  <meta content="MUSiC analysis code, for NanoAOD samples" name="description"/>
+  <meta content="MUSiC analysis code, for NanoAOD samples" name="twitter:description"/>
+  <meta content="MUSiC analysis code, for NanoAOD samples" property="og:description"/>
+  <meta content="MUSiC analysis code, for NanoAOD samples" itemprop="description"/>
+  <meta content="telephone=no" name="format-detection"/>
+  <meta content="Poxy v0.7.1" name="generator"/>
+  <meta content="strict-origin-when-cross-origin" name="referrer"/>
+  <style>div.poxy-main-banner { padding: 2rem; }</style>
+</head>
+<body>
+<header><nav id="navigation">
+  <div class="m-container">
+    <div class="m-row">
+      <a class="m-col-t-8 m-col-m-none m-left-m" href="index.html" id="m-navbar-brand">NanoMUSiC <span class="m-thin">MUSiC analysis code, for NanoAOD samples</span></a>
+      <div class="m-col-t-4 m-hide-m m-text-right m-nopadr">
+        <a class="m-doc-search-icon" href="#search" onclick="return showSearch()" title="Search"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+          <path d="m6 0c-3.31 0-6 2.69-6 6 0 3.31 2.69 6 6 6 1.49 0 2.85-0.541 3.89-1.44-0.0164 0.338 0.147 0.759 0.5 1.15l3.22 3.79c0.552 0.614 1.45 0.665 2 0.115 0.55-0.55 0.499-1.45-0.115-2l-3.79-3.22c-0.392-0.353-0.812-0.515-1.15-0.5 0.895-1.05 1.44-2.41 1.44-3.89 0-3.31-2.69-6-6-6zm0 1.56a4.44 4.44 0 0 1 4.44 4.44 4.44 4.44 0 0 1-4.44 4.44 4.44 4.44 0 0 1-4.44-4.44 4.44 4.44 0 0 1 4.44-4.44z" id="m-doc-search-icon-path"></path>
+        </svg></a>
+        <a href="#navigation" id="m-navbar-show" title="Show navigation"></a>
+        <a href="#" id="m-navbar-hide" title="Hide navigation"></a>
+      </div>
+      <div class="m-col-t-12 m-show-m m-col-m-none m-right-m" id="m-navbar-collapse">
+        <div class="m-row">
+          <ol class="m-col-t-6 m-col-m-none">
+            <li><a href="pages.html">Pages</a></li>
+            <li><a href="annotated.html">Classes</a></li>
+            <li><a href="files.html">Files</a></li>
+          </ol>
+          <ol class="m-col-t-6 m-col-m-none" start="4">
+            <li><a class="poxy-icon github poxy-external" href="https://github.com/CMSMUSiC/NanoMUSiC/" target="_blank"><svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+	<path d="M25,1.23a24.37,24.37,0,0,0-7.7,47.5C18.51,49,19,48.2,19,47.56s0-2.12,0-4.15c-6.78,1.47-8.21-3.27-8.21-3.27C9.61,37.33,8,36.58,8,36.58c-2.21-1.51.17-1.48.17-1.48a5.12,5.12,0,0,1,3.73,2.51c2.17,3.72,5.7,2.65,7.09,2a5.25,5.25,0,0,1,1.55-3.26c-5.41-.61-11.1-2.7-11.1-12A9.41,9.41,0,0,1,12,17.79a8.75,8.75,0,0,1,.24-6.45s2-.66,6.7,2.49a23.1,23.1,0,0,1,12.2,0c4.66-3.15,6.7-2.49,6.7-2.49A8.75,8.75,0,0,1,38,17.79a9.41,9.41,0,0,1,2.51,6.54c0,9.36-5.7,11.42-11.13,12a5.83,5.83,0,0,1,1.65,4.51c0,3.26,0,5.89,0,6.69,0,.65.44,1.41,1.68,1.17A24.38,24.38,0,0,0,25,1.23Z" fill="currentColor"></path>
+</svg>
+</a></li>
+            <li><a class="poxy-icon theme" href="#poxy-theme-switch" id="poxy-theme-switch" onclick="toggle_theme();"><svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+	<circle cx="185.6708" cy="183.8122" fill="currentColor" r="65.625"></circle>
+	<path d="M185.6708,87.5622a13.1256,13.1256,0,0,0,13.125-13.125V52.5622a13.125,13.125,0,1,0-26.25,0v21.875A13.1257,13.1257,0,0,0,185.6708,87.5622Z" fill="currentColor"></path>
+	<path d="M99.051,115.7519a13.1236,13.1236,0,1,0,18.56-18.56L102.1442,81.726a13.1236,13.1236,0,0,0-18.5595,18.56Z" fill="currentColor"></path>
+	<path d="M89.4208,183.8122a13.1257,13.1257,0,0,0-13.125-13.125H54.4208a13.125,13.125,0,0,0,0,26.25h21.875A13.1256,13.1256,0,0,0,89.4208,183.8122Z" fill="currentColor"></path>
+	<path d="M99.051,251.8725,83.5847,267.3431a13.1236,13.1236,0,1,0,18.56,18.56l15.4663-15.4706a13.1236,13.1236,0,1,0-18.5595-18.56Z" fill="currentColor"></path>
+	<path d="M185.6708,280.0622a13.1258,13.1258,0,0,0-13.125,13.125v21.875a13.125,13.125,0,0,0,26.25,0v-21.875A13.1257,13.1257,0,0,0,185.6708,280.0622Z" fill="currentColor"></path>
+	<path d="M272.2907,251.8725a13.1236,13.1236,0,1,0-18.56,18.56l15.4663,15.4706a13.1236,13.1236,0,1,0,18.56-18.56Z" fill="currentColor"></path>
+	<path d="M330.0458,183.8122a13.1257,13.1257,0,0,0-13.125-13.125h-21.875a13.125,13.125,0,0,0,0,26.25h21.875A13.1256,13.1256,0,0,0,330.0458,183.8122Z" fill="currentColor"></path>
+	<path d="M263.0109,119.5971a13.0824,13.0824,0,0,0,9.28-3.8452l15.4663-15.4663a13.1236,13.1236,0,1,0-18.56-18.56L253.7312,97.1923a13.125,13.125,0,0,0,9.28,22.4048Z" fill="currentColor"></path>
+	<path d="M456.9379,401.6714a63.97,63.97,0,0,1-14.9963,7.2055c-19.6448,6.5283-41.8787,2.9566-58.1439-9.8523a68.9311,68.9311,0,0,1-10.835-10.8339c-12.8088-16.2663-16.3806-38.5-9.8523-58.1471a63.8444,63.8444,0,0,1,7.2077-14.9931,8.8036,8.8036,0,0,0-10.1172-13.3034,87.5188,87.5188,0,1,0,110.0372,110.04A8.8,8.8,0,0,0,456.9379,401.6714Z" fill="currentColor"></path>
+</svg>
+</a></li>
+            <li class="m-show-m"><a class="m-doc-search-icon" href="#search" onclick="return showSearch()" title="Search"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+              <use href="#m-doc-search-icon-path"></use>
+            </svg></a></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav></header>
+<main><article>
+  <div class="m-container m-container-inflatable">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        <h1>
+          idCacheStream <span class="m-thin">class</span>
+        </h1>
+        <p></p>
+        <nav class="m-block m-default poxy-toc">
+          <h3>Contents</h3>
+          <ul>
+            <li>
+              Reference
+              <ul>
+                <li><a href="#typeless-methods">Constructors, destructors, conversion operators</a></li>
+                <li><a href="#pub-methods">Public functions</a></li>
+              </ul>
+            </li>
+          </ul>
+        </nav>
+        <section id="typeless-methods">
+          <h2><a href="#typeless-methods">Constructors, destructors, conversion operators</a></h2>
+          <dl class="m-doc">
+            <dt id="a8d5e098262b24516246e8bcab896a627">
+              <span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a8d5e098262b24516246e8bcab896a627">idCacheStream</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd></dd>
+            <dt id="aed2504be72e9ac5fed125125aca98009">
+              <span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#aed2504be72e9ac5fed125125aca98009">idCacheStream</a>(</span><span class="m-doc-wrap">const char* filename) <span class="m-label m-flat m-info">explicit</span> </span>
+            </dt>
+            <dd></dd>
+          </dl>
+        </section>
+        <section id="pub-methods">
+          <h2><a href="#pub-methods">Public functions</a></h2>
+          <dl class="m-doc">
+            <dt id="bca28619bd4289293a49461d6af95758dd25b8880e2b86464f7aab11024ca9d8">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#bca28619bd4289293a49461d6af95758dd25b8880e2b86464f7aab11024ca9d8">bad</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="79b88f5dcde7e3058e7e3ddac7048a5016365f951245b8a4b60d36dc1921429a">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#79b88f5dcde7e3058e7e3ddac7048a5016365f951245b8a4b60d36dc1921429a">clear</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="a8194a7e7556ba0f6b01870d01b09cb48">
+              <span class="m-doc-wrap-bumper">void <a class="m-doc-self" href="#a8194a7e7556ba0f6b01870d01b09cb48">close</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd></dd>
+            <dt id="6bcd4bf1b20d1b7a5ac6d56587c82ebfbc1ddca60ed2460b930370c2cabc191e">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#6bcd4bf1b20d1b7a5ac6d56587c82ebfbc1ddca60ed2460b930370c2cabc191e">copyfmt</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="936a0f5a3459a0a514e0db041b65383eb37f1e2ff8be895b2dc3f316f28a1e1e">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#936a0f5a3459a0a514e0db041b65383eb37f1e2ff8be895b2dc3f316f28a1e1e">eof</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="a4f77c4c439ac4357617394e25c923ebcfb6fc7a0639d1f1b462cbf65d4e5074">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#a4f77c4c439ac4357617394e25c923ebcfb6fc7a0639d1f1b462cbf65d4e5074">exceptions</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="4124b63963ed115c79f8f6f429999c407002defd045ece9f13398823703d8b83">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#4124b63963ed115c79f8f6f429999c407002defd045ece9f13398823703d8b83">fail</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="47877e5b944d28abdea1d85797e2483bf6f8de21a568a80003f99b4bdfde1327">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#47877e5b944d28abdea1d85797e2483bf6f8de21a568a80003f99b4bdfde1327">fill</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="8545309161aaa13594541cd5a82a19c7f84f96ba189253a6f03700488c5fd99d">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#8545309161aaa13594541cd5a82a19c7f84f96ba189253a6f03700488c5fd99d">flags</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="75c4529537ec8a0a6f2bbce1efabb4e769c33984d7094c21d49b8a0f0d6e0037">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#75c4529537ec8a0a6f2bbce1efabb4e769c33984d7094c21d49b8a0f0d6e0037">gcount</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="fa9601ccbef1b012019d115e827c507db1c82b4059815d312023ccc7d5fb9950">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#fa9601ccbef1b012019d115e827c507db1c82b4059815d312023ccc7d5fb9950">get</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="3e3164cbe4165cf6fbf2cfa803700792676be11e43217adcfd7848c311fd688c">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#3e3164cbe4165cf6fbf2cfa803700792676be11e43217adcfd7848c311fd688c">getline</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="8ac4026490cb618f9bab15b95e4eb87ddb823ee78c1221dc2ae427e77e886e79">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#8ac4026490cb618f9bab15b95e4eb87ddb823ee78c1221dc2ae427e77e886e79">getloc</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="eee94048df61ecad004169d7d1406516af7ff0821fdc453ab84f6de76078fddf">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#eee94048df61ecad004169d7d1406516af7ff0821fdc453ab84f6de76078fddf">good</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="3d558add37d0fa1eb33ca8131908126bf14d62e54dbc56857b676aa978cbe530">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#3d558add37d0fa1eb33ca8131908126bf14d62e54dbc56857b676aa978cbe530">ignore</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="3e20e074134c786f2461710850c20eef9bc402202eb7f3967ea71c8a041f42f7">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#3e20e074134c786f2461710850c20eef9bc402202eb7f3967ea71c8a041f42f7">imbue</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="430806008cd551573b34cfb872e758c5c6da522df4b26acfdd98db0cdbf98c95">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#430806008cd551573b34cfb872e758c5c6da522df4b26acfdd98db0cdbf98c95">init</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="a64f65003ee66384bf66ef061495bf76a">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#a64f65003ee66384bf66ef061495bf76a">is_open</a>(</span><span class="m-doc-wrap">) -&gt; bool</span>
+            </dt>
+            <dd></dd>
+            <dt id="811cf66238ff1b2c464c7162497e4bce520e50c1f2cfe2a6222b3cc8e7ef6d68">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#811cf66238ff1b2c464c7162497e4bce520e50c1f2cfe2a6222b3cc8e7ef6d68">iword</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="7b8a1477760372b3bb24e90385f0bd91ed7fc692b21910123e733aa62618b725">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#7b8a1477760372b3bb24e90385f0bd91ed7fc692b21910123e733aa62618b725">move</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="41a98ac55e5ff0b7c58f90d21cb7ff9821068027be80cc10a1e900e89e709b1e">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#41a98ac55e5ff0b7c58f90d21cb7ff9821068027be80cc10a1e900e89e709b1e">narrow</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="a8f60e52d6ab689ca9001ff96d490fea9">
+              <span class="m-doc-wrap-bumper">void <a class="m-doc-self" href="#a8f60e52d6ab689ca9001ff96d490fea9">open</a>(</span><span class="m-doc-wrap">const char* filename,
+              unsigned int timeout = 3600)</span>
+            </dt>
+            <dd></dd>
+            <dt id="43a64d6618d2efe54fcf2658e649e07082b4c3743845d454025b86e1e9963cb4">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#43a64d6618d2efe54fcf2658e649e07082b4c3743845d454025b86e1e9963cb4">operator bool</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc" href="cpp/io/basic_ios/operator!.html#">operator!</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="c439e2f1171cf1935882b5b04623983eef344b4a9d1a730d9c43674f0bd1ef09">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#c439e2f1171cf1935882b5b04623983eef344b4a9d1a730d9c43674f0bd1ef09">operator&gt;&gt;</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="b30a4d162dc071a751f2af5f395df051efc3b1e1c8fdea60c0b3a2cf44123c94">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#b30a4d162dc071a751f2af5f395df051efc3b1e1c8fdea60c0b3a2cf44123c94">peek</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="8f59894bd92fd51288bf27d00648a87dd75cbc417c3da1bad4cbe82e1a68ed92">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#8f59894bd92fd51288bf27d00648a87dd75cbc417c3da1bad4cbe82e1a68ed92">precision</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="cd64f80cd78b7f9d8f7063d5a88c60ec66bda0c308fc97ce9252273ed26c2085">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#cd64f80cd78b7f9d8f7063d5a88c60ec66bda0c308fc97ce9252273ed26c2085">putback</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="6585328c36e491707238ab19a1c2bc5d335b6e14f60486965a69537b1d4ea102">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#6585328c36e491707238ab19a1c2bc5d335b6e14f60486965a69537b1d4ea102">pword</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="e1c57417b05b06bdc57b05019c576df16b4f099f3f26506cf7fd4fd3f8ee3232">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#e1c57417b05b06bdc57b05019c576df16b4f099f3f26506cf7fd4fd3f8ee3232">rdbuf</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="8908cca9b31b6f396bd1afa6699401ee075d47b06bc43bea7b0f1b6e84de48b7">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#8908cca9b31b6f396bd1afa6699401ee075d47b06bc43bea7b0f1b6e84de48b7">rdstate</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="604570c31e1b108a4c5d6854b90b65261032d23df0669c5243bb21fa8d37ff64">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#604570c31e1b108a4c5d6854b90b65261032d23df0669c5243bb21fa8d37ff64">read</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="9a948340ab807dba6be0dd09f4ed74b871dc8445ae0c269c1a9f472e1cb87f73">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#9a948340ab807dba6be0dd09f4ed74b871dc8445ae0c269c1a9f472e1cb87f73">readsome</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="da1ed8b4c3aae760c7caafe898e526766e904767f1093559218f3e2e8106a24f">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#da1ed8b4c3aae760c7caafe898e526766e904767f1093559218f3e2e8106a24f">register_callback</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="6dc9d9b9a0551463bda6f153d1e9df58f58f838063884d65e50a47a4d91d7f7b">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#6dc9d9b9a0551463bda6f153d1e9df58f58f838063884d65e50a47a4d91d7f7b">seekg</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="3fd4ef0cebe422a8c650467c5633c5a7122f398fd52ba4b718175969d61f6d69">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#3fd4ef0cebe422a8c650467c5633c5a7122f398fd52ba4b718175969d61f6d69">set_rdbuf</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="e03a60e50d3738f526823f7d6c52359786653537b96729afb3a8ebdfb3d8a9a1">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#e03a60e50d3738f526823f7d6c52359786653537b96729afb3a8ebdfb3d8a9a1">setf</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="b5f73010047e90219b902133b2822e0d04c8994926601b0e33d39201d32db3b6">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#b5f73010047e90219b902133b2822e0d04c8994926601b0e33d39201d32db3b6">setstate</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="80e1f6effb40f58bd0c8b3904aa73a6aa7d8dd3f2f37992df9488c1b0cef2573">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#80e1f6effb40f58bd0c8b3904aa73a6aa7d8dd3f2f37992df9488c1b0cef2573">swap</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="62d71331796610c158a54afda98431dc2e874d948bfc20ed96000af189d85166">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#62d71331796610c158a54afda98431dc2e874d948bfc20ed96000af189d85166">sync</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="b62466ff11df291363fa4a6b789d520390419d8eace93be263e9e5a5cc68feec">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#b62466ff11df291363fa4a6b789d520390419d8eace93be263e9e5a5cc68feec">sync_with_stdio</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="8ec2a6b34a42a970fd5d517ba2d997d46c2d85e08ee2e399a6cc14fb4f95a7b1">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#8ec2a6b34a42a970fd5d517ba2d997d46c2d85e08ee2e399a6cc14fb4f95a7b1">tellg</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="5c98cb6b451ba7f43399b94b490fac58eaba38042d4adcde9df450432299b93a">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#5c98cb6b451ba7f43399b94b490fac58eaba38042d4adcde9df450432299b93a">tie</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="067739e809fe5f45379c9c0d3398cfdc534e9875bde38be57ca64610d0777059">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#067739e809fe5f45379c9c0d3398cfdc534e9875bde38be57ca64610d0777059">unget</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="be0fb172806dcbd61d4b49e6184c837531f1362d490dd88b47ce021ba280e877">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#be0fb172806dcbd61d4b49e6184c837531f1362d490dd88b47ce021ba280e877">unsetf</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="84be2227ce05416819fc9400b0c597b995e1b84f1e840af0f6f46473c497fdec">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#84be2227ce05416819fc9400b0c597b995e1b84f1e840af0f6f46473c497fdec">widen</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="a56d239028a980e03dc66bde966ee8162b78afc5891df14b11ae1dc10f6d2c59">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#a56d239028a980e03dc66bde966ee8162b78afc5891df14b11ae1dc10f6d2c59">width</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt id="af2d07c1abf1f6a4956b2d57ed5ca708b88a9ef1f83257012fe8d6ec6024c5e4">
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc-self" href="#af2d07c1abf1f6a4956b2d57ed5ca708b88a9ef1f83257012fe8d6ec6024c5e4">xalloc</a>(</span><span class="m-doc-wrap">T... args) -&gt; T</span>
+            </dt>
+            <dd></dd>
+          </dl>
+        </section>
+      </div>
+    </div>
+  </div>
+</article></main>
+<div class="m-doc-search" id="search">
+  <a href="#!" onclick="return hideSearch()"></a>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-m-8 m-push-m-2">
+        <div class="m-doc-search-header m-text m-small">
+          <div><span class="m-label m-default">Tab</span> / <span class="m-label m-default">T</span> to search, <span class="m-label m-default">Esc</span> to close</div>
+          <div id="search-symbolcount">…</div>
+        </div>
+        <div class="m-doc-search-content">
+          <form>
+            <input autocomplete="off" autofocus="autofocus" disabled="disabled" id="search-input" name="q" placeholder="Loading …" spellcheck="false" type="search"/>
+          </form>
+          <noscript class="m-text m-danger m-text-center">Unlike everything else in the docs, the search functionality <em>requires</em> JavaScript.</noscript>
+          <div class="m-text m-dim m-text-center" id="search-help">
+            <p class="m-noindent">Search for symbols, directories, files, pages or
+            modules. You can omit any prefix from the symbol or file path; adding a
+            <code>:</code> or <code>/</code> suffix lists all members of given symbol or
+            directory.</p>
+            <p class="m-noindent">Use <span class="m-label m-dim">↓</span>
+            / <span class="m-label m-dim">↑</span> to navigate through the list,
+            <span class="m-label m-dim">Enter</span> to go.
+            <span class="m-label m-dim">Tab</span> autocompletes common prefix, you can
+            copy a link to the result using <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">L</span> while <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">M</span> produces a Markdown link.</p>
+          </div>
+          <div class="m-text m-warning m-text-center" id="search-notfound">Sorry, nothing was found.</div>
+          <ul id="search-results"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="search-v2.js"></script>
+<script async="async" src="searchdata-v2.js"></script>
+<footer><nav>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        
+<a class="poxy-external" href="https://github.com/CMSMUSiC/NanoMUSiC/" target="_blank">Github</a>
+• <a class="poxy-external" href="https://github.com/CMSMUSiC/NanoMUSiC/issues" target="_blank">Report an issue</a>
+• <a class="poxy-external" href="https://github.com/marzer/tomlplusplus/blob/master/LICENSE" target="_blank">License</a>
+• <a download="" href="NanoMUSiC.tagfile.xml" target="_blank" type="text/xml">Doxygen tagfile</a>
+<br/><br/>
+Site generated using <a class="poxy-external" href="https://github.com/marzer/poxy/" target="_blank">Poxy</a>
+
+      </div>
+    </div>
+  </div>
+</nav></footer>
+
+
+</body></html>

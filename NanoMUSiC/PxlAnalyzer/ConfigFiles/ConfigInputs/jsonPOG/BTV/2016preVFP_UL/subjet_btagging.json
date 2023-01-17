@@ -1,0 +1,984 @@
+{
+  "schema_version": 2,
+  "description": "This json file contains the corrections for deepCSV subjet tagging. ",
+  "corrections": [
+    {
+      "name": "deepCSV_subjet",
+      "description": "deepCSV subjet tagging  factors for UL 2016preVFP. The names of the measurements are 'incl' for light subjets and 'lt' for b and c subjets. Scale factors are provided for the medium (M) and loose (L) working points.",
+      "version": 1,
+      "inputs": [
+        {
+          "name": "systematic",
+          "type": "string"
+        },
+        {
+          "name": "method",
+          "type": "string",
+          "description": "incl for light jets, lt for b/c jets"
+        },
+        {
+          "name": "working_point",
+          "type": "string",
+          "description": "L/M"
+        },
+        {
+          "name": "flavor",
+          "type": "int",
+          "description": "hadron flavor definition: 5=b, 4=c, 0=udsg"
+        },
+        {
+          "name": "abseta",
+          "type": "real"
+        },
+        {
+          "name": "pt",
+          "type": "real"
+        }
+      ],
+      "output": {
+        "name": "weight",
+        "type": "real"
+      },
+      "generic_formulas": [
+        {
+          "nodetype": "formula",
+          "expression": "[0]+[1]*x+[2]*x*x+[3]*x*x*x+[4]*x*x*x*x",
+          "parser": "TFormula",
+          "variables": [
+            "pt"
+          ]
+        }
+      ],
+      "data": {
+        "nodetype": "category",
+        "input": "systematic",
+        "content": [
+          {
+            "key": "central",
+            "value": {
+              "nodetype": "category",
+              "input": "method",
+              "content": [
+                {
+                  "key": "lt",
+                  "value": {
+                    "nodetype": "category",
+                    "input": "working_point",
+                    "content": [
+                      {
+                        "key": "L",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 4,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      30.0,
+                                      120.0,
+                                      180.0,
+                                      240.0,
+                                      450.0
+                                    ],
+                                    "content": [
+                                      0.91214,
+                                      0.90771,
+                                      0.98221,
+                                      0.8833
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            },
+                            {
+                              "key": 5,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      30.0,
+                                      120.0,
+                                      180.0,
+                                      240.0,
+                                      450.0
+                                    ],
+                                    "content": [
+                                      0.91214,
+                                      0.90771,
+                                      0.98221,
+                                      0.8833
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "M",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 4,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      30.0,
+                                      120.0,
+                                      180.0,
+                                      240.0,
+                                      450.0
+                                    ],
+                                    "content": [
+                                      0.90945,
+                                      0.95695,
+                                      1.04871,
+                                      0.91987
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            },
+                            {
+                              "key": 5,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      30.0,
+                                      120.0,
+                                      180.0,
+                                      240.0,
+                                      450.0
+                                    ],
+                                    "content": [
+                                      0.90945,
+                                      0.95695,
+                                      1.04871,
+                                      0.91987
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "key": "incl",
+                  "value": {
+                    "nodetype": "category",
+                    "input": "working_point",
+                    "content": [
+                      {
+                        "key": "L",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formularef",
+                                        "index": 0,
+                                        "parameters": [
+                                          1.28633,
+                                          0.000194454,
+                                          3.68642e-07,
+                                          -4.48844e-10,
+                                          0.0
+                                        ]
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "M",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formularef",
+                                        "index": 0,
+                                        "parameters": [
+                                          1.61315,
+                                          -0.00131388,
+                                          3.83896e-06,
+                                          -2.46171e-09,
+                                          0.0
+                                        ]
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "T",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formularef",
+                                        "index": 0,
+                                        "parameters": [
+                                          1.73822,
+                                          -7.53842e-06,
+                                          2.41538e-07,
+                                          0.0,
+                                          0.0
+                                        ]
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "key": "up",
+            "value": {
+              "nodetype": "category",
+              "input": "method",
+              "content": [
+                {
+                  "key": "lt",
+                  "value": {
+                    "nodetype": "category",
+                    "input": "working_point",
+                    "content": [
+                      {
+                        "key": "L",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 4,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      30.0,
+                                      120.0,
+                                      180.0,
+                                      240.0,
+                                      450.0
+                                    ],
+                                    "content": [
+                                      1.07462,
+                                      1.10631,
+                                      1.06817,
+                                      1.10529
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            },
+                            {
+                              "key": 5,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      30.0,
+                                      120.0,
+                                      180.0,
+                                      240.0,
+                                      450.0
+                                    ],
+                                    "content": [
+                                      0.99338,
+                                      1.00701,
+                                      1.02519,
+                                      0.9943
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "M",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 4,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      30.0,
+                                      120.0,
+                                      180.0,
+                                      240.0,
+                                      450.0
+                                    ],
+                                    "content": [
+                                      1.09079,
+                                      1.14307,
+                                      1.16494,
+                                      1.10927
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            },
+                            {
+                              "key": 5,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      30.0,
+                                      120.0,
+                                      180.0,
+                                      240.0,
+                                      450.0
+                                    ],
+                                    "content": [
+                                      1.00012,
+                                      1.05001,
+                                      1.10683,
+                                      1.01457
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "key": "incl",
+                  "value": {
+                    "nodetype": "category",
+                    "input": "working_point",
+                    "content": [
+                      {
+                        "key": "L",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formularef",
+                                        "index": 0,
+                                        "parameters": [
+                                          1.35818,
+                                          0.000274184,
+                                          1.64584e-07,
+                                          -3.23984e-10,
+                                          0.0
+                                        ]
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "M",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formularef",
+                                        "index": 0,
+                                        "parameters": [
+                                          1.81426,
+                                          -0.00133172,
+                                          3.96074e-06,
+                                          -2.56176e-09,
+                                          0.0
+                                        ]
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "T",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formularef",
+                                        "index": 0,
+                                        "parameters": [
+                                          2.14772,
+                                          -1.96331e-05,
+                                          2.79195e-07,
+                                          0.0,
+                                          0.0
+                                        ]
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "key": "down",
+            "value": {
+              "nodetype": "category",
+              "input": "method",
+              "content": [
+                {
+                  "key": "lt",
+                  "value": {
+                    "nodetype": "category",
+                    "input": "working_point",
+                    "content": [
+                      {
+                        "key": "L",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 4,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      30.0,
+                                      120.0,
+                                      180.0,
+                                      240.0,
+                                      450.0
+                                    ],
+                                    "content": [
+                                      0.74964,
+                                      0.70897,
+                                      0.89602,
+                                      0.66078
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            },
+                            {
+                              "key": 5,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      30.0,
+                                      120.0,
+                                      180.0,
+                                      240.0,
+                                      450.0
+                                    ],
+                                    "content": [
+                                      0.83089,
+                                      0.80834,
+                                      0.93912,
+                                      0.77204
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "M",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 4,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      30.0,
+                                      120.0,
+                                      180.0,
+                                      240.0,
+                                      450.0
+                                    ],
+                                    "content": [
+                                      0.72805,
+                                      0.77032,
+                                      0.93197,
+                                      0.72896
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            },
+                            {
+                              "key": 5,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      30.0,
+                                      120.0,
+                                      180.0,
+                                      240.0,
+                                      450.0
+                                    ],
+                                    "content": [
+                                      0.81875,
+                                      0.86364,
+                                      0.99034,
+                                      0.82441
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "key": "incl",
+                  "value": {
+                    "nodetype": "category",
+                    "input": "working_point",
+                    "content": [
+                      {
+                        "key": "L",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formularef",
+                                        "index": 0,
+                                        "parameters": [
+                                          1.21453,
+                                          0.000114908,
+                                          5.71514e-07,
+                                          -5.73171e-10,
+                                          0.0
+                                        ]
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "M",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formularef",
+                                        "index": 0,
+                                        "parameters": [
+                                          1.41335,
+                                          -0.00130138,
+                                          3.73287e-06,
+                                          -2.38111e-09,
+                                          0.0
+                                        ]
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": "T",
+                        "value": {
+                          "nodetype": "category",
+                          "input": "flavor",
+                          "content": [
+                            {
+                              "key": 0,
+                              "value": {
+                                "nodetype": "binning",
+                                "input": "abseta",
+                                "edges": [
+                                  0.0,
+                                  2.5
+                                ],
+                                "content": [
+                                  {
+                                    "nodetype": "binning",
+                                    "input": "pt",
+                                    "edges": [
+                                      20.0,
+                                      1000.0
+                                    ],
+                                    "content": [
+                                      {
+                                        "nodetype": "formularef",
+                                        "index": 0,
+                                        "parameters": [
+                                          1.329,
+                                          2.79543e-06,
+                                          2.07092e-07,
+                                          0.0,
+                                          0.0
+                                        ]
+                                      }
+                                    ],
+                                    "flow": "clamp"
+                                  }
+                                ],
+                                "flow": "error"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

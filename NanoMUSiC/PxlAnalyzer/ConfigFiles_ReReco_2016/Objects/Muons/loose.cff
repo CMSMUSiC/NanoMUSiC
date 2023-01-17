@@ -1,0 +1,10 @@
+# Loose ID (2015)
+# https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2?rev=15 (10.07.2015)
+#
+Muon.LooseID.UseBool = 0
+Muon.LooseID.BoolName = isLooseMuon
+Muon.LooseID.IsGlobalMuon = 1
+Muon.LooseID.IsTrackerMuon = 1
+Muon.LooseID.IsPFMuon = 1
+#
+# End Loose ID

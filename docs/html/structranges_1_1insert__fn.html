@@ -1,0 +1,251 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    <meta name="generator" content="Doxygen 1.8.18" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- BEGIN opengraph metadata -->
+    <meta property="og:title" content="Doxygen Awesome" />
+    <meta property="og:image"
+        content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+    <meta property="og:description"
+        content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+    <meta property="og:url" content="https://jothepro.github.io/doxygen-awesome-css/" />
+    <!-- END opengraph metadata -->
+    <!-- BEGIN twitter metadata -->
+    <meta name="twitter:image:src"
+        content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+    <meta name="twitter:title" content="Doxygen Awesome" />
+    <meta name="twitter:description"
+        content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+    <!-- END twitter metadata -->
+    <title>NanoMUSiC: ranges::insert_fn Struct Reference</title>
+    <link href="tabs.css" rel="stylesheet" type="text/css" />
+    <link rel="icon" type="image/svg+xml" href="logo.drawio.svg" />
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="dynsections.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+    <script type="text/javascript" src="toggle-alternative-theme.js"></script>
+    <script type="text/javascript">
+        DoxygenAwesomeFragmentCopyButton.init()
+        DoxygenAwesomeDarkModeToggle.init()
+        DoxygenAwesomeParagraphLink.init()
+        DoxygenAwesomeInteractiveToc.init()
+    </script>
+    <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+    <link href="doxygen.css" rel="stylesheet" type="text/css" />
+    <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-alternative.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+    <!-- https://tholman.com/github-corners/ -->
+    <a href="https://github.com/cmsmusic/nanomusic" class="github-corner" title="View source on GitHub" target="_blank">
+        <svg viewBox="0 0 250 250" width="40" height="40"
+            style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+            <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+            <path
+                d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+                fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+            <path
+                d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+                fill="currentColor" class="octo-body"></path>
+        </svg></a>
+    <style>
+        .github-corner:hover .octo-arm {
+            animation: octocat-wave 560ms ease-in-out
+        }
+        @keyframes octocat-wave {
+            0%,
+            100% {
+                transform: rotate(0)
+            }
+            20%,
+            60% {
+                transform: rotate(-25deg)
+            }
+            40%,
+            80% {
+                transform: rotate(10deg)
+            }
+        }
+        @media (max-width:500px) {
+            .github-corner:hover .octo-arm {
+                animation: none
+            }
+            .github-corner .octo-arm {
+                animation: octocat-wave 560ms ease-in-out
+            }
+        }
+    </style>
+    <div id="top">
+        <!-- do not remove this div, it is closed by doxygen! -->
+        <div id="titlearea">
+            <table cellspacing="0" cellpadding="0">
+                <tbody>
+                    <tr style="height: 56px;">
+                        <td id="projectalign" style="padding-left: 0.5em;">
+                            <div id="projectname">NanoMUSiC
+                            </div>
+                            <div id="projectbrief">CMS MUSiC for NanoAOD</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- end header part --><!-- Generated by Doxygen 1.8.18 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'Search');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><b>ranges</b></li><li class="navelem"><a class="el" href="structranges_1_1insert__fn.html">insert_fn</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="structranges_1_1insert__fn-members.html">List of all members</a>  </div>
+  <div class="headertitle">
+<div class="title">ranges::insert_fn Struct Reference</div>  </div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:ab0bd1dfb4210d14cb8efa0a7cafd811c"><td class="memTemplParams" colspan="2"><a id="ab0bd1dfb4210d14cb8efa0a7cafd811c"></a>
+template&lt;typename Rng , typename... Args&gt; </td></tr>
+<tr class="memitem:ab0bd1dfb4210d14cb8efa0a7cafd811c"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>insert_result_t</b> = decltype(insert(std::declval&lt; Rng &gt;(), std::declval&lt; Args &gt;()...))</td></tr>
+<tr class="separator:ab0bd1dfb4210d14cb8efa0a7cafd811c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a1c403a828c10e1d8f38b169c2c1debc7"><td class="memItemLeft" align="right" valign="top"><a id="a1c403a828c10e1d8f38b169c2c1debc7"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>template</b> (typename Rng, typename <a class="el" href="structT.html">T</a>)(requires range&lt; Rng &gt; AND(!range&lt; <a class="el" href="structT.html">T</a> &gt;) AND const ructible_from&lt; range_value_t&lt; Rng &gt;</td></tr>
+<tr class="separator:a1c403a828c10e1d8f38b169c2c1debc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab216b25bd9f0e7ee47cd123f25fba31c"><td class="memItemLeft" align="right" valign="top"><a id="ab216b25bd9f0e7ee47cd123f25fba31c"></a>
+<a class="el" href="structT.html">T</a> insert_result_t&lt; Rng, <a class="el" href="structT.html">T</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (Rng &amp;&amp;rng, <a class="el" href="structT.html">T</a> &amp;&amp;t) const</td></tr>
+<tr class="separator:ab216b25bd9f0e7ee47cd123f25fba31c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14c99b6771c1631cc0b34d6a3a33ae0f"><td class="memItemLeft" align="right" valign="top"><a id="a14c99b6771c1631cc0b34d6a3a33ae0f"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>template</b> (typename Rng, typename Rng2)(requires range&lt; Rng &gt; AND range&lt; Rng2 &gt;) insert_result_t&lt; Rng</td></tr>
+<tr class="separator:a14c99b6771c1631cc0b34d6a3a33ae0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42653f74252681748f65c0b5aa4e08c7"><td class="memItemLeft" align="right" valign="top"><a id="a42653f74252681748f65c0b5aa4e08c7"></a>
+Rng2&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (Rng &amp;&amp;rng, Rng2 &amp;&amp;rng2) const</td></tr>
+<tr class="separator:a42653f74252681748f65c0b5aa4e08c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad79833abd7144a4b9c17e091981b9f0c"><td class="memItemLeft" align="right" valign="top"><a id="ad79833abd7144a4b9c17e091981b9f0c"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>template</b> (typename Rng, typename <a class="el" href="structT.html">T</a>)(requires range&lt; Rng &gt;) insert_result_t&lt; Rng</td></tr>
+<tr class="separator:ad79833abd7144a4b9c17e091981b9f0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3bbae54a3a09c9eef3a3709d061e276c"><td class="memItemLeft" align="right" valign="top"><a id="a3bbae54a3a09c9eef3a3709d061e276c"></a>
+std::initializer_list&lt; <a class="el" href="structT.html">T</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (Rng &amp;&amp;rng, std::initializer_list&lt; <a class="el" href="structT.html">T</a> &gt; rng2) const</td></tr>
+<tr class="separator:a3bbae54a3a09c9eef3a3709d061e276c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8f701820fd682cc4e10ed84e789dd39"><td class="memItemLeft" align="right" valign="top"><a id="af8f701820fd682cc4e10ed84e789dd39"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>template</b> (typename Rng, typename I, typename <a class="el" href="structS.html">S</a>)(requires range&lt; Rng &gt; AND sentinel_for&lt; <a class="el" href="structS.html">S</a></td></tr>
+<tr class="separator:af8f701820fd682cc4e10ed84e789dd39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1b3e791e7ef2f2277f0ef8d48176a3e"><td class="memItemLeft" align="right" valign="top"><a id="ad1b3e791e7ef2f2277f0ef8d48176a3e"></a>
+I&#160;</td><td class="memItemRight" valign="bottom"><b>AND</b> (!range&lt; <a class="el" href="structS.html">S</a> &gt;)) insert_result_t&lt; Rng</td></tr>
+<tr class="separator:ad1b3e791e7ef2f2277f0ef8d48176a3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a634f9668247b6447b879f936a2fab27e"><td class="memItemLeft" align="right" valign="top"><a id="a634f9668247b6447b879f936a2fab27e"></a>
+I <a class="el" href="structS.html">S</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (Rng &amp;&amp;rng, I i, <a class="el" href="structS.html">S</a> j) const</td></tr>
+<tr class="separator:a634f9668247b6447b879f936a2fab27e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a370bfb6e3094784511fe39fd9205c599"><td class="memItemLeft" align="right" valign="top"><a id="a370bfb6e3094784511fe39fd9205c599"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>template</b> (typename Rng, typename I, typename <a class="el" href="structT.html">T</a>)(requires range&lt; Rng &gt; AND input_iterator&lt; I &gt; AND(!range&lt; <a class="el" href="structT.html">T</a> &gt;) AND const ructible_from&lt; range_value_t&lt; Rng &gt;</td></tr>
+<tr class="separator:a370bfb6e3094784511fe39fd9205c599"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71fd9b2ce0994d9f1a47f7639c7327e9"><td class="memItemLeft" align="right" valign="top"><a id="a71fd9b2ce0994d9f1a47f7639c7327e9"></a>
+<a class="el" href="structT.html">T</a> insert_result_t&lt; Rng, I, <a class="el" href="structT.html">T</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (Rng &amp;&amp;rng, I p, <a class="el" href="structT.html">T</a> &amp;&amp;t) const</td></tr>
+<tr class="separator:a71fd9b2ce0994d9f1a47f7639c7327e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8df0a0a3e873fb72bd48202a95a17544"><td class="memItemLeft" align="right" valign="top"><a id="a8df0a0a3e873fb72bd48202a95a17544"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>template</b> (typename Rng, typename I, typename Rng2)(requires range&lt; Rng &gt; AND input_iterator&lt; I &gt; AND range&lt; Rng2 &gt;) insert_result_t&lt; Rng</td></tr>
+<tr class="separator:a8df0a0a3e873fb72bd48202a95a17544"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4a049230e38ae4ff63a42abeb68e120"><td class="memItemLeft" align="right" valign="top"><a id="af4a049230e38ae4ff63a42abeb68e120"></a>
+Rng2&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (Rng &amp;&amp;rng, I p, Rng2 &amp;&amp;rng2) const</td></tr>
+<tr class="separator:af4a049230e38ae4ff63a42abeb68e120"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff1925ccaa3a5904958bb5a6c12c7f4b"><td class="memItemLeft" align="right" valign="top"><a id="aff1925ccaa3a5904958bb5a6c12c7f4b"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>template</b> (typename Rng, typename I, typename <a class="el" href="structT.html">T</a>)(requires range&lt; Rng &gt; AND input_iterator&lt; I &gt;) insert_result_t&lt; Rng</td></tr>
+<tr class="separator:aff1925ccaa3a5904958bb5a6c12c7f4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d6965e0b556a2bd314bcca83ec134e9"><td class="memItemLeft" align="right" valign="top"><a id="a0d6965e0b556a2bd314bcca83ec134e9"></a>
+std::initializer_list&lt; <a class="el" href="structT.html">T</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (Rng &amp;&amp;rng, I p, std::initializer_list&lt; <a class="el" href="structT.html">T</a> &gt; rng2) const</td></tr>
+<tr class="separator:a0d6965e0b556a2bd314bcca83ec134e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17ec2cf50eead3183d045510fbc7040b"><td class="memItemLeft" align="right" valign="top"><a id="a17ec2cf50eead3183d045510fbc7040b"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>template</b> (typename Rng, typename I, typename N, typename <a class="el" href="structT.html">T</a>)(requires range&lt; Rng &gt; AND input_iterator&lt; I &gt; AND integral&lt; N &gt; AND(!range&lt; <a class="el" href="structT.html">T</a> &gt;) AND const ructible_from&lt; range_value_t&lt; Rng &gt;</td></tr>
+<tr class="separator:a17ec2cf50eead3183d045510fbc7040b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c694226c55394c0120707971d671ad6"><td class="memItemLeft" align="right" valign="top"><a id="a4c694226c55394c0120707971d671ad6"></a>
+<a class="el" href="structT.html">T</a> insert_result_t&lt; Rng, I, N, <a class="el" href="structT.html">T</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (Rng &amp;&amp;rng, I p, N n, <a class="el" href="structT.html">T</a> &amp;&amp;t) const</td></tr>
+<tr class="separator:a4c694226c55394c0120707971d671ad6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a324426f8cde0f5132911fd11ec1328a9"><td class="memItemLeft" align="right" valign="top"><a id="a324426f8cde0f5132911fd11ec1328a9"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>template</b> (typename Rng, typename P, typename I, typename <a class="el" href="structS.html">S</a>)(requires range&lt; Rng &gt; AND input_iterator&lt; P &gt; AND sentinel_for&lt; <a class="el" href="structS.html">S</a></td></tr>
+<tr class="separator:a324426f8cde0f5132911fd11ec1328a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1b3e791e7ef2f2277f0ef8d48176a3e"><td class="memItemLeft" align="right" valign="top"><a id="ad1b3e791e7ef2f2277f0ef8d48176a3e"></a>
+I&#160;</td><td class="memItemRight" valign="bottom"><b>AND</b> (!range&lt; <a class="el" href="structS.html">S</a> &gt;)) insert_result_t&lt; Rng</td></tr>
+<tr class="separator:ad1b3e791e7ef2f2277f0ef8d48176a3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adaa836fe33be1f4ce2063789a97a68c2"><td class="memItemLeft" align="right" valign="top"><a id="adaa836fe33be1f4ce2063789a97a68c2"></a>
+I <a class="el" href="structS.html">S</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (Rng &amp;&amp;rng, P p, I i, <a class="el" href="structS.html">S</a> j) const</td></tr>
+<tr class="separator:adaa836fe33be1f4ce2063789a97a68c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a6755078caa29f08886d6714f52774de7"><td class="memItemLeft" align="right" valign="top"><a id="a6755078caa29f08886d6714f52774de7"></a>
+I&#160;</td><td class="memItemRight" valign="bottom"><b>I</b></td></tr>
+<tr class="separator:a6755078caa29f08886d6714f52774de7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adffa2d46fe96fbe97ef3d41c47684c33"><td class="memItemLeft" align="right" valign="top"><a id="adffa2d46fe96fbe97ef3d41c47684c33"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>I</b></td></tr>
+<tr class="separator:adffa2d46fe96fbe97ef3d41c47684c33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c22b0c3b235dd4ca960fcf04fa36b4d"><td class="memItemLeft" align="right" valign="top"><a id="a3c22b0c3b235dd4ca960fcf04fa36b4d"></a>
+I&#160;</td><td class="memItemRight" valign="bottom"><b>P</b></td></tr>
+<tr class="separator:a3c22b0c3b235dd4ca960fcf04fa36b4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>/.automount/home/home__home1/institut_3a/silva/NanoMUSiC/NanoMUSiC/MUSiC/external/range-v3/include/range/v3/action/<a class="el" href="insert_8hpp_source.html">insert.hpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.8.18
+</small></address>
+</body>
+</html>

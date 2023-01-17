@@ -1,0 +1,37 @@
+# Debug levels are:
+#    - 0: Display only ERRORS/EXCEPTIONS
+#    - 1: Display also WARNINGS
+#    - 2: Display also INFO
+#    - 3: Display also DEBUG
+#    - 4: Display also verbose DEBUG
+
+# By default, debug = 1, means only WARNINGS will be displayed.
+# (ERRORS should always be handled with help of exceptions!)
+
+# The debug information is meant to be written to stderr.
+# Additionally there is "normal" program output that goes to stdout.
+
+# The output formatting should be the following:
+# "[<LEVEL>] (<invoking_class>): <message>"
+# e.g.:
+# "[DEBUG] (ParticleMatcher): Something's fishy!"
+# Please keep to that.
+
+[music]
+output = 'test_data_2017'
+debug = 0
+number_of_events = 100
+number_of_skip_events = 0
+is_data = false
+xsections = '$MUSIC_CONFIG/MC/scales.txt'
+config = '$MUSIC_CONFIG/configs/MC.cfg'
+year = '2017'
+output_file = '' # if empty, constructed from process
+process = 'SingleMuon_2016'
+dataset = '/foo/bar/abc/NANOAODSIM'
+hash = 'dummyhash'
+cacheread = true
+input_files = [
+    'root://cms-xrd-global.cern.ch///store/data/Run2017C/SingleMuon/NANOAOD/UL2017_MiniAODv2_NanoAODv9-v1/120000/037CED2F-27B3-DB4A-9A9D-C588589EDCE7.root',
+    'root://cms-xrd-global.cern.ch///store/data/Run2017C/SingleMuon/NANOAOD/UL2017_MiniAODv2_NanoAODv9-v1/120000/056C66FC-4143-4546-9861-D089AFFB4E55.root',
+]

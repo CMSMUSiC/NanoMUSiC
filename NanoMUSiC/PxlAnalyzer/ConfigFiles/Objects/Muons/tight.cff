@@ -1,0 +1,16 @@
+# Tight ID (2015)
+# https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2?rev=15 (10.07.2015)
+# 
+Muon.TightID.UseBool = 0
+Muon.TightID.BoolName = isTightMuon
+Muon.TightID.IsGlobalMuon = 1
+Muon.TightID.IsPFMuon = 1
+Muon.TightID.NormalizedChi2.max = 10
+Muon.TightID.VHitsMuonSys.min = 0
+Muon.TightID.NMatchedStations.min = 1
+Muon.TightID.Dxy.max = 0.2
+Muon.TightID.Dz.max = 0.5
+Muon.TightID.VHitsPixel.min = 0
+Muon.TightID.TrackerLayersWithMeas.min = 5
+#
+# End Tight ID

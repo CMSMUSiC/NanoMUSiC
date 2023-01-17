@@ -1,0 +1,23 @@
+import "$PXLANA/ConfigFiles/Objects/jet.cff" with "Jet" as "FatJet"
+
+FatJet.use = 0
+FatJet.UsePUPPI = 0
+FatJet.PUPPI.SDMassCorrection = "$PXLANA/ConfigFiles/ConfigInputs/puppiCorr.root"
+FatJet.Type.Gen = ""
+FatJet.Type.Rec = "AK8"
+FatJet.pt.min = 200
+
+FatJet.ID.Tag = 0
+
+FatJet.WJets.use = 0
+FatJet.WJets.Algo = "prunedMass"
+FatJet.WJets.tau1 = "tau1"
+FatJet.WJets.tau2 = "tau2"
+FatJet.WJets.mass.min = 65
+FatJet.WJets.mass.max = 95
+FatJet.WJets.tau.max = 0.4
+
+FatJet.Resolution.UnmatchedFile = "$PXLANALYZER_BASE/ConfigFiles/ConfigInputs/Summer16_25nsV1_MC_PtResolution_AK8PFchs.txt"
+FatJet.Resolution.SFFile = "$PXLANALYZER_BASE/ConfigFiles/ConfigInputs/Summer16_25nsV1_MC_SF_AK8PFchs.txt"
+
+FatJet.Error.JESFile = "$PXLANALYZER_BASE/ConfigFiles/ConfigInputs/Summer16_23Sep2016V4_MC_UncertaintySources_AK8PFchs.txt"

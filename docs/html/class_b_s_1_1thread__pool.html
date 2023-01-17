@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8"/>
+  <title>BS::thread_pool class | NanoMUSiC MUSiC analysis code, for NanoAOD samples</title>
+  <link href="favicon-dark.png" rel="icon" type="image/png"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <meta content="#22272e" name="theme-color"/>
+  <link href="poxy.css" referrerpolicy="no-referrer" rel="stylesheet"/>
+  <script src="poxy.js"></script>
+  <script>initialize_theme("dark");</script>
+  <meta content="NanoMUSiC" name="twitter:title"/>
+  <meta content="NanoMUSiC" property="og:title"/>
+  <meta content="NanoMUSiC" itemprop="name"/>
+  <meta content="MUSiC Team @ RWTH Aachen 3A" name="author"/>
+  <meta content="MUSiC Team @ RWTH Aachen 3A" property="article:author"/>
+  <meta content="MUSiC analysis code, for NanoAOD samples" name="description"/>
+  <meta content="MUSiC analysis code, for NanoAOD samples" name="twitter:description"/>
+  <meta content="MUSiC analysis code, for NanoAOD samples" property="og:description"/>
+  <meta content="MUSiC analysis code, for NanoAOD samples" itemprop="description"/>
+  <meta content="telephone=no" name="format-detection"/>
+  <meta content="Poxy v0.7.1" name="generator"/>
+  <meta content="strict-origin-when-cross-origin" name="referrer"/>
+  <style>div.poxy-main-banner { padding: 2rem; }</style>
+</head>
+<body>
+<header><nav id="navigation">
+  <div class="m-container">
+    <div class="m-row">
+      <a class="m-col-t-8 m-col-m-none m-left-m" href="index.html" id="m-navbar-brand">NanoMUSiC <span class="m-thin">MUSiC analysis code, for NanoAOD samples</span></a>
+      <div class="m-col-t-4 m-hide-m m-text-right m-nopadr">
+        <a class="m-doc-search-icon" href="#search" onclick="return showSearch()" title="Search"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+          <path d="m6 0c-3.31 0-6 2.69-6 6 0 3.31 2.69 6 6 6 1.49 0 2.85-0.541 3.89-1.44-0.0164 0.338 0.147 0.759 0.5 1.15l3.22 3.79c0.552 0.614 1.45 0.665 2 0.115 0.55-0.55 0.499-1.45-0.115-2l-3.79-3.22c-0.392-0.353-0.812-0.515-1.15-0.5 0.895-1.05 1.44-2.41 1.44-3.89 0-3.31-2.69-6-6-6zm0 1.56a4.44 4.44 0 0 1 4.44 4.44 4.44 4.44 0 0 1-4.44 4.44 4.44 4.44 0 0 1-4.44-4.44 4.44 4.44 0 0 1 4.44-4.44z" id="m-doc-search-icon-path"></path>
+        </svg></a>
+        <a href="#navigation" id="m-navbar-show" title="Show navigation"></a>
+        <a href="#" id="m-navbar-hide" title="Hide navigation"></a>
+      </div>
+      <div class="m-col-t-12 m-show-m m-col-m-none m-right-m" id="m-navbar-collapse">
+        <div class="m-row">
+          <ol class="m-col-t-6 m-col-m-none">
+            <li><a href="pages.html">Pages</a></li>
+            <li><a href="annotated.html">Classes</a></li>
+            <li><a href="files.html">Files</a></li>
+          </ol>
+          <ol class="m-col-t-6 m-col-m-none" start="4">
+            <li><a class="poxy-icon github poxy-external" href="https://github.com/CMSMUSiC/NanoMUSiC/" target="_blank"><svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+	<path d="M25,1.23a24.37,24.37,0,0,0-7.7,47.5C18.51,49,19,48.2,19,47.56s0-2.12,0-4.15c-6.78,1.47-8.21-3.27-8.21-3.27C9.61,37.33,8,36.58,8,36.58c-2.21-1.51.17-1.48.17-1.48a5.12,5.12,0,0,1,3.73,2.51c2.17,3.72,5.7,2.65,7.09,2a5.25,5.25,0,0,1,1.55-3.26c-5.41-.61-11.1-2.7-11.1-12A9.41,9.41,0,0,1,12,17.79a8.75,8.75,0,0,1,.24-6.45s2-.66,6.7,2.49a23.1,23.1,0,0,1,12.2,0c4.66-3.15,6.7-2.49,6.7-2.49A8.75,8.75,0,0,1,38,17.79a9.41,9.41,0,0,1,2.51,6.54c0,9.36-5.7,11.42-11.13,12a5.83,5.83,0,0,1,1.65,4.51c0,3.26,0,5.89,0,6.69,0,.65.44,1.41,1.68,1.17A24.38,24.38,0,0,0,25,1.23Z" fill="currentColor"></path>
+</svg>
+</a></li>
+            <li><a class="poxy-icon theme" href="#poxy-theme-switch" id="poxy-theme-switch" onclick="toggle_theme();"><svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+	<circle cx="185.6708" cy="183.8122" fill="currentColor" r="65.625"></circle>
+	<path d="M185.6708,87.5622a13.1256,13.1256,0,0,0,13.125-13.125V52.5622a13.125,13.125,0,1,0-26.25,0v21.875A13.1257,13.1257,0,0,0,185.6708,87.5622Z" fill="currentColor"></path>
+	<path d="M99.051,115.7519a13.1236,13.1236,0,1,0,18.56-18.56L102.1442,81.726a13.1236,13.1236,0,0,0-18.5595,18.56Z" fill="currentColor"></path>
+	<path d="M89.4208,183.8122a13.1257,13.1257,0,0,0-13.125-13.125H54.4208a13.125,13.125,0,0,0,0,26.25h21.875A13.1256,13.1256,0,0,0,89.4208,183.8122Z" fill="currentColor"></path>
+	<path d="M99.051,251.8725,83.5847,267.3431a13.1236,13.1236,0,1,0,18.56,18.56l15.4663-15.4706a13.1236,13.1236,0,1,0-18.5595-18.56Z" fill="currentColor"></path>
+	<path d="M185.6708,280.0622a13.1258,13.1258,0,0,0-13.125,13.125v21.875a13.125,13.125,0,0,0,26.25,0v-21.875A13.1257,13.1257,0,0,0,185.6708,280.0622Z" fill="currentColor"></path>
+	<path d="M272.2907,251.8725a13.1236,13.1236,0,1,0-18.56,18.56l15.4663,15.4706a13.1236,13.1236,0,1,0,18.56-18.56Z" fill="currentColor"></path>
+	<path d="M330.0458,183.8122a13.1257,13.1257,0,0,0-13.125-13.125h-21.875a13.125,13.125,0,0,0,0,26.25h21.875A13.1256,13.1256,0,0,0,330.0458,183.8122Z" fill="currentColor"></path>
+	<path d="M263.0109,119.5971a13.0824,13.0824,0,0,0,9.28-3.8452l15.4663-15.4663a13.1236,13.1236,0,1,0-18.56-18.56L253.7312,97.1923a13.125,13.125,0,0,0,9.28,22.4048Z" fill="currentColor"></path>
+	<path d="M456.9379,401.6714a63.97,63.97,0,0,1-14.9963,7.2055c-19.6448,6.5283-41.8787,2.9566-58.1439-9.8523a68.9311,68.9311,0,0,1-10.835-10.8339c-12.8088-16.2663-16.3806-38.5-9.8523-58.1471a63.8444,63.8444,0,0,1,7.2077-14.9931,8.8036,8.8036,0,0,0-10.1172-13.3034,87.5188,87.5188,0,1,0,110.0372,110.04A8.8,8.8,0,0,0,456.9379,401.6714Z" fill="currentColor"></path>
+</svg>
+</a></li>
+            <li class="m-show-m"><a class="m-doc-search-icon" href="#search" onclick="return showSearch()" title="Search"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+              <use href="#m-doc-search-icon-path"></use>
+            </svg></a></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav></header>
+<main><article>
+  <div class="m-container m-container-inflatable">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        <h1>
+          <span class="m-breadcrumb"><a href="namespace_b_s.html">BS</a>::<wbr/></span>thread_pool <span class="m-thin">class</span>
+        </h1>
+        <p>A fast, lightweight, and easy-to-use C++17 thread pool class.</p>
+        <nav class="m-block m-default poxy-toc">
+          <h3>Contents</h3>
+          <ul>
+            <li>
+              Reference
+              <ul>
+                <li><a href="#typeless-methods">Constructors, destructors, conversion operators</a></li>
+                <li><a href="#pub-methods">Public functions</a></li>
+              </ul>
+            </li>
+          </ul>
+        </nav>
+        <section id="typeless-methods">
+          <h2><a href="#typeless-methods">Constructors, destructors, conversion operators</a></h2>
+          <dl class="m-doc">
+            <dt>
+              <span class="m-doc-wrap-bumper"><a class="m-doc" href="#af0705b5edcf3809e4f133272e8070d12">thread_pool</a>(</span><span class="m-doc-wrap">const <a class="m-doc" href="namespace_b_s.html#a7bb1747ef283bd1349183c445ee89aaa">concurrency_<wbr/>t</a> thread_count_ = 0)</span>
+            </dt>
+            <dd>Construct a new thread pool.</dd>
+            <dt id="a1f7cc32367d0d0c020bf103782506998">
+              <span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a1f7cc32367d0d0c020bf103782506998">~thread_pool</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd>Destruct the thread pool. Waits for all tasks to complete, then destroys all threads. Note that if the pool is paused, then any tasks still in the queue will never be executed.</dd>
+          </dl>
+        </section>
+        <section id="pub-methods">
+          <h2><a href="#pub-methods">Public functions</a></h2>
+          <dl class="m-doc">
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc" href="#ab5faf242cb0eacbb5c1142a2bd966468">get_tasks_queued</a>(</span><span class="m-doc-wrap">) const -&gt; <a class="m-doc poxy-injected poxy-external" href="https://en.cppreference.com/w/cpp/types/size_t" target="_blank">size_t</a></span>
+            </dt>
+            <dd>Get the number of tasks currently waiting in the queue to be executed by the threads.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc" href="#a07b4d97e3a9e40e3228e2ed1f9a717cc">get_tasks_running</a>(</span><span class="m-doc-wrap">) const -&gt; <a class="m-doc poxy-injected poxy-external" href="https://en.cppreference.com/w/cpp/types/size_t" target="_blank">size_t</a></span>
+            </dt>
+            <dd>Get the number of tasks currently being executed by the threads.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc" href="#afdec64ff8998d66017cc185ae397e064">get_tasks_total</a>(</span><span class="m-doc-wrap">) const -&gt; <a class="m-doc poxy-injected poxy-external" href="https://en.cppreference.com/w/cpp/types/size_t" target="_blank">size_t</a></span>
+            </dt>
+            <dd>Get the total number of unfinished tasks: either still in the queue, or running in a thread. Note that <a class="m-doc" href="class_b_s_1_1thread__pool.html#afdec64ff8998d66017cc185ae397e064">get_<wbr/>tasks_<wbr/>total()</a> == <a class="m-doc" href="class_b_s_1_1thread__pool.html#ab5faf242cb0eacbb5c1142a2bd966468">get_<wbr/>tasks_<wbr/>queued()</a> + <a class="m-doc" href="class_b_s_1_1thread__pool.html#a07b4d97e3a9e40e3228e2ed1f9a717cc">get_<wbr/>tasks_<wbr/>running()</a>.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc" href="#afe1cb80839e30f218818e99af4d1dc64">get_thread_count</a>(</span><span class="m-doc-wrap">) const -&gt; <a class="m-doc" href="namespace_b_s.html#a7bb1747ef283bd1349183c445ee89aaa">concurrency_<wbr/>t</a></span>
+            </dt>
+            <dd>Get the number of threads in the pool.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc" href="#adc7938f7b2b9140c3f6e729b48db79b2">is_paused</a>(</span><span class="m-doc-wrap">) const -&gt; bool</span>
+            </dt>
+            <dd>Check whether the pool is currently paused.</dd>
+            <dt>
+              <div class="m-doc-template">template&lt;typename F, typename T1, typename T2, typename T = <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/types/common_type.html" target="_blank">std::<wbr/>common_type_t</a>&lt;T1, T2&gt;, typename R = <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/types/result_of.html" target="_blank">std::<wbr/>invoke_result_t</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/types/decay.html" target="_blank">std::<wbr/>decay_t</a>&lt;F&gt;, T, T&gt;&gt;</div>
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc" href="#a7567b2d637a74178f069265f969649c8">parallelize_loop</a>(</span><span class="m-doc-wrap">const T1 first_index,
+              const T2 index_after_last,
+              F&amp;&amp; loop,
+              const <a class="m-doc poxy-injected poxy-external" href="https://en.cppreference.com/w/cpp/types/size_t" target="_blank">size_t</a> num_blocks = 0) -&gt; <a class="m-doc" href="class_b_s_1_1multi__future.html">multi_<wbr/>future</a>&lt;R&gt;</span>
+            </dt>
+            <dd>Parallelize a loop by automatically splitting it into blocks and submitting each block separately to the queue. Returns a <a class="m-doc" href="class_b_s_1_1multi__future.html">multi_<wbr/>future</a> object that contains the futures for all of the blocks.</dd>
+            <dt>
+              <div class="m-doc-template">template&lt;typename F, typename T, typename R = <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/types/result_of.html" target="_blank">std::<wbr/>invoke_result_t</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/types/decay.html" target="_blank">std::<wbr/>decay_t</a>&lt;F&gt;, T, T&gt;&gt;</div>
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc" href="#a9a1874dbd7bc21887cab0a18167ce984">parallelize_loop</a>(</span><span class="m-doc-wrap">const T index_after_last,
+              F&amp;&amp; loop,
+              const <a class="m-doc poxy-injected poxy-external" href="https://en.cppreference.com/w/cpp/types/size_t" target="_blank">size_t</a> num_blocks = 0) -&gt; <a class="m-doc" href="class_b_s_1_1multi__future.html">multi_<wbr/>future</a>&lt;R&gt;</span>
+            </dt>
+            <dd>Parallelize a loop by automatically splitting it into blocks and submitting each block separately to the queue. Returns a <a class="m-doc" href="class_b_s_1_1multi__future.html">multi_<wbr/>future</a> object that contains the futures for all of the blocks. This overload is used for the special case where the first index is 0.</dd>
+            <dt id="aefb5f1e179eb97f6458d4f77fbb331fd">
+              <span class="m-doc-wrap-bumper">void <a class="m-doc-self" href="#aefb5f1e179eb97f6458d4f77fbb331fd">pause</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd>Pause the pool. The workers will temporarily stop retrieving new tasks out of the queue, although any tasks already executed will keep running until they are finished.</dd>
+            <dt>
+              <div class="m-doc-template">template&lt;typename F, typename T1, typename T2, typename T = <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/types/common_type.html" target="_blank">std::<wbr/>common_type_t</a>&lt;T1, T2&gt;&gt;</div>
+              <span class="m-doc-wrap-bumper">void <a class="m-doc" href="#ae7cec549d4a8729beac50f5eba3ec63f">push_loop</a>(</span><span class="m-doc-wrap">const T1 first_index,
+              const T2 index_after_last,
+              F&amp;&amp; loop,
+              const <a class="m-doc poxy-injected poxy-external" href="https://en.cppreference.com/w/cpp/types/size_t" target="_blank">size_t</a> num_blocks = 0)</span>
+            </dt>
+            <dd>Parallelize a loop by automatically splitting it into blocks and submitting each block separately to the queue. Does not return a <a class="m-doc" href="class_b_s_1_1multi__future.html">multi_<wbr/>future</a>, so the user must use <a class="m-doc" href="class_b_s_1_1thread__pool.html#a1e16153b1a14b5b4d8191168ccf6e4b8">wait_<wbr/>for_<wbr/>tasks()</a> or some other method to ensure that the loop finishes executing, otherwise bad things will happen.</dd>
+            <dt>
+              <div class="m-doc-template">template&lt;typename F, typename T&gt;</div>
+              <span class="m-doc-wrap-bumper">void <a class="m-doc" href="#a2ffca1428e1f111220b5f9aed9ff9eac">push_loop</a>(</span><span class="m-doc-wrap">const T index_after_last,
+              F&amp;&amp; loop,
+              const <a class="m-doc poxy-injected poxy-external" href="https://en.cppreference.com/w/cpp/types/size_t" target="_blank">size_t</a> num_blocks = 0)</span>
+            </dt>
+            <dd>Parallelize a loop by automatically splitting it into blocks and submitting each block separately to the queue. Does not return a <a class="m-doc" href="class_b_s_1_1multi__future.html">multi_<wbr/>future</a>, so the user must use <a class="m-doc" href="class_b_s_1_1thread__pool.html#a1e16153b1a14b5b4d8191168ccf6e4b8">wait_<wbr/>for_<wbr/>tasks()</a> or some other method to ensure that the loop finishes executing, otherwise bad things will happen. This overload is used for the special case where the first index is 0.</dd>
+            <dt>
+              <div class="m-doc-template">template&lt;typename F, typename... A&gt;</div>
+              <span class="m-doc-wrap-bumper">void <a class="m-doc" href="#a2ebd481672891be26e73f19f70b38e01">push_task</a>(</span><span class="m-doc-wrap">F&amp;&amp; task,
+              A &amp;&amp; ... args)</span>
+            </dt>
+            <dd>Push a function with zero or more arguments, but no return value, into the task queue. Does not return a future, so the user must use <a class="m-doc" href="class_b_s_1_1thread__pool.html#a1e16153b1a14b5b4d8191168ccf6e4b8">wait_<wbr/>for_<wbr/>tasks()</a> or some other method to ensure that the task finishes executing, otherwise bad things will happen.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">void <a class="m-doc" href="#a5d3623b19c51a513fe4612b2157b0314">reset</a>(</span><span class="m-doc-wrap">const <a class="m-doc" href="namespace_b_s.html#a7bb1747ef283bd1349183c445ee89aaa">concurrency_<wbr/>t</a> thread_count_ = 0)</span>
+            </dt>
+            <dd>Reset the number of threads in the pool. Waits for all currently running tasks to be completed, then destroys all threads in the pool and creates a new thread pool with the new number of threads. Any tasks that were waiting in the queue before the pool was reset will then be executed by the new threads. If the pool was paused before resetting it, the new pool will be paused as well.</dd>
+            <dt>
+              <div class="m-doc-template">template&lt;typename F, typename... A, typename R = <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/types/result_of.html" target="_blank">std::<wbr/>invoke_result_t</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/types/decay.html" target="_blank">std::<wbr/>decay_t</a>&lt;F&gt;, <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/types/decay.html" target="_blank">std::<wbr/>decay_t</a>&lt;A&gt;...&gt;&gt;</div>
+              <span class="m-doc-wrap-bumper">auto <a class="m-doc" href="#a49a3930b4a4094be01ba61c0a63cfffd">submit</a>(</span><span class="m-doc-wrap">F&amp;&amp; task,
+              A &amp;&amp; ... args) -&gt; <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/thread/future.html" target="_blank">std::<wbr/>future</a>&lt;R&gt;</span>
+            </dt>
+            <dd>Submit a function with zero or more arguments into the task queue. If the function has a return value, get a future for the eventual returned value. If the function has no return value, get an std::future&lt;void&gt; which can be used to wait until the task finishes.</dd>
+            <dt id="ad57048e0479f878af3ac3a27031a2d6e">
+              <span class="m-doc-wrap-bumper">void <a class="m-doc-self" href="#ad57048e0479f878af3ac3a27031a2d6e">unpause</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd>Unpause the pool. The workers will resume retrieving new tasks out of the queue.</dd>
+            <dt id="a1e16153b1a14b5b4d8191168ccf6e4b8">
+              <span class="m-doc-wrap-bumper">void <a class="m-doc-self" href="#a1e16153b1a14b5b4d8191168ccf6e4b8">wait_for_tasks</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd>Wait for tasks to be completed. Normally, this function waits for all tasks, both those that are currently running in the threads and those that are still waiting in the queue. However, if the pool is paused, this function only waits for the currently running tasks (otherwise it would wait forever). Note: To wait for just one specific task, use <a class="m-doc" href="class_b_s_1_1thread__pool.html#a49a3930b4a4094be01ba61c0a63cfffd">submit()</a> instead, and call the wait() member function of the generated future.</dd>
+          </dl>
+        </section>
+        <section>
+          <h2>Function documentation</h2>
+          <section class="m-doc-details" id="af0705b5edcf3809e4f133272e8070d12"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"> BS::<wbr/>thread_pool::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#af0705b5edcf3809e4f133272e8070d12">thread_pool</a>(</span><span class="m-doc-wrap">const <a class="m-doc" href="namespace_b_s.html#a7bb1747ef283bd1349183c445ee89aaa">concurrency_<wbr/>t</a> thread_count_ = 0)</span></span>
+            </h3>
+            <p>Construct a new thread pool.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">thread_count_</td>
+                  <td>The number of threads to use. The default value is the total number of hardware threads available, as reported by the implementation. This is usually determined by the number of cores in the CPU. If a core is hyperthreaded, it will count as two threads.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="ab5faf242cb0eacbb5c1142a2bd966468"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><a class="m-doc poxy-injected poxy-external" href="https://en.cppreference.com/w/cpp/types/size_t" target="_blank">size_t</a> BS::<wbr/>thread_pool::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#ab5faf242cb0eacbb5c1142a2bd966468">get_tasks_queued</a>(</span><span class="m-doc-wrap">) const</span></span>
+            </h3>
+            <p>Get the number of tasks currently waiting in the queue to be executed by the threads.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <tfoot>
+                <tr>
+                  <th style="width: 1%">Returns</th>
+                  <td>The number of queued tasks.</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a07b4d97e3a9e40e3228e2ed1f9a717cc"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><a class="m-doc poxy-injected poxy-external" href="https://en.cppreference.com/w/cpp/types/size_t" target="_blank">size_t</a> BS::<wbr/>thread_pool::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a07b4d97e3a9e40e3228e2ed1f9a717cc">get_tasks_running</a>(</span><span class="m-doc-wrap">) const</span></span>
+            </h3>
+            <p>Get the number of tasks currently being executed by the threads.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <tfoot>
+                <tr>
+                  <th style="width: 1%">Returns</th>
+                  <td>The number of running tasks.</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="afdec64ff8998d66017cc185ae397e064"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><a class="m-doc poxy-injected poxy-external" href="https://en.cppreference.com/w/cpp/types/size_t" target="_blank">size_t</a> BS::<wbr/>thread_pool::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#afdec64ff8998d66017cc185ae397e064">get_tasks_total</a>(</span><span class="m-doc-wrap">) const</span></span>
+            </h3>
+            <p>Get the total number of unfinished tasks: either still in the queue, or running in a thread. Note that <a class="m-doc" href="class_b_s_1_1thread__pool.html#afdec64ff8998d66017cc185ae397e064">get_<wbr/>tasks_<wbr/>total()</a> == <a class="m-doc" href="class_b_s_1_1thread__pool.html#ab5faf242cb0eacbb5c1142a2bd966468">get_<wbr/>tasks_<wbr/>queued()</a> + <a class="m-doc" href="class_b_s_1_1thread__pool.html#a07b4d97e3a9e40e3228e2ed1f9a717cc">get_<wbr/>tasks_<wbr/>running()</a>.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <tfoot>
+                <tr>
+                  <th style="width: 1%">Returns</th>
+                  <td>The total number of tasks.</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="afe1cb80839e30f218818e99af4d1dc64"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><a class="m-doc" href="namespace_b_s.html#a7bb1747ef283bd1349183c445ee89aaa">concurrency_<wbr/>t</a> BS::<wbr/>thread_pool::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#afe1cb80839e30f218818e99af4d1dc64">get_thread_count</a>(</span><span class="m-doc-wrap">) const</span></span>
+            </h3>
+            <p>Get the number of threads in the pool.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <tfoot>
+                <tr>
+                  <th style="width: 1%">Returns</th>
+                  <td>The number of threads.</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="adc7938f7b2b9140c3f6e729b48db79b2"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">bool BS::<wbr/>thread_pool::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#adc7938f7b2b9140c3f6e729b48db79b2">is_paused</a>(</span><span class="m-doc-wrap">) const</span></span>
+            </h3>
+            <p>Check whether the pool is currently paused.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <tfoot>
+                <tr>
+                  <th style="width: 1%">Returns</th>
+                  <td>true if the pool is paused, false if it is not paused.</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a7567b2d637a74178f069265f969649c8"><div>
+            <h3>
+              <div class="m-doc-template">
+                template&lt;typename F, typename T1, typename T2, typename T = <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/types/common_type.html" target="_blank">std::<wbr/>common_type_t</a>&lt;T1, T2&gt;, typename R = <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/types/result_of.html" target="_blank">std::<wbr/>invoke_result_t</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/types/decay.html" target="_blank">std::<wbr/>decay_t</a>&lt;F&gt;, T, T&gt;&gt;
+              </div>
+              <span class="m-doc-wrap-bumper"><a class="m-doc" href="class_b_s_1_1multi__future.html">multi_<wbr/>future</a>&lt;R&gt; BS::<wbr/>thread_pool::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a7567b2d637a74178f069265f969649c8">parallelize_loop</a>(</span><span class="m-doc-wrap">const T1 first_index,
+              const T2 index_after_last,
+              F&amp;&amp; loop,
+              const <a class="m-doc poxy-injected poxy-external" href="https://en.cppreference.com/w/cpp/types/size_t" target="_blank">size_t</a> num_blocks = 0)</span></span>
+            </h3>
+            <p>Parallelize a loop by automatically splitting it into blocks and submitting each block separately to the queue. Returns a <a class="m-doc" href="class_b_s_1_1multi__future.html">multi_<wbr/>future</a> object that contains the futures for all of the blocks.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Template parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">F</td>
+                  <td>The type of the function to loop through.</td>
+                </tr>
+                <tr>
+                  <td>T1</td>
+                  <td>The type of the first index in the loop. Should be a signed or unsigned integer.</td>
+                </tr>
+                <tr>
+                  <td>T2</td>
+                  <td>The type of the index after the last index in the loop. Should be a signed or unsigned integer. If T1 is not the same as T2, a common type will be automatically inferred.</td>
+                </tr>
+                <tr>
+                  <td>T</td>
+                  <td>The common type of T1 and T2.</td>
+                </tr>
+                <tr>
+                  <td>R</td>
+                  <td>The return value of the loop function F (can be void).</td>
+                </tr>
+              </tbody>
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>first_index</td>
+                  <td>The first index in the loop.</td>
+                </tr>
+                <tr>
+                  <td>index_after_last</td>
+                  <td>The index after the last index in the loop. The loop will iterate from first_index to (index_after_last - 1) inclusive. In other words, it will be equivalent to "for (T i = first_index; i &lt;
+index_after_last; ++i)". Note that if index_after_last == first_index, no blocks will be submitted.</td>
+                </tr>
+                <tr>
+                  <td>loop</td>
+                  <td>The function to loop through. Will be called once per block. Should take exactly two arguments: the first index in the block and the index after the last index in the block. loop(start, end) should typically involve a loop of the form "for (T i = start; i &lt; end; ++i)".</td>
+                </tr>
+                <tr>
+                  <td>num_blocks</td>
+                  <td>The maximum number of blocks to split the loop into. The default is to use the number of threads in the pool.</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td>A <a class="m-doc" href="class_b_s_1_1multi__future.html">multi_<wbr/>future</a> object that can be used to wait for all the blocks to finish. If the loop function returns a value, the <a class="m-doc" href="class_b_s_1_1multi__future.html">multi_<wbr/>future</a> object can also be used to obtain the values returned by each block.</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a9a1874dbd7bc21887cab0a18167ce984"><div>
+            <h3>
+              <div class="m-doc-template">
+                template&lt;typename F, typename T, typename R = <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/types/result_of.html" target="_blank">std::<wbr/>invoke_result_t</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/types/decay.html" target="_blank">std::<wbr/>decay_t</a>&lt;F&gt;, T, T&gt;&gt;
+              </div>
+              <span class="m-doc-wrap-bumper"><a class="m-doc" href="class_b_s_1_1multi__future.html">multi_<wbr/>future</a>&lt;R&gt; BS::<wbr/>thread_pool::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a9a1874dbd7bc21887cab0a18167ce984">parallelize_loop</a>(</span><span class="m-doc-wrap">const T index_after_last,
+              F&amp;&amp; loop,
+              const <a class="m-doc poxy-injected poxy-external" href="https://en.cppreference.com/w/cpp/types/size_t" target="_blank">size_t</a> num_blocks = 0)</span></span>
+            </h3>
+            <p>Parallelize a loop by automatically splitting it into blocks and submitting each block separately to the queue. Returns a <a class="m-doc" href="class_b_s_1_1multi__future.html">multi_<wbr/>future</a> object that contains the futures for all of the blocks. This overload is used for the special case where the first index is 0.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Template parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">F</td>
+                  <td>The type of the function to loop through.</td>
+                </tr>
+                <tr>
+                  <td>T</td>
+                  <td>The type of the loop indices. Should be a signed or unsigned integer.</td>
+                </tr>
+                <tr>
+                  <td>R</td>
+                  <td>The return value of the loop function F (can be void).</td>
+                </tr>
+              </tbody>
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>index_after_last</td>
+                  <td>The index after the last index in the loop. The loop will iterate from 0 to (index_after_last - 1) inclusive. In other words, it will be equivalent to "for (T i = 0; i &lt; index_after_last;
+++i)". Note that if index_after_last == 0, no blocks will be submitted.</td>
+                </tr>
+                <tr>
+                  <td>loop</td>
+                  <td>The function to loop through. Will be called once per block. Should take exactly two arguments: the first index in the block and the index after the last index in the block. loop(start, end) should typically involve a loop of the form "for (T i = start; i &lt; end; ++i)".</td>
+                </tr>
+                <tr>
+                  <td>num_blocks</td>
+                  <td>The maximum number of blocks to split the loop into. The default is to use the number of threads in the pool.</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td>A <a class="m-doc" href="class_b_s_1_1multi__future.html">multi_<wbr/>future</a> object that can be used to wait for all the blocks to finish. If the loop function returns a value, the <a class="m-doc" href="class_b_s_1_1multi__future.html">multi_<wbr/>future</a> object can also be used to obtain the values returned by each block.</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="ae7cec549d4a8729beac50f5eba3ec63f"><div>
+            <h3>
+              <div class="m-doc-template">
+                template&lt;typename F, typename T1, typename T2, typename T = <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/types/common_type.html" target="_blank">std::<wbr/>common_type_t</a>&lt;T1, T2&gt;&gt;
+              </div>
+              <span class="m-doc-wrap-bumper">void BS::<wbr/>thread_pool::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#ae7cec549d4a8729beac50f5eba3ec63f">push_loop</a>(</span><span class="m-doc-wrap">const T1 first_index,
+              const T2 index_after_last,
+              F&amp;&amp; loop,
+              const <a class="m-doc poxy-injected poxy-external" href="https://en.cppreference.com/w/cpp/types/size_t" target="_blank">size_t</a> num_blocks = 0)</span></span>
+            </h3>
+            <p>Parallelize a loop by automatically splitting it into blocks and submitting each block separately to the queue. Does not return a <a class="m-doc" href="class_b_s_1_1multi__future.html">multi_<wbr/>future</a>, so the user must use <a class="m-doc" href="class_b_s_1_1thread__pool.html#a1e16153b1a14b5b4d8191168ccf6e4b8">wait_<wbr/>for_<wbr/>tasks()</a> or some other method to ensure that the loop finishes executing, otherwise bad things will happen.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Template parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">F</td>
+                  <td>The type of the function to loop through.</td>
+                </tr>
+                <tr>
+                  <td>T1</td>
+                  <td>The type of the first index in the loop. Should be a signed or unsigned integer.</td>
+                </tr>
+                <tr>
+                  <td>T2</td>
+                  <td>The type of the index after the last index in the loop. Should be a signed or unsigned integer. If T1 is not the same as T2, a common type will be automatically inferred.</td>
+                </tr>
+                <tr>
+                  <td>T</td>
+                  <td>The common type of T1 and T2.</td>
+                </tr>
+              </tbody>
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>first_index</td>
+                  <td>The first index in the loop.</td>
+                </tr>
+                <tr>
+                  <td>index_after_last</td>
+                  <td>The index after the last index in the loop. The loop will iterate from first_index to (index_after_last - 1) inclusive. In other words, it will be equivalent to "for (T i = first_index; i &lt;
+index_after_last; ++i)". Note that if index_after_last == first_index, no blocks will be submitted.</td>
+                </tr>
+                <tr>
+                  <td>loop</td>
+                  <td>The function to loop through. Will be called once per block. Should take exactly two arguments: the first index in the block and the index after the last index in the block. loop(start, end) should typically involve a loop of the form "for (T i = start; i &lt; end; ++i)".</td>
+                </tr>
+                <tr>
+                  <td>num_blocks</td>
+                  <td>The maximum number of blocks to split the loop into. The default is to use the number of threads in the pool.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a2ffca1428e1f111220b5f9aed9ff9eac"><div>
+            <h3>
+              <div class="m-doc-template">
+                template&lt;typename F, typename T&gt;
+              </div>
+              <span class="m-doc-wrap-bumper">void BS::<wbr/>thread_pool::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a2ffca1428e1f111220b5f9aed9ff9eac">push_loop</a>(</span><span class="m-doc-wrap">const T index_after_last,
+              F&amp;&amp; loop,
+              const <a class="m-doc poxy-injected poxy-external" href="https://en.cppreference.com/w/cpp/types/size_t" target="_blank">size_t</a> num_blocks = 0)</span></span>
+            </h3>
+            <p>Parallelize a loop by automatically splitting it into blocks and submitting each block separately to the queue. Does not return a <a class="m-doc" href="class_b_s_1_1multi__future.html">multi_<wbr/>future</a>, so the user must use <a class="m-doc" href="class_b_s_1_1thread__pool.html#a1e16153b1a14b5b4d8191168ccf6e4b8">wait_<wbr/>for_<wbr/>tasks()</a> or some other method to ensure that the loop finishes executing, otherwise bad things will happen. This overload is used for the special case where the first index is 0.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Template parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">F</td>
+                  <td>The type of the function to loop through.</td>
+                </tr>
+                <tr>
+                  <td>T</td>
+                  <td>The type of the loop indices. Should be a signed or unsigned integer.</td>
+                </tr>
+              </tbody>
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>index_after_last</td>
+                  <td>The index after the last index in the loop. The loop will iterate from 0 to (index_after_last - 1) inclusive. In other words, it will be equivalent to "for (T i = 0; i &lt; index_after_last;
+++i)". Note that if index_after_last == 0, no blocks will be submitted.</td>
+                </tr>
+                <tr>
+                  <td>loop</td>
+                  <td>The function to loop through. Will be called once per block. Should take exactly two arguments: the first index in the block and the index after the last index in the block. loop(start, end) should typically involve a loop of the form "for (T i = start; i &lt; end; ++i)".</td>
+                </tr>
+                <tr>
+                  <td>num_blocks</td>
+                  <td>The maximum number of blocks to split the loop into. The default is to use the number of threads in the pool.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a2ebd481672891be26e73f19f70b38e01"><div>
+            <h3>
+              <div class="m-doc-template">
+                template&lt;typename F, typename... A&gt;
+              </div>
+              <span class="m-doc-wrap-bumper">void BS::<wbr/>thread_pool::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a2ebd481672891be26e73f19f70b38e01">push_task</a>(</span><span class="m-doc-wrap">F&amp;&amp; task,
+              A &amp;&amp; ... args)</span></span>
+            </h3>
+            <p>Push a function with zero or more arguments, but no return value, into the task queue. Does not return a future, so the user must use <a class="m-doc" href="class_b_s_1_1thread__pool.html#a1e16153b1a14b5b4d8191168ccf6e4b8">wait_<wbr/>for_<wbr/>tasks()</a> or some other method to ensure that the task finishes executing, otherwise bad things will happen.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Template parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">F</td>
+                  <td>The type of the function.</td>
+                </tr>
+                <tr>
+                  <td>A</td>
+                  <td>The types of the arguments.</td>
+                </tr>
+              </tbody>
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>task</td>
+                  <td>The function to push.</td>
+                </tr>
+                <tr>
+                  <td>args</td>
+                  <td>The zero or more arguments to pass to the function. Note that if the task is a class member function, the first argument must be a pointer to the object, i.e. &amp;object (or this), followed by the actual arguments.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a5d3623b19c51a513fe4612b2157b0314"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">void BS::<wbr/>thread_pool::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a5d3623b19c51a513fe4612b2157b0314">reset</a>(</span><span class="m-doc-wrap">const <a class="m-doc" href="namespace_b_s.html#a7bb1747ef283bd1349183c445ee89aaa">concurrency_<wbr/>t</a> thread_count_ = 0)</span></span>
+            </h3>
+            <p>Reset the number of threads in the pool. Waits for all currently running tasks to be completed, then destroys all threads in the pool and creates a new thread pool with the new number of threads. Any tasks that were waiting in the queue before the pool was reset will then be executed by the new threads. If the pool was paused before resetting it, the new pool will be paused as well.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">thread_count_</td>
+                  <td>The number of threads to use. The default value is the total number of hardware threads available, as reported by the implementation. This is usually determined by the number of cores in the CPU. If a core is hyperthreaded, it will count as two threads.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a49a3930b4a4094be01ba61c0a63cfffd"><div>
+            <h3>
+              <div class="m-doc-template">
+                template&lt;typename F, typename... A, typename R = <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/types/result_of.html" target="_blank">std::<wbr/>invoke_result_t</a>&lt;<a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/types/decay.html" target="_blank">std::<wbr/>decay_t</a>&lt;F&gt;, <a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/types/decay.html" target="_blank">std::<wbr/>decay_t</a>&lt;A&gt;...&gt;&gt;
+              </div>
+              <span class="m-doc-wrap-bumper"><a class="m-doc-external poxy-external" href="http://en.cppreference.com/w/cpp/thread/future.html" target="_blank">std::<wbr/>future</a>&lt;R&gt; BS::<wbr/>thread_pool::<wbr/></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a class="m-doc-self" href="#a49a3930b4a4094be01ba61c0a63cfffd">submit</a>(</span><span class="m-doc-wrap">F&amp;&amp; task,
+              A &amp;&amp; ... args)</span></span>
+            </h3>
+            <p>Submit a function with zero or more arguments into the task queue. If the function has a return value, get a future for the eventual returned value. If the function has no return value, get an std::future&lt;void&gt; which can be used to wait until the task finishes.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Template parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">F</td>
+                  <td>The type of the function.</td>
+                </tr>
+                <tr>
+                  <td>A</td>
+                  <td>The types of the zero or more arguments to pass to the function.</td>
+                </tr>
+                <tr>
+                  <td>R</td>
+                  <td>The return type of the function (can be void).</td>
+                </tr>
+              </tbody>
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>task</td>
+                  <td>The function to submit.</td>
+                </tr>
+                <tr>
+                  <td>args</td>
+                  <td>The zero or more arguments to pass to the function. Note that if the task is a class member function, the first argument must be a pointer to the object, i.e. &amp;object (or this), followed by the actual arguments.</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td>A future to be used later to wait for the function to finish executing and/or obtain its returned value if it has one.</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div></section>
+        </section>
+      </div>
+    </div>
+  </div>
+</article></main>
+<div class="m-doc-search" id="search">
+  <a href="#!" onclick="return hideSearch()"></a>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-m-8 m-push-m-2">
+        <div class="m-doc-search-header m-text m-small">
+          <div><span class="m-label m-default">Tab</span> / <span class="m-label m-default">T</span> to search, <span class="m-label m-default">Esc</span> to close</div>
+          <div id="search-symbolcount">…</div>
+        </div>
+        <div class="m-doc-search-content">
+          <form>
+            <input autocomplete="off" autofocus="autofocus" disabled="disabled" id="search-input" name="q" placeholder="Loading …" spellcheck="false" type="search"/>
+          </form>
+          <noscript class="m-text m-danger m-text-center">Unlike everything else in the docs, the search functionality <em>requires</em> JavaScript.</noscript>
+          <div class="m-text m-dim m-text-center" id="search-help">
+            <p class="m-noindent">Search for symbols, directories, files, pages or
+            modules. You can omit any prefix from the symbol or file path; adding a
+            <code>:</code> or <code>/</code> suffix lists all members of given symbol or
+            directory.</p>
+            <p class="m-noindent">Use <span class="m-label m-dim">↓</span>
+            / <span class="m-label m-dim">↑</span> to navigate through the list,
+            <span class="m-label m-dim">Enter</span> to go.
+            <span class="m-label m-dim">Tab</span> autocompletes common prefix, you can
+            copy a link to the result using <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">L</span> while <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">M</span> produces a Markdown link.</p>
+          </div>
+          <div class="m-text m-warning m-text-center" id="search-notfound">Sorry, nothing was found.</div>
+          <ul id="search-results"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="search-v2.js"></script>
+<script async="async" src="searchdata-v2.js"></script>
+<footer><nav>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        
+<a class="poxy-external" href="https://github.com/CMSMUSiC/NanoMUSiC/" target="_blank">Github</a>
+• <a class="poxy-external" href="https://github.com/CMSMUSiC/NanoMUSiC/issues" target="_blank">Report an issue</a>
+• <a class="poxy-external" href="https://github.com/marzer/tomlplusplus/blob/master/LICENSE" target="_blank">License</a>
+• <a download="" href="NanoMUSiC.tagfile.xml" target="_blank" type="text/xml">Doxygen tagfile</a>
+<br/><br/>
+Site generated using <a class="poxy-external" href="https://github.com/marzer/poxy/" target="_blank">Poxy</a>
+
+      </div>
+    </div>
+  </div>
+</nav></footer>
+
+
+</body></html>

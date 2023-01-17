@@ -1,0 +1,696 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    <meta name="generator" content="Doxygen 1.8.18" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- BEGIN opengraph metadata -->
+    <meta property="og:title" content="Doxygen Awesome" />
+    <meta property="og:image"
+        content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+    <meta property="og:description"
+        content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+    <meta property="og:url" content="https://jothepro.github.io/doxygen-awesome-css/" />
+    <!-- END opengraph metadata -->
+    <!-- BEGIN twitter metadata -->
+    <meta name="twitter:image:src"
+        content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+    <meta name="twitter:title" content="Doxygen Awesome" />
+    <meta name="twitter:description"
+        content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+    <!-- END twitter metadata -->
+    <title>NanoMUSiC: Functional</title>
+    <link href="tabs.css" rel="stylesheet" type="text/css" />
+    <link rel="icon" type="image/svg+xml" href="logo.drawio.svg" />
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="dynsections.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+    <script type="text/javascript" src="toggle-alternative-theme.js"></script>
+    <script type="text/javascript">
+        DoxygenAwesomeFragmentCopyButton.init()
+        DoxygenAwesomeDarkModeToggle.init()
+        DoxygenAwesomeParagraphLink.init()
+        DoxygenAwesomeInteractiveToc.init()
+    </script>
+    <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+    <link href="doxygen.css" rel="stylesheet" type="text/css" />
+    <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-alternative.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+    <!-- https://tholman.com/github-corners/ -->
+    <a href="https://github.com/cmsmusic/nanomusic" class="github-corner" title="View source on GitHub" target="_blank">
+        <svg viewBox="0 0 250 250" width="40" height="40"
+            style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+            <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+            <path
+                d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+                fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+            <path
+                d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+                fill="currentColor" class="octo-body"></path>
+        </svg></a>
+    <style>
+        .github-corner:hover .octo-arm {
+            animation: octocat-wave 560ms ease-in-out
+        }
+        @keyframes octocat-wave {
+            0%,
+            100% {
+                transform: rotate(0)
+            }
+            20%,
+            60% {
+                transform: rotate(-25deg)
+            }
+            40%,
+            80% {
+                transform: rotate(10deg)
+            }
+        }
+        @media (max-width:500px) {
+            .github-corner:hover .octo-arm {
+                animation: none
+            }
+            .github-corner .octo-arm {
+                animation: octocat-wave 560ms ease-in-out
+            }
+        }
+    </style>
+    <div id="top">
+        <!-- do not remove this div, it is closed by doxygen! -->
+        <div id="titlearea">
+            <table cellspacing="0" cellpadding="0">
+                <tbody>
+                    <tr style="height: 56px;">
+                        <td id="projectalign" style="padding-left: 0.5em;">
+                            <div id="projectname">NanoMUSiC
+                            </div>
+                            <div id="projectbrief">CMS MUSiC for NanoAOD</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- end header part --><!-- Generated by Doxygen 1.8.18 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'Search');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
+  <div class="headertitle">
+<div class="title">Functional</div>  </div>
+</div><!--header-->
+<div class="contents">
+
+<p>Function and function object utilities.  
+<a href="#details">More...</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespaceranges_1_1cpp20"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceranges_1_1cpp20.html">ranges::cpp20</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1plus.html">ranges::plus</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1minus.html">ranges::minus</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1multiplies.html">ranges::multiplies</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1bitwise__or.html">ranges::bitwise_or</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1convert__to.html">ranges::convert_to&lt; T &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1coerce.html">ranges::coerce&lt; T &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1coerce_3_01T_01const_01_4.html">ranges::coerce&lt; T const &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1coerce_3_01T_01_6_01_4.html">ranges::coerce&lt; T &amp; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1coerce_3_01T_01_6_6_01_4.html">ranges::coerce&lt; T &amp;&amp; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1bind__element.html">ranges::bind_element&lt; T &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1bind__element_3_01std_1_1reference__wrapper_3_01T_01_4_01_4.html">ranges::bind_element&lt; std::reference_wrapper&lt; T &gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1bind__element_3_01reference__wrapper_3_01T_01_4_01_4.html">ranges::bind_element&lt; reference_wrapper&lt; T &gt; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1protector.html">ranges::protector&lt; Bind &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1protect__fn.html">ranges::protect_fn</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1equal__to.html">ranges::equal_to</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1not__equal__to.html">ranges::not_equal_to</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1less.html">ranges::less</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1less__equal.html">ranges::less_equal</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1greater__equal.html">ranges::greater_equal</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1greater.html">ranges::greater</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1composed.html">ranges::composed&lt; Second, First &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1compose__fn.html">ranges::compose_fn</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1identity.html">ranges::identity</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1indirected.html">ranges::indirected&lt; Fn &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1indirect__fn.html">ranges::indirect_fn</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1invoke__fn.html">ranges::invoke_fn</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1invoke__result.html">ranges::invoke_result&lt; Fun, Args &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1logical__negate.html">ranges::logical_negate&lt; FD &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1not__fn__fn.html">ranges::not_fn_fn</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1transformed.html">ranges::transformed&lt; Fn1, Fn2 &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1on__fn.html">ranges::on_fn</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1overloaded.html">ranges::overloaded&lt; Ts &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1overloaded_3_4.html">ranges::overloaded&lt;&gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1overloaded_3_01First_00_01Rest_8_8_8_01_4.html">ranges::overloaded&lt; First, Rest... &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1overload__fn.html">ranges::overload_fn</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1make__pipeable__fn.html">ranges::make_pipeable_fn</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1pipeable__access.html">ranges::pipeable_access</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1pipeable__base.html">ranges::pipeable_base</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1reference__wrapper.html">ranges::reference_wrapper&lt; T &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1ref__fn.html">ranges::ref_fn</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structranges_1_1unwrap__reference__fn.html">ranges::unwrap_reference_fn</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:ga86e6d95df90418e8b226f8aba2a7c481"><td class="memTemplParams" colspan="2"><a id="ga86e6d95df90418e8b226f8aba2a7c481"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ga86e6d95df90418e8b226f8aba2a7c481"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>ranges::bind_element_t</b> = <a class="el" href="group__invocation.html#ga08e2193149605769f6052795ff0a87b1">meta::_t</a>&lt; <a class="el" href="structranges_1_1bind__element.html">bind_element</a>&lt; <a class="el" href="structT.html">T</a> &gt; &gt;</td></tr>
+<tr class="separator:ga86e6d95df90418e8b226f8aba2a7c481"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaaead4e1a1fb7012f09ac5242c6d6693b"><td class="memTemplParams" colspan="2"><a id="gaaead4e1a1fb7012f09ac5242c6d6693b"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:gaaead4e1a1fb7012f09ac5242c6d6693b"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>ranges::is_reference_wrapper</b> = <a class="el" href="group__integral.html#ga8cd5c79222ce70365f7469f35ece905a">meta::bool_</a>&lt; is_reference_wrapper_v&lt; <a class="el" href="structT.html">T</a> &gt; &gt;</td></tr>
+<tr class="separator:gaaead4e1a1fb7012f09ac5242c6d6693b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga78d165a5d2f2b9fbb69754ec22e1bc5f"><td class="memTemplParams" colspan="2"><a id="ga78d165a5d2f2b9fbb69754ec22e1bc5f"></a>
+template&lt;typename Fun , typename... Args&gt; </td></tr>
+<tr class="memitem:ga78d165a5d2f2b9fbb69754ec22e1bc5f"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>ranges::invoke_result_t</b> = decltype(invoke(std::declval&lt; Fun &gt;(), std::declval&lt; Args &gt;()...))</td></tr>
+<tr class="separator:ga78d165a5d2f2b9fbb69754ec22e1bc5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2dc27e88b4169c6a01c45e272291643e"><td class="memTemplParams" colspan="2"><a id="ga2dc27e88b4169c6a01c45e272291643e"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ga2dc27e88b4169c6a01c45e272291643e"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>ranges::is_pipeable</b> = <a class="el" href="group__integral.html#ga8cd5c79222ce70365f7469f35ece905a">meta::bool_</a>&lt; is_pipeable_v&lt; <a class="el" href="structT.html">T</a> &gt; &gt;</td></tr>
+<tr class="separator:ga2dc27e88b4169c6a01c45e272291643e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5015a7f7f962a144ca99da56470018c5"><td class="memItemLeft" align="right" valign="top"><a id="ga5015a7f7f962a144ca99da56470018c5"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ranges::instead</b> = <a class="el" href="structranges_1_1pipeable__base.html">pipeable_base</a></td></tr>
+<tr class="separator:ga5015a7f7f962a144ca99da56470018c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3f6a04e9777bb34828b4737977eb3c4a"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ga3f6a04e9777bb34828b4737977eb3c4a"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__group-functional.html#ga3f6a04e9777bb34828b4737977eb3c4a">ranges::ref_t</a> = decltype(ref(std::declval&lt; <a class="el" href="structT.html">T</a> &gt;()))</td></tr>
+<tr class="separator:ga3f6a04e9777bb34828b4737977eb3c4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga20276e9bc2c5e6c3739d36d3b25aaf3d"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ga20276e9bc2c5e6c3739d36d3b25aaf3d"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__group-functional.html#ga20276e9bc2c5e6c3739d36d3b25aaf3d">ranges::unwrap_reference_t</a> = decltype(unwrap_reference(std::declval&lt; <a class="el" href="structT.html">T</a> &gt;()))</td></tr>
+<tr class="separator:ga20276e9bc2c5e6c3739d36d3b25aaf3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ga6f748d797dbb2506bfa947cc86514b41"><td class="memTemplParams" colspan="2"><a id="ga6f748d797dbb2506bfa947cc86514b41"></a>
+template&lt;typename T , typename U  = meta::if_&lt;                 std::is_lvalue_reference&lt;T&gt;,                 std::reference_wrapper&lt;meta::_t&lt;std::remove_reference&lt;T&gt;&gt;&gt;, T &amp;&amp;&gt;&gt; </td></tr>
+<tr class="memitem:ga6f748d797dbb2506bfa947cc86514b41"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structU.html">U</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><b>ranges::bind_forward</b> (<a class="el" href="group__invocation.html#ga08e2193149605769f6052795ff0a87b1">meta::_t</a>&lt; std::remove_reference&lt; <a class="el" href="structT.html">T</a> &gt;&gt; &amp;t) noexcept</td></tr>
+<tr class="separator:ga6f748d797dbb2506bfa947cc86514b41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga081c711ce813311f82527e2959d5f2cc"><td class="memTemplParams" colspan="2"><a id="ga081c711ce813311f82527e2959d5f2cc"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ga081c711ce813311f82527e2959d5f2cc"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structT.html">T</a> &amp;&amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>ranges::bind_forward</b> (<a class="el" href="group__invocation.html#ga08e2193149605769f6052795ff0a87b1">meta::_t</a>&lt; std::remove_reference&lt; <a class="el" href="structT.html">T</a> &gt;&gt; &amp;&amp;t) noexcept</td></tr>
+<tr class="separator:ga081c711ce813311f82527e2959d5f2cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafc4ef8fe4935b2b9cc7dbfc59eeb4e44"><td class="memTemplParams" colspan="2">template&lt;typename Fun , typename... Args&gt; </td></tr>
+<tr class="memitem:gafc4ef8fe4935b2b9cc7dbfc59eeb4e44"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__group-functional.html#gafc4ef8fe4935b2b9cc7dbfc59eeb4e44">ranges::CPP_requires</a> (invocable_, requires(Fun &amp;&amp;fn)(invoke((Fun &amp;&amp;) fn, std::declval&lt; Args &gt;()...)))</td></tr>
+<tr class="memdesc:gafc4ef8fe4935b2b9cc7dbfc59eeb4e44"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <code>invocable_</code> concept.  <a href="group__group-functional.html#gafc4ef8fe4935b2b9cc7dbfc59eeb4e44">More...</a><br /></td></tr>
+<tr class="separator:gafc4ef8fe4935b2b9cc7dbfc59eeb4e44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac925363ea8a5ec98cd1f72a9bef9fbca"><td class="memTemplParams" colspan="2">template&lt;typename Fun , typename... Args&gt; </td></tr>
+<tr class="memitem:gac925363ea8a5ec98cd1f72a9bef9fbca"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__group-functional.html#gac925363ea8a5ec98cd1f72a9bef9fbca">ranges::CPP_requires</a> (predicate_, requires(Fun &amp;&amp;fn)(concepts::requires_&lt; convertible_to&lt; decltype(invoke((Fun &amp;&amp;) fn, std::declval&lt; Args &gt;()...)), bool &gt;&gt;))</td></tr>
+<tr class="memdesc:gac925363ea8a5ec98cd1f72a9bef9fbca"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <code>predicate_</code> concept.  <a href="group__group-functional.html#gac925363ea8a5ec98cd1f72a9bef9fbca">More...</a><br /></td></tr>
+<tr class="separator:gac925363ea8a5ec98cd1f72a9bef9fbca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:ga293f6aea92ff8aa536bb5adf5ea74281"><td class="memTemplParams" colspan="2">template&lt;typename Fun , typename... Args&gt; </td></tr>
+<tr class="memitem:ga293f6aea92ff8aa536bb5adf5ea74281"><td class="memTemplItemLeft" align="right" valign="top">CPP_concept&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__group-functional.html#ga293f6aea92ff8aa536bb5adf5ea74281">ranges::invocable</a></td></tr>
+<tr class="memdesc:ga293f6aea92ff8aa536bb5adf5ea74281"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <code>invocable</code> concept.  <a href="group__group-functional.html#ga293f6aea92ff8aa536bb5adf5ea74281">More...</a><br /></td></tr>
+<tr class="separator:ga293f6aea92ff8aa536bb5adf5ea74281"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2e3b6bd2dd98c968dd4f3c760ed3ea74"><td class="memTemplParams" colspan="2">template&lt;typename Fun , typename... Args&gt; </td></tr>
+<tr class="memitem:ga2e3b6bd2dd98c968dd4f3c760ed3ea74"><td class="memTemplItemLeft" align="right" valign="top">CPP_concept&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__group-functional.html#ga2e3b6bd2dd98c968dd4f3c760ed3ea74">ranges::regular_invocable</a></td></tr>
+<tr class="memdesc:ga2e3b6bd2dd98c968dd4f3c760ed3ea74"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <code>regular_invocable</code> concept.  <a href="group__group-functional.html#ga2e3b6bd2dd98c968dd4f3c760ed3ea74">More...</a><br /></td></tr>
+<tr class="separator:ga2e3b6bd2dd98c968dd4f3c760ed3ea74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad1e896d98710e37504450530cea39e6e"><td class="memTemplParams" colspan="2">template&lt;typename Fun , typename... Args&gt; </td></tr>
+<tr class="memitem:gad1e896d98710e37504450530cea39e6e"><td class="memTemplItemLeft" align="right" valign="top">CPP_concept&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__group-functional.html#gad1e896d98710e37504450530cea39e6e">ranges::predicate</a></td></tr>
+<tr class="memdesc:gad1e896d98710e37504450530cea39e6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <code>predicate</code> concept.  <a href="group__group-functional.html#gad1e896d98710e37504450530cea39e6e">More...</a><br /></td></tr>
+<tr class="separator:gad1e896d98710e37504450530cea39e6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadf442cb9d34808288b3197f168f4e760"><td class="memTemplParams" colspan="2">template&lt;typename R , typename T , typename U &gt; </td></tr>
+<tr class="memitem:gadf442cb9d34808288b3197f168f4e760"><td class="memTemplItemLeft" align="right" valign="top">CPP_concept&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__group-functional.html#gadf442cb9d34808288b3197f168f4e760">ranges::relation</a></td></tr>
+<tr class="memdesc:gadf442cb9d34808288b3197f168f4e760"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <code>relation</code> concept.  <a href="group__group-functional.html#gadf442cb9d34808288b3197f168f4e760">More...</a><br /></td></tr>
+<tr class="separator:gadf442cb9d34808288b3197f168f4e760"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6c68232d27c79e76c3164808f22ccc4a"><td class="memTemplParams" colspan="2">template&lt;typename R , typename T , typename U &gt; </td></tr>
+<tr class="memitem:ga6c68232d27c79e76c3164808f22ccc4a"><td class="memTemplItemLeft" align="right" valign="top">CPP_concept&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__group-functional.html#ga6c68232d27c79e76c3164808f22ccc4a">ranges::strict_weak_order</a></td></tr>
+<tr class="memdesc:ga6c68232d27c79e76c3164808f22ccc4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <code>strict_weak_order</code> concept.  <a href="group__group-functional.html#ga6c68232d27c79e76c3164808f22ccc4a">More...</a><br /></td></tr>
+<tr class="separator:ga6c68232d27c79e76c3164808f22ccc4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga166f17ad630fbfc369accb9a68e56b06"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ga166f17ad630fbfc369accb9a68e56b06"><td class="memTemplItemLeft" align="right" valign="top">constexpr RANGES_INLINE_VAR bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>ranges::is_reference_wrapper_v</b></td></tr>
+<tr class="separator:ga166f17ad630fbfc369accb9a68e56b06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaec3f9e6009779e45874b64f669787a9b"><td class="memTemplParams" colspan="2">template&lt;typename Fn , typename... Args&gt; </td></tr>
+<tr class="memitem:gaec3f9e6009779e45874b64f669787a9b"><td class="memTemplItemLeft" align="right" valign="top">constexpr RANGES_INLINE_VAR bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>ranges::is_invocable_v</b></td></tr>
+<tr class="separator:gaec3f9e6009779e45874b64f669787a9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac71907e6ed5bae3892febe21867cda2a"><td class="memTemplParams" colspan="2">template&lt;typename Fn , typename... Args&gt; </td></tr>
+<tr class="memitem:gac71907e6ed5bae3892febe21867cda2a"><td class="memTemplItemLeft" align="right" valign="top">constexpr RANGES_INLINE_VAR bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>ranges::is_nothrow_invocable_v</b></td></tr>
+<tr class="separator:gac71907e6ed5bae3892febe21867cda2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga44580bfef6967b9b17953e3f55064ca5"><td class="memTemplParams" colspan="2"><a id="ga44580bfef6967b9b17953e3f55064ca5"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ga44580bfef6967b9b17953e3f55064ca5"><td class="memTemplItemLeft" align="right" valign="top">constexpr RANGES_INLINE_VAR bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>ranges::is_pipeable_v</b> = META_IS_BASE_OF(<a class="el" href="structranges_1_1pipeable__base.html">pipeable_base</a>, <a class="el" href="structT.html">T</a>)</td></tr>
+<tr class="separator:ga44580bfef6967b9b17953e3f55064ca5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga66f461505a1d90ae45e3564376038beb"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ga66f461505a1d90ae45e3564376038beb"><td class="memTemplItemLeft" align="right" valign="top">constexpr RANGES_INLINE_VAR bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>ranges::is_pipeable_v&lt; T &amp; &gt;</b></td></tr>
+<tr class="separator:ga66f461505a1d90ae45e3564376038beb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga377df41dfb07bbed43a9e8b6ea1c3cd3"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ga377df41dfb07bbed43a9e8b6ea1c3cd3"><td class="memTemplItemLeft" align="right" valign="top">constexpr RANGES_INLINE_VAR bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>ranges::is_pipeable_v&lt; T &amp;&amp; &gt;</b></td></tr>
+<tr class="separator:ga377df41dfb07bbed43a9e8b6ea1c3cd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<p>Function and function object utilities. </p>
+<h2 class="groupheader">Typedef Documentation</h2>
+<a id="ga3f6a04e9777bb34828b4737977eb3c4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga3f6a04e9777bb34828b4737977eb3c4a">&#9670;&nbsp;</a></span>ref_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="group__group-functional.html#ga3f6a04e9777bb34828b4737977eb3c4a">ranges::ref_t</a> = typedef decltype(ref(std::declval&lt;<a class="el" href="structT.html">T</a>&gt;()))</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section see"><dt>See also</dt><dd><code><a class="el" href="structranges_1_1ref__fn.html">ref_fn</a></code> </dd></dl>
+
+</div>
+</div>
+<a id="ga20276e9bc2c5e6c3739d36d3b25aaf3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga20276e9bc2c5e6c3739d36d3b25aaf3d">&#9670;&nbsp;</a></span>unwrap_reference_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="group__group-functional.html#ga20276e9bc2c5e6c3739d36d3b25aaf3d">ranges::unwrap_reference_t</a> = typedef decltype(unwrap_reference(std::declval&lt;<a class="el" href="structT.html">T</a>&gt;()))</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section see"><dt>See also</dt><dd><code><a class="el" href="structranges_1_1unwrap__reference__fn.html">unwrap_reference_fn</a></code> </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="gafc4ef8fe4935b2b9cc7dbfc59eeb4e44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gafc4ef8fe4935b2b9cc7dbfc59eeb4e44">&#9670;&nbsp;</a></span>CPP_requires() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Fun , typename... Args&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">ranges::CPP_requires </td>
+          <td>(</td>
+          <td class="paramtype">invocable_&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">requires(Fun &amp;&amp;fn)(invoke((Fun &amp;&amp;) fn, std::declval&lt; Args &gt;()...))&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The <code>invocable_</code> concept. </p>
+<p>\concept invocable_ </p>
+
+</div>
+</div>
+<a id="gac925363ea8a5ec98cd1f72a9bef9fbca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gac925363ea8a5ec98cd1f72a9bef9fbca">&#9670;&nbsp;</a></span>CPP_requires() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Fun , typename... Args&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">ranges::CPP_requires </td>
+          <td>(</td>
+          <td class="paramtype">predicate_&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">requires(Fun &amp;&amp;fn)(concepts::requires_&lt; convertible_to&lt; decltype(invoke((Fun &amp;&amp;) fn, std::declval&lt; Args &gt;()...)), bool &gt;&gt;)&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The <code>predicate_</code> concept. </p>
+<p>\concept predicate_ </p>
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="ga293f6aea92ff8aa536bb5adf5ea74281"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga293f6aea92ff8aa536bb5adf5ea74281">&#9670;&nbsp;</a></span>invocable</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Fun , typename... Args&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">CPP_concept ranges::invocable</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        CPP_requires_ref(ranges::invocable_, Fun, Args...)</div>
+</div><!-- fragment -->
+<p>The <code>invocable</code> concept. </p>
+<p>\concept invocable </p>
+
+</div>
+</div>
+<a id="gaec3f9e6009779e45874b64f669787a9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaec3f9e6009779e45874b64f669787a9b">&#9670;&nbsp;</a></span>is_invocable_v</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Fn , typename... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr RANGES_INLINE_VAR bool ranges::is_invocable_v</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        meta::is_trait&lt;invoke_result&lt;Fn, Args...&gt;&gt;<a class="code" href="classvalue.html">::value</a></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="gac71907e6ed5bae3892febe21867cda2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gac71907e6ed5bae3892febe21867cda2a">&#9670;&nbsp;</a></span>is_nothrow_invocable_v</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Fn , typename... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr RANGES_INLINE_VAR bool ranges::is_nothrow_invocable_v</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        detail::is_nothrow_invocable_impl_&lt;is_invocable_v&lt;Fn, Args...&gt;&gt;<a class="code" href="structranges_1_1views_1_1iter__transform__fn.html#a453478c00ed45fd705bc55d9633fc94a">::template</a> <a class="code" href="group__invocation.html#ga2f71f17b6a6b48ea99134ddabd0e19a9">apply</a>&lt;</div>
+<div class="line">            Fn, Args...&gt;()</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ga66f461505a1d90ae45e3564376038beb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga66f461505a1d90ae45e3564376038beb">&#9670;&nbsp;</a></span>is_pipeable_v&lt; T &amp; &gt;</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr RANGES_INLINE_VAR bool ranges::is_pipeable_v&lt; <a class="el" href="structT.html">T</a> &amp; &gt;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">= META_IS_BASE_OF(pipeable_base,</div>
+<div class="line">                                                                          <a class="code" href="structT.html">T</a>)</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ga377df41dfb07bbed43a9e8b6ea1c3cd3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga377df41dfb07bbed43a9e8b6ea1c3cd3">&#9670;&nbsp;</a></span>is_pipeable_v&lt; T &amp;&amp; &gt;</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr RANGES_INLINE_VAR bool ranges::is_pipeable_v&lt; <a class="el" href="structT.html">T</a> &amp;&amp; &gt;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">= META_IS_BASE_OF(pipeable_base,</div>
+<div class="line">                                                                           <a class="code" href="structT.html">T</a>)</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ga166f17ad630fbfc369accb9a68e56b06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga166f17ad630fbfc369accb9a68e56b06">&#9670;&nbsp;</a></span>is_reference_wrapper_v</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr RANGES_INLINE_VAR bool ranges::is_reference_wrapper_v</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        detail::is_reference_wrapper_v&lt;detail::decay_t&lt;T&gt;&gt;</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="gad1e896d98710e37504450530cea39e6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gad1e896d98710e37504450530cea39e6e">&#9670;&nbsp;</a></span>predicate</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Fun , typename... Args&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">CPP_concept ranges::predicate</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        <a class="code" href="group__group-functional.html#ga2e3b6bd2dd98c968dd4f3c760ed3ea74">regular_invocable</a>&lt;Fun, Args...&gt; &amp;&amp;</div>
+<div class="line">        CPP_requires_ref(ranges::predicate_, Fun, Args...)</div>
+</div><!-- fragment -->
+<p>The <code>predicate</code> concept. </p>
+<p>\concept predicate </p>
+
+</div>
+</div>
+<a id="ga2e3b6bd2dd98c968dd4f3c760ed3ea74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga2e3b6bd2dd98c968dd4f3c760ed3ea74">&#9670;&nbsp;</a></span>regular_invocable</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Fun , typename... Args&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">CPP_concept ranges::regular_invocable</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        <a class="code" href="group__group-functional.html#ga293f6aea92ff8aa536bb5adf5ea74281">invocable</a>&lt;Fun, Args...&gt;</div>
+</div><!-- fragment -->
+<p>The <code>regular_invocable</code> concept. </p>
+<p>\concept regular_invocable </p>
+
+</div>
+</div>
+<a id="gadf442cb9d34808288b3197f168f4e760"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gadf442cb9d34808288b3197f168f4e760">&#9670;&nbsp;</a></span>relation</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename R , typename T , typename U &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">CPP_concept ranges::relation</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        predicate&lt;R, T, T&gt; &amp;&amp;</div>
+<div class="line">        predicate&lt;R, U, U&gt; &amp;&amp;</div>
+<div class="line">        predicate&lt;R, T, U&gt; &amp;&amp;</div>
+<div class="line">        predicate&lt;R, U, T&gt;</div>
+</div><!-- fragment -->
+<p>The <code>relation</code> concept. </p>
+<p>\concept relation </p>
+
+</div>
+</div>
+<a id="ga6c68232d27c79e76c3164808f22ccc4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga6c68232d27c79e76c3164808f22ccc4a">&#9670;&nbsp;</a></span>strict_weak_order</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename R , typename T , typename U &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">CPP_concept ranges::strict_weak_order</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        relation&lt;R, T, U&gt;</div>
+</div><!-- fragment -->
+<p>The <code>strict_weak_order</code> concept. </p>
+<p>\concept strict_weak_order </p>
+
+</div>
+</div>
+</div><!-- contents -->
+<div class="ttc" id="aclassvalue_html"><div class="ttname"><a href="classvalue.html">value</a></div><div class="ttdef"><b>Definition:</b> toml.hpp:1216</div></div>
+<div class="ttc" id="agroup__group-functional_html_ga293f6aea92ff8aa536bb5adf5ea74281"><div class="ttname"><a href="group__group-functional.html#ga293f6aea92ff8aa536bb5adf5ea74281">ranges::invocable</a></div><div class="ttdeci">CPP_concept invocable</div><div class="ttdoc">The invocable concept.</div><div class="ttdef"><b>Definition:</b> concepts.hpp:48</div></div>
+<div class="ttc" id="agroup__invocation_html_ga2f71f17b6a6b48ea99134ddabd0e19a9"><div class="ttname"><a href="group__invocation.html#ga2f71f17b6a6b48ea99134ddabd0e19a9">meta::apply</a></div><div class="ttdeci">_t&lt; extension::apply&lt; Fn, L &gt; &gt; apply</div><div class="ttdef"><b>Definition:</b> meta.hpp:1032</div></div>
+<div class="ttc" id="agroup__group-functional_html_ga2e3b6bd2dd98c968dd4f3c760ed3ea74"><div class="ttname"><a href="group__group-functional.html#ga2e3b6bd2dd98c968dd4f3c760ed3ea74">ranges::regular_invocable</a></div><div class="ttdeci">CPP_concept regular_invocable</div><div class="ttdoc">The regular_invocable concept.</div><div class="ttdef"><b>Definition:</b> concepts.hpp:55</div></div>
+<div class="ttc" id="astructranges_1_1views_1_1iter__transform__fn_html_a453478c00ed45fd705bc55d9633fc94a"><div class="ttname"><a href="structranges_1_1views_1_1iter__transform__fn.html#a453478c00ed45fd705bc55d9633fc94a">ranges::views::iter_transform_fn::template</a></div><div class="ttdeci">#define template(...)</div><div class="ttdoc">The transformable_range_ concept.</div></div>
+<div class="ttc" id="astructT_html"><div class="ttname"><a href="structT.html">T</a></div><div class="ttdef"><b>Definition:</b> count_if.cpp:23</div></div>
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.8.18
+</small></address>
+</body>
+</html>

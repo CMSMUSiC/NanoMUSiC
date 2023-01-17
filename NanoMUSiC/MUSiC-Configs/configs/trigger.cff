@@ -1,0 +1,85 @@
+# Define the common configuration for the triggers here.
+# All Data/MC specific configuration must given be in the sub-config files.
+#
+# Trigger.IgnoreL1 = <1 or 0>
+#                    If true (1), ignore present L1 Trigger information
+#                    completely.
+# Trigger.IgnoreHL = <1 or 0>
+#                    If true (1), ignore present HLT information completely.
+# Trigger.Prefix = <string>
+#                  All HLTs are stored with a prefix (set while skimming).
+#                  In most cases this will be 'HLT'.
+# Trigger.Groups = <comma separated list of 'Trigger.Groups' to be considered>
+#                  Only the 'Trigger.Groups' specified here are considered!
+#                  The values here are "arbitrary" but must match the actual
+#                  label of the 'Trigger.Groups' specified below, e.g. when
+#                  specifying 'Trigger.Groups = Muo,Ele', there must be
+#                  'Trigger.Muo' and 'Trigger.Ele' defined somewhere.
+#
+# A 'Trigger.<group>' consists of the following information
+# (<group> is e.g. Muo or Ele etc.):
+#
+#  - .Name = <string to identify the trigger group>
+#            At this moment only used for debugging.
+#  - .Triggers = <comma separated list of HLTs to be considered in this group>
+#                E.g. all SingleMu triggers to be considered.
+#  - .Cuts.<object> = <list of pt thresholds for objects>
+#                     This also defines the event topology to be considered.
+#                     E.g. if you specify 'Cuts.Mu = 25,20', only events with
+#                     one muon with pt > 25 GeV AND one muon with pt > 20 GeV
+#                     will be considered!
+#                     You can specify Cuts for more than one object, then only
+#                     events passing both topological requirements are
+#                     considered.
+#                     Legal <object> labels are: Muo, Ele, Tau, Gam, Jet, MET.
+#  - .Require = <1 or 0>
+#               If true (1), any of the triggers specified in .Triggers must
+#               have fired AND all topological requirements must be fulfilled,
+#               otherwise the event is not considered.
+#  - .Reject = <1 or 0>
+#              If true (1), if any of the triggers specified in .Triggers has
+#              fired AND all topological requirements are fulfilled, the event
+#              is rejected (vetoed).
+
+Trigger.IgnoreL1 = 0
+Trigger.IgnoreHL = 0
+Trigger.Prefix = "HLT"
+
+Trigger.Groups = Muo,Ele,DMu,DEl,Gam
+#, Tau, Gam, Jet, MET
+
+Trigger.Muo.Name = "SingleMu"
+Trigger.Muo.Cuts.Mu = 53
+# Zprime https://indico.cern.ch/event/460283/contribution/1/attachments/1182202/1716935/ZPrimeToMuMuPreApproval.pdf
+
+Trigger.Ele.Name = "SingleElectron"
+Trigger.Ele.Cuts.E = 130
+# Wprime AN-15-226
+# SM would suggest 140 https://indico.cern.ch/event/463425/contribution/1/attachments/1192269/1730665/Shvetsov_13November2015_SMPVV.pdf
+
+Trigger.Tau.Name = "Tau"
+Trigger.Tau.Cuts.Tau =
+Trigger.Tau.Cuts.MET =
+
+Trigger.Gam.Name = "SinglePhoton"
+Trigger.Gam.Cuts.Gamma = 225 #Yannik Changed
+
+Trigger.Jet.Name = "Jet"
+Trigger.Jet.Cuts.Jet = #500
+
+Trigger.MET.Name = "MET"
+Trigger.MET.Cuts.MET =
+
+# Following offline cuts in AN2016_465
+Trigger.DMu.Name = "DoubleMu"
+Trigger.DMu.Cuts.Mu = 25,25
+
+# Trigger becomes fully efficient for ET_SC > 40 GEV even in most outer part of endcap AN2016_190 Fig.3
+Trigger.DEl.Name = "DoubleElectron"
+Trigger.DEl.Cuts.E = 32,32  #Yannik Changed
+
+Trigger.DTa.Name = "DoubleTau"
+Trigger.DTa.Cuts.Tau =
+
+Trigger.DGa.Name = "DoublePhoton"
+Trigger.DGa.Cuts.Gamma = 100,100

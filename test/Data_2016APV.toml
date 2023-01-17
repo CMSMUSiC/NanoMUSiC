@@ -1,0 +1,37 @@
+# Debug levels are:
+#    - 0: Display only ERRORS/EXCEPTIONS
+#    - 1: Display also WARNINGS
+#    - 2: Display also INFO
+#    - 3: Display also DEBUG
+#    - 4: Display also verbose DEBUG
+
+# By default, debug = 1, means only WARNINGS will be displayed.
+# (ERRORS should always be handled with help of exceptions!)
+
+# The debug information is meant to be written to stderr.
+# Additionally there is "normal" program output that goes to stdout.
+
+# The output formatting should be the following:
+# "[<LEVEL>] (<invoking_class>): <message>"
+# e.g.:
+# "[DEBUG] (ParticleMatcher): Something's fishy!"
+# Please keep to that.
+
+[music]
+output = 'test_data_2016apv'
+debug = 0
+max_events = 100
+number_of_skip_events = 0
+is_data = false
+x_section_file = '$MUSIC_BASE/configs/x_sections.toml'
+config = '$MUSIC_CONFIG/configs/MC.cfg'
+year = '2016APV'
+outfilename = '' # if empty, constructed from process
+process = 'SingleMuon_2016APV'
+dataset = '/foo/bar/abc/NANOAODSIM'
+hash = 'dummyhash'
+cacheread = true
+input_files = [
+    'root://cms-xrd-global.cern.ch///store/data/Run2016C/SingleMuon/NANOAOD/HIPM_UL2016_MiniAODv2_NanoAODv9-v2/40000/0D1698EF-F93D-D84F-8529-4706B02CCB04.root',
+    'root://cms-xrd-global.cern.ch///store/data/Run2016C/SingleMuon/NANOAOD/HIPM_UL2016_MiniAODv2_NanoAODv9-v2/40000/110F91E7-5A73-9045-ADE5-8782FA482821.root',
+]

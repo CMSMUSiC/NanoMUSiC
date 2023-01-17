@@ -1,0 +1,37 @@
+# CutBasedID (tight) :
+# See also:
+# https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Spring15_selection_25ns
+# CBID = Cut Based IDentification
+##next option new in miniAOD
+Ele.CBID.usebool = 0
+Ele.CBID.boolname = cutBasedElectronID-Spring15-25ns-V1-standalone-tight
+##########unset#####################
+Ele.CBID.fBrem.min = 0.0           # Only for 2011!
+Ele.CBID.lowEta.fBrem.min = 0.0     # Only for 2011!
+Ele.CBID.lowEta.EoverPin.min = 0.0 # Only for 2011!
+Ele.CBID.Use.fBrem = 0
+#########end unset###############################
+
+# Barrel vaules:
+Ele.CBID.Barrel.DEtaIn.max = 0.00926
+Ele.CBID.Barrel.DPhiIn.max = 0.0336
+Ele.CBID.Barrel.sigmaIetaIeta.max = 0.0101
+Ele.CBID.Barrel.HoE.max = 0.0597
+Ele.CBID.Barrel.Dxy.max = 0.0111
+Ele.CBID.Barrel.Dz.max = 0.0466
+Ele.CBID.Barrel.RelInvEpDiff.max = 0.012
+Ele.CBID.Barrel.PFIsoRel.max = 0.0354
+Ele.CBID.Barrel.NInnerLayerLostHits.max = 2
+Ele.CBID.Barrel.Conversion.reject = 1
+# Endcap values:
+Ele.CBID.Endcap.DEtaIn.max = 0.00724
+Ele.CBID.Endcap.DPhiIn.max = 0.0918
+Ele.CBID.Endcap.sigmaIetaIeta.max = 0.0279
+Ele.CBID.Endcap.HoE.max = 0.0615
+Ele.CBID.Endcap.Dxy.max = 0.0351
+Ele.CBID.Endcap.Dz.max = 0.417
+Ele.CBID.Endcap.RelInvEpDiff.max = 0.00999
+Ele.CBID.Endcap.PFIsoRel.max = 0.0646
+Ele.CBID.Endcap.NInnerLayerLostHits.max = 1
+Ele.CBID.Endcap.Conversion.reject = 1
+# end CutBasedID

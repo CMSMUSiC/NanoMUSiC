@@ -1,0 +1,17 @@
+*.pyc
+*.d
+*.o
+*.so
+*.gcda
+bin/
+*-generated.hpp
+
+a.out
+scanClass
+pCalc
+createLookupTable
+
+gmon.out
+*.pdf
+*.png
+*.root

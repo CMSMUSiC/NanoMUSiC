@@ -1,0 +1,45 @@
+Generator.use = 0
+# Label used to name gen particles
+Generator.Label= gen
+Generator.BinningValue.max = 0
+
+# Options for types
+#Ele, Nu_ele, Muon, Nu_muon, Tau, Nu_tau Jet b Top Gluon Gamma Z W H
+
+## Mass cuts
+# Determine mass from single object e.g. W
+Generator.Mass.use.single=0
+Generator.Mass.Types.single=
+
+# Combine two particles to get generator mass
+Generator.Mass.use.double=1
+Generator.Mass.Types.double.first= Z
+Generator.Mass.Types.double.second= Z
+
+Generator.Mass.max = 0
+Generator.Mass.min = 0
+
+## Pt cuts
+# Determine pt from single object e.g. W
+Generator.pt.use.single=0
+Generator.pt.Types.single=
+
+# Combine two particles to get generator mass
+Generator.pt.use.double=0
+Generator.pt.Types.double.first=  Z
+Generator.pt.Types.double.second= Zs
+
+
+Generator.pt.max = 0
+Generator.pt.min = 0
+
+##Gamma cuts
+Generator.Gamma.use = 0
+Generator.GammaDY.use = 0
+Generator.GammaZy.use = 0
+Generator.Gamma.genPtCut = 0.0
+Generator.Gamma.cutmode = greater
+Generator.Gamma.statuses = 1
+Generator.Gamma.dR.max = 0.4
+Generator.Gamma.PartnerIds = 1,2,3,4,5,9,21
+

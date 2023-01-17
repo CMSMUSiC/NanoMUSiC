@@ -1,0 +1,971 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    <meta name="generator" content="Doxygen 1.8.18" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- BEGIN opengraph metadata -->
+    <meta property="og:title" content="Doxygen Awesome" />
+    <meta property="og:image"
+        content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+    <meta property="og:description"
+        content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+    <meta property="og:url" content="https://jothepro.github.io/doxygen-awesome-css/" />
+    <!-- END opengraph metadata -->
+    <!-- BEGIN twitter metadata -->
+    <meta name="twitter:image:src"
+        content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+    <meta name="twitter:title" content="Doxygen Awesome" />
+    <meta name="twitter:description"
+        content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+    <!-- END twitter metadata -->
+    <title>NanoMUSiC: /.automount/home/home__home1/institut_3a/silva/NanoMUSiC/NanoMUSiC/MUSiC/include/nano2pxl_utils.hpp File Reference</title>
+    <link href="tabs.css" rel="stylesheet" type="text/css" />
+    <link rel="icon" type="image/svg+xml" href="logo.drawio.svg" />
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="dynsections.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+    <script type="text/javascript" src="toggle-alternative-theme.js"></script>
+    <script type="text/javascript">
+        DoxygenAwesomeFragmentCopyButton.init()
+        DoxygenAwesomeDarkModeToggle.init()
+        DoxygenAwesomeParagraphLink.init()
+        DoxygenAwesomeInteractiveToc.init()
+    </script>
+    <link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+    <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+    <link href="doxygen.css" rel="stylesheet" type="text/css" />
+    <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+    <!-- https://tholman.com/github-corners/ -->
+    <a href="https://github.com/cmsmusic/nanomusic" class="github-corner" title="View source on GitHub" target="_blank">
+        <svg viewBox="0 0 250 250" width="40" height="40"
+            style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+            <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+            <path
+                d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+                fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+            <path
+                d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+                fill="currentColor" class="octo-body"></path>
+        </svg></a>
+    <style>
+        .github-corner:hover .octo-arm {
+            animation: octocat-wave 560ms ease-in-out
+        }
+        @keyframes octocat-wave {
+            0%,
+            100% {
+                transform: rotate(0)
+            }
+            20%,
+            60% {
+                transform: rotate(-25deg)
+            }
+            40%,
+            80% {
+                transform: rotate(10deg)
+            }
+        }
+        @media (max-width:500px) {
+            .github-corner:hover .octo-arm {
+                animation: none
+            }
+            .github-corner .octo-arm {
+                animation: octocat-wave 560ms ease-in-out
+            }
+        }
+    </style>
+    <div id="top">
+        <!-- do not remove this div, it is closed by doxygen! -->
+        <div id="titlearea">
+            <table cellspacing="0" cellpadding="0">
+                <tbody>
+                    <tr style="height: 56px;">
+                        <td id="projectalign" style="padding-left: 0.5em;">
+                            <div id="projectname">NanoMUSiC
+                            </div>
+                            <div id="projectbrief">CMS MUSiC using NanoAOD</div>
+                            <div> <a href="https://github.com/cmsmusic/nanomusic" class="github-corner"
+                                    title="View source on GitHub" target="_blank">Github repo</a></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- end header part --><!-- Generated by Doxygen 1.8.18 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'Search');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(document).ready(function(){initNavTree('nano2pxl__utils_8hpp.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div class="header">
+  <div class="summary">
+<a href="#func-members">Functions</a>  </div>
+  <div class="headertitle">
+<div class="title">nano2pxl_utils.hpp File Reference</div>  </div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;TLorentzVector.h&quot;</code><br />
+</div>
+<p><a href="nano2pxl__utils_8hpp_source.html">Go to the source code of this file.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ab4dc3fabf7d25daf4206879c84f39ad0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nano2pxl__utils_8hpp.html#ab4dc3fabf7d25daf4206879c84f39ad0">analyzeGenRelatedInfo</a> (<a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;nano_reader, pxl::EventView *GenEvtView)</td></tr>
+<tr class="separator:ab4dc3fabf7d25daf4206879c84f39ad0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37337ec8ca035dcd2c22d6400da5725d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nano2pxl__utils_8hpp.html#a37337ec8ca035dcd2c22d6400da5725d">analyzegenWeight</a> (<a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;nano_reader, pxl::EventView *GenEvtView)</td></tr>
+<tr class="separator:a37337ec8ca035dcd2c22d6400da5725d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a841cb5df4f2982810ea920e71a6d50c9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nano2pxl__utils_8hpp.html#a841cb5df4f2982810ea920e71a6d50c9">analyzeLHEInfo</a> (<a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;nano_reader, pxl::EventView *GenEvtView)</td></tr>
+<tr class="separator:a841cb5df4f2982810ea920e71a6d50c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fa1f3a91f3a7cb08f9c39d1a5f0dfca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nano2pxl__utils_8hpp.html#a1fa1f3a91f3a7cb08f9c39d1a5f0dfca">analyzeLHEParticles</a> (<a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;nano_reader, pxl::EventView *GenEvtView)</td></tr>
+<tr class="separator:a1fa1f3a91f3a7cb08f9c39d1a5f0dfca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82bd24d679bd5e84c6aca8d8d609c586"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nano2pxl__utils_8hpp.html#a82bd24d679bd5e84c6aca8d8d609c586">analyzeGenVertices</a> (<a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;nano_reader, pxl::EventView *GenEvtView)</td></tr>
+<tr class="separator:a82bd24d679bd5e84c6aca8d8d609c586"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0cbca3f46b4b53fcbd97f79b179d2461"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nano2pxl__utils_8hpp.html#a0cbca3f46b4b53fcbd97f79b179d2461">analyzeGenParticles</a> (<a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;nano_reader, pxl::EventView *GenEvtView)</td></tr>
+<tr class="separator:a0cbca3f46b4b53fcbd97f79b179d2461"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affb88e51d402f2fd9c181fafa36798d3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nano2pxl__utils_8hpp.html#affb88e51d402f2fd9c181fafa36798d3">analyzeGenDressedLeptons</a> (<a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;nano_reader, pxl::EventView *GenEvtView)</td></tr>
+<tr class="separator:affb88e51d402f2fd9c181fafa36798d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9fd0d228a01f5607a8fb46e58c51a479"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nano2pxl__utils_8hpp.html#a9fd0d228a01f5607a8fb46e58c51a479">analyzeGenPU</a> (<a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;nano_reader, pxl::EventView *GenEvtView)</td></tr>
+<tr class="separator:a9fd0d228a01f5607a8fb46e58c51a479"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addb2d16d7170ed7d99ea5640ad4eb2d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nano2pxl__utils_8hpp.html#addb2d16d7170ed7d99ea5640ad4eb2d8">analyzeGenJets</a> (<a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;nano_reader, pxl::EventView *GenEvtView)</td></tr>
+<tr class="separator:addb2d16d7170ed7d99ea5640ad4eb2d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3f0435c623798c288cb98437468bc5c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nano2pxl__utils_8hpp.html#ab3f0435c623798c288cb98437468bc5c">analyzeGenJetsAK8</a> (<a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;nano_reader, pxl::EventView *GenEvtView)</td></tr>
+<tr class="separator:ab3f0435c623798c288cb98437468bc5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adaac6e148ccbdf943cde7dc45823403d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nano2pxl__utils_8hpp.html#adaac6e148ccbdf943cde7dc45823403d">analyzeGenMET</a> (<a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;nano_reader, pxl::EventView *GenEvtView)</td></tr>
+<tr class="separator:adaac6e148ccbdf943cde7dc45823403d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30b67fd9952b1e1df318f9f69ee91364"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nano2pxl__utils_8hpp.html#a30b67fd9952b1e1df318f9f69ee91364">analyzeTrigger</a> (<a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;nano_reader, pxl::EventView *TrigEvtView)</td></tr>
+<tr class="separator:a30b67fd9952b1e1df318f9f69ee91364"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a710a6692fae11b221ac9c6132d81a1be"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nano2pxl__utils_8hpp.html#a710a6692fae11b221ac9c6132d81a1be">analyseMETFilter</a> (<a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;nano_reader, pxl::EventView *FilterEvtView)</td></tr>
+<tr class="separator:a710a6692fae11b221ac9c6132d81a1be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ecf9d7e82cf92823334aa3f6db4dd07"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nano2pxl__utils_8hpp.html#a5ecf9d7e82cf92823334aa3f6db4dd07">analyzeRho</a> (<a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;nano_reader, pxl::EventView *RecEvtView)</td></tr>
+<tr class="separator:a5ecf9d7e82cf92823334aa3f6db4dd07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec97770e500825b7821217e40bda9d6f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nano2pxl__utils_8hpp.html#aec97770e500825b7821217e40bda9d6f">analyzeRecVertices</a> (<a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;nano_reader, pxl::EventView *RecEvtView)</td></tr>
+<tr class="separator:aec97770e500825b7821217e40bda9d6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a535203a9fea68c4acbc1734682e07ab9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nano2pxl__utils_8hpp.html#a535203a9fea68c4acbc1734682e07ab9">analyzeRecTaus</a> (<a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;nano_reader, pxl::EventView *RecEvtView)</td></tr>
+<tr class="separator:a535203a9fea68c4acbc1734682e07ab9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace227919cf711deabc8f4c71284657d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nano2pxl__utils_8hpp.html#ace227919cf711deabc8f4c71284657d8">analyzeRecBoostedTaus</a> (<a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;nano_reader, pxl::EventView *RecEvtView)</td></tr>
+<tr class="separator:ace227919cf711deabc8f4c71284657d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82b78f26b03aac8d36096190c7e11c80"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nano2pxl__utils_8hpp.html#a82b78f26b03aac8d36096190c7e11c80">analyzeRecMuons</a> (<a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;nano_reader, pxl::EventView *RecEvtView)</td></tr>
+<tr class="separator:a82b78f26b03aac8d36096190c7e11c80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42515be7e85c9c22ddd696af5f865b2c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nano2pxl__utils_8hpp.html#a42515be7e85c9c22ddd696af5f865b2c">analyzeRecElectrons</a> (<a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;nano_reader, pxl::EventView *RecEvtView)</td></tr>
+<tr class="separator:a42515be7e85c9c22ddd696af5f865b2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aedf31ff30ecf8fedd43af0afabee3eab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nano2pxl__utils_8hpp.html#aedf31ff30ecf8fedd43af0afabee3eab">analyzeRecPhotons</a> (<a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;nano_reader, pxl::EventView *RecEvtView)</td></tr>
+<tr class="separator:aedf31ff30ecf8fedd43af0afabee3eab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ae730e94582f239ca7258ef3e2b99ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nano2pxl__utils_8hpp.html#a1ae730e94582f239ca7258ef3e2b99ee">analyzeRecMET</a> (<a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;nano_reader, pxl::EventView *RecEvtView)</td></tr>
+<tr class="separator:a1ae730e94582f239ca7258ef3e2b99ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e18dc177d9a44992f18e0e4e1d95753"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nano2pxl__utils_8hpp.html#a8e18dc177d9a44992f18e0e4e1d95753">analyzeRecPuppiMET</a> (<a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;nano_reader, pxl::EventView *RecEvtView)</td></tr>
+<tr class="separator:a8e18dc177d9a44992f18e0e4e1d95753"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7645de776d658a1c10f060a07d98248c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nano2pxl__utils_8hpp.html#a7645de776d658a1c10f060a07d98248c">analyzeRecJets</a> (<a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;nano_reader, pxl::EventView *RecEvtView)</td></tr>
+<tr class="separator:a7645de776d658a1c10f060a07d98248c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76dee63f1bc274e250faab56d728e24c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nano2pxl__utils_8hpp.html#a76dee63f1bc274e250faab56d728e24c">analyzeRecFatJets</a> (<a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;nano_reader, pxl::EventView *RecEvtView)</td></tr>
+<tr class="separator:a76dee63f1bc274e250faab56d728e24c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0141447f197e7044df2c883955a4302c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nano2pxl__utils_8hpp.html#a0141447f197e7044df2c883955a4302c">analyzeRecBTagWeights</a> (<a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;nano_reader, pxl::EventView *RecEvtView)</td></tr>
+<tr class="separator:a0141447f197e7044df2c883955a4302c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55423c518eb6e4016e1fd80e8191c6e3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nano2pxl__utils_8hpp.html#a55423c518eb6e4016e1fd80e8191c6e3">analyzePrefiringWeights</a> (<a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;nano_reader, pxl::EventView *RecEvtView)</td></tr>
+<tr class="separator:a55423c518eb6e4016e1fd80e8191c6e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="a710a6692fae11b221ac9c6132d81a1be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a710a6692fae11b221ac9c6132d81a1be">&#9670;&nbsp;</a></span>analyseMETFilter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void analyseMETFilter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>nano_reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pxl::EventView *&#160;</td>
+          <td class="paramname"><em>FilterEvtView</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="affb88e51d402f2fd9c181fafa36798d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affb88e51d402f2fd9c181fafa36798d3">&#9670;&nbsp;</a></span>analyzeGenDressedLeptons()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void analyzeGenDressedLeptons </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>nano_reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pxl::EventView *&#160;</td>
+          <td class="paramname"><em>GenEvtView</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="addb2d16d7170ed7d99ea5640ad4eb2d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#addb2d16d7170ed7d99ea5640ad4eb2d8">&#9670;&nbsp;</a></span>analyzeGenJets()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void analyzeGenJets </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>nano_reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pxl::EventView *&#160;</td>
+          <td class="paramname"><em>GenEvtView</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab3f0435c623798c288cb98437468bc5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3f0435c623798c288cb98437468bc5c">&#9670;&nbsp;</a></span>analyzeGenJetsAK8()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void analyzeGenJetsAK8 </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>nano_reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pxl::EventView *&#160;</td>
+          <td class="paramname"><em>GenEvtView</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adaac6e148ccbdf943cde7dc45823403d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adaac6e148ccbdf943cde7dc45823403d">&#9670;&nbsp;</a></span>analyzeGenMET()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void analyzeGenMET </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>nano_reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pxl::EventView *&#160;</td>
+          <td class="paramname"><em>GenEvtView</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0cbca3f46b4b53fcbd97f79b179d2461"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0cbca3f46b4b53fcbd97f79b179d2461">&#9670;&nbsp;</a></span>analyzeGenParticles()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void analyzeGenParticles </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>nano_reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pxl::EventView *&#160;</td>
+          <td class="paramname"><em>GenEvtView</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9fd0d228a01f5607a8fb46e58c51a479"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fd0d228a01f5607a8fb46e58c51a479">&#9670;&nbsp;</a></span>analyzeGenPU()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void analyzeGenPU </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>nano_reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pxl::EventView *&#160;</td>
+          <td class="paramname"><em>GenEvtView</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab4dc3fabf7d25daf4206879c84f39ad0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4dc3fabf7d25daf4206879c84f39ad0">&#9670;&nbsp;</a></span>analyzeGenRelatedInfo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void analyzeGenRelatedInfo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>nano_reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pxl::EventView *&#160;</td>
+          <td class="paramname"><em>GenEvtView</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a82bd24d679bd5e84c6aca8d8d609c586"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82bd24d679bd5e84c6aca8d8d609c586">&#9670;&nbsp;</a></span>analyzeGenVertices()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void analyzeGenVertices </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>nano_reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pxl::EventView *&#160;</td>
+          <td class="paramname"><em>GenEvtView</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a37337ec8ca035dcd2c22d6400da5725d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37337ec8ca035dcd2c22d6400da5725d">&#9670;&nbsp;</a></span>analyzegenWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void analyzegenWeight </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>nano_reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pxl::EventView *&#160;</td>
+          <td class="paramname"><em>GenEvtView</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a841cb5df4f2982810ea920e71a6d50c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a841cb5df4f2982810ea920e71a6d50c9">&#9670;&nbsp;</a></span>analyzeLHEInfo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void analyzeLHEInfo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>nano_reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pxl::EventView *&#160;</td>
+          <td class="paramname"><em>GenEvtView</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1fa1f3a91f3a7cb08f9c39d1a5f0dfca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1fa1f3a91f3a7cb08f9c39d1a5f0dfca">&#9670;&nbsp;</a></span>analyzeLHEParticles()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void analyzeLHEParticles </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>nano_reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pxl::EventView *&#160;</td>
+          <td class="paramname"><em>GenEvtView</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a55423c518eb6e4016e1fd80e8191c6e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55423c518eb6e4016e1fd80e8191c6e3">&#9670;&nbsp;</a></span>analyzePrefiringWeights()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void analyzePrefiringWeights </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>nano_reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pxl::EventView *&#160;</td>
+          <td class="paramname"><em>RecEvtView</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ace227919cf711deabc8f4c71284657d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace227919cf711deabc8f4c71284657d8">&#9670;&nbsp;</a></span>analyzeRecBoostedTaus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void analyzeRecBoostedTaus </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>nano_reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pxl::EventView *&#160;</td>
+          <td class="paramname"><em>RecEvtView</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0141447f197e7044df2c883955a4302c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0141447f197e7044df2c883955a4302c">&#9670;&nbsp;</a></span>analyzeRecBTagWeights()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void analyzeRecBTagWeights </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>nano_reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pxl::EventView *&#160;</td>
+          <td class="paramname"><em>RecEvtView</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a42515be7e85c9c22ddd696af5f865b2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42515be7e85c9c22ddd696af5f865b2c">&#9670;&nbsp;</a></span>analyzeRecElectrons()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void analyzeRecElectrons </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>nano_reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pxl::EventView *&#160;</td>
+          <td class="paramname"><em>RecEvtView</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a76dee63f1bc274e250faab56d728e24c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76dee63f1bc274e250faab56d728e24c">&#9670;&nbsp;</a></span>analyzeRecFatJets()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void analyzeRecFatJets </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>nano_reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pxl::EventView *&#160;</td>
+          <td class="paramname"><em>RecEvtView</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7645de776d658a1c10f060a07d98248c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7645de776d658a1c10f060a07d98248c">&#9670;&nbsp;</a></span>analyzeRecJets()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void analyzeRecJets </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>nano_reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pxl::EventView *&#160;</td>
+          <td class="paramname"><em>RecEvtView</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1ae730e94582f239ca7258ef3e2b99ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ae730e94582f239ca7258ef3e2b99ee">&#9670;&nbsp;</a></span>analyzeRecMET()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void analyzeRecMET </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>nano_reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pxl::EventView *&#160;</td>
+          <td class="paramname"><em>RecEvtView</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a82b78f26b03aac8d36096190c7e11c80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82b78f26b03aac8d36096190c7e11c80">&#9670;&nbsp;</a></span>analyzeRecMuons()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void analyzeRecMuons </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>nano_reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pxl::EventView *&#160;</td>
+          <td class="paramname"><em>RecEvtView</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aedf31ff30ecf8fedd43af0afabee3eab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aedf31ff30ecf8fedd43af0afabee3eab">&#9670;&nbsp;</a></span>analyzeRecPhotons()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void analyzeRecPhotons </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>nano_reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pxl::EventView *&#160;</td>
+          <td class="paramname"><em>RecEvtView</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8e18dc177d9a44992f18e0e4e1d95753"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e18dc177d9a44992f18e0e4e1d95753">&#9670;&nbsp;</a></span>analyzeRecPuppiMET()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void analyzeRecPuppiMET </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>nano_reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pxl::EventView *&#160;</td>
+          <td class="paramname"><em>RecEvtView</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a535203a9fea68c4acbc1734682e07ab9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a535203a9fea68c4acbc1734682e07ab9">&#9670;&nbsp;</a></span>analyzeRecTaus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void analyzeRecTaus </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>nano_reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pxl::EventView *&#160;</td>
+          <td class="paramname"><em>RecEvtView</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aec97770e500825b7821217e40bda9d6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec97770e500825b7821217e40bda9d6f">&#9670;&nbsp;</a></span>analyzeRecVertices()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void analyzeRecVertices </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>nano_reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pxl::EventView *&#160;</td>
+          <td class="paramname"><em>RecEvtView</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5ecf9d7e82cf92823334aa3f6db4dd07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ecf9d7e82cf92823334aa3f6db4dd07">&#9670;&nbsp;</a></span>analyzeRho()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void analyzeRho </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>nano_reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pxl::EventView *&#160;</td>
+          <td class="paramname"><em>RecEvtView</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a30b67fd9952b1e1df318f9f69ee91364"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30b67fd9952b1e1df318f9f69ee91364">&#9670;&nbsp;</a></span>analyzeTrigger()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void analyzeTrigger </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classNanoAODReader.html">NanoAODReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>nano_reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pxl::EventView *&#160;</td>
+          <td class="paramname"><em>TrigEvtView</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="dir_dcf38d83ed060d855df96b9bfaafe34b.html">NanoMUSiC</a></li><li class="navelem"><a class="el" href="dir_e73412be9015231e3f29f815ecf2e2d5.html">MUSiC</a></li><li class="navelem"><a class="el" href="dir_7aaf294a99fae0b1961be37b302bde84.html">include</a></li><li class="navelem"><a class="el" href="nano2pxl__utils_8hpp.html">nano2pxl_utils.hpp</a></li>
+    <li class="footer">Generated by
+    <a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.18 </li>
+  </ul>
+</div>
+</body>
+</html>

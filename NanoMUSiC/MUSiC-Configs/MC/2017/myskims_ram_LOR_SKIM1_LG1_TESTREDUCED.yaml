@@ -1,0 +1,82 @@
+# Default config file for the remote analysis manager (ram)
+#
+# Use tar.bz2 for compression, instead of tar.gz.
+# The latter has different checksums for two archives with identical contents.
+--- # Settings
+## Analysis files
+# executable denotes the executable file which will be run on the grid
+# outputfiles are copied back to the user after job completion
+# outputfilesdcache are copied to the dcache
+executable: ce_wrapper.sh
+outputfiles: [MusicOutDir.tar.gz]
+outputfilesdcache: []
+
+## Gridpack settings
+# gridpackbase is the base directory from which the gridpackfiles are read
+# gridpackfiles are the files of the gridpack, relative to gridpackhome or absolute
+#
+# gridpacklocal is the name of the local gridpack file
+# gridpackremote is the name/path of the remote gridpack file
+gridpackbase: $PXLANA
+gridpackfiles: [ConfigFiles, MUSiC, Main, $PXLANA/$MYPXLANA/, MUSiC/music, $PXLANA/$MYPXLANA, $PXLANA/$MYPXLANA/ce_wrapper.sh, set_env.sh, $MUSIC_UTILS/lib, $MUSIC_UTILS/include, $MUSIC_CONFIG/configs, $MUSIC_CONFIG/MC/scales.txt]
+
+gridpacklocal: gridpack_classification.tar.bz2
+gridpackremote: gridpacks/gridpack_classification.tar.bz2
+
+## Analysis Options
+# cmssw can specify a CMSSW version, defaults to $CMSSW_BASE if left empty
+# maxeventsoption denotes the command line option for limiting the processed number of events
+# skipeventsoption denotes the command line option for skipping a number of events
+#
+# eventsperjob defines the maximum number of events per job, leave empty to use filesperjob
+# filesperjob defines the files processed per job, leave empty to use eventsperjob
+cmssw:
+maxeventsoption: -N
+skipeventsoption: --skip
+
+eventsperjob:
+filesperjob: 1
+jobmaxruntime: 2870
+skim_criteria:
+  version: CMSSW_10_6_v5.4_2017
+  #isfinished: 1
+
+--- # Samples
+# &name defines an anchor
+# *name references an anchor
+# One cannot redefine anchor names
+#
+# Samples can be defined by:
+#  (sample name) ZToMuMu_M_50_120_13TeV_PH
+#      (skim id) 3510
+# (dataset path) /ZToMuMu_NNPDF30_13TeV-powheg_M_120_200/.../MINIAODSIM
+#
+# Dicts containing data samples have 'data' in their name:
+# data, Data, Data2015, PromptData
+
+
+W:
+  WToMuNu_M-100_13TeV_P8: &mcargs_p8_WToMuNu100 $PWD/configs/MC_WToMuNu_M-100_13TeV_P8.cfg -x $PWD/scales.txt
+  WToMuNu_M-200_13TeV_P8: &mcargs_p8_WToMuNu200 $PWD/configs/MC_WToMuNu_M-200_13TeV_P8.cfg -x $PWD/scales.txt
+  WToTauNu_M-100-tauola_13TeV_P8: &mcargs_p8_WToTauNu100 $PWD/configs/MC_WToTauNu_M-100_13TeV_P8.cfg
+  WToTauNu_M-200-tauola_13TeV_P8: &mcargs_p8_WToTauNu200 $PWD/configs/MC_WToTauNu_M-200_13TeV_P8.cfg
+
+WW:
+  #WWTo2L2Nu_DoubleScattering_13TeV_P8: &mcargs_WWTo2L2Nu $PWD/configs/MC_WWTo2L2Nu.cfg -x $PWD/scales.txt
+  WW_13TeV_P8: &mcargs $PWD/configs/MC.cfg -x $PWD/scales.txt
+  #WW_DoubleScattering_13TeV_P8: /WW_TuneCP5_DoubleScattering_13TeV-pythia8/RunIISummer19UL17MiniAODv2-106X_mc2017_realistic_v9-v1/MINIAODSIM
+
+DiPhoton:
+  GGJets_Pt-15_13TeV_SP: *mcargs
+  DiPhotonJetsBox_M40_80_13TeV_SP: *mcargs
+  #DiPhotonJetsBox_MGG-80toInf_13TeV_SP: &mcargs_DiphoJets $PWD/configs/MC_DiPhotonJets_MGG-80toInf_13TeV_AM.cfg -x $PWD/scales.txt
+
+TTBar:
+  #LOR
+  #TTJets_13TeV_AM: /TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL17MiniAODv2-106X_mc2017_realistic_v9-v2/MINIAODSIM
+  
+  TT_Mtt-1000toInf_13TeV_PH: *mcargs
+  TT_Mtt-700to1000_13TeV_PH: *mcargs
+  TTbar_13TeV_P8: &mcargs_TT_PH $PWD/configs/MC_TT_PH.cfg -x $PWD/scales.txt
+
+... # End of file

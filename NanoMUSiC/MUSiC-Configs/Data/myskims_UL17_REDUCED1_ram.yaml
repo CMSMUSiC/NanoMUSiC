@@ -1,0 +1,91 @@
+# Default config file for the remote analysis manager (ram)
+#
+# Use tar.bz2 for compression, instead of tar.gz.
+# The latter has different checksums for two archives with identical contents.
+--- # Settings
+## Analysis files
+# executable denotes the executable file which will be run on the grid
+# outputfiles are copied back to the user after job completion
+# outputfilesdcache are copied to the dcache
+executable: $MYPXLANA/ce_wrapper.sh
+outputfiles: [MusicOutDir.tar.gz]
+outputfilesdcache: []
+
+## Gridpack settings
+# gridpackbase is the base directory from which the gridpackfiles are read
+# gridpackfiles are the files of the gridpack, relative to gridpackhome or absolute
+#
+# gridpacklocal is the name of the local gridpack file
+# gridpackremote is the name/path of the remote gridpack file
+gridpackbase: $PXLANA
+gridpackfiles: [ConfigFiles, MUSiC, Main, $MYPXLANA/set_env.sh, MUSiC/music,$MYPXLANA ,$MYPXLANA/ce_wrapper.sh, set_env.sh, lib, $MUSIC_CONFIG/configs, $MUSIC_CONFIG/Data/scales.txt]
+
+gridpacklocal: gridpack_classification_data.tar.bz2
+gridpackremote: gridpacks/gridpack_classification_data.tar.bz2
+
+## Analysis Options
+# cmssw can specify a CMSSW version, defaults to $CMSSW_BASE if left empty
+# maxeventsoption denotes the command line option for limiting the processed number of events
+# skipeventsoption denotes the command line option for skipping a number of events
+#
+# eventsperjob defines the maximum number of events per job, leave empty to use filesperjob
+# filesperjob defines the files processed per job, leave empty to use eventsperjob
+cmssw:
+maxeventsoption: -N
+skipeventsoption: --skip
+
+eventsperjob:
+filesperjob: 3
+
+job_max_runtime: 120
+
+skim_criteria:
+  #version: CMSSW_8_0_v2.14
+  version: CMSSW_10_6_v5.4_2017
+--- # Samples
+# &name defines an anchor
+# *name references an anchor
+# One cannot redefine anchor names
+#
+# Samples can be defined by:
+#  (sample name) ZToMuMu_M_50_120_13TeV_PH
+#      (skim id) 3510
+# (dataset path) /ZToMuMu_NNPDF30_13TeV-powheg_M_120_200/.../MINIAODSIM
+#
+# Dicts containing data samples have 'data' in their name:
+# data, Data, Data2015, PromptData
+
+
+#Specifiy the command line parameters used above. Pay attention to the trailing s: %(argset)s
+#mcargs_sm=$PWD/configs/Data_SingleMu.cfg
+#mcargs_se=$PWD/configs/Data_SingleElectron.cfg
+#mcargs_de=$PWD/configs/Data_DoubleEG.cfg
+#mcargs_dm=$PWD/configs/Data_DoubleMu.cfg
+#mcargs_jet=$PWD/configs/Data_JetHT.cfg
+#mcargs_sp=$PWD/configs/Data_SinglePhoton.cfg
+#mcargs_dp=$PWD/configs/Data_DoublePhoton.cfg
+#scales=-x $PWD/scales.txt
+
+data:
+#SingleMu
+   #Data_Run2017B-09Aug2019_UL2017-v1_297047_299329_SingleMuon: &mcargs_sm $PWD/configs/Data_SingleMu.cfg -x $PWD/scales.txt
+   Data_Run2017B-UL2017_MiniAODv2-v1_297047_299329_SingleMuon:  &mcargs_sm $PWD/configs/Data_SingleMu.cfg -x $PWD/scales.txt
+
+#SingleEle
+   Data_Run2017B-UL2017_MiniAODv2-v1_297047_299329_SingleElectron: &mcargs_se $PWD/configs/Data_SingleElectron.cfg -x $PWD/scales.txt 
+
+#SinglePhoton
+   Data_Run2017B-UL2017_MiniAODv2-v1_297047_299329_SinglePhoton: &mcargs_sp $PWD/configs/Data_SinglePhoton.cfg -x $PWD/scales.txt
+
+#DoubleMu
+   Data_Run2017B-UL2017_MiniAODv2-v1_297047_299329_DoubleMuon: &mcargs_dm $PWD/configs/Data_DoubleMu.cfg -x $PWD/scales.txt
+
+#DoubleEle
+   Data_Run2017B-UL2017_MiniAODv2-v1_297047_299329_DoubleEG: &mcargs_de $PWD/configs/Data_DoubleEG.cfg -x $PWD/scales.txt
+
+
+
+
+
+
+

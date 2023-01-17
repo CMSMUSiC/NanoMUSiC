@@ -1,0 +1,644 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    <meta name="generator" content="Doxygen 1.8.18" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- BEGIN opengraph metadata -->
+    <meta property="og:title" content="Doxygen Awesome" />
+    <meta property="og:image"
+        content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+    <meta property="og:description"
+        content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+    <meta property="og:url" content="https://jothepro.github.io/doxygen-awesome-css/" />
+    <!-- END opengraph metadata -->
+    <!-- BEGIN twitter metadata -->
+    <meta name="twitter:image:src"
+        content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+    <meta name="twitter:title" content="Doxygen Awesome" />
+    <meta name="twitter:description"
+        content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+    <!-- END twitter metadata -->
+    <title>NanoMUSiC: Enumerate&lt; T &gt; Class Template Reference</title>
+    <link href="tabs.css" rel="stylesheet" type="text/css" />
+    <link rel="icon" type="image/svg+xml" href="logo.drawio.svg" />
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="dynsections.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+    <script type="text/javascript" src="toggle-alternative-theme.js"></script>
+    <script type="text/javascript">
+        DoxygenAwesomeFragmentCopyButton.init()
+        DoxygenAwesomeDarkModeToggle.init()
+        DoxygenAwesomeParagraphLink.init()
+        DoxygenAwesomeInteractiveToc.init()
+    </script>
+    <link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+    <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+    <link href="doxygen.css" rel="stylesheet" type="text/css" />
+    <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+    <!-- https://tholman.com/github-corners/ -->
+    <a href="https://github.com/cmsmusic/nanomusic" class="github-corner" title="View source on GitHub" target="_blank">
+        <svg viewBox="0 0 250 250" width="40" height="40"
+            style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+            <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+            <path
+                d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+                fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+            <path
+                d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+                fill="currentColor" class="octo-body"></path>
+        </svg></a>
+    <style>
+        .github-corner:hover .octo-arm {
+            animation: octocat-wave 560ms ease-in-out
+        }
+        @keyframes octocat-wave {
+            0%,
+            100% {
+                transform: rotate(0)
+            }
+            20%,
+            60% {
+                transform: rotate(-25deg)
+            }
+            40%,
+            80% {
+                transform: rotate(10deg)
+            }
+        }
+        @media (max-width:500px) {
+            .github-corner:hover .octo-arm {
+                animation: none
+            }
+            .github-corner .octo-arm {
+                animation: octocat-wave 560ms ease-in-out
+            }
+        }
+    </style>
+    <div id="top">
+        <!-- do not remove this div, it is closed by doxygen! -->
+        <div id="titlearea">
+            <table cellspacing="0" cellpadding="0">
+                <tbody>
+                    <tr style="height: 56px;">
+                        <td id="projectalign" style="padding-left: 0.5em;">
+                            <div id="projectname">NanoMUSiC
+                            </div>
+                            <div id="projectbrief">CMS MUSiC using NanoAOD</div>
+                            <div> <a href="https://github.com/cmsmusic/nanomusic" class="github-corner"
+                                    title="View source on GitHub" target="_blank">Github repo</a></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- end header part --><!-- Generated by Doxygen 1.8.18 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'Search');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(document).ready(function(){initNavTree('classEnumerate.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pri-types">Private Types</a> &#124;
+<a href="#pri-static-attribs">Static Private Attributes</a> &#124;
+<a href="#friends">Friends</a> &#124;
+<a href="classEnumerate-members.html">List of all members</a>  </div>
+  <div class="headertitle">
+<div class="title">Enumerate&lt; T &gt; Class Template Reference</div>  </div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="Enumerate_8hpp_source.html">Enumerate.hpp</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a82e17966a00f0f4ce4bb80f0ceda6d37"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEnumerate.html#a82e17966a00f0f4ce4bb80f0ceda6d37">const_iterator</a> = typename std::array&lt; <a class="el" href="classEnumerate.html#aabea0708e54d2d9837a9b9e446e240b4">CT</a>, <a class="el" href="classEnumerate.html#a24d09c9089c498f463b3eba475b2344c">N</a> &gt;::<a class="el" href="classEnumerate.html#a82e17966a00f0f4ce4bb80f0ceda6d37">const_iterator</a></td></tr>
+<tr class="separator:a82e17966a00f0f4ce4bb80f0ceda6d37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a33d186477d5b81e8a0912a4335670ba5"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEnumerate.html#a33d186477d5b81e8a0912a4335670ba5">Enumerate</a> (T &amp;&amp;...values)</td></tr>
+<tr class="separator:a33d186477d5b81e8a0912a4335670ba5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91bfbe393e8e8ab29d5a5df0e77cfb20"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="classEnumerate.html#a82e17966a00f0f4ce4bb80f0ceda6d37">const_iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEnumerate.html#a91bfbe393e8e8ab29d5a5df0e77cfb20">begin</a> () const</td></tr>
+<tr class="separator:a91bfbe393e8e8ab29d5a5df0e77cfb20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a725b9e53e06562a4ce45849ff33dea63"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="classEnumerate.html#a82e17966a00f0f4ce4bb80f0ceda6d37">const_iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEnumerate.html#a725b9e53e06562a4ce45849ff33dea63">end</a> () const</td></tr>
+<tr class="separator:a725b9e53e06562a4ce45849ff33dea63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1bd20338ba22e31bdc403586894e597"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="classEnumerate.html#a82e17966a00f0f4ce4bb80f0ceda6d37">const_iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEnumerate.html#ac1bd20338ba22e31bdc403586894e597">cbegin</a> () const</td></tr>
+<tr class="separator:ac1bd20338ba22e31bdc403586894e597"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0ad6a0a10266a763524bbe46b052cfa"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="classEnumerate.html#a82e17966a00f0f4ce4bb80f0ceda6d37">const_iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEnumerate.html#ab0ad6a0a10266a763524bbe46b052cfa">cend</a> () const</td></tr>
+<tr class="separator:ab0ad6a0a10266a763524bbe46b052cfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21ffb06ee1cf8e893d10a310b9a474fe"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEnumerate.html#a21ffb06ee1cf8e893d10a310b9a474fe">size</a> () const</td></tr>
+<tr class="separator:a21ffb06ee1cf8e893d10a310b9a474fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88ef3710cd4f765dbecdc55471ec6f33"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="classEnumerate.html#aabea0708e54d2d9837a9b9e446e240b4">CT</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEnumerate.html#a88ef3710cd4f765dbecdc55471ec6f33">operator[]</a> (const std::size_t index) const</td></tr>
+<tr class="separator:a88ef3710cd4f765dbecdc55471ec6f33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c95163a315ace1c93990a9360bcd87d"><td class="memTemplParams" colspan="2">template&lt;typename Q  = CT, std::enable_if_t&lt;!std::is_integral&lt; Q &gt;::value, bool &gt;  = true&gt; </td></tr>
+<tr class="memitem:a9c95163a315ace1c93990a9360bcd87d"><td class="memTemplItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classEnumerate.html#a9c95163a315ace1c93990a9360bcd87d">operator[]</a> (const Q &amp;str) const</td></tr>
+<tr class="separator:a9c95163a315ace1c93990a9360bcd87d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4258224ea8b62eef8e1e72379cc83ee4"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEnumerate.html#a4258224ea8b62eef8e1e72379cc83ee4">index_of</a> (const <a class="el" href="classEnumerate.html#aabea0708e54d2d9837a9b9e446e240b4">CT</a> &amp;val) const</td></tr>
+<tr class="separator:a4258224ea8b62eef8e1e72379cc83ee4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abed7cac635ace46e98a23e8b5bf80aef"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="classEnumerate.html#aabea0708e54d2d9837a9b9e446e240b4">CT</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEnumerate.html#abed7cac635ace46e98a23e8b5bf80aef">at</a> (const std::size_t index) const</td></tr>
+<tr class="separator:abed7cac635ace46e98a23e8b5bf80aef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:aca47267923d68a66f26928057149290c"><td class="memItemLeft" align="right" valign="top">std::array&lt; <a class="el" href="classEnumerate.html#aabea0708e54d2d9837a9b9e446e240b4">CT</a>, <a class="el" href="classEnumerate.html#a24d09c9089c498f463b3eba475b2344c">N</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEnumerate.html#aca47267923d68a66f26928057149290c">categories</a></td></tr>
+<tr class="separator:aca47267923d68a66f26928057149290c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-types"></a>
+Private Types</h2></td></tr>
+<tr class="memitem:aabea0708e54d2d9837a9b9e446e240b4"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEnumerate.html#aabea0708e54d2d9837a9b9e446e240b4">CT</a> = std::common_type_t&lt; T... &gt;</td></tr>
+<tr class="separator:aabea0708e54d2d9837a9b9e446e240b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-static-attribs"></a>
+Static Private Attributes</h2></td></tr>
+<tr class="memitem:a24d09c9089c498f463b3eba475b2344c"><td class="memItemLeft" align="right" valign="top">constexpr static std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEnumerate.html#a24d09c9089c498f463b3eba475b2344c">N</a> = sizeof...(T)</td></tr>
+<tr class="separator:a24d09c9089c498f463b3eba475b2344c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
+Friends</h2></td></tr>
+<tr class="memitem:af2e9a39c411d7e2cc83514dae7df116d"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEnumerate.html#af2e9a39c411d7e2cc83514dae7df116d">operator&lt;&lt;</a> (std::ostream &amp;os, const <a class="el" href="classEnumerate.html">Enumerate</a> &amp;_enum)</td></tr>
+<tr class="separator:af2e9a39c411d7e2cc83514dae7df116d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">Member Typedef Documentation</h2>
+<a id="a82e17966a00f0f4ce4bb80f0ceda6d37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82e17966a00f0f4ce4bb80f0ceda6d37">&#9670;&nbsp;</a></span>const_iterator</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename... T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classEnumerate.html">Enumerate</a>&lt; T &gt;::<a class="el" href="classEnumerate.html#a82e17966a00f0f4ce4bb80f0ceda6d37">const_iterator</a> =  typename std::array&lt;<a class="el" href="classEnumerate.html#aabea0708e54d2d9837a9b9e446e240b4">CT</a>, <a class="el" href="classEnumerate.html#a24d09c9089c498f463b3eba475b2344c">N</a>&gt;::<a class="el" href="classEnumerate.html#a82e17966a00f0f4ce4bb80f0ceda6d37">const_iterator</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aabea0708e54d2d9837a9b9e446e240b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabea0708e54d2d9837a9b9e446e240b4">&#9670;&nbsp;</a></span>CT</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename... T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classEnumerate.html">Enumerate</a>&lt; T &gt;::<a class="el" href="classEnumerate.html#aabea0708e54d2d9837a9b9e446e240b4">CT</a> =  std::common_type_t&lt;T...&gt;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a33d186477d5b81e8a0912a4335670ba5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33d186477d5b81e8a0912a4335670ba5">&#9670;&nbsp;</a></span>Enumerate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename... T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="classEnumerate.html">Enumerate</a>&lt; T &gt;::<a class="el" href="classEnumerate.html">Enumerate</a> </td>
+          <td>(</td>
+          <td class="paramtype">T &amp;&amp;...&#160;</td>
+          <td class="paramname"><em>values</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="abed7cac635ace46e98a23e8b5bf80aef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abed7cac635ace46e98a23e8b5bf80aef">&#9670;&nbsp;</a></span>at()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename... T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="classEnumerate.html#aabea0708e54d2d9837a9b9e446e240b4">CT</a> <a class="el" href="classEnumerate.html">Enumerate</a>&lt; T &gt;::at </td>
+          <td>(</td>
+          <td class="paramtype">const std::size_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a91bfbe393e8e8ab29d5a5df0e77cfb20"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91bfbe393e8e8ab29d5a5df0e77cfb20">&#9670;&nbsp;</a></span>begin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename... T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="classEnumerate.html#a82e17966a00f0f4ce4bb80f0ceda6d37">const_iterator</a> <a class="el" href="classEnumerate.html">Enumerate</a>&lt; T &gt;::begin </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac1bd20338ba22e31bdc403586894e597"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1bd20338ba22e31bdc403586894e597">&#9670;&nbsp;</a></span>cbegin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename... T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="classEnumerate.html#a82e17966a00f0f4ce4bb80f0ceda6d37">const_iterator</a> <a class="el" href="classEnumerate.html">Enumerate</a>&lt; T &gt;::cbegin </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab0ad6a0a10266a763524bbe46b052cfa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0ad6a0a10266a763524bbe46b052cfa">&#9670;&nbsp;</a></span>cend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename... T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="classEnumerate.html#a82e17966a00f0f4ce4bb80f0ceda6d37">const_iterator</a> <a class="el" href="classEnumerate.html">Enumerate</a>&lt; T &gt;::cend </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a725b9e53e06562a4ce45849ff33dea63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a725b9e53e06562a4ce45849ff33dea63">&#9670;&nbsp;</a></span>end()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename... T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="classEnumerate.html#a82e17966a00f0f4ce4bb80f0ceda6d37">const_iterator</a> <a class="el" href="classEnumerate.html">Enumerate</a>&lt; T &gt;::end </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4258224ea8b62eef8e1e72379cc83ee4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4258224ea8b62eef8e1e72379cc83ee4">&#9670;&nbsp;</a></span>index_of()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename... T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::size_t <a class="el" href="classEnumerate.html">Enumerate</a>&lt; T &gt;::index_of </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classEnumerate.html#aabea0708e54d2d9837a9b9e446e240b4">CT</a> &amp;&#160;</td>
+          <td class="paramname"><em>val</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9c95163a315ace1c93990a9360bcd87d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c95163a315ace1c93990a9360bcd87d">&#9670;&nbsp;</a></span>operator[]() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename... T&gt; </div>
+<div class="memtemplate">
+template&lt;typename Q  = CT, std::enable_if_t&lt;!std::is_integral&lt; Q &gt;::value, bool &gt;  = true&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::size_t <a class="el" href="classEnumerate.html">Enumerate</a>&lt; T &gt;::operator[] </td>
+          <td>(</td>
+          <td class="paramtype">const Q &amp;&#160;</td>
+          <td class="paramname"><em>str</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a88ef3710cd4f765dbecdc55471ec6f33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88ef3710cd4f765dbecdc55471ec6f33">&#9670;&nbsp;</a></span>operator[]() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename... T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="classEnumerate.html#aabea0708e54d2d9837a9b9e446e240b4">CT</a> <a class="el" href="classEnumerate.html">Enumerate</a>&lt; T &gt;::operator[] </td>
+          <td>(</td>
+          <td class="paramtype">const std::size_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a21ffb06ee1cf8e893d10a310b9a474fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21ffb06ee1cf8e893d10a310b9a474fe">&#9670;&nbsp;</a></span>size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename... T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::size_t <a class="el" href="classEnumerate.html">Enumerate</a>&lt; T &gt;::size </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Friends And Related Function Documentation</h2>
+<a id="af2e9a39c411d7e2cc83514dae7df116d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2e9a39c411d7e2cc83514dae7df116d">&#9670;&nbsp;</a></span>operator&lt;&lt;</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename... T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::ostream&amp; operator&lt;&lt; </td>
+          <td>(</td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>os</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classEnumerate.html">Enumerate</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>_enum</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="aca47267923d68a66f26928057149290c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca47267923d68a66f26928057149290c">&#9670;&nbsp;</a></span>categories</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename... T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;<a class="el" href="classEnumerate.html#aabea0708e54d2d9837a9b9e446e240b4">CT</a>, <a class="el" href="classEnumerate.html#a24d09c9089c498f463b3eba475b2344c">N</a>&gt; <a class="el" href="classEnumerate.html">Enumerate</a>&lt; T &gt;::categories</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a24d09c9089c498f463b3eba475b2344c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24d09c9089c498f463b3eba475b2344c">&#9670;&nbsp;</a></span>N</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename... T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr static std::size_t <a class="el" href="classEnumerate.html">Enumerate</a>&lt; T &gt;::N = sizeof...(T)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
+<li>/.automount/home/home__home1/institut_3a/silva/NanoMUSiC/NanoMUSiC/MUSiC/include/<a class="el" href="Enumerate_8hpp_source.html">Enumerate.hpp</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="classEnumerate.html">Enumerate</a></li>
+    <li class="footer">Generated by
+    <a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.18 </li>
+  </ul>
+</div>
+</body>
+</html>

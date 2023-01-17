@@ -1,0 +1,12 @@
+*.pyc
+*.log
+*.DS_Store
+*.sublime-workspace
+*.sublime-project
+*.py~
+*.c~
+*.cpp~
+*.cpp~
+hg-check*
+doc/build
+._*

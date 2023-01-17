@@ -1,0 +1,302 @@
+# Default config file for the remote analysis manager (ram)
+#
+# Use tar.bz2 for compression, instead of tar.gz.
+# The latter has different checksums for two archives with identical contents.
+--- # Settings
+## Analysis files
+# executable denotes the executable file which will be run on the grid
+# outputfiles are copied back to the user after job completion
+# outputfilesdcache are copied to the dcache
+executable: ce_wrapper.sh
+outputfiles: [MusicOutDir.tar.gz]
+outputfilesdcache: []
+
+## Gridpack settings
+# gridpackbase is the base directory from which the gridpackfiles are read
+# gridpackfiles are the files of the gridpack, relative to gridpackhome or absolute
+#
+# gridpacklocal is the name of the local gridpack file
+# gridpackremote is the name/path of the remote gridpack file
+gridpackbase: $PXLANA
+gridpackfiles: [ConfigFiles, MUSiC, Main, $PXLANA/$MYPXLANA/, MUSiC/music, $PXLANA/$MYPXLANA, $PXLANA/$MYPXLANA/ce_wrapper.sh, set_env.sh, $MUSIC_UTILS/lib, $MUSIC_CONFIG/configs, $MUSIC_CONFIG/MC/scales.txt]
+
+gridpacklocal: gridpack_classification.tar.bz2
+gridpackremote: gridpacks/gridpack_classification.tar.bz2
+
+## Analysis Options
+# cmssw can specify a CMSSW version, defaults to $CMSSW_BASE if left empty
+# maxeventsoption denotes the command line option for limiting the processed number of events
+# skipeventsoption denotes the command line option for skipping a number of events
+#
+# eventsperjob defines the maximum number of events per job, leave empty to use filesperjob
+# filesperjob defines the files processed per job, leave empty to use eventsperjob
+cmssw:
+maxeventsoption: -N
+skipeventsoption: --skip
+
+eventsperjob:
+filesperjob: 2
+jobmaxruntime: 2870
+skim_criteria:
+  version: CMSSW_10_6_v5p9_2017
+  #isfinished: 1
+
+--- # Samples
+# &name defines an anchor
+# *name references an anchor
+# One cannot redefine anchor names
+#
+# Samples can be defined by:
+#  (sample name) ZToMuMu_M_50_120_13TeV_PH
+#      (skim id) 3510
+# (dataset path) /ZToMuMu_NNPDF30_13TeV-powheg_M_120_200/.../MINIAODSIM
+#
+# Dicts containing data samples have 'data' in their name:
+# data, Data, Data2015, PromptData
+
+DrellYan:
+  #DYJetsToLL_M-50_HT-100to200_PSweights_13TeV_MG
+  #DYJetsToLL_M-50_HT-1200to2500_PSweights_13TeV_MG
+  #DYJetsToLL_M-50_HT-200to400_PSweights_13TeV_MG
+  #DYJetsToLL_M-50_HT-2500toInf_PSweights_13TeV_MG
+  #DYJetsToLL_M-50_HT-400to600_PSweights_13TeV_MG
+  #DYJetsToLL_M-50_HT-600to800_PSweights_13TeV_MG
+  #DYJetsToLL_M-50_HT-70to100_PSweights_13TeV_MG
+  #DYJetsToLL_M-50_HT-800to1200_PSweights_13TeV_MG
+
+  DYJetsToLL_M-50_13TeV_MG:  &mcargs_DY_MG $PWD/configs/MC_DY_UL17_MG.cfg
+  ##DYJetsToLL_M-50_13TeV_MG: &mcargs_DY_MG $PWD/configs/MC_DY_UL17_NOCUTS_MG.cfg
+  DYJetsToLL_M-50_13TeV_ext1_MG: *mcargs_DY_MG
+  
+  DYJetsToLL_Pt-100To250_MatchEWPDG20_13TeV_AM: &mcargs_DY_Pt_AM $PWD/configs/MC_DY_Pt_AM.cfg
+  ###DYJetsToLL_Pt-100To250_MatchEWPDG20_13TeV_AM: &mcargs_DY_Pt_AM $PWD/configs/MC_DY_Pt_AM_NOCUTS_Dec21.cfg
+  DYJetsToLL_Pt-250To400_MatchEWPDG20_13TeV_AM: *mcargs_DY_Pt_AM
+  DYJetsToLL_Pt-400To650_MatchEWPDG20_13TeV_AM: *mcargs_DY_Pt_AM
+  DYJetsToLL_Pt-50To100_MatchEWPDG20_13TeV_AM: *mcargs_DY_Pt_AM
+  DYJetsToLL_Pt-650ToInf_MatchEWPDG20_13TeV_AM: *mcargs_DY_Pt_AM
+
+  #ZToMuMu_M_120_200_13TeV_PH: &mcargs $PWD/configs/MC.cfg -x $PWD/scales.txt  
+  #ZToMuMu_M_200_400_13TeV_PH: *mcargs
+  #ZToMuMu_M_400_800_13TeV_PH: *mcargs
+  #ZToMuMu_M_800_1400_13TeV_PH: *mcargs
+  #ZToMuMu_M_1400_2300_13TeV_PH: *mcargs
+  #ZToMuMu_M_2300_3500_13TeV_PH: *mcargs
+  #ZToMuMu_M_3500_4500_13TeV_PH: *mcargs
+  #ZToMuMu_M_4500_6000_13TeV_PH: *mcargs
+  #ZToMuMu_M_6000_Inf_13TeV_PH: *mcargs
+  #ZToMuMu_M_50_120_13TeV_PH: *mcargs
+
+  ZToMuMu_M-50To120_13TeV_PH: &mcargs $PWD/configs/MC.cfg -x $PWD/scales.txt  
+  ZToMuMu_M-120To200_13TeV_PH: *mcargs
+  ZToMuMu_M-200To400_13TeV_PH: *mcargs
+  ZToMuMu_M-400To800_13TeV_PH: *mcargs
+  ZToMuMu_M-800To1400_13TeV_PH: *mcargs
+  ZToMuMu_M-1400To2300_13TeV_PH: *mcargs
+  ZToMuMu_M-2300To3500_13TeV_PH: *mcargs
+  ZToMuMu_M-3500To4500_13TeV_PH: *mcargs
+  ZToMuMu_M-4500To6000_13TeV_PH: *mcargs
+  ZToMuMu_M-6000ToInf_13TeV_PH: *mcargs
+
+
+  #LOR
+  #DYJetsToLL_M-10to50_13TeV_MG: *mcargs_DY_MG
+  DYJetsToLL_M-10to50_13TeV_MG: *mcargs
+  
+  #DYToEE_M-50_13TeV_PH: *mcargs
+
+#  DYJetsToEE_M-50_LTbinned_0To75_5f_LO_13TeV_MG: /DYJetsToEE_M-50_LTbinned_0To75_5f_LO_TuneCP5_13TeV-madgraph-pythia8/RunIISummer19UL17MiniAODv2-106X_mc2017_realistic_v9-v1/MINIAODSIM
+ # DYJetsToEE_M-50_LTbinned_100To200_5f_LO_13TeV_MG: /DYJetsToEE_M-50_LTbinned_100To200_5f_LO_TuneCP5_13TeV-madgraph-pythia8/RunIISummer19UL17MiniAODv2-106X_mc2017_realistic_v9-v1/MINIAODSIM
+ # DYJetsToEE_M-50_LTbinned_200To400_5f_LO_13TeV_MG: /DYJetsToEE_M-50_LTbinned_200To400_5f_LO_TuneCP5_13TeV-madgraph-pythia8/RunIISummer19UL17MiniAODv2-106X_mc2017_realistic_v9-v1/MINIAODSIM
+  #DYJetsToEE_M-50_LTbinned_75To80_5f_LO_13TeV_MG: /DYJetsToEE_M-50_LTbinned_75To80_5f_LO_TuneCP5_13TeV-madgraph-pythia8/RunIISummer19UL17MiniAODv2-106X_mc2017_realistic_v9-v1/MINIAODSIM
+  #DYJetsToEE_M-50_LTbinned_800To2000_5f_LO_13TeV_MG: /DYJetsToEE_M-50_LTbinned_800To2000_5f_LO_TuneCP5_13TeV-madgraph-pythia8/RunIISummer19UL17MiniAODv2-106X_mc2017_realistic_v9-v1/MINIAODSIM
+  #DYJetsToEE_M-50_LTbinned_80To85_5f_LO_13TeV_MG: /DYJetsToEE_M-50_LTbinned_80To85_5f_LO_TuneCP5_13TeV-madgraph-pythia8/RunIISummer19UL17MiniAODv2-106X_mc2017_realistic_v9-v1/MINIAODSIM
+  #DYJetsToEE_M-50_LTbinned_85To90_5f_LO_13TeV_MG: /DYJetsToEE_M-50_LTbinned_85To90_5f_LO_TuneCP5_13TeV-madgraph-pythia8/RunIISummer19UL17MiniAODv2-106X_mc2017_realistic_v9-v1/MINIAODSIM
+  #DYJetsToEE_M-50_LTbinned_90To95_5f_LO_13TeV_MG: /DYJetsToEE_M-50_LTbinned_90To95_5f_LO_TuneCP5_13TeV-madgraph-pythia8/RunIISummer19UL17MiniAODv2-106X_mc2017_realistic_v9-v1/MINIAODSIM
+  #DYJetsToEE_M-50_LTbinned_95To100_5f_LO_13TeV_MG: /DYJetsToEE_M-50_LTbinned_95To100_5f_LO_TuneCP5_13TeV-madgraph-pythia8/RunIISummer19UL17MiniAODv2-106X_mc2017_realistic_v9-v1/MINIAODSIM
+
+ZToInvisible:
+#LOR
+  #ZJetsToNuNu_HT-100To200_13TeV_MG: &mcargs $PWD/configs/MC.cfg -x $PWD/scales.txt
+  ZJetsToNuNu_HT-100To200_13TeV_MG: *mcargs
+  ZJetsToNuNu_HT-200To400_13TeV_MG: *mcargs
+  ZJetsToNuNu_HT-400To600_13TeV_MG: *mcargs
+  ZJetsToNuNu_HT-600To800_13TeV_MG: *mcargs
+  ZJetsToNuNu_HT-800To1200_13TeV_MG: *mcargs
+  ZJetsToNuNu_HT-1200To2500_13TeV_MG: *mcargs
+  ZJetsToNuNu_HT-2500ToInf_13TeV_MG: *mcargs
+
+W:
+  #OLD
+  #WJetsToLNu_13TeV_AM: &mcargs_w_bulk $PWD/configs/MC_WJetsToLNu_13TeV_AM.cfg
+  #WJetsToLNu_13TeV_ext2_AM: *mcargs_w_bulk
+  #WJetsToLNu_Pt-100To250_13TeV_AM: &mcargs_w_pt $PWD/configs/MC_WJetsToLNu_13TeV_Pt_AM.cfg
+
+  #WJetsToLNu_13TeV_MG: &mcargs_w_bulk $PWD/configs/MC_WJetsToLNu_13TeV_UL17_MG.cfg
+  WJetsToLNu_13TeV_MG: *mcargs
+  
+  ###WJetsToLNu_Pt-100To250_MatchEWPDG20_13TeV_AM: &mcargs_w_pt $PWD/configs/MC_WJetsToLNu_13TeV_Pt_AM.cfg
+  ###WJetsToLNu_Pt-100To250_MatchEWPDG20_13TeV_AM: &mcargs_w_pt $PWD/configs/MC_WJetsToLNu_UL17_TestLESSCUTS_13TeV_Pt_AM.cfg
+  #WJetsToLNu_Pt-100To250_MatchEWPDG20_13TeV_AM: &mcargs_w_pt $PWD/configs/MC_WJetsToLNu_UL17_TestLESSCUTS_13TeV_Pt_AM.cfg
+  #WJetsToLNu_Pt-250To400_MatchEWPDG20_13TeV_AM: *mcargs_w_pt
+  #WJetsToLNu_Pt-400To600_MatchEWPDG20_13TeV_AM: *mcargs_w_pt
+  #WJetsToLNu_Pt-600ToInf_MatchEWPDG20_13TeV_AM: *mcargs_w_pt
+
+  WJetsToLNu_Pt-100To250_MatchEWPDG20_13TeV_AM: &mcargs_w_pt $PWD/configs/MC_WJetsToLNu_13TeV_UL17_Pt_HTCUT_AM.cfg
+  WJetsToLNu_Pt-250To400_MatchEWPDG20_13TeV_AM: *mcargs
+  WJetsToLNu_Pt-400To600_MatchEWPDG20_13TeV_AM: *mcargs
+  WJetsToLNu_Pt-600ToInf_MatchEWPDG20_13TeV_AM: *mcargs
+
+  WJetsToLNu_HT-100To200_13TeV_MG: &mcargs_w_ht $PWD/configs/MC_WJetsToLNu_13TeV_HT_MG.cfg -x $PWD/scales.txt
+  WJetsToLNu_HT-200To400_13TeV_MG: *mcargs_w_ht
+  WJetsToLNu_HT-400To600_13TeV_MG: *mcargs_w_ht
+  WJetsToLNu_HT-600To800_13TeV_MG: *mcargs_w_ht
+  WJetsToLNu_HT-800To1200_13TeV_MG: *mcargs_w_ht
+  WJetsToLNu_HT-1200To2500_13TeV_MG: *mcargs_w_ht
+  WJetsToLNu_HT-2500ToInf_13TeV_MG: *mcargs_w_ht
+
+  #WToMuNu_M-100_13TeV_P8: &mcargs_p8_WToMuNu100 $PWD/configs/MC_WToMuNu_M-100_13TeV_P8.cfg -x $PWD/scales.txt
+  #WToMuNu_M-200_13TeV_P8: &mcargs_p8_WToMuNu200 $PWD/configs/MC_WToMuNu_M-200_13TeV_P8.cfg -x $PWD/scales.txt
+  #WToTauNu_M-100-tauola_13TeV_P8: &mcargs_p8_WToTauNu100 $PWD/configs/MC_WToTauNu_M-100_13TeV_P8.cfg
+  #WToTauNu_M-200-tauola_13TeV_P8: &mcargs_p8_WToTauNu200 $PWD/configs/MC_WToTauNu_M-200_13TeV_P8.cfg
+
+Gamma:
+  GJets_HT-40To100_13TeV_MG: &mcargs_mg $PWD/configs/MC_madgraph.cfg -x $PWD/scales.txt
+  GJets_HT-100To200_13TeV_MG: *mcargs_mg
+  GJets_HT-200To400_13TeV_MG: *mcargs_mg
+  GJets_HT-400To600_13TeV_MG: *mcargs_mg
+  GJets_HT-600ToInf_13TeV_MG: *mcargs_mg
+
+WW:
+  WW_13TeV_P8: *mcargs
+  #WWTo2L2Nu_13TeV_PH: *mcargs
+  WWTo2L2Nu_13TeV_PH: &mcargs_WWTo2L2Nu $PWD/configs/MC_WWTo2L2Nu.cfg -x $PWD/scales.txt
+
+  #WW_DoubleScattering_13TeV_P8: /WW_TuneCP5_DoubleScattering_13TeV-pythia8/RunIISummer19UL17MiniAODv2-106X_mc2017_realistic_v9-v1/MINIAODSIM
+  #WWTo2L2Nu_DoubleScattering_13TeV_P8: &mcargs_WWTo2L2Nu $PWD/configs/MC_WWTo2L2Nu.cfg -x $PWD/scales.txt	
+
+ZZ:
+  #ZZTo4L_13TeV_PH: *mcargs
+  ZZTo2L2Nu_13TeV_PH: *mcargs
+  ZZTo2L2Nu_13TeV_PH: *mcargs
+  ZZ_13TeV_P8: *mcargs
+  
+DiPhoton:
+  GGJets_Pt-15_13TeV_SP: *mcargs
+  DiPhotonJetsBox_M40_80_13TeV_SP: *mcargs
+  #DiPhotonJetsBox_MGG-80toInf_13TeV_SP: &mcargs_DiphoJets $PWD/configs/MC_DiPhotonJets_MGG-80toInf_13TeV_AM.cfg -x $PWD/scales.txt
+  #DiPhotonJetsBox_MGG-80toInf_13TeV_SP: *mcargs
+
+WZ:
+  WZ_13TeV_P8: *mcargs
+  WZTo3LNu_13TeV_AM: *mcargs
+  #WZTo3LNu_mllmin01_13TeV_PH: *mcargs
+
+#ZG:
+
+WG:
+  #WGJets_MonoPhoton_PtG-130_13TeV_MG
+  WGJets_MonoPhoton_PtG-40to130_13TeV_MG: *mcargs_mg
+  #WGToLNuG_13TeV_MG: *mcargs
+  WGToLNuG_01J_5f_PtG_130_13TeV_AM: *mcargs
+  WGToLNuG_01J_5f_PtG_300_13TeV_AM: *mcargs
+  WGToLNuG_01J_5f_PtG_500_13TeV_AM: *mcargs
+
+WWW:
+  WWW_4F_13TeV_AM: *mcargs
+
+WWZ:
+  WWZ_4F_13TeV_AM: *mcargs
+  
+WZG:
+  WZG_13TeV_AM: *mcargs
+
+WZZ:
+  WZZ_13TeV_AM: *mcargs
+  WZZ_13TeV_ext1_AM: *mcargs
+
+ZZZ:
+  ZZZ_13TeV_AM: *mcargs
+
+
+WWG:
+  WWG_13TeV_AM: *mcargs
+
+#WGG:
+
+Top:
+  #LOR
+  ST_s-channel_4f_leptonDecays_13TeV_AM: *mcargs
+  ST_t-channel_antitop_4f_InclusiveDecays_13TeV_PH: *mcargs
+  ST_t-channel_top_4f_InclusiveDecays_13TeV_PH: *mcargs
+  ST_tW_antitop_5f_NoFullyHadronicDecays_13TeV_PH: *mcargs
+  ST_tW_top_5f_NoFullyHadronicDecays_13TeV_PH: *mcargs
+
+TG:
+  TGJets_13TeV_AM: *mcargs
+
+TZQ:
+  tZq_ll_4f_ckm_NLO_13TeV_AM: *mcargs
+
+TTBar:
+  #LOR
+  #TTJets_13TeV_AM: /TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL17MiniAODv2-106X_mc2017_realistic_v9-v2/MINIAODSIM
+  
+  TT_Mtt-1000toInf_13TeV_PH: *mcargs
+  TT_Mtt-700to1000_13TeV_PH: *mcargs
+  TTbar_13TeV_P8: &mcargs_TT_PH $PWD/configs/MC_TT_PH.cfg -x $PWD/scales.txt
+
+TTG:
+  TTGJets_13TeV_AM: *mcargs
+  TTGG_0Jets_13TeV_AM: *mcargs
+
+TTW:
+  TTWJetsToLNu_13TeV_AM: *mcargs
+  TTWJetsToQQ_13TeV_AM: *mcargs
+
+
+TTZ:
+  TTZToLLNuNu_M-10_13TeV_AM: *mcargs
+  TTZToQQ_13TeV_AM: *mcargs
+
+#TTTT:
+  TTTT_13TeV_AM: *mcargs
+
+#TTWW:
+#  TTWW_13TeV_MG: /TTWW_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17MiniAOD-106X_mc2017_realistic_v6-v2/MINIAODSIM
+
+#TTWZ:
+#  TTWZ_13TeV_MG: /TTWZ_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17MiniAODv2-106X_mc2017_realistic_v9-v1/MINIAODSIM
+
+
+HIG:
+##LOR #HIGGS
+   
+  VBFHToGG_M125_13TeV_AM: *mcargs
+  VBFHToZG_M-125_13TeV_PH: *mcargs
+  VBFHToTauTau_M125_13TeV_PH: *mcargs
+  ttHJetToNonbb_M125_13TeV_AM: *mcargs
+  ttHJetTobb_M125_13TeV_AM: *mcargs
+  #GluGluHToGG_M125_13TeV_AM: *mcargs
+  #GluGluHToGG_M125_13TeV_PH: *mcargs #uncomment me as soon you have finished the Feb Classification  
+  GluGluHToZG_M-125_13TeV_PH: *mcargs
+  GluGluHToTauTau_M125_13TeV_PH: *mcargs
+  GluGluHToWWTo2L2Nu_M1252_JHUGenV714_13TeV_PH: &mcargs_JHUgen $PWD/configs/MC_powhegJHUgen.cfg -x $PWD/scales.txt
+  GluGluHToZZTo2L2Nu_M1252_JHUGenV735_13TeV_PH: *mcargs_JHUgen
+  GluGluHToZZTo4L_M1252_JHUGenV7011_13TeV_PH: *mcargs_JHUgen
+  VBFHToWWTo2L2Nu_M-125-jhugen727_13TeV_PH: *mcargs_JHUgen
+  
+  
+QCD:
+
+ #LOR
+  QCD_HT50to100_PSWeights_13TeV_MG: &mcargs_qcd $PWD/configs/MC_QCD.cfg
+  QCD_HT100to200_PSWeights_13TeV_MG: *mcargs_qcd
+  QCD_HT200to300_PSWeights_13TeV_MG: *mcargs_qcd
+  QCD_HT300to500_PSWeights_13TeV_MG: *mcargs_qcd
+  QCD_HT500to700_PSWeights_13TeV_MG: *mcargs_qcd
+  #QCD_HT500to700_PSWeights_13TeV_ext1_MG: *mcargs_qcd
+  QCD_HT700to1000_PSWeights_13TeV_MG: *mcargs_qcd
+  QCD_HT1000to1500_PSWeights_13TeV_MG: *mcargs_qcd
+  QCD_HT1500to2000_PSWeights_13TeV_MG: *mcargs_qcd
+  QCD_HT2000toInf_PSWeights_13TeV_MG: *mcargs_qcd
+... # End of file

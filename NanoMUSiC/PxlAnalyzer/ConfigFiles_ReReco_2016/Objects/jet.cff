@@ -1,0 +1,127 @@
+############################
+##   Cuts and Isolation   ##
+############################
+# See also:
+# https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID
+Jet.use = 1
+Jet.Type.Gen = "AK4"
+Jet.Type.Rec = "AK4"
+Jet.pt.min = 50
+# In this case Barrel means tracker jets
+Jet.eta.Barrel.max = 2.4
+# In this case endcap means calo jets not covered by tracker
+Jet.eta.Endcap.min = 2.4
+Jet.eta.Endcap.max = 3.0
+# default uses only jets reconstucted using also the tracker
+Jet.barrel.only = 1
+Jet.endcap.only = 0
+Jet.DeltaR.max = 0.5
+Jet.isPF = 1
+
+Jet.ID.use = 1
+Jet.ID.Tag = 1
+Jet.ID.Type = "LOOSE"
+
+Jet.Rho.Label = "fixedGridRhoFastjetAll"
+
+# See also:
+# https://twiki.cern.ch/twiki/bin/view/CMS/JECUncertaintySources?rev=29#2012_JEC
+Jet.Error.JESType = "Total"
+Jet.Error.JESFile = "$PXLANALYZER_BASE/ConfigFiles/ConfigInputs/Summer16_23Sep2016V4_MC_UncertaintySources_AK4PFchs.txt"
+Jet.Error.Fakes = 0.0
+# If Jet.ID.use = False, use the following selection:
+# PFJetID (LOOSE):
+Jet.NeutralHadronEnergyFraction.max = 0.99  # must be < 0.99!
+Jet.NeutralEMEnergyFraction.max = 0.99      # must be < 0.99!
+Jet.NumConstituents.min = 2
+# Only if |eta| > 2.4:
+Jet.ChargedHadronEnergyFraction.min = 0.0  # must be > 0.0
+Jet.ChargedEMEnergyFraction.max = 0.99     # must be < 0.99!
+Jet.chargedMultiplicity.min = 1
+# end of PFJetID
+
+############################
+##         Gen            ##
+############################
+Jet.Gen.HadOverEm.min = 0.0
+Jet.Gen.HadEFrac.min = 0.05
+
+# Possible B-Jet algorithms:
+# - combinedSecondaryVertexBJetTags
+# - jetBProbabilityBJetTags
+# - jetProbabilityBJetTags
+# - simpleSecondaryVertexBJetTags
+# - softElectronByIP3dBJetTags
+# - softElectronByPtBJetTags
+# - softMuonBJetTags
+# - softMuonByIP3dBJetTags
+# - softMuonByPtBJetTags
+# - trackCountingHighEffBJetTags
+# - trackCountingHighPurBJetTags
+
+############################
+##       B Jets           ##
+############################
+# BJets?
+Jet.BJets.use = 0
+#Jet.BJets.Algo = "pfCombinedSecondaryVertexV2BJetTags"
+Jet.BJets.Algo = "pfCombinedInclusiveSecondaryVertexV2BJetTags"
+Jet.BJets.AlgoName = "CSVv2"
+Jet.BJets.Discr.WP = "Tight"
+Jet.BJets.Discr.min = 0.9535
+Jet.BJets.SF.Method = ""
+Jet.BJets.SF.file = "$PXLANALYZER_BASE/ConfigFiles/ConfigInputs/ScaleFactors/2016/CSVv2_Moriond17_B_H.csv"
+#for Jet.BJets.SF.file : put path after : $PXLANALYZER_BASE
+Jet.BJets.Efficiency.file = "$PXLANALYZER_BASE/ConfigFiles/ConfigInputs/ScaleFactors/2016/BTagEfficiency_HadflavourNjet.root"
+Jet.BJets.Efficiency.type = "HadflavNjet"
+Jet.BJets.Efficiency.dir = "BTagEfficiency_HadflavourNjet"
+Jet.BJets.Efficiency.hist = "eff_BTag_HadflavNjet"
+# Tight WP for 2017 data : https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco
+Jet.BJets.Type.Gen = "b"
+Jet.BJets.Type.Rec = "b"
+# Choose Algorithm for Flavour Identification of (B)Jets:
+# - algoFlavour
+# - physicsFlavour
+# https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation
+
+############################
+## Resolution Corrections ##
+############################
+
+# Measurements show that the jet energy resolution (JER) in data is worse than in the simulation.
+# See the documentation of BinnedMapping to understand the following config options.
+#
+# All values from:
+# https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetResolution?rev=32
+
+# Switch for Jet Resolution correction
+Jet.Resolutions.Corr.use = 1
+
+#https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution?rev=50
+Jet.Resolution.UnmatchedFile = "$PXLANALYZER_BASE/ConfigFiles/ConfigInputs/Summer16_25nsV1_MC_PtResolution_AK4PFchs.txt"
+Jet.Resolution.SFFile = "$PXLANALYZER_BASE/ConfigFiles/ConfigInputs/Summer16_25nsV1_MC_SF_AK4PFchs.txt"
+
+
+# If true, the given eta values are considered abolute.
+# No negative values allowed!
+Jet.Resolution.abs_eta=1
+
+# Width of distribution (recPt - genPt), privately studied on MC (feat. M. Weber).
+Jet.Resolution.sigma_MC = 7.2
+
+Jet.ScaleFactors =
+
+
+#################
+## Sytematics  ##
+#################
+# lowered kinematics cuts for systematics used to allow particles to
+# shift from unselected to selected after the shift
+Jet.Syst.pt.min = 30
+Jet.Syst.eta.Barrel.max = 2.4
+Jet.Syst.eta.Endcap.min = 2.4
+Jet.Syst.eta.Endcap.max = 3.2
+
+Jet.Syst.Types = Resolution, Scale
+# If using BJets with the 2A SF method
+#Jet.Syst.Types = Resolution, Scale, BJetsSF2A
