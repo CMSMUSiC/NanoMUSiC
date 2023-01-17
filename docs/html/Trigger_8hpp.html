@@ -21,7 +21,7 @@
     <meta name="twitter:description"
         content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
     <!-- END twitter metadata -->
-    <title>NanoMUSiC: /.automount/home/home__home1/institut_3a/silva/NanoMUSiC/NanoMUSiC/MUSiC/include/Trigger.hpp File Reference</title>
+    <title>NanoMUSiC: /.automount/home/home__home1/institut_3a/silva/projects/music/NanoMUSiC/NanoMUSiC/MUSiC/include/Trigger.hpp File Reference</title>
     <link href="tabs.css" rel="stylesheet" type="text/css" />
     <link rel="icon" type="image/svg+xml" href="logo.drawio.svg" />
     <script type="text/javascript" src="jquery.js"></script>
@@ -163,12 +163,20 @@ $(document).ready(function(){initNavTree('Trigger_8hpp.html',''); initResizable(
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">Trigger.hpp File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="Enumerate_8hpp_source.html">Enumerate.hpp</a>&quot;</code><br />
+<div class="textblock"><code>#include &lt;string&gt;</code><br />
+<code>#include &lt;string_view&gt;</code><br />
+<code>#include &quot;<a class="el" href="CorrectionSets_8hpp_source.html">CorrectionSets.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Enumerate_8hpp_source.html">Enumerate.hpp</a>&quot;</code><br />
+<code>#include &lt;fmt/core.h&gt;</code><br />
+<code>#include &quot;ROOT/RVec.hxx&quot;</code><br />
 </div>
 <p><a href="Trigger_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -176,6 +184,39 @@ $(document).ready(function(){initNavTree('Trigger_8hpp.html',''); initResizable(
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTriggerBits.html">TriggerBits</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespaceTrigger"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html">Trigger</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a8a4f3587ec4f58598997c30093ff7458"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#a8a4f3587ec4f58598997c30093ff7458">Trigger::get_year_for_muon_sf</a> (<a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> year)</td></tr>
+<tr class="separator:a8a4f3587ec4f58598997c30093ff7458"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a475693bf9bf595a28241687c3b98aa15"><td class="memTemplParams" colspan="2">template&lt;typename T1 , typename T2 &gt; </td></tr>
+<tr class="memitem:a475693bf9bf595a28241687c3b98aa15"><td class="memTemplItemLeft" align="right" valign="top">std::pair&lt; RVec&lt; float &gt;, RVec&lt; float &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#a475693bf9bf595a28241687c3b98aa15">Trigger::get_matches</a> (const T1 &amp;trigger_objects_pt, const T1 &amp;trigger_objects_eta, const T1 &amp;trigger_objects_phi, const T2 &amp;nano_objects_pt, const T2 &amp;nano_objects_eta, const T2 &amp;nano_objects_phi)</td></tr>
+<tr class="separator:a475693bf9bf595a28241687c3b98aa15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6df4c8b56bf5622b27467cc5a201a0d"><td class="memTemplParams" colspan="2">template&lt;typename T1 , typename T2 &gt; </td></tr>
+<tr class="memitem:ac6df4c8b56bf5622b27467cc5a201a0d"><td class="memTemplItemLeft" align="right" valign="top">constexpr std::tuple&lt; bool, float, float &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#ac6df4c8b56bf5622b27467cc5a201a0d">Trigger::trigger_matcher</a> (const T1 &amp;trigger_objects_pt, const T1 &amp;trigger_objects_eta, const T1 &amp;trigger_objects_phi, const T2 &amp;nano_objects_pt, const T2 &amp;nano_objects_eta, const T2 &amp;nano_objects_phi, const float max_delta_r)</td></tr>
+<tr class="separator:ac6df4c8b56bf5622b27467cc5a201a0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a580e1c559f06988c3c72636666e5d80f"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#a580e1c559f06988c3c72636666e5d80f">Trigger::check_bit</a> (const RVec&lt; int &gt; &amp;trigger_bits, const int &amp;bit)</td></tr>
+<tr class="separator:a580e1c559f06988c3c72636666e5d80f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76fa6042a608b9be8e58b9e5b398d1b5"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#a76fa6042a608b9be8e58b9e5b398d1b5">Trigger::SingleMuonLowPtBits</a> (const RVec&lt; int &gt; &amp;triggerobj_bit, const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;year)</td></tr>
+<tr class="memdesc:a76fa6042a608b9be8e58b9e5b398d1b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check the <code>trigger_bit</code> of a given TrigObj for Single Muon - Low pT.  <a href="namespaceTrigger.html#a76fa6042a608b9be8e58b9e5b398d1b5">More...</a><br /></td></tr>
+<tr class="separator:a76fa6042a608b9be8e58b9e5b398d1b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10c809938ce09d2f3b5b9405fae0b967"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#a10c809938ce09d2f3b5b9405fae0b967">Trigger::SingleMuonHighPtBits</a> (const RVec&lt; int &gt; &amp;triggerobj_bit, const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;year)</td></tr>
+<tr class="memdesc:a10c809938ce09d2f3b5b9405fae0b967"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check the <code>trigger_bit</code> of a given TrigObj for Single Muon - High pT.  <a href="namespaceTrigger.html#a10c809938ce09d2f3b5b9405fae0b967">More...</a><br /></td></tr>
+<tr class="separator:a10c809938ce09d2f3b5b9405fae0b967"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a505dcb3d3918e6bb18a8229388d44a4c"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#a505dcb3d3918e6bb18a8229388d44a4c">Trigger::check_trigger_bit</a> (const RVec&lt; int &gt; &amp;triggerobj_bit, const std::string_view &amp;path, const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;year)</td></tr>
+<tr class="separator:a505dcb3d3918e6bb18a8229388d44a4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:ac93ee13dccdb4ce77bb658412f602dc5"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#ac93ee13dccdb4ce77bb658412f602dc5">Trigger::HLTPath</a></td></tr>
+<tr class="separator:ac93ee13dccdb4ce77bb658412f602dc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff1092c04a2f900b8106a8f8745b0fc9"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#aff1092c04a2f900b8106a8f8745b0fc9">Trigger::kTotalPaths</a> = HLTPath.size()</td></tr>
+<tr class="separator:aff1092c04a2f900b8106a8f8745b0fc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

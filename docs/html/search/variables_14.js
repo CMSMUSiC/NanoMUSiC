@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['x_5fsection_5ffile_828',['x_section_file',['../classTaskConfiguration.html#a72f7b2cfb8d6a97f2f6eab2e1d4b3c14',1,'TaskConfiguration']]]
+  ['year_839',['year',['../classTaskConfiguration.html#a60b1e28a305778028fdd171ed62c5760',1,'TaskConfiguration::year()'],['../classCorrector.html#a4e1405aa9bd95e389386f7ba4d9954ab',1,'Corrector::year()'],['../classEventData.html#a0ac82e0ba143e9390c9c5011f6555788',1,'EventData::year()']]],
+  ['year_5fstr_840',['year_str',['../classTaskConfiguration.html#a2f9878732676540d1a94ad637e0f6d01',1,'TaskConfiguration']]]
 ];

@@ -9,6 +9,13 @@ var Configs_8hpp =
     [ "METConfig", "structObjConfig_1_1METConfig.html", "structObjConfig_1_1METConfig" ],
     [ "RunConfig", "structRunConfig_1_1RunConfig.html", "structRunConfig_1_1RunConfig" ],
     [ "TaskConfiguration", "classTaskConfiguration.html", "classTaskConfiguration" ],
+    [ "ADD_TO_TRIGGER_RED_LIST", "Configs_8hpp.html#a8b7a21b5630221611d4d6bd21eb830d7", null ],
+    [ "BOOST_HANA_CONFIG_ENABLE_STRING_UDL", "Configs_8hpp.html#a81de60f5bea16e6ff4a38c94e3022f10", null ],
+    [ "HANA_FIRST", "Configs_8hpp.html#a8ba4b90ab0c7a44249616f4cb3848c30", null ],
+    [ "HANA_FIRST_TO_SV", "Configs_8hpp.html#a4567cd0c682e448eaa5fa6734b62b8f6", null ],
+    [ "HANA_SECOND", "Configs_8hpp.html#ab9f8e03af5770839bed7836bbdc61107", null ],
+    [ "HANA_SECOND_TO_SV", "Configs_8hpp.html#a6d8df6d25a3b3f4c2305ad991bcdce96", null ],
+    [ "HANA_TO_SV", "Configs_8hpp.html#a1154d34bd4e1bd5ed78ab65b5a765721", null ],
     [ "Year", "Configs_8hpp.html#ae49013585f0536b639fe09828864fe37", [
       [ "Run2016APV", "Configs_8hpp.html#ae49013585f0536b639fe09828864fe37acdd64c4ab6df0b9123e861c6a553ff52", null ],
       [ "Run2016", "Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abd2434cf3747e405569bbf500407c664", null ],
@@ -16,7 +23,8 @@ var Configs_8hpp =
       [ "Run2018", "Configs_8hpp.html#ae49013585f0536b639fe09828864fe37a4574676bc1f98656ba6d813ba595ffc0", null ],
       [ "kTotalYears", "Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abfd3e8c0a2e269807b0b07d3cc6ad62c", null ]
     ] ],
-    [ "get_runyear", "Configs_8hpp.html#a85b6de68703d4e9d78cc25d31006aefd", null ],
+    [ "get_runyear", "Configs_8hpp.html#ab2bcc6de72277af49c9a757fc875b6b7", null ],
+    [ "get_trigger_stream", "Configs_8hpp.html#a2a3fa0cef291209ce5a0d333a494dee0", null ],
     [ "BJets", "Configs_8hpp.html#afcac5b1ca0a14bad328559f7f3ec6d53", null ],
     [ "Bjets2016", "Configs_8hpp.html#aede2d0f9e6783cf805606e73beeaf92d", null ],
     [ "Bjets2016APV", "Configs_8hpp.html#a27230779f387f21354f8c0ae33c0e0a5", null ],
@@ -64,5 +72,6 @@ var Configs_8hpp =
     [ "Tau2016APV", "Configs_8hpp.html#ac4290728edcbb440f36cf613b410394a", null ],
     [ "Tau2017", "Configs_8hpp.html#a1035b4960705276118f3f838132caa17", null ],
     [ "Tau2018", "Configs_8hpp.html#af288d635abe7f71e7ec01e09f75f7926", null ],
-    [ "Taus", "Configs_8hpp.html#a7f5c435c8ba15409e77c02a916d075ac", null ]
+    [ "Taus", "Configs_8hpp.html#a7f5c435c8ba15409e77c02a916d075ac", null ],
+    [ "TriggerStreamRedList", "Configs_8hpp.html#ad32e5ab25a03dd893cca49c1936bf661", null ]
 ];

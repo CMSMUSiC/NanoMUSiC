@@ -25,32 +25,34 @@
 var NAVTREE =
 [
   [ "NanoMUSiC", "index.html", [
+    [ "About", "index.html#autotoc_md1", null ],
+    [ "License", "index.html#autotoc_md2", null ],
     [ "Setup", "md_installation.html", [
-      [ "Dependencies", "md_installation.html#autotoc_md2", null ],
-      [ "Setup the environment (only once)", "md_installation.html#autotoc_md3", null ],
-      [ "Configuring the environment (for every new session)", "md_installation.html#autotoc_md4", null ],
-      [ "Compilation", "md_installation.html#autotoc_md5", null ],
-      [ "Installations directories", "md_installation.html#autotoc_md6", null ]
+      [ "Dependencies", "md_installation.html#autotoc_md4", null ],
+      [ "Setup the environment (only once)", "md_installation.html#autotoc_md5", null ],
+      [ "Configuring the environment (for every new session)", "md_installation.html#autotoc_md6", null ],
+      [ "Compilation", "md_installation.html#autotoc_md7", null ],
+      [ "Installations directories", "md_installation.html#autotoc_md8", null ]
     ] ],
     [ "Running the analysis", "md_running.html", [
-      [ "Skim", "md_running.html#autotoc_md8", [
-        [ "Run Config File", "md_running.html#autotoc_md9", [
-          [ "Single process", "md_running.html#autotoc_md10", null ]
+      [ "Skim", "md_running.html#autotoc_md10", [
+        [ "Run Config File", "md_running.html#autotoc_md11", [
+          [ "Single process", "md_running.html#autotoc_md12", null ]
         ] ]
       ] ]
     ] ],
     [ "NanoAOD file Content", "md_nanoaod_content.html", [
-      [ "MC", "md_nanoaod_content.html#autotoc_md12", [
-        [ "2016APV", "md_nanoaod_content.html#autotoc_md13", null ],
-        [ "2016", "md_nanoaod_content.html#autotoc_md14", null ],
-        [ "2017", "md_nanoaod_content.html#autotoc_md15", null ],
-        [ "2018", "md_nanoaod_content.html#autotoc_md16", null ]
+      [ "MC", "md_nanoaod_content.html#autotoc_md14", [
+        [ "2016APV", "md_nanoaod_content.html#autotoc_md15", null ],
+        [ "2016", "md_nanoaod_content.html#autotoc_md16", null ],
+        [ "2017", "md_nanoaod_content.html#autotoc_md17", null ],
+        [ "2018", "md_nanoaod_content.html#autotoc_md18", null ]
       ] ],
-      [ "Data", "md_nanoaod_content.html#autotoc_md17", [
-        [ "2016APV", "md_nanoaod_content.html#autotoc_md18", null ],
-        [ "2016", "md_nanoaod_content.html#autotoc_md19", null ],
-        [ "2017", "md_nanoaod_content.html#autotoc_md20", null ],
-        [ "2018", "md_nanoaod_content.html#autotoc_md21", null ]
+      [ "Data", "md_nanoaod_content.html#autotoc_md19", [
+        [ "2016APV", "md_nanoaod_content.html#autotoc_md20", null ],
+        [ "2016", "md_nanoaod_content.html#autotoc_md21", null ],
+        [ "2017", "md_nanoaod_content.html#autotoc_md22", null ],
+        [ "2018", "md_nanoaod_content.html#autotoc_md23", null ]
       ] ]
     ] ],
     [ "Namespaces", "namespaces.html", [
@@ -82,7 +84,8 @@ var NAVTREE =
         [ "Variables", "globals_vars.html", null ],
         [ "Typedefs", "globals_type.html", null ],
         [ "Enumerations", "globals_enum.html", null ],
-        [ "Enumerator", "globals_eval.html", null ]
+        [ "Enumerator", "globals_eval.html", null ],
+        [ "Macros", "globals_defs.html", null ]
       ] ]
     ] ]
   ] ]
@@ -91,8 +94,8 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "Configs_8hpp.html",
-"classNanoAODReader.html#a0fb2493dae0db7c237b2ed79ddbec5cd",
-"process__event_8hpp_source.html"
+"classEventData.html#aeff04602f12f93c5fbec0ddd1ca270ea",
+"nano2pxl__utils_8hpp.html#a30b67fd9952b1e1df318f9f69ee91364"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

@@ -21,7 +21,7 @@
     <meta name="twitter:description"
         content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
     <!-- END twitter metadata -->
-    <title>NanoMUSiC: /.automount/home/home__home1/institut_3a/silva/NanoMUSiC/NanoMUSiC/MUSiC/include/RunLumiFilter.hpp Source File</title>
+    <title>NanoMUSiC: /.automount/home/home__home1/institut_3a/silva/projects/music/NanoMUSiC/NanoMUSiC/MUSiC/include/RunLumiFilter.hpp Source File</title>
     <link href="tabs.css" rel="stylesheet" type="text/css" />
     <link rel="icon" type="image/svg+xml" href="logo.drawio.svg" />
     <script type="text/javascript" src="jquery.js"></script>
@@ -166,114 +166,121 @@ $(document).ready(function(){initNavTree('RunLumiFilter_8hpp_source.html',''); i
 <div class="title">RunLumiFilter.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<a href="RunLumiFilter_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#include &quot;json.hpp&quot;</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a name="l00003"></a><span class="lineno"><a class="line" href="RunLumiFilter_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">    3</a></span>&#160;<span class="keyword">using</span> <a class="code" href="RunLumiFilter_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> = <a class="code" href="RunLumiFilter_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">nlohmann::json</a>;</div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160; </div>
-<div class="line"><a name="l00005"></a><span class="lineno"><a class="line" href="classRunLumiFilter.html">    5</a></span>&#160;<span class="keyword">class </span><a class="code" href="classRunLumiFilter.html">RunLumiFilter</a></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;{</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;  <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00008"></a><span class="lineno"><a class="line" href="classRunLumiFilter.html#a35ab7e861e15849274fb9ecf03195151">    8</a></span>&#160;    <a class="code" href="RunLumiFilter_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> <a class="code" href="classRunLumiFilter.html#a35ab7e861e15849274fb9ecf03195151">good_runs_lumis_json</a>;</div>
-<div class="line"><a name="l00009"></a><span class="lineno"><a class="line" href="classRunLumiFilter.html#a036f1dfa3fcbcf0934fbfaabd80ac130">    9</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classRunLumiFilter.html#a036f1dfa3fcbcf0934fbfaabd80ac130">dummy_json</a> = <span class="keyword">false</span>;</div>
+<a href="RunLumiFilter_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef RUNLUMIFILTER_HPP</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define RUNLUMIFILTER_HPP</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160; </div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;fstream&gt;</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;json.hpp&quot;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno"><a class="line" href="RunLumiFilter_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">    9</a></span>&#160;<span class="keyword">using</span> <a class="code" href="RunLumiFilter_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> = <a class="code" href="RunLumiFilter_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">nlohmann::json</a>;</div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;  <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00012"></a><span class="lineno"><a class="line" href="classRunLumiFilter.html#ae880ca319ec1b9d3d5cf1518bf6e9bac">   12</a></span>&#160;    <a class="code" href="classRunLumiFilter.html#ae880ca319ec1b9d3d5cf1518bf6e9bac">RunLumiFilter</a>(<span class="keyword">const</span> std::string &amp;_input_json_file)</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    {</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;        <a class="code" href="classRunLumiFilter.html#a35ab7e861e15849274fb9ecf03195151">good_runs_lumis_json</a> = [&amp;]() {</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;            <span class="keywordflow">if</span> (_input_json_file == <span class="stringliteral">&quot;&quot;</span>)</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;            {</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;                <span class="comment">// no golden json provided --&gt; should always return true</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;                <a class="code" href="classRunLumiFilter.html#a036f1dfa3fcbcf0934fbfaabd80ac130">dummy_json</a> = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;                <span class="keywordflow">return</span> <a class="code" href="RunLumiFilter_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a>();</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;            }</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;            <span class="keywordflow">try</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;            {</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                <span class="keyword">auto</span> golden_json = json::parse(std::ifstream(_input_json_file));</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;                <span class="keywordflow">return</span> golden_json;</div>
+<div class="line"><a name="l00011"></a><span class="lineno"><a class="line" href="classRunLumiFilter.html">   11</a></span>&#160;<span class="keyword">class </span><a class="code" href="classRunLumiFilter.html">RunLumiFilter</a></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;{</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="classRunLumiFilter.html#a35ab7e861e15849274fb9ecf03195151">   14</a></span>&#160;    <a class="code" href="RunLumiFilter_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> <a class="code" href="classRunLumiFilter.html#a35ab7e861e15849274fb9ecf03195151">good_runs_lumis_json</a>;</div>
+<div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="classRunLumiFilter.html#a036f1dfa3fcbcf0934fbfaabd80ac130">   15</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classRunLumiFilter.html#a036f1dfa3fcbcf0934fbfaabd80ac130">dummy_json</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00018"></a><span class="lineno"><a class="line" href="classRunLumiFilter.html#ae880ca319ec1b9d3d5cf1518bf6e9bac">   18</a></span>&#160;    <a class="code" href="classRunLumiFilter.html#ae880ca319ec1b9d3d5cf1518bf6e9bac">RunLumiFilter</a>(<span class="keyword">const</span> std::string &amp;_input_json_file)</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    {</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;        <a class="code" href="classRunLumiFilter.html#a35ab7e861e15849274fb9ecf03195151">good_runs_lumis_json</a> = [&amp;]() {</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;            <span class="keywordflow">if</span> (_input_json_file == <span class="stringliteral">&quot;&quot;</span>)</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;            {</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;                <span class="comment">// no golden json provided --&gt; should always return true</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                <a class="code" href="classRunLumiFilter.html#a036f1dfa3fcbcf0934fbfaabd80ac130">dummy_json</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;                <span class="keywordflow">return</span> <a class="code" href="RunLumiFilter_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a>();</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;            }</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;            <span class="keywordflow">catch</span> (<span class="keyword">const</span> json::parse_error &amp;err)</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;            {</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;                std::cerr &lt;&lt; <span class="stringliteral">&quot;ERROR: Golden JSON file [&quot;</span> &lt;&lt; _input_json_file &lt;&lt; <span class="stringliteral">&quot;] parsing failed.&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;                std::cerr &lt;&lt; <span class="stringliteral">&quot;Message: &quot;</span> &lt;&lt; err.what() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;                          &lt;&lt; <span class="stringliteral">&quot;Exception id: &quot;</span> &lt;&lt; err.id &lt;&lt; <span class="charliteral">&#39;\n&#39;</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;                          &lt;&lt; <span class="stringliteral">&quot;Byte position of error: &quot;</span> &lt;&lt; err.byte &lt;&lt; std::endl;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;                exit(-1);</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;            }</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        }();</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    }</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
-<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="classRunLumiFilter.html#a2b2b7c6c01ade28cdd5a421c638786a9">   38</a></span>&#160;    <span class="keyword">auto</span> <a class="code" href="classRunLumiFilter.html#a2b2b7c6c01ade28cdd5a421c638786a9">operator()</a>(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> &amp;run_number, <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> &amp;lumi, <span class="keyword">const</span> <span class="keywordtype">bool</span> &amp;is_data)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <span class="keywordflow">if</span> (!is_data)</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        {</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        }</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        <span class="keywordflow">if</span> (<a class="code" href="classRunLumiFilter.html#a036f1dfa3fcbcf0934fbfaabd80ac130">dummy_json</a>)</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        {</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;            <span class="comment">// no golden json provided --&gt; should always return true</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        }</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        <span class="comment">// CMS standard is to have run number as string</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        <span class="keyword">const</span> <span class="keyword">auto</span> test_run = std::to_string(run_number);</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        <span class="keyword">const</span> <span class="keyword">auto</span> test_lumi = lumi;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        <span class="keyword">auto</span> is_good_run_lumi = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160; </div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        <span class="keywordflow">if</span> (<a class="code" href="classRunLumiFilter.html#a35ab7e861e15849274fb9ecf03195151">good_runs_lumis_json</a>.find(test_run) != <a class="code" href="classRunLumiFilter.html#a35ab7e861e15849274fb9ecf03195151">good_runs_lumis_json</a>.end())</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        {</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;            <span class="keywordflow">for</span> (<span class="keyword">auto</span> <span class="keyword">const</span> &amp;interval : <a class="code" href="classRunLumiFilter.html#a35ab7e861e15849274fb9ecf03195151">good_runs_lumis_json</a>[test_run])</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;            {</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> low = interval.front();</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> high = interval.back();</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                <span class="keywordflow">if</span> (test_lumi &gt;= low &amp;&amp; test_lumi &lt;= high)</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                {</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                    is_good_run_lumi = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                }</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;            }</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        }</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        <span class="keywordflow">return</span> is_good_run_lumi;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    }</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="comment">// implemented only for backward compatibility</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno"><a class="line" href="classRunLumiFilter.html#a248ac62744737bc547141f5dd0852724">   71</a></span>&#160;    <span class="keyword">auto</span> <a class="code" href="classRunLumiFilter.html#a248ac62744737bc547141f5dd0852724">operator()</a>(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> &amp;run_number, <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> &amp;lumi)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        <span class="keywordflow">if</span> (<a class="code" href="classRunLumiFilter.html#a036f1dfa3fcbcf0934fbfaabd80ac130">dummy_json</a>)</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        {</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;            <span class="comment">// no golden json provided --&gt; should always return true</span></div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;        }</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        <span class="comment">// CMS standard is to have run number as string</span></div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        <span class="keyword">const</span> <span class="keyword">auto</span> test_run = std::to_string(run_number);</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        <span class="keyword">const</span> <span class="keyword">auto</span> test_lumi = lumi;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160; </div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        <span class="keyword">auto</span> is_good_run_lumi = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160; </div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;        <span class="keywordflow">if</span> (<a class="code" href="classRunLumiFilter.html#a35ab7e861e15849274fb9ecf03195151">good_runs_lumis_json</a>.find(test_run) != <a class="code" href="classRunLumiFilter.html#a35ab7e861e15849274fb9ecf03195151">good_runs_lumis_json</a>.end())</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;        {</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;            <span class="keywordflow">for</span> (<span class="keyword">auto</span> <span class="keyword">const</span> &amp;interval : <a class="code" href="classRunLumiFilter.html#a35ab7e861e15849274fb9ecf03195151">good_runs_lumis_json</a>[test_run])</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;            {</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> low = interval.front();</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> high = interval.back();</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;                <span class="keywordflow">if</span> (test_lumi &gt;= low &amp;&amp; test_lumi &lt;= high)</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;                {</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                    is_good_run_lumi = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;                }</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;            }</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;        }</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;        <span class="keywordflow">return</span> is_good_run_lumi;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    }</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;};</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;            <span class="keywordflow">try</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;            {</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;                <span class="keyword">auto</span> golden_json = json::parse(std::ifstream(_input_json_file));</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;                <span class="keywordflow">return</span> golden_json;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;            }</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;            <span class="keywordflow">catch</span> (<span class="keyword">const</span> json::parse_error &amp;err)</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;            {</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;                std::cerr &lt;&lt; <span class="stringliteral">&quot;ERROR: Golden JSON file [&quot;</span> &lt;&lt; _input_json_file &lt;&lt; <span class="stringliteral">&quot;] parsing failed.&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;                std::cerr &lt;&lt; <span class="stringliteral">&quot;Message: &quot;</span> &lt;&lt; err.what() &lt;&lt; <span class="charliteral">&#39;\n&#39;</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;                          &lt;&lt; <span class="stringliteral">&quot;Exception id: &quot;</span> &lt;&lt; err.id &lt;&lt; <span class="charliteral">&#39;\n&#39;</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                          &lt;&lt; <span class="stringliteral">&quot;Byte position of error: &quot;</span> &lt;&lt; err.byte &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                exit(-1);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;            }</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        }();</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    }</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
+<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="classRunLumiFilter.html#a2b2b7c6c01ade28cdd5a421c638786a9">   44</a></span>&#160;    <span class="keyword">auto</span> <a class="code" href="classRunLumiFilter.html#a2b2b7c6c01ade28cdd5a421c638786a9">operator()</a>(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> &amp;run_number, <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> &amp;lumi, <span class="keyword">const</span> <span class="keywordtype">bool</span> &amp;is_data)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        <span class="keywordflow">if</span> (!is_data)</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        {</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        }</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        <span class="keywordflow">if</span> (<a class="code" href="classRunLumiFilter.html#a036f1dfa3fcbcf0934fbfaabd80ac130">dummy_json</a>)</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        {</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;            <span class="comment">// no golden json provided --&gt; should always return true</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        }</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        <span class="comment">// CMS standard is to have run number as string</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        <span class="keyword">const</span> <span class="keyword">auto</span> test_run = std::to_string(run_number);</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        <span class="keyword">const</span> <span class="keyword">auto</span> test_lumi = lumi;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; </div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        <span class="keyword">auto</span> is_good_run_lumi = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        <span class="keywordflow">if</span> (<a class="code" href="classRunLumiFilter.html#a35ab7e861e15849274fb9ecf03195151">good_runs_lumis_json</a>.find(test_run) != <a class="code" href="classRunLumiFilter.html#a35ab7e861e15849274fb9ecf03195151">good_runs_lumis_json</a>.end())</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        {</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;            <span class="keywordflow">for</span> (<span class="keyword">auto</span> <span class="keyword">const</span> &amp;interval : <a class="code" href="classRunLumiFilter.html#a35ab7e861e15849274fb9ecf03195151">good_runs_lumis_json</a>[test_run])</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;            {</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> low = interval.front();</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> high = interval.back();</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;                <span class="keywordflow">if</span> (test_lumi &gt;= low &amp;&amp; test_lumi &lt;= high)</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                {</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;                    is_good_run_lumi = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;                }</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;            }</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        }</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        <span class="keywordflow">return</span> is_good_run_lumi;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    }</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <span class="comment">// implemented only for backward compatibility</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno"><a class="line" href="classRunLumiFilter.html#af9edf48199f10060f14421fbf6276f04">   77</a></span>&#160;    <span class="keyword">auto</span> <a class="code" href="classRunLumiFilter.html#af9edf48199f10060f14421fbf6276f04">operator()</a>(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> &amp;run_number, <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> &amp;lumi) -&gt; <span class="keywordtype">bool</span> <span class="keyword">const</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    {</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        <span class="keywordflow">if</span> (<a class="code" href="classRunLumiFilter.html#a036f1dfa3fcbcf0934fbfaabd80ac130">dummy_json</a>)</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        {</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;            <span class="comment">// no golden json provided --&gt; should always return true</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;        }</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;        <span class="comment">// CMS standard is to have run number as string</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;        <span class="keyword">const</span> <span class="keyword">auto</span> test_run = std::to_string(run_number);</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;        <span class="keyword">const</span> <span class="keyword">auto</span> test_lumi = lumi;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160; </div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        <span class="keyword">auto</span> is_good_run_lumi = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160; </div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;        <span class="keywordflow">if</span> (<a class="code" href="classRunLumiFilter.html#a35ab7e861e15849274fb9ecf03195151">good_runs_lumis_json</a>.find(test_run) != <a class="code" href="classRunLumiFilter.html#a35ab7e861e15849274fb9ecf03195151">good_runs_lumis_json</a>.end())</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        {</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;            <span class="keywordflow">for</span> (<span class="keyword">auto</span> <span class="keyword">const</span> &amp;interval : <a class="code" href="classRunLumiFilter.html#a35ab7e861e15849274fb9ecf03195151">good_runs_lumis_json</a>[test_run])</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;            {</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> low = interval.front();</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> high = interval.back();</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;                <span class="keywordflow">if</span> (test_lumi &gt;= low &amp;&amp; test_lumi &lt;= high)</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;                {</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;                    is_good_run_lumi = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;                }</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;            }</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;        }</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;        <span class="keywordflow">return</span> is_good_run_lumi;</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    }</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;};</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<span class="preprocessor">#endif // !RUNLUMIFILTER_HPP</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
-<div class="ttc" id="aclassRunLumiFilter_html_a35ab7e861e15849274fb9ecf03195151"><div class="ttname"><a href="classRunLumiFilter.html#a35ab7e861e15849274fb9ecf03195151">RunLumiFilter::good_runs_lumis_json</a></div><div class="ttdeci">json good_runs_lumis_json</div><div class="ttdef"><b>Definition:</b> RunLumiFilter.hpp:8</div></div>
-<div class="ttc" id="aclassRunLumiFilter_html_ae880ca319ec1b9d3d5cf1518bf6e9bac"><div class="ttname"><a href="classRunLumiFilter.html#ae880ca319ec1b9d3d5cf1518bf6e9bac">RunLumiFilter::RunLumiFilter</a></div><div class="ttdeci">RunLumiFilter(const std::string &amp;_input_json_file)</div><div class="ttdef"><b>Definition:</b> RunLumiFilter.hpp:12</div></div>
-<div class="ttc" id="aclassRunLumiFilter_html_a036f1dfa3fcbcf0934fbfaabd80ac130"><div class="ttname"><a href="classRunLumiFilter.html#a036f1dfa3fcbcf0934fbfaabd80ac130">RunLumiFilter::dummy_json</a></div><div class="ttdeci">bool dummy_json</div><div class="ttdef"><b>Definition:</b> RunLumiFilter.hpp:9</div></div>
-<div class="ttc" id="aclassRunLumiFilter_html_a248ac62744737bc547141f5dd0852724"><div class="ttname"><a href="classRunLumiFilter.html#a248ac62744737bc547141f5dd0852724">RunLumiFilter::operator()</a></div><div class="ttdeci">auto operator()(const unsigned long &amp;run_number, const unsigned long &amp;lumi) const</div><div class="ttdef"><b>Definition:</b> RunLumiFilter.hpp:71</div></div>
-<div class="ttc" id="aclassRunLumiFilter_html"><div class="ttname"><a href="classRunLumiFilter.html">RunLumiFilter</a></div><div class="ttdef"><b>Definition:</b> RunLumiFilter.hpp:6</div></div>
-<div class="ttc" id="aclassRunLumiFilter_html_a2b2b7c6c01ade28cdd5a421c638786a9"><div class="ttname"><a href="classRunLumiFilter.html#a2b2b7c6c01ade28cdd5a421c638786a9">RunLumiFilter::operator()</a></div><div class="ttdeci">auto operator()(const unsigned long &amp;run_number, const unsigned long &amp;lumi, const bool &amp;is_data) const</div><div class="ttdef"><b>Definition:</b> RunLumiFilter.hpp:38</div></div>
-<div class="ttc" id="aRunLumiFilter_8hpp_html_ab701e3ac61a85b337ec5c1abaad6742d"><div class="ttname"><a href="RunLumiFilter_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition:</b> RunLumiFilter.hpp:3</div></div>
+<div class="ttc" id="aclassRunLumiFilter_html_a35ab7e861e15849274fb9ecf03195151"><div class="ttname"><a href="classRunLumiFilter.html#a35ab7e861e15849274fb9ecf03195151">RunLumiFilter::good_runs_lumis_json</a></div><div class="ttdeci">json good_runs_lumis_json</div><div class="ttdef"><b>Definition:</b> RunLumiFilter.hpp:14</div></div>
+<div class="ttc" id="aclassRunLumiFilter_html_ae880ca319ec1b9d3d5cf1518bf6e9bac"><div class="ttname"><a href="classRunLumiFilter.html#ae880ca319ec1b9d3d5cf1518bf6e9bac">RunLumiFilter::RunLumiFilter</a></div><div class="ttdeci">RunLumiFilter(const std::string &amp;_input_json_file)</div><div class="ttdef"><b>Definition:</b> RunLumiFilter.hpp:18</div></div>
+<div class="ttc" id="aclassRunLumiFilter_html_a036f1dfa3fcbcf0934fbfaabd80ac130"><div class="ttname"><a href="classRunLumiFilter.html#a036f1dfa3fcbcf0934fbfaabd80ac130">RunLumiFilter::dummy_json</a></div><div class="ttdeci">bool dummy_json</div><div class="ttdef"><b>Definition:</b> RunLumiFilter.hpp:15</div></div>
+<div class="ttc" id="aclassRunLumiFilter_html_af9edf48199f10060f14421fbf6276f04"><div class="ttname"><a href="classRunLumiFilter.html#af9edf48199f10060f14421fbf6276f04">RunLumiFilter::operator()</a></div><div class="ttdeci">auto operator()(const unsigned long &amp;run_number, const unsigned long &amp;lumi) -&gt; bool const</div><div class="ttdef"><b>Definition:</b> RunLumiFilter.hpp:77</div></div>
+<div class="ttc" id="aclassRunLumiFilter_html"><div class="ttname"><a href="classRunLumiFilter.html">RunLumiFilter</a></div><div class="ttdef"><b>Definition:</b> RunLumiFilter.hpp:12</div></div>
+<div class="ttc" id="aclassRunLumiFilter_html_a2b2b7c6c01ade28cdd5a421c638786a9"><div class="ttname"><a href="classRunLumiFilter.html#a2b2b7c6c01ade28cdd5a421c638786a9">RunLumiFilter::operator()</a></div><div class="ttdeci">auto operator()(const unsigned long &amp;run_number, const unsigned long &amp;lumi, const bool &amp;is_data) const</div><div class="ttdef"><b>Definition:</b> RunLumiFilter.hpp:44</div></div>
+<div class="ttc" id="aRunLumiFilter_8hpp_html_ab701e3ac61a85b337ec5c1abaad6742d"><div class="ttname"><a href="RunLumiFilter_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition:</b> RunLumiFilter.hpp:9</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

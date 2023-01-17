@@ -164,9 +164,7 @@ $(document).ready(function(){initNavTree('structTriggerBits.html',''); initResiz
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
-<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="structTriggerBits-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">TriggerBits Struct Reference</div>  </div>
@@ -179,6 +177,10 @@ $(document).ready(function(){initNavTree('structTriggerBits.html',''); initResiz
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aa2f54ea6ab4df09ec7d39f2ebd897d24"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structTriggerBits.html">TriggerBits</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTriggerBits.html#aa2f54ea6ab4df09ec7d39f2ebd897d24">set</a> (unsigned int path, bool value)</td></tr>
 <tr class="separator:aa2f54ea6ab4df09ec7d39f2ebd897d24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07d015911a903781b0dbe762d99b085a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structTriggerBits.html">TriggerBits</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTriggerBits.html#a07d015911a903781b0dbe762d99b085a">set</a> (const std::string_view &amp;path, bool value)</td></tr>
+<tr class="separator:a07d015911a903781b0dbe762d99b085a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51776e9890ae43e91ee1a6dcbca98360"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTriggerBits.html#a51776e9890ae43e91ee1a6dcbca98360">pass</a> (const std::string_view &amp;path) const</td></tr>
+<tr class="separator:a51776e9890ae43e91ee1a6dcbca98360"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2e58baad0df7cb569cd80107a5c5e731"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTriggerBits.html#a2e58baad0df7cb569cd80107a5c5e731">pass</a> (unsigned int path) const</td></tr>
 <tr class="separator:a2e58baad0df7cb569cd80107a5c5e731"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afc81a42df8a6b8055389c6d76e510ad7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTriggerBits.html#afc81a42df8a6b8055389c6d76e510ad7">any</a> () const</td></tr>
@@ -191,35 +193,11 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:afdfa9971a644e4d85192e87e7212ef1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3e2b290fe5d72062c1b472b334dc5876"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTriggerBits.html#a3e2b290fe5d72062c1b472b334dc5876">as_string</a> () const</td></tr>
 <tr class="separator:a3e2b290fe5d72062c1b472b334dc5876"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae5c95fa3b52e2d4229efe95db897cedc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTriggerBits.html#ae5c95fa3b52e2d4229efe95db897cedc">check_bit</a> (const std::string_view &amp;path, const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;year) const</td></tr>
-<tr class="separator:ae5c95fa3b52e2d4229efe95db897cedc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
-Static Public Member Functions</h2></td></tr>
-<tr class="memitem:af39033975344314b49990947b3e01e69"><td class="memTemplParams" colspan="2">template&lt;typename T1 , typename T2 &gt; </td></tr>
-<tr class="memitem:af39033975344314b49990947b3e01e69"><td class="memTemplItemLeft" align="right" valign="top">static constexpr std::pair&lt; RVec&lt; float &gt;, RVec&lt; float &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structTriggerBits.html#af39033975344314b49990947b3e01e69">get_matches</a> (T1 &amp;&amp;trigger_objects, T2 &amp;&amp;nano_objects)</td></tr>
-<tr class="separator:af39033975344314b49990947b3e01e69"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae8141aa07062177ac87acc4e6dd5a425"><td class="memTemplParams" colspan="2">template&lt;typename T1 , typename T2 &gt; </td></tr>
-<tr class="memitem:ae8141aa07062177ac87acc4e6dd5a425"><td class="memTemplItemLeft" align="right" valign="top">static constexpr std::tuple&lt; bool, float, float, float &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structTriggerBits.html#ae8141aa07062177ac87acc4e6dd5a425">trigger_matcher</a> (T1 trigger_objs, T2 nano_objects, <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;year)</td></tr>
-<tr class="separator:ae8141aa07062177ac87acc4e6dd5a425"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a921a4405b24cc0c6b99361cdf2c94084"><td class="memItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTriggerBits.html#a921a4405b24cc0c6b99361cdf2c94084">SingleMuonLowPtBits</a> (const int &amp;trigger_bit, const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;year)</td></tr>
-<tr class="separator:a921a4405b24cc0c6b99361cdf2c94084"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1b544aab0c89989dceec4a5ad3883ca7"><td class="memItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTriggerBits.html#a1b544aab0c89989dceec4a5ad3883ca7">SingleMuonHighPtBits</a> (const int &amp;trigger_bit, const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;year)</td></tr>
-<tr class="separator:a1b544aab0c89989dceec4a5ad3883ca7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a4d46f2f04c9ff72cae66676c955517a4"><td class="memItemLeft" align="right" valign="top">std::bitset&lt; <a class="el" href="structTriggerBits.html#ae05d89cb687144ae516ea502c68c4bae">SIZE</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTriggerBits.html#a4d46f2f04c9ff72cae66676c955517a4">trigger_bits</a></td></tr>
-<tr class="separator:a4d46f2f04c9ff72cae66676c955517a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
-Static Public Attributes</h2></td></tr>
-<tr class="memitem:ad1ed6a2cc26da7bfdbb2981bd6f4b771"><td class="memItemLeft" align="right" valign="top">static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTriggerBits.html#ad1ed6a2cc26da7bfdbb2981bd6f4b771">HLTPath</a></td></tr>
-<tr class="separator:ad1ed6a2cc26da7bfdbb2981bd6f4b771"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a60e4b2bafefa1eca4bf54acf5c42913c"><td class="memItemLeft" align="right" valign="top">static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTriggerBits.html#a60e4b2bafefa1eca4bf54acf5c42913c">kTotalPaths</a> = HLTPath.size()</td></tr>
-<tr class="separator:a60e4b2bafefa1eca4bf54acf5c42913c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae05d89cb687144ae516ea502c68c4bae"><td class="memItemLeft" align="right" valign="top">static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTriggerBits.html#ae05d89cb687144ae516ea502c68c4bae">SIZE</a> = sizeof(unsigned int) * 8</td></tr>
-<tr class="separator:ae05d89cb687144ae516ea502c68c4bae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23300d1ed27b61d373d6110d0e42de6f"><td class="memItemLeft" align="right" valign="top">std::bitset&lt; <a class="el" href="namespaceTrigger.html#aff1092c04a2f900b8106a8f8745b0fc9">Trigger::kTotalPaths</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTriggerBits.html#a23300d1ed27b61d373d6110d0e42de6f">trigger_bits</a></td></tr>
+<tr class="separator:a23300d1ed27b61d373d6110d0e42de6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a id="afc81a42df8a6b8055389c6d76e510ad7"></a>
@@ -347,8 +325,8 @@ Static Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="ae5c95fa3b52e2d4229efe95db897cedc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae5c95fa3b52e2d4229efe95db897cedc">&#9670;&nbsp;</a></span>check_bit()</h2>
+<a id="a51776e9890ae43e91ee1a6dcbca98360"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51776e9890ae43e91ee1a6dcbca98360">&#9670;&nbsp;</a></span>pass() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -357,21 +335,11 @@ Static Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool TriggerBits::check_bit </td>
+          <td class="memname">bool TriggerBits::pass </td>
           <td>(</td>
           <td class="paramtype">const std::string_view &amp;&#160;</td>
-          <td class="paramname"><em>path</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;&#160;</td>
-          <td class="paramname"><em>year</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td> const</td>
         </tr>
       </table>
   </td>
@@ -383,46 +351,8 @@ Static Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="af39033975344314b49990947b3e01e69"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af39033975344314b49990947b3e01e69">&#9670;&nbsp;</a></span>get_matches()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T1 , typename T2 &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static constexpr std::pair&lt;RVec&lt;float&gt;, RVec&lt;float&gt; &gt; TriggerBits::get_matches </td>
-          <td>(</td>
-          <td class="paramtype">T1 &amp;&amp;&#160;</td>
-          <td class="paramname"><em>trigger_objects</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">T2 &amp;&amp;&#160;</td>
-          <td class="paramname"><em>nano_objects</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a2e58baad0df7cb569cd80107a5c5e731"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2e58baad0df7cb569cd80107a5c5e731">&#9670;&nbsp;</a></span>pass()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e58baad0df7cb569cd80107a5c5e731">&#9670;&nbsp;</a></span>pass() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -447,8 +377,44 @@ template&lt;typename T1 , typename T2 &gt; </div>
 
 </div>
 </div>
+<a id="a07d015911a903781b0dbe762d99b085a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07d015911a903781b0dbe762d99b085a">&#9670;&nbsp;</a></span>set() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structTriggerBits.html">TriggerBits</a>&amp; TriggerBits::set </td>
+          <td>(</td>
+          <td class="paramtype">const std::string_view &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="aa2f54ea6ab4df09ec7d39f2ebd897d24"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa2f54ea6ab4df09ec7d39f2ebd897d24">&#9670;&nbsp;</a></span>set()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2f54ea6ab4df09ec7d39f2ebd897d24">&#9670;&nbsp;</a></span>set() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -483,199 +449,15 @@ template&lt;typename T1 , typename T2 &gt; </div>
 
 </div>
 </div>
-<a id="a1b544aab0c89989dceec4a5ad3883ca7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1b544aab0c89989dceec4a5ad3883ca7">&#9670;&nbsp;</a></span>SingleMuonHighPtBits()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static constexpr bool TriggerBits::SingleMuonHighPtBits </td>
-          <td>(</td>
-          <td class="paramtype">const int &amp;&#160;</td>
-          <td class="paramname"><em>trigger_bit</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;&#160;</td>
-          <td class="paramname"><em>year</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a921a4405b24cc0c6b99361cdf2c94084"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a921a4405b24cc0c6b99361cdf2c94084">&#9670;&nbsp;</a></span>SingleMuonLowPtBits()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static constexpr bool TriggerBits::SingleMuonLowPtBits </td>
-          <td>(</td>
-          <td class="paramtype">const int &amp;&#160;</td>
-          <td class="paramname"><em>trigger_bit</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;&#160;</td>
-          <td class="paramname"><em>year</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ae8141aa07062177ac87acc4e6dd5a425"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae8141aa07062177ac87acc4e6dd5a425">&#9670;&nbsp;</a></span>trigger_matcher()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T1 , typename T2 &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static constexpr std::tuple&lt;bool, float, float, float&gt; TriggerBits::trigger_matcher </td>
-          <td>(</td>
-          <td class="paramtype">T1&#160;</td>
-          <td class="paramname"><em>trigger_objs</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">T2&#160;</td>
-          <td class="paramname"><em>nano_objects</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;&#160;</td>
-          <td class="paramname"><em>year</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="ad1ed6a2cc26da7bfdbb2981bd6f4b771"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad1ed6a2cc26da7bfdbb2981bd6f4b771">&#9670;&nbsp;</a></span>HLTPath</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr auto TriggerBits::HLTPath</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">= <a class="code" href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">make_enumerate</a>(<span class="stringliteral">&quot;SingleMuonLowPt&quot;</span>, <span class="stringliteral">&quot;SingleMuonHighPt&quot;</span>, <span class="stringliteral">&quot;SingleElectron&quot;</span>, <span class="stringliteral">&quot;DoubleMuon&quot;</span>,</div>
-<div class="line">                                                   <span class="stringliteral">&quot;DoubleElectron&quot;</span>, <span class="stringliteral">&quot;Photon&quot;</span>, <span class="stringliteral">&quot;Tau&quot;</span>, <span class="stringliteral">&quot;BJet&quot;</span>, <span class="stringliteral">&quot;MET&quot;</span>)</div>
-</div><!-- fragment -->
-</div>
-</div>
-<a id="a60e4b2bafefa1eca4bf54acf5c42913c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a60e4b2bafefa1eca4bf54acf5c42913c">&#9670;&nbsp;</a></span>kTotalPaths</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr auto TriggerBits::kTotalPaths = HLTPath.size()</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ae05d89cb687144ae516ea502c68c4bae"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae05d89cb687144ae516ea502c68c4bae">&#9670;&nbsp;</a></span>SIZE</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr size_t TriggerBits::SIZE = sizeof(unsigned int) * 8</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a4d46f2f04c9ff72cae66676c955517a4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4d46f2f04c9ff72cae66676c955517a4">&#9670;&nbsp;</a></span>trigger_bits</h2>
+<a id="a23300d1ed27b61d373d6110d0e42de6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23300d1ed27b61d373d6110d0e42de6f">&#9670;&nbsp;</a></span>trigger_bits</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::bitset&lt;<a class="el" href="structTriggerBits.html#ae05d89cb687144ae516ea502c68c4bae">SIZE</a>&gt; TriggerBits::trigger_bits</td>
+          <td class="memname">std::bitset&lt;<a class="el" href="namespaceTrigger.html#aff1092c04a2f900b8106a8f8745b0fc9">Trigger::kTotalPaths</a>&gt; TriggerBits::trigger_bits</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -683,11 +465,10 @@ template&lt;typename T1 , typename T2 &gt; </div>
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>/.automount/home/home__home1/institut_3a/silva/NanoMUSiC/NanoMUSiC/MUSiC/include/<a class="el" href="Trigger_8hpp_source.html">Trigger.hpp</a></li>
+<li>/.automount/home/home__home1/institut_3a/silva/projects/music/NanoMUSiC/NanoMUSiC/MUSiC/include/<a class="el" href="Trigger_8hpp_source.html">Trigger.hpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
-<div class="ttc" id="aEnumerate_8hpp_html_a50a6ea831da5d2eec783b7d73d98094a"><div class="ttname"><a href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">make_enumerate</a></div><div class="ttdeci">constexpr auto make_enumerate(Ts &amp;&amp;...args)</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:131</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

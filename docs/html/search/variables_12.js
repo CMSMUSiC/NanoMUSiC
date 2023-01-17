@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['variations_821',['Variations',['../namespaceVariations.html#a1d7b333ccffb424b9c45a95f680b760d',1,'Variations']]],
-  ['variationsandshiftsindexrange_822',['VariationsAndShiftsIndexRange',['../namespaceVariations.html#ad3cbffd6c724d522145cda38a9d4bec5',1,'Variations']]],
-  ['variationsandshiftsrange_823',['VariationsAndShiftsRange',['../namespaceVariations.html#a6b34827b8432bb749397c1331bacd23d',1,'Variations']]]
+  ['weights_834',['Weights',['../classOutputs.html#a13958379a685bb4e61b22fb601633f47',1,'Outputs']]],
+  ['weights_5fdown_835',['weights_down',['../classOutputs.html#a9a97465a47b95c6ca41df9623792067b',1,'Outputs']]],
+  ['weights_5fnominal_836',['weights_nominal',['../classOutputs.html#a60233b7211dabe186b0ddd01b57a4b9b',1,'Outputs']]],
+  ['weights_5fup_837',['weights_up',['../classOutputs.html#a413c53316500829bb5318eb9f94e5c23',1,'Outputs']]]
 ];

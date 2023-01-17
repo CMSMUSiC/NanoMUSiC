@@ -31,5 +31,6 @@ var hierarchy =
     [ "ObjConfig::TauConfig", "structObjConfig_1_1TauConfig.html", null ],
     [ "NanoObjects::Taus", "structNanoObjects_1_1Taus.html", null ],
     [ "TOMLConfig", "classTOMLConfig.html", null ],
+    [ "NanoObjects::TrgObjs", "structNanoObjects_1_1TrgObjs.html", null ],
     [ "TriggerBits", "structTriggerBits.html", null ]
 ];

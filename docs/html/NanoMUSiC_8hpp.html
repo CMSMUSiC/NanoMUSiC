@@ -21,7 +21,7 @@
     <meta name="twitter:description"
         content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
     <!-- END twitter metadata -->
-    <title>NanoMUSiC: /.automount/home/home__home1/institut_3a/silva/NanoMUSiC/NanoMUSiC/MUSiC/include/NanoMUSiC.hpp File Reference</title>
+    <title>NanoMUSiC: /.automount/home/home__home1/institut_3a/silva/projects/music/NanoMUSiC/NanoMUSiC/MUSiC/include/NanoMUSiC.hpp File Reference</title>
     <link href="tabs.css" rel="stylesheet" type="text/css" />
     <link rel="icon" type="image/svg+xml" href="logo.drawio.svg" />
     <script type="text/javascript" src="jquery.js"></script>
@@ -182,11 +182,13 @@ $(document).ready(function(){initNavTree('NanoMUSiC_8hpp.html',''); initResizabl
 <code>#include &lt;iostream&gt;</code><br />
 <code>#include &lt;limits&gt;</code><br />
 <code>#include &lt;math.h&gt;</code><br />
+<code>#include &lt;memory&gt;</code><br />
 <code>#include &lt;numeric&gt;</code><br />
 <code>#include &lt;optional&gt;</code><br />
 <code>#include &lt;set&gt;</code><br />
 <code>#include &lt;sstream&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
+<code>#include &lt;string_view&gt;</code><br />
 <code>#include &lt;sys/time.h&gt;</code><br />
 <code>#include &lt;thread&gt;</code><br />
 <code>#include &lt;time.h&gt;</code><br />
@@ -227,16 +229,12 @@ Typedefs</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:a1cebcc2da734541f7cf005033722cb43"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#a1cebcc2da734541f7cf005033722cb43">PrintProcessInfo</a> ()</td></tr>
 <tr class="separator:a1cebcc2da734541f7cf005033722cb43"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a308ca4e62678b26a996284060effbd12"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#a308ca4e62678b26a996284060effbd12">get_data_stream</a> (const std::string_view &amp;dataset)</td></tr>
-<tr class="separator:a308ca4e62678b26a996284060effbd12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ef88d1206645b82f5a36dc4db0c0b3e"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; TFile &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#a0ef88d1206645b82f5a36dc4db0c0b3e">file_loader</a> (const std::string &amp;file_path, const bool cacheread, const std::string &amp;cache_dir, const bool verbose_load)</td></tr>
 <tr class="separator:a0ef88d1206645b82f5a36dc4db0c0b3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79075a862a5c485c83147cba22ffe704"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#a79075a862a5c485c83147cba22ffe704">getCpuTime</a> ()</td></tr>
 <tr class="separator:a79075a862a5c485c83147cba22ffe704"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5199675223743e214c6a4ce51945297"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#aa5199675223743e214c6a4ce51945297">is_tenth</a> (int &amp;event_counter)</td></tr>
 <tr class="separator:aa5199675223743e214c6a4ce51945297"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad14d9498758231e468bfe95357612c32"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#ad14d9498758231e468bfe95357612c32">save_class_storage</a> (const std::unordered_set&lt; unsigned long &gt; &amp;classes, std::string output_file_name)</td></tr>
-<tr class="separator:ad14d9498758231e468bfe95357612c32"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b3eebbf38729c8d55ad8c67324a02c8"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a9b3eebbf38729c8d55ad8c67324a02c8"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#a9b3eebbf38729c8d55ad8c67324a02c8">get_and_check_future</a> (std::future&lt; T &gt; &amp;_ftr)</td></tr>
 <tr class="separator:a9b3eebbf38729c8d55ad8c67324a02c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -266,6 +264,9 @@ Functions</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">std::unique_ptr&lt;TFile&gt; file_loader </td>
@@ -297,6 +298,11 @@ Functions</h2></td></tr>
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 </div>
@@ -321,29 +327,14 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="a308ca4e62678b26a996284060effbd12"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a308ca4e62678b26a996284060effbd12">&#9670;&nbsp;</a></span>get_data_stream()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string_view get_data_stream </td>
-          <td>(</td>
-          <td class="paramtype">const std::string_view &amp;&#160;</td>
-          <td class="paramname"><em>dataset</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a79075a862a5c485c83147cba22ffe704"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a79075a862a5c485c83147cba22ffe704">&#9670;&nbsp;</a></span>getCpuTime()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">double getCpuTime </td>
@@ -352,6 +343,11 @@ template&lt;typename T &gt; </div>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 </div>
@@ -387,6 +383,9 @@ template&lt;typename T &gt; </div>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void prepare_output_buffer </td>
@@ -396,6 +395,11 @@ template&lt;typename T &gt; </div>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 </div>
@@ -405,6 +409,9 @@ template&lt;typename T &gt; </div>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void print_report </td>
@@ -436,6 +443,11 @@ template&lt;typename T &gt; </div>
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 </div>
@@ -445,6 +457,9 @@ template&lt;typename T &gt; </div>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void PrintProcessInfo </td>
@@ -453,34 +468,11 @@ template&lt;typename T &gt; </div>
           <td></td>
         </tr>
       </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ad14d9498758231e468bfe95357612c32"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad14d9498758231e468bfe95357612c32">&#9670;&nbsp;</a></span>save_class_storage()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void save_class_storage </td>
-          <td>(</td>
-          <td class="paramtype">const std::unordered_set&lt; unsigned long &gt; &amp;&#160;</td>
-          <td class="paramname"><em>classes</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::string&#160;</td>
-          <td class="paramname"><em>output_file_name</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 </div>

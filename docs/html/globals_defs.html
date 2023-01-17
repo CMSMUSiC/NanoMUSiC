@@ -49,14 +49,13 @@
     extensions: ["tex2jax.js"],
     jax: ["input/TeX","output/HTML-CSS"],
 });
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
 </script>
 <script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
     <link href="doxygen.css" rel="stylesheet" type="text/css" />
     <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
-<link href="custom.css" rel="stylesheet" type="text/css"/>
-<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
-<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
-<link href="custom-alternative.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
     <!-- https://tholman.com/github-corners/ -->
@@ -107,7 +106,9 @@
                         <td id="projectalign" style="padding-left: 0.5em;">
                             <div id="projectname">NanoMUSiC
                             </div>
-                            <div id="projectbrief">CMS MUSiC with NanoAOD</div>
+                            <div id="projectbrief">CMS MUSiC using NanoAOD</div>
+                            <div> <a href="https://github.com/cmsmusic/nanomusic" class="github-corner"
+                                    title="View source on GitHub" target="_blank">Github repo</a></div>
                         </td>
                     </tr>
                 </tbody>
@@ -162,11 +163,26 @@ $(document).ready(function(){initNavTree('globals_defs.html',''); initResizable(
 
 <div class="contents">
 &#160;<ul>
-<li>GCC_DIAG_OFF
-: <a class="el" href="MConfig_8hpp.html#a646972e87fa873eb9da1adf5e8651c18">MConfig.hpp</a>
+<li>ADD_TO_TRIGGER_RED_LIST
+: <a class="el" href="Configs_8hpp.html#a8b7a21b5630221611d4d6bd21eb830d7">Configs.hpp</a>
 </li>
-<li>GCC_DIAG_ON
-: <a class="el" href="MConfig_8hpp.html#a449bfc1762077f4e7698b86e187f05a4">MConfig.hpp</a>
+<li>BOOST_HANA_CONFIG_ENABLE_STRING_UDL
+: <a class="el" href="Configs_8hpp.html#a81de60f5bea16e6ff4a38c94e3022f10">Configs.hpp</a>
+</li>
+<li>HANA_FIRST
+: <a class="el" href="Configs_8hpp.html#a8ba4b90ab0c7a44249616f4cb3848c30">Configs.hpp</a>
+</li>
+<li>HANA_FIRST_TO_SV
+: <a class="el" href="Configs_8hpp.html#a4567cd0c682e448eaa5fa6734b62b8f6">Configs.hpp</a>
+</li>
+<li>HANA_SECOND
+: <a class="el" href="Configs_8hpp.html#ab9f8e03af5770839bed7836bbdc61107">Configs.hpp</a>
+</li>
+<li>HANA_SECOND_TO_SV
+: <a class="el" href="Configs_8hpp.html#a6d8df6d25a3b3f4c2305ad991bcdce96">Configs.hpp</a>
+</li>
+<li>HANA_TO_SV
+: <a class="el" href="Configs_8hpp.html#a1154d34bd4e1bd5ed78ab65b5a765721">Configs.hpp</a>
 </li>
 </ul>
 </div><!-- contents -->

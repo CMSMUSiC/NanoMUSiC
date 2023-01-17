@@ -14,14 +14,12 @@ var dir_7aaf294a99fae0b1961be37b302bde84 =
     [ "NanoObjects.hpp", "NanoObjects_8hpp.html", "NanoObjects_8hpp" ],
     [ "ObjectCorrections.hpp", "ObjectCorrections_8hpp.html", "ObjectCorrections_8hpp" ],
     [ "Outputs.hpp", "Outputs_8hpp.html", "Outputs_8hpp" ],
-    [ "PDFAlphaSWeights.hpp", "PDFAlphaSWeights_8hpp.html", "PDFAlphaSWeights_8hpp" ],
+    [ "PDFAlphaSWeights.hpp", "PDFAlphaSWeights_8hpp.html", null ],
     [ "process_event.hpp", "process__event_8hpp.html", null ],
     [ "RunLumiFilter.hpp", "RunLumiFilter_8hpp.html", "RunLumiFilter_8hpp" ],
     [ "TOMLConfig.hpp", "TOMLConfig_8hpp.html", [
       [ "TOMLConfig", "classTOMLConfig.html", "classTOMLConfig" ]
     ] ],
-    [ "Trigger.hpp", "Trigger_8hpp.html", [
-      [ "TriggerBits", "structTriggerBits.html", "structTriggerBits" ]
-    ] ],
-    [ "variations.hpp", "variations_8hpp.html", "variations_8hpp" ]
+    [ "Trigger.hpp", "Trigger_8hpp.html", "Trigger_8hpp" ],
+    [ "variations.hpp", "variations_8hpp.html", null ]
 ];

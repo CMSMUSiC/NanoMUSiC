@@ -176,8 +176,8 @@ $(document).ready(function(){initNavTree('classEventData.html',''); initResizabl
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab51041578f0574d1fc28df3486cac251"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#ab51041578f0574d1fc28df3486cac251">EventData</a> (const bool &amp;_is_data, const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;_year, std::string_view variation=&quot;Default&quot;, std::string_view shift=&quot;Nominal&quot;)</td></tr>
-<tr class="separator:ab51041578f0574d1fc28df3486cac251"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a628ba77d544c2ed606b1df8b2dd78fd6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a628ba77d544c2ed606b1df8b2dd78fd6">EventData</a> (const bool &amp;_is_data, const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;_year, const std::string &amp;_trigger_stream)</td></tr>
+<tr class="separator:a628ba77d544c2ed606b1df8b2dd78fd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9d303a0ea8cb2f361775287693ecad57"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a9d303a0ea8cb2f361775287693ecad57">set_event_info</a> (<a class="el" href="structNanoObjects_1_1EventInfo.html">NanoObjects::EventInfo</a> &amp;&amp;_event_info)</td></tr>
 <tr class="separator:a9d303a0ea8cb2f361775287693ecad57"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aef34f9941fd462497a19b659b9ce8b82"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#aef34f9941fd462497a19b659b9ce8b82">set_muons</a> (<a class="el" href="structNanoObjects_1_1Muons.html">NanoObjects::Muons</a> &amp;&amp;_muons, RVec&lt; int &gt; &amp;&amp;mask)</td></tr>
@@ -208,6 +208,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a7e1fef4f2b7f2c5b1db20d69e25b9feb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e68908d0e50665509326b28f1a9c862"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a1e68908d0e50665509326b28f1a9c862">set_met</a> (<a class="el" href="structNanoObjects_1_1MET.html">NanoObjects::MET</a> &amp;&amp;_met)</td></tr>
 <tr class="separator:a1e68908d0e50665509326b28f1a9c862"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ea4ad51dad522fa1aa7365229167424"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a2ea4ad51dad522fa1aa7365229167424">set_trgobjs</a> (<a class="el" href="structNanoObjects_1_1TrgObjs.html">NanoObjects::TrgObjs</a> &amp;&amp;_trgobjs, RVec&lt; int &gt; &amp;&amp;mask)</td></tr>
+<tr class="separator:a2ea4ad51dad522fa1aa7365229167424"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51392199bcb3bacefbebd9c2f009d502"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a51392199bcb3bacefbebd9c2f009d502">set_trgobjs</a> (<a class="el" href="structNanoObjects_1_1TrgObjs.html">NanoObjects::TrgObjs</a> &amp;&amp;_trgobjs)</td></tr>
+<tr class="separator:a51392199bcb3bacefbebd9c2f009d502"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a01ed84187a22b855c554f1e1d8dcc08d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a01ed84187a22b855c554f1e1d8dcc08d">operator bool</a> () const</td></tr>
 <tr class="separator:a01ed84187a22b855c554f1e1d8dcc08d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a17bfe015a30a3e9b39e40dccc9b45f0c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a17bfe015a30a3e9b39e40dccc9b45f0c">set_null</a> ()</td></tr>
@@ -224,10 +228,15 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a7ca942eb8490142fde15317675796210"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae19056feebc614db13cf4c43120efaec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#ae19056feebc614db13cf4c43120efaec">met_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs)</td></tr>
 <tr class="separator:ae19056feebc614db13cf4c43120efaec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff3d4f7d45de3617caa5d61077ebaa98"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#aff3d4f7d45de3617caa5d61077ebaa98">set_trigger_bits</a> ()</td></tr>
+<tr class="memdesc:aff3d4f7d45de3617caa5d61077ebaa98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set <code><a class="el" href="structTriggerBits.html">TriggerBits</a></code> for this event. They will be checked latter.  <a href="classEventData.html#aff3d4f7d45de3617caa5d61077ebaa98">More...</a><br /></td></tr>
+<tr class="separator:aff3d4f7d45de3617caa5d61077ebaa98"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4a31021edfe264f1ad6e4effdb6b5aa3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a4a31021edfe264f1ad6e4effdb6b5aa3">trigger_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs)</td></tr>
 <tr class="separator:a4a31021edfe264f1ad6e4effdb6b5aa3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a950a9e1073b8061b0263ae13650d169d"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a950a9e1073b8061b0263ae13650d169d">get_muons_selection_mask</a> ()</td></tr>
-<tr class="separator:a950a9e1073b8061b0263ae13650d169d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a754378a8430dbf0736e1f5d3afe990b8"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a754378a8430dbf0736e1f5d3afe990b8">get_low_pt_muons_selection_mask</a> ()</td></tr>
+<tr class="separator:a754378a8430dbf0736e1f5d3afe990b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98b1e8b9f03d88863a75a1e837cbe4e9"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a98b1e8b9f03d88863a75a1e837cbe4e9">get_high_pt_muons_selection_mask</a> ()</td></tr>
+<tr class="separator:a98b1e8b9f03d88863a75a1e837cbe4e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adb53a8dd64414d03cf53cfc4e925e3c4"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#adb53a8dd64414d03cf53cfc4e925e3c4">get_electrons_selection_mask</a> ()</td></tr>
 <tr class="separator:adb53a8dd64414d03cf53cfc4e925e3c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acbeab1cd3835d54a0386a7bac5c6216e"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#acbeab1cd3835d54a0386a7bac5c6216e">get_photons_selection_mask</a> ()</td></tr>
@@ -242,12 +251,15 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aca95abcb1bd3ef47151a8deb13fce03d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a13b2095832e126ffb5b961e85927c213"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a13b2095832e126ffb5b961e85927c213">object_selection</a> ()</td></tr>
 <tr class="separator:a13b2095832e126ffb5b961e85927c213"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2aabd74356947ed9ed5343f9f6b2b7a2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a2aabd74356947ed9ed5343f9f6b2b7a2">has_selected_objects_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs)</td></tr>
+<tr class="separator:a2aabd74356947ed9ed5343f9f6b2b7a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1219b1d61a18f978b54d85b112848662"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a1219b1d61a18f978b54d85b112848662">final_selection</a> ()</td></tr>
 <tr class="separator:a1219b1d61a18f978b54d85b112848662"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae9e39f1152346ed90ee6789965f0d66b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#ae9e39f1152346ed90ee6789965f0d66b">trigger_match_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs)</td></tr>
-<tr class="separator:ae9e39f1152346ed90ee6789965f0d66b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9236b3984d97ec804dc40cc5c3449bec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a9236b3984d97ec804dc40cc5c3449bec">set_scale_factors</a> ()</td></tr>
-<tr class="separator:a9236b3984d97ec804dc40cc5c3449bec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4c885e22f70210d96633684062e3ce0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#af4c885e22f70210d96633684062e3ce0">trigger_match_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs, std::map&lt; std::string_view, <a class="el" href="classCorrector.html">Corrector</a> &gt; &amp;trigger_sf_correctors)</td></tr>
+<tr class="memdesc:af4c885e22f70210d96633684062e3ce0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Will check if the current event has a matched object to a good TrgObj.  <a href="classEventData.html#af4c885e22f70210d96633684062e3ce0">More...</a><br /></td></tr>
+<tr class="separator:af4c885e22f70210d96633684062e3ce0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36ff28875a37714ead1c2703e80aaaba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a36ff28875a37714ead1c2703e80aaaba">set_scale_factors</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs)</td></tr>
+<tr class="separator:a36ff28875a37714ead1c2703e80aaaba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae032f5e9f3dc21e4f2f4776e1e6780bb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#ae032f5e9f3dc21e4f2f4776e1e6780bb">muon_corrections</a> ()</td></tr>
 <tr class="separator:ae032f5e9f3dc21e4f2f4776e1e6780bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a02a1c8c1de594722e96f59e3d7fb70f8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a02a1c8c1de594722e96f59e3d7fb70f8">electron_corrections</a> ()</td></tr>
@@ -262,8 +274,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:acb49193c48e0711de6f8427cc0c6e477"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6ab1f712396be3e0b2f51f0ecccf0c64"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a6ab1f712396be3e0b2f51f0ecccf0c64">met_corrections</a> ()</td></tr>
 <tr class="separator:a6ab1f712396be3e0b2f51f0ecccf0c64"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2aabd74356947ed9ed5343f9f6b2b7a2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a2aabd74356947ed9ed5343f9f6b2b7a2">has_selected_objects_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs)</td></tr>
-<tr class="separator:a2aabd74356947ed9ed5343f9f6b2b7a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abfe44fa9c96b79866e2f69312014213d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#abfe44fa9c96b79866e2f69312014213d">fill_event_content</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs)</td></tr>
 <tr class="separator:abfe44fa9c96b79866e2f69312014213d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -271,12 +281,22 @@ Public Member Functions</h2></td></tr>
 Public Attributes</h2></td></tr>
 <tr class="memitem:aaf332eea6443c1897461f058fa32c2a4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structTriggerBits.html">TriggerBits</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#aaf332eea6443c1897461f058fa32c2a4">trigger_bits</a></td></tr>
 <tr class="separator:aaf332eea6443c1897461f058fa32c2a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0737838dee0043efd316e7f0ff254331"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a0737838dee0043efd316e7f0ff254331">trigger_sf_nominal</a></td></tr>
+<tr class="separator:a0737838dee0043efd316e7f0ff254331"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c76b76b887405d2b4abfe03af05a7a1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a5c76b76b887405d2b4abfe03af05a7a1">trigger_sf_up</a></td></tr>
+<tr class="separator:a5c76b76b887405d2b4abfe03af05a7a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9cd4c3d3b3db39c7dac343ec04146da"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#aa9cd4c3d3b3db39c7dac343ec04146da">trigger_sf_down</a></td></tr>
+<tr class="separator:aa9cd4c3d3b3db39c7dac343ec04146da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf739a6f16adb04784efd9440353f0de"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNanoObjects_1_1EventInfo.html">NanoObjects::EventInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#aaf739a6f16adb04784efd9440353f0de">event_info</a></td></tr>
 <tr class="separator:aaf739a6f16adb04784efd9440353f0de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0cd7c3f2ca17c0fb8d962f47ff902869"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNanoObjects_1_1Muons.html">NanoObjects::Muons</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a0cd7c3f2ca17c0fb8d962f47ff902869">muons</a></td></tr>
 <tr class="separator:a0cd7c3f2ca17c0fb8d962f47ff902869"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a47b29912cf5e762706dfb82ef2a3a697"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a47b29912cf5e762706dfb82ef2a3a697">good_muons_mask</a></td></tr>
 <tr class="separator:a47b29912cf5e762706dfb82ef2a3a697"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc9b7b6429b10dccff5829fdf93bee55"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#afc9b7b6429b10dccff5829fdf93bee55">good_low_pt_muons_mask</a></td></tr>
+<tr class="separator:afc9b7b6429b10dccff5829fdf93bee55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeff04602f12f93c5fbec0ddd1ca270ea"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#aeff04602f12f93c5fbec0ddd1ca270ea">good_high_pt_muons_mask</a></td></tr>
+<tr class="separator:aeff04602f12f93c5fbec0ddd1ca270ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afa0332e6c9d6a115ca0af4f10c26ca9b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNanoObjects_1_1Electrons.html">NanoObjects::Electrons</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#afa0332e6c9d6a115ca0af4f10c26ca9b">electrons</a></td></tr>
 <tr class="separator:afa0332e6c9d6a115ca0af4f10c26ca9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a66c3e773aad8b7d71ea8779b7eba031a"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a66c3e773aad8b7d71ea8779b7eba031a">good_electrons_mask</a></td></tr>
@@ -301,10 +321,16 @@ Public Attributes</h2></td></tr>
 <tr class="separator:ad2b170044b06d826b8aa1a8319305933"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b74fee7f93e4f5ea5df2cb309245fd6"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a6b74fee7f93e4f5ea5df2cb309245fd6">good_met_mask</a></td></tr>
 <tr class="separator:a6b74fee7f93e4f5ea5df2cb309245fd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c393928adf85198a1831594537e2575"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNanoObjects_1_1TrgObjs.html">NanoObjects::TrgObjs</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a7c393928adf85198a1831594537e2575">trgobjs</a></td></tr>
+<tr class="separator:a7c393928adf85198a1831594537e2575"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c7a26dd8a975fcdc69c656137055814"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a2c7a26dd8a975fcdc69c656137055814">good_trgobjs_mask</a></td></tr>
+<tr class="separator:a2c7a26dd8a975fcdc69c656137055814"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a91c3c5c10ee4a176066a84716496e7b1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a91c3c5c10ee4a176066a84716496e7b1">is_data</a> = true</td></tr>
 <tr class="separator:a91c3c5c10ee4a176066a84716496e7b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ac82e0ba143e9390c9c5011f6555788"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a0ac82e0ba143e9390c9c5011f6555788">year</a> = <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abfd3e8c0a2e269807b0b07d3cc6ad62c">Year::kTotalYears</a></td></tr>
 <tr class="separator:a0ac82e0ba143e9390c9c5011f6555788"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb8bc5558652b04964b129d6467372a6"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#afb8bc5558652b04964b129d6467372a6">trigger_stream</a></td></tr>
+<tr class="separator:afb8bc5558652b04964b129d6467372a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -312,8 +338,8 @@ Private Attributes</h2></td></tr>
 <tr class="separator:a7434374ae697bc801f9b09f4ffa45e8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ab51041578f0574d1fc28df3486cac251"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab51041578f0574d1fc28df3486cac251">&#9670;&nbsp;</a></span>EventData()</h2>
+<a id="a628ba77d544c2ed606b1df8b2dd78fd6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a628ba77d544c2ed606b1df8b2dd78fd6">&#9670;&nbsp;</a></span>EventData()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -336,14 +362,8 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::string_view&#160;</td>
-          <td class="paramname"><em>variation</em> = <code>&quot;Default&quot;</code>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::string_view&#160;</td>
-          <td class="paramname"><em>shift</em> = <code>&quot;Nominal&quot;</code>&#160;</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>_trigger_stream</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -459,6 +479,7 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Not actually being used. Can stay, just in case ... </p>
 
 </div>
 </div>
@@ -538,6 +559,31 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a98b1e8b9f03d88863a75a1e837cbe4e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98b1e8b9f03d88863a75a1e837cbe4e9">&#9670;&nbsp;</a></span>get_high_pt_muons_selection_mask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventData::get_high_pt_muons_selection_mask </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a482b4ae5f66e7b3df72d63c0013fd919"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a482b4ae5f66e7b3df72d63c0013fd919">&#9670;&nbsp;</a></span>get_jets_selection_mask()</h2>
 
@@ -563,8 +609,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="aca95abcb1bd3ef47151a8deb13fce03d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aca95abcb1bd3ef47151a8deb13fce03d">&#9670;&nbsp;</a></span>get_met_selection_mask()</h2>
+<a id="a754378a8430dbf0736e1f5d3afe990b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a754378a8430dbf0736e1f5d3afe990b8">&#9670;&nbsp;</a></span>get_low_pt_muons_selection_mask()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -573,7 +619,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">auto EventData::get_met_selection_mask </td>
+          <td class="memname">auto EventData::get_low_pt_muons_selection_mask </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -588,8 +634,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a950a9e1073b8061b0263ae13650d169d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a950a9e1073b8061b0263ae13650d169d">&#9670;&nbsp;</a></span>get_muons_selection_mask()</h2>
+<a id="aca95abcb1bd3ef47151a8deb13fce03d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca95abcb1bd3ef47151a8deb13fce03d">&#9670;&nbsp;</a></span>get_met_selection_mask()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -598,7 +644,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">auto EventData::get_muons_selection_mask </td>
+          <td class="memname">auto EventData::get_met_selection_mask </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1386,8 +1432,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a9236b3984d97ec804dc40cc5c3449bec"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9236b3984d97ec804dc40cc5c3449bec">&#9670;&nbsp;</a></span>set_scale_factors()</h2>
+<a id="a36ff28875a37714ead1c2703e80aaaba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36ff28875a37714ead1c2703e80aaaba">&#9670;&nbsp;</a></span>set_scale_factors()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1398,7 +1444,8 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::set_scale_factors </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -1473,6 +1520,95 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a51392199bcb3bacefbebd9c2f009d502"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51392199bcb3bacefbebd9c2f009d502">&#9670;&nbsp;</a></span>set_trgobjs() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::set_trgobjs </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1TrgObjs.html">NanoObjects::TrgObjs</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_trgobjs</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2ea4ad51dad522fa1aa7365229167424"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ea4ad51dad522fa1aa7365229167424">&#9670;&nbsp;</a></span>set_trgobjs() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::set_trgobjs </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1TrgObjs.html">NanoObjects::TrgObjs</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_trgobjs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">RVec&lt; int &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>mask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aff3d4f7d45de3617caa5d61077ebaa98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff3d4f7d45de3617caa5d61077ebaa98">&#9670;&nbsp;</a></span>set_trigger_bits()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::set_trigger_bits </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set <code><a class="el" href="structTriggerBits.html">TriggerBits</a></code> for this event. They will be checked latter. </p>
+
+</div>
+</div>
 <a id="a8a7fd313316f373672d008cada484044"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8a7fd313316f373672d008cada484044">&#9670;&nbsp;</a></span>tau_corrections()</h2>
 
@@ -1521,11 +1657,12 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Filter events that did not fired any trigger or do not pass double trigger firing check </p>
 
 </div>
 </div>
-<a id="ae9e39f1152346ed90ee6789965f0d66b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae9e39f1152346ed90ee6789965f0d66b">&#9670;&nbsp;</a></span>trigger_match_filter()</h2>
+<a id="af4c885e22f70210d96633684062e3ce0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4c885e22f70210d96633684062e3ce0">&#9670;&nbsp;</a></span>trigger_match_filter()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1537,8 +1674,18 @@ Private Attributes</h2></td></tr>
           <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::trigger_match_filter </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
-          <td class="paramname"><em>outputs</em></td><td>)</td>
+          <td class="paramname"><em>outputs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">std::map&lt; std::string_view, <a class="el" href="classCorrector.html">Corrector</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>trigger_sf_correctors</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -1547,6 +1694,8 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Will check if the current event has a matched object to a good TrgObj. </p>
 
 </div>
 </div>
@@ -1646,6 +1795,20 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="aeff04602f12f93c5fbec0ddd1ca270ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeff04602f12f93c5fbec0ddd1ca270ea">&#9670;&nbsp;</a></span>good_high_pt_muons_mask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">RVec&lt;int&gt; EventData::good_high_pt_muons_mask</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a805cdf4b693c5dc08db056b262f780ac"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a805cdf4b693c5dc08db056b262f780ac">&#9670;&nbsp;</a></span>good_jets_mask</h2>
 
@@ -1654,6 +1817,20 @@ Private Attributes</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">RVec&lt;int&gt; EventData::good_jets_mask</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afc9b7b6429b10dccff5829fdf93bee55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc9b7b6429b10dccff5829fdf93bee55">&#9670;&nbsp;</a></span>good_low_pt_muons_mask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">RVec&lt;int&gt; EventData::good_low_pt_muons_mask</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1710,6 +1887,20 @@ Private Attributes</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">RVec&lt;int&gt; EventData::good_taus_mask</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2c7a26dd8a975fcdc69c656137055814"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c7a26dd8a975fcdc69c656137055814">&#9670;&nbsp;</a></span>good_trgobjs_mask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">RVec&lt;int&gt; EventData::good_trgobjs_mask</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1822,6 +2013,20 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a7c393928adf85198a1831594537e2575"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c393928adf85198a1831594537e2575">&#9670;&nbsp;</a></span>trgobjs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structNanoObjects_1_1TrgObjs.html">NanoObjects::TrgObjs</a> EventData::trgobjs</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="aaf332eea6443c1897461f058fa32c2a4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aaf332eea6443c1897461f058fa32c2a4">&#9670;&nbsp;</a></span>trigger_bits</h2>
 
@@ -1830,6 +2035,62 @@ Private Attributes</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="structTriggerBits.html">TriggerBits</a> EventData::trigger_bits</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa9cd4c3d3b3db39c7dac343ec04146da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9cd4c3d3b3db39c7dac343ec04146da">&#9670;&nbsp;</a></span>trigger_sf_down</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float EventData::trigger_sf_down</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0737838dee0043efd316e7f0ff254331"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0737838dee0043efd316e7f0ff254331">&#9670;&nbsp;</a></span>trigger_sf_nominal</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float EventData::trigger_sf_nominal</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5c76b76b887405d2b4abfe03af05a7a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c76b76b887405d2b4abfe03af05a7a1">&#9670;&nbsp;</a></span>trigger_sf_up</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float EventData::trigger_sf_up</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afb8bc5558652b04964b129d6467372a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb8bc5558652b04964b129d6467372a6">&#9670;&nbsp;</a></span>trigger_stream</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view EventData::trigger_stream</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1851,7 +2112,7 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>/.automount/home/home__home1/institut_3a/silva/NanoMUSiC/NanoMUSiC/MUSiC/include/<a class="el" href="EventData_8hpp_source.html">EventData.hpp</a></li>
+<li>/.automount/home/home__home1/institut_3a/silva/projects/music/NanoMUSiC/NanoMUSiC/MUSiC/include/<a class="el" href="EventData_8hpp_source.html">EventData.hpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

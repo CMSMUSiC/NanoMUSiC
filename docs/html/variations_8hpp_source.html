@@ -21,7 +21,7 @@
     <meta name="twitter:description"
         content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
     <!-- END twitter metadata -->
-    <title>NanoMUSiC: /.automount/home/home__home1/institut_3a/silva/NanoMUSiC/NanoMUSiC/MUSiC/include/variations.hpp Source File</title>
+    <title>NanoMUSiC: /.automount/home/home__home1/institut_3a/silva/projects/music/NanoMUSiC/NanoMUSiC/MUSiC/include/variations.hpp Source File</title>
     <link href="tabs.css" rel="stylesheet" type="text/css" />
     <link rel="icon" type="image/svg+xml" href="logo.drawio.svg" />
     <script type="text/javascript" src="jquery.js"></script>
@@ -166,120 +166,104 @@ $(document).ready(function(){initNavTree('variations_8hpp_source.html',''); init
 <div class="title">variations.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<a href="variations_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef VARIATIONS</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define VARIATIONS</span></div>
+<a href="variations_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">// #ifndef VARIATIONS</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">// #define VARIATIONS</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160; </div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">// On: 28.10.2022</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">// https://ericniebler.github.io/range-v3</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">// https://github.com/ericniebler/range-v3</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">// #include &lt;range/v3/all.hpp&gt;</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">// // On: 28.10.2022</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">// // https://ericniebler.github.io/range-v3</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">// // https://github.com/ericniebler/range-v3</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">// // #include &lt;range/v3/all.hpp&gt;</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;fmt/core.h&gt;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;fmt/ostream.h&gt;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;fmt/ranges.h&gt;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment">// using fmt::print;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">// #include &lt;fmt/core.h&gt;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment">// #include &lt;fmt/ostream.h&gt;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment">// #include &lt;fmt/ranges.h&gt;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment">// // using fmt::print;</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="Enumerate_8hpp.html">Enumerate.hpp</a>&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment">// #include &quot;Enumerate.hpp&quot;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">using namespace </span>ranges;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment">// using namespace ranges;</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">// namespace RangesHelpers</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">// {</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">// // namespace RangesHelpers</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">// // {</span></div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">// // Helper function to get an integer iterator</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">// template &lt;typename T = UInt_t&gt;</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">// constexpr auto index_range(const int &amp;from, const int &amp;to)</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment">// {</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment">//     using namespace ranges;</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">//     return views::ints(from, to) | views::transform([](auto i) { return static_cast&lt;T&gt;(std::make_unsigned_t&lt;int&gt;(i)); });</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">// }</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; </div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment">// template &lt;typename T = UInt_t&gt;</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">// constexpr auto index_range(const int &amp;to)</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">// {</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment">//     return index_range&lt;T&gt;(0, to);</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment">// }</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160; </div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment">// } // namespace RangesHelpers</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="namespaceVariations.html">   36</a></span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceVariations.html">Variations</a></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;{</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; </div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment">// variations, shifts, weights and cuts</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="namespaceVariations.html#a9f6406e5de2ab3e2054bb4a687cc743f">   40</a></span>&#160;constexpr <span class="keyword">auto</span> <a class="code" href="namespaceVariations.html#a9f6406e5de2ab3e2054bb4a687cc743f">Cuts</a> =</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <a class="code" href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">make_enumerate</a>(<span class="stringliteral">&quot;NoCuts&quot;</span>, <span class="stringliteral">&quot;GeneratorWeight&quot;</span>, <span class="stringliteral">&quot;RunLumi&quot;</span>, <span class="stringliteral">&quot;nPV&quot;</span>, <span class="stringliteral">&quot;METFilters&quot;</span>, <span class="stringliteral">&quot;TriggerCut&quot;</span>, <span class="stringliteral">&quot;TriggerMatch&quot;</span>, <span class="stringliteral">&quot;AtLeastOneClass&quot;</span>);</div>
-<div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="namespaceVariations.html#aad223089c2e2f52440c2fe9c8daded16">   42</a></span>&#160;constexpr <span class="keyword">auto</span> <a class="code" href="namespaceVariations.html#aad223089c2e2f52440c2fe9c8daded16">Weights</a> = <a class="code" href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">make_enumerate</a>(<span class="stringliteral">&quot;Generator&quot;</span>, <span class="stringliteral">&quot;PDF&quot;</span>, <span class="stringliteral">&quot;Alpha_S&quot;</span>, <span class="stringliteral">&quot;PileUp&quot;</span>, <span class="stringliteral">&quot;Lumi&quot;</span>, <span class="stringliteral">&quot;Trigger&quot;</span>);</div>
-<div class="line"><a name="l00043"></a><span class="lineno"><a class="line" href="namespaceVariations.html#a1d7b333ccffb424b9c45a95f680b760d">   43</a></span>&#160;constexpr <span class="keyword">auto</span> <a class="code" href="namespaceVariations.html">Variations</a> =</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <a class="code" href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">make_enumerate</a>(<span class="stringliteral">&quot;Default&quot;</span>, <span class="stringliteral">&quot;JEC&quot;</span>, <span class="stringliteral">&quot;JER&quot;</span>, <span class="stringliteral">&quot;MuonScale&quot;</span>, <span class="stringliteral">&quot;MuonResolution&quot;</span>, <span class="stringliteral">&quot;ElectronScale&quot;</span>, <span class="stringliteral">&quot;ElectronResolution&quot;</span>);</div>
-<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="namespaceVariations.html#af38c4696586d4069cd343c2d9c1a2def">   45</a></span>&#160;constexpr <span class="keyword">auto</span> <a class="code" href="namespaceVariations.html#af38c4696586d4069cd343c2d9c1a2def">Shifts</a> = <a class="code" href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">make_enumerate</a>(<span class="stringliteral">&quot;Nominal&quot;</span>, <span class="stringliteral">&quot;Up&quot;</span>, <span class="stringliteral">&quot;Down&quot;</span>);</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
-<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="namespaceVariations.html#aa9f092a91a5c774367aad13ad035c401">   47</a></span>&#160;constexpr <span class="keyword">auto</span> <a class="code" href="namespaceVariations.html#aa9f092a91a5c774367aad13ad035c401">kTotalCuts</a> = <a class="code" href="classOutputs.html#a82e6df3ec0abf230ea32702dda229311">Outputs::Cuts</a>.size();</div>
-<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="namespaceVariations.html#a0b26e00c0f903ece8bc9a20ea4a5ed79">   48</a></span>&#160;constexpr <span class="keyword">auto</span> <a class="code" href="namespaceVariations.html#a0b26e00c0f903ece8bc9a20ea4a5ed79">kTotalWeights</a> = <a class="code" href="classOutputs.html#a13958379a685bb4e61b22fb601633f47">Outputs::Weights</a>.size();</div>
-<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="namespaceVariations.html#a15f07f72460ea4d899e26ed3f8feec60">   49</a></span>&#160;constexpr <span class="keyword">auto</span> <a class="code" href="namespaceVariations.html#a15f07f72460ea4d899e26ed3f8feec60">kTotalVariations</a> = <a class="code" href="namespaceVariations.html#a1d7b333ccffb424b9c45a95f680b760d">Outputs::Variations</a>.size();</div>
-<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="namespaceVariations.html#a9b2c691fb7e3a57d5e14feede78d230c">   50</a></span>&#160;constexpr <span class="keyword">auto</span> <a class="code" href="namespaceVariations.html#a9b2c691fb7e3a57d5e14feede78d230c">kTotalshifts</a> = <a class="code" href="classOutputs.html#ac460194c479cd9f4b58ce67c63711ab1">Outputs::Shifts</a>.size();</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
-<div class="line"><a name="l00052"></a><span class="lineno"><a class="line" href="namespaceVariations.html#a5fa6577d928294598f239958fb344efc">   52</a></span>&#160;<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="namespaceVariations.html#a5fa6577d928294598f239958fb344efc">variation_to_index</a>(std::string_view variation, std::string_view shift)</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;{</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="comment">// default case</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keywordflow">if</span> (variation == <span class="stringliteral">&quot;Default&quot;</span>)</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    {</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    }</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; </div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="comment">// general case</span></div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <span class="keywordflow">return</span> 2 * <a class="code" href="namespaceVariations.html#a1d7b333ccffb424b9c45a95f680b760d">Outputs::Variations</a>.index_of(variation) - 2 + <a class="code" href="classOutputs.html#ac460194c479cd9f4b58ce67c63711ab1">Outputs::Shifts</a>.index_of(shift);</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;}</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
-<div class="line"><a name="l00064"></a><span class="lineno"><a class="line" href="namespaceVariations.html#af009677f6c42aa52fd27a192e7d1c5fb">   64</a></span>&#160;std::pair&lt;std::string_view, std::string_view&gt; <a class="code" href="namespaceVariations.html#af009677f6c42aa52fd27a192e7d1c5fb">index_to_variation</a>(std::size_t index)</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;{</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="comment">// default case</span></div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keywordflow">if</span> (index == 0)</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    {</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        <span class="keywordflow">return</span> std::make_pair(<a class="code" href="namespaceVariations.html#a1d7b333ccffb424b9c45a95f680b760d">Outputs::Variations</a>[0], <a class="code" href="classOutputs.html#ac460194c479cd9f4b58ce67c63711ab1">Outputs::Shifts</a>[0]);</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    }</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="comment">// general case</span></div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    std::size_t idx_variation = (index + 1) / 2;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    std::size_t idx_shift = index - 2 * idx_variation + 2;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="keywordflow">return</span> std::make_pair(<a class="code" href="namespaceVariations.html#a1d7b333ccffb424b9c45a95f680b760d">Outputs::Variations</a>[idx_variation], <a class="code" href="classOutputs.html#ac460194c479cd9f4b58ce67c63711ab1">Outputs::Shifts</a>[idx_shift]);</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;}</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
-<div class="line"><a name="l00078"></a><span class="lineno"><a class="line" href="namespaceVariations.html#a6b34827b8432bb749397c1331bacd23d">   78</a></span>&#160;<span class="keyword">inline</span> <span class="keyword">auto</span> <a class="code" href="namespaceVariations.html#a6b34827b8432bb749397c1331bacd23d">VariationsAndShiftsRange</a> = views::cartesian_product(<a class="code" href="namespaceVariations.html#a1d7b333ccffb424b9c45a95f680b760d">Outputs::Variations</a>, <a class="code" href="classOutputs.html#ac460194c479cd9f4b58ce67c63711ab1">Outputs::Shifts</a>) |</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;                                       views::remove_if([](<span class="keyword">auto</span> variation_and_shift) {</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;                                           <span class="keyword">const</span> <span class="keyword">auto</span> [variation, shift] = variation_and_shift;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;                                           <span class="keywordflow">return</span> (variation == <span class="stringliteral">&quot;Default&quot;</span> &amp;&amp; (shift == <span class="stringliteral">&quot;Up&quot;</span> || shift == <span class="stringliteral">&quot;Down&quot;</span>));</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;                                       }) |</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;                                       views::remove_if([](<span class="keyword">auto</span> variation_and_shift) {</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;                                           <span class="keyword">const</span> <span class="keyword">auto</span> [variation, shift] = variation_and_shift;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;                                           <span class="keywordflow">return</span> (variation != <span class="stringliteral">&quot;Default&quot;</span> &amp;&amp; shift == <span class="stringliteral">&quot;Nominal&quot;</span>);</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;                                       });</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
-<div class="line"><a name="l00088"></a><span class="lineno"><a class="line" href="namespaceVariations.html#a6615e2523ecb8f6c69e7a8bc491df60e">   88</a></span>&#160;constexpr <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="namespaceVariations.html#a6615e2523ecb8f6c69e7a8bc491df60e">kTotalVariationsAndShifts</a> = (<a class="code" href="namespaceVariations.html#a15f07f72460ea4d899e26ed3f8feec60">Outputs::kTotalVariations</a> - 1) * 2 + 1;</div>
-<div class="line"><a name="l00089"></a><span class="lineno"><a class="line" href="namespaceVariations.html#ad3cbffd6c724d522145cda38a9d4bec5">   89</a></span>&#160;<span class="keyword">inline</span> <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code" href="namespaceVariations.html#ad3cbffd6c724d522145cda38a9d4bec5">VariationsAndShiftsIndexRange</a> = RangesHelpers::index_range&lt;unsigned long&gt;(<a class="code" href="namespaceVariations.html#a6615e2523ecb8f6c69e7a8bc491df60e">kTotalVariationsAndShifts</a>);</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160; </div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;} <span class="comment">// namespace Variations</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160; </div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/*VARIATIONS*/</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">// // // Helper function to get an integer iterator</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">// // template &lt;typename T = UInt_t&gt;</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">// // constexpr auto index_range(const int &amp;from, const int &amp;to)</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment">// // {</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment">// //     using namespace ranges;</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">// //     return views::ints(from, to) | views::transform([](auto i) { return</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">// static_cast&lt;T&gt;(std::make_unsigned_t&lt;int&gt;(i)); });</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment">// // }</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">// // template &lt;typename T = UInt_t&gt;</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">// // constexpr auto index_range(const int &amp;to)</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment">// // {</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment">// //     return index_range&lt;T&gt;(0, to);</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment">// // }</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment">// // } // namespace RangesHelpers</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">// namespace Variations</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment">// {</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="comment">// // variations, shifts, weights and cuts</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="comment">// constexpr auto Cuts =</span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="comment">//     make_enumerate(&quot;NoCuts&quot;, &quot;GeneratorWeight&quot;, &quot;RunLumi&quot;, &quot;nPV&quot;, &quot;METFilters&quot;, &quot;TriggerCut&quot;, &quot;TriggerMatch&quot;,</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment">//     &quot;AtLeastOneClass&quot;);</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="comment">// constexpr auto Weights = make_enumerate(&quot;Generator&quot;, &quot;PDF&quot;, &quot;Alpha_S&quot;, &quot;PileUp&quot;, &quot;Lumi&quot;, &quot;Trigger&quot;);</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="comment">// constexpr auto Variations =</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment">//     make_enumerate(&quot;Default&quot;, &quot;JEC&quot;, &quot;JER&quot;, &quot;MuonScale&quot;, &quot;MuonResolution&quot;, &quot;ElectronScale&quot;, &quot;ElectronResolution&quot;);</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="comment">// constexpr auto Shifts = make_enumerate(&quot;Nominal&quot;, &quot;Up&quot;, &quot;Down&quot;);</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160; </div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="comment">// constexpr auto kTotalCuts = Outputs::Cuts.size();</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment">// constexpr auto kTotalWeights = Outputs::Weights.size();</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment">// constexpr auto kTotalVariations = Outputs::Variations.size();</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="comment">// constexpr auto kTotalshifts = Outputs::Shifts.size();</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment">// unsigned int variation_to_index(std::string_view variation, std::string_view shift)</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment">// {</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="comment">//     // default case</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="comment">//     if (variation == &quot;Default&quot;)</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="comment">//     {</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="comment">//         return 0;</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="comment">//     }</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="comment">//     // general case</span></div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="comment">//     return 2 * Outputs::Variations.index_of(variation) - 2 + Outputs::Shifts.index_of(shift);</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="comment">// }</span></div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="comment">// std::pair&lt;std::string_view, std::string_view&gt; index_to_variation(std::size_t index)</span></div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment">// {</span></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="comment">//     // default case</span></div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="comment">//     if (index == 0)</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="comment">//     {</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="comment">//         return std::make_pair(Outputs::Variations[0], Outputs::Shifts[0]);</span></div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="comment">//     }</span></div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="comment">//     // general case</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="comment">//     std::size_t idx_variation = (index + 1) / 2;</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="comment">//     std::size_t idx_shift = index - 2 * idx_variation + 2;</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="comment">//     return std::make_pair(Outputs::Variations[idx_variation], Outputs::Shifts[idx_shift]);</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="comment">// }</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="comment">// inline auto VariationsAndShiftsRange = views::cartesian_product(Outputs::Variations, Outputs::Shifts) |</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="comment">//                                        views::remove_if([](auto variation_and_shift) {</span></div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="comment">//                                            const auto [variation, shift] = variation_and_shift;</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="comment">//                                            return (variation == &quot;Default&quot; &amp;&amp; (shift == &quot;Up&quot; || shift == &quot;Down&quot;));</span></div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="comment">//                                        }) |</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="comment">//                                        views::remove_if([](auto variation_and_shift) {</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="comment">//                                            const auto [variation, shift] = variation_and_shift;</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="comment">//                                            return (variation != &quot;Default&quot; &amp;&amp; shift == &quot;Nominal&quot;);</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="comment">//                                        });</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160; </div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="comment">// constexpr unsigned int kTotalVariationsAndShifts = (Outputs::kTotalVariations - 1) * 2 + 1;</span></div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="comment">// inline const auto VariationsAndShiftsIndexRange = RangesHelpers::index_range&lt;unsigned</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="comment">// long&gt;(kTotalVariationsAndShifts);</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160; </div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="comment">// } // namespace Variations</span></div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160; </div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="comment">// #endif /*VARIATIONS*/</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
-<div class="ttc" id="anamespaceVariations_html_a9b2c691fb7e3a57d5e14feede78d230c"><div class="ttname"><a href="namespaceVariations.html#a9b2c691fb7e3a57d5e14feede78d230c">Variations::kTotalshifts</a></div><div class="ttdeci">constexpr auto kTotalshifts</div><div class="ttdef"><b>Definition:</b> variations.hpp:50</div></div>
-<div class="ttc" id="anamespaceVariations_html_ad3cbffd6c724d522145cda38a9d4bec5"><div class="ttname"><a href="namespaceVariations.html#ad3cbffd6c724d522145cda38a9d4bec5">Variations::VariationsAndShiftsIndexRange</a></div><div class="ttdeci">const auto VariationsAndShiftsIndexRange</div><div class="ttdef"><b>Definition:</b> variations.hpp:89</div></div>
-<div class="ttc" id="aEnumerate_8hpp_html_a50a6ea831da5d2eec783b7d73d98094a"><div class="ttname"><a href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">make_enumerate</a></div><div class="ttdeci">constexpr auto make_enumerate(Ts &amp;&amp;...args)</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:131</div></div>
-<div class="ttc" id="anamespaceVariations_html_a6b34827b8432bb749397c1331bacd23d"><div class="ttname"><a href="namespaceVariations.html#a6b34827b8432bb749397c1331bacd23d">Variations::VariationsAndShiftsRange</a></div><div class="ttdeci">auto VariationsAndShiftsRange</div><div class="ttdef"><b>Definition:</b> variations.hpp:78</div></div>
-<div class="ttc" id="anamespaceVariations_html_af009677f6c42aa52fd27a192e7d1c5fb"><div class="ttname"><a href="namespaceVariations.html#af009677f6c42aa52fd27a192e7d1c5fb">Variations::index_to_variation</a></div><div class="ttdeci">std::pair&lt; std::string_view, std::string_view &gt; index_to_variation(std::size_t index)</div><div class="ttdef"><b>Definition:</b> variations.hpp:64</div></div>
-<div class="ttc" id="anamespaceVariations_html_aad223089c2e2f52440c2fe9c8daded16"><div class="ttname"><a href="namespaceVariations.html#aad223089c2e2f52440c2fe9c8daded16">Variations::Weights</a></div><div class="ttdeci">constexpr auto Weights</div><div class="ttdef"><b>Definition:</b> variations.hpp:42</div></div>
-<div class="ttc" id="anamespaceVariations_html_a1d7b333ccffb424b9c45a95f680b760d"><div class="ttname"><a href="namespaceVariations.html#a1d7b333ccffb424b9c45a95f680b760d">Variations::Variations</a></div><div class="ttdeci">constexpr auto Variations</div><div class="ttdef"><b>Definition:</b> variations.hpp:43</div></div>
-<div class="ttc" id="anamespaceVariations_html_a5fa6577d928294598f239958fb344efc"><div class="ttname"><a href="namespaceVariations.html#a5fa6577d928294598f239958fb344efc">Variations::variation_to_index</a></div><div class="ttdeci">unsigned int variation_to_index(std::string_view variation, std::string_view shift)</div><div class="ttdef"><b>Definition:</b> variations.hpp:52</div></div>
-<div class="ttc" id="aEnumerate_8hpp_html"><div class="ttname"><a href="Enumerate_8hpp.html">Enumerate.hpp</a></div></div>
-<div class="ttc" id="anamespaceVariations_html_af38c4696586d4069cd343c2d9c1a2def"><div class="ttname"><a href="namespaceVariations.html#af38c4696586d4069cd343c2d9c1a2def">Variations::Shifts</a></div><div class="ttdeci">constexpr auto Shifts</div><div class="ttdef"><b>Definition:</b> variations.hpp:45</div></div>
-<div class="ttc" id="aclassOutputs_html_a82e6df3ec0abf230ea32702dda229311"><div class="ttname"><a href="classOutputs.html#a82e6df3ec0abf230ea32702dda229311">Outputs::Cuts</a></div><div class="ttdeci">static constexpr auto Cuts</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:68</div></div>
-<div class="ttc" id="anamespaceVariations_html_a6615e2523ecb8f6c69e7a8bc491df60e"><div class="ttname"><a href="namespaceVariations.html#a6615e2523ecb8f6c69e7a8bc491df60e">Variations::kTotalVariationsAndShifts</a></div><div class="ttdeci">constexpr unsigned int kTotalVariationsAndShifts</div><div class="ttdef"><b>Definition:</b> variations.hpp:88</div></div>
-<div class="ttc" id="anamespaceVariations_html_a15f07f72460ea4d899e26ed3f8feec60"><div class="ttname"><a href="namespaceVariations.html#a15f07f72460ea4d899e26ed3f8feec60">Variations::kTotalVariations</a></div><div class="ttdeci">constexpr auto kTotalVariations</div><div class="ttdef"><b>Definition:</b> variations.hpp:49</div></div>
-<div class="ttc" id="anamespaceVariations_html_a0b26e00c0f903ece8bc9a20ea4a5ed79"><div class="ttname"><a href="namespaceVariations.html#a0b26e00c0f903ece8bc9a20ea4a5ed79">Variations::kTotalWeights</a></div><div class="ttdeci">constexpr auto kTotalWeights</div><div class="ttdef"><b>Definition:</b> variations.hpp:48</div></div>
-<div class="ttc" id="aclassOutputs_html_ac460194c479cd9f4b58ce67c63711ab1"><div class="ttname"><a href="classOutputs.html#ac460194c479cd9f4b58ce67c63711ab1">Outputs::Shifts</a></div><div class="ttdeci">static constexpr auto Shifts</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:73</div></div>
-<div class="ttc" id="aclassOutputs_html_a13958379a685bb4e61b22fb601633f47"><div class="ttname"><a href="classOutputs.html#a13958379a685bb4e61b22fb601633f47">Outputs::Weights</a></div><div class="ttdeci">static constexpr auto Weights</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:70</div></div>
-<div class="ttc" id="anamespaceVariations_html_aa9f092a91a5c774367aad13ad035c401"><div class="ttname"><a href="namespaceVariations.html#aa9f092a91a5c774367aad13ad035c401">Variations::kTotalCuts</a></div><div class="ttdeci">constexpr auto kTotalCuts</div><div class="ttdef"><b>Definition:</b> variations.hpp:47</div></div>
-<div class="ttc" id="anamespaceVariations_html"><div class="ttname"><a href="namespaceVariations.html">Variations</a></div><div class="ttdef"><b>Definition:</b> variations.hpp:37</div></div>
-<div class="ttc" id="anamespaceVariations_html_a9f6406e5de2ab3e2054bb4a687cc743f"><div class="ttname"><a href="namespaceVariations.html#a9f6406e5de2ab3e2054bb4a687cc743f">Variations::Cuts</a></div><div class="ttdeci">constexpr auto Cuts</div><div class="ttdef"><b>Definition:</b> variations.hpp:40</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

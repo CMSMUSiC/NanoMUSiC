@@ -10,7 +10,7 @@ var classTaskConfiguration =
     [ "process", "classTaskConfiguration.html#a9cc14a9b1ef25b2a4d5400ef4a7793ef", null ],
     [ "run_config", "classTaskConfiguration.html#a0e55c6e8ea93e531854dbc801329e2d0", null ],
     [ "run_config_file", "classTaskConfiguration.html#a381375efc6b6c671476ecc252aa05441", null ],
-    [ "run_hash", "classTaskConfiguration.html#aee6bf8b1ed663ff2b1e0a5ac4b6adb53", null ],
+    [ "trigger_stream", "classTaskConfiguration.html#a3a4784b9dae22e7a6ebe4facbfa0dba5", null ],
     [ "x_section_file", "classTaskConfiguration.html#a72f7b2cfb8d6a97f2f6eab2e1d4b3c14", null ],
     [ "year", "classTaskConfiguration.html#a60b1e28a305778028fdd171ed62c5760", null ],
     [ "year_str", "classTaskConfiguration.html#a2f9878732676540d1a94ad637e0f6d01", null ]
