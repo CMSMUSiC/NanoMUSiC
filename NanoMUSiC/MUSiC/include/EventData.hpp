@@ -4,8 +4,6 @@
 #include <functional>
 
 #include <fmt/core.h>
-#include <fmt/ostream.h>
-#include <fmt/ranges.h>
 
 #include "Configs.hpp"
 #include "NanoObjects.hpp"
@@ -217,7 +215,7 @@ class EventData
         this->is_null = true;
     }
 
-    // un-null-ify - not sure when/if it would be needed, but...
+    // un-null-ify - not sure when/if it would be needed, but ...
     void unset_null()
     {
         this->is_null = true;
@@ -455,60 +453,60 @@ class EventData
     }
 
     // Low pT muon filter
-    auto get_low_pt_muons_selection_mask()
+    auto get_low_pt_muons_selection_mask() -> RVec<int>
     {
 
         // fmt::print("Eta: {}\n", muons.eta.get());
         // fmt::print("Eta mask: {}\n", VecOps::abs(muons.eta.get()) <= 2.4);
         // fmt::print("Eta mask from Config: {}\n", VecOps::abs(muons.eta.get()) <= ObjConfig::Muons[year].MaxAbsEta);
-        return (muons.pt.get() >= ObjConfig::Muons[year].MinLowPt)                  //
-               & (muons.pt.get() < ObjConfig::Muons[year].MaxLowPt)                 //
-               & (VecOps::abs(muons.eta.get()) <= ObjConfig::Muons[year].MaxAbsEta) //
-               & (muons.tightId.get())                                              //
-               & (muons.pfRelIso03_all.get() < ObjConfig::Muons[year].PFRelIso_WP);
+        return (muons.pt.get() >= ObjConfig::Muons[year].MinLowPt)                   //
+               && (muons.pt.get() < ObjConfig::Muons[year].MaxLowPt)                 //
+               && (VecOps::abs(muons.eta.get()) <= ObjConfig::Muons[year].MaxAbsEta) //
+               && (muons.tightId.get())                                              //
+               && (muons.pfRelIso03_all.get() < ObjConfig::Muons[year].PFRelIso_WP);
     }
 
     // High pT muon filter
-    auto get_high_pt_muons_selection_mask()
+    auto get_high_pt_muons_selection_mask() -> RVec<int>
     {
-        return (muons.pt.get() >= ObjConfig::Muons[year].MaxLowPt)                  //
-               & (VecOps::abs(muons.eta.get()) <= ObjConfig::Muons[year].MaxAbsEta) //
-               & (muons.highPtId.get() >= 1)                                        //
-               & (muons.tkRelIso.get() < ObjConfig::Muons[year].TkRelIso_WP);
+        return (muons.pt.get() >= ObjConfig::Muons[year].MaxLowPt)                   //
+               && (VecOps::abs(muons.eta.get()) <= ObjConfig::Muons[year].MaxAbsEta) //
+               && (muons.highPtId.get() >= 1)                                        //
+               && (muons.tkRelIso.get() < ObjConfig::Muons[year].TkRelIso_WP);
     }
 
     // Electrons
-    auto get_electrons_selection_mask()
+    auto get_electrons_selection_mask() -> RVec<int>
     {
         return electrons.pt.get() >= ObjConfig::Electrons[year].PreSelPt;
     }
 
     // Photons
-    auto get_photons_selection_mask()
+    auto get_photons_selection_mask() -> RVec<int>
     {
         return photons.pt.get() >= ObjConfig::Photons[year].PreSelPt;
     }
 
     // Taus
-    auto get_taus_selection_mask()
+    auto get_taus_selection_mask() -> RVec<int>
     {
         return taus.pt.get() >= ObjConfig::Taus[year].PreSelPt;
     }
 
     // BJets
-    auto get_bjets_selection_mask()
+    auto get_bjets_selection_mask() -> RVec<int>
     {
         return bjets.pt.get() >= ObjConfig::BJets[year].PreSelPt;
     }
 
     // Jets
-    auto get_jets_selection_mask()
+    auto get_jets_selection_mask() -> RVec<int>
     {
         return jets.pt.get() >= ObjConfig::Jets[year].PreSelPt;
     }
 
     // MET
-    auto get_met_selection_mask()
+    auto get_met_selection_mask() -> RVec<int>
     {
         return met.pt.get() >= ObjConfig::MET[year].PreSelPt;
     }
@@ -520,7 +518,7 @@ class EventData
             // launch selection tasks
             good_low_pt_muons_mask = get_low_pt_muons_selection_mask();
             good_high_pt_muons_mask = get_high_pt_muons_selection_mask();
-            good_muons_mask = good_low_pt_muons_mask | good_high_pt_muons_mask;
+            good_muons_mask = good_low_pt_muons_mask || good_high_pt_muons_mask;
 
             good_electrons_mask = get_electrons_selection_mask();
 
@@ -542,7 +540,6 @@ class EventData
     {
         if (*this)
         {
-
             if (                                          //
                 (VecOps::Sum(good_muons_mask) > 0) ||     //
                 (VecOps::Sum(good_electrons_mask) > 0) || //
@@ -554,10 +551,12 @@ class EventData
             )
             {
                 outputs.fill_cutflow_histo("AtLeastOneSelectedObject", outputs.get_event_weight());
+                fmt::print("--> trigger filter bits: {}\n", trgobjs.filterBits.get());
+                fmt::print("--> Muon_pt: {}\n", muons.pt.get());
                 return *this;
             }
             set_null();
-            // fmt::print("\nDEBUG - DID NOT PASS has_selected_objects_filter FILTER");
+            fmt::print("\nDEBUG - DID NOT PASS has_selected_objects_filter FILTER");
             return *this;
         }
         return *this;
@@ -566,10 +565,13 @@ class EventData
     /////////////////////////////////////////////////////////
     /// Not actually being used. Can stay, just in case ...
     ///
-    EventData &final_selection()
+    EventData &dummy()
     {
         if (*this)
         {
+            fmt::print("--> Muon_pt (inside matcher) : {}\n", muons.pt.get());
+            fmt::print("--> Electron_pt (inside matcher) : {}\n", electrons.pt.get());
+            fmt::print("--> trigger filter bits (inside matcher 1): {}\n", trgobjs.filterBits.get());
             return *this;
         }
         return *this;
@@ -583,8 +585,11 @@ class EventData
     ///
     EventData &trigger_match_filter(Outputs &outputs, std::map<std::string_view, Corrector> &trigger_sf_correctors)
     {
+        fmt::print("--> Jet_eta (inside matcher 1): {}\n", jets.eta.get());
+        fmt::print("--> trigger filter bits (inside matcher 1): {}\n", trgobjs.filterBits.get());
         if (*this)
         {
+            fmt::print("--> trigger filter bits (inside matcher 2): {}\n", trgobjs.filterBits.get());
             // define matchers for each trigger
             std::map<std::string_view, std::function<bool()>> matchers;
             matchers["SingleMuonLowPt"] = [&]() {
@@ -595,7 +600,7 @@ class EventData
                 /////////////////////////////////////////////////////
 
                 auto trgobj_mask = (                                                                //
-                    (trgobjs.id.get() == PDG::Muon::Id) &                                           //
+                    (trgobjs.id.get() == PDG::Muon::Id) &&                                          //
                     (Trigger::check_trigger_bit(trgobjs.filterBits.get(), "SingleMuonLowPt", year)) //
                 );
 
@@ -652,7 +657,7 @@ class EventData
                 ///////////////////////////////////////////////////
 
                 auto trgobj_mask = (                                                                 //
-                    (trgobjs.id.get() == PDG::Muon::Id) &                                            //
+                    (trgobjs.id.get() == PDG::Muon::Id) &&                                           //
                     (Trigger::check_trigger_bit(trgobjs.filterBits.get(), "SingleMuonHighPt", year)) //
                 );
 

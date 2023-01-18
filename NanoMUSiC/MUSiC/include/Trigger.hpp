@@ -8,11 +8,12 @@
 #include "Enumerate.hpp"
 
 #include <fmt/core.h>
+#include <fmt/ostream.h>
 
 #include "ROOT/RVec.hxx"
 using namespace ROOT;
 using namespace ROOT::VecOps;
-// using namespace std::literals::string_view_literals;
+
 using namespace std::literals;
 
 namespace Trigger
@@ -62,10 +63,10 @@ std::pair<RVec<float>, RVec<float>> get_matches(const T1 &trigger_objects_pt,  /
     for (std::size_t idx = 0; idx < nano_objects_pt.size(); idx++)
     {
         // DeltaR
-        matches_distances.at(idx) = VecOps::Min(VecOps::sqrt(                               //
-            VecOps::pow((trigger_objects_eta - nano_objects_eta[idx]), 2.)                  //
-            + VecOps::pow(VecOps::DeltaPhi(trigger_objects_phi, nano_objects_phi[idx]), 2.) //
-            ));
+        matches_distances.at(idx) =
+            VecOps::Min(VecOps::sqrt(VecOps::pow((trigger_objects_eta - nano_objects_eta[idx]), 2.) +
+
+                                     +VecOps::pow(VecOps::DeltaPhi(trigger_objects_phi, nano_objects_phi[idx]), 2.)));
 
         // Relative pT diff
         matches_relative_pT.at(idx) =
@@ -122,6 +123,7 @@ constexpr std::tuple<bool, float, float> trigger_matcher(const T1 &trigger_objec
 
 RVec<int> check_bit(const RVec<int> &trigger_bits, const int &bit)
 {
+    fmt::print("trigger bits: {} - bit: {}\n", trigger_bits, bit);
     return (trigger_bits & bit) / bit;
 }
 

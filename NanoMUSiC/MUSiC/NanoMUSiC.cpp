@@ -1,4 +1,7 @@
 #include "NanoMUSiC.hpp"
+#include "TTreeReader.h"
+#include "TTreeReaderValue.h"
+#include <string_view>
 
 int main(int argc, char *argv[])
 {
@@ -20,7 +23,6 @@ int main(int argc, char *argv[])
         std::cout << " " << std::endl;
 
         std::cout << run_config_file << std::endl;
-
         if (run_config_file == "")
         {
             std::cout << "ERROR: the option '--run-config' is required but missing" << std::endl;
@@ -159,252 +161,83 @@ int main(int argc, char *argv[])
         columns.erase(std::remove(columns.begin(), columns.end(), "Pileup_nTrueInt"), columns.end());
     }
 
-    // create RDataFrame
-    auto df = ROOT::RDataFrame("Events", configuration.input_files, columns);
+    // create file chain and tree reader
+    auto chain = TChain("Events");
+    for (auto &&file : configuration.input_files)
+    {
+        chain.Add(file.c_str());
+    }
+
+    // create tree reader and add values and arrays
+    auto tree_reader = TTreeReader(&chain);
+
+    // event info
+    ADD_VALUE_READER(run, UInt_t);
+    ADD_VALUE_READER(lumi, UInt_t);
+    ADD_VALUE_READER(event_number, ULong64_t);
+    ADD_VALUE_READER(Pileup_nTrueInt, float);
+    ADD_VALUE_READER(genWeight, float);
+    ADD_VALUE_READER(PV_npvsGood, int);
+    ADD_VALUE_READER(Flag_goodVertices, bool);
+    ADD_VALUE_READER(Flag_globalSuperTightHalo2016Filter, bool);
+    ADD_VALUE_READER(Flag_HBHENoiseFilter, bool);
+    ADD_VALUE_READER(Flag_HBHENoiseIsoFilter, bool);
+    ADD_VALUE_READER(Flag_EcalDeadCellTriggerPrimitiveFilter, bool);
+    ADD_VALUE_READER(Flag_BadPFMuonFilter, bool);
+    ADD_VALUE_READER(Flag_BadPFMuonDzFilter, bool);
+    ADD_VALUE_READER(Flag_eeBadScFilter, bool);
+    ADD_VALUE_READER(Flag_ecalBadCalibFilter, bool);
+    ADD_VALUE_READER(HLT_IsoMu27, bool);
+    ADD_VALUE_READER(HLT_Mu50, bool);
+    ADD_VALUE_READER(HLT_TkMu100, bool);
+    ADD_VALUE_READER(HLT_OldMu100, bool);
+
+    // muons
+    ADD_ARRAY_READER(Muon_pt, float);
+    ADD_ARRAY_READER(Muon_eta, float);
+    ADD_ARRAY_READER(Muon_phi, float);
+    ADD_ARRAY_READER(Muon_tightId, bool);
+    ADD_ARRAY_READER(Muon_highPtId, UChar_t);
+    ADD_ARRAY_READER(Muon_pfRelIso03_all, float);
+    ADD_ARRAY_READER(Muon_tkRelIso, float);
+
+    // electrons
+    ADD_ARRAY_READER(Electron_pt, float);
+    ADD_ARRAY_READER(Electron_eta, float);
+    ADD_ARRAY_READER(Electron_phi, float);
+
+    // photons
+    ADD_ARRAY_READER(Photon_pt, float);
+    ADD_ARRAY_READER(Photon_eta, float);
+    ADD_ARRAY_READER(Photon_phi, float);
+
+    // taus
+    ADD_ARRAY_READER(Tau_pt, float);
+    ADD_ARRAY_READER(Tau_eta, float);
+    ADD_ARRAY_READER(Tau_phi, float);
+
+    // jets
+    ADD_ARRAY_READER(Jet_pt, float);
+    ADD_ARRAY_READER(Jet_eta, float);
+    ADD_ARRAY_READER(Jet_phi, float);
+
+    // met
+    ADD_VALUE_READER(MET_pt, float);
+    ADD_VALUE_READER(MET_phi, float);
+
+    // trgobjs
+    ADD_ARRAY_READER(TrigObj_pt, float);
+    ADD_ARRAY_READER(TrigObj_eta, float);
+    ADD_ARRAY_READER(TrigObj_phi, float);
+    ADD_ARRAY_READER(TrigObj_id, int);
+    ADD_ARRAY_READER(TrigObj_filterBits, int);
+
     //////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////       [ BEGIN ]      //////////////////////////////////////
     //////////////////////////////////////   loop over events   //////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////
-    auto event_processor =
-        [&](
-            // event info
-            const UInt_t &run, const UInt_t &lumi, const ULong64_t &event_number, const float &Pileup_nTrueInt,
-            const float &genWeight, const int &PV_npvsGood, const bool &Flag_goodVertices,
-            const bool &Flag_globalSuperTightHalo2016Filter, const bool &Flag_HBHENoiseFilter,
-            const bool &Flag_HBHENoiseIsoFilter, const bool &Flag_EcalDeadCellTriggerPrimitiveFilter,
-            const bool &Flag_BadPFMuonFilter, const bool &Flag_BadPFMuonDzFilter, const bool &Flag_eeBadScFilter,
-            const bool &Flag_ecalBadCalibFilter, const bool &HLT_IsoMu27, const bool &HLT_Mu50, const bool &HLT_TkMu100,
-            const bool &HLT_OldMu100,
-
-            // muons
-            const RVec<float> &Muon_pt, const RVec<float> &Muon_eta, const RVec<float> &Muon_phi,
-            const RVec<bool> &Muon_tightId, const RVec<UChar_t> &Muon_highPtId, const RVec<float> &Muon_pfRelIso03_all,
-            const RVec<float> &Muon_tkRelIso,
-
-            // electrons
-            const RVec<float> &Electron_pt, const RVec<float> &Electron_eta, const RVec<float> &Electron_phi,
-
-            // photons
-            const RVec<float> &Photon_pt, const RVec<float> &Photon_eta, const RVec<float> &Photon_phi,
-
-            // taus
-            const RVec<float> &Tau_pt, const RVec<float> &Tau_eta, const RVec<float> &Tau_phi,
-
-            // jets
-            const RVec<float> &Jet_pt, const RVec<float> &Jet_eta, const RVec<float> &Jet_phi,
-
-            // met
-            const float &MET_pt, const float &MET_phi,
-
-            // trgobjs
-            const RVec<float> &TrigObj_pt, const RVec<float> &TrigObj_eta, const RVec<float> &TrigObj_phi,
-            const RVec<int> &TrigObj_id, const RVec<int> &TrigObj_filterBits
-
-            ) -> void {
-        event_counter++;
-
-        // clear outputs buffers
-        outputs.clear_event_tree();
-
-        // MET - temporaries
-        const RVec<float> temp_met_pt = {MET_pt};
-        const RVec<float> temp_met_eta = {0.};
-        const RVec<float> temp_met_phi = {MET_phi};
-
-        // build event data
-        auto event_data =
-            EventData(configuration.is_data, configuration.year, configuration.trigger_stream)
-                // event info
-                .set_event_info(NanoObjects::EventInfo(
-                    run, lumi, event_number, Pileup_nTrueInt, genWeight, PV_npvsGood, Flag_goodVertices,
-                    Flag_globalSuperTightHalo2016Filter, Flag_HBHENoiseFilter, Flag_HBHENoiseIsoFilter,
-                    Flag_EcalDeadCellTriggerPrimitiveFilter, Flag_BadPFMuonFilter, Flag_BadPFMuonDzFilter,
-                    Flag_eeBadScFilter, Flag_ecalBadCalibFilter, HLT_IsoMu27, HLT_Mu50, HLT_TkMu100, HLT_OldMu100))
-                // muons
-                .set_muons(NanoObjects::Muons(Muon_pt, Muon_eta, Muon_phi, Muon_tightId, Muon_highPtId,
-                                              Muon_pfRelIso03_all, Muon_tkRelIso))
-                // electrons
-                .set_electrons(NanoObjects::Electrons(Electron_pt, Electron_eta, Electron_phi))
-                // photons
-                .set_photons(NanoObjects::Photons(Photon_pt, Photon_eta, Photon_phi))
-                // taus
-                .set_taus(NanoObjects::Taus(Tau_pt, Tau_eta, Tau_phi))
-                // bjets
-                .set_bjets(NanoObjects::BJets(Jet_pt, Jet_eta, Jet_phi))
-                // jets
-                .set_jets(NanoObjects::Jets(Jet_pt, Jet_eta, Jet_phi))
-                // met
-                .set_met(NanoObjects::MET(temp_met_pt, temp_met_eta, temp_met_phi))
-                // trgobjs
-                .set_trgobjs(
-                    NanoObjects::TrgObjs(TrigObj_pt, TrigObj_eta, TrigObj_phi, TrigObj_id, TrigObj_filterBits));
-
-        event_data = //
-            event_data.set_const_weights(outputs, pu_weight)
-                .generator_filter(outputs)
-                .run_lumi_filter(outputs, run_lumi_filter)
-                .npv_filter(outputs)
-                .met_filter(outputs)
-                .set_trigger_bits()
-                .trigger_filter(outputs)
-                .object_selection()
-                .has_selected_objects_filter(outputs)
-                .trigger_match_filter(outputs, trigger_sf_correctors)
-                .set_scale_factors(outputs)
-                .muon_corrections()
-                .electron_corrections()
-                .photon_corrections()
-                .tau_corrections()
-                .bjet_corrections()
-                .jet_corrections()
-                .met_corrections()
-                .fill_event_content(outputs);
-
-        // fill output event tree
-        if (event_data)
-        {
-
-            outputs.fill_event_tree();
-        }
-
-        // process monitoring
-        if (event_counter < 10 || (event_counter < 100 && event_counter % 10 == 0) ||
-            (event_counter < 1000 && event_counter % 100 == 0) ||
-            (event_counter < 10000 && event_counter % 1000 == 0) ||
-            (event_counter >= 10000 && event_counter % 10000 == 0))
-        {
-            print_report(dTime1, event_counter, outputs.cutflow_histo);
-            PrintProcessInfo();
-        }
-    };
-
-    auto event_processor_MC =
-        [&](
-            // event info
-            const UInt_t &run, const UInt_t &lumi, const ULong64_t &event_number, const float &Pileup_nTrueInt,
-            const float &genWeight, const int &PV_npvsGood, const bool &Flag_goodVertices,
-            const bool &Flag_globalSuperTightHalo2016Filter, const bool &Flag_HBHENoiseFilter,
-            const bool &Flag_HBHENoiseIsoFilter, const bool &Flag_EcalDeadCellTriggerPrimitiveFilter,
-            const bool &Flag_BadPFMuonFilter, const bool &Flag_BadPFMuonDzFilter, const bool &Flag_eeBadScFilter,
-            const bool &Flag_ecalBadCalibFilter, const bool &HLT_IsoMu27, const bool &HLT_Mu50, const bool &HLT_TkMu100,
-            const bool &HLT_OldMu100,
-
-            // muons
-            const RVec<float> &Muon_pt, const RVec<float> &Muon_eta, const RVec<float> &Muon_phi,
-            const RVec<bool> &Muon_tightId, const RVec<UChar_t> &Muon_highPtId, const RVec<float> &Muon_pfRelIso03_all,
-            const RVec<float> &Muon_tkRelIso,
-
-            // electrons
-            const RVec<float> &Electron_pt, const RVec<float> &Electron_eta, const RVec<float> &Electron_phi,
-
-            // photons
-            const RVec<float> &Photon_pt, const RVec<float> &Photon_eta, const RVec<float> &Photon_phi,
-
-            // taus
-            const RVec<float> &Tau_pt, const RVec<float> &Tau_eta, const RVec<float> &Tau_phi,
-
-            // jets
-            const RVec<float> &Jet_pt, const RVec<float> &Jet_eta, const RVec<float> &Jet_phi,
-
-            // met
-            const float &MET_pt, const float &MET_phi,
-
-            // trgobjs
-            const RVec<float> &TrigObj_pt, const RVec<float> &TrigObj_eta, const RVec<float> &TrigObj_phi,
-            const RVec<int> &TrigObj_id, const RVec<int> &TrigObj_filterBits) {
-            event_processor(
-                // event info
-                run, lumi, event_number, Pileup_nTrueInt, genWeight, PV_npvsGood, Flag_goodVertices,
-                Flag_globalSuperTightHalo2016Filter, Flag_HBHENoiseFilter, Flag_HBHENoiseIsoFilter,
-                Flag_EcalDeadCellTriggerPrimitiveFilter, Flag_BadPFMuonFilter, Flag_BadPFMuonDzFilter,
-                Flag_eeBadScFilter, Flag_ecalBadCalibFilter, HLT_IsoMu27, HLT_Mu50, HLT_TkMu100, HLT_OldMu100,
-
-                // muons
-                Muon_pt, Muon_eta, Muon_phi, Muon_tightId, Muon_highPtId, Muon_pfRelIso03_all, Muon_tkRelIso,
-
-                // electrons
-                Electron_pt, Electron_eta, Electron_phi,
-
-                // photons
-                Photon_pt, Photon_eta, Photon_phi,
-
-                // taus
-                Tau_pt, Tau_eta, Tau_phi,
-
-                // jets
-                Jet_pt, Jet_eta, Jet_phi,
-
-                // met
-                MET_pt, MET_phi,
-
-                // trgobjs
-                TrigObj_pt, TrigObj_eta, TrigObj_phi, TrigObj_id, TrigObj_filterBits);
-        };
-
-    auto event_processor_Data =
-        [&](
-            // event info
-            const UInt_t &run, const UInt_t &lumi, const ULong64_t &event_number, const int &PV_npvsGood,
-            const bool &Flag_goodVertices, const bool &Flag_globalSuperTightHalo2016Filter,
-            const bool &Flag_HBHENoiseFilter, const bool &Flag_HBHENoiseIsoFilter,
-            const bool &Flag_EcalDeadCellTriggerPrimitiveFilter, const bool &Flag_BadPFMuonFilter,
-            const bool &Flag_BadPFMuonDzFilter, const bool &Flag_eeBadScFilter, const bool &Flag_ecalBadCalibFilter,
-            const bool &HLT_IsoMu27, const bool &HLT_Mu50, const bool &HLT_TkMu100, const bool &HLT_OldMu100,
-
-            // muons
-            const RVec<float> &Muon_pt, const RVec<float> &Muon_eta, const RVec<float> &Muon_phi,
-            const RVec<bool> &Muon_tightId, const RVec<UChar_t> &Muon_highPtId, const RVec<float> &Muon_pfRelIso03_all,
-            const RVec<float> &Muon_tkRelIso,
-
-            // electrons
-            const RVec<float> &Electron_pt, const RVec<float> &Electron_eta, const RVec<float> &Electron_phi,
-
-            // photons
-            const RVec<float> &Photon_pt, const RVec<float> &Photon_eta, const RVec<float> &Photon_phi,
-
-            // taus
-            const RVec<float> &Tau_pt, const RVec<float> &Tau_eta, const RVec<float> &Tau_phi,
-
-            // jets
-            const RVec<float> &Jet_pt, const RVec<float> &Jet_eta, const RVec<float> &Jet_phi,
-
-            // met
-            const float &MET_pt, const float &MET_phi,
-
-            // trgobjs
-            const RVec<float> &TrigObj_pt, const RVec<float> &TrigObj_eta, const RVec<float> &TrigObj_phi,
-            const RVec<int> &TrigObj_id, const RVec<int> &TrigObj_filterBits) {
-            event_processor(
-                // event info
-                run, lumi, event_number, 1., 1., PV_npvsGood, Flag_goodVertices, Flag_globalSuperTightHalo2016Filter,
-                Flag_HBHENoiseFilter, Flag_HBHENoiseIsoFilter, Flag_EcalDeadCellTriggerPrimitiveFilter,
-                Flag_BadPFMuonFilter, Flag_BadPFMuonDzFilter, Flag_eeBadScFilter, Flag_ecalBadCalibFilter, HLT_IsoMu27,
-                HLT_Mu50, HLT_TkMu100, HLT_OldMu100,
-
-                // muons
-                Muon_pt, Muon_eta, Muon_phi, Muon_tightId, Muon_highPtId, Muon_pfRelIso03_all, Muon_tkRelIso,
-
-                // electrons
-                Electron_pt, Electron_eta, Electron_phi,
-
-                // photons
-                Photon_pt, Photon_eta, Photon_phi,
-
-                // taus
-                Tau_pt, Tau_eta, Tau_phi,
-
-                // jets
-                Jet_pt, Jet_eta, Jet_phi,
-
-                // met
-                MET_pt, MET_phi,
-
-                // trgobjs
-                TrigObj_pt, TrigObj_eta, TrigObj_phi, TrigObj_id, TrigObj_filterBits);
-        };
-
     std::cout << " " << std::endl;
     std::cout << colors.green << "Starting Classification ..." << colors.def << std::endl;
     std::cout << " " << std::endl;
@@ -414,13 +247,103 @@ int main(int argc, char *argv[])
 
     // launch event loop for Data or MC
     std::cout << colors.green << "\nLaunching event loop ..." << colors.def << std::endl;
-    if (configuration.is_data)
+
+    for (auto &&evt : tree_reader)
     {
-        df.Foreach(event_processor_Data, columns);
-    }
-    else
-    {
-        df.Foreach(event_processor_MC, columns);
+        fmt::print("TrgObjs_filterBits: {}\n", unwrap(TrigObj_filterBits));
+        event_counter = evt;
+        fmt::print("Event counter: {}\n", event_counter);
+
+        // clear outputs buffers
+        outputs.clear_event_tree();
+
+        // build event data
+        auto event_data =
+            EventData(configuration.is_data, configuration.year, configuration.trigger_stream)
+                // event info
+                .set_event_info(NanoObjects::EventInfo(
+                    unwrap(run), unwrap(lumi), unwrap(event_number), unwrap(Pileup_nTrueInt), unwrap(genWeight),
+                    unwrap(PV_npvsGood), unwrap(Flag_goodVertices), unwrap(Flag_globalSuperTightHalo2016Filter),
+                    unwrap(Flag_HBHENoiseFilter), unwrap(Flag_HBHENoiseIsoFilter),
+                    unwrap(Flag_EcalDeadCellTriggerPrimitiveFilter), unwrap(Flag_BadPFMuonFilter),
+                    unwrap(Flag_BadPFMuonDzFilter), unwrap(Flag_eeBadScFilter), unwrap(Flag_ecalBadCalibFilter),
+                    unwrap(HLT_IsoMu27), unwrap(HLT_Mu50), unwrap(HLT_TkMu100), unwrap(HLT_OldMu100)))
+                // muons
+                .set_muons(NanoObjects::Muons(unwrap(Muon_pt), unwrap(Muon_eta), unwrap(Muon_phi), unwrap(Muon_tightId),
+                                              unwrap(Muon_highPtId), unwrap(Muon_pfRelIso03_all),
+                                              unwrap(Muon_tkRelIso)))
+                // electrons
+                .set_electrons(NanoObjects::Electrons(unwrap(Electron_pt), unwrap(Electron_eta), unwrap(Electron_phi)))
+                // photons
+                .set_photons(NanoObjects::Photons(unwrap(Photon_pt), unwrap(Photon_eta), unwrap(Photon_phi)))
+                // taus
+                .set_taus(NanoObjects::Taus(unwrap(Tau_pt), unwrap(Tau_eta), unwrap(Tau_phi)))
+                // bjets
+                .set_bjets(NanoObjects::BJets(unwrap(Jet_pt), unwrap(Jet_eta), unwrap(Jet_phi)))
+                // jets
+                .set_jets(NanoObjects::Jets(unwrap(Jet_pt), unwrap(Jet_eta), unwrap(Jet_phi)))
+                // met
+                .set_met(NanoObjects::MET({unwrap(MET_pt)}, {0.}, {unwrap(MET_phi)}))
+                // trgobjs
+                .set_trgobjs(NanoObjects::TrgObjs(unwrap(TrigObj_pt), unwrap(TrigObj_eta), unwrap(TrigObj_phi),
+                                                  unwrap(TrigObj_id), unwrap(TrigObj_filterBits)));
+
+        fmt::print("Reading from inside the EventData 1: {}\n", event_data.trgobjs.filterBits.get());
+        event_data = event_data.set_const_weights(outputs, pu_weight);
+        fmt::print("Reading from inside the EventData 2: {}\n", event_data.trgobjs.filterBits.get());
+        event_data = event_data.generator_filter(outputs);
+        fmt::print("Reading from inside the EventData 3: {}\n", event_data.trgobjs.filterBits.get());
+        event_data = event_data.run_lumi_filter(outputs, run_lumi_filter);
+        fmt::print("Reading from inside the EventData 4: {}\n", event_data.trgobjs.filterBits.get());
+        event_data = event_data.npv_filter(outputs);
+        fmt::print("Reading from inside the EventData 5: {}\n", event_data.trgobjs.filterBits.get());
+        event_data = event_data.met_filter(outputs);
+        fmt::print("Reading from inside the EventData 6: {}\n", event_data.trgobjs.filterBits.get());
+        event_data = event_data.set_trigger_bits();
+        fmt::print("Reading from inside the EventData 7: {}\n", event_data.trgobjs.filterBits.get());
+        event_data = event_data.trigger_filter(outputs);
+        fmt::print("Reading from inside the EventData 8: {}\n", event_data.trgobjs.filterBits.get());
+        event_data = event_data.object_selection();
+        fmt::print("Reading from inside the EventData 9: {}\n", event_data.trgobjs.filterBits.get());
+        fmt::print("--> Muon_pt 9: {}\n", event_data.muons.pt.get());
+        event_data = event_data.has_selected_objects_filter(outputs);
+        fmt::print("Reading from inside the EventData 10: {}\n", event_data.trgobjs.filterBits.get());
+        fmt::print("--> Muon_pt 10: {}\n", event_data.muons.pt.get());
+
+        // event_data = event_data.dummy();
+        // fmt::print("foo: {}\n", event_data_1.trgobjs.filterBits.get());
+
+        event_data = event_data.trigger_match_filter(outputs, trigger_sf_correctors);
+        //                  .set_scale_factors(outputs)
+        //                  .muon_corrections()
+        //                  .electron_corrections()
+        //                  .photon_corrections()
+        //                  .tau_corrections()
+        //                  .bjet_corrections()
+        //                  .jet_corrections()
+        //                  .met_corrections()
+        //                  .fill_event_content(outputs);
+
+        // fill output event tree
+        if (event_data)
+        {
+            outputs.fill_event_tree();
+        }
+
+        fmt::print("a\n");
+        // process monitoring
+        if (event_counter < 10 || (event_counter < 100 && event_counter % 10 == 0) ||
+            (event_counter < 1000 && event_counter % 100 == 0) ||
+            (event_counter < 10000 && event_counter % 1000 == 0) ||
+            (event_counter >= 10000 && event_counter % 10000 == 0))
+        {
+            fmt::print("b\n");
+            print_report(dTime1, event_counter, outputs.cutflow_histo);
+            fmt::print("c\n");
+            PrintProcessInfo();
+            fmt::print("d\n");
+        }
+        fmt::print("e\n");
     }
 
     std::cout << colors.green << "Event loop done ..." << colors.def << std::endl;

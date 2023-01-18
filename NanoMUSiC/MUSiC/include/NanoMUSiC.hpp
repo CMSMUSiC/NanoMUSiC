@@ -32,11 +32,13 @@
 #include "Math/VectorUtil.h"
 #include "ROOT/RDataFrame.hxx"
 #include "ROOT/RVec.hxx"
+#include "TChain.h"
 #include "TFile.h"
 #include "TH1.h"
-#include "TObjString.h"
 #include "TTree.h"
-
+#include "TTreeReader.h"
+#include "TTreeReaderArray.h"
+#include "TTreeReaderValue.h"
 // toml++ v3.1.0
 // https://github.com/marzer/tomlplusplus
 #include "toml.hpp"
@@ -75,7 +77,52 @@ using namespace std::chrono_literals;
 using namespace ROOT::Math;
 using namespace ROOT::VecOps;
 
-inline void PrintProcessInfo()
+template <typename T>
+auto make_value_reader(TTreeReader &tree_reader, const std::string &leaf) -> std::optional<TTreeReaderValue<T>>
+{
+    if (tree_reader.GetTree()->GetLeaf(leaf.c_str()) != nullptr)
+    {
+        return std::make_optional<TTreeReaderValue<T>>(tree_reader, leaf.c_str());
+    }
+    return std::nullopt;
+}
+
+template <typename T>
+auto make_array_reader(TTreeReader &tree_reader, const std::string &leaf) -> std::optional<TTreeReaderArray<T>>
+{
+    if (tree_reader.GetTree()->GetLeaf(leaf.c_str()) != nullptr)
+    {
+        return std::make_optional<TTreeReaderArray<T>>(tree_reader, leaf.c_str());
+    }
+    return std::nullopt;
+}
+
+// helper macros
+#define ADD_VALUE_READER(VAR, TYPE) auto VAR = make_value_reader<TYPE>(tree_reader, #VAR)
+#define ADD_ARRAY_READER(VAR, TYPE) auto VAR = make_array_reader<TYPE>(tree_reader, #VAR)
+
+template <typename T>
+auto unwrap(std::optional<TTreeReaderValue<T>> &value) -> T
+{
+    if (value)
+    {
+        return **value;
+    }
+    return T();
+}
+
+template <typename T>
+auto unwrap(std::optional<TTreeReaderArray<T>> &array) -> RVec<T>
+{
+    if (array)
+    {
+        return RVec<T>(static_cast<T *>((*array).GetAddress()), (*array).GetSize());
+        // return RVec<T>((*array).begin(), (*array).end());
+    }
+    return RVec<T>();
+}
+
+void PrintProcessInfo()
 {
     auto info = ProcInfo_t();
     gSystem->GetProcInfo(&info);
@@ -92,8 +139,8 @@ inline void PrintProcessInfo()
 
 // (async) TFile download
 using OptionalFuture_t = std::optional<std::future<std::unique_ptr<TFile>>>;
-inline std::unique_ptr<TFile> file_loader(const std::string &file_path, const bool cacheread,
-                                          const std::string &cache_dir, const bool verbose_load)
+std::unique_ptr<TFile> file_loader(const std::string &file_path, const bool cacheread, const std::string &cache_dir,
+                                   const bool verbose_load)
 {
     std::cout << "Loading file [ " << file_path << " ]" << std::endl;
 
@@ -122,7 +169,7 @@ inline std::unique_ptr<TFile> file_loader(const std::string &file_path, const bo
     return input_root_file;
 }
 
-inline double getCpuTime()
+double getCpuTime()
 {
     struct timeval tv;
     gettimeofday(&tv, NULL);
@@ -151,7 +198,7 @@ T get_and_check_future(std::future<T> &_ftr)
         exit(1);
     }
 }
-inline void prepare_output_buffer(const TaskConfiguration &configuration)
+void prepare_output_buffer(const TaskConfiguration &configuration)
 {
     const std::string startDir = getcwd(NULL, 0);
 
@@ -171,8 +218,7 @@ inline void prepare_output_buffer(const TaskConfiguration &configuration)
     system(("cp " + configuration.x_section_file + " . ").c_str());
 }
 
-inline void print_report(const double &dTime1, const unsigned long &event_counter, TH1F &cutflow_histo,
-                         bool is_final = false)
+void print_report(const double &dTime1, const unsigned long &event_counter, TH1F &cutflow_histo, bool is_final = false)
 {
     double dTime2 = getCpuTime();
     std::string final_str = is_final ? "Final " : "";
@@ -193,11 +239,6 @@ inline void print_report(const double &dTime1, const unsigned long &event_counte
     }
     fmt::print("=====================================\n");
 
-    if (event_counter == 0 && !is_final)
-    {
-        std::cout << "Error: No event was analyzed!" << std::endl;
-        throw std::runtime_error("No event was analyzed!");
-    }
     std::cout << " " << std::endl;
 }
 

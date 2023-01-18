@@ -1,6 +1,7 @@
 #ifndef MUSIC_NANOOBJECTS
 #define MUSIC_NANOOBJECTS
 
+#include "fmt/core.h"
 #include <ROOT/RVec.hxx>
 
 constexpr float Muon_mass = 105.6583755 / 1000.;
@@ -157,6 +158,7 @@ struct TrgObjs
             const RVec<int> &_id = {}, const RVec<int> &_filterBits = {})
         : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi), id(_id), filterBits(_filterBits)
     {
+        fmt::print("Trigger filter bits: {}\n", _filterBits);
     }
 };
 using NanoAODObjects_t = std::tuple<Muons, Electrons, Photons, Taus, BJets, Jets, MET>;

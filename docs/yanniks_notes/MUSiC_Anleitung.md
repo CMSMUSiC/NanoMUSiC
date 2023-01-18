@@ -1,0 +1,110 @@
+1) **Alle MC & Data Samples auf [DAS](https://cmsweb.cern.ch/das/request?view=list&limit=50&instance=prod%2Fglobal&input=dataset%3D%2FZToMuMu_*%2FRunIISummer20UL18MiniAODv2*%2FMINIAODSIM*), [Grasp](https://cms-pdmv.cern.ch/grasp/samples?dataset_query=ZToMuMu_M-3500To4500_TuneCP5_13TeV-powheg-pythia8&campaign=Run3Winter22*GS,RunIISummer20UL16*GEN,RunIISummer20UL16*GENAPV,RunIISummer20UL17*GEN,RunIISummer20UL18*GEN) etc. suchen wie [hier](https://docs.google.com/spreadsheets/d/1C3wC3vG5VHEX0-bk-s6qdhGR0Hy7KcVLkG9efDYlN6Q/edit#gid=1654878574)**
+------------------
+2) **[[MUSiC einrichten]]**
+------------------
+- Immer alles **sourcen** und **VOMS** einrichten
+	- `source MUSiC-StartUp.csh`
+	- `voms-proxy-init --voms cms --voms cms:/cms/dcms --valid 198:0`
+------------------
+3) **Samples Skimmen:**
+	- MC:
+		- .txt mit allen DAS Namen erstellen
+		- ParseSampleList benutzen
+			- z.B.: `parseSampleList.py new_files.txt -c /home/home1/institut_3a/ykaiser/TAPAS_2022/CMSSW_10_6_20/src/PxlSkimmer/Skimming/test/mc_miniAOD_UL2018_cfg.py -e 13`
+		- Benutze Crab:
+			- z.B.: `music_crab3.py -g 106X_upgrade2018_realistic_v16_L1v1 mc_powheg.txt`
+		- Bei Fails:
+			- Status überprüfen:
+			    - Lokal: `crab status *Path*`
+			    - Global: [Grafana](https://monit-grafana.cern.ch/d/cmsTMDetail/cms-task-monitoring-task-view?orgId=11) 
+			- [Exit Codes](https://twiki.cern.ch/twiki/bin/view/CMSPublic/JobExitCodes)
+			- Resubmitten:
+				- Single one:
+					- z.B.: `crab resubmit crab_WJetsToLNu_Pt-250To400_MatchEWPDG20_13TeV_AM --maxmemory 4000 --maxjobruntime 2750`
+				- Multiple:
+					- `python ../resubmit_crab_jobs.py -d .`
+			- Wenn Resubmitten nicht geht, dann Killen
+				- Stoppen der failed/toRetry Jobs auf crab:
+				    -   `crab kill -d *PathofthefailedJobs*` 
+	- Data:
+		- .txt mit allen DAS Namen erstellen
+		- Data Parsen:
+			-  `datasets.py name.txt`
+			-   **WICHTIG:** datasets.py muss für jedes Datenset einzeln editiert werden
+		- Benutze Crab:
+			- `music_crab3.py -g 106X_dataRun2_v35 All_data.txt --maxmemory 4000 --maxJobRuntimeMin 2750 --eventsPerJob 78000`   
+			- Rest wie bei MC
+	- Samples zur [Database](https://cms-project-aachen3a-db.web.cern.ch/index) senden
+		- Einzeln: `watchdog.py --debug DEBUG -f --addIncomplete --only FILENAME`
+		- Alle im Ordner: `python ../multi_watchdog.py -d .`
+		- **WICHTIG:** Manchmal entsteht ein Buffer Overflow, wenn das passiert einfach nochmal das Kommando nutzen (solange bis alle Samples einen Eintrag in der Database haben der nicht 0 ist)
+------------------
+4) **Classification:**
+	- Kopiere den **timing** Ordner eines Vorherigen Nutzers an eine Stelle an dem du Zugriff drauf hast und editiere den PATH im Code
+		- in `TAPAS/MUSiC-Utils/python/luigi_music/tasks/classification.py`
+	- Erstelle einen Ordner in dem die Classification laufen soll
+	- Erstelle eine data.root (`touch data.root`)
+	- Erstelle einen Ordner (`mkdir NAME`) mit dem Namen der CampaignID_Datum die genutzt werden soll (Datum im Format Jahr_Monat_Tag)
+	- Lösche vorhandene gridpacks im dcache zur Classification (siehe bei ERRORs)
+	- Kopiere deine Cookies:
+		- z.B.: /home/home1/institut_3a/ykaiser/TAPAS_2022/Condor_utils/restoring_sso_cookies.sh ~/private/CERN_UserCertificate.pem ~/private/CERN_UserCertificate.key
+	- Starte die Classification:
+		- z.B.: `ECWorkflows.py classify --myskims-path /.automount/home/home__home1/institut_3a/ykaiser/TAPAS_2022/TAPAS/MUSiC-Configs/MC/myskims_UL18_20_07_2022.yaml --campaign-id EC_test_2022_10_22 --remote-dir /disk1/ykaiser/working/Masterarbeit/Classification/SemiFULLClassification_22_10_2022`
+	- mc Ordner mergen
+		- z.B.: `ECMerger.py /disk1/ykaiser/working/Masterarbeit/Classification/SemiFULLClassification_09_08_2022_edited/mc/* --final --merge=all --data=False -o /disk1/ykaiser/working/Masterarbeit/Classification/SemiFULLClassification_09_08_2022_edited/mc_merged/bg.root -j 120`
+	- ==**Überprüfung der Classification:**==
+		- Television `television.py mc/*/*`
+			- **WICHTIG:** Television funktioniert nur, wenn das Terminalfenster groß genug gezogen wurde, daher am besten nur im Vollbildfenstermodus ausprobieren
+			- Bei der Passwortfrage einfach Enter drücken
+		- [Luigi Task Visualiser](http://localhost:8082/static/visualiser/index.html)
+			- Unirechner: `ssh -L 8082:lx3acms2:8082 lx3acms2`
+			- Heimrechner: `ssh -J ykaiser@portal.physik.rwth-aachen.de -L 8082:lx3acms2:8082 ykaiser@lx3acms2`
+		- `condor_q`
+	- ==**Bei ERRORS oder Stuck:**==
+		- Wenn die Classification schon einiges klassifiziert hat und nur einzelne Gruppen Failen:
+			- Stoppen mittels `Strg+alt gr+ß`oder`Strg+C` oder `Strg+Z` (bei +Z mit `ps` gucken ob der Prozess noch läuft und mit `kill -9 NUMMER` killen)
+			- `condor_rm USERNAME` anwenden
+			- dcache Gridpacks der Classification clearen
+				- z.B.: zu finden mittels: `uberftp grid-ftp`
+					- `cd /pnfs/physik.rwth-aachen.de/cms/store/user/DEINUSERNAME/luigi_gridpacks`
+					- `ls`
+			- **ACHTUNG**: Im gleichen Ordner werden auch die Gridpacks des Scans gespeichert und mittels uberftp hat man ADMIN Rechte und könnte alle Daten löschen (auch von anderen Usern) und es gibt kein BACKUP
+			- Gucken ob beim Luigi Task Visualiser alle Disabled Tasks weg sind (ca. 5 min nach dem stoppen des Kommandos und dem löschen in condor sollten die Tasks von alleine verschwinden)
+			- Lokale Ordner der gefailten Gruppen löschen (in `mc/..`)
+			- Classification Kommando erneut nutzen
+		- Wenn die Classification zu Beginn Failed dann Fehler suchen und in einem **NEUEM** Ordner alles nochmal starten
+------------------
+5) **Scan:**
+	- Erstelle einen Ordner in dem du den Scan laufen lassen willst
+	- Kopiere den **timing** Ordner in den Scan Ordner
+	- Kopiere oder **besser Linke** die `bg.root` Datei aus dem Classification `mc_merged` Ordner in den Scan Ordner (von MC `bg.root` und Data `bg_data.root`)
+		- z.B.:  `ln -s /disk1/ykaiser/working/Masterarbeit/Classification/SemiFULLClassification_09_08_2022_edited/mc_merged/bg.root bg.root`
+	- Erstelle einen Ordner (`mkdir NAME`) mit dem Namen der CampaignID_Datum die genutzt werden soll (Datum im Format Jahr_Monat_Tag)
+	- Starte den Scan:
+		- `ECWorkflows.py scan --mc bg.root --signal bg_3000.root --distributions InvMass --class-types exclusive --campaign-id Scan_30001_19_09 --remote-dir /disk1/ykaiser/working/Masterarbeit/Scan/test_04_19_09_2022_good`
+	- ==**Überprüfung des Scans:**==
+		- z.B.: `television.py Scan_InvMass_Scan_30001_31_08/*`
+			- **WICHTIG:** Television funktioniert nur, wenn das Terminalfenster groß genug gezogen wurde, daher am besten nur im Vollbildfenstermodus ausprobieren
+			- Bei der Passwortfrage einfach Enter drücken
+		- [Luigi Task Visualiser](http://localhost:8082/static/visualiser/index.html)
+			- Unirechner: `ssh -L 8082:lx3acms2:8082 lx3acms2`
+			- Heimrechner: `ssh -J ykaiser@portal.physik.rwth-aachen.de -L 8082:lx3acms2:8082 ykaiser@lx3acms2`
+		- `condor_q`
+	- ==**Bei ERRORs oder Stuck:**==
+		- Wenn einige Sachen schon Erfolgreich gescannt wurden:
+			- Stoppen mittels `Strg+alt gr+ß`oder`Strg+C` oder `Strg+Z` (bei +Z mit `ps` gucken ob der Prozess noch läuft und mit `kill -9 NUMMER` killen)
+			- `condor_rm USERNAME` anwenden
+			- dcache Gridpacks des Scans clearen
+				- z.B.: zu finden mittels: `uberftp grid-ftp`
+					- `cd /pnfs/physik.rwth-aachen.de/cms/store/user/DEINUSERNAME/luigi_gridpacks`
+					- `ls`
+			- **ACHTUNG**: Im gleichen Ordner werden auch die Gridpacks der Classification gespeichert und mittels uberftp hat man ADMIN Rechte und könnte alle Daten löschen (auch von anderen Usern) und es gibt kein BACKUP
+			- Gucken ob beim Luigi Task Visualiser alle Disabled Tasks weg sind (ca. 5 min nach dem stoppen des Kommandos und dem löschen in condor sollten die Tasks von alleine verschwinden)
+			- Lokale Ordner der gefailten Gruppen löschen (im CampaignID-Ordner)
+				- Tipp:
+					- `python Scan_check.py -d test_04_19_09_2022_good/Scan_InvMass_Scan_30001_19_09`
+					- `python delete_scan.py -d Scan_InvMass_Scan_30001_31_08`
+						- das Lösch-Script löscht manchmal einen gefailten Ordner nicht, daher am Ende sicherheitshalber den Scancheck nochmal laufen lassen und den übrig gebliebenen Ordner in der Failes***.txt per Hand löschen
+			- Scan Kommando erneut nutzen
+
+#MUSiC #DAS #Commands #CRAB #Classification #PxlSkimmer #ParseSampleList #Scan #Watchdog 

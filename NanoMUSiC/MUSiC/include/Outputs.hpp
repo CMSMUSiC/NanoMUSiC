@@ -37,7 +37,7 @@ namespace IndexHelpers
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Creates a iterable range of integers in the interval [first, last].
-inline const std::vector<long> make_index(long first, long last)
+const std::vector<long> make_index(long first, long last)
 {
     auto vec = std::vector<long>(last - first + 1);
     long item = first;
@@ -51,7 +51,7 @@ inline const std::vector<long> make_index(long first, long last)
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Creates a iterable range of integers in the interval [0 (zero), length[.
-inline const std::vector<long> make_index(long lenght)
+const std::vector<long> make_index(long lenght)
 {
     return make_index(0, lenght - 1);
 }

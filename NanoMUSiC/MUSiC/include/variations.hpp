@@ -77,7 +77,7 @@
 //     return std::make_pair(Outputs::Variations[idx_variation], Outputs::Shifts[idx_shift]);
 // }
 
-// inline auto VariationsAndShiftsRange = views::cartesian_product(Outputs::Variations, Outputs::Shifts) |
+// auto VariationsAndShiftsRange = views::cartesian_product(Outputs::Variations, Outputs::Shifts) |
 //                                        views::remove_if([](auto variation_and_shift) {
 //                                            const auto [variation, shift] = variation_and_shift;
 //                                            return (variation == "Default" && (shift == "Up" || shift == "Down"));
@@ -88,7 +88,7 @@
 //                                        });
 
 // constexpr unsigned int kTotalVariationsAndShifts = (Outputs::kTotalVariations - 1) * 2 + 1;
-// inline const auto VariationsAndShiftsIndexRange = RangesHelpers::index_range<unsigned
+// const auto VariationsAndShiftsIndexRange = RangesHelpers::index_range<unsigned
 // long>(kTotalVariationsAndShifts);
 
 // } // namespace Variations

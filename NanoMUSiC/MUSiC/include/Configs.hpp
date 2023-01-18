@@ -57,7 +57,7 @@ enum Year
     kTotalYears, // <-- should always be the last one!!
 };
 
-inline auto get_runyear(const std::string &year_str) -> Year
+auto get_runyear(const std::string &year_str) -> Year
 {
     // check year
     if (year_str != "2016APV" && year_str != "2016" && year_str != "2017" && year_str != "2018")
@@ -263,7 +263,7 @@ constexpr auto TriggerStreamRedList = //
     );
 
 // get data_stream from process
-inline std::string_view get_trigger_stream(bool is_data, const std::string &process)
+std::string_view get_trigger_stream(bool is_data, const std::string &process)
 {
     using namespace std::literals;
     if (not is_data)

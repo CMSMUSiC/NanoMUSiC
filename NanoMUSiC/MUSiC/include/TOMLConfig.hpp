@@ -61,12 +61,12 @@ class TOMLConfig
     const std::string toml_config_file;
 };
 
-inline TOMLConfig::TOMLConfig(const toml::table &_toml_config, const std::string _toml_config_file)
+TOMLConfig::TOMLConfig(const toml::table &_toml_config, const std::string _toml_config_file)
     : toml_config(_toml_config), toml_config_file(_toml_config_file)
 {
 }
 
-inline const TOMLConfig TOMLConfig::make_toml_config(const std::string &_toml_config_file)
+const TOMLConfig TOMLConfig::make_toml_config(const std::string &_toml_config_file)
 {
     try
     {
@@ -79,12 +79,12 @@ inline const TOMLConfig TOMLConfig::make_toml_config(const std::string &_toml_co
     }
 }
 
-inline std::string TOMLConfig::config_file_path()
+std::string TOMLConfig::config_file_path()
 {
     return toml_config_file;
 }
 
-inline bool TOMLConfig::check_item(const std::string &path)
+bool TOMLConfig::check_item(const std::string &path)
 {
     if (toml_config.at_path(path))
     {
