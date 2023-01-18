@@ -117,7 +117,6 @@ auto unwrap(std::optional<TTreeReaderArray<T>> &array) -> RVec<T>
     if (array)
     {
         return RVec<T>(static_cast<T *>((*array).GetAddress()), (*array).GetSize());
-        // return RVec<T>((*array).begin(), (*array).end());
     }
     return RVec<T>();
 }

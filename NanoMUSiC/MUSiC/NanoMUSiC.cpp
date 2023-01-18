@@ -173,8 +173,10 @@ int main(int argc, char *argv[])
 
     // event info
     ADD_VALUE_READER(run, UInt_t);
-    ADD_VALUE_READER(lumi, UInt_t);
-    ADD_VALUE_READER(event_number, ULong64_t);
+    // ADD_VALUE_READER(lumi, UInt_t);
+    auto lumi = make_value_reader<UInt_t>(tree_reader, "luminosityBlock");
+    // ADD_VALUE_READER(event_number, ULong64_t);
+    auto event_number = make_value_reader<ULong64_t>(tree_reader, "event");
     ADD_VALUE_READER(Pileup_nTrueInt, float);
     ADD_VALUE_READER(genWeight, float);
     ADD_VALUE_READER(PV_npvsGood, int);
@@ -250,9 +252,7 @@ int main(int argc, char *argv[])
 
     for (auto &&evt : tree_reader)
     {
-        fmt::print("TrgObjs_filterBits: {}\n", unwrap(TrigObj_filterBits));
         event_counter = evt;
-        fmt::print("Event counter: {}\n", event_counter);
 
         // clear outputs buffers
         outputs.clear_event_tree();
@@ -261,13 +261,25 @@ int main(int argc, char *argv[])
         auto event_data =
             EventData(configuration.is_data, configuration.year, configuration.trigger_stream)
                 // event info
-                .set_event_info(NanoObjects::EventInfo(
-                    unwrap(run), unwrap(lumi), unwrap(event_number), unwrap(Pileup_nTrueInt), unwrap(genWeight),
-                    unwrap(PV_npvsGood), unwrap(Flag_goodVertices), unwrap(Flag_globalSuperTightHalo2016Filter),
-                    unwrap(Flag_HBHENoiseFilter), unwrap(Flag_HBHENoiseIsoFilter),
-                    unwrap(Flag_EcalDeadCellTriggerPrimitiveFilter), unwrap(Flag_BadPFMuonFilter),
-                    unwrap(Flag_BadPFMuonDzFilter), unwrap(Flag_eeBadScFilter), unwrap(Flag_ecalBadCalibFilter),
-                    unwrap(HLT_IsoMu27), unwrap(HLT_Mu50), unwrap(HLT_TkMu100), unwrap(HLT_OldMu100)))
+                .set_event_info(NanoObjects::EventInfo(unwrap(run),                                 //
+                                                       unwrap(lumi),                                //
+                                                       unwrap(event_number),                        //
+                                                       unwrap(Pileup_nTrueInt),                     //
+                                                       unwrap(genWeight),                           //
+                                                       unwrap(PV_npvsGood),                         //
+                                                       unwrap(Flag_goodVertices),                   //
+                                                       unwrap(Flag_globalSuperTightHalo2016Filter), //
+                                                       unwrap(Flag_HBHENoiseFilter),                //
+                                                       unwrap(Flag_HBHENoiseIsoFilter),
+                                                       unwrap(Flag_EcalDeadCellTriggerPrimitiveFilter), //
+                                                       unwrap(Flag_BadPFMuonFilter),                    //
+                                                       unwrap(Flag_BadPFMuonDzFilter),                  //
+                                                       unwrap(Flag_eeBadScFilter),                      //
+                                                       unwrap(Flag_ecalBadCalibFilter),
+                                                       unwrap(HLT_IsoMu27), //
+                                                       unwrap(HLT_Mu50),    //
+                                                       unwrap(HLT_TkMu100), //
+                                                       unwrap(HLT_OldMu100)))
                 // muons
                 .set_muons(NanoObjects::Muons(unwrap(Muon_pt), unwrap(Muon_eta), unwrap(Muon_phi), unwrap(Muon_tightId),
                                               unwrap(Muon_highPtId), unwrap(Muon_pfRelIso03_all),
@@ -288,41 +300,25 @@ int main(int argc, char *argv[])
                 .set_trgobjs(NanoObjects::TrgObjs(unwrap(TrigObj_pt), unwrap(TrigObj_eta), unwrap(TrigObj_phi),
                                                   unwrap(TrigObj_id), unwrap(TrigObj_filterBits)));
 
-        fmt::print("Reading from inside the EventData 1: {}\n", event_data.trgobjs.filterBits.get());
-        event_data = event_data.set_const_weights(outputs, pu_weight);
-        fmt::print("Reading from inside the EventData 2: {}\n", event_data.trgobjs.filterBits.get());
-        event_data = event_data.generator_filter(outputs);
-        fmt::print("Reading from inside the EventData 3: {}\n", event_data.trgobjs.filterBits.get());
-        event_data = event_data.run_lumi_filter(outputs, run_lumi_filter);
-        fmt::print("Reading from inside the EventData 4: {}\n", event_data.trgobjs.filterBits.get());
-        event_data = event_data.npv_filter(outputs);
-        fmt::print("Reading from inside the EventData 5: {}\n", event_data.trgobjs.filterBits.get());
-        event_data = event_data.met_filter(outputs);
-        fmt::print("Reading from inside the EventData 6: {}\n", event_data.trgobjs.filterBits.get());
-        event_data = event_data.set_trigger_bits();
-        fmt::print("Reading from inside the EventData 7: {}\n", event_data.trgobjs.filterBits.get());
-        event_data = event_data.trigger_filter(outputs);
-        fmt::print("Reading from inside the EventData 8: {}\n", event_data.trgobjs.filterBits.get());
-        event_data = event_data.object_selection();
-        fmt::print("Reading from inside the EventData 9: {}\n", event_data.trgobjs.filterBits.get());
-        fmt::print("--> Muon_pt 9: {}\n", event_data.muons.pt.get());
-        event_data = event_data.has_selected_objects_filter(outputs);
-        fmt::print("Reading from inside the EventData 10: {}\n", event_data.trgobjs.filterBits.get());
-        fmt::print("--> Muon_pt 10: {}\n", event_data.muons.pt.get());
-
-        // event_data = event_data.dummy();
-        // fmt::print("foo: {}\n", event_data_1.trgobjs.filterBits.get());
-
-        event_data = event_data.trigger_match_filter(outputs, trigger_sf_correctors);
-        //                  .set_scale_factors(outputs)
-        //                  .muon_corrections()
-        //                  .electron_corrections()
-        //                  .photon_corrections()
-        //                  .tau_corrections()
-        //                  .bjet_corrections()
-        //                  .jet_corrections()
-        //                  .met_corrections()
-        //                  .fill_event_content(outputs);
+        event_data = event_data.set_const_weights(outputs, pu_weight)
+                         .generator_filter(outputs)
+                         .run_lumi_filter(outputs, run_lumi_filter)
+                         .npv_filter(outputs)
+                         .met_filter(outputs)
+                         .set_trigger_bits()
+                         .trigger_filter(outputs)
+                         .object_selection()
+                         .has_selected_objects_filter(outputs)
+                         .trigger_match_filter(outputs, trigger_sf_correctors)
+                         .set_scale_factors(outputs)
+                         .muon_corrections()
+                         .electron_corrections()
+                         .photon_corrections()
+                         .tau_corrections()
+                         .bjet_corrections()
+                         .jet_corrections()
+                         .met_corrections()
+                         .fill_event_content(outputs);
 
         // fill output event tree
         if (event_data)
@@ -330,20 +326,17 @@ int main(int argc, char *argv[])
             outputs.fill_event_tree();
         }
 
-        fmt::print("a\n");
+        // fmt::print("a\n");
         // process monitoring
         if (event_counter < 10 || (event_counter < 100 && event_counter % 10 == 0) ||
             (event_counter < 1000 && event_counter % 100 == 0) ||
             (event_counter < 10000 && event_counter % 1000 == 0) ||
             (event_counter >= 10000 && event_counter % 10000 == 0))
         {
-            fmt::print("b\n");
             print_report(dTime1, event_counter, outputs.cutflow_histo);
-            fmt::print("c\n");
             PrintProcessInfo();
-            fmt::print("d\n");
         }
-        fmt::print("e\n");
+        // fmt::print("e\n");
     }
 
     std::cout << colors.green << "Event loop done ..." << colors.def << std::endl;

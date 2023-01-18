@@ -123,7 +123,7 @@ constexpr std::tuple<bool, float, float> trigger_matcher(const T1 &trigger_objec
 
 RVec<int> check_bit(const RVec<int> &trigger_bits, const int &bit)
 {
-    fmt::print("trigger bits: {} - bit: {}\n", trigger_bits, bit);
+    // fmt::print("trigger bits: {} - bit: {}\n", trigger_bits, bit);
     return (trigger_bits & bit) / bit;
 }
 

@@ -16,25 +16,25 @@ namespace NanoObjects
 
 struct EventInfo
 {
-    std::reference_wrapper<const UInt_t> run;
-    std::reference_wrapper<const UInt_t> lumi;
-    std::reference_wrapper<const ULong64_t> event;
-    std::reference_wrapper<const float> Pileup_nTrueInt;
-    std::reference_wrapper<const float> genWeight;
-    std::reference_wrapper<const int> PV_npvsGood;
-    std::reference_wrapper<const bool> Flag_goodVertices;
-    std::reference_wrapper<const bool> Flag_globalSuperTightHalo2016Filter;
-    std::reference_wrapper<const bool> Flag_HBHENoiseFilter;
-    std::reference_wrapper<const bool> Flag_HBHENoiseIsoFilter;
-    std::reference_wrapper<const bool> Flag_EcalDeadCellTriggerPrimitiveFilter;
-    std::reference_wrapper<const bool> Flag_BadPFMuonFilter;
-    std::reference_wrapper<const bool> Flag_BadPFMuonDzFilter;
-    std::reference_wrapper<const bool> Flag_eeBadScFilter;
-    std::reference_wrapper<const bool> Flag_ecalBadCalibFilter;
-    std::reference_wrapper<const bool> HLT_IsoMu27;
-    std::reference_wrapper<const bool> HLT_Mu50;
-    std::reference_wrapper<const bool> HLT_TkMu100;
-    std::reference_wrapper<const bool> HLT_OldMu100;
+    UInt_t run;
+    UInt_t lumi;
+    ULong64_t event;
+    float Pileup_nTrueInt;
+    float genWeight;
+    int PV_npvsGood;
+    bool Flag_goodVertices;
+    bool Flag_globalSuperTightHalo2016Filter;
+    bool Flag_HBHENoiseFilter;
+    bool Flag_HBHENoiseIsoFilter;
+    bool Flag_EcalDeadCellTriggerPrimitiveFilter;
+    bool Flag_BadPFMuonFilter;
+    bool Flag_BadPFMuonDzFilter;
+    bool Flag_eeBadScFilter;
+    bool Flag_ecalBadCalibFilter;
+    bool HLT_IsoMu27;
+    bool HLT_Mu50;
+    bool HLT_TkMu100;
+    bool HLT_OldMu100;
 
     EventInfo(const UInt_t &_run = 0, const UInt_t &_lumi = 0, const ULong64_t &_event = 0,
               const float &_Pileup_nTrueInt = 0, const float &_genWeight = 1., const int &_PV_npvsGood = 0,
@@ -59,13 +59,13 @@ struct EventInfo
 struct Muons
 {
     std::size_t size;
-    std::reference_wrapper<const RVec<float>> pt;
-    std::reference_wrapper<const RVec<float>> eta;
-    std::reference_wrapper<const RVec<float>> phi;
-    std::reference_wrapper<const RVec<bool>> tightId;
-    std::reference_wrapper<const RVec<UChar_t>> highPtId;
-    std::reference_wrapper<const RVec<float>> pfRelIso03_all;
-    std::reference_wrapper<const RVec<float>> tkRelIso;
+    RVec<float> pt;
+    RVec<float> eta;
+    RVec<float> phi;
+    RVec<bool> tightId;
+    RVec<UChar_t> highPtId;
+    RVec<float> pfRelIso03_all;
+    RVec<float> tkRelIso;
 
     Muons(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {},
           const RVec<bool> &_tightId = {}, const RVec<UChar_t> &_highPtId = {}, const RVec<float> &_pfRelIso03_all = {},
@@ -79,9 +79,9 @@ struct Muons
 struct Electrons
 {
     std::size_t size;
-    std::reference_wrapper<const RVec<float>> pt;
-    std::reference_wrapper<const RVec<float>> eta;
-    std::reference_wrapper<const RVec<float>> phi;
+    RVec<float> pt;
+    RVec<float> eta;
+    RVec<float> phi;
 
     Electrons(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {})
         : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi)
@@ -92,9 +92,9 @@ struct Electrons
 struct Photons
 {
     std::size_t size;
-    std::reference_wrapper<const RVec<float>> pt;
-    std::reference_wrapper<const RVec<float>> eta;
-    std::reference_wrapper<const RVec<float>> phi;
+    RVec<float> pt;
+    RVec<float> eta;
+    RVec<float> phi;
 
     Photons(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {})
         : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi)
@@ -105,9 +105,9 @@ struct Photons
 struct Taus
 {
     std::size_t size;
-    std::reference_wrapper<const RVec<float>> pt;
-    std::reference_wrapper<const RVec<float>> eta;
-    std::reference_wrapper<const RVec<float>> phi;
+    RVec<float> pt;
+    RVec<float> eta;
+    RVec<float> phi;
 
     Taus(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {})
         : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi)
@@ -118,9 +118,9 @@ struct Taus
 struct Jets
 {
     std::size_t size;
-    std::reference_wrapper<const RVec<float>> pt;
-    std::reference_wrapper<const RVec<float>> eta;
-    std::reference_wrapper<const RVec<float>> phi;
+    RVec<float> pt;
+    RVec<float> eta;
+    RVec<float> phi;
 
     Jets(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {})
         : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi)
@@ -133,9 +133,9 @@ using BJets = Jets;
 struct MET
 {
     std::size_t size;
-    std::reference_wrapper<const RVec<float>> pt;
-    std::reference_wrapper<const RVec<float>> eta;
-    std::reference_wrapper<const RVec<float>> phi;
+    RVec<float> pt;
+    RVec<float> eta;
+    RVec<float> phi;
 
     MET(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {})
         : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi)
@@ -146,19 +146,19 @@ struct MET
 struct TrgObjs
 {
     std::size_t size;
-    std::reference_wrapper<const RVec<float>> pt;
-    std::reference_wrapper<const RVec<float>> eta;
-    std::reference_wrapper<const RVec<float>> phi;
+    RVec<float> pt;
+    RVec<float> eta;
+    RVec<float> phi;
     // ID of the object: 11 = Electron (PixelMatched e/gamma), 22 = Photon (PixelMatch-vetoed e/gamma), 13 =
     // Muon, 15 = Tau, 1 = Jet, 6 = FatJet, 2 = MET, 3 = HT, 4 = MHT
-    std::reference_wrapper<const RVec<int>> id;
-    std::reference_wrapper<const RVec<int>> filterBits;
+    RVec<int> id;
+    RVec<int> filterBits;
 
     TrgObjs(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {},
             const RVec<int> &_id = {}, const RVec<int> &_filterBits = {})
         : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi), id(_id), filterBits(_filterBits)
     {
-        fmt::print("Trigger filter bits: {}\n", _filterBits);
+        // fmt::print("Trigger filter bits: {}\n", _filterBits);
     }
 };
 using NanoAODObjects_t = std::tuple<Muons, Electrons, Photons, Taus, BJets, Jets, MET>;

@@ -230,10 +230,10 @@ class EventData
             // // fmt::print("\nDEBUG - set_const_weights");
             if (!is_data)
             {
-                outputs.set_event_weight("Generator", event_info.genWeight.get());
-                outputs.set_event_weight("PileUp", "Nominal", pu_weight({event_info.Pileup_nTrueInt.get(), "nominal"}));
-                outputs.set_event_weight("PileUp", "Up", pu_weight({event_info.Pileup_nTrueInt.get(), "up"}));
-                outputs.set_event_weight("PileUp", "Down", pu_weight({event_info.Pileup_nTrueInt.get(), "down"}));
+                outputs.set_event_weight("Generator", event_info.genWeight);
+                outputs.set_event_weight("PileUp", "Nominal", pu_weight({event_info.Pileup_nTrueInt, "nominal"}));
+                outputs.set_event_weight("PileUp", "Up", pu_weight({event_info.Pileup_nTrueInt, "up"}));
+                outputs.set_event_weight("PileUp", "Down", pu_weight({event_info.Pileup_nTrueInt, "down"}));
             }
             return *this;
         }
@@ -274,15 +274,15 @@ class EventData
     {
         if (*this)
         {
-            if (_run_lumi_filter(event_info.run.get(), event_info.lumi.get(), is_data))
+            if (_run_lumi_filter(event_info.run, event_info.lumi, is_data))
             {
                 // // fmt::print("\nDEBUG - run_lumi_filter");
                 outputs.fill_cutflow_histo("RunLumi", outputs.get_event_weight());
                 return *this;
             }
             set_null();
-            // fmt::print("\nDEBUG - DID NOT PASS RUN_LUMI FILTER: {} - {}", event_info.run.get(),
-            // event_info.lumi.get());
+            // fmt::print("\nDEBUG - DID NOT PASS RUN_LUMI FILTER: {} - {}", event_info.run,
+            // event_info.lumi);
             return *this;
         }
         return *this;
@@ -292,7 +292,7 @@ class EventData
     {
         if (*this)
         {
-            if (event_info.PV_npvsGood.get() > 0)
+            if (event_info.PV_npvsGood > 0)
             {
                 // // fmt::print("\nDEBUG - PV_npvsGood");
                 outputs.fill_cutflow_histo("nPV", outputs.get_event_weight());
@@ -320,35 +320,35 @@ class EventData
             {
                 // clang-format off
                 pass_MET_filters = pass_MET_filters
-                                   && event_info.Flag_goodVertices.get()
-                                   && event_info.Flag_globalSuperTightHalo2016Filter.get()
-                                   && event_info.Flag_HBHENoiseFilter.get()
-                                   && event_info.Flag_HBHENoiseIsoFilter.get()
-                                   && event_info.Flag_EcalDeadCellTriggerPrimitiveFilter.get()
-                                   && event_info.Flag_BadPFMuonFilter.get()
-                                   && event_info.Flag_BadPFMuonDzFilter.get()
-                                   && event_info.Flag_eeBadScFilter.get();
+                                   && event_info.Flag_goodVertices
+                                   && event_info.Flag_globalSuperTightHalo2016Filter
+                                   && event_info.Flag_HBHENoiseFilter
+                                   && event_info.Flag_HBHENoiseIsoFilter
+                                   && event_info.Flag_EcalDeadCellTriggerPrimitiveFilter
+                                   && event_info.Flag_BadPFMuonFilter
+                                   && event_info.Flag_BadPFMuonDzFilter
+                                   && event_info.Flag_eeBadScFilter;
                 // clang-format on
-                // event_info.Flag_BadChargedCandidateFilter.get();
-                // event_info.Flag_hfNoisyHitsFilter.get();
+                // event_info.Flag_BadChargedCandidateFilter;
+                // event_info.Flag_hfNoisyHitsFilter;
             }
 
             if (year == Year::Run2017 || year == Year::Run2018)
             {
                 // clang-format off
                 pass_MET_filters = pass_MET_filters
-                                   && event_info.Flag_goodVertices.get()
-                                   && event_info.Flag_globalSuperTightHalo2016Filter.get()
-                                   && event_info.Flag_HBHENoiseFilter.get()
-                                   && event_info.Flag_HBHENoiseIsoFilter.get()
-                                   && event_info.Flag_EcalDeadCellTriggerPrimitiveFilter.get()
-                                   && event_info.Flag_BadPFMuonFilter.get()
-                                   && event_info.Flag_BadPFMuonDzFilter.get()
-                                   && event_info.Flag_eeBadScFilter.get()
-                                   && event_info.Flag_ecalBadCalibFilter.get();
+                                   && event_info.Flag_goodVertices
+                                   && event_info.Flag_globalSuperTightHalo2016Filter
+                                   && event_info.Flag_HBHENoiseFilter
+                                   && event_info.Flag_HBHENoiseIsoFilter
+                                   && event_info.Flag_EcalDeadCellTriggerPrimitiveFilter
+                                   && event_info.Flag_BadPFMuonFilter
+                                   && event_info.Flag_BadPFMuonDzFilter
+                                   && event_info.Flag_eeBadScFilter
+                                   && event_info.Flag_ecalBadCalibFilter;
                 // clang-format on
-                // event_info.Flag_hfNoisyHitsFilter.get();
-                // event_info.Flag_BadChargedCandidateFilter.get();
+                // event_info.Flag_hfNoisyHitsFilter;
+                // event_info.Flag_BadChargedCandidateFilter;
             }
 
             if (pass_MET_filters)
@@ -382,9 +382,8 @@ class EventData
             case Year::Run2016:
                 break;
             case Year::Run2017:
-                trigger_bits.set("SingleMuonLowPt", event_info.HLT_IsoMu27.get())
-                    .set("SingleMuonHighPt",
-                         event_info.HLT_Mu50.get() || event_info.HLT_TkMu100.get() || event_info.HLT_OldMu100.get())
+                trigger_bits.set("SingleMuonLowPt", event_info.HLT_IsoMu27)
+                    .set("SingleMuonHighPt", event_info.HLT_Mu50 || event_info.HLT_TkMu100 || event_info.HLT_OldMu100)
                     .set("SingleElectron", false)
                     .set("DoubleMuon", false)
                     .set("DoubleElectron", false)
@@ -439,7 +438,7 @@ class EventData
         if (*this)
         {
             // fmt::print("\nDEBUG - trigger_filter: {}\n", trigger_bits.as_string());
-            // fmt::print("\nDEBUG - muon pt: {}\n", muons.pt.get());
+            // fmt::print("\nDEBUG - muon pt: {}\n", muons.pt);
             if (trigger_bits.any())
             {
                 outputs.fill_cutflow_histo("TriggerCut", outputs.get_event_weight());
@@ -456,59 +455,59 @@ class EventData
     auto get_low_pt_muons_selection_mask() -> RVec<int>
     {
 
-        // fmt::print("Eta: {}\n", muons.eta.get());
-        // fmt::print("Eta mask: {}\n", VecOps::abs(muons.eta.get()) <= 2.4);
-        // fmt::print("Eta mask from Config: {}\n", VecOps::abs(muons.eta.get()) <= ObjConfig::Muons[year].MaxAbsEta);
-        return (muons.pt.get() >= ObjConfig::Muons[year].MinLowPt)                   //
-               && (muons.pt.get() < ObjConfig::Muons[year].MaxLowPt)                 //
-               && (VecOps::abs(muons.eta.get()) <= ObjConfig::Muons[year].MaxAbsEta) //
-               && (muons.tightId.get())                                              //
-               && (muons.pfRelIso03_all.get() < ObjConfig::Muons[year].PFRelIso_WP);
+        // fmt::print("Eta: {}\n", muons.eta);
+        // fmt::print("Eta mask: {}\n", VecOps::abs(muons.eta) <= 2.4);
+        // fmt::print("Eta mask from Config: {}\n", VecOps::abs(muons.eta) <= ObjConfig::Muons[year].MaxAbsEta);
+        return (muons.pt >= ObjConfig::Muons[year].MinLowPt)                   //
+               && (muons.pt < ObjConfig::Muons[year].MaxLowPt)                 //
+               && (VecOps::abs(muons.eta) <= ObjConfig::Muons[year].MaxAbsEta) //
+               && (muons.tightId)                                              //
+               && (muons.pfRelIso03_all < ObjConfig::Muons[year].PFRelIso_WP);
     }
 
     // High pT muon filter
     auto get_high_pt_muons_selection_mask() -> RVec<int>
     {
-        return (muons.pt.get() >= ObjConfig::Muons[year].MaxLowPt)                   //
-               && (VecOps::abs(muons.eta.get()) <= ObjConfig::Muons[year].MaxAbsEta) //
-               && (muons.highPtId.get() >= 1)                                        //
-               && (muons.tkRelIso.get() < ObjConfig::Muons[year].TkRelIso_WP);
+        return (muons.pt >= ObjConfig::Muons[year].MaxLowPt)                   //
+               && (VecOps::abs(muons.eta) <= ObjConfig::Muons[year].MaxAbsEta) //
+               && (muons.highPtId >= 1)                                        //
+               && (muons.tkRelIso < ObjConfig::Muons[year].TkRelIso_WP);
     }
 
     // Electrons
     auto get_electrons_selection_mask() -> RVec<int>
     {
-        return electrons.pt.get() >= ObjConfig::Electrons[year].PreSelPt;
+        return electrons.pt >= ObjConfig::Electrons[year].PreSelPt;
     }
 
     // Photons
     auto get_photons_selection_mask() -> RVec<int>
     {
-        return photons.pt.get() >= ObjConfig::Photons[year].PreSelPt;
+        return photons.pt >= ObjConfig::Photons[year].PreSelPt;
     }
 
     // Taus
     auto get_taus_selection_mask() -> RVec<int>
     {
-        return taus.pt.get() >= ObjConfig::Taus[year].PreSelPt;
+        return taus.pt >= ObjConfig::Taus[year].PreSelPt;
     }
 
     // BJets
     auto get_bjets_selection_mask() -> RVec<int>
     {
-        return bjets.pt.get() >= ObjConfig::BJets[year].PreSelPt;
+        return bjets.pt >= ObjConfig::BJets[year].PreSelPt;
     }
 
     // Jets
     auto get_jets_selection_mask() -> RVec<int>
     {
-        return jets.pt.get() >= ObjConfig::Jets[year].PreSelPt;
+        return jets.pt >= ObjConfig::Jets[year].PreSelPt;
     }
 
     // MET
     auto get_met_selection_mask() -> RVec<int>
     {
-        return met.pt.get() >= ObjConfig::MET[year].PreSelPt;
+        return met.pt >= ObjConfig::MET[year].PreSelPt;
     }
 
     EventData &object_selection()
@@ -551,12 +550,10 @@ class EventData
             )
             {
                 outputs.fill_cutflow_histo("AtLeastOneSelectedObject", outputs.get_event_weight());
-                fmt::print("--> trigger filter bits: {}\n", trgobjs.filterBits.get());
-                fmt::print("--> Muon_pt: {}\n", muons.pt.get());
                 return *this;
             }
             set_null();
-            fmt::print("\nDEBUG - DID NOT PASS has_selected_objects_filter FILTER");
+            // fmt::print("\nDEBUG - DID NOT PASS has_selected_objects_filter FILTER");
             return *this;
         }
         return *this;
@@ -565,17 +562,17 @@ class EventData
     /////////////////////////////////////////////////////////
     /// Not actually being used. Can stay, just in case ...
     ///
-    EventData &dummy()
-    {
-        if (*this)
-        {
-            fmt::print("--> Muon_pt (inside matcher) : {}\n", muons.pt.get());
-            fmt::print("--> Electron_pt (inside matcher) : {}\n", electrons.pt.get());
-            fmt::print("--> trigger filter bits (inside matcher 1): {}\n", trgobjs.filterBits.get());
-            return *this;
-        }
-        return *this;
-    }
+    // EventData &dummy()
+    // {
+    //     if (*this)
+    //     {
+    //         fmt::print("--> Muon_pt (inside matcher) : {}\n", muons.pt);
+    //         fmt::print("--> Electron_pt (inside matcher) : {}\n", electrons.pt);
+    //         fmt::print("--> trigger filter bits (inside matcher 1): {}\n", trgobjs.filterBits);
+    //         return *this;
+    //     }
+    //     return *this;
+    // }
 
     /////////////////////////////////////////////////////////////////////
     /// Will check if the current event has a matched object to a good TrgObj
@@ -585,11 +582,11 @@ class EventData
     ///
     EventData &trigger_match_filter(Outputs &outputs, std::map<std::string_view, Corrector> &trigger_sf_correctors)
     {
-        fmt::print("--> Jet_eta (inside matcher 1): {}\n", jets.eta.get());
-        fmt::print("--> trigger filter bits (inside matcher 1): {}\n", trgobjs.filterBits.get());
+        // fmt::print("--> Jet_eta (inside matcher 1): {}\n", jets.eta);
+        // fmt::print("--> trigger filter bits (inside matcher 1): {}\n", trgobjs.filterBits);
         if (*this)
         {
-            fmt::print("--> trigger filter bits (inside matcher 2): {}\n", trgobjs.filterBits.get());
+            // fmt::print("--> trigger filter bits (inside matcher 2): {}\n", trgobjs.filterBits);
             // define matchers for each trigger
             std::map<std::string_view, std::function<bool()>> matchers;
             matchers["SingleMuonLowPt"] = [&]() {
@@ -599,34 +596,34 @@ class EventData
                 // fmt::print("HLT Path: {}\n", "SingleMuonLowPt");
                 /////////////////////////////////////////////////////
 
-                auto trgobj_mask = (                                                                //
-                    (trgobjs.id.get() == PDG::Muon::Id) &&                                          //
-                    (Trigger::check_trigger_bit(trgobjs.filterBits.get(), "SingleMuonLowPt", year)) //
+                auto trgobj_mask = (                                                          //
+                    (trgobjs.id == PDG::Muon::Id) &&                                          //
+                    (Trigger::check_trigger_bit(trgobjs.filterBits, "SingleMuonLowPt", year)) //
                 );
 
-                // fmt::print("Id: {}\n", trgobjs.id.get());
-                // fmt::print("Id mask: {}\n", (trgobjs.id.get() == PDG::Muon::Id));
-                // fmt::print("Bit : {}\n", trgobjs.filterBits.get());
+                // fmt::print("Id: {}\n", trgobjs.id);
+                // fmt::print("Id mask: {}\n", (trgobjs.id == PDG::Muon::Id));
+                // fmt::print("Bit : {}\n", trgobjs.filterBits);
                 // fmt::print("Bit mask: {}\n",
-                //            Trigger::check_trigger_bit(trgobjs.filterBits.get(), "SingleMuonLowPt", year));
+                //            Trigger::check_trigger_bit(trgobjs.filterBits, "SingleMuonLowPt", year));
                 // fmt::print("---------\n");
-                // fmt::print("Trigger Eta: {}\n", trgobjs.eta.get()[trgobj_mask]);
-                // fmt::print("Obj Eta: {}\n", muons.eta.get()[good_low_pt_muons_mask]);
-                // fmt::print("Trigger Phi: {}\n", trgobjs.phi.get()[trgobj_mask]);
-                // fmt::print("Obj Phi: {}\n", muons.phi.get()[good_low_pt_muons_mask]);
+                // fmt::print("Trigger Eta: {}\n", trgobjs.eta[trgobj_mask]);
+                // fmt::print("Obj Eta: {}\n", muons.eta[good_low_pt_muons_mask]);
+                // fmt::print("Trigger Phi: {}\n", trgobjs.phi[trgobj_mask]);
+                // fmt::print("Obj Phi: {}\n", muons.phi[good_low_pt_muons_mask]);
                 // fmt::print("---------\n");
                 // fmt::print("MASK: {}\n", good_low_pt_muons_mask);
-                // fmt::print("RAW Obj pt: {}\n", muons.pt.get());
-                // fmt::print("RAW Obj eta: {}\n", muons.eta.get());
-                // fmt::print("RAW Obj Phi: {}\n", muons.phi.get());
+                // fmt::print("RAW Obj pt: {}\n", muons.pt);
+                // fmt::print("RAW Obj eta: {}\n", muons.eta);
+                // fmt::print("RAW Obj Phi: {}\n", muons.phi);
 
                 const auto [_has_trigger_match, _matched_nano_object_pt, _matched_nano_object_eta] =
-                    Trigger::trigger_matcher(trgobjs.pt.get()[trgobj_mask],           //
-                                             trgobjs.eta.get()[trgobj_mask],          //
-                                             trgobjs.phi.get()[trgobj_mask],          //
-                                             muons.pt.get()[good_low_pt_muons_mask],  //
-                                             muons.eta.get()[good_low_pt_muons_mask], //
-                                             muons.phi.get()[good_low_pt_muons_mask], //
+                    Trigger::trigger_matcher(trgobjs.pt[trgobj_mask],           //
+                                             trgobjs.eta[trgobj_mask],          //
+                                             trgobjs.phi[trgobj_mask],          //
+                                             muons.pt[good_low_pt_muons_mask],  //
+                                             muons.eta[good_low_pt_muons_mask], //
+                                             muons.phi[good_low_pt_muons_mask], //
                                              ObjConfig::Muons[year].MaxDeltaRTriggerMatch);
 
                 // will run if a trigger is found and matched
@@ -656,34 +653,34 @@ class EventData
                 // fmt::print("HLT Path: {}\n", "SingleMuonHighPt");
                 ///////////////////////////////////////////////////
 
-                auto trgobj_mask = (                                                                 //
-                    (trgobjs.id.get() == PDG::Muon::Id) &&                                           //
-                    (Trigger::check_trigger_bit(trgobjs.filterBits.get(), "SingleMuonHighPt", year)) //
+                auto trgobj_mask = (                                                           //
+                    (trgobjs.id == PDG::Muon::Id) &&                                           //
+                    (Trigger::check_trigger_bit(trgobjs.filterBits, "SingleMuonHighPt", year)) //
                 );
 
-                // fmt::print("Id: {}\n", trgobjs.id.get());
-                // fmt::print("Id mask: {}\n", (trgobjs.id.get() == PDG::Muon::Id));
-                // fmt::print("Bit : {}\n", trgobjs.filterBits.get());
+                // fmt::print("Id: {}\n", trgobjs.id);
+                // fmt::print("Id mask: {}\n", (trgobjs.id == PDG::Muon::Id));
+                // fmt::print("Bit : {}\n", trgobjs.filterBits);
                 // fmt::print("Bit mask: {}\n",
-                //            Trigger::check_trigger_bit(trgobjs.filterBits.get(), "SingleMuonHighPt", year));
+                //            Trigger::check_trigger_bit(trgobjs.filterBits, "SingleMuonHighPt", year));
                 // fmt::print("---------\n");
-                // fmt::print("Trigger Eta: {}\n", trgobjs.eta.get()[trgobj_mask]);
-                // fmt::print("Obj Eta: {}\n", muons.eta.get()[good_high_pt_muons_mask]);
-                // fmt::print("Trigger Phi: {}\n", trgobjs.phi.get()[trgobj_mask]);
-                // fmt::print("Obj Phi: {}\n", muons.phi.get()[good_high_pt_muons_mask]);
+                // fmt::print("Trigger Eta: {}\n", trgobjs.eta[trgobj_mask]);
+                // fmt::print("Obj Eta: {}\n", muons.eta[good_high_pt_muons_mask]);
+                // fmt::print("Trigger Phi: {}\n", trgobjs.phi[trgobj_mask]);
+                // fmt::print("Obj Phi: {}\n", muons.phi[good_high_pt_muons_mask]);
                 // fmt::print("---------\n");
                 // fmt::print("MASK: {}\n", good_high_pt_muons_mask);
-                // fmt::print("RAW Obj pt: {}\n", muons.pt.get());
-                // fmt::print("RAW Obj eta: {}\n", muons.eta.get());
-                // fmt::print("RAW Obj Phi: {}\n", muons.phi.get());
+                // fmt::print("RAW Obj pt: {}\n", muons.pt);
+                // fmt::print("RAW Obj eta: {}\n", muons.eta);
+                // fmt::print("RAW Obj Phi: {}\n", muons.phi);
 
                 const auto [_has_trigger_match, _matched_nano_object_pt, _matched_nano_object_eta] =
-                    Trigger::trigger_matcher(trgobjs.pt.get()[trgobj_mask],            //
-                                             trgobjs.eta.get()[trgobj_mask],           //
-                                             trgobjs.phi.get()[trgobj_mask],           //
-                                             muons.pt.get()[good_high_pt_muons_mask],  //
-                                             muons.eta.get()[good_high_pt_muons_mask], //
-                                             muons.phi.get()[good_high_pt_muons_mask], //
+                    Trigger::trigger_matcher(trgobjs.pt[trgobj_mask],            //
+                                             trgobjs.eta[trgobj_mask],           //
+                                             trgobjs.phi[trgobj_mask],           //
+                                             muons.pt[good_high_pt_muons_mask],  //
+                                             muons.eta[good_high_pt_muons_mask], //
+                                             muons.phi[good_high_pt_muons_mask], //
                                              ObjConfig::Muons[year].MaxDeltaRTriggerMatch);
 
                 // will run if a trigger is found and matched
@@ -804,39 +801,39 @@ class EventData
     {
         if (*this)
         {
-            outputs.run = event_info.run.get();
-            outputs.lumi_section = event_info.lumi.get();
-            outputs.event_number = event_info.event.get();
+            outputs.run = event_info.run;
+            outputs.lumi_section = event_info.lumi;
+            outputs.event_number = event_info.event;
             outputs.trigger_bits = trigger_bits.as_ulong();
 
             outputs.fill_branches(
                 // muons
-                muons.pt.get()[good_muons_mask],  //
-                muons.eta.get()[good_muons_mask], //
-                muons.phi.get()[good_muons_mask], //
+                muons.pt[good_muons_mask],  //
+                muons.eta[good_muons_mask], //
+                muons.phi[good_muons_mask], //
                 // electrons
-                electrons.pt.get()[good_electrons_mask],  //
-                electrons.eta.get()[good_electrons_mask], //
-                electrons.phi.get()[good_electrons_mask], //
+                electrons.pt[good_electrons_mask],  //
+                electrons.eta[good_electrons_mask], //
+                electrons.phi[good_electrons_mask], //
                 // photons
-                photons.pt.get()[good_photons_mask],  //
-                photons.eta.get()[good_photons_mask], //
-                photons.phi.get()[good_photons_mask], //
+                photons.pt[good_photons_mask],  //
+                photons.eta[good_photons_mask], //
+                photons.phi[good_photons_mask], //
                 // taus
-                taus.pt.get()[good_taus_mask],  //
-                taus.eta.get()[good_taus_mask], //
-                taus.phi.get()[good_taus_mask], //
+                taus.pt[good_taus_mask],  //
+                taus.eta[good_taus_mask], //
+                taus.phi[good_taus_mask], //
                 // bjets
-                bjets.pt.get()[good_bjets_mask],  //
-                bjets.eta.get()[good_bjets_mask], //
-                bjets.phi.get()[good_bjets_mask], //
+                bjets.pt[good_bjets_mask],  //
+                bjets.eta[good_bjets_mask], //
+                bjets.phi[good_bjets_mask], //
                 // jets
-                jets.pt.get()[good_jets_mask],  //
-                jets.eta.get()[good_jets_mask], //
-                jets.phi.get()[good_jets_mask], //
+                jets.pt[good_jets_mask],  //
+                jets.eta[good_jets_mask], //
+                jets.phi[good_jets_mask], //
                 // met
-                met.pt.get()[good_met_mask], //
-                met.phi.get()[good_met_mask]);
+                met.pt[good_met_mask], //
+                met.phi[good_met_mask]);
 
             return *this;
         }
