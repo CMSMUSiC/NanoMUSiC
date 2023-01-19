@@ -1,4 +1,5 @@
 #include "NanoMUSiC.hpp"
+#include "RtypesCore.h"
 #include "TTreeReader.h"
 #include "TTreeReaderValue.h"
 #include <string_view>
@@ -123,44 +124,6 @@ int main(int argc, char *argv[])
                                        : "nano_music_" + configuration.process + "_" + configuration.year_str + ".root";
     Outputs outputs(output_file_name);
 
-    // define columns to be processed
-    std::vector<std::string> columns = {
-        // event info
-        "run", "luminosityBlock", "event", "Pileup_nTrueInt", "genWeight", "PV_npvsGood", "Flag_goodVertices",
-        "Flag_globalSuperTightHalo2016Filter", "Flag_HBHENoiseFilter", "Flag_HBHENoiseIsoFilter",
-        "Flag_EcalDeadCellTriggerPrimitiveFilter", "Flag_BadPFMuonFilter", "Flag_BadPFMuonDzFilter",
-        "Flag_eeBadScFilter", "Flag_ecalBadCalibFilter", "HLT_IsoMu27", "HLT_Mu50", "HLT_TkMu100", "HLT_OldMu100",
-
-        // muons
-        "Muon_pt", "Muon_eta", "Muon_phi", "Muon_tightId", "Muon_highPtId", "Muon_pfRelIso03_all", "Muon_tkRelIso",
-
-        // electrons
-        "Electron_pt", "Electron_eta", "Electron_phi",
-
-        // photons
-        "Photon_pt", "Photon_eta", "Photon_phi",
-
-        // taus
-        "Tau_pt", "Tau_eta", "Tau_phi",
-
-        // jets
-        "Jet_pt", "Jet_eta", "Jet_phi",
-
-        // met
-        "MET_pt", "MET_phi",
-
-        // trigger_objs
-        "TrigObj_pt", "TrigObj_eta", "TrigObj_phi", "TrigObj_id", "TrigObj_filterBits"
-
-    };
-
-    // clear columns for Data processing
-    if (configuration.is_data)
-    {
-        columns.erase(std::remove(columns.begin(), columns.end(), "genWeight"), columns.end());
-        columns.erase(std::remove(columns.begin(), columns.end(), "Pileup_nTrueInt"), columns.end());
-    }
-
     // create file chain and tree reader
     auto chain = TChain("Events");
     for (auto &&file : configuration.input_files)
@@ -207,6 +170,9 @@ int main(int argc, char *argv[])
     ADD_ARRAY_READER(Electron_pt, float);
     ADD_ARRAY_READER(Electron_eta, float);
     ADD_ARRAY_READER(Electron_phi, float);
+    ADD_ARRAY_READER(Electron_cutBased, int);
+    ADD_ARRAY_READER(Electron_cutBased_HEEP, bool);
+    ADD_ARRAY_READER(Electron_deltaEtaSC, float);
 
     // photons
     ADD_ARRAY_READER(Photon_pt, float);
@@ -285,7 +251,9 @@ int main(int argc, char *argv[])
                                               unwrap(Muon_highPtId), unwrap(Muon_pfRelIso03_all),
                                               unwrap(Muon_tkRelIso)))
                 // electrons
-                .set_electrons(NanoObjects::Electrons(unwrap(Electron_pt), unwrap(Electron_eta), unwrap(Electron_phi)))
+                .set_electrons(NanoObjects::Electrons(unwrap(Electron_pt), unwrap(Electron_eta), unwrap(Electron_phi),
+                                                      unwrap(Electron_cutBased), unwrap(Electron_cutBased_HEEP),
+                                                      unwrap(Electron_deltaEtaSC)))
                 // photons
                 .set_photons(NanoObjects::Photons(unwrap(Photon_pt), unwrap(Photon_eta), unwrap(Photon_phi)))
                 // taus

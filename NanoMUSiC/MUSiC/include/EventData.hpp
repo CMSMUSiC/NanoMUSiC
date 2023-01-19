@@ -34,6 +34,8 @@ class EventData
 
     NanoObjects::Electrons electrons;
     RVec<int> good_electrons_mask;
+    RVec<int> good_low_pt_electrons_mask;
+    RVec<int> good_high_pt_electrons_mask;
 
     NanoObjects::Photons photons;
     RVec<int> good_photons_mask;
@@ -97,6 +99,8 @@ class EventData
         {
             electrons = _electrons;
             good_electrons_mask = mask;
+            good_low_pt_electrons_mask = mask;
+            good_high_pt_electrons_mask = mask;
             return *this;
         }
         return *this;
@@ -474,10 +478,25 @@ class EventData
                && (muons.tkRelIso < ObjConfig::Muons[year].TkRelIso_WP);
     }
 
-    // Electrons
-    auto get_electrons_selection_mask() -> RVec<int>
+    // Low pT Electrons
+    auto get_low_pt_electrons_selection_mask() -> RVec<int>
     {
-        return electrons.pt >= ObjConfig::Electrons[year].PreSelPt;
+        return ((electrons.pt >= ObjConfig::Electrons[year].MinLowPt) &&
+                (electrons.pt < ObjConfig::Electrons[year].MaxLowPt)) //
+               && ((VecOps::abs(electrons.eta + electrons.deltaEtaSC) <= 1.442) ||
+                   ((VecOps::abs(electrons.eta + electrons.deltaEtaSC) >= 1.566) &&
+                    (VecOps::abs(electrons.eta + electrons.deltaEtaSC) <= 2.5))) //
+               && (electrons.cutBased >= 4);
+    }
+
+    // High pT Electrons
+    auto get_high_pt_electrons_selection_mask() -> RVec<int>
+    {
+        return (electrons.pt >= ObjConfig::Electrons[year].MaxLowPt) //
+               && ((VecOps::abs(electrons.eta + electrons.deltaEtaSC) <= 1.442) ||
+                   ((VecOps::abs(electrons.eta + electrons.deltaEtaSC) >= 1.566) &&
+                    (VecOps::abs(electrons.eta + electrons.deltaEtaSC) <= 2.5))) //
+               && (electrons.cutBased_HEEP);
     }
 
     // Photons
@@ -519,7 +538,8 @@ class EventData
             good_high_pt_muons_mask = get_high_pt_muons_selection_mask();
             good_muons_mask = good_low_pt_muons_mask || good_high_pt_muons_mask;
 
-            good_electrons_mask = get_electrons_selection_mask();
+            good_low_pt_electrons_mask = get_low_pt_electrons_selection_mask();
+            good_high_pt_electrons_mask = get_high_pt_electrons_selection_mask();
 
             good_photons_mask = get_photons_selection_mask();
 

@@ -57,7 +57,7 @@ enum Year
     kTotalYears, // <-- should always be the last one!!
 };
 
-auto get_runyear(const std::string &year_str) -> Year
+inline auto get_runyear(const std::string &year_str) -> Year
 {
     // check year
     if (year_str != "2016APV" && year_str != "2016" && year_str != "2017" && year_str != "2018")
@@ -108,18 +108,14 @@ constexpr std::array<MuonConfig, Year::kTotalYears> Muons = {Muon2016APV, Muon20
 // Electrons
 struct ElectronConfig
 {
-    float PreSelPt = 20;
     float MinLowPt = 25;
-    float MaxLowPt = 120;
-    float MaxAbsEta = 2.4;
-    float MaxDeltaRTriggerMatch = 0.1;
-    float TkRelIso_WP = 0.10; // smaller than this
-    float PFRelIso_WP = 0.15; // smaller than this
+    float MaxLowPt = 100;
+    float MaxAbsEta = 2.5;
 };
 
 constexpr auto Electron2016APV = ElectronConfig{};
 constexpr auto Electron2016 = ElectronConfig{};
-constexpr auto Electron2017 = ElectronConfig{.MinLowPt = 28.};
+constexpr auto Electron2017 = ElectronConfig{};
 constexpr auto Electron2018 = ElectronConfig{};
 constexpr std::array<ElectronConfig, Year::kTotalYears> Electrons = {Electron2016APV, Electron2016, Electron2017,
                                                                      Electron2018};

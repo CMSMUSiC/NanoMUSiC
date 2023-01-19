@@ -82,9 +82,15 @@ struct Electrons
     RVec<float> pt;
     RVec<float> eta;
     RVec<float> phi;
+    RVec<int> cutBased;
+    RVec<bool> cutBased_HEEP;
+    RVec<float> deltaEtaSC;
 
-    Electrons(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {})
-        : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi)
+    Electrons(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {},
+              const RVec<int> &_cutBased = {}, const RVec<bool> &_cutBased_HEEP = {},
+              const RVec<float> &_deltaEtaSC = {})
+        : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi), cutBased(_cutBased), cutBased_HEEP(_cutBased_HEEP),
+          deltaEtaSC(_deltaEtaSC)
     {
     }
 };
