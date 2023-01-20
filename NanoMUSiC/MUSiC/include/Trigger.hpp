@@ -18,18 +18,17 @@ using namespace std::literals;
 
 namespace Trigger
 {
-constexpr auto HLTPath = make_enumerate( //
-    "SingleMuonLowPt"sv,                 //
-    "SingleMuonHighPt"sv,                //
-    "SingleElectronLowPt"sv,             //
-    "SingleElectronHighPt"sv,            //
-    "DoubleMuon"sv,                      //
-    "DoubleElectron"sv,                  //
-    "Photon"sv,                          //
-    "Tau"sv,                             //
-    "BJet"sv,                            //
-    "Jet"sv,                             //
-    "MET"sv);
+constexpr auto HLTPath = make_enumerate("SingleMuonLowPt"sv,      //
+                                        "SingleMuonHighPt"sv,     //
+                                        "SingleElectronLowPt"sv,  //
+                                        "SingleElectronHighPt"sv, //
+                                        "DoubleMuon"sv,           //
+                                        "DoubleElectron"sv,       //
+                                        "Photon"sv,               //
+                                        "Tau"sv,                  //
+                                        "BJet"sv,                 //
+                                        "Jet"sv,                  //
+                                        "MET"sv);
 constexpr auto kTotalPaths = HLTPath.size();
 
 inline std::string get_year_for_muon_sf(Year year)
@@ -66,7 +65,6 @@ std::pair<RVec<float>, RVec<float>> get_matches(const T1 &trigger_objects_pt,  /
         // DeltaR
         matches_distances.at(idx) =
             VecOps::Min(VecOps::sqrt(VecOps::pow((trigger_objects_eta - nano_objects_eta[idx]), 2.) +
-
                                      +VecOps::pow(VecOps::DeltaPhi(trigger_objects_phi, nano_objects_phi[idx]), 2.)));
 
         // Relative pT diff
@@ -129,6 +127,7 @@ inline RVec<int> check_bit(const RVec<int> &trigger_bits, const int &bit)
 }
 
 ///////////////////////////////////////////////////////////
+// Ref: https://hlt-config-editor-dev-confdbv3.app.cern.ch/
 /// Check the `trigger_bit` of a given TrigObj for Single Muon - Low pT
 // Run2017 configurations
 // hltL3crIsoL1sMu22Or25L1f0L2f10QL3f27QL3trkIsoFiltered0p07 -> HLT_IsoMu27 - bit: 8
@@ -154,6 +153,7 @@ inline RVec<int> SingleMuonLowPtBits(const RVec<int> &triggerobj_bit, const Year
 
 ///////////////////////////////////////////////////////////
 /// Check the `trigger_bit` of a given TrigObj for Single Muon - High pT
+// Ref: https://hlt-config-editor-dev-confdbv3.app.cern.ch/
 // Run2017 configurations
 // hltL3fL1sMu22Or25L1f0L2f10QL3Filtered50Q -> HLT_Mu50 - bit: 1024
 // hltL3fL1sMu22Or25L1f0L2f10QL3Filtered100Q -> HLT_OldMu100 - bit: 2048
@@ -177,6 +177,23 @@ inline RVec<int> SingleMuonHighPtBits(const RVec<int> &triggerobj_bit, const Yea
     }
 };
 
+//////////////////////////////////////////////////////////////////////
+/// Seems to be the same for all three years
+// Ref: https://hlt-config-editor-dev-confdbv3.app.cern.ch/
+/// 1 = CaloIdL_TrackIdL_IsoVL
+/// 2 = 1e (WPTight)
+/// 4 = 1e (WPLoose)
+/// 8 = OverlapFilter PFTau
+/// 16 = 2e
+/// 32 = 1e-1mu
+/// 64 = 1e-1tau
+/// 128 = 3e
+/// 256 = 2e-1mu
+/// 512 = 1e-2mu
+/// 1024 = 1e (32_L1DoubleEG_AND_L1SingleEGOr)
+/// 2048 = 1e (CaloIdVT_GsfTrkIdT)
+/// 4096 = 1e (PFJet)
+/// 8192 = 1e (Photon175_OR_Photon200) for Electron (PixelMatched e/gamma)
 inline RVec<int> SingleElectronLowPtBits(const RVec<int> &triggerobj_bit, const Year &year)
 {
     switch (year)
@@ -195,24 +212,59 @@ inline RVec<int> SingleElectronLowPtBits(const RVec<int> &triggerobj_bit, const 
     }
 };
 
+//////////////////////////////////////////////////////////////////////
+/// Seems to be the same for all three years
+// Ref: https://hlt-config-editor-dev-confdbv3.app.cern.ch/
+/// 1 = CaloIdL_TrackIdL_IsoVL
+/// 2 = 1e (WPTight)
+/// 4 = 1e (WPLoose)
+/// 8 = OverlapFilter PFTau
+/// 16 = 2e
+/// 32 = 1e-1mu
+/// 64 = 1e-1tau
+/// 128 = 3e
+/// 256 = 2e-1mu
+/// 512 = 1e-2mu
+/// 1024 = 1e (32_L1DoubleEG_AND_L1SingleEGOr)
+/// 2048 = 1e (CaloIdVT_GsfTrkIdT)
+/// 4096 = 1e (PFJet)
+/// 8192 = 1e (Photon175_OR_Photon200) for Electron (PixelMatched e/gamma)
 inline RVec<int> SingleElectronHighPtBits(const RVec<int> &triggerobj_bit, const Year &year)
 {
     switch (year)
     {
     case Year::Run2016APV:
-        return (check_bit(triggerobj_bit, 2) || check_bit(triggerobj_bit, 8192) || check_bit(triggerobj_bit, 1));
+        return (check_bit(triggerobj_bit, 2) || check_bit(triggerobj_bit, 8192) || check_bit(triggerobj_bit, 2048));
     case Year::Run2016:
-        return (check_bit(triggerobj_bit, 2) || check_bit(triggerobj_bit, 8192) || check_bit(triggerobj_bit, 1));
+        return (check_bit(triggerobj_bit, 2) || check_bit(triggerobj_bit, 8192) || check_bit(triggerobj_bit, 2048));
     case Year::Run2017:
-        return (check_bit(triggerobj_bit, 2) || check_bit(triggerobj_bit, 8192) || check_bit(triggerobj_bit, 1));
+        return (check_bit(triggerobj_bit, 2) || check_bit(triggerobj_bit, 8192) || check_bit(triggerobj_bit, 2048));
     case Year::Run2018:
-        return (check_bit(triggerobj_bit, 2) || check_bit(triggerobj_bit, 8192) || check_bit(triggerobj_bit, 1));
+        return (check_bit(triggerobj_bit, 2) || check_bit(triggerobj_bit, 8192) || check_bit(triggerobj_bit, 2048));
     default:
         throw std::runtime_error(
             fmt::format("Year ({}) not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).\n", year));
     }
 };
 
+//////////////////////////////////////////////////////////////////////
+/// Seems to be the same for all three years.
+/// NOTE: So far, we do not trigger solo on photons.
+// Ref: https://hlt-config-editor-dev-confdbv3.app.cern.ch/
+/// 1 = CaloIdL_TrackIdL_IsoVL
+/// 2 = 1e (WPTight)
+/// 4 = 1e (WPLoose)
+/// 8 = OverlapFilter PFTau
+/// 16 = 2e
+/// 32 = 1e-1mu
+/// 64 = 1e-1tau
+/// 128 = 3e
+/// 256 = 2e-1mu
+/// 512 = 1e-2mu
+/// 1024 = 1e (32_L1DoubleEG_AND_L1SingleEGOr)
+/// 2048 = 1e (CaloIdVT_GsfTrkIdT)
+/// 4096 = 1e (PFJet)
+/// 8192 = 1e (Photon175_OR_Photon200) for Electron (PixelMatched e/gamma)
 inline RVec<int> PhotonBits(const RVec<int> &triggerobj_bit, const Year &year)
 {
     switch (year)
@@ -230,6 +282,7 @@ inline RVec<int> PhotonBits(const RVec<int> &triggerobj_bit, const Year &year)
             fmt::format("Year ({}) not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).\n", year));
     }
 };
+
 ////////////////////////////////////////////////////////////////////////
 /// Check the `trigger_bit` of a given TrigObj, `path` and `year`.
 ///
@@ -255,7 +308,6 @@ inline RVec<int> check_trigger_bit(const RVec<int> &triggerobj_bit, const std::s
     {
         return PhotonBits(triggerobj_bit, year);
     }
-
     else
     {
         throw std::runtime_error(
@@ -267,7 +319,6 @@ inline RVec<int> check_trigger_bit(const RVec<int> &triggerobj_bit, const std::s
 
 struct TriggerBits
 {
-
     std::bitset<Trigger::kTotalPaths> trigger_bits;
 
     TriggerBits &set(unsigned int path, bool value)

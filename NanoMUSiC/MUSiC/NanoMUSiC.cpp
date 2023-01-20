@@ -169,7 +169,6 @@ int main(int argc, char *argv[])
     ADD_VALUE_READER(HLT_Photon200, bool);
     ADD_VALUE_READER(HLT_Photon175, bool);
     ADD_VALUE_READER(HLT_Ele115_CaloIdVT_GsfTrkIdT, bool);
-    ;
 
     // muons
     ADD_ARRAY_READER(Muon_pt, float);

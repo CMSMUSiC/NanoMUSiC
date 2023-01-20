@@ -1,6 +1,7 @@
 #ifndef MUSIC_EVENT_DATA
 #define MUSIC_EVENT_DATA
 
+#include <algorithm>
 #include <exception>
 #include <functional>
 
@@ -59,10 +60,9 @@ class EventData
 
     bool is_data = true;
     Year year = Year::kTotalYears;
-    std::string_view trigger_stream;
 
     EventData(const bool &_is_data, const Year &_year, const std::string &_trigger_stream)
-        : is_null(false), is_data(_is_data), year(_year), trigger_stream(_trigger_stream)
+        : is_null(false), is_data(_is_data), year(_year)
     {
     }
 
@@ -448,31 +448,6 @@ class EventData
                                          ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
             }
 
-            ////////////////////////////////////////////////////////////////////////////
-            // remove filter possible trigger duplicates, based on the trigger stream
-
-            // those hana maps are complicated to work with.
-            //  one can not simply ask for a key at runtime (e.g. my_map["foo"])
-            // the solution is to loop over all keys and whether taht is the key that you are looking for
-            bool found_hana_key = false;
-            boost::hana::for_each(TriggerConfig::TriggerStreamRedList, [&](const auto &stream) {
-                if (HANA_FIRST_TO_SV(stream) == trigger_stream)
-                {
-                    found_hana_key = true;
-                    boost::hana::for_each(                                           //
-                        boost::hana::second(stream), [&](const auto &trigger_path) { //
-                            trigger_bits.set(trigger_path, false);                   //
-                        });
-                }
-            });
-
-            // just a sanitiy check ...
-            if (not found_hana_key)
-            {
-                throw std::runtime_error(
-                    fmt::format("[ ERROR ] The requested Trigger Stream ({}) could not be found.", trigger_stream));
-            }
-
             return *this;
         }
         return *this;
@@ -487,6 +462,7 @@ class EventData
         {
             // fmt::print("\nDEBUG - trigger_filter: {}\n", trigger_bits.as_string());
             // fmt::print("\nDEBUG - muon pt: {}\n", muons.pt);
+
             if (trigger_bits.any())
             {
                 outputs.fill_cutflow_histo("TriggerCut", outputs.get_event_weight());
@@ -646,11 +622,8 @@ class EventData
     ///
     EventData &trigger_match_filter(Outputs &outputs, std::map<std::string_view, Corrector> &trigger_sf_correctors)
     {
-        // fmt::print("--> Jet_eta (inside matcher 1): {}\n", jets.eta);
-        // fmt::print("--> trigger filter bits (inside matcher 1): {}\n", trgobjs.filterBits);
         if (*this)
         {
-            // fmt::print("--> trigger filter bits (inside matcher 2): {}\n", trgobjs.filterBits);
             // define matchers for each trigger
             std::map<std::string_view, std::function<bool()>> matchers;
             matchers["SingleMuonLowPt"] = [&]() {
