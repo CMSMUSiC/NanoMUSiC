@@ -32,6 +32,7 @@
 #include "Math/VectorUtil.h"
 #include "ROOT/RDataFrame.hxx"
 #include "ROOT/RVec.hxx"
+#include "RtypesCore.h"
 #include "TChain.h"
 #include "TFile.h"
 #include "TH1.h"
@@ -39,6 +40,7 @@
 #include "TTreeReader.h"
 #include "TTreeReaderArray.h"
 #include "TTreeReaderValue.h"
+
 // toml++ v3.1.0
 // https://github.com/marzer/tomlplusplus
 #include "toml.hpp"

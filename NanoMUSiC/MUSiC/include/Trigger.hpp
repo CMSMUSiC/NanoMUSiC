@@ -21,7 +21,8 @@ namespace Trigger
 constexpr auto HLTPath = make_enumerate( //
     "SingleMuonLowPt"sv,                 //
     "SingleMuonHighPt"sv,                //
-    "SingleElectron"sv,                  //
+    "SingleElectronLowPt"sv,             //
+    "SingleElectronHighPt"sv,            //
     "DoubleMuon"sv,                      //
     "DoubleElectron"sv,                  //
     "Photon"sv,                          //
@@ -31,7 +32,7 @@ constexpr auto HLTPath = make_enumerate( //
     "MET"sv);
 constexpr auto kTotalPaths = HLTPath.size();
 
-std::string get_year_for_muon_sf(Year year)
+inline std::string get_year_for_muon_sf(Year year)
 {
     switch (year)
     {
@@ -121,7 +122,7 @@ constexpr std::tuple<bool, float, float> trigger_matcher(const T1 &trigger_objec
     return std::make_tuple(has_trigger_match, matched_nanoobject_pt, matched_nanoobject_eta);
 }
 
-RVec<int> check_bit(const RVec<int> &trigger_bits, const int &bit)
+inline RVec<int> check_bit(const RVec<int> &trigger_bits, const int &bit)
 {
     // fmt::print("trigger bits: {} - bit: {}\n", trigger_bits, bit);
     return (trigger_bits & bit) / bit;
@@ -133,18 +134,18 @@ RVec<int> check_bit(const RVec<int> &trigger_bits, const int &bit)
 // hltL3crIsoL1sMu22Or25L1f0L2f10QL3f27QL3trkIsoFiltered0p07 -> HLT_IsoMu27 - bit: 8
 // hltL3crIsoL1sSingleMu22L1f0L2f10QL3f24QL3trkIsoFiltered0p07 -> HLT_IsoMu24 - bit: 8
 ///
-RVec<int> SingleMuonLowPtBits(const RVec<int> &triggerobj_bit, const Year &year)
+inline RVec<int> SingleMuonLowPtBits(const RVec<int> &triggerobj_bit, const Year &year)
 {
     switch (year)
     {
     case Year::Run2016APV:
-        return check_bit(triggerobj_bit, 8);
+        return (check_bit(triggerobj_bit, 2) || check_bit(triggerobj_bit, 8));
     case Year::Run2016:
-        return check_bit(triggerobj_bit, 8);
+        return (check_bit(triggerobj_bit, 2) || check_bit(triggerobj_bit, 8));
     case Year::Run2017:
-        return check_bit(triggerobj_bit, 8);
+        return (check_bit(triggerobj_bit, 2) || check_bit(triggerobj_bit, 8));
     case Year::Run2018:
-        return check_bit(triggerobj_bit, 8);
+        return (check_bit(triggerobj_bit, 2) || check_bit(triggerobj_bit, 8));
     default:
         throw std::runtime_error("Year (" + std::to_string(year) +
                                  ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
@@ -158,28 +159,81 @@ RVec<int> SingleMuonLowPtBits(const RVec<int> &triggerobj_bit, const Year &year)
 // hltL3fL1sMu22Or25L1f0L2f10QL3Filtered100Q -> HLT_OldMu100 - bit: 2048
 // hltL3fL1sMu25f0TkFiltered100Q -> HLT_OldMu100 - bit: 2048
 ///
-RVec<int> SingleMuonHighPtBits(const RVec<int> &triggerobj_bit, const Year &year)
+inline RVec<int> SingleMuonHighPtBits(const RVec<int> &triggerobj_bit, const Year &year)
 {
     switch (year)
     {
     case Year::Run2016APV:
-        return (check_bit(triggerobj_bit, 1024) | check_bit(triggerobj_bit, 2048));
+        return (check_bit(triggerobj_bit, 1024) || check_bit(triggerobj_bit, 2048));
     case Year::Run2016:
-        return (check_bit(triggerobj_bit, 1024) | check_bit(triggerobj_bit, 2048));
+        return (check_bit(triggerobj_bit, 1024) || check_bit(triggerobj_bit, 2048));
     case Year::Run2017:
-        return (check_bit(triggerobj_bit, 1024) | check_bit(triggerobj_bit, 2048));
+        return (check_bit(triggerobj_bit, 1024) || check_bit(triggerobj_bit, 2048));
     case Year::Run2018:
-        return (check_bit(triggerobj_bit, 1024) | check_bit(triggerobj_bit, 2048));
+        return (check_bit(triggerobj_bit, 1024) || check_bit(triggerobj_bit, 2048));
     default:
-        throw std::runtime_error("Year (" + std::to_string(year) +
-                                 ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
+        throw std::runtime_error(
+            fmt::format("Year ({}) not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).\n", year));
     }
 };
 
+inline RVec<int> SingleElectronLowPtBits(const RVec<int> &triggerobj_bit, const Year &year)
+{
+    switch (year)
+    {
+    case Year::Run2016APV:
+        return (check_bit(triggerobj_bit, 2) || check_bit(triggerobj_bit, 8192));
+    case Year::Run2016:
+        return (check_bit(triggerobj_bit, 2) || check_bit(triggerobj_bit, 8192));
+    case Year::Run2017:
+        return (check_bit(triggerobj_bit, 2) || check_bit(triggerobj_bit, 8192));
+    case Year::Run2018:
+        return (check_bit(triggerobj_bit, 2) || check_bit(triggerobj_bit, 8192));
+    default:
+        throw std::runtime_error(
+            fmt::format("Year ({}) not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).\n", year));
+    }
+};
+
+inline RVec<int> SingleElectronHighPtBits(const RVec<int> &triggerobj_bit, const Year &year)
+{
+    switch (year)
+    {
+    case Year::Run2016APV:
+        return (check_bit(triggerobj_bit, 2) || check_bit(triggerobj_bit, 8192) || check_bit(triggerobj_bit, 1));
+    case Year::Run2016:
+        return (check_bit(triggerobj_bit, 2) || check_bit(triggerobj_bit, 8192) || check_bit(triggerobj_bit, 1));
+    case Year::Run2017:
+        return (check_bit(triggerobj_bit, 2) || check_bit(triggerobj_bit, 8192) || check_bit(triggerobj_bit, 1));
+    case Year::Run2018:
+        return (check_bit(triggerobj_bit, 2) || check_bit(triggerobj_bit, 8192) || check_bit(triggerobj_bit, 1));
+    default:
+        throw std::runtime_error(
+            fmt::format("Year ({}) not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).\n", year));
+    }
+};
+
+inline RVec<int> PhotonBits(const RVec<int> &triggerobj_bit, const Year &year)
+{
+    switch (year)
+    {
+    case Year::Run2016APV:
+        return check_bit(triggerobj_bit, 8192);
+    case Year::Run2016:
+        return check_bit(triggerobj_bit, 8192);
+    case Year::Run2017:
+        return check_bit(triggerobj_bit, 8192);
+    case Year::Run2018:
+        return check_bit(triggerobj_bit, 8192);
+    default:
+        throw std::runtime_error(
+            fmt::format("Year ({}) not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).\n", year));
+    }
+};
 ////////////////////////////////////////////////////////////////////////
 /// Check the `trigger_bit` of a given TrigObj, `path` and `year`.
 ///
-RVec<int> check_trigger_bit(const RVec<int> &triggerobj_bit, const std::string_view &path, const Year &year)
+inline RVec<int> check_trigger_bit(const RVec<int> &triggerobj_bit, const std::string_view &path, const Year &year)
 {
     if (path == std::string_view("SingleMuonLowPt"))
     {
@@ -189,10 +243,23 @@ RVec<int> check_trigger_bit(const RVec<int> &triggerobj_bit, const std::string_v
     {
         return SingleMuonHighPtBits(triggerobj_bit, year);
     }
+    else if (path == std::string_view("SingleElectronLowPt"))
+    {
+        return SingleElectronLowPtBits(triggerobj_bit, year);
+    }
+    else if (path == std::string_view("SingleElectronHighPt"))
+    {
+        return SingleElectronHighPtBits(triggerobj_bit, year);
+    }
+    else if (path == std::string_view("Photon"))
+    {
+        return PhotonBits(triggerobj_bit, year);
+    }
+
     else
     {
-        throw std::runtime_error("Year (" + std::to_string(year) +
-                                 ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
+        throw std::runtime_error(
+            fmt::format("\'check_trigger_bit\' is not implemented for the requested trigger path ({}).\n", path));
     }
 }
 

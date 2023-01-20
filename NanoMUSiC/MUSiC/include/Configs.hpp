@@ -111,6 +111,7 @@ struct ElectronConfig
     float MinLowPt = 25;
     float MaxLowPt = 100;
     float MaxAbsEta = 2.5;
+    float MaxDeltaRTriggerMatch = 0.3;
 };
 
 constexpr auto Electron2016APV = ElectronConfig{};
@@ -127,7 +128,7 @@ struct PhotonConfig
     float MinLowPt = 25;
     float MaxLowPt = 120;
     float MaxAbsEta = 2.4;
-    float MaxDeltaRTriggerMatch = 0.1;
+    float MaxDeltaRTriggerMatch = 0.3;
     float TkRelIso_WP = 0.10; // smaller than this
     float PFRelIso_WP = 0.15; // smaller than this
 };
@@ -240,22 +241,26 @@ namespace TriggerConfig
 ///
 constexpr auto TriggerStreamRedList = //
     boost::hana::make_map(
-        ADD_TO_TRIGGER_RED_LIST("MC"_s),                                                                      //
-        ADD_TO_TRIGGER_RED_LIST("SingleMuon"_s),                                                              //
-        ADD_TO_TRIGGER_RED_LIST("SingleElectron"_s, "SingleMuonLowPt"sv, "SingleMuonHighPt"sv),               //
-        ADD_TO_TRIGGER_RED_LIST("DoubleMuon"_s, "SingleMuonLowPt"sv, "SingleMuonHighPt"sv, "SingleElectron"), //
-        ADD_TO_TRIGGER_RED_LIST("DoubleEG"_s, "SingleMuonLowPt"sv, "SingleMuonHighPt"sv, "SingleElectron"sv,
-                                "DoubleMuon"), //
-        ADD_TO_TRIGGER_RED_LIST("SinglePhoton"_s, "SingleMuonLowPt"sv, "SingleMuonHighPt"sv, "SingleElectron"sv,
-                                "DoubleMuon"sv, "DoubleElectron"), //
-        ADD_TO_TRIGGER_RED_LIST("Tau"_s, "SingleMuonLowPt"sv, "SingleMuonHighPt"sv, "SingleElectron"sv, "DoubleMuon"sv,
-                                "DoubleElectron"sv, "Photon"), //
-        ADD_TO_TRIGGER_RED_LIST("BTagCSV"_s, "SingleMuonLowPt"sv, "SingleMuonHighPt"sv, "SingleElectron"sv,
-                                "DoubleMuon"sv, "DoubleElectron"sv, "Photon"sv, "Tau"), //
-        ADD_TO_TRIGGER_RED_LIST("JetHT"_s, "SingleMuonLowPt"sv, "SingleMuonHighPt"sv, "SingleElectron"sv,
-                                "DoubleMuon"sv, "DoubleElectron"sv, "Photon"sv, "Tau"sv, "BJet"), //
-        ADD_TO_TRIGGER_RED_LIST("MET"_s, "SingleMuonLowPt"sv, "SingleMuonHighPt"sv, "SingleElectron"sv, "DoubleMuon"sv,
-                                "DoubleElectron"sv, "Photon"sv, "Tau"sv, "BJet"sv, "Jet"sv) //
+        ADD_TO_TRIGGER_RED_LIST("MC"_s),                                                        //
+        ADD_TO_TRIGGER_RED_LIST("SingleMuon"_s),                                                //
+        ADD_TO_TRIGGER_RED_LIST("SingleElectron"_s, "SingleMuonLowPt"sv, "SingleMuonHighPt"sv), //
+        ADD_TO_TRIGGER_RED_LIST("DoubleMuon"_s, "SingleMuonLowPt"sv, "SingleMuonHighPt"sv, "SingleElectronLowPt"sv,
+                                "SingleElectronHighPt"sv), //
+        ADD_TO_TRIGGER_RED_LIST("DoubleEG"_s, "SingleMuonLowPt"sv, "SingleMuonHighPt"sv, "SingleElectronLowPt"sv,
+                                "SingleElectronHighPt"sv,
+                                "DoubleMuon"sv), //
+        ADD_TO_TRIGGER_RED_LIST("SinglePhoton"_s, "SingleMuonLowPt"sv, "SingleMuonHighPt"sv, "SingleElectronLowPt"sv,
+                                "SingleElectronHighPt"sv, "DoubleMuon"sv, "DoubleElectron"sv), //
+        ADD_TO_TRIGGER_RED_LIST("Tau"_s, "SingleMuonLowPt"sv, "SingleMuonHighPt"sv, "SingleElectronLowPt"sv,
+                                "SingleElectronHighPt"sv, "DoubleMuon"sv, "DoubleElectron"sv, "Photon"sv), //
+        ADD_TO_TRIGGER_RED_LIST("BTagCSV"_s, "SingleMuonLowPt"sv, "SingleMuonHighPt"sv, "SingleElectronLowPt"sv,
+                                "SingleElectronHighPt"sv, "DoubleMuon"sv, "DoubleElectron"sv, "Photon"sv, "Tau"sv), //
+        ADD_TO_TRIGGER_RED_LIST("JetHT"_s, "SingleMuonLowPt"sv, "SingleMuonHighPt"sv, "SingleElectronLowPt"sv,
+                                "SingleElectronHighPt"sv, "DoubleMuon"sv, "DoubleElectron"sv, "Photon"sv, "Tau"sv,
+                                "BJet"sv), //
+        ADD_TO_TRIGGER_RED_LIST("MET"_s, "SingleMuonLowPt"sv, "SingleMuonHighPt"sv, "SingleElectronLowPt"sv,
+                                "SingleElectronHighPt"sv, "DoubleMuon"sv, "DoubleElectron"sv, "Photon"sv, "Tau"sv,
+                                "BJet"sv, "Jet"sv) //
     );
 
 // get data_stream from process

@@ -32,9 +32,18 @@ struct EventInfo
     bool Flag_eeBadScFilter;
     bool Flag_ecalBadCalibFilter;
     bool HLT_IsoMu27;
+    bool HLT_IsoMu24;
+    bool HLT_IsoTkMu24;
     bool HLT_Mu50;
+    bool HLT_TkMu50;
     bool HLT_TkMu100;
     bool HLT_OldMu100;
+    bool HLT_Ele27_WPTight_Gsf;
+    bool HLT_Ele35_WPTight_Gsf;
+    bool HLT_Ele32_WPTight_Gsf;
+    bool HLT_Photon200;
+    bool HLT_Photon175;
+    bool HLT_Ele115_CaloIdVT_GsfTrkIdT;
 
     EventInfo(const UInt_t &_run = 0, const UInt_t &_lumi = 0, const ULong64_t &_event = 0,
               const float &_Pileup_nTrueInt = 0, const float &_genWeight = 1., const int &_PV_npvsGood = 0,
@@ -43,7 +52,11 @@ struct EventInfo
               const bool &_Flag_EcalDeadCellTriggerPrimitiveFilter = false, const bool &_Flag_BadPFMuonFilter = false,
               const bool &_Flag_BadPFMuonDzFilter = false, const bool &_Flag_eeBadScFilter = false,
               const bool &_Flag_ecalBadCalibFilter = false, const bool &_HLT_IsoMu27 = false,
-              const bool &_HLT_Mu50 = false, const bool &_HLT_TkMu100 = false, const bool &_HLT_OldMu100 = false)
+              const bool &_HLT_IsoMu24 = false, const bool &_HLT_IsoTkMu24 = false, const bool &_HLT_Mu50 = false,
+              const bool &_HLT_TkMu50 = false, const bool &_HLT_TkMu100 = false, const bool &_HLT_OldMu100 = false,
+              const bool &_HLT_Ele27_WPTight_Gsf = false, const bool &_HLT_Ele35_WPTight_Gsf = false,
+              const bool &_HLT_Ele32_WPTight_Gsf = false, const bool &_HLT_Photon200 = false,
+              const bool &_HLT_Photon175 = false, const bool &_HLT_Ele115_CaloIdVT_GsfTrkIdT = false)
         : run(_run), lumi(_lumi), event(_event), Pileup_nTrueInt(_Pileup_nTrueInt), genWeight(_genWeight),
           PV_npvsGood(_PV_npvsGood), Flag_goodVertices(_Flag_goodVertices),
           Flag_globalSuperTightHalo2016Filter(_Flag_globalSuperTightHalo2016Filter),
@@ -51,7 +64,11 @@ struct EventInfo
           Flag_EcalDeadCellTriggerPrimitiveFilter(_Flag_EcalDeadCellTriggerPrimitiveFilter),
           Flag_BadPFMuonFilter(_Flag_BadPFMuonFilter), Flag_BadPFMuonDzFilter(_Flag_BadPFMuonDzFilter),
           Flag_eeBadScFilter(_Flag_eeBadScFilter), Flag_ecalBadCalibFilter(_Flag_ecalBadCalibFilter),
-          HLT_IsoMu27(_HLT_IsoMu27), HLT_Mu50(_HLT_Mu50), HLT_TkMu100(_HLT_TkMu100), HLT_OldMu100(_HLT_OldMu100)
+          HLT_IsoMu27(_HLT_IsoMu27), HLT_IsoMu24(_HLT_IsoMu24), HLT_IsoTkMu24(_HLT_IsoTkMu24), HLT_Mu50(_HLT_Mu50),
+          HLT_TkMu50(_HLT_TkMu50), HLT_TkMu100(_HLT_TkMu100), HLT_OldMu100(_HLT_OldMu100),
+          HLT_Ele27_WPTight_Gsf(_HLT_Ele27_WPTight_Gsf), HLT_Ele35_WPTight_Gsf(_HLT_Ele35_WPTight_Gsf),
+          HLT_Ele32_WPTight_Gsf(_HLT_Ele32_WPTight_Gsf), HLT_Photon200(_HLT_Photon200), HLT_Photon175(_HLT_Photon175),
+          HLT_Ele115_CaloIdVT_GsfTrkIdT(_HLT_Ele115_CaloIdVT_GsfTrkIdT)
     {
     }
 };

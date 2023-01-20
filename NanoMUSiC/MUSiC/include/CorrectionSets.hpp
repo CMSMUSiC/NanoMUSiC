@@ -26,6 +26,9 @@ enum class CorrectionTypes
 {
     TriggerSFMuonLowPt,
     TriggerSFMuonHighPt,
+    TriggerSFElectronLowPt,
+    TriggerSFElectronHighPt,
+    Photon,
     PU,
     MuonLowPt,
 };
@@ -103,7 +106,6 @@ class Corrector
     Corrector(const CorrectionTypes _correction_type, const Year _year, bool _is_data)
         : correction_type(_correction_type), year(_year), is_data(_is_data)
     {
-
         switch (_correction_type)
         {
         case CorrectionTypes::MuonLowPt: {
@@ -111,13 +113,25 @@ class Corrector
             correction_ref = RoccoR(input_file);
             break;
         }
-        default:
-            if (!is_data)
-            {
-                auto [json_file, key] = correction_keys.at({correction_type, year});
-                correction_ref = correction::CorrectionSet::from_file(json_file)->at(key);
-            }
+        case CorrectionTypes::TriggerSFElectronLowPt: {
+            break;
         }
+        case CorrectionTypes::TriggerSFElectronHighPt: {
+            break;
+        }
+        case CorrectionTypes::Photon: {
+            break;
+        }
+        default:
+            auto [json_file, key] = correction_keys.at({correction_type, year});
+            correction_ref = correction::CorrectionSet::from_file(json_file)->at(key);
+        }
+    }
+
+    // dummy
+    double operator()()
+    {
+        return 1.;
     }
 
     // correctionlib
