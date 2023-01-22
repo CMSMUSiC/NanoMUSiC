@@ -79,39 +79,13 @@ int main(int argc, char *argv[])
     auto run_lumi_filter = RunLumiFilter(configuration.golden_json_file);
 
     std::cout << colors.def << "[ Initializing ] PU corrections ..." << colors.def << std::endl;
-    auto pu_weight = Corrector(CorrectionTypes::PU, configuration.year, configuration.is_data);
-
-    std::cout << colors.def << "[ Initializing ] Trigger SF corrections ..." << colors.def << std::endl;
-
-    std::map<std::string_view, Corrector> trigger_sf_correctors = //
-        {
-            {"SingleMuonLowPt",
-             Corrector(CorrectionTypes::TriggerSFMuonLowPt, configuration.year, configuration.is_data)},
-            {"SingleMuonHighPt",
-             Corrector(CorrectionTypes::TriggerSFMuonHighPt, configuration.year, configuration.is_data)},
-            {"SingleElectronLowPt",
-             Corrector(CorrectionTypes::TriggerSFElectronHighPt, configuration.year, configuration.is_data)},
-            {"SingleElectronHighPt",
-             Corrector(CorrectionTypes::TriggerSFElectronHighPt, configuration.year, configuration.is_data)},
-            {"Photon", Corrector(CorrectionTypes::Photon, configuration.year, configuration.is_data)},
-        };
-
-    // sanity checks ...
-    // the keys of the map above should match the defined HLP paths
-    for (auto &&correction : trigger_sf_correctors)
-    {
-        const auto [name, corr] = correction;
-        auto it = std::find(Trigger::HLTPath.cbegin(), Trigger::HLTPath.cend(), name);
-        if (it == Trigger::HLTPath.cend())
-        {
-            throw std::runtime_error(
-                fmt::format("The Trigger SF name ({}) is not present in the array of defined HLT paths ({}).\n", name,
-                            Trigger::HLTPath));
-        }
-    }
+    auto pu_weight = Corrector("PU"sv, configuration.year, configuration.is_data);
 
     std::cout << colors.def << "[ Initializing ] Rochester Muon Momentum Corrections ..." << colors.def << std::endl;
-    auto rochester_corrections = Corrector(CorrectionTypes::MuonLowPt, configuration.year, configuration.is_data);
+    auto rochester_corrections = Corrector("MuonLowPt"sv, configuration.year, configuration.is_data);
+
+    std::cout << colors.def << "[ Initializing ] Trigger matchers ..." << colors.def << std::endl;
+    std::map<std::string_view, TrgObjMatcher> matchers = make_trgobj_matcher(configuration.year, configuration.is_data);
 
     // read cross-sections files
     std::cout << colors.def << "[ Initializing ] X-Sections ..." << colors.def << std::endl;
@@ -238,7 +212,7 @@ int main(int argc, char *argv[])
 
         // build event data
         auto event_data =
-            EventData(configuration.is_data, configuration.year, configuration.trigger_stream)
+            EventData(configuration.is_data, configuration.year)
                 // event info
                 .set_event_info(NanoObjects::EventInfo(unwrap(run),                                     //
                                                        unwrap(lumi),                                    //
@@ -299,7 +273,7 @@ int main(int argc, char *argv[])
                          .trigger_filter(outputs)
                          .object_selection()
                          .has_selected_objects_filter(outputs)
-                         .trigger_match_filter(outputs, trigger_sf_correctors)
+                         .trigger_match_filter(outputs, matchers)
                          .set_scale_factors(outputs)
                          .muon_corrections()
                          .electron_corrections()

@@ -79,8 +79,8 @@ namespace ObjConfig
 //  REF: https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonUL2017
 struct MuonConfig
 {
-    float MinLowPt = 26.;
-    float MaxLowPt = 120.;
+    float MinLowPt = 25.;
+    float MaxLowPt = 200.;
     float MaxAbsEta = 2.4;
     float MaxDeltaRTriggerMatch = 0.1;
     float TkRelIso_WP = 0.10; // smaller than this
@@ -89,7 +89,7 @@ struct MuonConfig
 
 constexpr auto Muon2016APV = MuonConfig{};
 constexpr auto Muon2016 = MuonConfig{};
-constexpr auto Muon2017 = MuonConfig{.MinLowPt = 29.};
+constexpr auto Muon2017 = MuonConfig{};
 constexpr auto Muon2018 = MuonConfig{};
 constexpr std::array<MuonConfig, Year::kTotalYears> Muons = {Muon2016APV, Muon2016, Muon2017, Muon2018};
 

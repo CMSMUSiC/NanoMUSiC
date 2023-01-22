@@ -7,6 +7,7 @@
 
 #include <fmt/core.h>
 #include <stdexcept>
+#include <string_view>
 
 #include "Configs.hpp"
 #include "NanoObjects.hpp"
@@ -61,8 +62,7 @@ class EventData
     bool is_data = true;
     Year year = Year::kTotalYears;
 
-    EventData(const bool &_is_data, const Year &_year, const std::string &_trigger_stream)
-        : is_null(false), is_data(_is_data), year(_year)
+    EventData(const bool &_is_data, const Year &_year) : is_null(false), is_data(_is_data), year(_year)
     {
     }
 
@@ -462,7 +462,6 @@ class EventData
         {
             // fmt::print("\nDEBUG - trigger_filter: {}\n", trigger_bits.as_string());
             // fmt::print("\nDEBUG - muon pt: {}\n", muons.pt);
-
             if (trigger_bits.any())
             {
                 outputs.fill_cutflow_histo("TriggerCut", outputs.get_event_weight());
@@ -560,6 +559,7 @@ class EventData
 
             good_low_pt_electrons_mask = get_low_pt_electrons_selection_mask();
             good_high_pt_electrons_mask = get_high_pt_electrons_selection_mask();
+            good_electrons_mask = good_low_pt_electrons_mask || good_high_pt_electrons_mask;
 
             good_photons_mask = get_photons_selection_mask();
 
@@ -620,232 +620,14 @@ class EventData
     // this filter also get the trigger scale factor,
     // otherwise we would have to look over the objects twice
     ///
-    EventData &trigger_match_filter(Outputs &outputs, std::map<std::string_view, Corrector> &trigger_sf_correctors)
+    EventData &trigger_match_filter(Outputs &outputs, const std::map<std::string_view, TrgObjMatcher> &matchers)
     {
         if (*this)
         {
-            // define matchers for each trigger
-            std::map<std::string_view, std::function<bool()>> matchers;
-            matchers["SingleMuonLowPt"] = [&]() {
-                //////////////////////////////////////////
-                // DEBUG
-                // fmt::print("----------------------------- DEBUG ----------------------\n");
-                // fmt::print("HLT Path: {}\n", "SingleMuonLowPt");
-                /////////////////////////////////////////////////////
-
-                auto trgobj_mask = (                                                          //
-                    (trgobjs.id == PDG::Muon::Id) &&                                          //
-                    (Trigger::check_trigger_bit(trgobjs.filterBits, "SingleMuonLowPt", year)) //
-                );
-
-                // fmt::print("Id: {}\n", trgobjs.id);
-                // fmt::print("Id mask: {}\n", (trgobjs.id == PDG::Muon::Id));
-                // fmt::print("Bit : {}\n", trgobjs.filterBits);
-                // fmt::print("Bit mask: {}\n",
-                //            Trigger::check_trigger_bit(trgobjs.filterBits, "SingleMuonLowPt", year));
-                // fmt::print("---------\n");
-                // fmt::print("Trigger Eta: {}\n", trgobjs.eta[trgobj_mask]);
-                // fmt::print("Obj Eta: {}\n", muons.eta[good_low_pt_muons_mask]);
-                // fmt::print("Trigger Phi: {}\n", trgobjs.phi[trgobj_mask]);
-                // fmt::print("Obj Phi: {}\n", muons.phi[good_low_pt_muons_mask]);
-                // fmt::print("---------\n");
-                // fmt::print("MASK: {}\n", good_low_pt_muons_mask);
-                // fmt::print("RAW Obj pt: {}\n", muons.pt);
-                // fmt::print("RAW Obj eta: {}\n", muons.eta);
-                // fmt::print("RAW Obj Phi: {}\n", muons.phi);
-
-                const auto [_has_trigger_match, _matched_nano_object_pt, _matched_nano_object_eta] =
-                    Trigger::trigger_matcher(trgobjs.pt[trgobj_mask],           //
-                                             trgobjs.eta[trgobj_mask],          //
-                                             trgobjs.phi[trgobj_mask],          //
-                                             muons.pt[good_low_pt_muons_mask],  //
-                                             muons.eta[good_low_pt_muons_mask], //
-                                             muons.phi[good_low_pt_muons_mask], //
-                                             ObjConfig::Muons[year].MaxDeltaRTriggerMatch);
-
-                // will run if a trigger is found and matched
-                if (_has_trigger_match)
-                {
-                    trigger_sf_nominal = //
-                        trigger_sf_correctors.at("SingleMuonLowPt")({Trigger::get_year_for_muon_sf(year),
-                                                                     fabs(_matched_nano_object_eta),
-                                                                     _matched_nano_object_pt, "sf"});
-                    trigger_sf_up = //
-                        trigger_sf_correctors.at("SingleMuonLowPt")({Trigger::get_year_for_muon_sf(year),
-                                                                     fabs(_matched_nano_object_eta),
-                                                                     _matched_nano_object_pt, "systup"});
-                    trigger_sf_down = //
-                        trigger_sf_correctors.at("SingleMuonLowPt")({Trigger::get_year_for_muon_sf(year),
-                                                                     fabs(_matched_nano_object_eta),
-                                                                     _matched_nano_object_pt, "systdown"});
-
-                    // fmt::print("SF: {} - {} - {}\n", trigger_sf_nominal, trigger_sf_up, trigger_sf_down);
-                }
-                return _has_trigger_match;
-            };
-            matchers["SingleMuonHighPt"] = [&]() {
-                ////////////////////////////////////////
-                // DEBUG
-                // fmt::print("----------------------------- DEBUG ----------------------\n");
-                // fmt::print("HLT Path: {}\n", "SingleMuonHighPt");
-                ///////////////////////////////////////////////////
-
-                auto trgobj_mask = (                                                           //
-                    (trgobjs.id == PDG::Muon::Id) &&                                           //
-                    (Trigger::check_trigger_bit(trgobjs.filterBits, "SingleMuonHighPt", year)) //
-                );
-
-                // fmt::print("Id: {}\n", trgobjs.id);
-                // fmt::print("Id mask: {}\n", (trgobjs.id == PDG::Muon::Id));
-                // fmt::print("Bit : {}\n", trgobjs.filterBits);
-                // fmt::print("Bit mask: {}\n",
-                //            Trigger::check_trigger_bit(trgobjs.filterBits, "SingleMuonHighPt", year));
-                // fmt::print("---------\n");
-                // fmt::print("Trigger Eta: {}\n", trgobjs.eta[trgobj_mask]);
-                // fmt::print("Obj Eta: {}\n", muons.eta[good_high_pt_muons_mask]);
-                // fmt::print("Trigger Phi: {}\n", trgobjs.phi[trgobj_mask]);
-                // fmt::print("Obj Phi: {}\n", muons.phi[good_high_pt_muons_mask]);
-                // fmt::print("---------\n");
-                // fmt::print("MASK: {}\n", good_high_pt_muons_mask);
-                // fmt::print("RAW Obj pt: {}\n", muons.pt);
-                // fmt::print("RAW Obj eta: {}\n", muons.eta);
-                // fmt::print("RAW Obj Phi: {}\n", muons.phi);
-
-                const auto [_has_trigger_match, _matched_nano_object_pt, _matched_nano_object_eta] =
-                    Trigger::trigger_matcher(trgobjs.pt[trgobj_mask],            //
-                                             trgobjs.eta[trgobj_mask],           //
-                                             trgobjs.phi[trgobj_mask],           //
-                                             muons.pt[good_high_pt_muons_mask],  //
-                                             muons.eta[good_high_pt_muons_mask], //
-                                             muons.phi[good_high_pt_muons_mask], //
-                                             ObjConfig::Muons[year].MaxDeltaRTriggerMatch);
-
-                // will run if a trigger is found and matched
-                if (_has_trigger_match)
-                {
-                    trigger_sf_nominal = //
-                        trigger_sf_correctors.at("SingleMuonHighPt")({Trigger::get_year_for_muon_sf(year),
-                                                                      fabs(_matched_nano_object_eta),
-                                                                      _matched_nano_object_pt, "sf"});
-                    trigger_sf_up = //
-                        trigger_sf_correctors.at("SingleMuonHighPt")({Trigger::get_year_for_muon_sf(year),
-                                                                      fabs(_matched_nano_object_eta),
-                                                                      _matched_nano_object_pt, "systup"});
-                    trigger_sf_down = //
-                        trigger_sf_correctors.at("SingleMuonHighPt")({Trigger::get_year_for_muon_sf(year),
-                                                                      fabs(_matched_nano_object_eta),
-                                                                      _matched_nano_object_pt, "systdown"});
-
-                    // fmt::print("SF: {} - {} - {}\n", trigger_sf_nominal, trigger_sf_up, trigger_sf_down);
-                }
-                return _has_trigger_match;
-            };
-            matchers["SingleElectronLowPt"] = [&]() {
-                ////////////////////////////////////////
-                // DEBUG
-                // fmt::print("----------------------------- DEBUG ----------------------\n");
-                // fmt::print("HLT Path: {}\n", "SingleElectronLowPt");
-                ///////////////////////////////////////////////////
-                auto trgobj_mask = (                                                              //
-                    (trgobjs.id == PDG::Electron::Id) &&                                          //
-                    (Trigger::check_trigger_bit(trgobjs.filterBits, "SingleElectronLowPt", year)) //
-                );
-
-                const auto [_has_trigger_match, _matched_nano_object_pt, _matched_nano_object_eta] =
-                    Trigger::trigger_matcher(trgobjs.pt[trgobj_mask],                   //
-                                             trgobjs.eta[trgobj_mask],                  //
-                                             trgobjs.phi[trgobj_mask],                  //
-                                             electrons.pt[good_low_pt_electrons_mask],  //
-                                             electrons.eta[good_low_pt_electrons_mask], //
-                                             electrons.phi[good_low_pt_electrons_mask], //
-                                             ObjConfig::Electrons[year].MaxDeltaRTriggerMatch);
-
-                // will run if a trigger is found and matched
-                if (_has_trigger_match)
-                {
-                    trigger_sf_nominal = //
-                        trigger_sf_correctors.at("SingleElectronLowPt")();
-                    trigger_sf_up = //
-                        trigger_sf_correctors.at("SingleElectronLowPt")();
-                    trigger_sf_down = //
-                        trigger_sf_correctors.at("SingleElectronLowPt")();
-                    // fmt::print("SF: {} - {} - {}\n", trigger_sf_nominal, trigger_sf_up, trigger_sf_down);
-                }
-                return _has_trigger_match;
-            };
-            matchers["SingleElectronHighPt"] = [&]() {
-                ////////////////////////////////////////
-                // DEBUG
-                // fmt::print("----------------------------- DEBUG ----------------------\n");
-                // fmt::print("HLT Path: {}\n", "SingleElectronHighPt");
-                ///////////////////////////////////////////////////
-                auto trgobj_mask = (                                                               //
-                    (trgobjs.id == PDG::Electron::Id) &&                                           //
-                    (Trigger::check_trigger_bit(trgobjs.filterBits, "SingleElectronHighPt", year)) //
-                );
-
-                const auto [_has_trigger_match, _matched_nano_object_pt, _matched_nano_object_eta] =
-                    Trigger::trigger_matcher(trgobjs.pt[trgobj_mask],                    //
-                                             trgobjs.eta[trgobj_mask],                   //
-                                             trgobjs.phi[trgobj_mask],                   //
-                                             electrons.pt[good_high_pt_electrons_mask],  //
-                                             electrons.eta[good_high_pt_electrons_mask], //
-                                             electrons.phi[good_high_pt_electrons_mask], //
-                                             ObjConfig::Electrons[year].MaxDeltaRTriggerMatch);
-
-                // will run if a trigger is found and matched
-                if (_has_trigger_match)
-                {
-                    trigger_sf_nominal = //
-                        trigger_sf_correctors.at("SingleElectronHighPt")();
-                    trigger_sf_up = //
-                        trigger_sf_correctors.at("SingleElectronHighPt")();
-                    trigger_sf_down = //
-                        trigger_sf_correctors.at("SingleElectronHighPt")();
-                    // fmt::print("SF: {} - {} - {}\n", trigger_sf_nominal, trigger_sf_up, trigger_sf_down);
-                }
-                return _has_trigger_match;
-            };
-            matchers["Photon"] = [&]() {
-                ////////////////////////////////////////
-                // DEBUG
-                // fmt::print("----------------------------- DEBUG ----------------------\n");
-                // fmt::print("HLT Path: {}\n", "Photon");
-                ///////////////////////////////////////////////////
-                auto trgobj_mask = (
-                    // looks strange, but the use of the electron ID is intentional //
-                    (trgobjs.id == PDG::Electron::Id) &&                             //
-                    (Trigger::check_trigger_bit(trgobjs.filterBits, "Photon", year)) //
-                );
-
-                const auto [_has_trigger_match, _matched_nano_object_pt, _matched_nano_object_eta] =
-                    Trigger::trigger_matcher(trgobjs.pt[trgobj_mask],        //
-                                             trgobjs.eta[trgobj_mask],       //
-                                             trgobjs.phi[trgobj_mask],       //
-                                             photons.pt[good_photons_mask],  //
-                                             photons.eta[good_photons_mask], //
-                                             photons.phi[good_photons_mask], //
-                                             ObjConfig::Photons[year].MaxDeltaRTriggerMatch);
-
-                // will run if a trigger is found and matched
-                if (_has_trigger_match)
-                {
-                    trigger_sf_nominal = //
-                        trigger_sf_correctors.at("Photon")();
-                    trigger_sf_up = //
-                        trigger_sf_correctors.at("Photon")();
-                    trigger_sf_down = //
-                        trigger_sf_correctors.at("Photon")();
-                    // fmt::print("SF: {} - {} - {}\n", trigger_sf_nominal, trigger_sf_up, trigger_sf_down);
-                }
-                return _has_trigger_match;
-            };
-            // FIXME: Include the trigger matching for all other objects.
-
             // given the trigger seed produce a triggerobj mask for that seed
             // test the correspondents objects to that seed
             // if fail, try next seed (bit)
-            for (auto &&hlt_path : Trigger::HLTPath)
+            for (auto &&hlt_path : Trigger::ActivatedHLTPath)
             {
                 if (trigger_bits.pass(hlt_path))
                 {
@@ -854,10 +636,61 @@ class EventData
                         throw std::runtime_error(
                             fmt::format("ERROR: There is no matcher defined for path: {}\n", hlt_path));
                     }
-                    if (matchers.at(hlt_path)())
+                    if (hlt_path.find("SingleMuonLowPt") != std::string_view::npos)
                     {
-                        outputs.fill_cutflow_histo("TriggerMatch", outputs.get_event_weight());
-                        return *this;
+                        const auto [has_trigger_match, _trigger_sf_nominal, _trigger_sf_up, _trigger_sf_down] =
+                            matchers.at(hlt_path)(trgobjs, muons, good_low_pt_muons_mask);
+                        if (has_trigger_match)
+                        {
+                            // set scale factors
+                            trigger_sf_nominal = _trigger_sf_nominal;
+                            trigger_sf_up = _trigger_sf_up;
+                            trigger_sf_down = _trigger_sf_down;
+                            outputs.fill_cutflow_histo("TriggerMatch", outputs.get_event_weight());
+                            return *this;
+                        }
+                    }
+                    if (hlt_path.find("SingleMuonHighPt") != std::string_view::npos)
+                    {
+                        const auto [has_trigger_match, _trigger_sf_nominal, _trigger_sf_up, _trigger_sf_down] =
+                            matchers.at(hlt_path)(trgobjs, muons, good_high_pt_muons_mask);
+                        if (has_trigger_match)
+                        {
+                            // set scale factors
+                            trigger_sf_nominal = _trigger_sf_nominal;
+                            trigger_sf_up = _trigger_sf_up;
+                            trigger_sf_down = _trigger_sf_down;
+                            outputs.fill_cutflow_histo("TriggerMatch", outputs.get_event_weight());
+                            return *this;
+                        }
+                    }
+                    if (hlt_path.find("SingleElectronLowPt") != std::string_view::npos)
+                    {
+                        const auto [has_trigger_match, _trigger_sf_nominal, _trigger_sf_up, _trigger_sf_down] =
+                            matchers.at(hlt_path)(trgobjs, electrons, good_low_pt_electrons_mask);
+                        if (has_trigger_match)
+                        {
+                            // set scale factors
+                            trigger_sf_nominal = _trigger_sf_nominal;
+                            trigger_sf_up = _trigger_sf_up;
+                            trigger_sf_down = _trigger_sf_down;
+                            outputs.fill_cutflow_histo("TriggerMatch", outputs.get_event_weight());
+                            return *this;
+                        }
+                    }
+                    if (hlt_path.find("SingleElectronHighPt") != std::string_view::npos)
+                    {
+                        const auto [has_trigger_match, _trigger_sf_nominal, _trigger_sf_up, _trigger_sf_down] =
+                            matchers.at(hlt_path)(trgobjs, electrons, good_high_pt_electrons_mask);
+                        if (has_trigger_match)
+                        {
+                            // set scale factors
+                            trigger_sf_nominal = _trigger_sf_nominal;
+                            trigger_sf_up = _trigger_sf_up;
+                            trigger_sf_down = _trigger_sf_down;
+                            outputs.fill_cutflow_histo("TriggerMatch", outputs.get_event_weight());
+                            return *this;
+                        }
                     }
                 }
             }
