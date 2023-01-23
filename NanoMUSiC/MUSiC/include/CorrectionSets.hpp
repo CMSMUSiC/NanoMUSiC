@@ -16,6 +16,7 @@
 // Ref: https://twiki.cern.ch/twiki/bin/viewauth/CMS/RochcorMuon
 // Ref: https://gitlab.cern.ch/akhukhun/roccor/-/tree/Run2.v5
 // Implementation example: https://github.com/UFLX2MuMu/Ntupliser/blob/master_2017_94X/DiMuons/src/PtCorrRoch.cc
+#include "TMemFile.h"
 #include "fmt/core.h"
 #include "roccor/RoccoR.h"
 
@@ -23,6 +24,14 @@
 #include "MUSiCTools.hpp"
 
 using namespace std::string_view_literals;
+
+///////////////////////////////////////////////////////
+/// Reads a xxd dump (from xxd) and returns a TMemFile.
+/// xxd -i root_file.root > foo.h
+auto read_xxd_dump(unsigned char arr[], unsigned int _size, const std::string &name = "dummy") -> TMemFile
+{
+    return TMemFile(name.c_str(), static_cast<char *>(static_cast<void *>(arr)), _size);
+}
 
 using CorrectionlibRef_t = correction::Correction::Ref;
 using RochesterCorrection_t = RoccoR;
@@ -111,17 +120,17 @@ class Corrector
     Corrector(const std::string_view &_correction_type, const Year _year, bool _is_data)
         : correction_type(_correction_type), year(_year), is_data(_is_data)
     {
+        // Rochester Correction
         if (_correction_type == "MuonLowPt")
         {
             auto [input_file, _dummy_key] = correction_keys.at({correction_type, year});
             correction_ref = RoccoR(input_file);
         }
-        else if (_correction_type == "SingleElectronLowPt")
+        // dummy corrections
+        else if (_correction_type == "SingleElectronLowPt" or _correction_type == "SingleElectronHighPt")
         {
         }
-        else if (_correction_type == "SingleElectronHighPt")
-        {
-        }
+        // default case is any correction that uses the correctionlib
         else
         {
             auto [json_file, key] = correction_keys.at({correction_type, year});
