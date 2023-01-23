@@ -1,8 +1,4 @@
 #include "NanoMUSiC.hpp"
-#include "RtypesCore.h"
-#include "TTreeReader.h"
-#include "TTreeReaderValue.h"
-#include <string_view>
 
 int main(int argc, char *argv[])
 {
@@ -83,31 +79,13 @@ int main(int argc, char *argv[])
     auto run_lumi_filter = RunLumiFilter(configuration.golden_json_file);
 
     std::cout << colors.def << "[ Initializing ] PU corrections ..." << colors.def << std::endl;
-    auto pu_weight = Corrector(CorrectionTypes::PU, configuration.year, configuration.is_data);
-
-    std::cout << colors.def << "[ Initializing ] Trigger SF corrections ..." << colors.def << std::endl;
-
-    std::map<std::string_view, Corrector> trigger_sf_correctors = //
-        {
-            {"SingleMuonLowPt",
-             Corrector(CorrectionTypes::TriggerSFMuonLowPt, configuration.year, configuration.is_data)},
-            {"SingleMuonHighPt",
-             Corrector(CorrectionTypes::TriggerSFMuonHighPt, configuration.year, configuration.is_data)},
-        };
-    // sanity checks ...
-    // the keys of the map above should match the defined HLP paths
-    for (auto &&correction : trigger_sf_correctors)
-    {
-        const auto [name, corr] = correction;
-        auto it = std::find(Trigger::HLTPath.cbegin(), Trigger::HLTPath.cend(), name);
-        if (it == Trigger::HLTPath.cend())
-            throw std::runtime_error(
-                fmt::format("The Trigger SF name ({}) is not present in the array of defined HLT paths ({}).\n", name,
-                            Trigger::HLTPath));
-    }
+    auto pu_weight = Corrector("PU"sv, configuration.year, configuration.is_data);
 
     std::cout << colors.def << "[ Initializing ] Rochester Muon Momentum Corrections ..." << colors.def << std::endl;
-    auto rochester_corrections = Corrector(CorrectionTypes::MuonLowPt, configuration.year, configuration.is_data);
+    auto rochester_corrections = Corrector("MuonLowPt"sv, configuration.year, configuration.is_data);
+
+    std::cout << colors.def << "[ Initializing ] Trigger matchers ..." << colors.def << std::endl;
+    std::map<std::string_view, TrgObjMatcher> matchers = make_trgobj_matcher(configuration.year, configuration.is_data);
 
     // read cross-sections files
     std::cout << colors.def << "[ Initializing ] X-Sections ..." << colors.def << std::endl;
@@ -153,9 +131,18 @@ int main(int argc, char *argv[])
     ADD_VALUE_READER(Flag_eeBadScFilter, bool);
     ADD_VALUE_READER(Flag_ecalBadCalibFilter, bool);
     ADD_VALUE_READER(HLT_IsoMu27, bool);
+    ADD_VALUE_READER(HLT_IsoMu24, bool);
+    ADD_VALUE_READER(HLT_IsoTkMu24, bool);
     ADD_VALUE_READER(HLT_Mu50, bool);
+    ADD_VALUE_READER(HLT_TkMu50, bool);
     ADD_VALUE_READER(HLT_TkMu100, bool);
     ADD_VALUE_READER(HLT_OldMu100, bool);
+    ADD_VALUE_READER(HLT_Ele27_WPTight_Gsf, bool);
+    ADD_VALUE_READER(HLT_Ele35_WPTight_Gsf, bool);
+    ADD_VALUE_READER(HLT_Ele32_WPTight_Gsf, bool);
+    ADD_VALUE_READER(HLT_Photon200, bool);
+    ADD_VALUE_READER(HLT_Photon175, bool);
+    ADD_VALUE_READER(HLT_Ele115_CaloIdVT_GsfTrkIdT, bool);
 
     // muons
     ADD_ARRAY_READER(Muon_pt, float);
@@ -225,27 +212,36 @@ int main(int argc, char *argv[])
 
         // build event data
         auto event_data =
-            EventData(configuration.is_data, configuration.year, configuration.trigger_stream)
+            EventData(configuration.is_data, configuration.year)
                 // event info
-                .set_event_info(NanoObjects::EventInfo(unwrap(run),                                 //
-                                                       unwrap(lumi),                                //
-                                                       unwrap(event_number),                        //
-                                                       unwrap(Pileup_nTrueInt),                     //
-                                                       unwrap(genWeight),                           //
-                                                       unwrap(PV_npvsGood),                         //
-                                                       unwrap(Flag_goodVertices),                   //
-                                                       unwrap(Flag_globalSuperTightHalo2016Filter), //
-                                                       unwrap(Flag_HBHENoiseFilter),                //
-                                                       unwrap(Flag_HBHENoiseIsoFilter),
+                .set_event_info(NanoObjects::EventInfo(unwrap(run),                                     //
+                                                       unwrap(lumi),                                    //
+                                                       unwrap(event_number),                            //
+                                                       unwrap(Pileup_nTrueInt),                         //
+                                                       unwrap(genWeight),                               //
+                                                       unwrap(PV_npvsGood),                             //
+                                                       unwrap(Flag_goodVertices),                       //
+                                                       unwrap(Flag_globalSuperTightHalo2016Filter),     //
+                                                       unwrap(Flag_HBHENoiseFilter),                    //
+                                                       unwrap(Flag_HBHENoiseIsoFilter),                 //
                                                        unwrap(Flag_EcalDeadCellTriggerPrimitiveFilter), //
                                                        unwrap(Flag_BadPFMuonFilter),                    //
                                                        unwrap(Flag_BadPFMuonDzFilter),                  //
                                                        unwrap(Flag_eeBadScFilter),                      //
-                                                       unwrap(Flag_ecalBadCalibFilter),
-                                                       unwrap(HLT_IsoMu27), //
-                                                       unwrap(HLT_Mu50),    //
-                                                       unwrap(HLT_TkMu100), //
-                                                       unwrap(HLT_OldMu100)))
+                                                       unwrap(Flag_ecalBadCalibFilter),                 //
+                                                       unwrap(HLT_IsoMu27),                             //
+                                                       unwrap(HLT_IsoMu24),                             //
+                                                       unwrap(HLT_IsoTkMu24),                           //
+                                                       unwrap(HLT_Mu50),                                //
+                                                       unwrap(HLT_TkMu50),                              //
+                                                       unwrap(HLT_TkMu100),                             //
+                                                       unwrap(HLT_OldMu100),                            //
+                                                       unwrap(HLT_Ele27_WPTight_Gsf),                   //
+                                                       unwrap(HLT_Ele35_WPTight_Gsf),                   //
+                                                       unwrap(HLT_Ele32_WPTight_Gsf),                   //
+                                                       unwrap(HLT_Photon200),                           //
+                                                       unwrap(HLT_Photon175),                           //
+                                                       unwrap(HLT_Ele115_CaloIdVT_GsfTrkIdT)))
                 // muons
                 .set_muons(NanoObjects::Muons(unwrap(Muon_pt), unwrap(Muon_eta), unwrap(Muon_phi), unwrap(Muon_tightId),
                                               unwrap(Muon_highPtId), unwrap(Muon_pfRelIso03_all),
@@ -277,7 +273,7 @@ int main(int argc, char *argv[])
                          .trigger_filter(outputs)
                          .object_selection()
                          .has_selected_objects_filter(outputs)
-                         .trigger_match_filter(outputs, trigger_sf_correctors)
+                         .trigger_match_filter(outputs, matchers)
                          .set_scale_factors(outputs)
                          .muon_corrections()
                          .electron_corrections()

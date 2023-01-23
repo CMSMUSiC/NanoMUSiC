@@ -32,6 +32,7 @@
 #include "Math/VectorUtil.h"
 #include "ROOT/RDataFrame.hxx"
 #include "ROOT/RVec.hxx"
+#include "RtypesCore.h"
 #include "TChain.h"
 #include "TFile.h"
 #include "TH1.h"
@@ -39,6 +40,7 @@
 #include "TTreeReader.h"
 #include "TTreeReaderArray.h"
 #include "TTreeReaderValue.h"
+
 // toml++ v3.1.0
 // https://github.com/marzer/tomlplusplus
 #include "toml.hpp"
@@ -59,10 +61,6 @@
 // Filters (lumi, gen phase-space, ...)
 #include "RunLumiFilter.hpp"
 
-// Corrections and weighters
-#include "CorrectionSets.hpp"
-// #include "PDFAlphaSWeights.hpp"
-
 // MUSiC
 #include "Configs.hpp"
 #include "NanoObjects.hpp"
@@ -70,7 +68,12 @@
 // #include "ObjectCorrections.hpp"
 #include "Enumerate.hpp"
 #include "EventData.hpp"
+#include "TaskConfiguration.hpp"
 #include "Trigger.hpp"
+
+// Corrections and weighters
+#include "CorrectionSets.hpp"
+// #include "PDFAlphaSWeights.hpp"
 
 using namespace std::chrono_literals;
 // using namespace ranges;
@@ -121,7 +124,7 @@ auto unwrap(std::optional<TTreeReaderArray<T>> &array) -> RVec<T>
     return RVec<T>();
 }
 
-void PrintProcessInfo()
+inline void PrintProcessInfo()
 {
     auto info = ProcInfo_t();
     gSystem->GetProcInfo(&info);
@@ -138,8 +141,8 @@ void PrintProcessInfo()
 
 // (async) TFile download
 using OptionalFuture_t = std::optional<std::future<std::unique_ptr<TFile>>>;
-std::unique_ptr<TFile> file_loader(const std::string &file_path, const bool cacheread, const std::string &cache_dir,
-                                   const bool verbose_load)
+inline std::unique_ptr<TFile> file_loader(const std::string &file_path, const bool cacheread,
+                                          const std::string &cache_dir, const bool verbose_load)
 {
     std::cout << "Loading file [ " << file_path << " ]" << std::endl;
 
@@ -168,7 +171,7 @@ std::unique_ptr<TFile> file_loader(const std::string &file_path, const bool cach
     return input_root_file;
 }
 
-double getCpuTime()
+inline double getCpuTime()
 {
     struct timeval tv;
     gettimeofday(&tv, NULL);
@@ -197,7 +200,8 @@ T get_and_check_future(std::future<T> &_ftr)
         exit(1);
     }
 }
-void prepare_output_buffer(const TaskConfiguration &configuration)
+
+inline void prepare_output_buffer(const TaskConfiguration &configuration)
 {
     const std::string startDir = getcwd(NULL, 0);
 
