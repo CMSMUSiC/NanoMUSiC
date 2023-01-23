@@ -64,7 +64,7 @@ struct xHisto
     auto fill(const float &value, const float &weight = 1.0) -> void
     {
         counts[get_bin(value)] += weight;
-        variances[get_bin(value)] += weight * weight;
+        variances[get_bin(value)] += std::pow(weight, 2);
     }
 
     auto add(const xHisto<N> &other)
@@ -91,7 +91,7 @@ struct xHisto
             // ///// REVIEW!!!!
             // ///// REVIEW!!!!
             // ///// REVIEW!!!!
-            variances[i] *= x * x;
+            variances[i] *= std::pow(x, 2);
             // ///// REVIEW!!!!
             // ///// REVIEW!!!!
             // ///// REVIEW!!!!
