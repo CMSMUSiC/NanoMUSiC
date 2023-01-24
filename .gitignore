@@ -221,3 +221,4 @@ bar.C
 ref_rdataframe_slot.cpp
 foo
 .gitignore
+gdb.txt
