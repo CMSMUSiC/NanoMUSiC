@@ -28,9 +28,16 @@ using namespace std::string_view_literals;
 ///////////////////////////////////////////////////////
 /// Reads a xxd dump (from xxd) and returns a TMemFile.
 /// xxd -i root_file.root > foo.h
-auto read_xxd_dump(unsigned char arr[], unsigned int _size, const std::string &name = "dummy") -> TMemFile
+auto read_xxd_dump(unsigned char arr[], unsigned int _size, const std::string &name = "_") -> TMemFile
 {
-    return TMemFile(name.c_str(), static_cast<char *>(static_cast<void *>(arr)), _size);
+    std::unique_ptr<char[]> buffer(new char());
+
+    for (unsigned int i = 0; i < _size; i++)
+    {
+        buffer[i] = static_cast<char>(arr[i]);
+    }
+
+    return TMemFile(name.c_str(), buffer.get(), _size);
 }
 
 using CorrectionlibRef_t = correction::Correction::Ref;
