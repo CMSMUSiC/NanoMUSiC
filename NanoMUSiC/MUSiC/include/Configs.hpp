@@ -170,15 +170,7 @@ constexpr std::array<JetConfig, Year::kTotalYears> Jets = {Jet2016APV, Jet2016, 
 // REF: https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL17#AK4_b_tagging
 struct METConfig
 {
-    float MinPt = 20;
-    float MinLowPt = 25;
-    float MaxLowPt = 120;
-    float MaxAbsEta = 2.4;
-    float MaxDeltaRTriggerMatch = 0.1;
-    float TkRelIso_WP = 0.10;                     // smaller than this
-    float PFRelIso_WP = 0.15;                     // smaller than this
-    std::string_view btag_algo = "btagDeepFlavB"; // DeepMET=DeepFlavour
-    float btag_wp_tight = 0.7476;
+    float MinPt = 100;
 };
 
 constexpr auto MET2016APV = METConfig{};
