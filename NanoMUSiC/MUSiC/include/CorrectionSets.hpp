@@ -125,7 +125,9 @@ class Corrector
     };
 
     Corrector(const std::string_view &_correction_type, const Year _year, bool _is_data)
-        : correction_type(_correction_type), year(_year), is_data(_is_data)
+        : correction_type(_correction_type),
+          year(_year),
+          is_data(_is_data)
     {
         // Rochester Correction
         if (_correction_type == "MuonLowPt")

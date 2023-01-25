@@ -337,7 +337,12 @@ class TrgObjMatcher
 
     TrgObjMatcher(const std::string_view &_hlt_path, double _max_deltar_r, double _pt_min, int _id, Year _year,
                   bool _is_data)
-        : hlt_path(_hlt_path), id(_id), max_deltar_r(_max_deltar_r), pt_min(_pt_min), year(_year), is_data(_is_data),
+        : hlt_path(_hlt_path),
+          id(_id),
+          max_deltar_r(_max_deltar_r),
+          pt_min(_pt_min),
+          year(_year),
+          is_data(_is_data),
           trigger_sf_correctors(Corrector(hlt_path, year, is_data))
     {
         // sanity checks ...

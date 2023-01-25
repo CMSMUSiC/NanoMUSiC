@@ -113,7 +113,7 @@ constexpr std::array<ElectronConfig, Year::kTotalYears> Electrons = {Electron201
 // Photons
 struct PhotonConfig
 {
-    float MinLowPt = 25;
+    float MinPt = 25;
 };
 
 constexpr auto Photon2016APV = PhotonConfig{};
@@ -125,65 +125,52 @@ constexpr std::array<PhotonConfig, Year::kTotalYears> Photons = {Photon2016APV, 
 // Taus
 struct TauConfig
 {
-    float PreSelPt = std::numeric_limits<float>::max();
-    float MinLowPt = 25;
-    float MaxLowPt = 120;
-    float MaxAbsEta = 2.4;
-    float MaxDeltaRTriggerMatch = 0.1;
-    float TkRelIso_WP = 0.10; // smaller than this
-    float PFRelIso_WP = 0.15; // smaller than this
+    // FIXME: change this once we have Taus in the workflow.
+    float MinPt = std::numeric_limits<float>::max();
 };
 
 constexpr auto Tau2016APV = TauConfig{};
 constexpr auto Tau2016 = TauConfig{};
-constexpr auto Tau2017 = TauConfig{.MinLowPt = 28.};
+constexpr auto Tau2017 = TauConfig{};
 constexpr auto Tau2018 = TauConfig{};
 constexpr std::array<TauConfig, Year::kTotalYears> Taus = {Tau2016APV, Tau2016, Tau2017, Tau2018};
 
 // Bjets
 struct BjetsConfig
 {
-    float PreSelPt = 20;
-    float MinLowPt = 25;
-    float MaxLowPt = 120;
+    float MinPt = 50;
     float MaxAbsEta = 2.4;
-    float MaxDeltaRTriggerMatch = 0.1;
-    float TkRelIso_WP = 0.10; // smaller than this
-    float PFRelIso_WP = 0.15; // smaller than this
+    int MinJetID = 2;              // equal or greater than this
+    float MinBTagWPTight = 0.6502; // equal or greater than this
 };
 
-constexpr auto Bjets2016APV = BjetsConfig{};
-constexpr auto Bjets2016 = BjetsConfig{};
-constexpr auto Bjets2017 = BjetsConfig{.MinLowPt = 28.};
-constexpr auto Bjets2018 = BjetsConfig{};
+constexpr auto Bjets2016APV = BjetsConfig{.MinBTagWPTight = 0.6502};
+constexpr auto Bjets2016 = BjetsConfig{.MinBTagWPTight = 0.6377};
+constexpr auto Bjets2017 = BjetsConfig{.MinBTagWPTight = 0.7476};
+constexpr auto Bjets2018 = BjetsConfig{.MinBTagWPTight = 0.71};
 constexpr std::array<BjetsConfig, Year::kTotalYears> BJets = {Bjets2016APV, Bjets2016, Bjets2017, Bjets2018};
 
 // Jets
 // REF: https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL17#AK4_b_tagging
 struct JetConfig
 {
-    float PreSelPt = 20;
-    float MinLowPt = 25;
-    float MaxLowPt = 120;
+    float MinPt = 50;
     float MaxAbsEta = 2.4;
-    float MaxDeltaRTriggerMatch = 0.1;
-    float TkRelIso_WP = 0.10;                     // smaller than this
-    float PFRelIso_WP = 0.15;                     // smaller than this
-    std::string_view btag_algo = "btagDeepFlavB"; // DeepJet=DeepFlavour
-    float btag_wp_tight = 0.7476;
+    int MinJetID = 2;              // equal or greater than this
+    float MaxBTagWPTight = 0.6502; // smaller than this
 };
 
-constexpr auto Jet2016APV = JetConfig{};
-constexpr auto Jet2016 = JetConfig{};
-constexpr auto Jet2017 = JetConfig{};
-constexpr auto Jet2018 = JetConfig{};
+constexpr auto Jet2016APV = JetConfig{.MaxBTagWPTight = 0.6502};
+constexpr auto Jet2016 = JetConfig{.MaxBTagWPTight = 0.6377};
+constexpr auto Jet2017 = JetConfig{.MaxBTagWPTight = 0.7476};
+constexpr auto Jet2018 = JetConfig{.MaxBTagWPTight = 0.71};
 constexpr std::array<JetConfig, Year::kTotalYears> Jets = {Jet2016APV, Jet2016, Jet2017, Jet2018};
 
 // MET
 // REF: https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL17#AK4_b_tagging
 struct METConfig
 {
-    float PreSelPt = 20;
+    float MinPt = 20;
     float MinLowPt = 25;
     float MaxLowPt = 120;
     float MaxAbsEta = 2.4;

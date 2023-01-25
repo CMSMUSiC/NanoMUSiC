@@ -57,17 +57,33 @@ struct EventInfo
               const bool &_HLT_Ele27_WPTight_Gsf = false, const bool &_HLT_Ele35_WPTight_Gsf = false,
               const bool &_HLT_Ele32_WPTight_Gsf = false, const bool &_HLT_Photon200 = false,
               const bool &_HLT_Photon175 = false, const bool &_HLT_Ele115_CaloIdVT_GsfTrkIdT = false)
-        : run(_run), lumi(_lumi), event(_event), Pileup_nTrueInt(_Pileup_nTrueInt), genWeight(_genWeight),
-          PV_npvsGood(_PV_npvsGood), Flag_goodVertices(_Flag_goodVertices),
+        : run(_run),
+          lumi(_lumi),
+          event(_event),
+          Pileup_nTrueInt(_Pileup_nTrueInt),
+          genWeight(_genWeight),
+          PV_npvsGood(_PV_npvsGood),
+          Flag_goodVertices(_Flag_goodVertices),
           Flag_globalSuperTightHalo2016Filter(_Flag_globalSuperTightHalo2016Filter),
-          Flag_HBHENoiseFilter(_Flag_HBHENoiseFilter), Flag_HBHENoiseIsoFilter(_Flag_HBHENoiseIsoFilter),
+          Flag_HBHENoiseFilter(_Flag_HBHENoiseFilter),
+          Flag_HBHENoiseIsoFilter(_Flag_HBHENoiseIsoFilter),
           Flag_EcalDeadCellTriggerPrimitiveFilter(_Flag_EcalDeadCellTriggerPrimitiveFilter),
-          Flag_BadPFMuonFilter(_Flag_BadPFMuonFilter), Flag_BadPFMuonDzFilter(_Flag_BadPFMuonDzFilter),
-          Flag_eeBadScFilter(_Flag_eeBadScFilter), Flag_ecalBadCalibFilter(_Flag_ecalBadCalibFilter),
-          HLT_IsoMu27(_HLT_IsoMu27), HLT_IsoMu24(_HLT_IsoMu24), HLT_IsoTkMu24(_HLT_IsoTkMu24), HLT_Mu50(_HLT_Mu50),
-          HLT_TkMu50(_HLT_TkMu50), HLT_TkMu100(_HLT_TkMu100), HLT_OldMu100(_HLT_OldMu100),
-          HLT_Ele27_WPTight_Gsf(_HLT_Ele27_WPTight_Gsf), HLT_Ele35_WPTight_Gsf(_HLT_Ele35_WPTight_Gsf),
-          HLT_Ele32_WPTight_Gsf(_HLT_Ele32_WPTight_Gsf), HLT_Photon200(_HLT_Photon200), HLT_Photon175(_HLT_Photon175),
+          Flag_BadPFMuonFilter(_Flag_BadPFMuonFilter),
+          Flag_BadPFMuonDzFilter(_Flag_BadPFMuonDzFilter),
+          Flag_eeBadScFilter(_Flag_eeBadScFilter),
+          Flag_ecalBadCalibFilter(_Flag_ecalBadCalibFilter),
+          HLT_IsoMu27(_HLT_IsoMu27),
+          HLT_IsoMu24(_HLT_IsoMu24),
+          HLT_IsoTkMu24(_HLT_IsoTkMu24),
+          HLT_Mu50(_HLT_Mu50),
+          HLT_TkMu50(_HLT_TkMu50),
+          HLT_TkMu100(_HLT_TkMu100),
+          HLT_OldMu100(_HLT_OldMu100),
+          HLT_Ele27_WPTight_Gsf(_HLT_Ele27_WPTight_Gsf),
+          HLT_Ele35_WPTight_Gsf(_HLT_Ele35_WPTight_Gsf),
+          HLT_Ele32_WPTight_Gsf(_HLT_Ele32_WPTight_Gsf),
+          HLT_Photon200(_HLT_Photon200),
+          HLT_Photon175(_HLT_Photon175),
           HLT_Ele115_CaloIdVT_GsfTrkIdT(_HLT_Ele115_CaloIdVT_GsfTrkIdT)
     {
     }
@@ -87,8 +103,14 @@ struct Muons
     Muons(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {},
           const RVec<bool> &_tightId = {}, const RVec<UChar_t> &_highPtId = {}, const RVec<float> &_pfRelIso03_all = {},
           const RVec<float> &_tkRelIso = {})
-        : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi), tightId(_tightId), highPtId(_highPtId),
-          pfRelIso03_all(_pfRelIso03_all), tkRelIso(_tkRelIso)
+        : size(_pt.size()),
+          pt(_pt),
+          eta(_eta),
+          phi(_phi),
+          tightId(_tightId),
+          highPtId(_highPtId),
+          pfRelIso03_all(_pfRelIso03_all),
+          tkRelIso(_tkRelIso)
     {
     }
 };
@@ -106,7 +128,12 @@ struct Electrons
     Electrons(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {},
               const RVec<int> &_cutBased = {}, const RVec<bool> &_cutBased_HEEP = {},
               const RVec<float> &_deltaEtaSC = {})
-        : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi), cutBased(_cutBased), cutBased_HEEP(_cutBased_HEEP),
+        : size(_pt.size()),
+          pt(_pt),
+          eta(_eta),
+          phi(_phi),
+          cutBased(_cutBased),
+          cutBased_HEEP(_cutBased_HEEP),
           deltaEtaSC(_deltaEtaSC)
     {
     }
@@ -120,9 +147,19 @@ struct Photons
     RVec<float> phi;
     RVec<int> cutBased;
     RVec<bool> pixelSeed;
+    RVec<bool> isScEtaEB;
+    RVec<bool> isScEtaEE;
     Photons(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {},
-            const RVec<int> &_cutBased = {}, const RVec<bool> &_pixelSeed = {})
-        : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi), cutBased(_cutBased), pixelSeed(_pixelSeed)
+            const RVec<int> &_cutBased = {}, const RVec<bool> &_pixelSeed = {}, const RVec<bool> &_isScEtaEB = {},
+            const RVec<bool> &_isScEtaEE = {})
+        : size(_pt.size()),
+          pt(_pt),
+          eta(_eta),
+          phi(_phi),
+          cutBased(_cutBased),
+          pixelSeed(_pixelSeed),
+          isScEtaEB(_isScEtaEB),
+          isScEtaEE(_isScEtaEE)
     {
     }
 };
@@ -135,7 +172,10 @@ struct Taus
     RVec<float> phi;
 
     Taus(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {})
-        : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi)
+        : size(_pt.size()),
+          pt(_pt),
+          eta(_eta),
+          phi(_phi)
     {
     }
 };
@@ -146,9 +186,17 @@ struct Jets
     RVec<float> pt;
     RVec<float> eta;
     RVec<float> phi;
+    RVec<int> jetId;
+    RVec<float> btagDeepFlavB;
 
-    Jets(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {})
-        : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi)
+    Jets(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {},
+         const RVec<int> &_jetId = {}, const RVec<float> &_btagDeepFlavB = {})
+        : size(_pt.size()),
+          pt(_pt),
+          eta(_eta),
+          phi(_phi),
+          jetId(_jetId),
+          btagDeepFlavB(_btagDeepFlavB)
     {
     }
 };
@@ -163,7 +211,10 @@ struct MET
     RVec<float> phi;
 
     MET(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {})
-        : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi)
+        : size(_pt.size()),
+          pt(_pt),
+          eta(_eta),
+          phi(_phi)
     {
     }
 };
@@ -181,9 +232,13 @@ struct TrgObjs
 
     TrgObjs(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {},
             const RVec<int> &_id = {}, const RVec<int> &_filterBits = {})
-        : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi), id(_id), filterBits(_filterBits)
+        : size(_pt.size()),
+          pt(_pt),
+          eta(_eta),
+          phi(_phi),
+          id(_id),
+          filterBits(_filterBits)
     {
-        // fmt::print("Trigger filter bits: {}\n", _filterBits);
     }
 };
 using NanoAODObjects_t = std::tuple<Muons, Electrons, Photons, Taus, BJets, Jets, MET>;

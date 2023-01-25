@@ -62,7 +62,10 @@ class EventData
     bool is_data = true;
     Year year = Year::kTotalYears;
 
-    EventData(const bool &_is_data, const Year &_year) : is_null(false), is_data(_is_data), year(_year)
+    EventData(const bool &_is_data, const Year &_year)
+        : is_null(false),
+          is_data(_is_data),
+          year(_year)
     {
     }
 
@@ -521,34 +524,42 @@ class EventData
     // Photons
     auto get_photons_selection_mask() -> RVec<int>
     {
-        return (photons.pt >= ObjConfig::Photons[year].MinLowPt) //
-               && (VecOps::abs(photons.eta) <= 1.442)            //
-               && (photons.cutBased >= 3)                        //
+        return (photons.pt >= ObjConfig::Photons[year].MinPt) //
+                                                              //    && (VecOps::abs(photons.eta) <= 1.442)         //
+               && (photons.isScEtaEB)                         //
+               && (not photons.isScEtaEE)                     //
+               && (photons.cutBased >= 3)                     //
                && (photons.pixelSeed == false);
     }
 
     // Taus
     auto get_taus_selection_mask() -> RVec<int>
     {
-        return taus.pt >= ObjConfig::Taus[year].PreSelPt;
+        return taus.pt >= ObjConfig::Taus[year].MinPt;
     }
 
     // BJets
     auto get_bjets_selection_mask() -> RVec<int>
     {
-        return bjets.pt >= ObjConfig::BJets[year].PreSelPt;
+        return (bjets.pt >= ObjConfig::BJets[year].MinPt)                      //
+               && (VecOps::abs(bjets.eta) <= ObjConfig::BJets[year].MaxAbsEta) //
+               && (bjets.jetId >= ObjConfig::BJets[year].MinJetID)             //
+               && (bjets.btagDeepFlavB >= ObjConfig::BJets[year].MinBTagWPTight);
     }
 
     // Jets
     auto get_jets_selection_mask() -> RVec<int>
     {
-        return jets.pt >= ObjConfig::Jets[year].PreSelPt;
+        return (jets.pt >= ObjConfig::Jets[year].MinPt)                      //
+               && (VecOps::abs(jets.eta) <= ObjConfig::Jets[year].MaxAbsEta) //
+               && (jets.jetId >= ObjConfig::Jets[year].MinJetID)             //
+               && (jets.btagDeepFlavB < ObjConfig::Jets[year].MaxBTagWPTight);
     }
 
     // MET
     auto get_met_selection_mask() -> RVec<int>
     {
-        return met.pt >= ObjConfig::MET[year].PreSelPt;
+        return met.pt >= ObjConfig::MET[year].MinPt;
     }
 
     EventData &object_selection()

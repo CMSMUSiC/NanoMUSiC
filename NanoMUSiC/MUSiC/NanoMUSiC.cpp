@@ -167,6 +167,8 @@ int main(int argc, char *argv[])
     ADD_ARRAY_READER(Photon_phi, float);
     ADD_ARRAY_READER(Photon_cutBased, int);
     ADD_ARRAY_READER(Photon_pixelSeed, bool);
+    ADD_ARRAY_READER(Photon_isScEtaEB, bool);
+    ADD_ARRAY_READER(Photon_isScEtaEE, bool);
 
     // taus
     ADD_ARRAY_READER(Tau_pt, float);
@@ -177,6 +179,8 @@ int main(int argc, char *argv[])
     ADD_ARRAY_READER(Jet_pt, float);
     ADD_ARRAY_READER(Jet_eta, float);
     ADD_ARRAY_READER(Jet_phi, float);
+    ADD_ARRAY_READER(Jet_jetId, int);
+    ADD_ARRAY_READER(Jet_btagDeepFlavB, float);
 
     // met
     ADD_VALUE_READER(MET_pt, float);
@@ -213,59 +217,85 @@ int main(int argc, char *argv[])
         outputs.clear_event_tree();
 
         // build event data
-        auto event_data =
-            EventData(configuration.is_data, configuration.year)
-                // event info
-                .set_event_info(NanoObjects::EventInfo(unwrap(run),                                     //
-                                                       unwrap(lumi),                                    //
-                                                       unwrap(event_number),                            //
-                                                       unwrap(Pileup_nTrueInt),                         //
-                                                       unwrap(genWeight),                               //
-                                                       unwrap(PV_npvsGood),                             //
-                                                       unwrap(Flag_goodVertices),                       //
-                                                       unwrap(Flag_globalSuperTightHalo2016Filter),     //
-                                                       unwrap(Flag_HBHENoiseFilter),                    //
-                                                       unwrap(Flag_HBHENoiseIsoFilter),                 //
-                                                       unwrap(Flag_EcalDeadCellTriggerPrimitiveFilter), //
-                                                       unwrap(Flag_BadPFMuonFilter),                    //
-                                                       unwrap(Flag_BadPFMuonDzFilter),                  //
-                                                       unwrap(Flag_eeBadScFilter),                      //
-                                                       unwrap(Flag_ecalBadCalibFilter),                 //
-                                                       unwrap(HLT_IsoMu27),                             //
-                                                       unwrap(HLT_IsoMu24),                             //
-                                                       unwrap(HLT_IsoTkMu24),                           //
-                                                       unwrap(HLT_Mu50),                                //
-                                                       unwrap(HLT_TkMu50),                              //
-                                                       unwrap(HLT_TkMu100),                             //
-                                                       unwrap(HLT_OldMu100),                            //
-                                                       unwrap(HLT_Ele27_WPTight_Gsf),                   //
-                                                       unwrap(HLT_Ele35_WPTight_Gsf),                   //
-                                                       unwrap(HLT_Ele32_WPTight_Gsf),                   //
-                                                       unwrap(HLT_Photon200),                           //
-                                                       unwrap(HLT_Photon175),                           //
-                                                       unwrap(HLT_Ele115_CaloIdVT_GsfTrkIdT)))
-                // muons
-                .set_muons(NanoObjects::Muons(unwrap(Muon_pt), unwrap(Muon_eta), unwrap(Muon_phi), unwrap(Muon_tightId),
-                                              unwrap(Muon_highPtId), unwrap(Muon_pfRelIso03_all),
-                                              unwrap(Muon_tkRelIso)))
-                // electrons
-                .set_electrons(NanoObjects::Electrons(unwrap(Electron_pt), unwrap(Electron_eta), unwrap(Electron_phi),
-                                                      unwrap(Electron_cutBased), unwrap(Electron_cutBased_HEEP),
-                                                      unwrap(Electron_deltaEtaSC)))
-                // photons
-                .set_photons(NanoObjects::Photons(unwrap(Photon_pt), unwrap(Photon_eta), unwrap(Photon_phi),
-                                                  unwrap(Photon_cutBased), unwrap(Photon_pixelSeed)))
-                // taus
-                .set_taus(NanoObjects::Taus(unwrap(Tau_pt), unwrap(Tau_eta), unwrap(Tau_phi)))
-                // bjets
-                .set_bjets(NanoObjects::BJets(unwrap(Jet_pt), unwrap(Jet_eta), unwrap(Jet_phi)))
-                // jets
-                .set_jets(NanoObjects::Jets(unwrap(Jet_pt), unwrap(Jet_eta), unwrap(Jet_phi)))
-                // met
-                .set_met(NanoObjects::MET({unwrap(MET_pt)}, {0.}, {unwrap(MET_phi)}))
-                // trgobjs
-                .set_trgobjs(NanoObjects::TrgObjs(unwrap(TrigObj_pt), unwrap(TrigObj_eta), unwrap(TrigObj_phi),
-                                                  unwrap(TrigObj_id), unwrap(TrigObj_filterBits)));
+        auto event_data = EventData(configuration.is_data, configuration.year)
+                              // event info
+                              .set_event_info(NanoObjects::EventInfo(unwrap(run),                                     //
+                                                                     unwrap(lumi),                                    //
+                                                                     unwrap(event_number),                            //
+                                                                     unwrap(Pileup_nTrueInt),                         //
+                                                                     unwrap(genWeight),                               //
+                                                                     unwrap(PV_npvsGood),                             //
+                                                                     unwrap(Flag_goodVertices),                       //
+                                                                     unwrap(Flag_globalSuperTightHalo2016Filter),     //
+                                                                     unwrap(Flag_HBHENoiseFilter),                    //
+                                                                     unwrap(Flag_HBHENoiseIsoFilter),                 //
+                                                                     unwrap(Flag_EcalDeadCellTriggerPrimitiveFilter), //
+                                                                     unwrap(Flag_BadPFMuonFilter),                    //
+                                                                     unwrap(Flag_BadPFMuonDzFilter),                  //
+                                                                     unwrap(Flag_eeBadScFilter),                      //
+                                                                     unwrap(Flag_ecalBadCalibFilter),                 //
+                                                                     unwrap(HLT_IsoMu27),                             //
+                                                                     unwrap(HLT_IsoMu24),                             //
+                                                                     unwrap(HLT_IsoTkMu24),                           //
+                                                                     unwrap(HLT_Mu50),                                //
+                                                                     unwrap(HLT_TkMu50),                              //
+                                                                     unwrap(HLT_TkMu100),                             //
+                                                                     unwrap(HLT_OldMu100),                            //
+                                                                     unwrap(HLT_Ele27_WPTight_Gsf),                   //
+                                                                     unwrap(HLT_Ele35_WPTight_Gsf),                   //
+                                                                     unwrap(HLT_Ele32_WPTight_Gsf),                   //
+                                                                     unwrap(HLT_Photon200),                           //
+                                                                     unwrap(HLT_Photon175),                           //
+                                                                     unwrap(HLT_Ele115_CaloIdVT_GsfTrkIdT)))
+                              // muons
+                              .set_muons(NanoObjects::Muons(unwrap(Muon_pt),             //
+                                                            unwrap(Muon_eta),            //
+                                                            unwrap(Muon_phi),            //
+                                                            unwrap(Muon_tightId),        //
+                                                            unwrap(Muon_highPtId),       //
+                                                            unwrap(Muon_pfRelIso03_all), //
+                                                            unwrap(Muon_tkRelIso)))
+                              // electrons
+                              .set_electrons(NanoObjects::Electrons(unwrap(Electron_pt),            //
+                                                                    unwrap(Electron_eta),           //
+                                                                    unwrap(Electron_phi),           //
+                                                                    unwrap(Electron_cutBased),      //
+                                                                    unwrap(Electron_cutBased_HEEP), //
+                                                                    unwrap(Electron_deltaEtaSC)))
+                              // photons
+                              .set_photons(NanoObjects::Photons(unwrap(Photon_pt),        //
+                                                                unwrap(Photon_eta),       //
+                                                                unwrap(Photon_phi),       //
+                                                                unwrap(Photon_cutBased),  //
+                                                                unwrap(Photon_pixelSeed), //
+                                                                unwrap(Photon_isScEtaEB), //
+                                                                unwrap(Photon_isScEtaEE)))
+                              // taus
+                              .set_taus(NanoObjects::Taus(unwrap(Tau_pt),  //
+                                                          unwrap(Tau_eta), //
+                                                          unwrap(Tau_phi)))
+                              // bjets
+                              .set_bjets(NanoObjects::BJets(unwrap(Jet_pt),    //
+                                                            unwrap(Jet_eta),   //
+                                                            unwrap(Jet_phi),   //
+                                                            unwrap(Jet_jetId), //
+                                                            unwrap(Jet_btagDeepFlavB)))
+                              // jets
+                              .set_jets(NanoObjects::Jets(unwrap(Jet_pt),    //
+                                                          unwrap(Jet_eta),   //
+                                                          unwrap(Jet_phi),   //
+                                                          unwrap(Jet_jetId), //
+                                                          unwrap(Jet_btagDeepFlavB)))
+                              // met
+                              .set_met(NanoObjects::MET({unwrap(MET_pt)}, //
+                                                        {0.},             //
+                                                        {unwrap(MET_phi)}))
+                              // trgobjs
+                              .set_trgobjs(NanoObjects::TrgObjs(unwrap(TrigObj_pt),  //
+                                                                unwrap(TrigObj_eta), //
+                                                                unwrap(TrigObj_phi), //
+                                                                unwrap(TrigObj_id),  //
+                                                                unwrap(TrigObj_filterBits)));
 
         event_data = event_data.set_const_weights(outputs, pu_weight)
                          .generator_filter(outputs)
