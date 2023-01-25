@@ -118,9 +118,11 @@ struct Photons
     RVec<float> pt;
     RVec<float> eta;
     RVec<float> phi;
-
-    Photons(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {})
-        : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi)
+    RVec<int> cutBased;
+    RVec<bool> pixelSeed;
+    Photons(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {},
+            const RVec<int> &_cutBased = {}, const RVec<bool> &_pixelSeed = {})
+        : size(_pt.size()), pt(_pt), eta(_eta), phi(_phi), cutBased(_cutBased), pixelSeed(_pixelSeed)
     {
     }
 };

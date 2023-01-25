@@ -9,6 +9,7 @@
 
 #include <fmt/color.h>
 #include <fmt/core.h>
+#include <limits>
 
 using namespace std::literals;
 
@@ -112,25 +113,19 @@ constexpr std::array<ElectronConfig, Year::kTotalYears> Electrons = {Electron201
 // Photons
 struct PhotonConfig
 {
-    float PreSelPt = 20;
     float MinLowPt = 25;
-    float MaxLowPt = 120;
-    float MaxAbsEta = 2.4;
-    float MaxDeltaRTriggerMatch = 0.3;
-    float TkRelIso_WP = 0.10; // smaller than this
-    float PFRelIso_WP = 0.15; // smaller than this
 };
 
 constexpr auto Photon2016APV = PhotonConfig{};
 constexpr auto Photon2016 = PhotonConfig{};
-constexpr auto Photon2017 = PhotonConfig{.MinLowPt = 28.};
+constexpr auto Photon2017 = PhotonConfig{};
 constexpr auto Photon2018 = PhotonConfig{};
 constexpr std::array<PhotonConfig, Year::kTotalYears> Photons = {Photon2016APV, Photon2016, Photon2017, Photon2018};
 
 // Taus
 struct TauConfig
 {
-    float PreSelPt = 20;
+    float PreSelPt = std::numeric_limits<float>::max();
     float MinLowPt = 25;
     float MaxLowPt = 120;
     float MaxAbsEta = 2.4;

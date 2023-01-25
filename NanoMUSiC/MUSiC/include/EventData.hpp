@@ -521,7 +521,10 @@ class EventData
     // Photons
     auto get_photons_selection_mask() -> RVec<int>
     {
-        return photons.pt >= ObjConfig::Photons[year].PreSelPt;
+        return (photons.pt >= ObjConfig::Photons[year].MinLowPt) //
+               && (VecOps::abs(photons.eta) <= 1.442)            //
+               && (photons.cutBased >= 3)                        //
+               && (photons.pixelSeed == false);
     }
 
     // Taus

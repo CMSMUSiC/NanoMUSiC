@@ -30,7 +30,7 @@ using namespace std::string_view_literals;
 /// xxd -i root_file.root > foo.h
 auto read_xxd_dump(unsigned char arr[], unsigned int _size, const std::string &name = "_") -> TMemFile
 {
-    std::unique_ptr<char[]> buffer(new char());
+    std::unique_ptr<char[]> buffer(new char[_size]());
 
     for (unsigned int i = 0; i < _size; i++)
     {

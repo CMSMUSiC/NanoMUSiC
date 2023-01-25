@@ -165,6 +165,8 @@ int main(int argc, char *argv[])
     ADD_ARRAY_READER(Photon_pt, float);
     ADD_ARRAY_READER(Photon_eta, float);
     ADD_ARRAY_READER(Photon_phi, float);
+    ADD_ARRAY_READER(Photon_cutBased, int);
+    ADD_ARRAY_READER(Photon_pixelSeed, bool);
 
     // taus
     ADD_ARRAY_READER(Tau_pt, float);
@@ -251,7 +253,8 @@ int main(int argc, char *argv[])
                                                       unwrap(Electron_cutBased), unwrap(Electron_cutBased_HEEP),
                                                       unwrap(Electron_deltaEtaSC)))
                 // photons
-                .set_photons(NanoObjects::Photons(unwrap(Photon_pt), unwrap(Photon_eta), unwrap(Photon_phi)))
+                .set_photons(NanoObjects::Photons(unwrap(Photon_pt), unwrap(Photon_eta), unwrap(Photon_phi),
+                                                  unwrap(Photon_cutBased), unwrap(Photon_pixelSeed)))
                 // taus
                 .set_taus(NanoObjects::Taus(unwrap(Tau_pt), unwrap(Tau_eta), unwrap(Tau_phi)))
                 // bjets
