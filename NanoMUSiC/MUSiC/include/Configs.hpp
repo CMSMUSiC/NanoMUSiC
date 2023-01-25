@@ -170,7 +170,7 @@ constexpr std::array<JetConfig, Year::kTotalYears> Jets = {Jet2016APV, Jet2016, 
 // REF: https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL17#AK4_b_tagging
 struct METConfig
 {
-    float MinPt = 100;
+    float MinPt = 100.;
 };
 
 constexpr auto MET2016APV = METConfig{};

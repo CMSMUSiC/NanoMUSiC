@@ -567,23 +567,19 @@ class EventData
         if (*this)
         {
             // launch selection tasks
-            good_low_pt_muons_mask = get_low_pt_muons_selection_mask();
-            good_high_pt_muons_mask = get_high_pt_muons_selection_mask();
+            good_low_pt_muons_mask = good_low_pt_muons_mask && get_low_pt_muons_selection_mask();
+            good_high_pt_muons_mask = good_high_pt_muons_mask && get_high_pt_muons_selection_mask();
             good_muons_mask = good_low_pt_muons_mask || good_high_pt_muons_mask;
 
-            good_low_pt_electrons_mask = get_low_pt_electrons_selection_mask();
-            good_high_pt_electrons_mask = get_high_pt_electrons_selection_mask();
+            good_low_pt_electrons_mask = good_low_pt_electrons_mask && get_low_pt_electrons_selection_mask();
+            good_high_pt_electrons_mask = good_high_pt_electrons_mask && get_high_pt_electrons_selection_mask();
             good_electrons_mask = good_low_pt_electrons_mask || good_high_pt_electrons_mask;
 
-            good_photons_mask = get_photons_selection_mask();
-
-            good_taus_mask = get_taus_selection_mask();
-
-            good_bjets_mask = get_bjets_selection_mask();
-
-            good_jets_mask = get_jets_selection_mask();
-
-            good_met_mask = get_met_selection_mask();
+            good_photons_mask = good_photons_mask && get_photons_selection_mask();
+            good_taus_mask = good_taus_mask && get_taus_selection_mask();
+            good_bjets_mask = good_bjets_mask && get_bjets_selection_mask();
+            good_jets_mask = good_jets_mask && get_jets_selection_mask();
+            good_met_mask = good_met_mask && get_met_selection_mask();
             return *this;
         }
         return *this;
