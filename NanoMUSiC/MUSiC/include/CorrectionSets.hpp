@@ -465,6 +465,7 @@ class Corrector
             auto [input_file, _dummy_key] = correction_keys.at({correction_type, year});
             correction_ref = RoccoR(input_file);
         }
+
         // Single Electron Trigger
         else if (_correction_type == "SingleElectronLowPt")
         {
@@ -474,6 +475,7 @@ class Corrector
         {
             correction_ref = ElectronTriggerSF(ElectronTriggerSF::PtRegime::HighPt, year);
         }
+
         // default case is any correction that uses the correctionlib
         else
         {
@@ -482,8 +484,7 @@ class Corrector
         }
     }
 
-    // dummy
-    double operator()() const
+    auto operator()() const -> double
     {
         if (not is_data)
         {
@@ -492,9 +493,19 @@ class Corrector
         return 1.;
     }
 
+    // Electron Trigger SF
+    auto operator()(const float &eta_sc, const float &pt, const std::string_view &variation = "nominal") const -> double
+    {
+        if (not is_data)
+        {
+            return std::get<ElectronTriggerSF_t>(correction_ref)(eta_sc, pt, variation);
+        }
+        return 1.;
+    }
+
     // correctionlib
     template <class T = const std::vector<std::variant<int, double, std::string>>>
-    double operator()(T &&values) const
+    auto operator()(T &&values) const -> double
     {
         if (not is_data)
         {
@@ -504,8 +515,8 @@ class Corrector
     }
 
     // rochester corrections - Data
-    double operator()(const int Q, const double pt, const double eta, const double phi, const int s = 0,
-                      const int m = 0) const
+    auto operator()(const int Q, const double pt, const double eta, const double phi, const int s = 0,
+                    const int m = 0) const -> double
     {
         if (is_data)
         {
@@ -515,8 +526,8 @@ class Corrector
     }
 
     // rochester corrections - MC (matched GenMuon - recommended)
-    double operator()(const int Q, const double pt, const double eta, const double phi, const double genPt,
-                      const int s = 0, const int m = 0) const
+    auto operator()(const int Q, const double pt, const double eta, const double phi, const double genPt,
+                    const int s = 0, const int m = 0) const -> double
     {
         if (not is_data)
         {
@@ -526,8 +537,8 @@ class Corrector
     }
 
     // rochester corrections - MC (unmatched GenMuon - not recommended)
-    double operator()(const int Q, const double pt, const double eta, const double phi, const int n, const double u,
-                      const int s = 0, const int m = 0) const
+    auto operator()(const int Q, const double pt, const double eta, const double phi, const int n, const double u,
+                    const int s = 0, const int m = 0) const -> double
     {
         if (not is_data)
         {

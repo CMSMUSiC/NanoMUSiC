@@ -429,11 +429,11 @@ class TrgObjMatcher
             else if (id == PDG::Electron::Id)
             {
                 trigger_sf_nominal = //
-                    trigger_sf_correctors();
+                    trigger_sf_correctors(_matched_nano_object_eta, _matched_nano_object_pt, "nominal");
                 trigger_sf_up = //
-                    trigger_sf_correctors();
+                    trigger_sf_correctors(_matched_nano_object_eta, _matched_nano_object_pt, "up");
                 trigger_sf_down = //
-                    trigger_sf_correctors();
+                    trigger_sf_correctors(_matched_nano_object_eta, _matched_nano_object_pt, "down");
             }
             else
             {
