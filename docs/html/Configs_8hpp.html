@@ -165,7 +165,6 @@ $(document).ready(function(){initNavTree('Configs_8hpp.html',''); initResizable(
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#define-members">Macros</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
@@ -179,7 +178,7 @@ $(document).ready(function(){initNavTree('Configs_8hpp.html',''); initResizable(
 <code>#include &quot;<a class="el" href="TOMLConfig_8hpp_source.html">TOMLConfig.hpp</a>&quot;</code><br />
 <code>#include &lt;fmt/color.h&gt;</code><br />
 <code>#include &lt;fmt/core.h&gt;</code><br />
-<code>#include &lt;boost/hana.hpp&gt;</code><br />
+<code>#include &lt;limits&gt;</code><br />
 </div>
 <p><a href="Configs_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -201,8 +200,6 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structRunConfig_1_1RunConfig.html">RunConfig::RunConfig</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTaskConfiguration.html">TaskConfiguration</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Namespaces</h2></td></tr>
@@ -220,25 +217,6 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceRunConfig"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceRunConfig.html">RunConfig</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespaceTriggerConfig"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTriggerConfig.html">TriggerConfig</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
-Macros</h2></td></tr>
-<tr class="memitem:a81de60f5bea16e6ff4a38c94e3022f10"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Configs_8hpp.html#a81de60f5bea16e6ff4a38c94e3022f10">BOOST_HANA_CONFIG_ENABLE_STRING_UDL</a>&#160;&#160;&#160;1</td></tr>
-<tr class="separator:a81de60f5bea16e6ff4a38c94e3022f10"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8b7a21b5630221611d4d6bd21eb830d7"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Configs_8hpp.html#a8b7a21b5630221611d4d6bd21eb830d7">ADD_TO_TRIGGER_RED_LIST</a>(DATA_STREAM, ...)&#160;&#160;&#160;boost::hana::make_pair(DATA_STREAM, boost::hana::make_tuple(__VA_ARGS__))</td></tr>
-<tr class="separator:a8b7a21b5630221611d4d6bd21eb830d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1154d34bd4e1bd5ed78ab65b5a765721"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Configs_8hpp.html#a1154d34bd4e1bd5ed78ab65b5a765721">HANA_TO_SV</a>(DATA)&#160;&#160;&#160;std::string_view(DATA.c_str())</td></tr>
-<tr class="separator:a1154d34bd4e1bd5ed78ab65b5a765721"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8ba4b90ab0c7a44249616f4cb3848c30"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Configs_8hpp.html#a8ba4b90ab0c7a44249616f4cb3848c30">HANA_FIRST</a>(DATA)&#160;&#160;&#160;boost::hana::first(DATA)</td></tr>
-<tr class="separator:a8ba4b90ab0c7a44249616f4cb3848c30"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab9f8e03af5770839bed7836bbdc61107"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Configs_8hpp.html#ab9f8e03af5770839bed7836bbdc61107">HANA_SECOND</a>(DATA)&#160;&#160;&#160;boost::hana::second(DATA)</td></tr>
-<tr class="separator:ab9f8e03af5770839bed7836bbdc61107"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4567cd0c682e448eaa5fa6734b62b8f6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Configs_8hpp.html#a4567cd0c682e448eaa5fa6734b62b8f6">HANA_FIRST_TO_SV</a>(DATA)&#160;&#160;&#160;std::string_view(boost::hana::first(DATA).c_str())</td></tr>
-<tr class="separator:a4567cd0c682e448eaa5fa6734b62b8f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6d8df6d25a3b3f4c2305ad991bcdce96"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Configs_8hpp.html#a6d8df6d25a3b3f4c2305ad991bcdce96">HANA_SECOND_TO_SV</a>(DATA)&#160;&#160;&#160;std::string_view(boost::hana::second(DATA).c_str())</td></tr>
-<tr class="separator:a6d8df6d25a3b3f4c2305ad991bcdce96"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -257,8 +235,6 @@ Enumerations</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:ab2bcc6de72277af49c9a757fc875b6b7"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Configs_8hpp.html#ab2bcc6de72277af49c9a757fc875b6b7">get_runyear</a> (const std::string &amp;year_str) -&gt; <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a></td></tr>
 <tr class="separator:ab2bcc6de72277af49c9a757fc875b6b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2a3fa0cef291209ce5a0d333a494dee0"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTriggerConfig.html#a2a3fa0cef291209ce5a0d333a494dee0">TriggerConfig::get_trigger_stream</a> (bool is_data, const std::string &amp;process)</td></tr>
-<tr class="separator:a2a3fa0cef291209ce5a0d333a494dee0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -282,7 +258,7 @@ Variables</h2></td></tr>
 <tr class="separator:ad4e1cfb9b93034c238ab627ab35a21a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab46f42728104c7577db1cc223b80e09b"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#ab46f42728104c7577db1cc223b80e09b">ObjConfig::Muon2016</a> = MuonConfig{}</td></tr>
 <tr class="separator:ab46f42728104c7577db1cc223b80e09b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abc3e4bf0db07b566e6006e5d80949986"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#abc3e4bf0db07b566e6006e5d80949986">ObjConfig::Muon2017</a> = MuonConfig{.MinLowPt = 29.}</td></tr>
+<tr class="memitem:abc3e4bf0db07b566e6006e5d80949986"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#abc3e4bf0db07b566e6006e5d80949986">ObjConfig::Muon2017</a> = MuonConfig{}</td></tr>
 <tr class="separator:abc3e4bf0db07b566e6006e5d80949986"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a41a72e5c8e55e55344b3023641d721"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a9a41a72e5c8e55e55344b3023641d721">ObjConfig::Muon2018</a> = MuonConfig{}</td></tr>
 <tr class="separator:a9a41a72e5c8e55e55344b3023641d721"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -292,7 +268,7 @@ Variables</h2></td></tr>
 <tr class="separator:a5502e44d308316e66839a4a4d4c92034"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a89592b76685f21502f61606f4a079a9c"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a89592b76685f21502f61606f4a079a9c">ObjConfig::Electron2016</a> = ElectronConfig{}</td></tr>
 <tr class="separator:a89592b76685f21502f61606f4a079a9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a23b2448c7fa0b3ff9271f5a736b6c7c5"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a23b2448c7fa0b3ff9271f5a736b6c7c5">ObjConfig::Electron2017</a> = ElectronConfig{.MinLowPt = 28.}</td></tr>
+<tr class="memitem:a23b2448c7fa0b3ff9271f5a736b6c7c5"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a23b2448c7fa0b3ff9271f5a736b6c7c5">ObjConfig::Electron2017</a> = ElectronConfig{}</td></tr>
 <tr class="separator:a23b2448c7fa0b3ff9271f5a736b6c7c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8269df68489a6bfdac9413feef1e9592"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a8269df68489a6bfdac9413feef1e9592">ObjConfig::Electron2018</a> = ElectronConfig{}</td></tr>
 <tr class="separator:a8269df68489a6bfdac9413feef1e9592"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -302,7 +278,7 @@ Variables</h2></td></tr>
 <tr class="separator:a2c94c43453578a05a4594b31c600c4ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac357df9579d6c38a1316f648bfb65fac"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#ac357df9579d6c38a1316f648bfb65fac">ObjConfig::Photon2016</a> = PhotonConfig{}</td></tr>
 <tr class="separator:ac357df9579d6c38a1316f648bfb65fac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad3ecd1bb18d8def1acf126662db71529"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#ad3ecd1bb18d8def1acf126662db71529">ObjConfig::Photon2017</a> = PhotonConfig{.MinLowPt = 28.}</td></tr>
+<tr class="memitem:ad3ecd1bb18d8def1acf126662db71529"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#ad3ecd1bb18d8def1acf126662db71529">ObjConfig::Photon2017</a> = PhotonConfig{}</td></tr>
 <tr class="separator:ad3ecd1bb18d8def1acf126662db71529"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a11cb011b88330b27dcf1f6b90f6f8053"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a11cb011b88330b27dcf1f6b90f6f8053">ObjConfig::Photon2018</a> = PhotonConfig{}</td></tr>
 <tr class="separator:a11cb011b88330b27dcf1f6b90f6f8053"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -312,29 +288,29 @@ Variables</h2></td></tr>
 <tr class="separator:ac4290728edcbb440f36cf613b410394a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7173280d0c86303237242fc5e4906cc9"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a7173280d0c86303237242fc5e4906cc9">ObjConfig::Tau2016</a> = TauConfig{}</td></tr>
 <tr class="separator:a7173280d0c86303237242fc5e4906cc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1035b4960705276118f3f838132caa17"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a1035b4960705276118f3f838132caa17">ObjConfig::Tau2017</a> = TauConfig{.MinLowPt = 28.}</td></tr>
+<tr class="memitem:a1035b4960705276118f3f838132caa17"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a1035b4960705276118f3f838132caa17">ObjConfig::Tau2017</a> = TauConfig{}</td></tr>
 <tr class="separator:a1035b4960705276118f3f838132caa17"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af288d635abe7f71e7ec01e09f75f7926"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#af288d635abe7f71e7ec01e09f75f7926">ObjConfig::Tau2018</a> = TauConfig{}</td></tr>
 <tr class="separator:af288d635abe7f71e7ec01e09f75f7926"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7f5c435c8ba15409e77c02a916d075ac"><td class="memItemLeft" align="right" valign="top">constexpr std::array&lt; TauConfig, <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abfd3e8c0a2e269807b0b07d3cc6ad62c">Year::kTotalYears</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a7f5c435c8ba15409e77c02a916d075ac">ObjConfig::Taus</a> = {Tau2016APV, Tau2016, Tau2017, Tau2018}</td></tr>
 <tr class="separator:a7f5c435c8ba15409e77c02a916d075ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a27230779f387f21354f8c0ae33c0e0a5"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a27230779f387f21354f8c0ae33c0e0a5">ObjConfig::Bjets2016APV</a> = BjetsConfig{}</td></tr>
+<tr class="memitem:a27230779f387f21354f8c0ae33c0e0a5"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a27230779f387f21354f8c0ae33c0e0a5">ObjConfig::Bjets2016APV</a> = BjetsConfig{.MinBTagWPTight = 0.6502}</td></tr>
 <tr class="separator:a27230779f387f21354f8c0ae33c0e0a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aede2d0f9e6783cf805606e73beeaf92d"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#aede2d0f9e6783cf805606e73beeaf92d">ObjConfig::Bjets2016</a> = BjetsConfig{}</td></tr>
+<tr class="memitem:aede2d0f9e6783cf805606e73beeaf92d"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#aede2d0f9e6783cf805606e73beeaf92d">ObjConfig::Bjets2016</a> = BjetsConfig{.MinBTagWPTight = 0.6377}</td></tr>
 <tr class="separator:aede2d0f9e6783cf805606e73beeaf92d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae1869324596201ecc35343da445c1988"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#ae1869324596201ecc35343da445c1988">ObjConfig::Bjets2017</a> = BjetsConfig{.MinLowPt = 28.}</td></tr>
+<tr class="memitem:ae1869324596201ecc35343da445c1988"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#ae1869324596201ecc35343da445c1988">ObjConfig::Bjets2017</a> = BjetsConfig{.MinBTagWPTight = 0.7476}</td></tr>
 <tr class="separator:ae1869324596201ecc35343da445c1988"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac0e217bf79fc1623de7b071c0e0589f8"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#ac0e217bf79fc1623de7b071c0e0589f8">ObjConfig::Bjets2018</a> = BjetsConfig{}</td></tr>
+<tr class="memitem:ac0e217bf79fc1623de7b071c0e0589f8"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#ac0e217bf79fc1623de7b071c0e0589f8">ObjConfig::Bjets2018</a> = BjetsConfig{.MinBTagWPTight = 0.71}</td></tr>
 <tr class="separator:ac0e217bf79fc1623de7b071c0e0589f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afcac5b1ca0a14bad328559f7f3ec6d53"><td class="memItemLeft" align="right" valign="top">constexpr std::array&lt; BjetsConfig, <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abfd3e8c0a2e269807b0b07d3cc6ad62c">Year::kTotalYears</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#afcac5b1ca0a14bad328559f7f3ec6d53">ObjConfig::BJets</a> = {Bjets2016APV, Bjets2016, Bjets2017, Bjets2018}</td></tr>
 <tr class="separator:afcac5b1ca0a14bad328559f7f3ec6d53"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4cd1a7972f985bbd4bed7a53aa41127c"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a4cd1a7972f985bbd4bed7a53aa41127c">ObjConfig::Jet2016APV</a> = JetConfig{}</td></tr>
+<tr class="memitem:a4cd1a7972f985bbd4bed7a53aa41127c"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a4cd1a7972f985bbd4bed7a53aa41127c">ObjConfig::Jet2016APV</a> = JetConfig{.MaxBTagWPTight = 0.6502}</td></tr>
 <tr class="separator:a4cd1a7972f985bbd4bed7a53aa41127c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa0c3eb7f51055a6251a12dba623c29a0"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#aa0c3eb7f51055a6251a12dba623c29a0">ObjConfig::Jet2016</a> = JetConfig{}</td></tr>
+<tr class="memitem:aa0c3eb7f51055a6251a12dba623c29a0"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#aa0c3eb7f51055a6251a12dba623c29a0">ObjConfig::Jet2016</a> = JetConfig{.MaxBTagWPTight = 0.6377}</td></tr>
 <tr class="separator:aa0c3eb7f51055a6251a12dba623c29a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a200cb319f03866ad3d144993e1c8b82f"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a200cb319f03866ad3d144993e1c8b82f">ObjConfig::Jet2017</a> = JetConfig{}</td></tr>
+<tr class="memitem:a200cb319f03866ad3d144993e1c8b82f"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#a200cb319f03866ad3d144993e1c8b82f">ObjConfig::Jet2017</a> = JetConfig{.MaxBTagWPTight = 0.7476}</td></tr>
 <tr class="separator:a200cb319f03866ad3d144993e1c8b82f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afa25b904c9954d6ccd0510e490b7aa2b"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#afa25b904c9954d6ccd0510e490b7aa2b">ObjConfig::Jet2018</a> = JetConfig{}</td></tr>
+<tr class="memitem:afa25b904c9954d6ccd0510e490b7aa2b"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#afa25b904c9954d6ccd0510e490b7aa2b">ObjConfig::Jet2018</a> = JetConfig{.MaxBTagWPTight = 0.71}</td></tr>
 <tr class="separator:afa25b904c9954d6ccd0510e490b7aa2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6e980438b2782165952b19d6d62e4a9"><td class="memItemLeft" align="right" valign="top">constexpr std::array&lt; JetConfig, <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abfd3e8c0a2e269807b0b07d3cc6ad62c">Year::kTotalYears</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#ab6e980438b2782165952b19d6d62e4a9">ObjConfig::Jets</a> = {Jet2016APV, Jet2016, Jet2017, Jet2018}</td></tr>
 <tr class="separator:ab6e980438b2782165952b19d6d62e4a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -358,142 +334,7 @@ Variables</h2></td></tr>
 <tr class="separator:aee4e7ff55e6f4e450dfdf5994b7e8df3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a738f87046a9e89a6097a926d1680d3dc"><td class="memItemLeft" align="right" valign="top">constexpr std::array&lt; RunConfig, <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abfd3e8c0a2e269807b0b07d3cc6ad62c">Year::kTotalYears</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceRunConfig.html#a738f87046a9e89a6097a926d1680d3dc">RunConfig::Runs</a> = {<a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37acdd64c4ab6df0b9123e861c6a553ff52">Run2016APV</a>, <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abd2434cf3747e405569bbf500407c664">Run2016</a>, <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37a46f3a28d72133d1d36182be3a3938bb5">Run2017</a>, <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37a4574676bc1f98656ba6d813ba595ffc0">Run2018</a>}</td></tr>
 <tr class="separator:a738f87046a9e89a6097a926d1680d3dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad32e5ab25a03dd893cca49c1936bf661"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTriggerConfig.html#ad32e5ab25a03dd893cca49c1936bf661">TriggerConfig::TriggerStreamRedList</a></td></tr>
-<tr class="separator:ad32e5ab25a03dd893cca49c1936bf661"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Macro Definition Documentation</h2>
-<a id="a8b7a21b5630221611d4d6bd21eb830d7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8b7a21b5630221611d4d6bd21eb830d7">&#9670;&nbsp;</a></span>ADD_TO_TRIGGER_RED_LIST</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define ADD_TO_TRIGGER_RED_LIST</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">DATA_STREAM, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>...</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td>&#160;&#160;&#160;boost::hana::make_pair(DATA_STREAM, boost::hana::make_tuple(__VA_ARGS__))</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a81de60f5bea16e6ff4a38c94e3022f10"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a81de60f5bea16e6ff4a38c94e3022f10">&#9670;&nbsp;</a></span>BOOST_HANA_CONFIG_ENABLE_STRING_UDL</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define BOOST_HANA_CONFIG_ENABLE_STRING_UDL&#160;&#160;&#160;1</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a8ba4b90ab0c7a44249616f4cb3848c30"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8ba4b90ab0c7a44249616f4cb3848c30">&#9670;&nbsp;</a></span>HANA_FIRST</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define HANA_FIRST</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">DATA</td><td>)</td>
-          <td>&#160;&#160;&#160;boost::hana::first(DATA)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a4567cd0c682e448eaa5fa6734b62b8f6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4567cd0c682e448eaa5fa6734b62b8f6">&#9670;&nbsp;</a></span>HANA_FIRST_TO_SV</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define HANA_FIRST_TO_SV</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">DATA</td><td>)</td>
-          <td>&#160;&#160;&#160;std::string_view(boost::hana::first(DATA).c_str())</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ab9f8e03af5770839bed7836bbdc61107"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab9f8e03af5770839bed7836bbdc61107">&#9670;&nbsp;</a></span>HANA_SECOND</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define HANA_SECOND</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">DATA</td><td>)</td>
-          <td>&#160;&#160;&#160;boost::hana::second(DATA)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a6d8df6d25a3b3f4c2305ad991bcdce96"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6d8df6d25a3b3f4c2305ad991bcdce96">&#9670;&nbsp;</a></span>HANA_SECOND_TO_SV</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define HANA_SECOND_TO_SV</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">DATA</td><td>)</td>
-          <td>&#160;&#160;&#160;std::string_view(boost::hana::second(DATA).c_str())</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a1154d34bd4e1bd5ed78ab65b5a765721"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1154d34bd4e1bd5ed78ab65b5a765721">&#9670;&nbsp;</a></span>HANA_TO_SV</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define HANA_TO_SV</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">DATA</td><td>)</td>
-          <td>&#160;&#160;&#160;std::string_view(DATA.c_str())</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
 <a id="ae49013585f0536b639fe09828864fe37"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae49013585f0536b639fe09828864fe37">&#9670;&nbsp;</a></span>Year</h2>

@@ -163,6 +163,7 @@ $(document).ready(function(){initNavTree('NanoMUSiC_8hpp.html',''); initResizabl
 
 <div class="header">
   <div class="summary">
+<a href="#define-members">Macros</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
@@ -198,10 +199,14 @@ $(document).ready(function(){initNavTree('NanoMUSiC_8hpp.html',''); initResizabl
 <code>#include &quot;Math/VectorUtil.h&quot;</code><br />
 <code>#include &quot;ROOT/RDataFrame.hxx&quot;</code><br />
 <code>#include &quot;ROOT/RVec.hxx&quot;</code><br />
+<code>#include &quot;RtypesCore.h&quot;</code><br />
+<code>#include &quot;TChain.h&quot;</code><br />
 <code>#include &quot;TFile.h&quot;</code><br />
 <code>#include &quot;TH1.h&quot;</code><br />
-<code>#include &quot;TObjString.h&quot;</code><br />
 <code>#include &quot;TTree.h&quot;</code><br />
+<code>#include &quot;TTreeReader.h&quot;</code><br />
+<code>#include &quot;TTreeReaderArray.h&quot;</code><br />
+<code>#include &quot;TTreeReaderValue.h&quot;</code><br />
 <code>#include &quot;toml.hpp&quot;</code><br />
 <code>#include &quot;color.hpp&quot;</code><br />
 <code>#include &quot;emoji.hpp&quot;</code><br />
@@ -210,16 +215,24 @@ $(document).ready(function(){initNavTree('NanoMUSiC_8hpp.html',''); initResizabl
 <code>#include &quot;<a class="el" href="MUSiCTools_8hpp_source.html">MUSiCTools.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="TOMLConfig_8hpp_source.html">TOMLConfig.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="RunLumiFilter_8hpp_source.html">RunLumiFilter.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="CorrectionSets_8hpp_source.html">CorrectionSets.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Configs_8hpp_source.html">Configs.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="NanoObjects_8hpp_source.html">NanoObjects.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Outputs_8hpp_source.html">Outputs.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Enumerate_8hpp_source.html">Enumerate.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="EventData_8hpp_source.html">EventData.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="TaskConfiguration_8hpp_source.html">TaskConfiguration.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Trigger_8hpp_source.html">Trigger.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="CorrectionSets_8hpp_source.html">CorrectionSets.hpp</a>&quot;</code><br />
 </div>
 <p><a href="NanoMUSiC_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:a82b84917c4cc4e02b8dc79fbd1bf4f5f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#a82b84917c4cc4e02b8dc79fbd1bf4f5f">ADD_VALUE_READER</a>(VAR,  TYPE)&#160;&#160;&#160;auto VAR = <a class="el" href="NanoMUSiC_8hpp.html#aa3d1375c874876795a8c4ec566c1fdc6">make_value_reader</a>&lt;TYPE&gt;(tree_reader, #VAR)</td></tr>
+<tr class="separator:a82b84917c4cc4e02b8dc79fbd1bf4f5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa125e7c8cee3898852b8c52151b1c672"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#aa125e7c8cee3898852b8c52151b1c672">ADD_ARRAY_READER</a>(VAR,  TYPE)&#160;&#160;&#160;auto VAR = <a class="el" href="NanoMUSiC_8hpp.html#a5243b2e67317aeb7c96cbb4cd98182a4">make_array_reader</a>&lt;TYPE&gt;(tree_reader, #VAR)</td></tr>
+<tr class="separator:aa125e7c8cee3898852b8c52151b1c672"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:a80e365d8190775175a4620a81aaa3185"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#a80e365d8190775175a4620a81aaa3185">OptionalFuture_t</a> = std::optional&lt; std::future&lt; std::unique_ptr&lt; TFile &gt; &gt;&gt;</td></tr>
@@ -227,6 +240,18 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:aa3d1375c874876795a8c4ec566c1fdc6"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:aa3d1375c874876795a8c4ec566c1fdc6"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#aa3d1375c874876795a8c4ec566c1fdc6">make_value_reader</a> (TTreeReader &amp;tree_reader, const std::string &amp;leaf) -&gt; std::optional&lt; TTreeReaderValue&lt; T &gt;&gt;</td></tr>
+<tr class="separator:aa3d1375c874876795a8c4ec566c1fdc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5243b2e67317aeb7c96cbb4cd98182a4"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a5243b2e67317aeb7c96cbb4cd98182a4"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#a5243b2e67317aeb7c96cbb4cd98182a4">make_array_reader</a> (TTreeReader &amp;tree_reader, const std::string &amp;leaf) -&gt; std::optional&lt; TTreeReaderArray&lt; T &gt;&gt;</td></tr>
+<tr class="separator:a5243b2e67317aeb7c96cbb4cd98182a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d1de4e8c7ef08ec45ab65b0def9694d"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a7d1de4e8c7ef08ec45ab65b0def9694d"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#a7d1de4e8c7ef08ec45ab65b0def9694d">unwrap</a> (std::optional&lt; TTreeReaderValue&lt; T &gt;&gt; &amp;value) -&gt; T</td></tr>
+<tr class="separator:a7d1de4e8c7ef08ec45ab65b0def9694d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7fe4b41c75070bb4ee32517a6818ff1"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ac7fe4b41c75070bb4ee32517a6818ff1"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#ac7fe4b41c75070bb4ee32517a6818ff1">unwrap</a> (std::optional&lt; TTreeReaderArray&lt; T &gt;&gt; &amp;array) -&gt; RVec&lt; T &gt;</td></tr>
+<tr class="separator:ac7fe4b41c75070bb4ee32517a6818ff1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1cebcc2da734541f7cf005033722cb43"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#a1cebcc2da734541f7cf005033722cb43">PrintProcessInfo</a> ()</td></tr>
 <tr class="separator:a1cebcc2da734541f7cf005033722cb43"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ef88d1206645b82f5a36dc4db0c0b3e"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; TFile &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#a0ef88d1206645b82f5a36dc4db0c0b3e">file_loader</a> (const std::string &amp;file_path, const bool cacheread, const std::string &amp;cache_dir, const bool verbose_load)</td></tr>
@@ -243,6 +268,63 @@ Functions</h2></td></tr>
 <tr class="memitem:a41ec02e286c1ee820f743c2ec2347efe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NanoMUSiC_8hpp.html#a41ec02e286c1ee820f743c2ec2347efe">print_report</a> (const double &amp;dTime1, const unsigned long &amp;event_counter, TH1F &amp;cutflow_histo, bool is_final=false)</td></tr>
 <tr class="separator:a41ec02e286c1ee820f743c2ec2347efe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="aa125e7c8cee3898852b8c52151b1c672"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa125e7c8cee3898852b8c52151b1c672">&#9670;&nbsp;</a></span>ADD_ARRAY_READER</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define ADD_ARRAY_READER</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">VAR, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">TYPE&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td>&#160;&#160;&#160;auto VAR = <a class="el" href="NanoMUSiC_8hpp.html#a5243b2e67317aeb7c96cbb4cd98182a4">make_array_reader</a>&lt;TYPE&gt;(tree_reader, #VAR)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a82b84917c4cc4e02b8dc79fbd1bf4f5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82b84917c4cc4e02b8dc79fbd1bf4f5f">&#9670;&nbsp;</a></span>ADD_VALUE_READER</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define ADD_VALUE_READER</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">VAR, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">TYPE&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td>&#160;&#160;&#160;auto VAR = <a class="el" href="NanoMUSiC_8hpp.html#aa3d1375c874876795a8c4ec566c1fdc6">make_value_reader</a>&lt;TYPE&gt;(tree_reader, #VAR)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="a80e365d8190775175a4620a81aaa3185"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a80e365d8190775175a4620a81aaa3185">&#9670;&nbsp;</a></span>OptionalFuture_t</h2>
@@ -378,6 +460,68 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
+<a id="a5243b2e67317aeb7c96cbb4cd98182a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5243b2e67317aeb7c96cbb4cd98182a4">&#9670;&nbsp;</a></span>make_array_reader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">auto make_array_reader </td>
+          <td>(</td>
+          <td class="paramtype">TTreeReader &amp;&#160;</td>
+          <td class="paramname"><em>tree_reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>leaf</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; std::optional&lt;TTreeReaderArray&lt;T&gt;&gt;
+</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa3d1375c874876795a8c4ec566c1fdc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3d1375c874876795a8c4ec566c1fdc6">&#9670;&nbsp;</a></span>make_value_reader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">auto make_value_reader </td>
+          <td>(</td>
+          <td class="paramtype">TTreeReader &amp;&#160;</td>
+          <td class="paramname"><em>tree_reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>leaf</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; std::optional&lt;TTreeReaderValue&lt;T&gt;&gt;
+</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="af1b03d412e02df069024d445cf782b46"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af1b03d412e02df069024d445cf782b46">&#9670;&nbsp;</a></span>prepare_output_buffer()</h2>
 
@@ -409,9 +553,6 @@ template&lt;typename T &gt; </div>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void print_report </td>
@@ -443,11 +584,6 @@ template&lt;typename T &gt; </div>
           <td></td><td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 </div>
@@ -473,6 +609,48 @@ template&lt;typename T &gt; </div>
 <span class="mlabels"><span class="mlabel">inline</span></span>  </td>
   </tr>
 </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac7fe4b41c75070bb4ee32517a6818ff1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7fe4b41c75070bb4ee32517a6818ff1">&#9670;&nbsp;</a></span>unwrap() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">auto unwrap </td>
+          <td>(</td>
+          <td class="paramtype">std::optional&lt; TTreeReaderArray&lt; T &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>array</em></td><td>)</td>
+          <td> -&gt; RVec&lt;T&gt;
+</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7d1de4e8c7ef08ec45ab65b0def9694d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d1de4e8c7ef08ec45ab65b0def9694d">&#9670;&nbsp;</a></span>unwrap() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">auto unwrap </td>
+          <td>(</td>
+          <td class="paramtype">std::optional&lt; TTreeReaderValue&lt; T &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td> -&gt; T
+</td>
+        </tr>
+      </table>
 </div><div class="memdoc">
 
 </div>

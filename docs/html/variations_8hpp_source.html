@@ -245,7 +245,7 @@ $(document).ready(function(){initNavTree('variations_8hpp_source.html',''); init
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="comment">//     return std::make_pair(Outputs::Variations[idx_variation], Outputs::Shifts[idx_shift]);</span></div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="comment">// }</span></div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="comment">// inline auto VariationsAndShiftsRange = views::cartesian_product(Outputs::Variations, Outputs::Shifts) |</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="comment">// auto VariationsAndShiftsRange = views::cartesian_product(Outputs::Variations, Outputs::Shifts) |</span></div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="comment">//                                        views::remove_if([](auto variation_and_shift) {</span></div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="comment">//                                            const auto [variation, shift] = variation_and_shift;</span></div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="comment">//                                            return (variation == &quot;Default&quot; &amp;&amp; (shift == &quot;Up&quot; || shift == &quot;Down&quot;));</span></div>
@@ -256,7 +256,7 @@ $(document).ready(function(){initNavTree('variations_8hpp_source.html',''); init
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="comment">//                                        });</span></div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160; </div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="comment">// constexpr unsigned int kTotalVariationsAndShifts = (Outputs::kTotalVariations - 1) * 2 + 1;</span></div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="comment">// inline const auto VariationsAndShiftsIndexRange = RangesHelpers::index_range&lt;unsigned</span></div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="comment">// const auto VariationsAndShiftsIndexRange = RangesHelpers::index_range&lt;unsigned</span></div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="comment">// long&gt;(kTotalVariationsAndShifts);</span></div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160; </div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="comment">// } // namespace Variations</span></div>

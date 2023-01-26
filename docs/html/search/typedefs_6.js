@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['rochestercorrection_5ft_849',['RochesterCorrection_t',['../CorrectionSets_8hpp.html#a92123307785577bd95f7bbc9fbc4462a',1,'CorrectionSets.hpp']]]
+  ['path_979',['Path',['../namespaceMUSiCTools.html#a58b8f4ae2ccaa5f53dc7de43bc3bea4d',1,'MUSiCTools']]]
 ];

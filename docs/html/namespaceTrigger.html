@@ -177,9 +177,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a475693bf9bf595a28241687c3b98aa15"><td class="memTemplParams" colspan="2">template&lt;typename T1 , typename T2 &gt; </td></tr>
 <tr class="memitem:a475693bf9bf595a28241687c3b98aa15"><td class="memTemplItemLeft" align="right" valign="top">std::pair&lt; RVec&lt; float &gt;, RVec&lt; float &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#a475693bf9bf595a28241687c3b98aa15">get_matches</a> (const T1 &amp;trigger_objects_pt, const T1 &amp;trigger_objects_eta, const T1 &amp;trigger_objects_phi, const T2 &amp;nano_objects_pt, const T2 &amp;nano_objects_eta, const T2 &amp;nano_objects_phi)</td></tr>
 <tr class="separator:a475693bf9bf595a28241687c3b98aa15"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac6df4c8b56bf5622b27467cc5a201a0d"><td class="memTemplParams" colspan="2">template&lt;typename T1 , typename T2 &gt; </td></tr>
-<tr class="memitem:ac6df4c8b56bf5622b27467cc5a201a0d"><td class="memTemplItemLeft" align="right" valign="top">constexpr std::tuple&lt; bool, float, float &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#ac6df4c8b56bf5622b27467cc5a201a0d">trigger_matcher</a> (const T1 &amp;trigger_objects_pt, const T1 &amp;trigger_objects_eta, const T1 &amp;trigger_objects_phi, const T2 &amp;nano_objects_pt, const T2 &amp;nano_objects_eta, const T2 &amp;nano_objects_phi, const float max_delta_r)</td></tr>
-<tr class="separator:ac6df4c8b56bf5622b27467cc5a201a0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a019ed351f7b271deb1f72f15057ab800"><td class="memTemplParams" colspan="2">template&lt;typename T1 , typename T2 &gt; </td></tr>
+<tr class="memitem:a019ed351f7b271deb1f72f15057ab800"><td class="memTemplItemLeft" align="right" valign="top">constexpr std::tuple&lt; bool, std::size_t &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#a019ed351f7b271deb1f72f15057ab800">trigger_matcher</a> (const T1 &amp;trigger_objects_pt, const T1 &amp;trigger_objects_eta, const T1 &amp;trigger_objects_phi, const T2 &amp;nano_objects_pt, const T2 &amp;nano_objects_eta, const T2 &amp;nano_objects_phi, const float max_delta_r)</td></tr>
+<tr class="separator:a019ed351f7b271deb1f72f15057ab800"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a580e1c559f06988c3c72636666e5d80f"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#a580e1c559f06988c3c72636666e5d80f">check_bit</a> (const RVec&lt; int &gt; &amp;trigger_bits, const int &amp;bit)</td></tr>
 <tr class="separator:a580e1c559f06988c3c72636666e5d80f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a76fa6042a608b9be8e58b9e5b398d1b5"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#a76fa6042a608b9be8e58b9e5b398d1b5">SingleMuonLowPtBits</a> (const RVec&lt; int &gt; &amp;triggerobj_bit, const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;year)</td></tr>
@@ -188,6 +188,14 @@ Functions</h2></td></tr>
 <tr class="memitem:a10c809938ce09d2f3b5b9405fae0b967"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#a10c809938ce09d2f3b5b9405fae0b967">SingleMuonHighPtBits</a> (const RVec&lt; int &gt; &amp;triggerobj_bit, const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;year)</td></tr>
 <tr class="memdesc:a10c809938ce09d2f3b5b9405fae0b967"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check the <code>trigger_bit</code> of a given TrigObj for Single Muon - High pT.  <a href="namespaceTrigger.html#a10c809938ce09d2f3b5b9405fae0b967">More...</a><br /></td></tr>
 <tr class="separator:a10c809938ce09d2f3b5b9405fae0b967"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add17c3a37a8876f30af7ee03e7a8a181"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#add17c3a37a8876f30af7ee03e7a8a181">SingleElectronLowPtBits</a> (const RVec&lt; int &gt; &amp;triggerobj_bit, const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;year)</td></tr>
+<tr class="memdesc:add17c3a37a8876f30af7ee03e7a8a181"><td class="mdescLeft">&#160;</td><td class="mdescRight">Seems to be the same for all three years.  <a href="namespaceTrigger.html#add17c3a37a8876f30af7ee03e7a8a181">More...</a><br /></td></tr>
+<tr class="separator:add17c3a37a8876f30af7ee03e7a8a181"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64ae1c44469c9af1ac48f631aec51a5a"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#a64ae1c44469c9af1ac48f631aec51a5a">SingleElectronHighPtBits</a> (const RVec&lt; int &gt; &amp;triggerobj_bit, const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;year)</td></tr>
+<tr class="memdesc:a64ae1c44469c9af1ac48f631aec51a5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Seems to be the same for all three years.  <a href="namespaceTrigger.html#a64ae1c44469c9af1ac48f631aec51a5a">More...</a><br /></td></tr>
+<tr class="separator:a64ae1c44469c9af1ac48f631aec51a5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97e3cda8811a1bfb0032b6a38efb710c"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#a97e3cda8811a1bfb0032b6a38efb710c">PhotonBits</a> (const RVec&lt; int &gt; &amp;triggerobj_bit, const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;year)</td></tr>
+<tr class="separator:a97e3cda8811a1bfb0032b6a38efb710c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a505dcb3d3918e6bb18a8229388d44a4c"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#a505dcb3d3918e6bb18a8229388d44a4c">check_trigger_bit</a> (const RVec&lt; int &gt; &amp;triggerobj_bit, const std::string_view &amp;path, const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;year)</td></tr>
 <tr class="separator:a505dcb3d3918e6bb18a8229388d44a4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -197,6 +205,8 @@ Variables</h2></td></tr>
 <tr class="separator:ac93ee13dccdb4ce77bb658412f602dc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aff1092c04a2f900b8106a8f8745b0fc9"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#aff1092c04a2f900b8106a8f8745b0fc9">kTotalPaths</a> = HLTPath.size()</td></tr>
 <tr class="separator:aff1092c04a2f900b8106a8f8745b0fc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18ae85cd2c887f12d732d8437dd62e43"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#a18ae85cd2c887f12d732d8437dd62e43">ActivatedHLTPath</a></td></tr>
+<tr class="separator:a18ae85cd2c887f12d732d8437dd62e43"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a580e1c559f06988c3c72636666e5d80f"></a>
@@ -204,6 +214,9 @@ Variables</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">RVec&lt;int&gt; Trigger::check_bit </td>
@@ -223,6 +236,11 @@ Variables</h2></td></tr>
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 </div>
@@ -232,6 +250,9 @@ Variables</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">RVec&lt;int&gt; Trigger::check_trigger_bit </td>
@@ -257,6 +278,11 @@ Variables</h2></td></tr>
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 <p>Check the <code>trigger_bit</code> of a given TrigObj, <code>path</code> and <code>year</code>. </p>
 
@@ -321,6 +347,9 @@ template&lt;typename T1 , typename T2 &gt; </div>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">std::string Trigger::get_year_for_muon_sf </td>
@@ -330,7 +359,127 @@ template&lt;typename T1 , typename T2 &gt; </div>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="a97e3cda8811a1bfb0032b6a38efb710c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97e3cda8811a1bfb0032b6a38efb710c">&#9670;&nbsp;</a></span>PhotonBits()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">RVec&lt;int&gt; Trigger::PhotonBits </td>
+          <td>(</td>
+          <td class="paramtype">const RVec&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>triggerobj_bit</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;&#160;</td>
+          <td class="paramname"><em>year</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Seems to be the same for all three years. NOTE: So far, we do not trigger solo on photons. 1 = CaloIdL_TrackIdL_IsoVL 2 = 1e (WPTight) 4 = 1e (WPLoose) 8 = OverlapFilter PFTau 16 = 2e 32 = 1e-1mu 64 = 1e-1tau 128 = 3e 256 = 2e-1mu 512 = 1e-2mu 1024 = 1e (32_L1DoubleEG_AND_L1SingleEGOr) 2048 = 1e (CaloIdVT_GsfTrkIdT) 4096 = 1e (PFJet) 8192 = 1e (Photon175_OR_Photon200) for Electron (PixelMatched e/gamma) </p>
+
+</div>
+</div>
+<a id="a64ae1c44469c9af1ac48f631aec51a5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64ae1c44469c9af1ac48f631aec51a5a">&#9670;&nbsp;</a></span>SingleElectronHighPtBits()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">RVec&lt;int&gt; Trigger::SingleElectronHighPtBits </td>
+          <td>(</td>
+          <td class="paramtype">const RVec&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>triggerobj_bit</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;&#160;</td>
+          <td class="paramname"><em>year</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Seems to be the same for all three years. </p>
+<p>1 = CaloIdL_TrackIdL_IsoVL 2 = 1e (WPTight) 4 = 1e (WPLoose) 8 = OverlapFilter PFTau 16 = 2e 32 = 1e-1mu 64 = 1e-1tau 128 = 3e 256 = 2e-1mu 512 = 1e-2mu 1024 = 1e (32_L1DoubleEG_AND_L1SingleEGOr) 2048 = 1e (CaloIdVT_GsfTrkIdT) 4096 = 1e (PFJet) 8192 = 1e (Photon175_OR_Photon200) for Electron (PixelMatched e/gamma) </p>
+
+</div>
+</div>
+<a id="add17c3a37a8876f30af7ee03e7a8a181"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add17c3a37a8876f30af7ee03e7a8a181">&#9670;&nbsp;</a></span>SingleElectronLowPtBits()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">RVec&lt;int&gt; Trigger::SingleElectronLowPtBits </td>
+          <td>(</td>
+          <td class="paramtype">const RVec&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>triggerobj_bit</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;&#160;</td>
+          <td class="paramname"><em>year</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Seems to be the same for all three years. </p>
+<p>1 = CaloIdL_TrackIdL_IsoVL 2 = 1e (WPTight) 4 = 1e (WPLoose) 8 = OverlapFilter PFTau 16 = 2e 32 = 1e-1mu 64 = 1e-1tau 128 = 3e 256 = 2e-1mu 512 = 1e-2mu 1024 = 1e (32_L1DoubleEG_AND_L1SingleEGOr) 2048 = 1e (CaloIdVT_GsfTrkIdT) 4096 = 1e (PFJet) 8192 = 1e (Photon175_OR_Photon200) for Electron (PixelMatched e/gamma) </p>
 
 </div>
 </div>
@@ -339,6 +488,9 @@ template&lt;typename T1 , typename T2 &gt; </div>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">RVec&lt;int&gt; Trigger::SingleMuonHighPtBits </td>
@@ -358,6 +510,11 @@ template&lt;typename T1 , typename T2 &gt; </div>
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Check the <code>trigger_bit</code> of a given TrigObj for Single Muon - High pT. </p>
@@ -369,6 +526,9 @@ template&lt;typename T1 , typename T2 &gt; </div>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">RVec&lt;int&gt; Trigger::SingleMuonLowPtBits </td>
@@ -388,14 +548,19 @@ template&lt;typename T1 , typename T2 &gt; </div>
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Check the <code>trigger_bit</code> of a given TrigObj for Single Muon - Low pT. </p>
 
 </div>
 </div>
-<a id="ac6df4c8b56bf5622b27467cc5a201a0d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac6df4c8b56bf5622b27467cc5a201a0d">&#9670;&nbsp;</a></span>trigger_matcher()</h2>
+<a id="a019ed351f7b271deb1f72f15057ab800"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a019ed351f7b271deb1f72f15057ab800">&#9670;&nbsp;</a></span>trigger_matcher()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -406,7 +571,7 @@ template&lt;typename T1 , typename T2 &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr std::tuple&lt;bool, float, float&gt; Trigger::trigger_matcher </td>
+          <td class="memname">constexpr std::tuple&lt;bool, std::size_t&gt; Trigger::trigger_matcher </td>
           <td>(</td>
           <td class="paramtype">const T1 &amp;&#160;</td>
           <td class="paramname"><em>trigger_objects_pt</em>, </td>
@@ -463,6 +628,32 @@ template&lt;typename T1 , typename T2 &gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Variable Documentation</h2>
+<a id="a18ae85cd2c887f12d732d8437dd62e43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18ae85cd2c887f12d732d8437dd62e43">&#9670;&nbsp;</a></span>ActivatedHLTPath</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto Trigger::ActivatedHLTPath</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">= <a class="code" href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">make_enumerate</a>(<span class="stringliteral">&quot;SingleMuonLowPt&quot;</span>sv,     </div>
+<div class="line">                                                 <span class="stringliteral">&quot;SingleMuonHighPt&quot;</span>sv,    </div>
+<div class="line">                                                 <span class="stringliteral">&quot;SingleElectronLowPt&quot;</span>sv, </div>
+<div class="line">                                                 <span class="stringliteral">&quot;SingleElectronHighPt&quot;</span>sv)</div>
+</div><!-- fragment -->
+</div>
+</div>
 <a id="ac93ee13dccdb4ce77bb658412f602dc5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac93ee13dccdb4ce77bb658412f602dc5">&#9670;&nbsp;</a></span>HLTPath</h2>
 
@@ -482,17 +673,17 @@ template&lt;typename T1 , typename T2 &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">= <a class="code" href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">make_enumerate</a>( </div>
-<div class="line">    <span class="stringliteral">&quot;SingleMuonLowPt&quot;</span>sv,                 </div>
-<div class="line">    <span class="stringliteral">&quot;SingleMuonHighPt&quot;</span>sv,                </div>
-<div class="line">    <span class="stringliteral">&quot;SingleElectron&quot;</span>sv,                  </div>
-<div class="line">    <span class="stringliteral">&quot;DoubleMuon&quot;</span>sv,                      </div>
-<div class="line">    <span class="stringliteral">&quot;DoubleElectron&quot;</span>sv,                  </div>
-<div class="line">    <span class="stringliteral">&quot;Photon&quot;</span>sv,                          </div>
-<div class="line">    <span class="stringliteral">&quot;Tau&quot;</span>sv,                             </div>
-<div class="line">    <span class="stringliteral">&quot;BJet&quot;</span>sv,                            </div>
-<div class="line">    <span class="stringliteral">&quot;Jet&quot;</span>sv,                             </div>
-<div class="line">    <span class="stringliteral">&quot;MET&quot;</span>sv)</div>
+<b>Initial value:</b><div class="fragment"><div class="line">= <a class="code" href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">make_enumerate</a>(<span class="stringliteral">&quot;SingleMuonLowPt&quot;</span>sv,      </div>
+<div class="line">                                        <span class="stringliteral">&quot;SingleMuonHighPt&quot;</span>sv,     </div>
+<div class="line">                                        <span class="stringliteral">&quot;SingleElectronLowPt&quot;</span>sv,  </div>
+<div class="line">                                        <span class="stringliteral">&quot;SingleElectronHighPt&quot;</span>sv, </div>
+<div class="line">                                        <span class="stringliteral">&quot;DoubleMuon&quot;</span>sv,           </div>
+<div class="line">                                        <span class="stringliteral">&quot;DoubleElectron&quot;</span>sv,       </div>
+<div class="line">                                        <span class="stringliteral">&quot;Photon&quot;</span>sv,               </div>
+<div class="line">                                        <span class="stringliteral">&quot;Tau&quot;</span>sv,                  </div>
+<div class="line">                                        <span class="stringliteral">&quot;BJet&quot;</span>sv,                 </div>
+<div class="line">                                        <span class="stringliteral">&quot;Jet&quot;</span>sv,                  </div>
+<div class="line">                                        <span class="stringliteral">&quot;MET&quot;</span>sv)</div>
 </div><!-- fragment -->
 </div>
 </div>

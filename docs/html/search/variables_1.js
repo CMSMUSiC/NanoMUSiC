@@ -1,9 +1,17 @@
 var searchData=
 [
-  ['categories_671',['categories',['../classEnumerate.html#aca47267923d68a66f26928057149290c',1,'Enumerate']]],
-  ['correction_5fkeys_672',['correction_keys',['../classCorrector.html#a5f816cd28e1708277f207c19c33f63a8',1,'Corrector']]],
-  ['correction_5fref_673',['correction_ref',['../classCorrector.html#a1b5ebe507f50525f6cd6276b491204fa',1,'Corrector']]],
-  ['correction_5ftype_674',['correction_type',['../classCorrector.html#ab03d759230a761e21481d9acc29c84a9',1,'Corrector']]],
-  ['cutflow_5fhisto_675',['cutflow_histo',['../classOutputs.html#ab9c4e5bf0cf1b72ae606aa8e87b67eb5',1,'Outputs']]],
-  ['cuts_676',['Cuts',['../classOutputs.html#a82e6df3ec0abf230ea32702dda229311',1,'Outputs']]]
+  ['barrel_5feta_5flower_5flimit_754',['barrel_eta_lower_limit',['../classElectronTriggerSF.html#ae6ef687091d0288bd856f2351807ba8c',1,'ElectronTriggerSF']]],
+  ['barrel_5feta_5fupper_5flimit_755',['barrel_eta_upper_limit',['../classElectronTriggerSF.html#a276ccaf2c17d2b36c9c8178d23502d01',1,'ElectronTriggerSF']]],
+  ['barrel_5fpt_5flower_5flimit_756',['barrel_pt_lower_limit',['../classElectronTriggerSF.html#a775f8e33b1f603b08fac8ab92b6799c8',1,'ElectronTriggerSF']]],
+  ['barrel_5fpt_5fupper_5flimit_757',['barrel_pt_upper_limit',['../classElectronTriggerSF.html#aa760241002579b12aa3bd621f8f1d236',1,'ElectronTriggerSF']]],
+  ['bjet_5feta_758',['BJet_eta',['../classOutputs.html#aa5a6ec77b625042d2f72fecf384e106b',1,'Outputs']]],
+  ['bjet_5fphi_759',['BJet_phi',['../classOutputs.html#ac3ac2d9ba55088c7e80820e01f549e75',1,'Outputs']]],
+  ['bjet_5fpt_760',['BJet_pt',['../classOutputs.html#a9064dc06872c67e3468ddc7cf2e6da84',1,'Outputs']]],
+  ['bjets_761',['bjets',['../classEventData.html#a1286371ddebe8d0578df3dd5e17c2a66',1,'EventData::bjets()'],['../namespaceObjConfig.html#afcac5b1ca0a14bad328559f7f3ec6d53',1,'ObjConfig::BJets()']]],
+  ['bjets2016_762',['Bjets2016',['../namespaceObjConfig.html#aede2d0f9e6783cf805606e73beeaf92d',1,'ObjConfig']]],
+  ['bjets2016apv_763',['Bjets2016APV',['../namespaceObjConfig.html#a27230779f387f21354f8c0ae33c0e0a5',1,'ObjConfig']]],
+  ['bjets2017_764',['Bjets2017',['../namespaceObjConfig.html#ae1869324596201ecc35343da445c1988',1,'ObjConfig']]],
+  ['bjets2018_765',['Bjets2018',['../namespaceObjConfig.html#ac0e217bf79fc1623de7b071c0e0589f8',1,'ObjConfig']]],
+  ['btagdeepflavb_766',['btagDeepFlavB',['../structNanoObjects_1_1Jets.html#aa5621a8f0a66ec48f810c5e8149ed278',1,'NanoObjects::Jets']]],
+  ['buffer_5fsize_767',['buffer_size',['../classOutputs.html#aef0940481404cb0a12985a10756aa55c',1,'Outputs']]]
 ];

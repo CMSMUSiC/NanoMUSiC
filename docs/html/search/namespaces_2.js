@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['musictools_450',['MUSiCTools',['../namespaceMUSiCTools.html',1,'']]]
+  ['indexhelpers_525',['IndexHelpers',['../namespaceIndexHelpers.html',1,'']]]
 ];

@@ -1,5 +1,6 @@
 var dir_7aaf294a99fae0b1961be37b302bde84 =
 [
+    [ "ElectronTriggerSF", "dir_047fc3cb0361c649fb86cad0b4450530.html", "dir_047fc3cb0361c649fb86cad0b4450530" ],
     [ "Configs.hpp", "Configs_8hpp.html", "Configs_8hpp" ],
     [ "CorrectionSets.hpp", "CorrectionSets_8hpp.html", "CorrectionSets_8hpp" ],
     [ "Enumerate.hpp", "Enumerate_8hpp.html", "Enumerate_8hpp" ],
@@ -17,6 +18,9 @@ var dir_7aaf294a99fae0b1961be37b302bde84 =
     [ "PDFAlphaSWeights.hpp", "PDFAlphaSWeights_8hpp.html", null ],
     [ "process_event.hpp", "process__event_8hpp.html", null ],
     [ "RunLumiFilter.hpp", "RunLumiFilter_8hpp.html", "RunLumiFilter_8hpp" ],
+    [ "TaskConfiguration.hpp", "TaskConfiguration_8hpp.html", [
+      [ "TaskConfiguration", "classTaskConfiguration.html", "classTaskConfiguration" ]
+    ] ],
     [ "TOMLConfig.hpp", "TOMLConfig_8hpp.html", [
       [ "TOMLConfig", "classTOMLConfig.html", "classTOMLConfig" ]
     ] ],

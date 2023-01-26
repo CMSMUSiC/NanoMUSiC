@@ -25,34 +25,40 @@
 var NAVTREE =
 [
   [ "NanoMUSiC", "index.html", [
-    [ "About", "index.html#autotoc_md1", null ],
-    [ "License", "index.html#autotoc_md2", null ],
+    [ "About", "index.html#autotoc_md5", null ],
+    [ "License", "index.html#autotoc_md6", null ],
+    [ "Electron Trigger Scale Factors", "md___8automount_home_home__home1_institut_3a_silva_projects_music_NanoMUSiC_NanoMUSiC_MUSiC_include_ElectronTriggerSF_README.html", [
+      [ "Content of SF files", "md___8automount_home_home__home1_institut_3a_silva_projects_music_NanoMUSiC_NanoMUSiC_MUSiC_include_ElectronTriggerSF_README.html#autotoc_md1", [
+        [ "Barrrel", "md___8automount_home_home__home1_institut_3a_silva_projects_music_NanoMUSiC_NanoMUSiC_MUSiC_include_ElectronTriggerSF_README.html#autotoc_md2", null ],
+        [ "Endcap", "md___8automount_home_home__home1_institut_3a_silva_projects_music_NanoMUSiC_NanoMUSiC_MUSiC_include_ElectronTriggerSF_README.html#autotoc_md3", null ]
+      ] ]
+    ] ],
     [ "Setup", "md_installation.html", [
-      [ "Dependencies", "md_installation.html#autotoc_md4", null ],
-      [ "Setup the environment (only once)", "md_installation.html#autotoc_md5", null ],
-      [ "Configuring the environment (for every new session)", "md_installation.html#autotoc_md6", null ],
-      [ "Compilation", "md_installation.html#autotoc_md7", null ],
-      [ "Installations directories", "md_installation.html#autotoc_md8", null ]
+      [ "Dependencies", "md_installation.html#autotoc_md8", null ],
+      [ "Setup the environment (only once)", "md_installation.html#autotoc_md9", null ],
+      [ "Configuring the environment (for every new session)", "md_installation.html#autotoc_md10", null ],
+      [ "Compilation", "md_installation.html#autotoc_md11", null ],
+      [ "Installations directories", "md_installation.html#autotoc_md12", null ]
     ] ],
     [ "Running the analysis", "md_running.html", [
-      [ "Skim", "md_running.html#autotoc_md10", [
-        [ "Run Config File", "md_running.html#autotoc_md11", [
-          [ "Single process", "md_running.html#autotoc_md12", null ]
+      [ "Skim", "md_running.html#autotoc_md14", [
+        [ "Run Config File", "md_running.html#autotoc_md15", [
+          [ "Single process", "md_running.html#autotoc_md16", null ]
         ] ]
       ] ]
     ] ],
     [ "NanoAOD file Content", "md_nanoaod_content.html", [
-      [ "MC", "md_nanoaod_content.html#autotoc_md14", [
-        [ "2016APV", "md_nanoaod_content.html#autotoc_md15", null ],
-        [ "2016", "md_nanoaod_content.html#autotoc_md16", null ],
-        [ "2017", "md_nanoaod_content.html#autotoc_md17", null ],
-        [ "2018", "md_nanoaod_content.html#autotoc_md18", null ]
+      [ "MC", "md_nanoaod_content.html#autotoc_md18", [
+        [ "2016APV", "md_nanoaod_content.html#autotoc_md19", null ],
+        [ "2016", "md_nanoaod_content.html#autotoc_md20", null ],
+        [ "2017", "md_nanoaod_content.html#autotoc_md21", null ],
+        [ "2018", "md_nanoaod_content.html#autotoc_md22", null ]
       ] ],
-      [ "Data", "md_nanoaod_content.html#autotoc_md19", [
-        [ "2016APV", "md_nanoaod_content.html#autotoc_md20", null ],
-        [ "2016", "md_nanoaod_content.html#autotoc_md21", null ],
-        [ "2017", "md_nanoaod_content.html#autotoc_md22", null ],
-        [ "2018", "md_nanoaod_content.html#autotoc_md23", null ]
+      [ "Data", "md_nanoaod_content.html#autotoc_md23", [
+        [ "2016APV", "md_nanoaod_content.html#autotoc_md24", null ],
+        [ "2016", "md_nanoaod_content.html#autotoc_md25", null ],
+        [ "2017", "md_nanoaod_content.html#autotoc_md26", null ],
+        [ "2018", "md_nanoaod_content.html#autotoc_md27", null ]
       ] ]
     ] ],
     [ "Namespaces", "namespaces.html", [
@@ -73,6 +79,8 @@ var NAVTREE =
         [ "Functions", "functions_func.html", null ],
         [ "Variables", "functions_vars.html", "functions_vars" ],
         [ "Typedefs", "functions_type.html", null ],
+        [ "Enumerations", "functions_enum.html", null ],
+        [ "Enumerator", "functions_eval.html", null ],
         [ "Related Functions", "functions_rela.html", null ]
       ] ]
     ] ],
@@ -94,8 +102,9 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "Configs_8hpp.html",
-"classEventData.html#aeff04602f12f93c5fbec0ddd1ca270ea",
-"nano2pxl__utils_8hpp.html#a30b67fd9952b1e1df318f9f69ee91364"
+"classEventData.html",
+"functions_vars.html",
+"structRunConfig_1_1RunConfig.html#a25d3be14452facf0fd689960090943c1"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

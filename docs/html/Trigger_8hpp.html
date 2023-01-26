@@ -171,17 +171,24 @@ $(document).ready(function(){initNavTree('Trigger_8hpp.html',''); initResizable(
 <div class="title">Trigger.hpp File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;string&gt;</code><br />
+<div class="textblock"><code>#include &lt;limits&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
 <code>#include &lt;string_view&gt;</code><br />
 <code>#include &quot;<a class="el" href="CorrectionSets_8hpp_source.html">CorrectionSets.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Enumerate_8hpp_source.html">Enumerate.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="NanoObjects_8hpp_source.html">NanoObjects.hpp</a>&quot;</code><br />
 <code>#include &lt;fmt/core.h&gt;</code><br />
+<code>#include &lt;fmt/ostream.h&gt;</code><br />
 <code>#include &quot;ROOT/RVec.hxx&quot;</code><br />
 </div>
 <p><a href="Trigger_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structoverloaded.html">overloaded&lt; Ts &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrgObjMatcher.html">TrgObjMatcher</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTriggerBits.html">TriggerBits</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -197,9 +204,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a475693bf9bf595a28241687c3b98aa15"><td class="memTemplParams" colspan="2">template&lt;typename T1 , typename T2 &gt; </td></tr>
 <tr class="memitem:a475693bf9bf595a28241687c3b98aa15"><td class="memTemplItemLeft" align="right" valign="top">std::pair&lt; RVec&lt; float &gt;, RVec&lt; float &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#a475693bf9bf595a28241687c3b98aa15">Trigger::get_matches</a> (const T1 &amp;trigger_objects_pt, const T1 &amp;trigger_objects_eta, const T1 &amp;trigger_objects_phi, const T2 &amp;nano_objects_pt, const T2 &amp;nano_objects_eta, const T2 &amp;nano_objects_phi)</td></tr>
 <tr class="separator:a475693bf9bf595a28241687c3b98aa15"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac6df4c8b56bf5622b27467cc5a201a0d"><td class="memTemplParams" colspan="2">template&lt;typename T1 , typename T2 &gt; </td></tr>
-<tr class="memitem:ac6df4c8b56bf5622b27467cc5a201a0d"><td class="memTemplItemLeft" align="right" valign="top">constexpr std::tuple&lt; bool, float, float &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#ac6df4c8b56bf5622b27467cc5a201a0d">Trigger::trigger_matcher</a> (const T1 &amp;trigger_objects_pt, const T1 &amp;trigger_objects_eta, const T1 &amp;trigger_objects_phi, const T2 &amp;nano_objects_pt, const T2 &amp;nano_objects_eta, const T2 &amp;nano_objects_phi, const float max_delta_r)</td></tr>
-<tr class="separator:ac6df4c8b56bf5622b27467cc5a201a0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a019ed351f7b271deb1f72f15057ab800"><td class="memTemplParams" colspan="2">template&lt;typename T1 , typename T2 &gt; </td></tr>
+<tr class="memitem:a019ed351f7b271deb1f72f15057ab800"><td class="memTemplItemLeft" align="right" valign="top">constexpr std::tuple&lt; bool, std::size_t &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#a019ed351f7b271deb1f72f15057ab800">Trigger::trigger_matcher</a> (const T1 &amp;trigger_objects_pt, const T1 &amp;trigger_objects_eta, const T1 &amp;trigger_objects_phi, const T2 &amp;nano_objects_pt, const T2 &amp;nano_objects_eta, const T2 &amp;nano_objects_phi, const float max_delta_r)</td></tr>
+<tr class="separator:a019ed351f7b271deb1f72f15057ab800"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a580e1c559f06988c3c72636666e5d80f"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#a580e1c559f06988c3c72636666e5d80f">Trigger::check_bit</a> (const RVec&lt; int &gt; &amp;trigger_bits, const int &amp;bit)</td></tr>
 <tr class="separator:a580e1c559f06988c3c72636666e5d80f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a76fa6042a608b9be8e58b9e5b398d1b5"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#a76fa6042a608b9be8e58b9e5b398d1b5">Trigger::SingleMuonLowPtBits</a> (const RVec&lt; int &gt; &amp;triggerobj_bit, const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;year)</td></tr>
@@ -208,8 +215,29 @@ Functions</h2></td></tr>
 <tr class="memitem:a10c809938ce09d2f3b5b9405fae0b967"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#a10c809938ce09d2f3b5b9405fae0b967">Trigger::SingleMuonHighPtBits</a> (const RVec&lt; int &gt; &amp;triggerobj_bit, const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;year)</td></tr>
 <tr class="memdesc:a10c809938ce09d2f3b5b9405fae0b967"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check the <code>trigger_bit</code> of a given TrigObj for Single Muon - High pT.  <a href="namespaceTrigger.html#a10c809938ce09d2f3b5b9405fae0b967">More...</a><br /></td></tr>
 <tr class="separator:a10c809938ce09d2f3b5b9405fae0b967"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add17c3a37a8876f30af7ee03e7a8a181"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#add17c3a37a8876f30af7ee03e7a8a181">Trigger::SingleElectronLowPtBits</a> (const RVec&lt; int &gt; &amp;triggerobj_bit, const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;year)</td></tr>
+<tr class="memdesc:add17c3a37a8876f30af7ee03e7a8a181"><td class="mdescLeft">&#160;</td><td class="mdescRight">Seems to be the same for all three years.  <a href="namespaceTrigger.html#add17c3a37a8876f30af7ee03e7a8a181">More...</a><br /></td></tr>
+<tr class="separator:add17c3a37a8876f30af7ee03e7a8a181"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64ae1c44469c9af1ac48f631aec51a5a"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#a64ae1c44469c9af1ac48f631aec51a5a">Trigger::SingleElectronHighPtBits</a> (const RVec&lt; int &gt; &amp;triggerobj_bit, const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;year)</td></tr>
+<tr class="memdesc:a64ae1c44469c9af1ac48f631aec51a5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Seems to be the same for all three years.  <a href="namespaceTrigger.html#a64ae1c44469c9af1ac48f631aec51a5a">More...</a><br /></td></tr>
+<tr class="separator:a64ae1c44469c9af1ac48f631aec51a5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97e3cda8811a1bfb0032b6a38efb710c"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#a97e3cda8811a1bfb0032b6a38efb710c">Trigger::PhotonBits</a> (const RVec&lt; int &gt; &amp;triggerobj_bit, const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;year)</td></tr>
+<tr class="separator:a97e3cda8811a1bfb0032b6a38efb710c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a505dcb3d3918e6bb18a8229388d44a4c"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#a505dcb3d3918e6bb18a8229388d44a4c">Trigger::check_trigger_bit</a> (const RVec&lt; int &gt; &amp;triggerobj_bit, const std::string_view &amp;path, const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;year)</td></tr>
 <tr class="separator:a505dcb3d3918e6bb18a8229388d44a4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0930706ccdcce4d25d36c7c80ecacb4f"><td class="memTemplParams" colspan="2">template&lt;class... Ts&gt; </td></tr>
+<tr class="memitem:a0930706ccdcce4d25d36c7c80ecacb4f"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="Trigger_8hpp.html#a0930706ccdcce4d25d36c7c80ecacb4f">overloaded</a> (Ts...) -&gt; <a class="el" href="structoverloaded.html">overloaded</a>&lt; Ts... &gt;</td></tr>
+<tr class="separator:a0930706ccdcce4d25d36c7c80ecacb4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad21f24cd1403c7ec5aa90553486baaa6"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Trigger_8hpp.html#ad21f24cd1403c7ec5aa90553486baaa6">get_pt</a> (const std::variant&lt; <a class="el" href="structNanoObjects_1_1Muons.html">NanoObjects::Muons</a>, <a class="el" href="structNanoObjects_1_1Electrons.html">NanoObjects::Electrons</a> &gt; &amp;var_) -&gt; RVec&lt; float &gt;</td></tr>
+<tr class="separator:ad21f24cd1403c7ec5aa90553486baaa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5acb027fc923b9417b4d7e6983f637a6"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Trigger_8hpp.html#a5acb027fc923b9417b4d7e6983f637a6">get_eta</a> (const std::variant&lt; <a class="el" href="structNanoObjects_1_1Muons.html">NanoObjects::Muons</a>, <a class="el" href="structNanoObjects_1_1Electrons.html">NanoObjects::Electrons</a> &gt; &amp;var_) -&gt; RVec&lt; float &gt;</td></tr>
+<tr class="separator:a5acb027fc923b9417b4d7e6983f637a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc33f04900bea40b979005d526851020"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Trigger_8hpp.html#afc33f04900bea40b979005d526851020">get_phi</a> (const std::variant&lt; <a class="el" href="structNanoObjects_1_1Muons.html">NanoObjects::Muons</a>, <a class="el" href="structNanoObjects_1_1Electrons.html">NanoObjects::Electrons</a> &gt; &amp;var_) -&gt; RVec&lt; float &gt;</td></tr>
+<tr class="separator:afc33f04900bea40b979005d526851020"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af974237541432c44d125b1d1b008b32d"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Trigger_8hpp.html#af974237541432c44d125b1d1b008b32d">get_delta_eta_sc</a> (const std::variant&lt; <a class="el" href="structNanoObjects_1_1Muons.html">NanoObjects::Muons</a>, <a class="el" href="structNanoObjects_1_1Electrons.html">NanoObjects::Electrons</a> &gt; &amp;var_) -&gt; RVec&lt; float &gt;</td></tr>
+<tr class="separator:af974237541432c44d125b1d1b008b32d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae63625a5ba0438dec0353b343c6180ff"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Trigger_8hpp.html#ae63625a5ba0438dec0353b343c6180ff">make_trgobj_matcher</a> (<a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> year, bool is_data) -&gt; std::map&lt; std::string_view, <a class="el" href="classTrgObjMatcher.html">TrgObjMatcher</a> &gt;</td></tr>
+<tr class="separator:ae63625a5ba0438dec0353b343c6180ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -217,7 +245,175 @@ Variables</h2></td></tr>
 <tr class="separator:ac93ee13dccdb4ce77bb658412f602dc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aff1092c04a2f900b8106a8f8745b0fc9"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#aff1092c04a2f900b8106a8f8745b0fc9">Trigger::kTotalPaths</a> = HLTPath.size()</td></tr>
 <tr class="separator:aff1092c04a2f900b8106a8f8745b0fc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18ae85cd2c887f12d732d8437dd62e43"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTrigger.html#a18ae85cd2c887f12d732d8437dd62e43">Trigger::ActivatedHLTPath</a></td></tr>
+<tr class="separator:a18ae85cd2c887f12d732d8437dd62e43"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="af974237541432c44d125b1d1b008b32d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af974237541432c44d125b1d1b008b32d">&#9670;&nbsp;</a></span>get_delta_eta_sc()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto get_delta_eta_sc </td>
+          <td>(</td>
+          <td class="paramtype">const std::variant&lt; <a class="el" href="structNanoObjects_1_1Muons.html">NanoObjects::Muons</a>, <a class="el" href="structNanoObjects_1_1Electrons.html">NanoObjects::Electrons</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>var_</em></td><td>)</td>
+          <td> -&gt; RVec&lt;float&gt;
+</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5acb027fc923b9417b4d7e6983f637a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5acb027fc923b9417b4d7e6983f637a6">&#9670;&nbsp;</a></span>get_eta()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto get_eta </td>
+          <td>(</td>
+          <td class="paramtype">const std::variant&lt; <a class="el" href="structNanoObjects_1_1Muons.html">NanoObjects::Muons</a>, <a class="el" href="structNanoObjects_1_1Electrons.html">NanoObjects::Electrons</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>var_</em></td><td>)</td>
+          <td> -&gt; RVec&lt;float&gt;
+</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afc33f04900bea40b979005d526851020"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc33f04900bea40b979005d526851020">&#9670;&nbsp;</a></span>get_phi()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto get_phi </td>
+          <td>(</td>
+          <td class="paramtype">const std::variant&lt; <a class="el" href="structNanoObjects_1_1Muons.html">NanoObjects::Muons</a>, <a class="el" href="structNanoObjects_1_1Electrons.html">NanoObjects::Electrons</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>var_</em></td><td>)</td>
+          <td> -&gt; RVec&lt;float&gt;
+</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad21f24cd1403c7ec5aa90553486baaa6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad21f24cd1403c7ec5aa90553486baaa6">&#9670;&nbsp;</a></span>get_pt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto get_pt </td>
+          <td>(</td>
+          <td class="paramtype">const std::variant&lt; <a class="el" href="structNanoObjects_1_1Muons.html">NanoObjects::Muons</a>, <a class="el" href="structNanoObjects_1_1Electrons.html">NanoObjects::Electrons</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>var_</em></td><td>)</td>
+          <td> -&gt; RVec&lt;float&gt;
+</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae63625a5ba0438dec0353b343c6180ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae63625a5ba0438dec0353b343c6180ff">&#9670;&nbsp;</a></span>make_trgobj_matcher()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto make_trgobj_matcher </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a>&#160;</td>
+          <td class="paramname"><em>year</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>is_data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; std::map&lt;std::string_view, <a class="el" href="classTrgObjMatcher.html">TrgObjMatcher</a>&gt;
+</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0930706ccdcce4d25d36c7c80ecacb4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0930706ccdcce4d25d36c7c80ecacb4f">&#9670;&nbsp;</a></span>overloaded()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class... Ts&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structoverloaded.html">overloaded</a> </td>
+          <td>(</td>
+          <td class="paramtype">Ts...&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td> -&gt;  <a class="el" href="structoverloaded.html">overloaded</a>&lt; Ts... &gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

@@ -4,6 +4,7 @@ var hierarchy =
     [ "Corrector", "classCorrector.html", null ],
     [ "ObjConfig::ElectronConfig", "structObjConfig_1_1ElectronConfig.html", null ],
     [ "NanoObjects::Electrons", "structNanoObjects_1_1Electrons.html", null ],
+    [ "ElectronTriggerSF", "classElectronTriggerSF.html", null ],
     [ "Enumerate< T >", "classEnumerate.html", null ],
     [ "EventData", "classEventData.html", null ],
     [ "NanoObjects::EventInfo", "structNanoObjects_1_1EventInfo.html", null ],
@@ -31,6 +32,10 @@ var hierarchy =
     [ "ObjConfig::TauConfig", "structObjConfig_1_1TauConfig.html", null ],
     [ "NanoObjects::Taus", "structNanoObjects_1_1Taus.html", null ],
     [ "TOMLConfig", "classTOMLConfig.html", null ],
+    [ "TrgObjMatcher", "classTrgObjMatcher.html", null ],
     [ "NanoObjects::TrgObjs", "structNanoObjects_1_1TrgObjs.html", null ],
-    [ "TriggerBits", "structTriggerBits.html", null ]
+    [ "TriggerBits", "structTriggerBits.html", null ],
+    [ "Ts", null, [
+      [ "overloaded< Ts >", "structoverloaded.html", null ]
+    ] ]
 ];

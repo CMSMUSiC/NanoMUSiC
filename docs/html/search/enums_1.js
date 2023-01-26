@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['year_851',['Year',['../Configs_8hpp.html#ae49013585f0536b639fe09828864fe37',1,'Configs.hpp']]]
+  ['ptregime_982',['PtRegime',['../classElectronTriggerSF.html#a01fab8a308807ee40d846b459d2d4418',1,'ElectronTriggerSF']]]
 ];

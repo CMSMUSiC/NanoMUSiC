@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['muonlowpt_853',['MuonLowPt',['../CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934ab8b5d0c91bd1f06360fb4cc1d639a070',1,'CorrectionSets.hpp']]]
+  ['ktotalregimes_985',['kTotalRegimes',['../classElectronTriggerSF.html#a01fab8a308807ee40d846b459d2d4418a4c63d014cb119869d589c52e4b34a99d',1,'ElectronTriggerSF']]],
+  ['ktotalyears_986',['kTotalYears',['../Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abfd3e8c0a2e269807b0b07d3cc6ad62c',1,'Configs.hpp']]]
 ];

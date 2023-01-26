@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['ktotalshifts_602',['kTotalShifts',['../MUSiCEvent_8hpp.html#aabddd589ce7fd3d829e15265d92dbedca386cdc7164070d591669646d76eeaa15',1,'MUSiCEvent.hpp']]],
-  ['ktotalvariations_603',['kTotalVariations',['../MUSiCEvent_8hpp.html#a4a8a5602a15f2d608ba6f1f5e05caa74ab5ff28459072e5927f2934e10c78d259',1,'MUSiCEvent.hpp']]],
-  ['ktotalweights_604',['kTotalWeights',['../MUSiCEvent_8hpp.html#add354b854a8899ddb39fc9d57bbe22e3a16b16efbc26f5b2c218e51546724f3f4',1,'MUSiCEvent.hpp']]]
+  ['triggersfelectronhighpt_995',['TriggerSFElectronHighPt',['../CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934a60dbfac5bc7214d8c59509687e03350c',1,'CorrectionSets.hpp']]],
+  ['triggersfelectronlowpt_996',['TriggerSFElectronLowPt',['../CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934ad2b704461a5087ea895c1b4636c98f0d',1,'CorrectionSets.hpp']]],
+  ['triggersfmuonhighpt_997',['TriggerSFMuonHighPt',['../CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934aa7ee39d8d01013aed54ec0aae74fde41',1,'CorrectionSets.hpp']]],
+  ['triggersfmuonlowpt_998',['TriggerSFMuonLowPt',['../CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934a9d5fe4ef7ae72e9b7ec98cd08d03e7aa',1,'CorrectionSets.hpp']]]
 ];

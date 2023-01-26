@@ -1,17 +1,19 @@
 var searchData=
 [
-  ['genweight_711',['genWeight',['../structNanoObjects_1_1EventInfo.html#a7370ae5c9d4fe4a293ee6144330d21cc',1,'NanoObjects::EventInfo']]],
-  ['golden_5fjson_712',['golden_json',['../structRunConfig_1_1RunConfig.html#a25d3be14452facf0fd689960090943c1',1,'RunConfig::RunConfig']]],
-  ['golden_5fjson_5ffile_713',['golden_json_file',['../classTaskConfiguration.html#a21b4dd14d2912ba34956e8d22d816213',1,'TaskConfiguration']]],
-  ['good_5fbjets_5fmask_714',['good_bjets_mask',['../classEventData.html#aa438fb5f9dbd498476372cb13967c726',1,'EventData']]],
-  ['good_5felectrons_5fmask_715',['good_electrons_mask',['../classEventData.html#a66c3e773aad8b7d71ea8779b7eba031a',1,'EventData']]],
-  ['good_5fhigh_5fpt_5fmuons_5fmask_716',['good_high_pt_muons_mask',['../classEventData.html#aeff04602f12f93c5fbec0ddd1ca270ea',1,'EventData']]],
-  ['good_5fjets_5fmask_717',['good_jets_mask',['../classEventData.html#a805cdf4b693c5dc08db056b262f780ac',1,'EventData']]],
-  ['good_5flow_5fpt_5fmuons_5fmask_718',['good_low_pt_muons_mask',['../classEventData.html#afc9b7b6429b10dccff5829fdf93bee55',1,'EventData']]],
-  ['good_5fmet_5fmask_719',['good_met_mask',['../classEventData.html#a6b74fee7f93e4f5ea5df2cb309245fd6',1,'EventData']]],
-  ['good_5fmuons_5fmask_720',['good_muons_mask',['../classEventData.html#a47b29912cf5e762706dfb82ef2a3a697',1,'EventData']]],
-  ['good_5fphotons_5fmask_721',['good_photons_mask',['../classEventData.html#a7859ba7e37194978a8fd73d32de7cabd',1,'EventData']]],
-  ['good_5fruns_5flumis_5fjson_722',['good_runs_lumis_json',['../classRunLumiFilter.html#a35ab7e861e15849274fb9ecf03195151',1,'RunLumiFilter']]],
-  ['good_5ftaus_5fmask_723',['good_taus_mask',['../classEventData.html#a72e46a8442a9501ca9d5520b86be6805',1,'EventData']]],
-  ['good_5ftrgobjs_5fmask_724',['good_trgobjs_mask',['../classEventData.html#a2c7a26dd8a975fcdc69c656137055814',1,'EventData']]]
+  ['fdata_802',['fData',['../classNanoAODReader.html#a0b4f0ecb07da63858c2d34a2b5b67467',1,'NanoAODReader']]],
+  ['filename_803',['filename',['../classOutputs.html#a356e661aac9a4eea96be142b71d9b4c7',1,'Outputs']]],
+  ['filterbits_804',['filterBits',['../structNanoObjects_1_1TrgObjs.html#abb3f9f352bf460dfff6a31ec0bb292c6',1,'NanoObjects::TrgObjs']]],
+  ['flag_5fbadpfmuondzfilter_805',['Flag_BadPFMuonDzFilter',['../structNanoObjects_1_1EventInfo.html#a0163024b3ec370d8f7f66e5429f35b21',1,'NanoObjects::EventInfo']]],
+  ['flag_5fbadpfmuonfilter_806',['Flag_BadPFMuonFilter',['../structNanoObjects_1_1EventInfo.html#a4ff6c02be34c6b6514b41638d2f133f3',1,'NanoObjects::EventInfo']]],
+  ['flag_5fecalbadcalibfilter_807',['Flag_ecalBadCalibFilter',['../structNanoObjects_1_1EventInfo.html#afb6ee043284964bf3faef0a6cbbcda5e',1,'NanoObjects::EventInfo']]],
+  ['flag_5fecaldeadcelltriggerprimitivefilter_808',['Flag_EcalDeadCellTriggerPrimitiveFilter',['../structNanoObjects_1_1EventInfo.html#a987c81db9833f177ab896aceb75f8088',1,'NanoObjects::EventInfo']]],
+  ['flag_5feebadscfilter_809',['Flag_eeBadScFilter',['../structNanoObjects_1_1EventInfo.html#ae2d563cf3b67acf43458a0a303f99c59',1,'NanoObjects::EventInfo']]],
+  ['flag_5fglobalsupertighthalo2016filter_810',['Flag_globalSuperTightHalo2016Filter',['../structNanoObjects_1_1EventInfo.html#a244740d94ba9a221fb780a5980605fac',1,'NanoObjects::EventInfo']]],
+  ['flag_5fgoodvertices_811',['Flag_goodVertices',['../structNanoObjects_1_1EventInfo.html#a2500b8682176c0c712fe7fe58aad4ce9',1,'NanoObjects::EventInfo']]],
+  ['flag_5fhbhenoisefilter_812',['Flag_HBHENoiseFilter',['../structNanoObjects_1_1EventInfo.html#a7a33aaa32e423b35d7a3030417a2a539',1,'NanoObjects::EventInfo']]],
+  ['flag_5fhbhenoiseisofilter_813',['Flag_HBHENoiseIsoFilter',['../structNanoObjects_1_1EventInfo.html#ad0701217e1f941dde623f765a1316d0c',1,'NanoObjects::EventInfo']]],
+  ['flistofbranches_814',['fListOfBranches',['../classNanoAODReader.html#a09c8c9ed87fa9c4bb56ac0971b689b7e',1,'NanoAODReader']]],
+  ['flistofleaves_815',['fListOfLeaves',['../classNanoAODReader.html#aa39ba69a494ca4b4ff263ab08a757304',1,'NanoAODReader']]],
+  ['freader_816',['fReader',['../classNanoAODReader.html#a8a89e188660e88f0419ebb354bd32982',1,'NanoAODReader']]],
+  ['ftype_817',['fType',['../classNanoAODReader.html#a94917b9304a236bf5befbc258ed78622',1,'NanoAODReader']]]
 ];

@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['read_20data_20from_20nanoaodreader_868',['Read data from NanoAODReader',['../md_NanoAODReader.html',1,'']]],
-  ['running_20the_20analysis_869',['Running the analysis',['../md_running.html',1,'']]]
+  ['setup_1006',['Setup',['../md_installation.html',1,'']]]
 ];

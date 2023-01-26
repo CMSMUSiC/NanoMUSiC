@@ -229,12 +229,12 @@ $(document).ready(function(){initNavTree('TOMLConfig_8hpp_source.html',''); init
 <div class="line"><a name="l00061"></a><span class="lineno"><a class="line" href="classTOMLConfig.html#a79359a822b2d0d8f6eb3a1d1f2be9a52">   61</a></span>&#160;    <span class="keyword">const</span> std::string <a class="code" href="classTOMLConfig.html#a79359a822b2d0d8f6eb3a1d1f2be9a52">toml_config_file</a>;</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;};</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
-<div class="line"><a name="l00064"></a><span class="lineno"><a class="line" href="classTOMLConfig.html#ade397ed67829cb6a15ac3bd13a7b55cb">   64</a></span>&#160;<span class="keyword">inline</span> <a class="code" href="classTOMLConfig.html#ade397ed67829cb6a15ac3bd13a7b55cb">TOMLConfig::TOMLConfig</a>(<span class="keyword">const</span> toml::table &amp;_toml_config, <span class="keyword">const</span> std::string _toml_config_file)</div>
+<div class="line"><a name="l00064"></a><span class="lineno"><a class="line" href="classTOMLConfig.html#ade397ed67829cb6a15ac3bd13a7b55cb">   64</a></span>&#160;<a class="code" href="classTOMLConfig.html#ade397ed67829cb6a15ac3bd13a7b55cb">TOMLConfig::TOMLConfig</a>(<span class="keyword">const</span> toml::table &amp;_toml_config, <span class="keyword">const</span> std::string _toml_config_file)</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    : toml_config(_toml_config), toml_config_file(_toml_config_file)</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;{</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;}</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; </div>
-<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="classTOMLConfig.html#a8f84c07b50ad698868d397727dee344c">   69</a></span>&#160;<span class="keyword">inline</span> <span class="keyword">const</span> <a class="code" href="classTOMLConfig.html">TOMLConfig</a> <a class="code" href="classTOMLConfig.html#a8f84c07b50ad698868d397727dee344c">TOMLConfig::make_toml_config</a>(<span class="keyword">const</span> std::string &amp;_toml_config_file)</div>
+<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="classTOMLConfig.html#a8f84c07b50ad698868d397727dee344c">   69</a></span>&#160;<span class="keyword">const</span> <a class="code" href="classTOMLConfig.html">TOMLConfig</a> <a class="code" href="classTOMLConfig.html#a8f84c07b50ad698868d397727dee344c">TOMLConfig::make_toml_config</a>(<span class="keyword">const</span> std::string &amp;_toml_config_file)</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;{</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keywordflow">try</span></div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    {</div>
@@ -247,12 +247,12 @@ $(document).ready(function(){initNavTree('TOMLConfig_8hpp_source.html',''); init
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    }</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;}</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; </div>
-<div class="line"><a name="l00082"></a><span class="lineno"><a class="line" href="classTOMLConfig.html#a14486c3c05b1ff6c43f7053f47588e16">   82</a></span>&#160;<span class="keyword">inline</span> std::string <a class="code" href="classTOMLConfig.html#a14486c3c05b1ff6c43f7053f47588e16">TOMLConfig::config_file_path</a>()</div>
+<div class="line"><a name="l00082"></a><span class="lineno"><a class="line" href="classTOMLConfig.html#a14486c3c05b1ff6c43f7053f47588e16">   82</a></span>&#160;std::string <a class="code" href="classTOMLConfig.html#a14486c3c05b1ff6c43f7053f47588e16">TOMLConfig::config_file_path</a>()</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;{</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="classTOMLConfig.html#a79359a822b2d0d8f6eb3a1d1f2be9a52">toml_config_file</a>;</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;}</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160; </div>
-<div class="line"><a name="l00087"></a><span class="lineno"><a class="line" href="classTOMLConfig.html#a59b2cd87f56e533ef4043b8ffb241bb9">   87</a></span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> <a class="code" href="classTOMLConfig.html#a59b2cd87f56e533ef4043b8ffb241bb9">TOMLConfig::check_item</a>(<span class="keyword">const</span> std::string &amp;path)</div>
+<div class="line"><a name="l00087"></a><span class="lineno"><a class="line" href="classTOMLConfig.html#a59b2cd87f56e533ef4043b8ffb241bb9">   87</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classTOMLConfig.html#a59b2cd87f56e533ef4043b8ffb241bb9">TOMLConfig::check_item</a>(<span class="keyword">const</span> std::string &amp;path)</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;{</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordflow">if</span> (<a class="code" href="classTOMLConfig.html#a4b76c4aad10d65c4bfebc8324e22f217">toml_config</a>.at_path(path))</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    {</div>

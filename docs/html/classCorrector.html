@@ -175,34 +175,38 @@ $(document).ready(function(){initNavTree('classCorrector.html',''); initResizabl
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae0853c601b8533aab4cf72deef1172c9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#ae0853c601b8533aab4cf72deef1172c9">Corrector</a> (const <a class="el" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934">CorrectionTypes</a> _correction_type, const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> _year, bool _is_data)</td></tr>
-<tr class="separator:ae0853c601b8533aab4cf72deef1172c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af505991ef5f78a7b81de2329e02ca632"><td class="memTemplParams" colspan="2">template&lt;class T  = const std::vector&lt;std::variant&lt;int, double, std::string&gt;&gt;&gt; </td></tr>
-<tr class="memitem:af505991ef5f78a7b81de2329e02ca632"><td class="memTemplItemLeft" align="right" valign="top">double&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classCorrector.html#af505991ef5f78a7b81de2329e02ca632">operator()</a> (T &amp;&amp;values)</td></tr>
-<tr class="separator:af505991ef5f78a7b81de2329e02ca632"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adc73900bcfa86c6a93f38149745d9b19"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#adc73900bcfa86c6a93f38149745d9b19">operator()</a> (const int Q, const double pt, const double eta, const double phi, const int s=0, const int m=0)</td></tr>
-<tr class="separator:adc73900bcfa86c6a93f38149745d9b19"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a92aa552bb13dc33be4278f34eafee65d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#a92aa552bb13dc33be4278f34eafee65d">operator()</a> (const int Q, const double pt, const double eta, const double phi, const double genPt, const int s=0, const int m=0)</td></tr>
-<tr class="separator:a92aa552bb13dc33be4278f34eafee65d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa880aa28c5ef28808fe009bcdea0393c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#aa880aa28c5ef28808fe009bcdea0393c">operator()</a> (const int Q, const double pt, const double eta, const double phi, const int n, const double u, const int s=0, const int m=0)</td></tr>
-<tr class="separator:aa880aa28c5ef28808fe009bcdea0393c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acae626eea5b85f397ccbe92cdb3240c9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#acae626eea5b85f397ccbe92cdb3240c9">Corrector</a> (const std::string_view &amp;_correction_type, const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> _year, bool _is_data)</td></tr>
+<tr class="separator:acae626eea5b85f397ccbe92cdb3240c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a619e575e3992fd25755d68e7a7471c34"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#a619e575e3992fd25755d68e7a7471c34">operator()</a> () const -&gt; double</td></tr>
+<tr class="separator:a619e575e3992fd25755d68e7a7471c34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a590a6c5ed596161c3d23377e144a8c99"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#a590a6c5ed596161c3d23377e144a8c99">operator()</a> (const float &amp;eta_sc, const float &amp;pt, const std::string_view &amp;variation=&quot;nominal&quot;) const -&gt; double</td></tr>
+<tr class="separator:a590a6c5ed596161c3d23377e144a8c99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ce6743ecb6abec62aa1b99ee2ccca5d"><td class="memTemplParams" colspan="2">template&lt;class T  = const std::vector&lt;std::variant&lt;int, double, std::string&gt;&gt;&gt; </td></tr>
+<tr class="memitem:a4ce6743ecb6abec62aa1b99ee2ccca5d"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classCorrector.html#a4ce6743ecb6abec62aa1b99ee2ccca5d">operator()</a> (T &amp;&amp;values) const -&gt; double</td></tr>
+<tr class="separator:a4ce6743ecb6abec62aa1b99ee2ccca5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1cccde81aa6ea2461d5f6966389f0a41"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#a1cccde81aa6ea2461d5f6966389f0a41">operator()</a> (const int Q, const double pt, const double eta, const double phi, const int s=0, const int m=0) const -&gt; double</td></tr>
+<tr class="separator:a1cccde81aa6ea2461d5f6966389f0a41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a382473e5166be9805082012dff9283cd"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#a382473e5166be9805082012dff9283cd">operator()</a> (const int Q, const double pt, const double eta, const double phi, const double genPt, const int s=0, const int m=0) const -&gt; double</td></tr>
+<tr class="separator:a382473e5166be9805082012dff9283cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae719be4f4bac28c4f01b66d823f3d0f"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#aae719be4f4bac28c4f01b66d823f3d0f">operator()</a> (const int Q, const double pt, const double eta, const double phi, const int n, const double u, const int s=0, const int m=0) const -&gt; double</td></tr>
+<tr class="separator:aae719be4f4bac28c4f01b66d823f3d0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:ab03d759230a761e21481d9acc29c84a9"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934">CorrectionTypes</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#ab03d759230a761e21481d9acc29c84a9">correction_type</a></td></tr>
-<tr class="separator:ab03d759230a761e21481d9acc29c84a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52821134c9b069d1611006cde48ac4b0"><td class="memItemLeft" align="right" valign="top">const std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#a52821134c9b069d1611006cde48ac4b0">correction_type</a></td></tr>
+<tr class="separator:a52821134c9b069d1611006cde48ac4b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4e1405aa9bd95e389386f7ba4d9954ab"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#a4e1405aa9bd95e389386f7ba4d9954ab">year</a></td></tr>
 <tr class="separator:a4e1405aa9bd95e389386f7ba4d9954ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af44c52e4e7a6bad4bb76986f1bee4513"><td class="memItemLeft" align="right" valign="top">const bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#af44c52e4e7a6bad4bb76986f1bee4513">is_data</a></td></tr>
 <tr class="separator:af44c52e4e7a6bad4bb76986f1bee4513"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1b5ebe507f50525f6cd6276b491204fa"><td class="memItemLeft" align="right" valign="top">std::variant&lt; <a class="el" href="CorrectionSets_8hpp.html#af1b8b92794ed34f64d7e63cb40dba657">CorrectionlibRef_t</a>, <a class="el" href="CorrectionSets_8hpp.html#a92123307785577bd95f7bbc9fbc4462a">RochesterCorrection_t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#a1b5ebe507f50525f6cd6276b491204fa">correction_ref</a></td></tr>
-<tr class="separator:a1b5ebe507f50525f6cd6276b491204fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f816cd28e1708277f207c19c33f63a8"><td class="memItemLeft" align="right" valign="top">const std::map&lt; std::pair&lt; <a class="el" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934">CorrectionTypes</a>, <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &gt;, std::pair&lt; std::string, std::string &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#a5f816cd28e1708277f207c19c33f63a8">correction_keys</a></td></tr>
-<tr class="separator:a5f816cd28e1708277f207c19c33f63a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a855d2673d3aee05ef8edd29013ed92a0"><td class="memItemLeft" align="right" valign="top">std::variant&lt; <a class="el" href="CorrectionSets_8hpp.html#af1b8b92794ed34f64d7e63cb40dba657">CorrectionlibRef_t</a>, <a class="el" href="CorrectionSets_8hpp.html#a92123307785577bd95f7bbc9fbc4462a">RochesterCorrection_t</a>, <a class="el" href="CorrectionSets_8hpp.html#a843d0c7459a3c996f91aabb1d79ac097">ElectronTriggerSF_t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#a855d2673d3aee05ef8edd29013ed92a0">correction_ref</a></td></tr>
+<tr class="separator:a855d2673d3aee05ef8edd29013ed92a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a807445cee37cb0ba1bd0fe6ace6fc59f"><td class="memItemLeft" align="right" valign="top">const std::map&lt; std::pair&lt; std::string_view, <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &gt;, std::pair&lt; std::string, std::string &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html#a807445cee37cb0ba1bd0fe6ace6fc59f">correction_keys</a></td></tr>
+<tr class="separator:a807445cee37cb0ba1bd0fe6ace6fc59f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ae0853c601b8533aab4cf72deef1172c9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae0853c601b8533aab4cf72deef1172c9">&#9670;&nbsp;</a></span>Corrector()</h2>
+<a id="acae626eea5b85f397ccbe92cdb3240c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acae626eea5b85f397ccbe92cdb3240c9">&#9670;&nbsp;</a></span>Corrector()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -213,7 +217,7 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="memname">Corrector::Corrector </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934">CorrectionTypes</a>&#160;</td>
+          <td class="paramtype">const std::string_view &amp;&#160;</td>
           <td class="paramname"><em>_correction_type</em>, </td>
         </tr>
         <tr>
@@ -244,8 +248,8 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a92aa552bb13dc33be4278f34eafee65d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a92aa552bb13dc33be4278f34eafee65d">&#9670;&nbsp;</a></span>operator()() <span class="overload">[1/4]</span></h2>
+<a id="a619e575e3992fd25755d68e7a7471c34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a619e575e3992fd25755d68e7a7471c34">&#9670;&nbsp;</a></span>operator()() <span class="overload">[1/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -254,7 +258,76 @@ Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">double Corrector::operator() </td>
+          <td class="memname">auto Corrector::operator() </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const -&gt; double
+    </td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a590a6c5ed596161c3d23377e144a8c99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a590a6c5ed596161c3d23377e144a8c99">&#9670;&nbsp;</a></span>operator()() <span class="overload">[2/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto Corrector::operator() </td>
+          <td>(</td>
+          <td class="paramtype">const float &amp;&#160;</td>
+          <td class="paramname"><em>eta_sc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float &amp;&#160;</td>
+          <td class="paramname"><em>pt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string_view &amp;&#160;</td>
+          <td class="paramname"><em>variation</em> = <code>&quot;nominal&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const -&gt; double
+    </td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a382473e5166be9805082012dff9283cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a382473e5166be9805082012dff9283cd">&#9670;&nbsp;</a></span>operator()() <span class="overload">[3/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto Corrector::operator() </td>
           <td>(</td>
           <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>Q</em>, </td>
@@ -298,7 +371,8 @@ Public Attributes</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td>
+          <td></td><td> const -&gt; double
+    </td>
         </tr>
       </table>
   </td>
@@ -310,8 +384,8 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="aa880aa28c5ef28808fe009bcdea0393c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa880aa28c5ef28808fe009bcdea0393c">&#9670;&nbsp;</a></span>operator()() <span class="overload">[2/4]</span></h2>
+<a id="aae719be4f4bac28c4f01b66d823f3d0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae719be4f4bac28c4f01b66d823f3d0f">&#9670;&nbsp;</a></span>operator()() <span class="overload">[4/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -320,7 +394,7 @@ Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">double Corrector::operator() </td>
+          <td class="memname">auto Corrector::operator() </td>
           <td>(</td>
           <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>Q</em>, </td>
@@ -370,7 +444,8 @@ Public Attributes</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td>
+          <td></td><td> const -&gt; double
+    </td>
         </tr>
       </table>
   </td>
@@ -382,8 +457,8 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="adc73900bcfa86c6a93f38149745d9b19"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adc73900bcfa86c6a93f38149745d9b19">&#9670;&nbsp;</a></span>operator()() <span class="overload">[3/4]</span></h2>
+<a id="a1cccde81aa6ea2461d5f6966389f0a41"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1cccde81aa6ea2461d5f6966389f0a41">&#9670;&nbsp;</a></span>operator()() <span class="overload">[5/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -392,7 +467,7 @@ Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">double Corrector::operator() </td>
+          <td class="memname">auto Corrector::operator() </td>
           <td>(</td>
           <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>Q</em>, </td>
@@ -430,7 +505,8 @@ Public Attributes</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td>
+          <td></td><td> const -&gt; double
+    </td>
         </tr>
       </table>
   </td>
@@ -442,8 +518,8 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="af505991ef5f78a7b81de2329e02ca632"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af505991ef5f78a7b81de2329e02ca632">&#9670;&nbsp;</a></span>operator()() <span class="overload">[4/4]</span></h2>
+<a id="a4ce6743ecb6abec62aa1b99ee2ccca5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ce6743ecb6abec62aa1b99ee2ccca5d">&#9670;&nbsp;</a></span>operator()() <span class="overload">[6/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -454,11 +530,12 @@ template&lt;class T  = const std::vector&lt;std::variant&lt;int, double, std::st
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">double Corrector::operator() </td>
+          <td class="memname">auto Corrector::operator() </td>
           <td>(</td>
           <td class="paramtype">T &amp;&amp;&#160;</td>
           <td class="paramname"><em>values</em></td><td>)</td>
-          <td></td>
+          <td> const -&gt; double
+    </td>
         </tr>
       </table>
   </td>
@@ -471,42 +548,42 @@ template&lt;class T  = const std::vector&lt;std::variant&lt;int, double, std::st
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="a5f816cd28e1708277f207c19c33f63a8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5f816cd28e1708277f207c19c33f63a8">&#9670;&nbsp;</a></span>correction_keys</h2>
+<a id="a807445cee37cb0ba1bd0fe6ace6fc59f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a807445cee37cb0ba1bd0fe6ace6fc59f">&#9670;&nbsp;</a></span>correction_keys</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const std::map&lt;std::pair&lt;<a class="el" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934">CorrectionTypes</a>, <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a>&gt;, std::pair&lt;std::string, std::string&gt; &gt; Corrector::correction_keys</td>
+          <td class="memname">const std::map&lt;std::pair&lt;std::string_view, <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a>&gt;, std::pair&lt;std::string, std::string&gt; &gt; Corrector::correction_keys</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a1b5ebe507f50525f6cd6276b491204fa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1b5ebe507f50525f6cd6276b491204fa">&#9670;&nbsp;</a></span>correction_ref</h2>
+<a id="a855d2673d3aee05ef8edd29013ed92a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a855d2673d3aee05ef8edd29013ed92a0">&#9670;&nbsp;</a></span>correction_ref</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::variant&lt;<a class="el" href="CorrectionSets_8hpp.html#af1b8b92794ed34f64d7e63cb40dba657">CorrectionlibRef_t</a>, <a class="el" href="CorrectionSets_8hpp.html#a92123307785577bd95f7bbc9fbc4462a">RochesterCorrection_t</a>&gt; Corrector::correction_ref</td>
+          <td class="memname">std::variant&lt;<a class="el" href="CorrectionSets_8hpp.html#af1b8b92794ed34f64d7e63cb40dba657">CorrectionlibRef_t</a>, <a class="el" href="CorrectionSets_8hpp.html#a92123307785577bd95f7bbc9fbc4462a">RochesterCorrection_t</a>, <a class="el" href="CorrectionSets_8hpp.html#a843d0c7459a3c996f91aabb1d79ac097">ElectronTriggerSF_t</a>&gt; Corrector::correction_ref</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="ab03d759230a761e21481d9acc29c84a9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab03d759230a761e21481d9acc29c84a9">&#9670;&nbsp;</a></span>correction_type</h2>
+<a id="a52821134c9b069d1611006cde48ac4b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52821134c9b069d1611006cde48ac4b0">&#9670;&nbsp;</a></span>correction_type</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934">CorrectionTypes</a> Corrector::correction_type</td>
+          <td class="memname">const std::string_view Corrector::correction_type</td>
         </tr>
       </table>
 </div><div class="memdoc">
