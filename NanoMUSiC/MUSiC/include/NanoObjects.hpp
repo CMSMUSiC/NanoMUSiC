@@ -3,6 +3,7 @@
 
 #include "fmt/core.h"
 #include <ROOT/RVec.hxx>
+#include <variant>
 
 constexpr float Muon_mass = 105.6583755 / 1000.;
 constexpr float Electron_mass = 0.51099895000 / 1000.;

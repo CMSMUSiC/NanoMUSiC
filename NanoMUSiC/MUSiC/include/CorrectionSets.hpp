@@ -105,7 +105,6 @@ class ElectronTriggerSF
         : pt_regime(_pt_regime),
           year(_year)
     {
-
         // histo->GetXaxis()->GetBinUpEdge(histo->GetXaxis()->GetLast())
         if (year == Year::Run2016APV)
         {
@@ -153,7 +152,7 @@ class ElectronTriggerSF
                 endcap_pt_lower_limit = std::get<3>(endcap_limits);
             }
         }
-        if (year == Year::Run2016)
+        else if (year == Year::Run2016)
         {
             if (pt_regime == PtRegime::LowPt)
             {
@@ -198,7 +197,7 @@ class ElectronTriggerSF
                 endcap_pt_lower_limit = std::get<3>(endcap_limits);
             }
         }
-        if (year == Year::Run2017)
+        else if (year == Year::Run2017)
         {
             if (pt_regime == PtRegime::LowPt)
             {
@@ -243,7 +242,7 @@ class ElectronTriggerSF
                 endcap_pt_lower_limit = std::get<3>(endcap_limits);
             }
         }
-        if (year == Year::Run2018)
+        else if (year == Year::Run2018)
         {
             if (pt_regime == PtRegime::LowPt)
             {
@@ -288,7 +287,42 @@ class ElectronTriggerSF
                 endcap_pt_lower_limit = std::get<3>(endcap_limits);
             }
         }
-        throw std::runtime_error("[ Electron Trigger SF ] A proper year and pt_regime combination was not provided.");
+        else
+        {
+            throw std::runtime_error(
+                "[ Electron Trigger SF ] A proper year and pt_regime combination was not provided.");
+        }
+
+        // print configurations
+        // PtRegime pt_regime;
+        // Year year;
+        // TH2F sf_histogram_barrel;
+        // TH2F sf_histogram_endcap;
+        // float barrel_eta_upper_limit;
+        // float barrel_eta_lower_limit;
+        // float endcap_eta_upper_limit;
+        // float endcap_eta_lower_limit;
+        // float barrel_pt_upper_limit;
+        // float barrel_pt_lower_limit;
+        // float endcap_pt_upper_limit;
+        // float endcap_pt_lower_limit;
+        fmt::print("\n=========================================================\n");
+        fmt::print("------------      Electron Trigger SF    ----------------\n");
+        fmt::print("Regime: {}\n", [&_pt_regime]() -> std::string {
+            if (_pt_regime == PtRegime::LowPt)
+            {
+                return "Low Pt";
+            }
+            else
+            {
+                return "High Pt";
+            }
+        }());
+        fmt::print("Barrel eta: [{} - {}]\n", barrel_eta_lower_limit, barrel_eta_upper_limit);
+        fmt::print("Barrel pT: [{} - {}]\n", barrel_pt_lower_limit, barrel_pt_upper_limit);
+        fmt::print("Endcap eta: [{} - {}]\n", endcap_eta_lower_limit, endcap_eta_upper_limit);
+        fmt::print("Endcap pT: [{} - {}]\n", endcap_pt_lower_limit, endcap_pt_upper_limit);
+        fmt::print("=========================================================\n\n");
     }
 
     auto operator()(float eta_sc, float pt, std::string_view variation = "nominal") const -> double
@@ -322,11 +356,6 @@ class ElectronTriggerSF
             {
                 uncert = -1.0 * sf_histogram_barrel.GetBinErrorLow(sf_histogram_barrel.FindFixBin(eta_sc, pt));
             }
-            else
-            {
-                throw std::runtime_error(
-                    fmt::format("[ Electron Trigger SF ] The provided Variation ({}) is now allowed.", variation));
-            }
 
             return nominal + uncert;
         }
@@ -352,11 +381,6 @@ class ElectronTriggerSF
             else if (variation == "down")
             {
                 uncert = -1.0 * sf_histogram_barrel.GetBinErrorLow(sf_histogram_barrel.FindFixBin(eta_sc, pt));
-            }
-            else
-            {
-                throw std::runtime_error(
-                    fmt::format("[ Electron Trigger SF ] The provided Variation ({}) is now allowed.", variation));
             }
 
             return nominal + uncert;

@@ -1,6 +1,7 @@
 #ifndef MUSIC_TRIGGER
 #define MUSIC_TRIGGER
 
+#include <limits>
 #include <string>
 #include <string_view>
 
@@ -84,17 +85,16 @@ std::pair<RVec<float>, RVec<float>> get_matches(const T1 &trigger_objects_pt,  /
 }
 
 template <typename T1, typename T2>
-constexpr std::tuple<bool, float, float> trigger_matcher(const T1 &trigger_objects_pt,  //
-                                                         const T1 &trigger_objects_eta, //
-                                                         const T1 &trigger_objects_phi, //
-                                                         const T2 &nano_objects_pt,     //
-                                                         const T2 &nano_objects_eta,    //
-                                                         const T2 &nano_objects_phi,    //
-                                                         const float max_delta_r)
+constexpr std::tuple<bool, std::size_t> trigger_matcher(const T1 &trigger_objects_pt,  //
+                                                        const T1 &trigger_objects_eta, //
+                                                        const T1 &trigger_objects_phi, //
+                                                        const T2 &nano_objects_pt,     //
+                                                        const T2 &nano_objects_eta,    //
+                                                        const T2 &nano_objects_phi,    //
+                                                        const float max_delta_r)
 {
     bool has_trigger_match = false;
-    float matched_nanoobject_pt = 0.;
-    float matched_nanoobject_eta = 0.;
+    std::size_t matched_index = std::numeric_limits<unsigned int>::max();
 
     if (nano_objects_pt.size() > 0 and trigger_objects_pt.size() > 0)
     {
@@ -109,11 +109,15 @@ constexpr std::tuple<bool, float, float> trigger_matcher(const T1 &trigger_objec
         if (VecOps::Any(good_delta_r))
         {
             has_trigger_match = true;
-
-            // if there is any match, them we take the first object.
-            // it should be the largest pT
-            matched_nanoobject_pt = nano_objects_pt[0];
-            matched_nanoobject_eta = nano_objects_eta[0];
+            for (std::size_t i = 0; i < good_delta_r.size(); i++)
+            {
+                // the match should corresponds to the first matched object in the event
+                if (good_delta_r.at(i) == 1)
+                {
+                    matched_index = i;
+                    break;
+                }
+            }
         }
     }
 
@@ -125,7 +129,7 @@ constexpr std::tuple<bool, float, float> trigger_matcher(const T1 &trigger_objec
     // fmt::print("Rel_pT: : {}\n", matches_rel_pT);
     ///////////////////////////////////////
 
-    return std::make_tuple(has_trigger_match, matched_nanoobject_pt, matched_nanoobject_eta);
+    return std::make_tuple(has_trigger_match, matched_index);
 }
 
 inline RVec<int> check_bit(const RVec<int> &trigger_bits, const int &bit)
@@ -324,6 +328,54 @@ inline RVec<int> check_trigger_bit(const RVec<int> &triggerobj_bit, const std::s
 }
 } // namespace Trigger
 
+// access functions for variant forms
+// Reference: https://en.cppreference.com/w/cpp/utility/variant/visit
+// helper type for the visitor #4
+template <class... Ts>
+struct overloaded : Ts...
+{
+    using Ts::operator()...;
+};
+// explicit deduction guide (not needed as of C++20)
+template <class... Ts>
+overloaded(Ts...) -> overloaded<Ts...>;
+
+inline auto get_pt(const std::variant<NanoObjects::Muons, NanoObjects::Electrons> &var_) -> RVec<float>
+{
+    return std::visit(
+        overloaded{
+            [](auto nano_obj) -> RVec<float> { return nano_obj.pt; },
+        },
+        var_);
+}
+
+inline auto get_eta(const std::variant<NanoObjects::Muons, NanoObjects::Electrons> &var_) -> RVec<float>
+{
+    return std::visit(
+        overloaded{
+            [](auto nano_obj) -> RVec<float> { return nano_obj.eta; },
+        },
+        var_);
+}
+
+inline auto get_phi(const std::variant<NanoObjects::Muons, NanoObjects::Electrons> &var_) -> RVec<float>
+{
+    return std::visit(
+        overloaded{
+            [](auto nano_obj) -> RVec<float> { return nano_obj.phi; },
+        },
+        var_);
+}
+
+inline auto get_delta_eta_sc(const std::variant<NanoObjects::Muons, NanoObjects::Electrons> &var_) -> RVec<float>
+{
+    return std::visit(overloaded{
+                          [](const NanoObjects::Electrons &nano_obj) -> RVec<float> { return nano_obj.deltaEtaSC; },
+                          [](auto nano_obj) -> RVec<float> { return RVec<float>(0., nano_obj.size); },
+                      },
+                      var_);
+}
+
 class TrgObjMatcher
 {
   public:
@@ -356,9 +408,9 @@ class TrgObjMatcher
         }
     }
 
-    template <typename T>
-    auto operator()(const NanoObjects::TrgObjs &trgobjs, const T &nano_objects, RVec<int> nano_objs_mask) const
-        -> std::tuple<bool, double, double, double>
+    auto operator()(const NanoObjects::TrgObjs &trgobjs,
+                    const std::variant<NanoObjects::Muons, NanoObjects::Electrons> &nano_objects,
+                    RVec<int> nano_objs_mask) const -> std::tuple<bool, double, double, double>
     {
         ////////////////////////////////////////
         // DEBUG
@@ -375,7 +427,7 @@ class TrgObjMatcher
             && (trgobjs.pt >= pt_min)                                        //
         );
 
-        auto nano_objects_pt_mask = nano_objects.pt >= pt_min;
+        auto nano_objects_pt_mask = get_pt(nano_objects) >= pt_min;
 
         // if (hlt_path == "SingleElectronLowPt")
         // {
@@ -402,13 +454,13 @@ class TrgObjMatcher
         //     fmt::print("RAW Obj Phi: {}\n", nano_objects.phi);
         // }
 
-        const auto [has_trigger_match, _matched_nano_object_pt, _matched_nano_object_eta] =
-            Trigger::trigger_matcher(trgobjs.pt[trgobj_mask],                                  //
-                                     trgobjs.eta[trgobj_mask],                                 //
-                                     trgobjs.phi[trgobj_mask],                                 //
-                                     nano_objects.pt[nano_objs_mask && nano_objects_pt_mask],  //
-                                     nano_objects.eta[nano_objs_mask && nano_objects_pt_mask], //
-                                     nano_objects.phi[nano_objs_mask && nano_objects_pt_mask], //
+        const auto [has_trigger_match, matched_index] =
+            Trigger::trigger_matcher(trgobjs.pt[trgobj_mask],                                       //
+                                     trgobjs.eta[trgobj_mask],                                      //
+                                     trgobjs.phi[trgobj_mask],                                      //
+                                     get_pt(nano_objects)[nano_objs_mask && nano_objects_pt_mask],  //
+                                     get_eta(nano_objects)[nano_objs_mask && nano_objects_pt_mask], //
+                                     get_phi(nano_objects)[nano_objs_mask && nano_objects_pt_mask], //
                                      max_deltar_r);
 
         // will run if a trigger is found and matched
@@ -416,6 +468,11 @@ class TrgObjMatcher
         {
             if (id == PDG::Muon::Id)
             {
+                auto _matched_nano_object_pt =
+                    (get_pt(nano_objects)[nano_objs_mask && nano_objects_pt_mask]).at(matched_index);
+                auto _matched_nano_object_eta =
+                    (get_eta(nano_objects)[nano_objs_mask && nano_objects_pt_mask]).at(matched_index);
+
                 trigger_sf_nominal = //
                     trigger_sf_correctors({Trigger::get_year_for_muon_sf(year), fabs(_matched_nano_object_eta),
                                            _matched_nano_object_pt, "sf"});
@@ -428,12 +485,18 @@ class TrgObjMatcher
             }
             else if (id == PDG::Electron::Id)
             {
+                auto _matched_nano_object_pt =
+                    (get_pt(nano_objects)[nano_objs_mask && nano_objects_pt_mask]).at(matched_index);
+                auto _matched_nano_object_eta_sc =
+                    (get_eta(nano_objects)[nano_objs_mask && nano_objects_pt_mask]).at(matched_index) +
+                    (get_delta_eta_sc(nano_objects)[nano_objs_mask && nano_objects_pt_mask]).at(matched_index);
+
                 trigger_sf_nominal = //
-                    trigger_sf_correctors(_matched_nano_object_eta, _matched_nano_object_pt, "nominal");
+                    trigger_sf_correctors(_matched_nano_object_eta_sc, _matched_nano_object_pt, "nominal");
                 trigger_sf_up = //
-                    trigger_sf_correctors(_matched_nano_object_eta, _matched_nano_object_pt, "up");
+                    trigger_sf_correctors(_matched_nano_object_eta_sc, _matched_nano_object_pt, "up");
                 trigger_sf_down = //
-                    trigger_sf_correctors(_matched_nano_object_eta, _matched_nano_object_pt, "down");
+                    trigger_sf_correctors(_matched_nano_object_eta_sc, _matched_nano_object_pt, "down");
             }
             else
             {
