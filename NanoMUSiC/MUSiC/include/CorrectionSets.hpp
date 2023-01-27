@@ -465,10 +465,10 @@ class Corrector
         // MuonLowPt
         // {{TYPE, YEAR}, {INPUT, DUMMY (leave empty)}},
         {{"MuonLowPt"sv, Year::Run2016APV},
-         {MUSiCTools::parse_and_expand_music_base(("$MUSIC_BASE/NanoMUSiC/MUSiC/external/roccor/RoccoR2016UL.txt")),
+         {MUSiCTools::parse_and_expand_music_base(("$MUSIC_BASE/NanoMUSiC/MUSiC/external/roccor/RoccoR2016aUL.txt")),
           ""}},
         {{"MuonLowPt"sv, Year::Run2016},
-         {MUSiCTools::parse_and_expand_music_base(("$MUSIC_BASE/NanoMUSiC/MUSiC/external/roccor/RoccoR2016UL.txt")),
+         {MUSiCTools::parse_and_expand_music_base(("$MUSIC_BASE/NanoMUSiC/MUSiC/external/roccor/RoccoR2016bUL.txt")),
           ""}},
         {{"MuonLowPt"sv, Year::Run2017},
          {MUSiCTools::parse_and_expand_music_base(("$MUSIC_BASE/NanoMUSiC/MUSiC/external/roccor/RoccoR2017UL.txt")),

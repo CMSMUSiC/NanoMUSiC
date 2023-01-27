@@ -7,8 +7,8 @@ dataset = '/SingleMuonX/bar/abc/NANOAOD'
 is_crab_job = false
 
 input_files = [
-    '/home/home1/institut_3a/silva/projects/music/test_data/SingleMuon2017/037CED2F-27B3-DB4A-9A9D-C588589EDCE7.root',
-    # '/home/home1/institut_3a/silva/projects/music/test_data/SingleMuon2017/056C66FC-4143-4546-9861-D089AFFB4E55.root',
+    '/home/home1/institut_3a/silva/projects/music/test_data/SingleMuon2017/f01.root',
+    # '/home/home1/institut_3a/silva/projects/music/test_data/SingleMuon2017/f02.root',
 ]
 
 # input_files = [

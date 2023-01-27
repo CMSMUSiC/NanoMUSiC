@@ -1,0 +1,11 @@
+output = 'test_data_2016'
+is_data = true                                    # Is Data?
+x_section_file = '$MUSIC_BASE/configs/xsections_and_lumi/x_sections.toml'
+year = '2016'
+process = 'SingleMuonX_2017'
+dataset = '/SingleMuonX/bar/abc/NANOAOD'
+is_crab_job = false
+
+input_files = [
+    '/home/home1/institut_3a/silva/projects/music/test_data/SingleMuon2016/f01.root',
+]
