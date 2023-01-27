@@ -7,9 +7,9 @@ dataset = '/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL17
 is_crab_job = false
 
 input_files = [
-    '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/f01.root',
-#     '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/f02.root',
-#     '/home/home1/institut_3a/silva/projects/music/test_data/DY2017/f03.root',
+    '/disk1/silva/projects/NanoMUSiC_Test_Data/DY2017/f01.root',
+#     '/disk1/silva/projects/NanoMUSiC_Test_Data/DY2017/f02.root',
+#     '/disk1/silva/projects/NanoMUSiC_Test_Data/DY2017/f03.root',
     ]
 
 
