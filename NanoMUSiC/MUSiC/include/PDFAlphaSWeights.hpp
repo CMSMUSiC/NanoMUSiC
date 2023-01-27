@@ -1,13 +1,18 @@
 #ifndef PDF_ALPHA_S
 #define PDF_ALPHA_S
 
+#include "fmt/core.h"
 #include <optional>
 #include <regex>
+
+#include <fmt/format.h>
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-local-typedefs"
 #include "LHAPDF/LHAPDF.h"
 #pragma GCC diagnostic pop
+
+#include <TTree.h>
 
 // References:
 // clang-format off
@@ -17,9 +22,18 @@
 namespace PDFAlphaSWeights
 {
 
+inline bool has_pdf_weight(TTree *events_tree)
+{
+    if (events_tree->GetBranch("LHEPdfWeight"))
+    {
+        return true;
+    }
+    return false;
+}
+
 // will look for IDs in the LHEPdfWeight description string
 // if can not find then, will return a std::nullopt
-std::optional<std::pair<int, int>> get_pdf_ids(const std::unique_ptr<TTree> &events_tree)
+inline std::optional<std::pair<int, int>> get_pdf_ids(TTree *events_tree)
 {
     std::optional<std::pair<int, int>> ids = std::nullopt;
     if (has_pdf_weight(events_tree))
@@ -42,18 +56,17 @@ std::optional<std::pair<int, int>> get_pdf_ids(const std::unique_ptr<TTree> &eve
             }
             if (match_counter != 2)
             {
-                throw std::runtime_error("Too many of too few matches (" + std::to_string(match_counter) + ") to
-                LHAPDF IDs.");
+                throw std::runtime_error(fmt::format("Too many or too few matches ({}) to LHAPDF IDs.", match_counter));
             }
         }
         catch (const std::out_of_range &e)
         {
             std::cerr << e.what() << std::endl;
-            std::cerr << "ERROR: When trying to match the LHEPdfWeight description the to declared PDF set IDs
-            (REGEX: "
-                         "\"[0-9]*\"), looks like there is more than 2 matches. \nLHEPdfWeight description:\n "
-                      << LHEPdfWeight_description << "\nFirst 2 matches: \n"
-                      << buffer_ids[0] << " and " << buffer_ids[1] << std::endl;
+            fmt::print(
+                "ERROR: When trying to match the LHEPdfWeight description to declared PDF set IDs (REGEX: \"[0-9]*\"), "
+                "looks like there is more than 2 matches.");
+            fmt::print("\nLHEPdfWeight description:\n {}", LHEPdfWeight_description);
+            fmt::print("\nFirst 2 matches: {} and {}", buffer_ids[0], buffer_ids[1]);
         }
         catch (const std::exception &e)
         {
@@ -64,12 +77,12 @@ std::optional<std::pair<int, int>> get_pdf_ids(const std::unique_ptr<TTree> &eve
     return ids;
 }
 
-double get_pdf_weight_from_LHAPDf(const std::unique_ptr<TTree> &events_tree)
+inline double get_pdf_weight_from_LHAPDf(const TTree *events_tree)
 {
     return 1.;
 }
 
-std::pair<std::string, int> get_pdfset_name_by_id(int &id)
+inline std::pair<std::string, int> get_pdfset_name_by_id(int &id)
 {
     // Reference:
     // https://lhapdf.hepforge.org/group__index.html#gaa361996fe42aba7f8752a7be03166a47
@@ -85,14 +98,14 @@ std::pair<std::string, int> get_pdfset_name_by_id(int &id)
     return pdf_set;
 }
 
-double get_pdf_weight_from_sample(const std::unique_ptr<TTree> &events_tree, const std::pair<int, int> &ids)
+inline double get_pdf_weight_from_sample(const TTree *events_tree, const std::pair<int, int> &ids)
 {
     return 1.;
 }
 
 // TODO:
 // Add systematics
-double get_pdf_weight(const std::unique_ptr<TTree> &events_tree)
+inline double get_pdf_weight(TTree *events_tree)
 {
     const auto ids = get_pdf_ids(events_tree);
     if (ids)

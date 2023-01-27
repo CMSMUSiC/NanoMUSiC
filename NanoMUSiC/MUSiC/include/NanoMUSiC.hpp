@@ -73,7 +73,7 @@
 
 // Corrections and weighters
 #include "CorrectionSets.hpp"
-// #include "PDFAlphaSWeights.hpp"
+#include "PDFAlphaSWeights.hpp"
 
 using namespace std::chrono_literals;
 // using namespace ranges;
