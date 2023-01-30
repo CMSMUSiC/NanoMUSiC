@@ -31,6 +31,8 @@ class EventData
 
     NanoObjects::EventInfo event_info;
 
+    NanoObjects::LHEInfo lhe_info;
+
     NanoObjects::Muons muons;
     RVec<int> good_muons_mask;
     RVec<int> good_low_pt_muons_mask;
@@ -75,6 +77,16 @@ class EventData
         if (*this)
         {
             event_info = _event_info;
+            return *this;
+        }
+        return *this;
+    }
+
+    EventData &set_lhe_info(NanoObjects::LHEInfo &&_lhe_info)
+    {
+        if (*this)
+        {
+            lhe_info = _lhe_info;
             return *this;
         }
         return *this;
@@ -725,6 +737,26 @@ class EventData
         return *this;
     }
 
+    EventData &set_pdf_weights(Outputs &outputs)
+    {
+        if (*this)
+        {
+            if (lhe_info.nLHEPdfWeight > 0)
+            {
+                if (lhe_info.nLHEPdfWeight != 103)
+                {
+                    fmt::print("Ewn!\n");
+                }
+            }
+            else
+            {
+                fmt::print("Nhwenn !\n");
+            }
+            return *this;
+        }
+        return *this;
+    }
+
     EventData &muon_corrections()
     {
         if (*this)
@@ -792,6 +824,9 @@ class EventData
             outputs.trigger_bits = trigger_bits.as_ulong();
 
             outputs.fill_branches(
+                // LHE Info
+                std::move(lhe_info.LHEPdfWeight), //
+
                 // muons
                 muons.pt[good_muons_mask],  //
                 muons.eta[good_muons_mask], //

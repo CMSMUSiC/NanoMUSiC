@@ -2,6 +2,7 @@
 #define PDF_ALPHA_S
 
 #include "fmt/core.h"
+#include <exception>
 #include <optional>
 #include <regex>
 
@@ -17,6 +18,8 @@
 // References:
 // clang-format off
 //  https://cms-pdmv.gitbook.io/project/mccontact/info-for-mc-production-for-ultra-legacy-campaigns-2016-2017-2018#recommendations-on-the-usage-of-pdfs-and-cpx-tunes
+// https://indico.cern.ch/event/494682/contributions/1172505/attachments/1223578/1800218/mcaod-Feb15-2016.pdf
+// https://twiki.cern.ch/twiki/bin/view/CMS/TopSystematics
 // clang-format on
 
 namespace PDFAlphaSWeights
@@ -47,31 +50,20 @@ inline std::optional<std::pair<int, int>> get_pdf_ids(TTree *events_tree)
                                                                     LHEPdfWeight_description.end(), expression);
         auto match_counter = 0;
         std::array<int, 2> buffer_ids = {-1, -1};
-        try
+
+        while (regex_iter != regex_end)
         {
-            while (regex_iter != regex_end)
-            {
-                buffer_ids.at(match_counter) = std::stoi(*regex_iter++);
-                match_counter++;
-            }
-            if (match_counter != 2)
-            {
-                throw std::runtime_error(fmt::format("Too many or too few matches ({}) to LHAPDF IDs.", match_counter));
-            }
+            buffer_ids.at(match_counter) = std::stoi(*regex_iter++);
+            match_counter++;
         }
-        catch (const std::out_of_range &e)
+        if (match_counter != 2)
         {
-            std::cerr << e.what() << std::endl;
-            fmt::print(
-                "ERROR: When trying to match the LHEPdfWeight description to declared PDF set IDs (REGEX: \"[0-9]*\"), "
-                "looks like there is more than 2 matches.");
-            fmt::print("\nLHEPdfWeight description:\n {}", LHEPdfWeight_description);
-            fmt::print("\nFirst 2 matches: {} and {}", buffer_ids[0], buffer_ids[1]);
+            throw std::runtime_error(
+                fmt::format("Too many or too few matches ({}) to LHAPDF IDs.\nLHEPdfWeight description:\n "
+                            "{}\nFirst 2 matches: {} and {}",
+                            match_counter, LHEPdfWeight_description, buffer_ids[0], buffer_ids[1]));
         }
-        catch (const std::exception &e)
-        {
-            std::cerr << e.what() << std::endl;
-        }
+
         ids = std::make_pair(buffer_ids[0], buffer_ids[1]);
     }
     return ids;

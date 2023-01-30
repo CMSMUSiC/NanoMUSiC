@@ -99,6 +99,9 @@ class Outputs
     std::array<float, kTotalWeights> weights_up;
     std::array<float, kTotalWeights> weights_down;
 
+    unsigned int nLHEPdfWeight;
+    std::array<float, kMaxObjects> LHEPdfWeight;
+
     unsigned int nMuon;
     std::array<float, kMaxObjects> Muon_pt;
     std::array<float, kMaxObjects> Muon_eta;
@@ -137,7 +140,8 @@ class Outputs
     TH1F cutflow_histo;
 
     Outputs(const std::string _filename)
-        : filename(_filename), output_file(std::unique_ptr<TFile>(TFile::Open(filename.c_str(), "RECREATE")))
+        : filename(_filename),
+          output_file(std::unique_ptr<TFile>(TFile::Open(filename.c_str(), "RECREATE")))
     {
 
         output_tree = std::make_unique<TTree>("nano_music", "nano_music");
@@ -154,6 +158,7 @@ class Outputs
 
         output_tree->Branch("kTotalWeights", &kTotalWeights_non_const, "kTotalWeights/i");
 
+        output_tree->Branch("nLHEPdfWeight", &nLHEPdfWeight, "nLHEPdfWeight/i");
         output_tree->Branch("nMuon", &nMuon, "nMuon/i");
         output_tree->Branch("nElectron", &nElectron, "nElectron/i");
         output_tree->Branch("nPhoton", &nPhoton, "nPhoton/i");
@@ -166,6 +171,9 @@ class Outputs
         output_tree->Branch("weights_nominal", weights_nominal.data(), "weights_nominal[kTotalWeights]/F", buffer_size);
         output_tree->Branch("weights_up", weights_up.data(), "weights_up[kTotalWeights]/F", buffer_size);
         output_tree->Branch("weights_down", weights_down.data(), "weights_down[kTotalWeights]/F", buffer_size);
+
+        // LHE Info
+        output_tree->Branch("LHEPdfWeight", LHEPdfWeight.data(), "LHEPdfWeight[nLHEPdfWeight]/F", buffer_size);
 
         // physical objects
         output_tree->Branch("Muon_pt", Muon_pt.data(), "Muon_pt[nMuon]/F", buffer_size);
@@ -252,6 +260,9 @@ class Outputs
         weights_up.fill(1);
         weights_down.fill(1);
 
+        nLHEPdfWeight = 0;
+        LHEPdfWeight.fill(0);
+
         nMuon = 0;
         Muon_pt.fill(0);
         Muon_eta.fill(0);
@@ -287,13 +298,37 @@ class Outputs
         MET_phi.fill(0);
     }
 
-    void fill_branches(RVec<float> &&_muon_pt, RVec<float> &&_muon_eta, RVec<float> &&_muon_phi,
-                       RVec<float> &&_electron_pt, RVec<float> &&_electron_eta, RVec<float> &&_electron_phi,
-                       RVec<float> &&_photon_pt, RVec<float> &&_photon_eta, RVec<float> &&_photon_phi,
-                       RVec<float> &&_tau_pt, RVec<float> &&_tau_eta, RVec<float> &&_tau_phi, RVec<float> &&_bjet_pt,
-                       RVec<float> &&_bjet_eta, RVec<float> &&_bjet_phi, RVec<float> &&_jet_pt, RVec<float> &&_jet_eta,
-                       RVec<float> &&_jet_phi, RVec<float> &&_met_pt, RVec<float> &&_met_phi)
+    void fill_branches(RVec<float> &&_lhe_pdf_weights, //
+                                                       // muons
+                       RVec<float> &&_muon_pt,         //
+                       RVec<float> &&_muon_eta,        //
+                       RVec<float> &&_muon_phi,        //
+                       // electrons
+                       RVec<float> &&_electron_pt,  //
+                       RVec<float> &&_electron_eta, //
+                       RVec<float> &&_electron_phi, //
+                       // photons
+                       RVec<float> &&_photon_pt,  //
+                       RVec<float> &&_photon_eta, //
+                       RVec<float> &&_photon_phi, //
+                       // taus
+                       RVec<float> &&_tau_pt,  //
+                       RVec<float> &&_tau_eta, //
+                       RVec<float> &&_tau_phi, //
+                       // bjets
+                       RVec<float> &&_bjet_pt,  //
+                       RVec<float> &&_bjet_eta, //
+                       RVec<float> &&_bjet_phi, //
+                       // jets
+                       RVec<float> &&_jet_pt,  //
+                       RVec<float> &&_jet_eta, //
+                       RVec<float> &&_jet_phi, //
+                       // met
+                       RVec<float> &&_met_pt, //
+                       RVec<float> &&_met_phi)
     {
+        nLHEPdfWeight = _lhe_pdf_weights.size();
+        std::copy(_lhe_pdf_weights.cbegin(), _lhe_pdf_weights.cend(), LHEPdfWeight.begin());
 
         nMuon = _muon_pt.size();
         std::copy(_muon_pt.cbegin(), _muon_pt.cend(), Muon_pt.begin());

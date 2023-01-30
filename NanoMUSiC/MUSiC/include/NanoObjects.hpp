@@ -90,6 +90,23 @@ struct EventInfo
     }
 };
 
+struct LHEInfo
+{
+    std::size_t nLHEPdfWeight;
+    RVec<float> LHEPdfWeight;
+
+    std::size_t nLHEScaleWeight;
+    RVec<float> LHEScaleWeight;
+
+    LHEInfo(const RVec<float> &_LHEPdfWeight = {}, const RVec<float> &_LHEScaleWeight = {})
+        : nLHEPdfWeight(_LHEPdfWeight.size()),
+          LHEPdfWeight(_LHEPdfWeight),
+          nLHEScaleWeight(_LHEScaleWeight.size()),
+          LHEScaleWeight(_LHEScaleWeight)
+    {
+    }
+};
+
 struct Muons
 {
     std::size_t size;

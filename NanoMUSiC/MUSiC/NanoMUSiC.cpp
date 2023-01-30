@@ -145,6 +145,10 @@ int main(int argc, char *argv[])
     ADD_VALUE_READER(HLT_Ele115_CaloIdVT_GsfTrkIdT, bool);
 
     // muons
+    ADD_ARRAY_READER(LHEPdfWeight, float);
+    ADD_ARRAY_READER(LHEScaleWeight, float);
+
+    // muons
     ADD_ARRAY_READER(Muon_pt, float);
     ADD_ARRAY_READER(Muon_eta, float);
     ADD_ARRAY_READER(Muon_phi, float);
@@ -247,6 +251,10 @@ int main(int argc, char *argv[])
                                                                      unwrap(HLT_Photon200),                           //
                                                                      unwrap(HLT_Photon175),                           //
                                                                      unwrap(HLT_Ele115_CaloIdVT_GsfTrkIdT)))
+
+                              // muons
+                              .set_lhe_info(NanoObjects::LHEInfo(unwrap(LHEPdfWeight),    //
+                                                                 unwrap(LHEScaleWeight))) //
                               // muons
                               .set_muons(NanoObjects::Muons(unwrap(Muon_pt),             //
                                                             unwrap(Muon_eta),            //
@@ -308,6 +316,7 @@ int main(int argc, char *argv[])
                          .has_selected_objects_filter(outputs)
                          .trigger_match_filter(outputs, matchers)
                          .set_scale_factors(outputs)
+                         .set_pdf_weights(outputs)
                          .muon_corrections()
                          .electron_corrections()
                          .photon_corrections()
