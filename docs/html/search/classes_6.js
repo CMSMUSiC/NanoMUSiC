@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['nanoaodreader_500',['NanoAODReader',['../classNanoAODReader.html',1,'']]]
+  ['lheinfo_530',['LHEInfo',['../structNanoObjects_1_1LHEInfo.html',1,'NanoObjects']]]
 ];

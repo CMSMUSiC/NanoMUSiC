@@ -13,6 +13,7 @@ var namespaces_dup =
     [ "MUSiCTools", "namespaceMUSiCTools.html", null ],
     [ "NanoObjects", "namespaceNanoObjects.html", null ],
     [ "ObjConfig", "namespaceObjConfig.html", null ],
+    [ "PDFAlphaSWeights", "namespacePDFAlphaSWeights.html", null ],
     [ "PDG", "namespacePDG.html", "namespacePDG" ],
     [ "RunConfig", "namespaceRunConfig.html", null ],
     [ "Trigger", "namespaceTrigger.html", null ]

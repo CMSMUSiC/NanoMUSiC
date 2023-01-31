@@ -171,84 +171,83 @@ $(document).ready(function(){initNavTree('namespacePDFAlphaSWeights.html',''); i
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:adc72012ac04ff409d853467188e0e039"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDFAlphaSWeights.html#adc72012ac04ff409d853467188e0e039">has_pdf_weight</a> (const std::unique_ptr&lt; TTree &gt; &amp;events_tree)</td></tr>
-<tr class="separator:adc72012ac04ff409d853467188e0e039"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9e34caf4dd955b8c34964d4e79fee6c9"><td class="memItemLeft" align="right" valign="top">std::optional&lt; std::pair&lt; int, int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDFAlphaSWeights.html#a9e34caf4dd955b8c34964d4e79fee6c9">get_pdf_ids</a> (const std::unique_ptr&lt; TTree &gt; &amp;events_tree)</td></tr>
-<tr class="separator:a9e34caf4dd955b8c34964d4e79fee6c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa81303140703533857c23d391232d573"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDFAlphaSWeights.html#aa81303140703533857c23d391232d573">get_pdf_weight_from_LHAPDf</a> (const std::unique_ptr&lt; TTree &gt; &amp;events_tree)</td></tr>
-<tr class="separator:aa81303140703533857c23d391232d573"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a861f68c4450024b3a52173301158991e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDFAlphaSWeights.html#a861f68c4450024b3a52173301158991e">has_pdf_weight</a> (TTree *events_tree)</td></tr>
+<tr class="separator:a861f68c4450024b3a52173301158991e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0fe98fd1c773c4c4f3c3b5fa028caa45"><td class="memItemLeft" align="right" valign="top">std::optional&lt; std::pair&lt; unsigned int, unsigned int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDFAlphaSWeights.html#a0fe98fd1c773c4c4f3c3b5fa028caa45">get_pdf_ids</a> (TTree *events_tree)</td></tr>
+<tr class="separator:a0fe98fd1c773c4c4f3c3b5fa028caa45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa35d6bdbc7c376f40f0c93eba3beec6c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDFAlphaSWeights.html#aa35d6bdbc7c376f40f0c93eba3beec6c">get_pdf_weight_from_LHAPDf</a> (const TTree *events_tree)</td></tr>
+<tr class="separator:aa35d6bdbc7c376f40f0c93eba3beec6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae8df4687e31557b0347619e05a524099"><td class="memItemLeft" align="right" valign="top">std::pair&lt; std::string, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDFAlphaSWeights.html#ae8df4687e31557b0347619e05a524099">get_pdfset_name_by_id</a> (int &amp;id)</td></tr>
 <tr class="separator:ae8df4687e31557b0347619e05a524099"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2686457bcddf14bf969f9b8e8d34afb7"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDFAlphaSWeights.html#a2686457bcddf14bf969f9b8e8d34afb7">get_pdf_weight_from_sample</a> (const std::unique_ptr&lt; TTree &gt; &amp;events_tree, const std::pair&lt; int, int &gt; &amp;ids)</td></tr>
-<tr class="separator:a2686457bcddf14bf969f9b8e8d34afb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acec655381a82568fe10439f2d98a3663"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDFAlphaSWeights.html#acec655381a82568fe10439f2d98a3663">get_pdf_weight</a> (const std::unique_ptr&lt; TTree &gt; &amp;events_tree)</td></tr>
-<tr class="separator:acec655381a82568fe10439f2d98a3663"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28011e16bd30f69dcf9338202ca23403"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDFAlphaSWeights.html#a28011e16bd30f69dcf9338202ca23403">get_pdf_weight_from_sample</a> (const TTree *events_tree, const std::pair&lt; int, int &gt; &amp;ids)</td></tr>
+<tr class="separator:a28011e16bd30f69dcf9338202ca23403"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a9e34caf4dd955b8c34964d4e79fee6c9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9e34caf4dd955b8c34964d4e79fee6c9">&#9670;&nbsp;</a></span>get_pdf_ids()</h2>
+<a id="a0fe98fd1c773c4c4f3c3b5fa028caa45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0fe98fd1c773c4c4f3c3b5fa028caa45">&#9670;&nbsp;</a></span>get_pdf_ids()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::optional&lt;std::pair&lt;int, int&gt; &gt; PDFAlphaSWeights::get_pdf_ids </td>
+          <td class="memname">std::optional&lt;std::pair&lt;unsigned int, unsigned int&gt; &gt; PDFAlphaSWeights::get_pdf_ids </td>
           <td>(</td>
-          <td class="paramtype">const std::unique_ptr&lt; TTree &gt; &amp;&#160;</td>
+          <td class="paramtype">TTree *&#160;</td>
           <td class="paramname"><em>events_tree</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="acec655381a82568fe10439f2d98a3663"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acec655381a82568fe10439f2d98a3663">&#9670;&nbsp;</a></span>get_pdf_weight()</h2>
+<a id="aa35d6bdbc7c376f40f0c93eba3beec6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa35d6bdbc7c376f40f0c93eba3beec6c">&#9670;&nbsp;</a></span>get_pdf_weight_from_LHAPDf()</h2>
 
 <div class="memitem">
 <div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">double PDFAlphaSWeights::get_pdf_weight </td>
-          <td>(</td>
-          <td class="paramtype">const std::unique_ptr&lt; TTree &gt; &amp;&#160;</td>
-          <td class="paramname"><em>events_tree</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="aa81303140703533857c23d391232d573"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa81303140703533857c23d391232d573">&#9670;&nbsp;</a></span>get_pdf_weight_from_LHAPDf()</h2>
-
-<div class="memitem">
-<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">double PDFAlphaSWeights::get_pdf_weight_from_LHAPDf </td>
           <td>(</td>
-          <td class="paramtype">const std::unique_ptr&lt; TTree &gt; &amp;&#160;</td>
+          <td class="paramtype">const TTree *&#160;</td>
           <td class="paramname"><em>events_tree</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a2686457bcddf14bf969f9b8e8d34afb7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2686457bcddf14bf969f9b8e8d34afb7">&#9670;&nbsp;</a></span>get_pdf_weight_from_sample()</h2>
+<a id="a28011e16bd30f69dcf9338202ca23403"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28011e16bd30f69dcf9338202ca23403">&#9670;&nbsp;</a></span>get_pdf_weight_from_sample()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">double PDFAlphaSWeights::get_pdf_weight_from_sample </td>
           <td>(</td>
-          <td class="paramtype">const std::unique_ptr&lt; TTree &gt; &amp;&#160;</td>
+          <td class="paramtype">const TTree *&#160;</td>
           <td class="paramname"><em>events_tree</em>, </td>
         </tr>
         <tr>
@@ -263,6 +262,11 @@ Functions</h2></td></tr>
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 </div>
@@ -272,6 +276,9 @@ Functions</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">std::pair&lt;std::string, int&gt; PDFAlphaSWeights::get_pdfset_name_by_id </td>
@@ -281,24 +288,37 @@ Functions</h2></td></tr>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="adc72012ac04ff409d853467188e0e039"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adc72012ac04ff409d853467188e0e039">&#9670;&nbsp;</a></span>has_pdf_weight()</h2>
+<a id="a861f68c4450024b3a52173301158991e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a861f68c4450024b3a52173301158991e">&#9670;&nbsp;</a></span>has_pdf_weight()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">bool PDFAlphaSWeights::has_pdf_weight </td>
           <td>(</td>
-          <td class="paramtype">const std::unique_ptr&lt; TTree &gt; &amp;&#160;</td>
+          <td class="paramtype">TTree *&#160;</td>
           <td class="paramname"><em>events_tree</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 </div>
