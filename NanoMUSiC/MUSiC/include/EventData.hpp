@@ -31,18 +31,20 @@ class EventData
 
   public:
     TriggerBits trigger_bits;
-    float trigger_sf_nominal;
-    float trigger_sf_up;
-    float trigger_sf_down;
+    float trigger_sf_nominal = 1.;
+    float trigger_sf_up = 1.;
+    float trigger_sf_down = 1.;
 
     NanoObjects::EventInfo event_info;
 
     NanoObjects::GeneratorInfo generator_info;
 
     NanoObjects::LHEInfo lhe_info;
-    float alpha_s_up;
-    float alpha_s_down;
     int lha_id;
+    float alpha_s_up = 1.;
+    float alpha_s_down = 1.;
+    float scale_envelope_weight_up = 1.;
+    float scale_envelope_weight_down = 1.;
 
     NanoObjects::Muons muons;
     RVec<int> good_muons_mask;
@@ -804,7 +806,7 @@ class EventData
                 else
                 {
                     throw std::runtime_error(fmt::format(
-                        "Unexpected number of weights ({}). According to CMSSW "
+                        "Unexpected number of PDF weights ({}). According to CMSSW "
                         "(https://github.dev/cms-sw/cmssw/blob/6ef534126e6db3dfdea86c3f0eedb773f0117cbc/PhysicsTools/"
                         "NanoAOD/python/genWeightsTable_cfi.py#L20) if should be eighther 101, 103, 31 or 33.\n",
                         lhe_info.nLHEPdfWeight));
@@ -850,6 +852,60 @@ class EventData
                         _originalXWGTUP;
                 }
             }
+            return *this;
+        }
+        return *this;
+    }
+
+    EventData &set_scale_weights()
+    {
+        if (*this)
+        {
+            if (lhe_info.nLHEScaleWeight > 0)
+            {
+
+                if (lhe_info.nLHEScaleWeight != 9)
+                {
+                    throw std::runtime_error(fmt::format("Unexpected number of Scale weights ({}). Expected to be 9.\n",
+                                                         lhe_info.nLHEScaleWeight));
+                }
+                // if (lhe_info.LHEScaleWeight[4] != 1.)
+                // {
+                //     throw std::runtime_error(
+                //         fmt::format("The nominal LHEScaleWeight is expected to be 1, but also found values {}. All "
+                //                     "variations will be normalized to the nominal LHEScaleWeight and it is "
+                //                     "assumed that the nominal weight is already included in the LHEWeight.\n",
+                //                     lhe_info.LHEScaleWeight[4]));
+                // }
+                auto murf_nominal = lhe_info.LHEScaleWeight[4];
+
+                // remove indexes 2 and 6 since they corresponds to unphysical values ()
+                lhe_info.LHEScaleWeight.erase(lhe_info.LHEScaleWeight.begin() + 2);
+                lhe_info.LHEScaleWeight.erase(lhe_info.LHEScaleWeight.begin() + 6);
+
+                // The nominal LHEScaleWeight is expected to be 1.
+                // All variations will be normalized to the nominal LHEScaleWeight and it is assumed that the nominal
+                // weight is already included in the LHEWeight.
+                // rescale, just in case, scale all weights to the nominal
+                for (auto &scale_weight : lhe_info.LHEScaleWeight)
+                {
+                    scale_weight /= murf_nominal;
+                }
+
+                scale_envelope_weight_up = VecOps::Max(lhe_info.LHEScaleWeight);
+                scale_envelope_weight_down = VecOps::Min(lhe_info.LHEScaleWeight);
+            }
+            else
+            {
+                if (not is_data)
+                {
+                    // it is already set, but just to be sure ...
+                    // not much to do here ...
+                    scale_envelope_weight_up = 1.;
+                    scale_envelope_weight_down = 1.;
+                }
+            }
+
             return *this;
         }
         return *this;
