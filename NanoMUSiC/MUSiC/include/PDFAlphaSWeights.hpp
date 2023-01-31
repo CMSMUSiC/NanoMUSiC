@@ -1,7 +1,8 @@
 #ifndef PDF_ALPHA_S
 #define PDF_ALPHA_S
 
-#include "fmt/core.h"
+#include "fmt/format.h"
+
 #include <exception>
 #include <optional>
 #include <regex>
@@ -24,6 +25,9 @@
 
 namespace PDFAlphaSWeights
 {
+// struct LHAPDFInfo{unsigned int id; std::string_view name; ErrorType};
+
+//     std::unordered_map<unsigned int, LHAPDFInfo> lhaids =
 
 inline bool has_pdf_weight(TTree *events_tree)
 {
@@ -36,24 +40,25 @@ inline bool has_pdf_weight(TTree *events_tree)
 
 // will look for IDs in the LHEPdfWeight description string
 // if can not find then, will return a std::nullopt
-inline std::optional<std::pair<int, int>> get_pdf_ids(TTree *events_tree)
+inline std::optional<std::pair<unsigned int, unsigned int>> get_pdf_ids(TTree *events_tree)
 {
-    std::optional<std::pair<int, int>> ids = std::nullopt;
+    std::optional<std::pair<unsigned int, unsigned int>> ids = std::nullopt;
     if (has_pdf_weight(events_tree))
     {
         std::string LHEPdfWeight_description = events_tree->GetBranch("LHEPdfWeight")->GetTitle();
-        std::regex expression("[0-9]*");
+        std::regex expression("[0-9]+");
 
         // default constructor = end-of-sequence:
         std::regex_token_iterator<std::string::iterator> regex_end;
         std::regex_token_iterator<std::string::iterator> regex_iter(LHEPdfWeight_description.begin(),
                                                                     LHEPdfWeight_description.end(), expression);
         auto match_counter = 0;
-        std::array<int, 2> buffer_ids = {-1, -1};
+        std::array<std::string, 2> buffer_ids = {"0", "0"};
 
         while (regex_iter != regex_end)
         {
-            buffer_ids.at(match_counter) = std::stoi(*regex_iter++);
+            buffer_ids[match_counter] = *regex_iter;
+            regex_iter++;
             match_counter++;
         }
         if (match_counter != 2)
@@ -64,7 +69,8 @@ inline std::optional<std::pair<int, int>> get_pdf_ids(TTree *events_tree)
                             match_counter, LHEPdfWeight_description, buffer_ids[0], buffer_ids[1]));
         }
 
-        ids = std::make_pair(buffer_ids[0], buffer_ids[1]);
+        ids = std::make_pair(static_cast<unsigned int>(std::stoi(buffer_ids[0])),
+                             static_cast<unsigned int>(std::stoi(buffer_ids[1])));
     }
     return ids;
 }
@@ -95,17 +101,17 @@ inline double get_pdf_weight_from_sample(const TTree *events_tree, const std::pa
     return 1.;
 }
 
-// TODO:
-// Add systematics
-inline double get_pdf_weight(TTree *events_tree)
-{
-    const auto ids = get_pdf_ids(events_tree);
-    if (ids)
-    {
-        return get_pdf_weight_from_sample(events_tree, ids.value());
-    }
-    return get_pdf_weight_from_LHAPDf(events_tree);
-}
+// // TODO:
+// // Add systematics
+// inline double get_pdf_weight(TTree *events_tree)
+// {
+//     const auto ids = get_pdf_ids(events_tree);
+//     if (ids)
+//     {
+//         return get_pdf_weight_from_sample(events_tree, ids.value());
+//     }
+//     return get_pdf_weight_from_LHAPDf(events_tree);
+// }
 
 } // namespace PDFAlphaSWeights
 

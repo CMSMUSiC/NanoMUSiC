@@ -37,7 +37,7 @@ namespace IndexHelpers
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Creates a iterable range of integers in the interval [first, last].
-const std::vector<long> make_index(long first, long last)
+inline const std::vector<long> make_index(long first, long last)
 {
     auto vec = std::vector<long>(last - first + 1);
     long item = first;
@@ -51,7 +51,7 @@ const std::vector<long> make_index(long first, long last)
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Creates a iterable range of integers in the interval [0 (zero), length[.
-const std::vector<long> make_index(long lenght)
+inline const std::vector<long> make_index(long lenght)
 {
     return make_index(0, lenght - 1);
 }
@@ -92,6 +92,7 @@ class Outputs
     unsigned int lumi_section;
     unsigned long event_number;
     unsigned long trigger_bits;
+    unsigned int lha_id;
 
     // ROOT won't let us write a const to a TTree 🤔🤬 ...
     int kTotalWeights_non_const = kTotalWeights;
@@ -100,7 +101,7 @@ class Outputs
     std::array<float, kTotalWeights> weights_down;
 
     unsigned int nLHEPdfWeight;
-    std::array<float, kMaxObjects> LHEPdfWeight;
+    std::array<float, 150> LHEPdfWeight;
 
     unsigned int nMuon;
     std::array<float, kMaxObjects> Muon_pt;
@@ -155,6 +156,7 @@ class Outputs
         output_tree->Branch("lumi_section", &lumi_section, "lumi_section/i");
         output_tree->Branch("event_number", &event_number, "event_number/g");
         output_tree->Branch("trigger_bits", &trigger_bits, "trigger_bits/g");
+        output_tree->Branch("lha_id", &lha_id, "lha_id/i");
 
         output_tree->Branch("kTotalWeights", &kTotalWeights_non_const, "kTotalWeights/i");
 
@@ -176,24 +178,37 @@ class Outputs
         output_tree->Branch("LHEPdfWeight", LHEPdfWeight.data(), "LHEPdfWeight[nLHEPdfWeight]/F", buffer_size);
 
         // physical objects
+        // muons
         output_tree->Branch("Muon_pt", Muon_pt.data(), "Muon_pt[nMuon]/F", buffer_size);
         output_tree->Branch("Muon_eta", Muon_eta.data(), "Muon_eta[nMuon]/F", buffer_size);
         output_tree->Branch("Muon_phi", Muon_phi.data(), "Muon_phi[nMuon]/F", buffer_size);
+
+        // electrons
         output_tree->Branch("Electron_pt", Electron_pt.data(), "Electron_pt[nElectron]/F", buffer_size);
         output_tree->Branch("Electron_eta", Electron_eta.data(), "Electron_eta[nElectron]/F", buffer_size);
         output_tree->Branch("Electron_phi", Electron_phi.data(), "Electron_phi[nElectron]/F", buffer_size);
+
+        // photons
         output_tree->Branch("Photon_pt", Photon_pt.data(), "Photon_pt[nPhoton]/F", buffer_size);
         output_tree->Branch("Photon_eta", Photon_eta.data(), "Photon_eta[nPhoton]/F", buffer_size);
         output_tree->Branch("Photon_phi", Photon_phi.data(), "Photon_phi[nPhoton]/F", buffer_size);
+
+        // taus
         output_tree->Branch("Tau_pt", Tau_pt.data(), "Tau_pt[nTau]/F", buffer_size);
         output_tree->Branch("Tau_eta", Tau_eta.data(), "Tau_eta[nTau]/F", buffer_size);
         output_tree->Branch("Tau_phi", Tau_phi.data(), "Tau_phi[nTau]/F", buffer_size);
+
+        // bjets
         output_tree->Branch("BJet_pt", BJet_pt.data(), "BJet_pt[nBJet]/F", buffer_size);
         output_tree->Branch("BJet_eta", BJet_eta.data(), "BJet_eta[nBJet]/F", buffer_size);
         output_tree->Branch("BJet_phi", BJet_phi.data(), "BJet_phi[nBJet]/F", buffer_size);
+
+        // jets
         output_tree->Branch("Jet_pt", Jet_pt.data(), "Jet_pt[nJet]/F", buffer_size);
         output_tree->Branch("Jet_eta", Jet_eta.data(), "Jet_eta[nJet]/F", buffer_size);
         output_tree->Branch("Jet_phi", Jet_phi.data(), "Jet_phi[nJet]/F", buffer_size);
+
+        // MET
         output_tree->Branch("MET_pt", MET_pt.data(), "MET_pt[nMET]/F", buffer_size);
         output_tree->Branch("MET_phi", MET_phi.data(), "MET_phi[nMET]/F", buffer_size);
 
@@ -255,13 +270,14 @@ class Outputs
         lumi_section = 0;
         event_number = 0;
         trigger_bits = 0;
+        lha_id = 0;
 
-        weights_nominal.fill(1);
-        weights_up.fill(1);
-        weights_down.fill(1);
+        weights_nominal.fill(1.);
+        weights_up.fill(1.);
+        weights_down.fill(1.);
 
         nLHEPdfWeight = 0;
-        LHEPdfWeight.fill(0);
+        LHEPdfWeight.fill(1.);
 
         nMuon = 0;
         Muon_pt.fill(0);

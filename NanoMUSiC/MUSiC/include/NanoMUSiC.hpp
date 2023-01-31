@@ -221,7 +221,8 @@ inline void prepare_output_buffer(const TaskConfiguration &configuration)
     system(("cp " + configuration.x_section_file + " . ").c_str());
 }
 
-void print_report(const double &dTime1, const unsigned long &event_counter, TH1F &cutflow_histo, bool is_final = false)
+inline void print_report(const double &dTime1, const unsigned long &event_counter, TH1F &cutflow_histo,
+                         bool is_final = false)
 {
     double dTime2 = getCpuTime();
     std::string final_str = is_final ? "Final " : "";

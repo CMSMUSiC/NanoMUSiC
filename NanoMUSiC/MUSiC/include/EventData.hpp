@@ -1,13 +1,19 @@
 #ifndef MUSIC_EVENT_DATA
 #define MUSIC_EVENT_DATA
 
+#include "LHAPDF/PDF.h"
 #include <algorithm>
 #include <exception>
 #include <functional>
-
-#include <fmt/core.h>
 #include <stdexcept>
 #include <string_view>
+
+#include <fmt/format.h>
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-local-typedefs"
+#include "LHAPDF/LHAPDF.h"
+#pragma GCC diagnostic pop
 
 #include "Configs.hpp"
 #include "NanoObjects.hpp"
@@ -31,7 +37,12 @@ class EventData
 
     NanoObjects::EventInfo event_info;
 
+    NanoObjects::GeneratorInfo generator_info;
+
     NanoObjects::LHEInfo lhe_info;
+    float alpha_s_up;
+    float alpha_s_down;
+    int lha_id;
 
     NanoObjects::Muons muons;
     RVec<int> good_muons_mask;
@@ -77,6 +88,16 @@ class EventData
         if (*this)
         {
             event_info = _event_info;
+            return *this;
+        }
+        return *this;
+    }
+
+    EventData &set_generator_info(NanoObjects::GeneratorInfo &&_generator_info)
+    {
+        if (*this)
+        {
+            generator_info = _generator_info;
             return *this;
         }
         return *this;
@@ -724,6 +745,116 @@ class EventData
         return *this;
     }
 
+    EventData &set_pdf_alpha_s_weights(const std::optional<std::pair<unsigned int, unsigned int>> &lha_indexes)
+    {
+        if (*this)
+        {
+            if (lhe_info.nLHEPdfWeight > 0)
+            {
+                // set LHA ID
+                auto [lha_id, _] = lha_indexes.value_or(std::pair<unsigned int, unsigned int>());
+                if (lha_id == 0)
+                {
+                    throw std::runtime_error(fmt::format(
+                        "There are PDF weights written in the file, but the REGEX failed to get a proper LHA ID."));
+                }
+
+                // has alpha_s weights
+                if (lhe_info.nLHEPdfWeight == 103 or lhe_info.nLHEPdfWeight == 33)
+                {
+                    alpha_s_up = lhe_info.LHEPdfWeight[101];
+                    alpha_s_down = lhe_info.LHEPdfWeight[102];
+
+                    // remove the first weight (always 1.)
+                    lhe_info.LHEPdfWeight.erase(lhe_info.LHEPdfWeight.begin());
+
+                    // remove last two elements (Alpha_S weights)
+                    lhe_info.LHEPdfWeight.erase(lhe_info.LHEPdfWeight.end() - 1);
+                    lhe_info.LHEPdfWeight.erase(lhe_info.LHEPdfWeight.end() - 1);
+                }
+                // don't have alpha_s weights, should get the one from the 5f LHAPDF set.
+                // REF:
+                // https://cms-pdmv.gitbook.io/project/mccontact/info-for-mc-production-for-ultra-legacy-campaigns-2016-2017-2018#recommendations-on-the-usage-of-pdfs-and-cpx-tunes
+                else if (lhe_info.nLHEPdfWeight == 101 or lhe_info.nLHEPdfWeight == 31)
+                {
+                    // Those are some possible convertion from for NNPDF31, without to with alpha_s
+                    // During the classification, the coded should check the status of alpha_s_up and alpha_s_down
+                    // and react accordinly.
+                    // 304400 --> 306000
+                    // 316200 --> 325300
+                    // 325500 --> 325300
+                    // 320900 --> 306000
+
+                    // Compute the Alpha_S weight for this event using NNPDF31_nnlo_as_0120 (319500) and divide the new
+                    // weight by the weight from the PDF the event was produced with.
+                    auto pdfset_alpha_s_up = std::unique_ptr<LHAPDF::PDF>(LHAPDF::mkPDF(319500));
+                    alpha_s_up =
+                        pdfset_alpha_s_up->xfxQ(generator_info.id1, generator_info.x1, generator_info.scalePDF) *
+                        pdfset_alpha_s_up->xfxQ(generator_info.id2, generator_info.x2, generator_info.scalePDF) /
+                        lhe_info.originalXWGTUP;
+
+                    // Compute the Alpha_S weight for this event using NNPDF31_nnlo_as_0116 (319300) and divide the new
+                    // weight by the weight from the PDF the event was produced with.
+                    auto pdfset_alpha_s_down = std::unique_ptr<LHAPDF::PDF>(LHAPDF::mkPDF(319300));
+                    alpha_s_down =
+                        pdfset_alpha_s_up->xfxQ(generator_info.id1, generator_info.x1, generator_info.scalePDF) *
+                        pdfset_alpha_s_up->xfxQ(generator_info.id2, generator_info.x2, generator_info.scalePDF) /
+                        lhe_info.originalXWGTUP;
+                }
+                else
+                {
+                    throw std::runtime_error(fmt::format(
+                        "Unexpected number of weights ({}). According to CMSSW "
+                        "(https://github.dev/cms-sw/cmssw/blob/6ef534126e6db3dfdea86c3f0eedb773f0117cbc/PhysicsTools/"
+                        "NanoAOD/python/genWeightsTable_cfi.py#L20) if should be eighther 101, 103, 31 or 33.\n",
+                        lhe_info.nLHEPdfWeight));
+                }
+            }
+            else
+            {
+                if (not is_data)
+                {
+                    // NNPDF31_nnlo_as_0118_hessian
+                    lha_id = 304400;
+                    int lha_size = 101;
+
+                    // Compute the PDF weight for this event using NNPDF31_nnlo_as_0118_hessian (304400) and divide the
+                    // new weight by the weight from the PDF the event was produced with.
+                    lhe_info.LHEPdfWeight.reserve(lha_size - 1);
+                    auto _pdf = std::unique_ptr<LHAPDF::PDF>(LHAPDF::mkPDF(lha_id));
+                    auto _originalXWGTUP = _pdf->xfxQ(generator_info.id1, generator_info.x1, generator_info.scalePDF) *
+                                           _pdf->xfxQ(generator_info.id2, generator_info.x2, generator_info.scalePDF);
+                    for (int i = (lha_id + 1); i < (lha_id + lha_size); i++)
+                    {
+                        _pdf = std::unique_ptr<LHAPDF::PDF>(LHAPDF::mkPDF(i));
+                        lhe_info.LHEPdfWeight.push_back(
+                            _pdf->xfxQ(generator_info.id1, generator_info.x1, generator_info.scalePDF) *
+                            _pdf->xfxQ(generator_info.id2, generator_info.x2, generator_info.scalePDF) /
+                            _originalXWGTUP);
+                    }
+
+                    // Compute the Alpha_S weight for this event using NNPDF31_nnlo_as_0120 (319500) and divide the new
+                    // weight by the weight from the PDF the event was produced with.
+                    auto pdfset_alpha_s_up = std::unique_ptr<LHAPDF::PDF>(LHAPDF::mkPDF(319500));
+                    alpha_s_up =
+                        pdfset_alpha_s_up->xfxQ(generator_info.id1, generator_info.x1, generator_info.scalePDF) *
+                        pdfset_alpha_s_up->xfxQ(generator_info.id2, generator_info.x2, generator_info.scalePDF) /
+                        _originalXWGTUP;
+
+                    // Compute the Alpha_S weight for this event using NNPDF31_nnlo_as_0116 (319300) and divide the new
+                    // weight by the weight from the PDF the event was produced with.
+                    auto pdfset_alpha_s_down = std::unique_ptr<LHAPDF::PDF>(LHAPDF::mkPDF(319300));
+                    alpha_s_down =
+                        pdfset_alpha_s_up->xfxQ(generator_info.id1, generator_info.x1, generator_info.scalePDF) *
+                        pdfset_alpha_s_up->xfxQ(generator_info.id2, generator_info.x2, generator_info.scalePDF) /
+                        _originalXWGTUP;
+                }
+            }
+            return *this;
+        }
+        return *this;
+    }
+
     EventData &set_scale_factors(Outputs &outputs)
     {
         if (*this)
@@ -732,26 +863,6 @@ class EventData
             outputs.set_event_weight("Trigger", "Nominal", trigger_sf_nominal);
             outputs.set_event_weight("Trigger", "Up", trigger_sf_up);
             outputs.set_event_weight("Trigger", "Down", trigger_sf_down);
-            return *this;
-        }
-        return *this;
-    }
-
-    EventData &set_pdf_weights(Outputs &outputs)
-    {
-        if (*this)
-        {
-            if (lhe_info.nLHEPdfWeight > 0)
-            {
-                if (lhe_info.nLHEPdfWeight != 103)
-                {
-                    fmt::print("Ewn!\n");
-                }
-            }
-            else
-            {
-                fmt::print("Nhwenn !\n");
-            }
             return *this;
         }
         return *this;
@@ -822,6 +933,7 @@ class EventData
             outputs.lumi_section = event_info.lumi;
             outputs.event_number = event_info.event;
             outputs.trigger_bits = trigger_bits.as_ulong();
+            outputs.lha_id = lha_id;
 
             outputs.fill_branches(
                 // LHE Info

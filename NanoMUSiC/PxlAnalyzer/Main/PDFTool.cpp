@@ -11,14 +11,19 @@
 using namespace pdf;
 
 PDFTool::PDFTool(Tools::MConfig const &config, unsigned int const debug)
-    : m_pdfInfo(), m_debug(debug), m_init(false), m_useLHAweights(false),
+    : m_pdfInfo(),
+      m_debug(debug),
+      m_init(false),
+      m_useLHAweights(false),
       // LHAPATH is an environment variable that is set, when you source
       // '/cvmfs/cms.cern.ch/cmsset_default.sh' and call 'cmsenv'.
       // If it is set correctly, LHAPDF will find the files containing the PDF sets.
       m_pdfPath("/cvmfs/sft.cern.ch/lcg/external/lhapdfsets/current"),
       // The name of the PDF set with which your sample has been produced. You can set it in some config file.
-      m_pdfProdName(config.GetItem<std::string>("PDF.Prod.Name")), m_pdfProd(LHAPDF::mkPDF(m_pdfProdName, 0)),
-      m_pdfSetsNNPDF(PDFSets()), m_AsSetsNNPDF(std::make_pair(nullptr, nullptr)),
+      m_pdfProdName(config.GetItem<std::string>("PDF.Prod.Name")),
+      m_pdfProd(LHAPDF::mkPDF(m_pdfProdName, 0)),
+      m_pdfSetsNNPDF(PDFSets()),
+      m_AsSetsNNPDF(std::make_pair(nullptr, nullptr)),
       m_PdfAsCombinedlabelOptions(
           Tools::splitString<std::string>(config.GetItem<std::string>("PDF.PDFAsCombinedLabels"), true)),
       // The name of one or more PDF sets that contain As weights in themselves.

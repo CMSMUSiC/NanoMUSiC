@@ -90,6 +90,34 @@ struct EventInfo
     }
 };
 
+struct GeneratorInfo
+{
+    float binvar;
+    float scalePDF;
+    float weight;
+    float x1;
+    float x2;
+    float xpdf1;
+    float xpdf2;
+    int id1;
+    int id2;
+
+    GeneratorInfo(const float &_binvar = 0., const float &_scalePDF = 0., const float &_weight = 1.,
+                  const float &_x1 = 0., const float &_x2 = 0., const float &_xpdf1 = 0., const float &_xpdf2 = 0.,
+                  const int &_id1 = 0, const int &_id2 = 0)
+        : binvar(_binvar),
+          scalePDF(_scalePDF),
+          weight(_weight),
+          x1(_x1),
+          x2(_x2),
+          xpdf1(_xpdf1),
+          xpdf2(_xpdf2),
+          id1(_id1),
+          id2(_id2)
+    {
+    }
+};
+
 struct LHEInfo
 {
     std::size_t nLHEPdfWeight;
@@ -98,11 +126,15 @@ struct LHEInfo
     std::size_t nLHEScaleWeight;
     RVec<float> LHEScaleWeight;
 
-    LHEInfo(const RVec<float> &_LHEPdfWeight = {}, const RVec<float> &_LHEScaleWeight = {})
+    float originalXWGTUP;
+
+    LHEInfo(const RVec<float> &_LHEPdfWeight = {}, const RVec<float> &_LHEScaleWeight = {},
+            const float &_originalXWGTUP = 1.)
         : nLHEPdfWeight(_LHEPdfWeight.size()),
           LHEPdfWeight(_LHEPdfWeight),
           nLHEScaleWeight(_LHEScaleWeight.size()),
-          LHEScaleWeight(_LHEScaleWeight)
+          LHEScaleWeight(_LHEScaleWeight),
+          originalXWGTUP(_originalXWGTUP)
     {
     }
 };

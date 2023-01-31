@@ -1,7 +1,11 @@
 #include "NanoMUSiC.hpp"
+#include <optional>
 
 int main(int argc, char *argv[])
 {
+    // silence LHAPDF
+    LHAPDF::setVerbosity(0);
+
     TDirectory::AddDirectory(kFALSE); // Force ROOT to give directories in our hand - Yes, we can
     TH1::AddDirectory(kFALSE);        // Force ROOT to give histograms in our hand - Yes, we can
 
@@ -144,9 +148,21 @@ int main(int argc, char *argv[])
     ADD_VALUE_READER(HLT_Photon175, bool);
     ADD_VALUE_READER(HLT_Ele115_CaloIdVT_GsfTrkIdT, bool);
 
-    // muons
+    // Generator info
+    ADD_VALUE_READER(Generator_binvar, float);
+    ADD_VALUE_READER(Generator_scalePDF, float);
+    ADD_VALUE_READER(Generator_weight, float);
+    ADD_VALUE_READER(Generator_x1, float);
+    ADD_VALUE_READER(Generator_x2, float);
+    ADD_VALUE_READER(Generator_xpdf1, float);
+    ADD_VALUE_READER(Generator_xpdf2, float);
+    ADD_VALUE_READER(Generator_id1, int);
+    ADD_VALUE_READER(Generator_id2, int);
+
+    // LHE info
     ADD_ARRAY_READER(LHEPdfWeight, float);
     ADD_ARRAY_READER(LHEScaleWeight, float);
+    ADD_VALUE_READER(LHEWeight_originalXWGTUP, float);
 
     // muons
     ADD_ARRAY_READER(Muon_pt, float);
@@ -207,6 +223,13 @@ int main(int argc, char *argv[])
     std::cout << colors.green << "Starting Classification ..." << colors.def << std::endl;
     std::cout << " " << std::endl;
 
+    std::cout << " " << std::endl;
+    std::cout << colors.green << "Checking for LHE PDF Info ..." << colors.def << std::endl;
+    std::cout << " " << std::endl;
+
+    std::optional<std::pair<unsigned int, unsigned int>> lha_indexes =
+        PDFAlphaSWeights::get_pdf_ids(tree_reader.GetTree());
+
     std::cout << colors.acqua << "Starting timer ..." << colors.def << std::endl;
     dTime1 = getCpuTime(); // Start Timer
 
@@ -251,10 +274,21 @@ int main(int argc, char *argv[])
                                                                      unwrap(HLT_Photon200),                           //
                                                                      unwrap(HLT_Photon175),                           //
                                                                      unwrap(HLT_Ele115_CaloIdVT_GsfTrkIdT)))
+                              // generator info
+                              .set_generator_info(NanoObjects::GeneratorInfo(unwrap(Generator_binvar),   //
+                                                                             unwrap(Generator_scalePDF), //
+                                                                             unwrap(Generator_weight),   //
+                                                                             unwrap(Generator_x1),       //
+                                                                             unwrap(Generator_x2),       //
+                                                                             unwrap(Generator_xpdf1),    //
+                                                                             unwrap(Generator_xpdf2),    //
+                                                                             unwrap(Generator_id1),      //
+                                                                             unwrap(Generator_id2)))     //
 
-                              // muons
-                              .set_lhe_info(NanoObjects::LHEInfo(unwrap(LHEPdfWeight),    //
-                                                                 unwrap(LHEScaleWeight))) //
+                              // lhe info
+                              .set_lhe_info(NanoObjects::LHEInfo(unwrap(LHEPdfWeight),              //
+                                                                 unwrap(LHEScaleWeight),            //
+                                                                 unwrap(LHEWeight_originalXWGTUP))) //
                               // muons
                               .set_muons(NanoObjects::Muons(unwrap(Muon_pt),             //
                                                             unwrap(Muon_eta),            //
@@ -315,8 +349,8 @@ int main(int argc, char *argv[])
                          .object_selection()
                          .has_selected_objects_filter(outputs)
                          .trigger_match_filter(outputs, matchers)
+                         .set_pdf_alpha_s_weights(lha_indexes)
                          .set_scale_factors(outputs)
-                         .set_pdf_weights(outputs)
                          .muon_corrections()
                          .electron_corrections()
                          .photon_corrections()
