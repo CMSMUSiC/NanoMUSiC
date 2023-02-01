@@ -754,6 +754,8 @@ class EventData
     {
         if (*this)
         {
+            // references are dangerous!!!!!
+            // be carefull with life time
             auto &default_pdf = std::get<0>(default_pdf_sets);
             auto &alpha_s_up_pdf = std::get<1>(default_pdf_sets);
             auto &alpha_s_down_pdf = std::get<2>(default_pdf_sets);
