@@ -114,6 +114,18 @@ auto unwrap(std::optional<TTreeReaderValue<T>> &value) -> T
     return T();
 }
 
+template <typename T, typename Q>
+auto unwrap(std::optional<TTreeReaderValue<T>> &value, Q &&default_value = Q()) -> T
+{
+    static_assert(std::is_arithmetic<T>::value, "The default type must be numeric.");
+
+    if (value)
+    {
+        return **value;
+    }
+    return static_cast<T>(default_value);
+}
+
 template <typename T>
 auto unwrap(std::optional<TTreeReaderArray<T>> &array) -> RVec<T>
 {

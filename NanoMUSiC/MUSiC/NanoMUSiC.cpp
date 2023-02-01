@@ -274,7 +274,7 @@ int main(int argc, char *argv[])
                                                                      unwrap(lumi),                                    //
                                                                      unwrap(event_number),                            //
                                                                      unwrap(Pileup_nTrueInt),                         //
-                                                                     unwrap(genWeight),                               //
+                                                                     unwrap(genWeight, 1.),                           //
                                                                      unwrap(PV_npvsGood),                             //
                                                                      unwrap(Flag_goodVertices),                       //
                                                                      unwrap(Flag_globalSuperTightHalo2016Filter),     //
@@ -299,20 +299,20 @@ int main(int argc, char *argv[])
                                                                      unwrap(HLT_Photon175),                           //
                                                                      unwrap(HLT_Ele115_CaloIdVT_GsfTrkIdT)))
                               // generator info
-                              .set_generator_info(NanoObjects::GeneratorInfo(unwrap(Generator_binvar),   //
-                                                                             unwrap(Generator_scalePDF), //
-                                                                             unwrap(Generator_weight),   //
-                                                                             unwrap(Generator_x1),       //
-                                                                             unwrap(Generator_x2),       //
-                                                                             unwrap(Generator_xpdf1),    //
-                                                                             unwrap(Generator_xpdf2),    //
-                                                                             unwrap(Generator_id1),      //
-                                                                             unwrap(Generator_id2)))     //
+                              .set_generator_info(NanoObjects::GeneratorInfo(unwrap(Generator_binvar),     //
+                                                                             unwrap(Generator_scalePDF),   //
+                                                                             unwrap(Generator_weight, 1.), //
+                                                                             unwrap(Generator_x1),         //
+                                                                             unwrap(Generator_x2),         //
+                                                                             unwrap(Generator_xpdf1),      //
+                                                                             unwrap(Generator_xpdf2),      //
+                                                                             unwrap(Generator_id1),        //
+                                                                             unwrap(Generator_id2)))       //
 
                               // lhe info
-                              .set_lhe_info(NanoObjects::LHEInfo(unwrap(LHEPdfWeight),              //
-                                                                 unwrap(LHEScaleWeight),            //
-                                                                 unwrap(LHEWeight_originalXWGTUP))) //
+                              .set_lhe_info(NanoObjects::LHEInfo(unwrap(LHEPdfWeight),                  //
+                                                                 unwrap(LHEScaleWeight),                //
+                                                                 unwrap(LHEWeight_originalXWGTUP, 1.))) //
                               // muons
                               .set_muons(NanoObjects::Muons(unwrap(Muon_pt),             //
                                                             unwrap(Muon_eta),            //
@@ -363,10 +363,10 @@ int main(int argc, char *argv[])
                                                                 unwrap(TrigObj_id),  //
                                                                 unwrap(TrigObj_filterBits)));
 
-        event_data = event_data.set_const_weights(outputs, pu_weight)
-                         .generator_filter(outputs)
-                         .set_pdf_alpha_s_weights(lha_indexes, default_pdf_sets)
+        event_data = event_data.set_pdf_alpha_s_weights(lha_indexes, default_pdf_sets)
                          .set_scale_weights()
+                         .set_const_weights(outputs, pu_weight)
+                         .generator_filter(outputs)
                          .run_lumi_filter(outputs, run_lumi_filter)
                          .npv_filter(outputs)
                          .met_filter(outputs)

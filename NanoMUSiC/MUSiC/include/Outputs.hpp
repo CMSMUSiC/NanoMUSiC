@@ -67,7 +67,7 @@ class Outputs
     // variations, shifts, weights and cuts
     static constexpr auto Cuts = make_enumerate("NoCuts", "GeneratorWeight", "RunLumi", "nPV", "METFilters",
                                                 "TriggerCut", "AtLeastOneSelectedObject", "TriggerMatch");
-    static constexpr auto Weights = make_enumerate("Generator", "PDF", "Alpha_S", "PileUp", "Lumi", "Trigger");
+    static constexpr auto Weights = make_enumerate("Generator", "PileUp", "Lumi", "Trigger");
     // static constexpr auto Variations =
     //     make_enumerate("Default", "JEC", "JER", "MuonScale", "MuonResolution", "ElectronScale",
     //     "ElectronResolution");
@@ -102,6 +102,8 @@ class Outputs
 
     unsigned int nLHEPdfWeight;
     std::array<float, 150> LHEPdfWeight;
+    float alpha_s_weight_up;
+    float alpha_s_weight_down;
 
     unsigned int nMuon;
     std::array<float, kMaxObjects> Muon_pt;
@@ -161,6 +163,8 @@ class Outputs
         output_tree->Branch("kTotalWeights", &kTotalWeights_non_const, "kTotalWeights/i");
 
         output_tree->Branch("nLHEPdfWeight", &nLHEPdfWeight, "nLHEPdfWeight/i");
+        output_tree->Branch("alpha_s_weight_up", &alpha_s_weight_up, "alpha_s_weight_up/f");
+        output_tree->Branch("alpha_s_weight_down", &alpha_s_weight_down, "alpha_s_weight_down/f");
         output_tree->Branch("nMuon", &nMuon, "nMuon/i");
         output_tree->Branch("nElectron", &nElectron, "nElectron/i");
         output_tree->Branch("nPhoton", &nPhoton, "nPhoton/i");
@@ -278,6 +282,8 @@ class Outputs
 
         nLHEPdfWeight = 0;
         LHEPdfWeight.fill(1.);
+        alpha_s_weight_up = 1.;
+        alpha_s_weight_down = 1.;
 
         nMuon = 0;
         Muon_pt.fill(0);
