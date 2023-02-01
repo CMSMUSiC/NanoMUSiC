@@ -704,15 +704,11 @@ class EventData
     // Low pT muon filter
     auto get_low_pt_muons_selection_mask() -> RVec<int>
     {
-
-        // fmt::print("Eta: {}\n", muons.eta);
-        // fmt::print("Eta mask: {}\n", VecOps::abs(muons.eta) <= 2.4);
-        // fmt::print("Eta mask from Config: {}\n", VecOps::abs(muons.eta) <= ObjConfig::Muons[year].MaxAbsEta);
         return (muons.pt >= ObjConfig::Muons[year].MinLowPt)                   //
                && (muons.pt < ObjConfig::Muons[year].MaxLowPt)                 //
                && (VecOps::abs(muons.eta) <= ObjConfig::Muons[year].MaxAbsEta) //
                && (muons.tightId)                                              //
-               && (muons.pfRelIso03_all < ObjConfig::Muons[year].PFRelIso_WP);
+               && (muons.pfRelIso04_all < ObjConfig::Muons[year].PFRelIso_WP);
     }
 
     // High pT muon filter
@@ -958,7 +954,7 @@ class EventData
             // -- Trigger: NUM_IsoMu24_DEN_CutBasedIdTight_and_PFIsoTight
             // High Pt Muons should consider:
             // -- Tracking efficiency: ~1.0
-            // -- Reconstruction:
+            // -- Reconstruction: NUM_TrackerMuons_DEN_genTracks
             // -- ID: NUM_HighPtID_DEN_TrackerMuons
             // -- Isolation: NUM_TightRelTkIso_DEN_HighPtIDandIPCut
             // -- Trigger: NUM_Mu50_or_OldMu100_or_TkMu100_DEN_CutBasedIdGlobalHighPt_and_TkIsoLoose
