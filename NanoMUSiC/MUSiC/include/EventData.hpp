@@ -947,18 +947,32 @@ class EventData
         if (*this)
         {
             // TODO: L1 prefiring
+
             // TODO: Muons
+            // Ref (2018): https://cms-nanoaod-integration.web.cern.ch/commonJSONSFs/summaries/MUO_2018_UL_muon_Z.html
             // Low Pt Muons should consider:
-            // --  tracking efficiency: ~1.
+            // -- Tracking efficiency: ~1.0
             // -- Reconstruction: NUM_TrackerMuons_DEN_genTracks
             // -- ID: NUM_TightID_DEN_TrackerMuons
-            // -- Isolation:
+            // -- Isolation: NUM_TightRelIso_DEN_TightIDandIPCut
             // -- Trigger: NUM_IsoMu24_DEN_CutBasedIdTight_and_PFIsoTight
+            // High Pt Muons should consider:
+            // -- Tracking efficiency: ~1.0
+            // -- Reconstruction:
+            // -- ID: NUM_HighPtID_DEN_TrackerMuons
+            // -- Isolation: NUM_TightRelTkIso_DEN_HighPtIDandIPCut
+            // -- Trigger: NUM_Mu50_or_OldMu100_or_TkMu100_DEN_CutBasedIdGlobalHighPt_and_TkIsoLoose
+
             // TODO: Electrons
+
             // TODO: Photons
+
             // TODO: Taus
+
             // TODO: Jets
+
             // TODO: BTag
+
             // TODO: MET
             //  trigger - this has already been procecssed during th trigger matching
             outputs.set_event_weight("Trigger", "Nominal", trigger_sf_nominal);

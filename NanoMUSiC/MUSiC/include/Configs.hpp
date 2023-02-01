@@ -80,9 +80,10 @@ struct MuonConfig
     float MaxLowPt = 200.;
     float MaxAbsEta = 2.4;
     float MaxDeltaRTriggerMatch = 0.1;
-    // REF: https://github.dev/cms-sw/cmssw/tree/CMSSW_10_6_X
-    float TkRelIso_WP = 0.05; // smaller than this
-    float PFRelIso_WP = 0.15; // smaller than this
+    // REF:
+    // https://github.dev/cms-sw/cmssw/blob/34b164986d540977336f87c70b169efb2d5e478e/DataFormats/MuonReco/src/MuonSelectors.cc#L1043-L1044
+    float TkRelIso_WP = 0.10; // smaller than this (DeltaR = 0.3)
+    float PFRelIso_WP = 0.15; // smaller than this (DeltaR = 0.4)
 };
 
 constexpr auto Muon2016APV = MuonConfig{};

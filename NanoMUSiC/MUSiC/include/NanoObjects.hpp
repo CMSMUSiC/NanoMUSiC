@@ -145,11 +145,11 @@ struct Muons
     RVec<float> phi;
     RVec<bool> tightId;
     RVec<UChar_t> highPtId;
-    RVec<float> pfRelIso03_all;
+    RVec<float> pfRelIso04_all;
     RVec<float> tkRelIso;
 
     Muons(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {},
-          const RVec<bool> &_tightId = {}, const RVec<UChar_t> &_highPtId = {}, const RVec<float> &_pfRelIso03_all = {},
+          const RVec<bool> &_tightId = {}, const RVec<UChar_t> &_highPtId = {}, const RVec<float> &_pfRelIso04_all = {},
           const RVec<float> &_tkRelIso = {})
         : size(_pt.size()),
           pt(_pt),
@@ -157,7 +157,7 @@ struct Muons
           phi(_phi),
           tightId(_tightId),
           highPtId(_highPtId),
-          pfRelIso03_all(_pfRelIso03_all),
+          pfRelIso04_all(_pfRelIso04_all),
           tkRelIso(_tkRelIso)
     {
     }
