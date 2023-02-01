@@ -263,8 +263,10 @@ class Outputs
         }
         return nominal_weight;
     }
-    // dummy
-    // clear event tree
+
+    //////////////////////////////////////////////////////////////////////////////////////
+    /// Clear event tree between every event.
+    /// Will set values and arrays to defaults.
     void clear_event_tree()
     {
         run = 0;
