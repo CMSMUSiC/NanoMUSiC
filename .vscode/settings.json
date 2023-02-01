@@ -141,7 +141,7 @@
     "other": true,
     "comments": true,
     "strings": true,
-    "Variables": true,
+    // "Variables": true,
   },
   "editor.suggest.localityBonus": true,
   "editor.wordBasedSuggestionsMode": "allDocuments",
@@ -151,4 +151,14 @@
   "python.formatting.blackArgs": [
     "--quiet"
   ],
+  "clang-tidy.buildPath": "/home/home1/institut_3a/silva/projects/music/NanoMUSiC/build",
+  "clang-tidy.executable": "/home/home1/institut_3a/silva/opt/clang-tidy/clang-tidy",
+  "clang-tidy.checks": [
+    "modernize-*",
+    "llvm-*",
+    "-llvm-header-guard",
+    "clang-analyzer-*",
+    "clang-analyzer-cplusplus*"
+  ],
+  "clang-tidy.lintOnSave": false,
 }

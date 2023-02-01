@@ -85,7 +85,7 @@ class EventData
     }
 
     // builder interface
-    EventData &set_event_info(NanoObjects::EventInfo &&_event_info)
+    auto set_event_info(NanoObjects::EventInfo &&_event_info) -> EventData &
     {
         if (*this)
         {
@@ -95,7 +95,7 @@ class EventData
         return *this;
     }
 
-    EventData &set_generator_info(NanoObjects::GeneratorInfo &&_generator_info)
+    auto set_generator_info(NanoObjects::GeneratorInfo &&_generator_info) -> EventData &
     {
         if (*this)
         {
@@ -105,7 +105,7 @@ class EventData
         return *this;
     }
 
-    EventData &set_lhe_info(NanoObjects::LHEInfo &&_lhe_info)
+    auto set_lhe_info(NanoObjects::LHEInfo &&_lhe_info) -> EventData &
     {
         if (*this)
         {
@@ -115,7 +115,7 @@ class EventData
         return *this;
     }
 
-    EventData &set_muons(NanoObjects::Muons &&_muons, RVec<int> &&mask)
+    auto set_muons(NanoObjects::Muons &&_muons, RVec<int> &&mask) -> EventData &
     {
         if (*this)
         {
@@ -128,12 +128,12 @@ class EventData
         return *this;
     }
 
-    EventData &set_muons(NanoObjects::Muons &&_muons)
+    auto set_muons(NanoObjects::Muons &&_muons) -> EventData &
     {
         return set_muons(std::move(_muons), RVec<int>(_muons.size, 1));
     }
 
-    EventData &set_electrons(NanoObjects::Electrons &&_electrons, RVec<int> &&mask)
+    auto set_electrons(NanoObjects::Electrons &&_electrons, RVec<int> &&mask) -> EventData &
     {
         if (*this)
         {
@@ -146,12 +146,12 @@ class EventData
         return *this;
     }
 
-    EventData &set_electrons(NanoObjects::Electrons &&_electrons)
+    auto set_electrons(NanoObjects::Electrons &&_electrons) -> EventData &
     {
         return set_electrons(std::move(_electrons), RVec<int>(_electrons.size, 1));
     }
 
-    EventData &set_photons(NanoObjects::Photons &&_photons, RVec<int> &&mask)
+    auto set_photons(NanoObjects::Photons &&_photons, RVec<int> &&mask) -> EventData &
     {
         if (*this)
         {
@@ -162,12 +162,12 @@ class EventData
         return *this;
     }
 
-    EventData &set_photons(NanoObjects::Photons &&_photons)
+    auto set_photons(NanoObjects::Photons &&_photons) -> EventData &
     {
         return set_photons(std::move(_photons), RVec<int>(_photons.size, 1));
     }
 
-    EventData &set_taus(NanoObjects::Taus &&_taus, RVec<int> &&mask)
+    auto set_taus(NanoObjects::Taus &&_taus, RVec<int> &&mask) -> EventData &
     {
         if (*this)
         {
@@ -178,12 +178,12 @@ class EventData
         return *this;
     }
 
-    EventData &set_taus(NanoObjects::Taus &&_taus)
+    auto set_taus(NanoObjects::Taus &&_taus) -> EventData &
     {
         return set_taus(std::move(_taus), RVec<int>(_taus.size, 1));
     }
 
-    EventData &set_bjets(NanoObjects::BJets &&_bjets, RVec<int> &&mask)
+    auto set_bjets(NanoObjects::BJets &&_bjets, RVec<int> &&mask) -> EventData &
     {
         if (*this)
         {
@@ -194,12 +194,12 @@ class EventData
         return *this;
     }
 
-    EventData &set_bjets(NanoObjects::BJets &&_bjets)
+    auto set_bjets(NanoObjects::BJets &&_bjets) -> EventData &
     {
         return set_bjets(std::move(_bjets), RVec<int>(_bjets.size, 1));
     }
 
-    EventData &set_jets(NanoObjects::Jets &&_jets, RVec<int> &&mask)
+    auto set_jets(NanoObjects::Jets &&_jets, RVec<int> &&mask) -> EventData &
     {
         if (*this)
         {
@@ -210,12 +210,12 @@ class EventData
         return *this;
     }
 
-    EventData &set_jets(NanoObjects::Jets &&_jets)
+    auto set_jets(NanoObjects::Jets &&_jets) -> EventData &
     {
         return set_jets(std::move(_jets), RVec<int>(_jets.size, 1));
     }
 
-    EventData &set_met(NanoObjects::MET &&_met, RVec<int> &&mask)
+    auto set_met(NanoObjects::MET &&_met, RVec<int> &&mask) -> EventData &
     {
         if (*this)
         {
@@ -226,12 +226,12 @@ class EventData
         return *this;
     }
 
-    EventData &set_met(NanoObjects::MET &&_met)
+    auto set_met(NanoObjects::MET &&_met) -> EventData &
     {
         return set_met(std::move(_met), RVec<int>(_met.size, 1));
     }
 
-    EventData &set_trgobjs(NanoObjects::TrgObjs &&_trgobjs, RVec<int> &&mask)
+    auto set_trgobjs(NanoObjects::TrgObjs &&_trgobjs, RVec<int> &&mask) -> EventData &
     {
         if (*this)
         {
@@ -242,24 +242,27 @@ class EventData
         return *this;
     }
 
-    EventData &set_trgobjs(NanoObjects::TrgObjs &&_trgobjs)
+    auto set_trgobjs(NanoObjects::TrgObjs &&_trgobjs) -> EventData &
     {
         return set_trgobjs(std::move(_trgobjs), RVec<int>(_trgobjs.size, 1));
     }
 
-    // is it a null event
+    ///////////////////////////////////////////////////////////////////////////////////
+    /// is it a null event
     operator bool() const
     {
         return !is_null;
     }
 
-    // null-ify the event
+    ///////////////////////////////////////////////////////////////////////////////////
+    /// null-ify the event
     void set_null()
     {
         this->is_null = true;
     }
 
-    // un-null-ify - not sure when/if it would be needed, but ...
+    ///////////////////////////////////////////////////////////////////////////////////
+    /// un-null-ify - not sure when/if it would be needed, but ...
     void unset_null()
     {
         this->is_null = true;
@@ -270,10 +273,10 @@ class EventData
     /// Those are tricky beasts, since they are not simple weights added to the event, but rather, should be treated as
     /// variations and have their uncert. squared-summed in the end of the processing (classification).
     /// This method also saves the LHA ID that was used during generation or rescaling.
-    EventData &set_pdf_alpha_s_weights(
+    auto set_pdf_alpha_s_weights(
         const std::optional<std::pair<unsigned int, unsigned int>> &lha_indexes,
         const std::tuple<std::vector<std::unique_ptr<LHAPDF::PDF>>, std::unique_ptr<LHAPDF::PDF>,
-                         std::unique_ptr<LHAPDF::PDF>> &default_pdf_sets)
+                         std::unique_ptr<LHAPDF::PDF>> &default_pdf_sets) -> EventData &
     {
         if (*this)
         {
@@ -385,7 +388,7 @@ class EventData
 
     ////////////////////////////////////////////////////////////////////////////////////
     /// Set the QCD Scaling weights, using the envelope method. If the sample has no weights are kept as 1.
-    EventData &set_scale_weights()
+    auto set_scale_weights() -> EventData &
     {
         if (*this)
         {
@@ -438,7 +441,8 @@ class EventData
     /// The naming constant weights means weights that are the sample for the whole event, but could differ from one
     /// event to another, e.g. pile-up. As a negative example, Muons resolution corretions are not constants, within the
     /// whole event.
-    EventData &set_const_weights(Outputs &outputs, Corrector &pu_weight)
+    /// Weights that are related to physical objects (e.g.: muon SFs) are set later, if the event pass the selection.
+    auto set_const_weights(Outputs &outputs, Corrector &pu_weight) -> EventData &
     {
         if (*this)
         {
@@ -462,7 +466,7 @@ class EventData
     /// Filter events based on their Generator process. This is implemented in order to avoid overlap of phase-space
     /// between MC samples.
     /// Should come after all constant weights are available.
-    EventData &generator_filter(Outputs &outputs)
+    auto generator_filter(Outputs &outputs) -> EventData &
     {
         if (*this)
         {
@@ -495,7 +499,7 @@ class EventData
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// Filter events based on their lumi sectiona and run numbers, following the recommendations from the LUMI-POG (aka
     /// "golden JSON").
-    EventData &run_lumi_filter(Outputs &outputs, const RunLumiFilter &_run_lumi_filter)
+    auto run_lumi_filter(Outputs &outputs, const RunLumiFilter &_run_lumi_filter) -> EventData &
     {
         if (*this)
         {
@@ -515,7 +519,7 @@ class EventData
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// Apply good primary vertex filters.
-    EventData &npv_filter(Outputs &outputs)
+    auto npv_filter(Outputs &outputs) -> EventData &
     {
         if (*this)
         {
@@ -534,7 +538,7 @@ class EventData
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Apply JEMMET-POG recommendations on calorimeter detection quality.
-    EventData &met_filter(Outputs &outputs)
+    auto met_filter(Outputs &outputs) -> EventData &
     {
         if (*this)
         {
@@ -600,7 +604,7 @@ class EventData
     //  1 - the fired trigger bit is saved as trigger_seed
     //  2 - all others bits are set to false
     ///
-    EventData &set_trigger_bits()
+    auto set_trigger_bits() -> EventData &
     {
         if (*this)
         {
@@ -679,7 +683,7 @@ class EventData
     //////////////////////////////////////////////////////////////
     /// Filter events that did not fired any trigger or do not pass double trigger firing check
     ///
-    EventData &trigger_filter(Outputs &outputs)
+    auto trigger_filter(Outputs &outputs) -> EventData &
     {
         if (*this)
         {
@@ -786,7 +790,7 @@ class EventData
     // Fill masks in order to select objects.
     // ATTENTION: Care should be taken to do not forget to merge (AND operation) all different masks per object. It is
     // need in order to filter out events that have no objects selected.
-    EventData &object_selection()
+    auto object_selection() -> EventData &
     {
         if (*this)
         {
@@ -810,8 +814,8 @@ class EventData
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Returns `true` if the event has at least one object selected.
-    EventData &has_selected_objects_filter(Outputs &outputs)
+    /// Returns `true` if the event has at least one object selected.
+    auto has_selected_objects_filter(Outputs &outputs) -> EventData &
     {
         if (*this)
         {
@@ -856,7 +860,8 @@ class EventData
     // this filter also get the trigger scale factor,
     // otherwise we would have to look over the objects twice
     ///
-    EventData &trigger_match_filter(Outputs &outputs, const std::map<std::string_view, TrgObjMatcher> &matchers)
+    auto trigger_match_filter(Outputs &outputs, const std::map<std::string_view, TrgObjMatcher> &matchers)
+        -> EventData &
     {
         if (*this)
         {
@@ -905,8 +910,7 @@ class EventData
                         const auto [has_trigger_match, _trigger_sf_nominal, _trigger_sf_up, _trigger_sf_down] =
                             matchers.at(hlt_path)(trgobjs, electrons, good_low_pt_electrons_mask);
                         if (has_trigger_match)
-                        {
-                            // set scale factors
+                        { // set scale factors
                             trigger_sf_nominal = _trigger_sf_nominal;
                             trigger_sf_up = _trigger_sf_up;
                             trigger_sf_down = _trigger_sf_down;
@@ -938,11 +942,19 @@ class EventData
         return *this;
     }
 
-    EventData &set_scale_factors_and_weights(Outputs &outputs)
+    auto set_scale_factors_and_weights(Outputs &outputs) -> EventData &
     {
         if (*this)
         {
-            // trigger
+            // TODO: L1 prefiring
+            // TODO: Muons
+            // TODO: Electrons
+            // TODO: Photons
+            // TODO: Taus
+            // TODO: Jets
+            // TODO: BTag
+            // TODO: MET
+            //  trigger - this has already been procecssed during th trigger matching
             outputs.set_event_weight("Trigger", "Nominal", trigger_sf_nominal);
             outputs.set_event_weight("Trigger", "Up", trigger_sf_up);
             outputs.set_event_weight("Trigger", "Down", trigger_sf_down);
@@ -951,7 +963,7 @@ class EventData
         return *this;
     }
 
-    EventData &muon_corrections()
+    auto muon_corrections() -> EventData &
     {
         if (*this)
         {
@@ -959,7 +971,7 @@ class EventData
         }
         return *this;
     }
-    EventData &electron_corrections()
+    auto electron_corrections() -> EventData &
     {
         if (*this)
         {
@@ -967,7 +979,7 @@ class EventData
         }
         return *this;
     }
-    EventData &photon_corrections()
+    auto photon_corrections() -> EventData &
     {
         if (*this)
         {
@@ -975,7 +987,7 @@ class EventData
         }
         return *this;
     }
-    EventData &tau_corrections()
+    auto tau_corrections() -> EventData &
     {
         if (*this)
         {
@@ -983,7 +995,7 @@ class EventData
         }
         return *this;
     }
-    EventData &bjet_corrections()
+    auto bjet_corrections() -> EventData &
     {
         if (*this)
         {
@@ -991,7 +1003,7 @@ class EventData
         }
         return *this;
     }
-    EventData &jet_corrections()
+    auto jet_corrections() -> EventData &
     {
         if (*this)
         {
@@ -999,7 +1011,7 @@ class EventData
         }
         return *this;
     }
-    EventData &met_corrections()
+    auto met_corrections() -> EventData &
     {
         if (*this)
         {
@@ -1008,7 +1020,7 @@ class EventData
         return *this;
     }
 
-    EventData &fill_event_content(Outputs &outputs)
+    auto fill_event_content(Outputs &outputs) -> EventData &
     {
         if (*this)
         {

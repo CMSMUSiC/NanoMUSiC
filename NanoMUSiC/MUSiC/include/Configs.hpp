@@ -51,8 +51,7 @@ inline auto get_runyear(const std::string &year_str) -> Year
     // check year
     if (year_str != "2016APV" && year_str != "2016" && year_str != "2017" && year_str != "2018")
     {
-        auto error_msg = "ERROR: year should be 2016APV, 2016, 2017 or 2018";
-        throw std::out_of_range{error_msg};
+        throw std::out_of_range{"ERROR: year should be 2016APV, 2016, 2017 or 2018"};
     }
 
     // return year as enum
@@ -60,18 +59,15 @@ inline auto get_runyear(const std::string &year_str) -> Year
     {
         return Year::Run2016APV;
     }
-    else if (year_str == "2016")
+    if (year_str == "2016")
     {
         return Year::Run2016;
     }
-    else if (year_str == "2017")
+    if (year_str == "2017")
     {
         return Year::Run2017;
     }
-    else
-    {
-        return Year::Run2018;
-    }
+    return Year::Run2018;
 }
 
 namespace ObjConfig
@@ -84,7 +80,8 @@ struct MuonConfig
     float MaxLowPt = 200.;
     float MaxAbsEta = 2.4;
     float MaxDeltaRTriggerMatch = 0.1;
-    float TkRelIso_WP = 0.10; // smaller than this
+    // REF: https://github.dev/cms-sw/cmssw/tree/CMSSW_10_6_X
+    float TkRelIso_WP = 0.05; // smaller than this
     float PFRelIso_WP = 0.15; // smaller than this
 };
 

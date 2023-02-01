@@ -37,13 +37,14 @@ namespace IndexHelpers
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Creates a iterable range of integers in the interval [first, last].
-inline const std::vector<long> make_index(long first, long last)
+inline auto make_index(long first, long last) -> const std::vector<long>
 {
     auto vec = std::vector<long>(last - first + 1);
     long item = first;
-    for (std::size_t i = 0; i < vec.size(); i++)
+    // for (std::size_t i = 0; i < vec.size(); i++)
+    for (auto &this_item : vec)
     {
-        vec[i] = item;
+        this_item = item;
         item++;
     }
     return vec;
@@ -51,7 +52,7 @@ inline const std::vector<long> make_index(long first, long last)
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Creates a iterable range of integers in the interval [0 (zero), length[.
-inline const std::vector<long> make_index(long lenght)
+inline auto make_index(long lenght) -> const std::vector<long>
 {
     return make_index(0, lenght - 1);
 }
@@ -223,7 +224,7 @@ class Outputs
         cutflow_histo.SetDirectory(output_file.get());
     }
 
-    void set_event_weight(std::string_view weight, std::string_view shift, float value)
+    auto set_event_weight(std::string_view weight, std::string_view shift, float value) -> void
     {
         if (shift == "Up")
         {
@@ -239,32 +240,28 @@ class Outputs
         }
     }
 
-    void set_event_weight(std::string_view weight, float value)
+    auto set_event_weight(std::string_view weight, float value) -> void
     {
         weights_up.at(Outputs::Weights.index_of(weight)) = value;
         weights_down.at(Outputs::Weights.index_of(weight)) = value;
         weights_nominal.at(Outputs::Weights.index_of(weight)) = value;
     }
 
-    float get_event_weight(std::string_view weight = "", std::string_view shift = "Nominal")
+    auto get_event_weight(std::string_view weight = "", std::string_view shift = "Nominal") -> float
     {
-        auto nominal_weight =
-            std::reduce(weights_nominal.cbegin(), weights_nominal.cend(), 1., std::multiplies<float>());
+        auto nominal_weight = std::reduce(weights_nominal.cbegin(), weights_nominal.cend(), 1.f, std::multiplies());
 
         if (shift == "Up")
         {
             return weights_up.at(Outputs::Weights.index_of(weight)) /
                    weights_nominal.at(Outputs::Weights.index_of(weight)) * nominal_weight;
         }
-        else if (shift == "Down")
+        if (shift == "Down")
         {
             return weights_down.at(Outputs::Weights.index_of(weight)) /
                    weights_nominal.at(Outputs::Weights.index_of(weight)) * nominal_weight;
         }
-        else
-        {
-            return nominal_weight;
-        }
+        return nominal_weight;
     }
 
     // clear event tree

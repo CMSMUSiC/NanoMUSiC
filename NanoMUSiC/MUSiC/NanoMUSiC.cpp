@@ -1,7 +1,7 @@
 #include "NanoMUSiC.hpp"
 #include <optional>
 
-int main(int argc, char *argv[])
+auto main(int argc, char *argv[]) -> int
 {
     // silence LHAPDF
     LHAPDF::setVerbosity(0);

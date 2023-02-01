@@ -5,15 +5,17 @@
 #include <any>
 #include <bitset>
 #include <chrono>
+#include <cmath>
 #include <csignal>
+#include <cstddef>
 #include <cstdlib>
+#include <ctime>
 #include <filesystem>
 #include <functional>
 #include <future>
 #include <iomanip>
 #include <iostream>
 #include <limits>
-#include <math.h>
 #include <memory>
 #include <numeric>
 #include <optional>
@@ -23,7 +25,6 @@
 #include <string_view>
 #include <sys/time.h>
 #include <thread>
-#include <time.h>
 #include <typeinfo>
 #include <unordered_set>
 
@@ -136,7 +137,7 @@ auto unwrap(std::optional<TTreeReaderArray<T>> &array) -> RVec<T>
     return RVec<T>();
 }
 
-inline void PrintProcessInfo()
+inline auto PrintProcessInfo() -> void
 {
     auto info = ProcInfo_t();
     gSystem->GetProcInfo(&info);
@@ -153,8 +154,8 @@ inline void PrintProcessInfo()
 
 // (async) TFile download
 using OptionalFuture_t = std::optional<std::future<std::unique_ptr<TFile>>>;
-inline std::unique_ptr<TFile> file_loader(const std::string &file_path, const bool cacheread,
-                                          const std::string &cache_dir, const bool verbose_load)
+inline auto file_loader(const std::string &file_path, const bool cacheread, const std::string &cache_dir,
+                        const bool verbose_load) -> std::unique_ptr<TFile>
 {
     std::cout << "Loading file [ " << file_path << " ]" << std::endl;
 
@@ -183,14 +184,14 @@ inline std::unique_ptr<TFile> file_loader(const std::string &file_path, const bo
     return input_root_file;
 }
 
-inline double getCpuTime()
+inline auto getCpuTime() -> double
 {
     struct timeval tv;
-    gettimeofday(&tv, NULL);
+    gettimeofday(&tv, nullptr);
     return ((double)tv.tv_sec + (double)tv.tv_usec / 1000000.0);
 }
 
-constexpr bool is_tenth(int &event_counter)
+constexpr auto is_tenth(int &event_counter) -> bool
 {
     return (event_counter < 10 || (event_counter < 100 && event_counter % 10 == 0) ||
             (event_counter < 1000 && event_counter % 100 == 0) ||
@@ -199,7 +200,7 @@ constexpr bool is_tenth(int &event_counter)
 }
 
 template <typename T>
-T get_and_check_future(std::future<T> &_ftr)
+auto get_and_check_future(std::future<T> &_ftr) -> T
 {
     try
     {
@@ -213,9 +214,9 @@ T get_and_check_future(std::future<T> &_ftr)
     }
 }
 
-inline void prepare_output_buffer(const TaskConfiguration &configuration)
+inline auto prepare_output_buffer(const TaskConfiguration &configuration) -> void
 {
-    const std::string startDir = getcwd(NULL, 0);
+    const std::string startDir = getcwd(nullptr, 0);
 
     // (Re)create output_directory dir and cd into it.
     system(("rm -rf " + configuration.output_directory).c_str());
@@ -233,8 +234,8 @@ inline void prepare_output_buffer(const TaskConfiguration &configuration)
     system(("cp " + configuration.x_section_file + " . ").c_str());
 }
 
-inline void print_report(const double &dTime1, const unsigned long &event_counter, TH1F &cutflow_histo,
-                         bool is_final = false)
+inline auto print_report(const double &dTime1, const unsigned long &event_counter, TH1F &cutflow_histo,
+                         bool is_final = false) -> void
 {
     double dTime2 = getCpuTime();
     std::string final_str = is_final ? "Final " : "";
