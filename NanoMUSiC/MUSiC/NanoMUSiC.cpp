@@ -91,6 +91,30 @@ int main(int argc, char *argv[])
     std::cout << colors.def << "[ Initializing ] Trigger matchers ..." << colors.def << std::endl;
     std::map<std::string_view, TrgObjMatcher> matchers = make_trgobj_matcher(configuration.year, configuration.is_data);
 
+    std::cout << colors.def << "[ Initializing ] LHAPDF Sets ..." << colors.def << std::endl;
+    // initilize pdf sets for fallback cases ...
+    // NNPDF31_nnlo_as_0118_hessian
+    int lha_id_fallback = 304400;
+    int lha_size = 101;
+
+    // Compute the PDF weight for this event using NNPDF31_nnlo_as_0118_hessian (304400) and divide the
+    // new weight by the weight from the PDF the event was produced with.
+    std::tuple<std::vector<std::unique_ptr<LHAPDF::PDF>>, std::unique_ptr<LHAPDF::PDF>, std::unique_ptr<LHAPDF::PDF>>
+        default_pdf_sets;
+    std::get<0>(default_pdf_sets).reserve(101);
+    for (int idx = lha_id_fallback; idx < (lha_id_fallback + lha_size); idx++)
+    {
+        std::get<0>(default_pdf_sets).push_back(std::unique_ptr<LHAPDF::PDF>(LHAPDF::mkPDF(lha_id_fallback)));
+    }
+
+    // Compute the Alpha_S weight for this event using NNPDF31_nnlo_as_0120 (319500) and divide the new
+    // weight by the weight from the PDF the event was produced with.
+    std::get<1>(default_pdf_sets) = std::unique_ptr<LHAPDF::PDF>(LHAPDF::mkPDF(319500));
+
+    // Compute the Alpha_S weight for this event using NNPDF31_nnlo_as_0116 (319300) and divide the new
+    // weight by the weight from the PDF the event was produced with.
+    std::get<2>(default_pdf_sets) = std::unique_ptr<LHAPDF::PDF>(LHAPDF::mkPDF(319300));
+
     // read cross-sections files
     std::cout << colors.def << "[ Initializing ] X-Sections ..." << colors.def << std::endl;
     const auto x_sections = TOMLConfig::make_toml_config(configuration.x_section_file);
@@ -349,9 +373,9 @@ int main(int argc, char *argv[])
                          .object_selection()
                          .has_selected_objects_filter(outputs)
                          .trigger_match_filter(outputs, matchers)
-                         .set_pdf_alpha_s_weights(lha_indexes)
+                         .set_pdf_alpha_s_weights(lha_indexes, default_pdf_sets)
                          .set_scale_weights()
-                         .set_scale_factors(outputs)
+                         .set_scale_factors_and_weights(outputs)
                          .muon_corrections()
                          .electron_corrections()
                          .photon_corrections()

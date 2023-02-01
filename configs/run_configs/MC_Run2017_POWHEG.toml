@@ -1,4 +1,4 @@
-output = 'test_mc_2017'
+output = 'test_mc_2017_POWHEG'
 is_data = false                                    # Is Data?
 x_section_file = '$MUSIC_BASE/configs/xsections_and_lumi/x_sections.toml'
 year = '2017'

@@ -1,4 +1,4 @@
-output = 'test_mc_2018'
+output = 'test_mc_2018_Pythia'
 is_data = false                                    # Is Data?
 x_section_file = '$MUSIC_BASE/configs/xsections_and_lumi/x_sections.toml'
 year = '2018'

@@ -747,7 +747,10 @@ class EventData
         return *this;
     }
 
-    EventData &set_pdf_alpha_s_weights(const std::optional<std::pair<unsigned int, unsigned int>> &lha_indexes)
+    EventData &set_pdf_alpha_s_weights(
+        const std::optional<std::pair<unsigned int, unsigned int>> &lha_indexes,
+        const std::tuple<std::vector<std::unique_ptr<LHAPDF::PDF>>, std::unique_ptr<LHAPDF::PDF>,
+                         std::unique_ptr<LHAPDF::PDF>> &default_pdf_sets)
     {
         if (*this)
         {
@@ -789,19 +792,19 @@ class EventData
 
                     // Compute the Alpha_S weight for this event using NNPDF31_nnlo_as_0120 (319500) and divide the new
                     // weight by the weight from the PDF the event was produced with.
-                    auto pdfset_alpha_s_up = std::unique_ptr<LHAPDF::PDF>(LHAPDF::mkPDF(319500));
-                    alpha_s_up =
-                        pdfset_alpha_s_up->xfxQ(generator_info.id1, generator_info.x1, generator_info.scalePDF) *
-                        pdfset_alpha_s_up->xfxQ(generator_info.id2, generator_info.x2, generator_info.scalePDF) /
-                        lhe_info.originalXWGTUP;
+                    alpha_s_up = std::get<1>(default_pdf_sets)
+                                     ->xfxQ(generator_info.id1, generator_info.x1, generator_info.scalePDF) *
+                                 std::get<1>(default_pdf_sets)
+                                     ->xfxQ(generator_info.id2, generator_info.x2, generator_info.scalePDF) /
+                                 lhe_info.originalXWGTUP;
 
                     // Compute the Alpha_S weight for this event using NNPDF31_nnlo_as_0116 (319300) and divide the new
                     // weight by the weight from the PDF the event was produced with.
-                    auto pdfset_alpha_s_down = std::unique_ptr<LHAPDF::PDF>(LHAPDF::mkPDF(319300));
-                    alpha_s_down =
-                        pdfset_alpha_s_up->xfxQ(generator_info.id1, generator_info.x1, generator_info.scalePDF) *
-                        pdfset_alpha_s_up->xfxQ(generator_info.id2, generator_info.x2, generator_info.scalePDF) /
-                        lhe_info.originalXWGTUP;
+                    alpha_s_down = std::get<2>(default_pdf_sets)
+                                       ->xfxQ(generator_info.id1, generator_info.x1, generator_info.scalePDF) *
+                                   std::get<2>(default_pdf_sets)
+                                       ->xfxQ(generator_info.id2, generator_info.x2, generator_info.scalePDF) /
+                                   lhe_info.originalXWGTUP;
                 }
                 else
                 {
@@ -824,32 +827,42 @@ class EventData
                     // new weight by the weight from the PDF the event was produced with.
                     lhe_info.LHEPdfWeight.reserve(lha_size - 1);
                     auto _pdf = std::unique_ptr<LHAPDF::PDF>(LHAPDF::mkPDF(lha_id));
-                    auto _originalXWGTUP = _pdf->xfxQ(generator_info.id1, generator_info.x1, generator_info.scalePDF) *
-                                           _pdf->xfxQ(generator_info.id2, generator_info.x2, generator_info.scalePDF);
-                    for (int i = (lha_id + 1); i < (lha_id + lha_size); i++)
+                    lhe_info.originalXWGTUP =
+                        std::get<0>(default_pdf_sets)
+                            .at(0)
+                            ->xfxQ(generator_info.id1, generator_info.x1, generator_info.scalePDF) *
+                        std::get<0>(default_pdf_sets)
+                            .at(0)
+                            ->xfxQ(generator_info.id2, generator_info.x2, generator_info.scalePDF);
+
+                    // skip the first, since it correspondeds to the originalXWGTUP (nominal)
+                    for (std::size_t i = 1; i < std::get<0>(default_pdf_sets).size(); i++)
                     {
-                        _pdf = std::unique_ptr<LHAPDF::PDF>(LHAPDF::mkPDF(i));
                         lhe_info.LHEPdfWeight.push_back(
-                            _pdf->xfxQ(generator_info.id1, generator_info.x1, generator_info.scalePDF) *
-                            _pdf->xfxQ(generator_info.id2, generator_info.x2, generator_info.scalePDF) /
-                            _originalXWGTUP);
+                            std::get<0>(default_pdf_sets)
+                                .at(i)
+                                ->xfxQ(generator_info.id1, generator_info.x1, generator_info.scalePDF) *
+                            std::get<0>(default_pdf_sets)
+                                .at(i)
+                                ->xfxQ(generator_info.id2, generator_info.x2, generator_info.scalePDF) /
+                            lhe_info.originalXWGTUP);
                     }
 
                     // Compute the Alpha_S weight for this event using NNPDF31_nnlo_as_0120 (319500) and divide the new
                     // weight by the weight from the PDF the event was produced with.
-                    auto pdfset_alpha_s_up = std::unique_ptr<LHAPDF::PDF>(LHAPDF::mkPDF(319500));
-                    alpha_s_up =
-                        pdfset_alpha_s_up->xfxQ(generator_info.id1, generator_info.x1, generator_info.scalePDF) *
-                        pdfset_alpha_s_up->xfxQ(generator_info.id2, generator_info.x2, generator_info.scalePDF) /
-                        _originalXWGTUP;
+                    alpha_s_up = std::get<1>(default_pdf_sets)
+                                     ->xfxQ(generator_info.id1, generator_info.x1, generator_info.scalePDF) *
+                                 std::get<1>(default_pdf_sets)
+                                     ->xfxQ(generator_info.id2, generator_info.x2, generator_info.scalePDF) /
+                                 lhe_info.originalXWGTUP;
 
                     // Compute the Alpha_S weight for this event using NNPDF31_nnlo_as_0116 (319300) and divide the new
                     // weight by the weight from the PDF the event was produced with.
-                    auto pdfset_alpha_s_down = std::unique_ptr<LHAPDF::PDF>(LHAPDF::mkPDF(319300));
-                    alpha_s_down =
-                        pdfset_alpha_s_up->xfxQ(generator_info.id1, generator_info.x1, generator_info.scalePDF) *
-                        pdfset_alpha_s_up->xfxQ(generator_info.id2, generator_info.x2, generator_info.scalePDF) /
-                        _originalXWGTUP;
+                    alpha_s_down = std::get<2>(default_pdf_sets)
+                                       ->xfxQ(generator_info.id1, generator_info.x1, generator_info.scalePDF) *
+                                   std::get<2>(default_pdf_sets)
+                                       ->xfxQ(generator_info.id2, generator_info.x2, generator_info.scalePDF) /
+                                   lhe_info.originalXWGTUP;
                 }
             }
             return *this;
@@ -911,7 +924,7 @@ class EventData
         return *this;
     }
 
-    EventData &set_scale_factors(Outputs &outputs)
+    EventData &set_scale_factors_and_weights(Outputs &outputs)
     {
         if (*this)
         {
