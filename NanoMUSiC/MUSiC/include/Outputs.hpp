@@ -263,7 +263,7 @@ class Outputs
         }
         return nominal_weight;
     }
-
+    // dummy
     // clear event tree
     void clear_event_tree()
     {

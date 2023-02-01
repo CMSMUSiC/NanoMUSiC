@@ -948,6 +948,12 @@ class EventData
         {
             // TODO: L1 prefiring
             // TODO: Muons
+            // Low Pt Muons should consider:
+            // --  tracking efficiency: ~1.
+            // -- Reconstruction: NUM_TrackerMuons_DEN_genTracks
+            // -- ID: NUM_TightID_DEN_TrackerMuons
+            // -- Isolation:
+            // -- Trigger: NUM_IsoMu24_DEN_CutBasedIdTight_and_PFIsoTight
             // TODO: Electrons
             // TODO: Photons
             // TODO: Taus
