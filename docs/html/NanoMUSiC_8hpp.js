@@ -13,5 +13,6 @@ var NanoMUSiC_8hpp =
     [ "print_report", "NanoMUSiC_8hpp.html#a41ec02e286c1ee820f743c2ec2347efe", null ],
     [ "PrintProcessInfo", "NanoMUSiC_8hpp.html#a1cebcc2da734541f7cf005033722cb43", null ],
     [ "unwrap", "NanoMUSiC_8hpp.html#ac7fe4b41c75070bb4ee32517a6818ff1", null ],
-    [ "unwrap", "NanoMUSiC_8hpp.html#a7d1de4e8c7ef08ec45ab65b0def9694d", null ]
+    [ "unwrap", "NanoMUSiC_8hpp.html#a7d1de4e8c7ef08ec45ab65b0def9694d", null ],
+    [ "unwrap", "NanoMUSiC_8hpp.html#a7552522b8f930e87e100d91cb6872ab4", null ]
 ];

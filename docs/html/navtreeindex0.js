@@ -141,6 +141,7 @@ var NAVTREEINDEX0 =
 "NanoMUSiC_8hpp.html#a1cebcc2da734541f7cf005033722cb43":[8,0,0,0,0,9,11],
 "NanoMUSiC_8hpp.html#a41ec02e286c1ee820f743c2ec2347efe":[8,0,0,0,0,9,10],
 "NanoMUSiC_8hpp.html#a5243b2e67317aeb7c96cbb4cd98182a4":[8,0,0,0,0,9,7],
+"NanoMUSiC_8hpp.html#a7552522b8f930e87e100d91cb6872ab4":[8,0,0,0,0,9,14],
 "NanoMUSiC_8hpp.html#a79075a862a5c485c83147cba22ffe704":[8,0,0,0,0,9,5],
 "NanoMUSiC_8hpp.html#a7d1de4e8c7ef08ec45ab65b0def9694d":[8,0,0,0,0,9,13],
 "NanoMUSiC_8hpp.html#a80e365d8190775175a4620a81aaa3185":[8,0,0,0,0,9,2],
@@ -248,6 +249,5 @@ var NAVTREEINDEX0 =
 "classEnumerate.html#a82e17966a00f0f4ce4bb80f0ceda6d37":[7,0,7,0],
 "classEnumerate.html#a88ef3710cd4f765dbecdc55471ec6f33":[7,0,7,10],
 "classEnumerate.html#a91bfbe393e8e8ab29d5a5df0e77cfb20":[7,0,7,4],
-"classEnumerate.html#a9c95163a315ace1c93990a9360bcd87d":[7,0,7,9],
-"classEnumerate.html#aabea0708e54d2d9837a9b9e446e240b4":[7,0,7,1]
+"classEnumerate.html#a9c95163a315ace1c93990a9360bcd87d":[7,0,7,9]
 };

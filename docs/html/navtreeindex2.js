@@ -1,5 +1,8 @@
 var NAVTREEINDEX2 =
 {
+"functions_enum.html":[7,3,4],
+"functions_eval.html":[7,3,5],
+"functions_f.html":[7,3,0,5],
 "functions_func.html":[7,3,1],
 "functions_g.html":[7,3,0,6],
 "functions_h.html":[7,3,0,7],
@@ -18,8 +21,8 @@ var NAVTREEINDEX2 =
 "functions_type.html":[7,3,3],
 "functions_u.html":[7,3,0,19],
 "functions_v.html":[7,3,0,20],
-"functions_vars.html":[7,3,2],
 "functions_vars.html":[7,3,2,0],
+"functions_vars.html":[7,3,2],
 "functions_vars_b.html":[7,3,2,1],
 "functions_vars_c.html":[7,3,2,2],
 "functions_vars_d.html":[7,3,2,3],
@@ -97,15 +100,15 @@ var NAVTREEINDEX2 =
 "namespaceEGTriggerLowPtRun2017.html":[6,0,7],
 "namespaceEGTriggerLowPtRun2018.html":[6,0,8],
 "namespaceIndexHelpers.html":[6,0,9],
-"namespaceMUSiCTools.html":[7,0,0],
 "namespaceMUSiCTools.html":[6,0,10],
-"namespaceNanoObjects.html":[6,0,11],
+"namespaceMUSiCTools.html":[7,0,0],
 "namespaceNanoObjects.html":[7,0,1],
+"namespaceNanoObjects.html":[6,0,11],
 "namespaceObjConfig.html":[6,0,12],
 "namespaceObjConfig.html":[7,0,2],
 "namespacePDFAlphaSWeights.html":[6,0,13],
-"namespacePDG.html":[7,0,3],
 "namespacePDG.html":[6,0,14],
+"namespacePDG.html":[7,0,3],
 "namespacePDG_1_1Electron.html":[6,0,14,0],
 "namespacePDG_1_1Muon.html":[6,0,14,1],
 "namespacePDG_1_1Photon.html":[6,0,14,2],
@@ -246,8 +249,5 @@ var NAVTREEINDEX2 =
 "structNanoObjects_1_1Photons.html#aab5f5db01d10fb9e81b887fac77306b5":[7,0,1,7,2],
 "structNanoObjects_1_1Photons.html#ac49b54663b4074770b5ea2c1d83a0458":[7,0,1,7,5],
 "structNanoObjects_1_1Photons.html#aca8e501cf6ab9e6855abfd9ffff3252d":[7,0,1,7,4],
-"structNanoObjects_1_1Taus.html":[7,0,1,8],
-"structNanoObjects_1_1Taus.html#a1a06fc3cc79fe6204c138960d208539a":[7,0,1,8,4],
-"structNanoObjects_1_1Taus.html#a91c9349c0dd39fc9c31c0fae26f30b82":[7,0,1,8,1],
-"structNanoObjects_1_1Taus.html#ab2a9f1623b948668f45f854d8caea44a":[7,0,1,8,2]
+"structNanoObjects_1_1Taus.html":[7,0,1,8]
 };

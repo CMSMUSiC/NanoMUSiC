@@ -9,6 +9,8 @@ var classOutputs =
     [ "set_event_weight", "classOutputs.html#aa9d13b02c883deb78cde20f639ce87d8", null ],
     [ "set_event_weight", "classOutputs.html#a69572992ca7a94789e24cb519fd3e478", null ],
     [ "write_data", "classOutputs.html#a859fc83b3772b135fd1a93540048681b", null ],
+    [ "alpha_s_weight_down", "classOutputs.html#ad396d5c174494dfac6bc645b2b8bf69d", null ],
+    [ "alpha_s_weight_up", "classOutputs.html#a72c2ec5662e15d32ce5ee36f8bbd8f7a", null ],
     [ "BJet_eta", "classOutputs.html#aa5a6ec77b625042d2f72fecf384e106b", null ],
     [ "BJet_phi", "classOutputs.html#ac3ac2d9ba55088c7e80820e01f549e75", null ],
     [ "BJet_pt", "classOutputs.html#a9064dc06872c67e3468ddc7cf2e6da84", null ],

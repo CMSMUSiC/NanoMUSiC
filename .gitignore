@@ -16,7 +16,7 @@ nano.root
 test_*
 docs/foo
 test_*
-Test_Ouputs_*
+Test_Outputs_*
 ##### PYTHON #####
 
 # Byte-compiled / optimized / DLL files

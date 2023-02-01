@@ -222,6 +222,11 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a17bfe015a30a3e9b39e40dccc9b45f0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9e7aa84ed7898124b187d9a02d247076"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a9e7aa84ed7898124b187d9a02d247076">unset_null</a> ()</td></tr>
 <tr class="separator:a9e7aa84ed7898124b187d9a02d247076"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad303f965fe100c399ec8de441d4881f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#aad303f965fe100c399ec8de441d4881f">set_pdf_alpha_s_weights</a> (const std::optional&lt; std::pair&lt; unsigned int, unsigned int &gt;&gt; &amp;lha_indexes, const std::tuple&lt; std::vector&lt; std::unique_ptr&lt; LHAPDF::PDF &gt;&gt;, std::unique_ptr&lt; LHAPDF::PDF &gt;, std::unique_ptr&lt; LHAPDF::PDF &gt;&gt; &amp;default_pdf_sets)</td></tr>
+<tr class="separator:aad303f965fe100c399ec8de441d4881f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5450c9d00a44b8c8cbbeb02d590a62dd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a5450c9d00a44b8c8cbbeb02d590a62dd">set_scale_weights</a> ()</td></tr>
+<tr class="memdesc:a5450c9d00a44b8c8cbbeb02d590a62dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the QCD Scaling weights, using the envelope method. If the sample has no weights are kept as 1.  <a href="classEventData.html#a5450c9d00a44b8c8cbbeb02d590a62dd">More...</a><br /></td></tr>
+<tr class="separator:a5450c9d00a44b8c8cbbeb02d590a62dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b9193b33b2ebb65f57360fd9bd9c729"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a8b9193b33b2ebb65f57360fd9bd9c729">set_const_weights</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs, <a class="el" href="classCorrector.html">Corrector</a> &amp;pu_weight)</td></tr>
 <tr class="separator:a8b9193b33b2ebb65f57360fd9bd9c729"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aab41cc18c5562bc6102c3ddd17e8de7d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#aab41cc18c5562bc6102c3ddd17e8de7d">generator_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs)</td></tr>
@@ -229,6 +234,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a44cf3290cb2a0afe083b7a885c0a438b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a44cf3290cb2a0afe083b7a885c0a438b">run_lumi_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs, const <a class="el" href="classRunLumiFilter.html">RunLumiFilter</a> &amp;_run_lumi_filter)</td></tr>
 <tr class="separator:a44cf3290cb2a0afe083b7a885c0a438b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ca942eb8490142fde15317675796210"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a7ca942eb8490142fde15317675796210">npv_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs)</td></tr>
+<tr class="memdesc:a7ca942eb8490142fde15317675796210"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply good primary vertex filters.  <a href="classEventData.html#a7ca942eb8490142fde15317675796210">More...</a><br /></td></tr>
 <tr class="separator:a7ca942eb8490142fde15317675796210"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae19056feebc614db13cf4c43120efaec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#ae19056feebc614db13cf4c43120efaec">met_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs)</td></tr>
 <tr class="separator:ae19056feebc614db13cf4c43120efaec"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -262,12 +268,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a1e9adebbacd7c23ff98cdc1a4ba83704"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a1e9adebbacd7c23ff98cdc1a4ba83704">trigger_match_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs, const std::map&lt; std::string_view, <a class="el" href="classTrgObjMatcher.html">TrgObjMatcher</a> &gt; &amp;matchers)</td></tr>
 <tr class="memdesc:a1e9adebbacd7c23ff98cdc1a4ba83704"><td class="mdescLeft">&#160;</td><td class="mdescRight">Will check if the current event has a matched object to a good TrgObj.  <a href="classEventData.html#a1e9adebbacd7c23ff98cdc1a4ba83704">More...</a><br /></td></tr>
 <tr class="separator:a1e9adebbacd7c23ff98cdc1a4ba83704"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a525744b752a4873a01fabe4321e8e703"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a525744b752a4873a01fabe4321e8e703">set_pdf_alpha_s_weights</a> (const std::optional&lt; std::pair&lt; unsigned int, unsigned int &gt;&gt; &amp;lha_indexes)</td></tr>
-<tr class="separator:a525744b752a4873a01fabe4321e8e703"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5450c9d00a44b8c8cbbeb02d590a62dd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a5450c9d00a44b8c8cbbeb02d590a62dd">set_scale_weights</a> ()</td></tr>
-<tr class="separator:a5450c9d00a44b8c8cbbeb02d590a62dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a36ff28875a37714ead1c2703e80aaaba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a36ff28875a37714ead1c2703e80aaaba">set_scale_factors</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs)</td></tr>
-<tr class="separator:a36ff28875a37714ead1c2703e80aaaba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf39d308fd5970391cb08033ee7d9b1d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#adf39d308fd5970391cb08033ee7d9b1d">set_scale_factors_and_weights</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs)</td></tr>
+<tr class="separator:adf39d308fd5970391cb08033ee7d9b1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae032f5e9f3dc21e4f2f4776e1e6780bb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#ae032f5e9f3dc21e4f2f4776e1e6780bb">muon_corrections</a> ()</td></tr>
 <tr class="separator:ae032f5e9f3dc21e4f2f4776e1e6780bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a02a1c8c1de594722e96f59e3d7fb70f8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEventData.html">EventData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a02a1c8c1de594722e96f59e3d7fb70f8">electron_corrections</a> ()</td></tr>
@@ -498,6 +500,7 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Filter events based on their Generator process. This is implemented in order to avoid overlap of phase-space between MC samples. Should come after all constant weights are available. </p>
 
 </div>
 </div>
@@ -886,6 +889,8 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Apply good primary vertex filters. </p>
+
 </div>
 </div>
 <a id="a13b2095832e126ffb5b961e85927c213"></a>
@@ -996,6 +1001,7 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Filter events based on their lumi sectiona and run numbers, following the recommendations from the LUMI-POG (aka "golden JSON"). </p>
 
 </div>
 </div>
@@ -1094,6 +1100,7 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>set generator weight should be called before any <a class="el" href="classEventData.html">EventData</a> method, but only after all weights are available (should wait for PDF and QCD Scale weights). The naming constant weights means weights that are the sample for the whole event, but could differ from one event to another, e.g. pile-up. As a negative example, Muons resolution corretions are not constants, within the whole event. </p>
 
 </div>
 </div>
@@ -1448,8 +1455,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a525744b752a4873a01fabe4321e8e703"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a525744b752a4873a01fabe4321e8e703">&#9670;&nbsp;</a></span>set_pdf_alpha_s_weights()</h2>
+<a id="aad303f965fe100c399ec8de441d4881f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad303f965fe100c399ec8de441d4881f">&#9670;&nbsp;</a></span>set_pdf_alpha_s_weights()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1461,8 +1468,18 @@ Private Attributes</h2></td></tr>
           <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::set_pdf_alpha_s_weights </td>
           <td>(</td>
           <td class="paramtype">const std::optional&lt; std::pair&lt; unsigned int, unsigned int &gt;&gt; &amp;&#160;</td>
-          <td class="paramname"><em>lha_indexes</em></td><td>)</td>
+          <td class="paramname"><em>lha_indexes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const std::tuple&lt; std::vector&lt; std::unique_ptr&lt; LHAPDF::PDF &gt;&gt;, std::unique_ptr&lt; LHAPDF::PDF &gt;, std::unique_ptr&lt; LHAPDF::PDF &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>default_pdf_sets</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -1471,6 +1488,7 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Set PDF and Alpha_S uncertainties. Those are tricky beasts, since they are not simple weights added to the event, but rather, should be treated as variations and have their uncert. squared-summed in the end of the processing (classification). This method also saves the LHA ID that was used during generation or rescaling. </p>
 
 </div>
 </div>
@@ -1536,8 +1554,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a36ff28875a37714ead1c2703e80aaaba"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a36ff28875a37714ead1c2703e80aaaba">&#9670;&nbsp;</a></span>set_scale_factors()</h2>
+<a id="adf39d308fd5970391cb08033ee7d9b1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf39d308fd5970391cb08033ee7d9b1d">&#9670;&nbsp;</a></span>set_scale_factors_and_weights()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1546,7 +1564,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::set_scale_factors </td>
+          <td class="memname"><a class="el" href="classEventData.html">EventData</a>&amp; EventData::set_scale_factors_and_weights </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
           <td class="paramname"><em>outputs</em></td><td>)</td>
@@ -1584,6 +1602,8 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Set the QCD Scaling weights, using the envelope method. If the sample has no weights are kept as 1. </p>
 
 </div>
 </div>
