@@ -40,24 +40,6 @@ constexpr auto ActivatedHLTPath = make_enumerate("SingleMuonLowPt"sv,     //
 
 // constexpr auto kTotalActivatedPaths = ActivatedHLTPath && (nano_objects.pt <= pt_min).size();
 
-inline std::string get_year_for_muon_sf(Year year)
-{
-    switch (year)
-    {
-    case Year::Run2016APV:
-        return "2016preVFP_UL"s;
-    case Year::Run2016:
-        return "2016postVFP_UL"s;
-    case Year::Run2017:
-        return "2017_UL"s;
-    case Year::Run2018:
-        return "2018_UL"s;
-    default:
-        throw std::runtime_error("Year (" + std::to_string(year) +
-                                 ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
-    }
-}
-
 template <typename T1, typename T2>
 std::pair<RVec<float>, RVec<float>> get_matches(const T1 &trigger_objects_pt,  //
                                                 const T1 &trigger_objects_eta, //
@@ -474,14 +456,14 @@ class TrgObjMatcher
                     (get_eta(nano_objects)[nano_objs_mask && nano_objects_pt_mask]).at(matched_index);
 
                 trigger_sf_nominal = //
-                    trigger_sf_correctors({Trigger::get_year_for_muon_sf(year), fabs(_matched_nano_object_eta),
-                                           _matched_nano_object_pt, "sf"});
+                    trigger_sf_correctors({CorrectionHelpers::get_year_for_muon_sf(year),
+                                           fabs(_matched_nano_object_eta), _matched_nano_object_pt, "sf"});
                 trigger_sf_up = //
-                    trigger_sf_correctors({Trigger::get_year_for_muon_sf(year), fabs(_matched_nano_object_eta),
-                                           _matched_nano_object_pt, "systup"});
+                    trigger_sf_correctors({CorrectionHelpers::get_year_for_muon_sf(year),
+                                           fabs(_matched_nano_object_eta), _matched_nano_object_pt, "systup"});
                 trigger_sf_down = //
-                    trigger_sf_correctors({Trigger::get_year_for_muon_sf(year), fabs(_matched_nano_object_eta),
-                                           _matched_nano_object_pt, "systdown"});
+                    trigger_sf_correctors({CorrectionHelpers::get_year_for_muon_sf(year),
+                                           fabs(_matched_nano_object_eta), _matched_nano_object_pt, "systdown"});
             }
             else if (id == PDG::Electron::Id)
             {
@@ -675,7 +657,7 @@ struct TriggerBits
         return static_cast<unsigned int>(trigger_bits.to_ullong());
     }
 
-    std::string_view as_string() const
+    std::string as_string() const
     {
         return trigger_bits.to_string();
     }
