@@ -179,12 +179,12 @@ $(document).ready(function(){initNavTree('classOutputs.html',''); initResizable(
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a16985c26f952e7bfbd5c171aa90f04ff"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classOutputs.html#a16985c26f952e7bfbd5c171aa90f04ff">Outputs</a> (const std::string _filename)</td></tr>
 <tr class="separator:a16985c26f952e7bfbd5c171aa90f04ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a69572992ca7a94789e24cb519fd3e478"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classOutputs.html#a69572992ca7a94789e24cb519fd3e478">set_event_weight</a> (std::string_view weight, std::string_view shift, float value)</td></tr>
-<tr class="separator:a69572992ca7a94789e24cb519fd3e478"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa9d13b02c883deb78cde20f639ce87d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classOutputs.html#aa9d13b02c883deb78cde20f639ce87d8">set_event_weight</a> (std::string_view weight, float value)</td></tr>
-<tr class="separator:aa9d13b02c883deb78cde20f639ce87d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1a20627ac4c8a44550309f7bc9044e56"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classOutputs.html#a1a20627ac4c8a44550309f7bc9044e56">get_event_weight</a> (std::string_view weight=&quot;&quot;, std::string_view shift=&quot;Nominal&quot;)</td></tr>
-<tr class="separator:a1a20627ac4c8a44550309f7bc9044e56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0341104109e6204d0dd7cddd98a5acf"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classOutputs.html#ac0341104109e6204d0dd7cddd98a5acf">set_event_weight</a> (std::string_view weight, std::string_view shift, float value) -&gt; void</td></tr>
+<tr class="separator:ac0341104109e6204d0dd7cddd98a5acf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a020c13015105b04cf587c0a1b702dfb4"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classOutputs.html#a020c13015105b04cf587c0a1b702dfb4">set_event_weight</a> (std::string_view weight, float value) -&gt; void</td></tr>
+<tr class="separator:a020c13015105b04cf587c0a1b702dfb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a958da199f97021eee3103adf2b059f04"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classOutputs.html#a958da199f97021eee3103adf2b059f04">get_event_weight</a> (std::string_view weight=&quot;&quot;, std::string_view shift=&quot;Nominal&quot;) -&gt; float</td></tr>
+<tr class="separator:a958da199f97021eee3103adf2b059f04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a781e9ea823a7fa1757a48cfe01f32c9e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classOutputs.html#a781e9ea823a7fa1757a48cfe01f32c9e">clear_event_tree</a> ()</td></tr>
 <tr class="separator:a781e9ea823a7fa1757a48cfe01f32c9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb244bf81c611f0a8df1fdabfc049533"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classOutputs.html#acb244bf81c611f0a8df1fdabfc049533">fill_branches</a> (RVec&lt; float &gt; &amp;&amp;_lhe_pdf_weights, RVec&lt; float &gt; &amp;&amp;_muon_pt, RVec&lt; float &gt; &amp;&amp;_muon_eta, RVec&lt; float &gt; &amp;&amp;_muon_phi, RVec&lt; float &gt; &amp;&amp;_electron_pt, RVec&lt; float &gt; &amp;&amp;_electron_eta, RVec&lt; float &gt; &amp;&amp;_electron_phi, RVec&lt; float &gt; &amp;&amp;_photon_pt, RVec&lt; float &gt; &amp;&amp;_photon_eta, RVec&lt; float &gt; &amp;&amp;_photon_phi, RVec&lt; float &gt; &amp;&amp;_tau_pt, RVec&lt; float &gt; &amp;&amp;_tau_eta, RVec&lt; float &gt; &amp;&amp;_tau_phi, RVec&lt; float &gt; &amp;&amp;_bjet_pt, RVec&lt; float &gt; &amp;&amp;_bjet_eta, RVec&lt; float &gt; &amp;&amp;_bjet_phi, RVec&lt; float &gt; &amp;&amp;_jet_pt, RVec&lt; float &gt; &amp;&amp;_jet_eta, RVec&lt; float &gt; &amp;&amp;_jet_phi, RVec&lt; float &gt; &amp;&amp;_met_pt, RVec&lt; float &gt; &amp;&amp;_met_phi)</td></tr>
@@ -289,7 +289,7 @@ Public Attributes</h2></td></tr>
 Static Public Attributes</h2></td></tr>
 <tr class="memitem:a82e6df3ec0abf230ea32702dda229311"><td class="memItemLeft" align="right" valign="top">static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classOutputs.html#a82e6df3ec0abf230ea32702dda229311">Cuts</a></td></tr>
 <tr class="separator:a82e6df3ec0abf230ea32702dda229311"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a13958379a685bb4e61b22fb601633f47"><td class="memItemLeft" align="right" valign="top">static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classOutputs.html#a13958379a685bb4e61b22fb601633f47">Weights</a> = <a class="el" href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">make_enumerate</a>(&quot;Generator&quot;, &quot;PileUp&quot;, &quot;Lumi&quot;, &quot;Trigger&quot;)</td></tr>
+<tr class="memitem:a13958379a685bb4e61b22fb601633f47"><td class="memItemLeft" align="right" valign="top">static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classOutputs.html#a13958379a685bb4e61b22fb601633f47">Weights</a></td></tr>
 <tr class="separator:a13958379a685bb4e61b22fb601633f47"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac460194c479cd9f4b58ce67c63711ab1"><td class="memItemLeft" align="right" valign="top">static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classOutputs.html#ac460194c479cd9f4b58ce67c63711ab1">Shifts</a> = <a class="el" href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">make_enumerate</a>(&quot;Nominal&quot;, &quot;Up&quot;, &quot;Down&quot;)</td></tr>
 <tr class="separator:ac460194c479cd9f4b58ce67c63711ab1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -359,6 +359,7 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Clear event tree between every event. Will set values and arrays to defaults. </p>
 
 </div>
 </div>
@@ -573,8 +574,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a1a20627ac4c8a44550309f7bc9044e56"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1a20627ac4c8a44550309f7bc9044e56">&#9670;&nbsp;</a></span>get_event_weight()</h2>
+<a id="a958da199f97021eee3103adf2b059f04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a958da199f97021eee3103adf2b059f04">&#9670;&nbsp;</a></span>get_event_weight()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -583,7 +584,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">float Outputs::get_event_weight </td>
+          <td class="memname">auto Outputs::get_event_weight </td>
           <td>(</td>
           <td class="paramtype">std::string_view&#160;</td>
           <td class="paramname"><em>weight</em> = <code>&quot;&quot;</code>, </td>
@@ -597,7 +598,8 @@ Private Attributes</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td>
+          <td></td><td> -&gt; float
+    </td>
         </tr>
       </table>
   </td>
@@ -609,8 +611,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="aa9d13b02c883deb78cde20f639ce87d8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa9d13b02c883deb78cde20f639ce87d8">&#9670;&nbsp;</a></span>set_event_weight() <span class="overload">[1/2]</span></h2>
+<a id="a020c13015105b04cf587c0a1b702dfb4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a020c13015105b04cf587c0a1b702dfb4">&#9670;&nbsp;</a></span>set_event_weight() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -619,7 +621,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void Outputs::set_event_weight </td>
+          <td class="memname">auto Outputs::set_event_weight </td>
           <td>(</td>
           <td class="paramtype">std::string_view&#160;</td>
           <td class="paramname"><em>weight</em>, </td>
@@ -633,7 +635,8 @@ Private Attributes</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td>
+          <td></td><td> -&gt; void
+    </td>
         </tr>
       </table>
   </td>
@@ -645,8 +648,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a69572992ca7a94789e24cb519fd3e478"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a69572992ca7a94789e24cb519fd3e478">&#9670;&nbsp;</a></span>set_event_weight() <span class="overload">[2/2]</span></h2>
+<a id="ac0341104109e6204d0dd7cddd98a5acf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0341104109e6204d0dd7cddd98a5acf">&#9670;&nbsp;</a></span>set_event_weight() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -655,7 +658,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void Outputs::set_event_weight </td>
+          <td class="memname">auto Outputs::set_event_weight </td>
           <td>(</td>
           <td class="paramtype">std::string_view&#160;</td>
           <td class="paramname"><em>weight</em>, </td>
@@ -675,7 +678,8 @@ Private Attributes</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td>
+          <td></td><td> -&gt; void
+    </td>
         </tr>
       </table>
   </td>
@@ -1461,7 +1465,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr auto Outputs::Weights = <a class="el" href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">make_enumerate</a>(&quot;Generator&quot;, &quot;PileUp&quot;, &quot;Lumi&quot;, &quot;Trigger&quot;)</td>
+          <td class="memname">constexpr auto Outputs::Weights</td>
         </tr>
       </table>
   </td>
@@ -1470,7 +1474,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        <a class="code" href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">make_enumerate</a>(<span class="stringliteral">&quot;Generator&quot;</span>, <span class="stringliteral">&quot;PileUp&quot;</span>, <span class="stringliteral">&quot;Lumi&quot;</span>, <span class="stringliteral">&quot;Trigger&quot;</span>, <span class="stringliteral">&quot;MuonReco&quot;</span>, <span class="stringliteral">&quot;MuonId&quot;</span>, <span class="stringliteral">&quot;MuonIso&quot;</span>)</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a9a97465a47b95c6ca41df9623792067b"></a>

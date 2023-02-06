@@ -1,6 +1,7 @@
 var namespaces_dup =
 [
     [ "anonymous_namespace{nanoaod_content_printer.cpp}", "namespaceanonymous__namespace_02nanoaod__content__printer_8cpp_03.html", null ],
+    [ "CorrectionHelpers", "namespaceCorrectionHelpers.html", null ],
     [ "EGTriggerHighPtRun2016", "namespaceEGTriggerHighPtRun2016.html", null ],
     [ "EGTriggerHighPtRun2016APV", "namespaceEGTriggerHighPtRun2016APV.html", null ],
     [ "EGTriggerHighPtRun2017", "namespaceEGTriggerHighPtRun2017.html", null ],

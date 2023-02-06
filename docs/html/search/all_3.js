@@ -16,13 +16,14 @@ var searchData=
   ['correction_5fkeys_77',['correction_keys',['../classCorrector.html#a807445cee37cb0ba1bd0fe6ace6fc59f',1,'Corrector']]],
   ['correction_5fref_78',['correction_ref',['../classCorrector.html#a855d2673d3aee05ef8edd29013ed92a0',1,'Corrector']]],
   ['correction_5ftype_79',['correction_type',['../classCorrector.html#a52821134c9b069d1611006cde48ac4b0',1,'Corrector']]],
-  ['correctionlibref_5ft_80',['CorrectionlibRef_t',['../CorrectionSets_8hpp.html#af1b8b92794ed34f64d7e63cb40dba657',1,'CorrectionSets.hpp']]],
-  ['correctionsets_2ehpp_81',['CorrectionSets.hpp',['../CorrectionSets_8hpp.html',1,'']]],
-  ['correctiontypes_82',['CorrectionTypes',['../CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934',1,'CorrectionSets.hpp']]],
-  ['corrector_83',['Corrector',['../classCorrector.html',1,'Corrector'],['../classCorrector.html#acae626eea5b85f397ccbe92cdb3240c9',1,'Corrector::Corrector()']]],
-  ['ct_84',['CT',['../classEnumerate.html#aabea0708e54d2d9837a9b9e446e240b4',1,'Enumerate']]],
-  ['cutbased_85',['cutBased',['../structNanoObjects_1_1Electrons.html#a7d4b969bfd7bd3890949dfeae8d22244',1,'NanoObjects::Electrons::cutBased()'],['../structNanoObjects_1_1Photons.html#a1f78fb6edb513ad4d1dc0dfd368172c8',1,'NanoObjects::Photons::cutBased()']]],
-  ['cutbased_5fheep_86',['cutBased_HEEP',['../structNanoObjects_1_1Electrons.html#a27b740323333002b1668c2532fad0a65',1,'NanoObjects::Electrons']]],
-  ['cutflow_5fhisto_87',['cutflow_histo',['../classOutputs.html#ab9c4e5bf0cf1b72ae606aa8e87b67eb5',1,'Outputs']]],
-  ['cuts_88',['Cuts',['../classOutputs.html#a82e6df3ec0abf230ea32702dda229311',1,'Outputs']]]
+  ['correctionhelpers_80',['CorrectionHelpers',['../namespaceCorrectionHelpers.html',1,'']]],
+  ['correctionlibref_5ft_81',['CorrectionlibRef_t',['../CorrectionSets_8hpp.html#af1b8b92794ed34f64d7e63cb40dba657',1,'CorrectionSets.hpp']]],
+  ['correctionsets_2ehpp_82',['CorrectionSets.hpp',['../CorrectionSets_8hpp.html',1,'']]],
+  ['correctiontypes_83',['CorrectionTypes',['../CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934',1,'CorrectionSets.hpp']]],
+  ['corrector_84',['Corrector',['../classCorrector.html',1,'Corrector'],['../classCorrector.html#acae626eea5b85f397ccbe92cdb3240c9',1,'Corrector::Corrector()']]],
+  ['ct_85',['CT',['../classEnumerate.html#aabea0708e54d2d9837a9b9e446e240b4',1,'Enumerate']]],
+  ['cutbased_86',['cutBased',['../structNanoObjects_1_1Electrons.html#a7d4b969bfd7bd3890949dfeae8d22244',1,'NanoObjects::Electrons::cutBased()'],['../structNanoObjects_1_1Photons.html#a1f78fb6edb513ad4d1dc0dfd368172c8',1,'NanoObjects::Photons::cutBased()']]],
+  ['cutbased_5fheep_87',['cutBased_HEEP',['../structNanoObjects_1_1Electrons.html#a27b740323333002b1668c2532fad0a65',1,'NanoObjects::Electrons']]],
+  ['cutflow_5fhisto_88',['cutflow_histo',['../classOutputs.html#ab9c4e5bf0cf1b72ae606aa8e87b67eb5',1,'Outputs']]],
+  ['cuts_89',['Cuts',['../classOutputs.html#a82e6df3ec0abf230ea32702dda229311',1,'Outputs']]]
 ];

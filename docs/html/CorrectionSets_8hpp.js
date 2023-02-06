@@ -13,5 +13,6 @@ var CorrectionSets_8hpp =
       [ "Photon", "CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934afd22b656b23ca07a276181a4953ba2c4", null ],
       [ "PU", "CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934abfd2343910378a1b537c3c8036a5c07e", null ],
       [ "MuonLowPt", "CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934ab8b5d0c91bd1f06360fb4cc1d639a070", null ]
-    ] ]
+    ] ],
+    [ "get_year_for_muon_sf", "CorrectionSets_8hpp.html#afa6c115d624ec1476bbf960737393268", null ]
 ];

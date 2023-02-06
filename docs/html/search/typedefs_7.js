@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['rochestercorrection_5ft_1052',['RochesterCorrection_t',['../CorrectionSets_8hpp.html#a92123307785577bd95f7bbc9fbc4462a',1,'CorrectionSets.hpp']]]
+  ['rochestercorrection_5ft_1054',['RochesterCorrection_t',['../CorrectionSets_8hpp.html#a92123307785577bd95f7bbc9fbc4462a',1,'CorrectionSets.hpp']]]
 ];

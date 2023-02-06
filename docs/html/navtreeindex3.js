@@ -1,5 +1,7 @@
 var NAVTREEINDEX3 =
 {
+"structNanoObjects_1_1Photons.html#aca8e501cf6ab9e6855abfd9ffff3252d":[7,0,1,7,4],
+"structNanoObjects_1_1Taus.html":[7,0,1,8],
 "structNanoObjects_1_1Taus.html#a1a06fc3cc79fe6204c138960d208539a":[7,0,1,8,4],
 "structNanoObjects_1_1Taus.html#a91c9349c0dd39fc9c31c0fae26f30b82":[7,0,1,8,1],
 "structNanoObjects_1_1Taus.html#ab2a9f1623b948668f45f854d8caea44a":[7,0,1,8,2],
@@ -47,11 +49,11 @@ var NAVTREEINDEX3 =
 "structTriggerBits.html#a07d015911a903781b0dbe762d99b085a":[7,0,16,7],
 "structTriggerBits.html#a23300d1ed27b61d373d6110d0e42de6f":[7,0,16,9],
 "structTriggerBits.html#a2e58baad0df7cb569cd80107a5c5e731":[7,0,16,6],
-"structTriggerBits.html#a3e2b290fe5d72062c1b472b334dc5876":[7,0,16,1],
 "structTriggerBits.html#a3e80e353e7cb528e12af000a24366b04":[7,0,16,3],
 "structTriggerBits.html#a50e328439bfd76fef43b7af69007e627":[7,0,16,4],
 "structTriggerBits.html#a51776e9890ae43e91ee1a6dcbca98360":[7,0,16,5],
 "structTriggerBits.html#aa2f54ea6ab4df09ec7d39f2ebd897d24":[7,0,16,8],
+"structTriggerBits.html#adcd6ae61772e4ba5143a82921f169f83":[7,0,16,1],
 "structTriggerBits.html#afc81a42df8a6b8055389c6d76e510ad7":[7,0,16,0],
 "structTriggerBits.html#afdfa9971a644e4d85192e87e7212ef1d":[7,0,16,2],
 "structoverloaded.html":[7,0,11],

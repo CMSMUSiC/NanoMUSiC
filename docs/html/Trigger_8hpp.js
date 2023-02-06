@@ -10,7 +10,6 @@ var Trigger_8hpp =
     [ "get_matches", "Trigger_8hpp.html#a475693bf9bf595a28241687c3b98aa15", null ],
     [ "get_phi", "Trigger_8hpp.html#afc33f04900bea40b979005d526851020", null ],
     [ "get_pt", "Trigger_8hpp.html#ad21f24cd1403c7ec5aa90553486baaa6", null ],
-    [ "get_year_for_muon_sf", "Trigger_8hpp.html#a8a4f3587ec4f58598997c30093ff7458", null ],
     [ "make_trgobj_matcher", "Trigger_8hpp.html#ae63625a5ba0438dec0353b343c6180ff", null ],
     [ "overloaded", "Trigger_8hpp.html#a0930706ccdcce4d25d36c7c80ecacb4f", null ],
     [ "PhotonBits", "Trigger_8hpp.html#a97e3cda8811a1bfb0032b6a38efb710c", null ],
