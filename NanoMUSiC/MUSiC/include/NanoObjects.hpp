@@ -22,6 +22,9 @@ struct EventInfo
     ULong64_t event;
     float Pileup_nTrueInt;
     float genWeight;
+    float L1PreFiringWeight_Nom;
+    float L1PreFiringWeight_Up;
+    float L1PreFiringWeight_Dn;
     int PV_npvsGood;
     bool Flag_goodVertices;
     bool Flag_globalSuperTightHalo2016Filter;
@@ -47,9 +50,11 @@ struct EventInfo
     bool HLT_Ele115_CaloIdVT_GsfTrkIdT;
 
     EventInfo(const UInt_t &_run = 0, const UInt_t &_lumi = 0, const ULong64_t &_event = 0,
-              const float &_Pileup_nTrueInt = 0, const float &_genWeight = 1., const int &_PV_npvsGood = 0,
-              const bool &_Flag_goodVertices = false, const bool &_Flag_globalSuperTightHalo2016Filter = false,
-              const bool &_Flag_HBHENoiseFilter = false, const bool &_Flag_HBHENoiseIsoFilter = false,
+              const float &_Pileup_nTrueInt = 0, const float &_genWeight = 1., const float &_L1PreFiringWeight_Nom = 1.,
+              const float &_L1PreFiringWeight_Up = 1., const float &_L1PreFiringWeight_Dn = 1.,
+              const int &_PV_npvsGood = 0, const bool &_Flag_goodVertices = false,
+              const bool &_Flag_globalSuperTightHalo2016Filter = false, const bool &_Flag_HBHENoiseFilter = false,
+              const bool &_Flag_HBHENoiseIsoFilter = false,
               const bool &_Flag_EcalDeadCellTriggerPrimitiveFilter = false, const bool &_Flag_BadPFMuonFilter = false,
               const bool &_Flag_BadPFMuonDzFilter = false, const bool &_Flag_eeBadScFilter = false,
               const bool &_Flag_ecalBadCalibFilter = false, const bool &_HLT_IsoMu27 = false,
@@ -63,6 +68,9 @@ struct EventInfo
           event(_event),
           Pileup_nTrueInt(_Pileup_nTrueInt),
           genWeight(_genWeight),
+          L1PreFiringWeight_Nom(_L1PreFiringWeight_Nom),
+          L1PreFiringWeight_Up(_L1PreFiringWeight_Up),
+          L1PreFiringWeight_Dn(_L1PreFiringWeight_Dn),
           PV_npvsGood(_PV_npvsGood),
           Flag_goodVertices(_Flag_goodVertices),
           Flag_globalSuperTightHalo2016Filter(_Flag_globalSuperTightHalo2016Filter),

@@ -947,6 +947,9 @@ class EventData
         if (*this)
         {
             // TODO: L1 prefiring
+            outputs.set_event_weight("L1PreFiring", "Nominal", event_info.L1PreFiringWeight_Nom);
+            outputs.set_event_weight("L1PreFiring", "Up", event_info.L1PreFiringWeight_Up);
+            outputs.set_event_weight("L1PreFiring", "Down", event_info.L1PreFiringWeight_Dn);
 
             // TODO: Muons
             // Ref (2018): https://cms-nanoaod-integration.web.cern.ch/commonJSONSFs/summaries/MUO_2018_UL_muon_Z.html
