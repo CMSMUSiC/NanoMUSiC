@@ -13,13 +13,18 @@
 // https://indico.cern.ch/event/1096988/contributions/4615134/attachments/2346047/4000529/Nov21_btaggingSFjsons.pdf
 #include <correction.h>
 
+#include "ROOT/RVec.hxx"
+#include "TH2.h"
+#include "TMemFile.h"
+using namespace ROOT;
+using namespace ROOT::VecOps;
+
+#include "fmt/core.h"
+
 // Rochester Corrections
 // Ref: https://twiki.cern.ch/twiki/bin/viewauth/CMS/RochcorMuon
 // Ref: https://gitlab.cern.ch/akhukhun/roccor/-/tree/Run2.v5
 // Implementation example: https://github.com/UFLX2MuMu/Ntupliser/blob/master_2017_94X/DiMuons/src/PtCorrRoch.cc
-#include "TH2.h"
-#include "TMemFile.h"
-#include "fmt/core.h"
 #include "roccor/RoccoR.h"
 
 #include "Configs.hpp"
@@ -52,7 +57,7 @@ class ElectronTriggerSF
 
   private:
     ///////////////////////////////////////////////////////
-    /// Reads a xxd dump (from xxd) and returns a TMemFile.
+    /// Reads a xxd dump and returns a TMemFile.
     /// xxd -i root_file.root > foo.h
     static auto read_xxd_dump(unsigned char arr[], unsigned int _size, const std::string &name = "_") -> TMemFile
     {
@@ -63,7 +68,7 @@ class ElectronTriggerSF
             buffer[i] = static_cast<char>(arr[i]);
         }
 
-        return TMemFile(name.c_str(), buffer.get(), _size);
+        return {name.c_str(), buffer.get(), _size};
     }
 
     //////////////////////////////////////////
@@ -308,16 +313,7 @@ class ElectronTriggerSF
         // float endcap_pt_lower_limit;
         fmt::print("\n=========================================================\n");
         fmt::print("------------      Electron Trigger SF    ----------------\n");
-        fmt::print("Regime: {}\n", [&_pt_regime]() -> std::string {
-            if (_pt_regime == PtRegime::LowPt)
-            {
-                return "Low Pt";
-            }
-            else
-            {
-                return "High Pt";
-            }
-        }());
+        fmt::print("Energy Regime: {}\n", (_pt_regime == PtRegime::LowPt) ? "Low pT"sv : "High pT"sv);
         fmt::print("Barrel eta: [{} - {}]\n", barrel_eta_lower_limit, barrel_eta_upper_limit);
         fmt::print("Barrel pT: [{} - {}]\n", barrel_pt_lower_limit, barrel_pt_upper_limit);
         fmt::print("Endcap eta: [{} - {}]\n", endcap_eta_lower_limit, endcap_eta_upper_limit);
@@ -352,14 +348,14 @@ class ElectronTriggerSF
             {
                 uncert = sf_histogram_barrel.GetBinErrorUp(sf_histogram_barrel.FindFixBin(eta_sc, pt));
             }
-            else if (variation == "down")
+            if (variation == "down")
             {
                 uncert = -1.0 * sf_histogram_barrel.GetBinErrorLow(sf_histogram_barrel.FindFixBin(eta_sc, pt));
             }
 
             return nominal + uncert;
         }
-        else if (std::fabs(eta_sc) >= 1.566 and std::fabs(eta_sc) < 2.5)
+        if (std::fabs(eta_sc) >= 1.566 and std::fabs(eta_sc) < 2.5)
         {
             // check limits
             if (pt >= endcap_pt_upper_limit)
@@ -378,20 +374,42 @@ class ElectronTriggerSF
             {
                 uncert = sf_histogram_barrel.GetBinErrorUp(sf_histogram_barrel.FindFixBin(eta_sc, pt));
             }
-            else if (variation == "down")
+            if (variation == "down")
             {
                 uncert = -1.0 * sf_histogram_barrel.GetBinErrorLow(sf_histogram_barrel.FindFixBin(eta_sc, pt));
             }
 
             return nominal + uncert;
         }
-        else
-        {
-            throw std::runtime_error(fmt::format(
-                "[ Electron Trigger SF ] The provided Super Cluster eta value ({}), is about of range.", eta_sc));
-        }
+        throw std::runtime_error(fmt::format(
+            "[ Electron Trigger SF ] The provided Super Cluster eta value ({}), is about of range.", eta_sc));
     }
 };
+
+namespace CorrectionHelpers
+{
+
+///////////////////////////////////////////////////////////////
+/// For some reason, the Official Muon SFs requires a field of the requested year, with proper formating.
+inline auto get_year_for_muon_sf(Year year) -> std::string
+{
+    switch (year)
+    {
+    case Year::Run2016APV:
+        return "2016preVFP_UL"s;
+    case Year::Run2016:
+        return "2016postVFP_UL"s;
+    case Year::Run2017:
+        return "2017_UL"s;
+    case Year::Run2018:
+        return "2018_UL"s;
+    default:
+        throw std::runtime_error("Year (" + std::to_string(year) +
+                                 ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
+    }
+}
+
+} // namespace CorrectionHelpers
 
 using CorrectionlibRef_t = correction::Correction::Ref;
 using RochesterCorrection_t = RoccoR;
@@ -431,6 +449,81 @@ class Corrector
         {{"PU"sv, Year::Run2018},
          {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2018_UL/puWeights.json.gz",
           "Collisions18_UltraLegacy_goldenJSON"}},
+
+        // Muon Reconstruction SF
+        // {{TYPE, YEAR}, {JSON, CORRECTION_KEY}},
+        {{"MuonReco"sv, Year::Run2016APV},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2016preVFP_UL/muon_Z.json.gz",
+          "NUM_TrackerMuons_DEN_genTracks"}},
+        {{"MuonReco"sv, Year::Run2016},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2016postVFP_UL/muon_Z.json.gz",
+          "NUM_TrackerMuons_DEN_genTracks"}},
+        {{"MuonReco"sv, Year::Run2017},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2017_UL/muon_Z.json.gz",
+          "NUM_TrackerMuons_DEN_genTracks"}},
+        {{"MuonReco"sv, Year::Run2018},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2018_UL/muon_Z.json.gz",
+          "NUM_TrackerMuons_DEN_genTracks"}},
+
+        // Muon ID SF - Low pT
+        // {{TYPE, YEAR}, {JSON, CORRECTION_KEY}},
+        {{"MuonIdLowPt"sv, Year::Run2016APV},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2016preVFP_UL/muon_Z.json.gz",
+          "NUM_TightID_DEN_TrackerMuons"}},
+        {{"MuonIdLowPt"sv, Year::Run2016},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2016postVFP_UL/muon_Z.json.gz",
+          "NUM_TightID_DEN_TrackerMuons"}},
+        {{"MuonIdLowPt"sv, Year::Run2017},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2017_UL/muon_Z.json.gz",
+          "NUM_TightID_DEN_TrackerMuons"}},
+        {{"MuonIdLowPt"sv, Year::Run2018},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2018_UL/muon_Z.json.gz",
+          "NUM_TightID_DEN_TrackerMuons"}},
+
+        // Muon ID SF - High pT
+        // {{TYPE, YEAR}, {JSON, CORRECTION_KEY}},
+        {{"MuonIdHighPt"sv, Year::Run2016APV},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2016preVFP_UL/muon_Z.json.gz",
+          "NUM_HighPtID_DEN_TrackerMuons"}},
+        {{"MuonIdHighPt"sv, Year::Run2016},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2016postVFP_UL/muon_Z.json.gz",
+          "NUM_HighPtID_DEN_TrackerMuons"}},
+        {{"MuonIdHighPt"sv, Year::Run2017},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2017_UL/muon_Z.json.gz",
+          "NUM_HighPtID_DEN_TrackerMuons"}},
+        {{"MuonIdHighPt"sv, Year::Run2018},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2018_UL/muon_Z.json.gz",
+          "NUM_HighPtID_DEN_TrackerMuons"}},
+
+        // Muon Iso SF - Low pT
+        // {{TYPE, YEAR}, {JSON, CORRECTION_KEY}},
+        {{"MuonIsoLowPt"sv, Year::Run2016APV},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2016preVFP_UL/muon_Z.json.gz",
+          "NUM_TightRelIso_DEN_TightIDandIPCut"}},
+        {{"MuonIsoLowPt"sv, Year::Run2016},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2016postVFP_UL/muon_Z.json.gz",
+          "NUM_TightRelIso_DEN_TightIDandIPCut"}},
+        {{"MuonIsoLowPt"sv, Year::Run2017},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2017_UL/muon_Z.json.gz",
+          "NUM_TightRelIso_DEN_TightIDandIPCut"}},
+        {{"MuonIsoLowPt"sv, Year::Run2018},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2018_UL/muon_Z.json.gz",
+          "NUM_TightRelIso_DEN_TightIDandIPCut"}},
+
+        // Muon Iso SF - High pT
+        // {{TYPE, YEAR}, {JSON, CORRECTION_KEY}},
+        {{"MuonIsoHighPt"sv, Year::Run2016APV},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2016preVFP_UL/muon_Z.json.gz",
+          "NUM_TightRelTkIso_DEN_HighPtIDandIPCut"}},
+        {{"MuonIsoHighPt"sv, Year::Run2016},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2016postVFP_UL/muon_Z.json.gz",
+          "NUM_TightRelTkIso_DEN_HighPtIDandIPCut"}},
+        {{"MuonIsoHighPt"sv, Year::Run2017},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2017_UL/muon_Z.json.gz",
+          "NUM_TightRelTkIso_DEN_HighPtIDandIPCut"}},
+        {{"MuonIsoHighPt"sv, Year::Run2018},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/2018_UL/muon_Z.json.gz",
+          "NUM_TightRelTkIso_DEN_HighPtIDandIPCut"}},
 
         // Muon Trigger SF  - Low Pt
         // {{TYPE, YEAR}, {JSON, CORRECTION_KEY}},
@@ -534,6 +627,39 @@ class Corrector
         if (not is_data)
         {
             return std::get<CorrectionlibRef_t>(correction_ref)->evaluate(std::forward<T>(values));
+        }
+        return 1.;
+    }
+
+    ////////////////////////////////////////////////////////
+    /// correctionlib
+    /// For a given collection of objects, get its total scale factor, according to a binary operator and a initial
+    /// value (should be the null value of the given operator)
+    template <typename T, typename BinOp = std::multiplies<T>>
+    auto operator()(const Year &year, const RVec<T> &pt, const RVec<T> &eta, const std::string &variation,
+                    BinOp Op = std::multiplies<T>(), float initial_value = 1.f) const -> float
+    {
+        static_assert(std::is_floating_point<T>::value, "The type must be floating point.");
+
+        if (not is_data)
+        {
+
+            RVec<float> sfs = RVec<float>(pt.size(), initial_value);
+
+            sfs = VecOps::Map(pt, eta, [&](const T &_pt, const T &_eta) {
+                return (*this)({CorrectionHelpers::get_year_for_muon_sf(year), //
+                                static_cast<double>(_eta),                     //
+                                static_cast<double>(_pt),                      //
+                                variation});
+            });
+
+            return std::reduce(sfs.cbegin(), sfs.cend(), initial_value, Op);
+
+            // auto weight = std::reduce(sfs.cbegin(), sfs.cend(), initial_value, Op);
+
+            // fmt::print("Weight: {}\n", weight);
+
+            // return weight;
         }
         return 1.;
     }

@@ -88,6 +88,13 @@ auto main(int argc, char *argv[]) -> int
     std::cout << colors.def << "[ Initializing ] Rochester Muon Momentum Corrections ..." << colors.def << std::endl;
     auto rochester_corrections = Corrector("MuonLowPt"sv, configuration.year, configuration.is_data);
 
+    std::cout << colors.def << "[ Initializing ] Muon SFs ..." << colors.def << std::endl;
+    auto muon_sf_reco = Corrector("MuonReco"sv, configuration.year, configuration.is_data);
+    auto muon_sf_id_low_pt = Corrector("MuonIdLowPt"sv, configuration.year, configuration.is_data);
+    auto muon_sf_id_high_pt = Corrector("MuonIdHighPt"sv, configuration.year, configuration.is_data);
+    auto muon_sf_iso_low_pt = Corrector("MuonIsoLowPt"sv, configuration.year, configuration.is_data);
+    auto muon_sf_iso_high_pt = Corrector("MuonIsoHighPt"sv, configuration.year, configuration.is_data);
+
     std::cout << colors.def << "[ Initializing ] Trigger matchers ..." << colors.def << std::endl;
     std::map<std::string_view, TrgObjMatcher> matchers = make_trgobj_matcher(configuration.year, configuration.is_data);
 
@@ -375,7 +382,10 @@ auto main(int argc, char *argv[]) -> int
                          .object_selection()
                          .has_selected_objects_filter(outputs)
                          .trigger_match_filter(outputs, matchers)
-                         .set_scale_factors_and_weights(outputs)
+                         .set_scale_factors_and_weights(outputs,
+                                                        // muon SFs
+                                                        muon_sf_reco, muon_sf_id_low_pt, muon_sf_id_high_pt,
+                                                        muon_sf_iso_low_pt, muon_sf_iso_high_pt)
                          .muon_corrections()
                          .electron_corrections()
                          .photon_corrections()
