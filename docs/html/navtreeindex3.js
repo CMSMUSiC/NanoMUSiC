@@ -1,5 +1,8 @@
 var NAVTREEINDEX3 =
 {
+"structNanoObjects_1_1Photons.html#aa23ff0a8f05192e16121d2391fcf4d33":[7,0,1,7,8],
+"structNanoObjects_1_1Photons.html#aab5f5db01d10fb9e81b887fac77306b5":[7,0,1,7,2],
+"structNanoObjects_1_1Photons.html#ac49b54663b4074770b5ea2c1d83a0458":[7,0,1,7,5],
 "structNanoObjects_1_1Photons.html#aca8e501cf6ab9e6855abfd9ffff3252d":[7,0,1,7,4],
 "structNanoObjects_1_1Taus.html":[7,0,1,8],
 "structNanoObjects_1_1Taus.html#a1a06fc3cc79fe6204c138960d208539a":[7,0,1,8,4],

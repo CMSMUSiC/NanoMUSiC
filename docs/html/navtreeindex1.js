@@ -245,8 +245,8 @@ var NAVTREEINDEX1 =
 "dir_dcf38d83ed060d855df96b9bfaafe34b.html":[8,0,0],
 "dir_e73412be9015231e3f29f815ecf2e2d5.html":[8,0,0,0],
 "files.html":[8,0],
-"functions.html":[7,3,0,0],
 "functions.html":[7,3,0],
+"functions.html":[7,3,0,0],
 "functions_b.html":[7,3,0,1],
 "functions_c.html":[7,3,0,2],
 "functions_d.html":[7,3,0,3]

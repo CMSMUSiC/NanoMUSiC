@@ -10,6 +10,6 @@ var searchData=
   ['jet_5fpt_259',['Jet_pt',['../classOutputs.html#a7aa5af3baf77a36cd4b192d3395cf309',1,'Outputs']]],
   ['jetconfig_260',['JetConfig',['../structObjConfig_1_1JetConfig.html',1,'ObjConfig']]],
   ['jetid_261',['jetId',['../structNanoObjects_1_1Jets.html#a9be5554ce582aefb6c7db71aa8b6c0a2',1,'NanoObjects::Jets']]],
-  ['jets_262',['Jets',['../structNanoObjects_1_1Jets.html',1,'NanoObjects::Jets'],['../classEventData.html#a2a303650c4cc597138c370790fc7722f',1,'EventData::jets()'],['../structNanoObjects_1_1Jets.html#a391f1cfc21ca1ebb2396f4b4c923f458',1,'NanoObjects::Jets::Jets()'],['../namespaceObjConfig.html#ab6e980438b2782165952b19d6d62e4a9',1,'ObjConfig::Jets()']]],
+  ['jets_262',['Jets',['../structNanoObjects_1_1Jets.html',1,'NanoObjects::Jets'],['../structNanoObjects_1_1Jets.html#a391f1cfc21ca1ebb2396f4b4c923f458',1,'NanoObjects::Jets::Jets()'],['../classEventData.html#a2a303650c4cc597138c370790fc7722f',1,'EventData::jets()'],['../namespaceObjConfig.html#ab6e980438b2782165952b19d6d62e4a9',1,'ObjConfig::Jets()']]],
   ['json_263',['json',['../RunLumiFilter_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d',1,'RunLumiFilter.hpp']]]
 ];

@@ -104,7 +104,7 @@ var NAVTREEINDEX =
 "Configs_8hpp.html",
 "classEnumerate.html#a9c95163a315ace1c93990a9360bcd87d",
 "functions_e.html",
-"structNanoObjects_1_1Photons.html#aca8e501cf6ab9e6855abfd9ffff3252d"
+"structNanoObjects_1_1Photons.html#aa23ff0a8f05192e16121d2391fcf4d33"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

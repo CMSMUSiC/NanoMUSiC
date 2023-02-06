@@ -1,6 +1,6 @@
 var structNanoObjects_1_1EventInfo =
 [
-    [ "EventInfo", "structNanoObjects_1_1EventInfo.html#ac77549b89547ea7e2dbb0c5db0d11a95", null ],
+    [ "EventInfo", "structNanoObjects_1_1EventInfo.html#af07eef954fddfd6f7bafa04dca7ed7aa", null ],
     [ "event", "structNanoObjects_1_1EventInfo.html#adf3eba3f4ae10b73e86f12c89c09f46b", null ],
     [ "Flag_BadPFMuonDzFilter", "structNanoObjects_1_1EventInfo.html#a0163024b3ec370d8f7f66e5429f35b21", null ],
     [ "Flag_BadPFMuonFilter", "structNanoObjects_1_1EventInfo.html#a4ff6c02be34c6b6514b41638d2f133f3", null ],
@@ -25,6 +25,9 @@ var structNanoObjects_1_1EventInfo =
     [ "HLT_Photon200", "structNanoObjects_1_1EventInfo.html#af763a496ba6e87e387a0b8427f60e9d2", null ],
     [ "HLT_TkMu100", "structNanoObjects_1_1EventInfo.html#a625b1cd154ed82716ee3fc2a919c35cf", null ],
     [ "HLT_TkMu50", "structNanoObjects_1_1EventInfo.html#ab69deacb453f0eb1b5f38aebae2e5c2c", null ],
+    [ "L1PreFiringWeight_Dn", "structNanoObjects_1_1EventInfo.html#a2de94920a4fdcd4e16e7564fd1537df0", null ],
+    [ "L1PreFiringWeight_Nom", "structNanoObjects_1_1EventInfo.html#a3a2d81e7ff637a85d956c8f7774aeaed", null ],
+    [ "L1PreFiringWeight_Up", "structNanoObjects_1_1EventInfo.html#a348e77b6243924bccf8cf5d237c2f25c", null ],
     [ "lumi", "structNanoObjects_1_1EventInfo.html#abe56111e9dc3e4ef1e149c2365c0c914", null ],
     [ "Pileup_nTrueInt", "structNanoObjects_1_1EventInfo.html#a687e0712ca1bffe927b4eb4f82569cef", null ],
     [ "PV_npvsGood", "structNanoObjects_1_1EventInfo.html#a6e62e1b16c34a471cfa636111219dea4", null ],
