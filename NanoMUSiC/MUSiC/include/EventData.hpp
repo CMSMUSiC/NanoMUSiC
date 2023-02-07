@@ -729,7 +729,7 @@ class EventData
                && ((VecOps::abs(electrons.eta + electrons.deltaEtaSC) <= 1.442) ||
                    ((VecOps::abs(electrons.eta + electrons.deltaEtaSC) >= 1.566) &&
                     (VecOps::abs(electrons.eta + electrons.deltaEtaSC) <= 2.5))) //
-               && (electrons.cutBased >= 4);
+               && (electrons.cutBased >= ObjConfig::Electrons[year].cutBasedId);
     }
 
     // High pT Electrons
@@ -938,33 +938,45 @@ class EventData
         }
         return *this;
     }
-
-    auto set_scale_factors_and_weights(Outputs &outputs, const Corrector &muon_sf_reco,
-                                       const Corrector &muon_sf_id_low_pt, const Corrector &muon_sf_id_high_pt,
-                                       const Corrector &muon_sf_iso_low_pt, const Corrector &muon_sf_iso_high_pt)
-        -> EventData &
+    auto set_l1_pre_firing_SFs(Outputs &outputs) -> EventData &
     {
         if (*this)
         {
-            // TODO: L1 prefiring
+            // L1 prefiring
             outputs.set_event_weight("L1PreFiring", "Nominal", event_info.L1PreFiringWeight_Nom);
             outputs.set_event_weight("L1PreFiring", "Up", event_info.L1PreFiringWeight_Up);
             outputs.set_event_weight("L1PreFiring", "Down", event_info.L1PreFiringWeight_Dn);
 
-            // TODO: Muons
-            // Ref (2018): https://cms-nanoaod-integration.web.cern.ch/commonJSONSFs/summaries/MUO_2018_UL_muon_Z.html
-            // Low Pt Muons should consider:
-            // -- Tracking efficiency: ~1.0
-            // -- Reconstruction: NUM_TrackerMuons_DEN_genTracks
-            // -- ID: NUM_TightID_DEN_TrackerMuons
-            // -- Isolation: NUM_TightRelIso_DEN_TightIDandIPCut
-            // -- Trigger: NUM_IsoMu24_DEN_CutBasedIdTight_and_PFIsoTight
-            // High Pt Muons should consider:
-            // -- Tracking efficiency: ~1.0
-            // -- Reconstruction: NUM_TrackerMuons_DEN_genTracks
-            // -- ID: NUM_HighPtID_DEN_TrackerMuons
-            // -- Isolation: NUM_TightRelTkIso_DEN_HighPtIDandIPCut
-            // -- Trigger: NUM_Mu50_or_OldMu100_or_TkMu100_DEN_CutBasedIdGlobalHighPt_and_TkIsoLoose
+            return *this;
+        }
+        return *this;
+    }
+
+    ///////////////////////////////////////////////////////////////
+    /// Muons
+    /// Ref (2018): https://cms-nanoaod-integration.web.cern.ch/commonJSONSFs/summaries/MUO_2018_UL_muon_Z.html
+    /// Low Pt Muons should consider:
+    /// -- Tracking efficiency: ~1.0
+    /// -- Reconstruction: NUM_TrackerMuons_DEN_genTracks
+    /// -- ID: NUM_TightID_DEN_TrackerMuons
+    /// -- Isolation: NUM_TightRelIso_DEN_TightIDandIPCut
+    /// -- Trigger: NUM_IsoMu24_DEN_CutBasedIdTight_and_PFIsoTight (already implemented during trigger matching)
+    /// High Pt Muons should consider:
+    /// -- Tracking efficiency: ~1.0
+    /// -- Reconstruction: NUM_TrackerMuons_DEN_genTracks
+    /// -- ID: NUM_HighPtID_DEN_TrackerMuons
+    /// -- Isolation: NUM_TightRelTkIso_DEN_HighPtIDandIPCut
+    /// -- Trigger: NUM_Mu50_or_OldMu100_or_TkMu100_DEN_CutBasedIdGlobalHighPt_and_TkIsoLoose (already
+    /// implemented during trigger matching)
+    auto set_muon_SFs(Outputs &outputs,                    //
+                      const Corrector &muon_sf_reco,       //
+                      const Corrector &muon_sf_id_low_pt,  //
+                      const Corrector &muon_sf_id_high_pt, //
+                      const Corrector &muon_sf_iso_low_pt, //
+                      const Corrector &muon_sf_iso_high_pt) -> EventData &
+    {
+        if (*this)
+        {
 
             RVec<float> good_muons_pt = muons.pt[good_muons_mask];
             RVec<float> good_muons_pt_low_pt = muons.pt[good_low_pt_muons_mask];
@@ -1005,18 +1017,97 @@ class EventData
                 muon_sf_iso_low_pt(year, good_muons_pt_low_pt, good_muons_eta_low_pt, "systdown") *
                     muon_sf_iso_high_pt(year, good_muons_pt_high_pt, good_muons_eta_high_pt, "systdown"));
 
-            // TODO: Electrons
+            return *this;
+        }
+        return *this;
+    }
 
-            // TODO: Photons
+    /// Electrons
+    /// Electron  SFs, in the correctionlib JSONs, are implemented in a single key: UL-Electron-ID-SF
+    /// inputs: year (string), variation (string), WorkingPoint (string), eta_SC (real), pt (real)
+    /// Examples:
+    /// - year: 2016preVFP, 2016postVFP, 2017, 2018
+    /// - variation: sf/sfup/sfdown (sfup = sf + syst, sfdown = sf - syst)
+    /// - WorkingPoint: Loose, Medium, RecoAbove20, RecoBelow20, Tight, Veto, wp80iso, wp80noiso, wp90iso, wp90noiso\
+    /// - eta: [-inf, inf)                                                                           │
+    /// - pt [10., inf)
+    ///
+    /// Parameters
+    /// Low pT
+    /// RECO:
+    /// ID:
+    /// ISO:
+    /// TODO: High Pt
+    /// RECO:
+    /// ID:
+    /// ISO:
+    auto set_electron_SFs(Outputs &outputs) -> EventData &
+    {
+        if (*this)
+        {
+            return *this;
+        }
+        return *this;
+    }
 
-            // TODO: Taus
+    /// TODO: Photons
+    auto set_photon_SFs(Outputs &outputs) -> EventData &
+    {
+        if (*this)
+        {
+            return *this;
+        }
+        return *this;
+    }
 
-            // TODO: Jets
+    /// TODO: Taus
+    auto set_tau_SFs(Outputs &outputs) -> EventData &
+    {
+        if (*this)
+        {
+            return *this;
+        }
+        return *this;
+    }
 
-            // TODO: BTag
+    /// Jets
+    /// No SFs are assigned to Jets. They have been measured to be close to 1.
+    auto set_jet_SFs(Outputs &outputs) -> EventData &
+    {
+        if (*this)
+        {
+            return *this;
+        }
+        return *this;
+    }
 
-            // TODO: MET
-            //  trigger - this has already been procecssed during th trigger matching
+    /// TODO: BJets
+    auto set_bjet_SFs(Outputs &outputs) -> EventData &
+    {
+        if (*this)
+        {
+            return *this;
+        }
+        return *this;
+    }
+
+    /// MET
+    /// MET is present in, virtually, all events. It is not possible to assign SFs.
+    auto set_met_SFs(Outputs &outputs) -> EventData &
+    {
+        if (*this)
+        {
+            return *this;
+        }
+        return *this;
+    }
+
+    /// Trigger
+    /// These weights have already been calculated during the trigger matching.
+    auto set_trigger_SFs(Outputs &outputs) -> EventData &
+    {
+        if (*this)
+        {
             outputs.set_event_weight("Trigger", "Nominal", trigger_sf_nominal);
             outputs.set_event_weight("Trigger", "Up", trigger_sf_up);
             outputs.set_event_weight("Trigger", "Down", trigger_sf_down);
@@ -1025,6 +1116,7 @@ class EventData
         return *this;
     }
 
+    /// TODO:
     auto muon_corrections() -> EventData &
     {
         if (*this)
@@ -1033,6 +1125,8 @@ class EventData
         }
         return *this;
     }
+
+    /// TODO:
     auto electron_corrections() -> EventData &
     {
         if (*this)
@@ -1041,6 +1135,8 @@ class EventData
         }
         return *this;
     }
+
+    /// TODO:
     auto photon_corrections() -> EventData &
     {
         if (*this)
@@ -1049,6 +1145,8 @@ class EventData
         }
         return *this;
     }
+
+    /// TODO:
     auto tau_corrections() -> EventData &
     {
         if (*this)
@@ -1057,6 +1155,8 @@ class EventData
         }
         return *this;
     }
+
+    /// TODO:
     auto bjet_corrections() -> EventData &
     {
         if (*this)
@@ -1065,6 +1165,8 @@ class EventData
         }
         return *this;
     }
+
+    /// TODO:
     auto jet_corrections() -> EventData &
     {
         if (*this)
@@ -1073,6 +1175,8 @@ class EventData
         }
         return *this;
     }
+
+    /// TODO:
     auto met_corrections() -> EventData &
     {
         if (*this)

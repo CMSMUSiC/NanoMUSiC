@@ -415,16 +415,16 @@ using CorrectionlibRef_t = correction::Correction::Ref;
 using RochesterCorrection_t = RoccoR;
 using ElectronTriggerSF_t = ElectronTriggerSF;
 
-enum class CorrectionTypes
-{
-    TriggerSFMuonLowPt,
-    TriggerSFMuonHighPt,
-    TriggerSFElectronLowPt,
-    TriggerSFElectronHighPt,
-    Photon,
-    PU,
-    MuonLowPt,
-};
+// enum class CorrectionTypes
+// {
+//     TriggerSFMuonLowPt,
+//     TriggerSFMuonHighPt,
+//     TriggerSFElectronLowPt,
+//     TriggerSFElectronHighPt,
+//     Photon,
+//     PU,
+//     MuonLowPt,
+// };
 
 class Corrector
 {
@@ -643,23 +643,30 @@ class Corrector
 
         if (not is_data)
         {
+            if (correction_type == "MuonReco"        //
+                or correction_type == "MuonIdLowPt"  //
+                or correction_type == "MuonIdHighPt" //
+                or correction_type == "MuonIsoLowPt" //
+                or correction_type == "MuonIsoHighPt")
+            {
 
-            RVec<float> sfs = RVec<float>(pt.size(), initial_value);
+                RVec<float> sfs = RVec<float>(pt.size(), initial_value);
 
-            sfs = VecOps::Map(pt, eta, [&](const T &_pt, const T &_eta) {
-                return (*this)({CorrectionHelpers::get_year_for_muon_sf(year), //
-                                static_cast<double>(_eta),                     //
-                                static_cast<double>(_pt),                      //
-                                variation});
-            });
+                sfs = VecOps::Map(pt, eta, [&](const T &_pt, const T &_eta) {
+                    return (*this)({CorrectionHelpers::get_year_for_muon_sf(year), //
+                                    static_cast<double>(_eta),                     //
+                                    static_cast<double>(_pt),                      //
+                                    variation});
+                });
 
-            return std::reduce(sfs.cbegin(), sfs.cend(), initial_value, Op);
+                return std::reduce(sfs.cbegin(), sfs.cend(), initial_value, Op);
 
-            // auto weight = std::reduce(sfs.cbegin(), sfs.cend(), initial_value, Op);
-
-            // fmt::print("Weight: {}\n", weight);
-
-            // return weight;
+                // auto weight = std::reduce(sfs.cbegin(), sfs.cend(), initial_value, Op);
+                // fmt::print("Weight: {}\n", weight);
+                // return weight;
+            }
+            throw std::runtime_error(
+                fmt::format("No matching was fouund for this correction type: {}.", correction_type));
         }
         return 1.;
     }
@@ -672,7 +679,7 @@ class Corrector
         {
             return std::get<RochesterCorrection_t>(correction_ref).kScaleDT(Q, pt, eta, phi, s, m);
         }
-        throw std::runtime_error("The signature of the used method is only valid for Data samples.");
+        throw std::runtime_error("This signature is only valid for Data samples.");
     }
 
     // rochester corrections - MC (matched GenMuon - recommended)
@@ -683,7 +690,7 @@ class Corrector
         {
             return std::get<RochesterCorrection_t>(correction_ref).kSpreadMC(Q, pt, eta, phi, genPt, s, m);
         }
-        throw std::runtime_error("The signature of the used method is only valid for MC samples.");
+        throw std::runtime_error("This signature is only valid for MC samples.");
     }
 
     // rochester corrections - MC (unmatched GenMuon - not recommended)

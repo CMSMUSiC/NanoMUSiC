@@ -389,10 +389,16 @@ auto main(int argc, char *argv[]) -> int
                          .object_selection()
                          .has_selected_objects_filter(outputs)
                          .trigger_match_filter(outputs, matchers)
-                         .set_scale_factors_and_weights(outputs,
-                                                        // muon SFs
-                                                        muon_sf_reco, muon_sf_id_low_pt, muon_sf_id_high_pt,
-                                                        muon_sf_iso_low_pt, muon_sf_iso_high_pt)
+                         .set_l1_pre_firing_SFs(outputs)
+                         .set_muon_SFs(outputs, muon_sf_reco, muon_sf_id_low_pt, muon_sf_id_high_pt, muon_sf_iso_low_pt,
+                                       muon_sf_iso_high_pt)
+                         .set_electron_SFs(outputs)
+                         .set_photon_SFs(outputs)
+                         .set_tau_SFs(outputs)
+                         .set_jet_SFs(outputs)
+                         .set_bjet_SFs(outputs)
+                         .set_met_SFs(outputs)
+                         .set_trigger_SFs(outputs)
                          .muon_corrections()
                          .electron_corrections()
                          .photon_corrections()
