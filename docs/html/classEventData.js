@@ -46,7 +46,7 @@ var classEventData =
     [ "set_muons", "classEventData.html#a33e726876bb6ddd65b5ad9ef8b1aead2", null ],
     [ "set_null", "classEventData.html#a17bfe015a30a3e9b39e40dccc9b45f0c", null ],
     [ "set_pdf_alpha_s_weights", "classEventData.html#a1d669c3288b41e162cb76af9a48af993", null ],
-    [ "set_photon_SFs", "classEventData.html#aa6728d94f767f92d4ae41951b7cedaa6", null ],
+    [ "set_photon_SFs", "classEventData.html#aff5b38a8b1ad329cb3bffe95cb86b35e", null ],
     [ "set_photons", "classEventData.html#ae34863e1e6ff95eedaf05282a0a7b766", null ],
     [ "set_photons", "classEventData.html#a5eada355d23808c753f19cd8ca479b4e", null ],
     [ "set_scale_weights", "classEventData.html#af3b16443ddf3fa18d1b84a3f256537de", null ],

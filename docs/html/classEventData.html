@@ -278,8 +278,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa0eba86b30084e6dc2115181ff058b22"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88aa8ff98d6a3c2f1b80eec32c9a5f52"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a88aa8ff98d6a3c2f1b80eec32c9a5f52">set_electron_SFs</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs, const <a class="el" href="classElectronSFCorrector.html">ElectronSFCorrector</a> &amp;electron_sf) -&gt; <a class="el" href="classEventData.html">EventData</a> &amp;</td></tr>
 <tr class="separator:a88aa8ff98d6a3c2f1b80eec32c9a5f52"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa6728d94f767f92d4ae41951b7cedaa6"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#aa6728d94f767f92d4ae41951b7cedaa6">set_photon_SFs</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs) -&gt; <a class="el" href="classEventData.html">EventData</a> &amp;</td></tr>
-<tr class="separator:aa6728d94f767f92d4ae41951b7cedaa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff5b38a8b1ad329cb3bffe95cb86b35e"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#aff5b38a8b1ad329cb3bffe95cb86b35e">set_photon_SFs</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs, const <a class="el" href="classPhotonSFCorrector.html">PhotonSFCorrector</a> &amp;photon_id_sf, const <a class="el" href="classPhotonSFCorrector.html">PhotonSFCorrector</a> &amp;photon_pixel_seed_sf) -&gt; <a class="el" href="classEventData.html">EventData</a> &amp;</td></tr>
+<tr class="separator:aff5b38a8b1ad329cb3bffe95cb86b35e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae9f5fb6661b6a9506f56dad9a9fb0379"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#ae9f5fb6661b6a9506f56dad9a9fb0379">set_tau_SFs</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs) -&gt; <a class="el" href="classEventData.html">EventData</a> &amp;</td></tr>
 <tr class="memdesc:ae9f5fb6661b6a9506f56dad9a9fb0379"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO: Taus.  <a href="classEventData.html#ae9f5fb6661b6a9506f56dad9a9fb0379">More...</a><br /></td></tr>
 <tr class="separator:ae9f5fb6661b6a9506f56dad9a9fb0379"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1232,7 +1232,7 @@ Private Attributes</h2></td></tr>
 <li>year: 2016preVFP, 2016postVFP, 2017, 2018</li>
 <li>variation: sf/sfup/sfdown (sfup = sf + syst, sfdown = sf - syst)</li>
 <li>WorkingPoint: Loose, Medium, RecoAbove20, RecoBelow20, Tight, Veto, wp80iso, wp80noiso, wp90iso, wp90noiso</li>
-<li>eta: [-inf, inf) │</li>
+<li>eta: [-inf, inf)</li>
 <li>pt [10., inf)</li>
 </ul>
 <p>Low pT RECO: RecoAbove20 ID: Tight ISO: No recomendations (already incorporated).</p>
@@ -1791,8 +1791,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="aa6728d94f767f92d4ae41951b7cedaa6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa6728d94f767f92d4ae41951b7cedaa6">&#9670;&nbsp;</a></span>set_photon_SFs()</h2>
+<a id="aff5b38a8b1ad329cb3bffe95cb86b35e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff5b38a8b1ad329cb3bffe95cb86b35e">&#9670;&nbsp;</a></span>set_photon_SFs()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1804,8 +1804,24 @@ Private Attributes</h2></td></tr>
           <td class="memname">auto EventData::set_photon_SFs </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
-          <td class="paramname"><em>outputs</em></td><td>)</td>
-          <td> -&gt; <a class="el" href="classEventData.html">EventData</a> &amp;
+          <td class="paramname"><em>outputs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classPhotonSFCorrector.html">PhotonSFCorrector</a> &amp;&#160;</td>
+          <td class="paramname"><em>photon_id_sf</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classPhotonSFCorrector.html">PhotonSFCorrector</a> &amp;&#160;</td>
+          <td class="paramname"><em>photon_pixel_seed_sf</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; <a class="el" href="classEventData.html">EventData</a> &amp;
     </td>
         </tr>
       </table>
@@ -1815,7 +1831,21 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>TODO: Photons RECO: From Twiki [0]: "The scale factor to reconstruct a supercluster with H/E&lt;0.5 is assumed to be 100%." [0] - <a href="https://twiki.cern.ch/twiki/bin/view/CMS/EgammaRunIIRecommendations#E_gamma_RECO">https://twiki.cern.ch/twiki/bin/view/CMS/EgammaRunIIRecommendations#E_gamma_RECO</a> </p>
+<p>Photons ID SFs, in the correctionlib JSONs, are implemented in: UL-Photon-ID-SF inputs: year (string), variation (string), WorkingPoint (string), eta_SC (real), pt (real)</p><ul>
+<li>year: 2016preVFP, 2016postVFP, 2017, 2018</li>
+<li>variation: sf/sfup/sfdown (sfup = sf + syst, sfdown = sf - syst)</li>
+<li>WorkingPoint: Loose, Medium, Tight, wp80, wp90</li>
+<li>eta: [-inf, inf)</li>
+<li>pt [20., inf)</li>
+</ul>
+<p>Low pT RECO: From Twiki [0]: "The scale factor to reconstruct a supercluster with H/E&lt;0.5 is assumed to be 100%." ID: Tight ISO: No recomendations (already incorporated).</p>
+<p>[0] - <a href="https://twiki.cern.ch/twiki/bin/view/CMS/EgammaRunIIRecommendations#E_gamma_RECO">https://twiki.cern.ch/twiki/bin/view/CMS/EgammaRunIIRecommendations#E_gamma_RECO</a></p>
+<p>Photons PixelSeed SFs, in the correctionlib JSONs, are implemented in: UL-Photon-PixVeto-SF These are the Photon Pixel Veto Scale Factors (nominal, up or down) for 2018 Ultra Legacy dataset.</p><ul>
+<li>year: 2016preVFP, 2016postVFP, 2017, 2018</li>
+<li>variation: sf/sfup/sfdown (sfup = sf + syst, sfdown = sf - syst)</li>
+<li>WorkingPoint (SFs available for the cut-based and MVA IDs): Loose, MVA, Medium, Tight</li>
+<li>HasPixBin: For each working point of choice, they are dependent on the photon pseudorapidity and R9: Possible bin choices: ['EBInc','EBHighR9','EBLowR9','EEInc','EEHighR9','EELowR9'] </li>
+</ul>
 
 </div>
 </div>

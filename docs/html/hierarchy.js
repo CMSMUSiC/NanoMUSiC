@@ -24,6 +24,7 @@ var hierarchy =
     [ "Outputs", "classOutputs.html", null ],
     [ "ObjConfig::PhotonConfig", "structObjConfig_1_1PhotonConfig.html", null ],
     [ "NanoObjects::Photons", "structNanoObjects_1_1Photons.html", null ],
+    [ "PhotonSFCorrector", "classPhotonSFCorrector.html", null ],
     [ "RunConfig::RunConfig", "structRunConfig_1_1RunConfig.html", null ],
     [ "RunLumiFilter", "classRunLumiFilter.html", null ],
     [ "runtime_error", null, [

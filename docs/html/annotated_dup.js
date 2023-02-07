@@ -13,6 +13,7 @@ var annotated_dup =
     [ "NanoAODReader", "classNanoAODReader.html", "classNanoAODReader" ],
     [ "Outputs", "classOutputs.html", "classOutputs" ],
     [ "overloaded", "structoverloaded.html", null ],
+    [ "PhotonSFCorrector", "classPhotonSFCorrector.html", "classPhotonSFCorrector" ],
     [ "RunLumiFilter", "classRunLumiFilter.html", "classRunLumiFilter" ],
     [ "TaskConfiguration", "classTaskConfiguration.html", "classTaskConfiguration" ],
     [ "TOMLConfig", "classTOMLConfig.html", "classTOMLConfig" ],
