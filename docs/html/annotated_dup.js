@@ -6,6 +6,7 @@ var annotated_dup =
     [ "PDG", "namespacePDG.html", null ],
     [ "RunConfig", "namespaceRunConfig.html", "namespaceRunConfig" ],
     [ "Corrector", "classCorrector.html", "classCorrector" ],
+    [ "ElectronSFCorrector", "classElectronSFCorrector.html", "classElectronSFCorrector" ],
     [ "ElectronTriggerSF", "classElectronTriggerSF.html", "classElectronTriggerSF" ],
     [ "Enumerate", "classEnumerate.html", "classEnumerate" ],
     [ "EventData", "classEventData.html", "classEventData" ],

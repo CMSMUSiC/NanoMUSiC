@@ -166,7 +166,6 @@ $(document).ready(function(){initNavTree('CorrectionSets_8hpp.html',''); initRes
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
-<a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">CorrectionSets.hpp File Reference</div>  </div>
@@ -199,6 +198,8 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCorrector.html">Corrector</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElectronSFCorrector.html">ElectronSFCorrector</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Namespaces</h2></td></tr>
@@ -213,21 +214,6 @@ Typedefs</h2></td></tr>
 <tr class="separator:a92123307785577bd95f7bbc9fbc4462a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a843d0c7459a3c996f91aabb1d79ac097"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CorrectionSets_8hpp.html#a843d0c7459a3c996f91aabb1d79ac097">ElectronTriggerSF_t</a> = <a class="el" href="classElectronTriggerSF.html">ElectronTriggerSF</a></td></tr>
 <tr class="separator:a843d0c7459a3c996f91aabb1d79ac097"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
-Enumerations</h2></td></tr>
-<tr class="memitem:a91da7242fa6e7bbdfa52592fe7b6b934"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934">CorrectionTypes</a> { <br />
-&#160;&#160;<a class="el" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934a9d5fe4ef7ae72e9b7ec98cd08d03e7aa">CorrectionTypes::TriggerSFMuonLowPt</a>, 
-<a class="el" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934aa7ee39d8d01013aed54ec0aae74fde41">CorrectionTypes::TriggerSFMuonHighPt</a>, 
-<a class="el" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934ad2b704461a5087ea895c1b4636c98f0d">CorrectionTypes::TriggerSFElectronLowPt</a>, 
-<a class="el" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934a60dbfac5bc7214d8c59509687e03350c">CorrectionTypes::TriggerSFElectronHighPt</a>, 
-<br />
-&#160;&#160;<a class="el" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934afd22b656b23ca07a276181a4953ba2c4">CorrectionTypes::Photon</a>, 
-<a class="el" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934abfd2343910378a1b537c3c8036a5c07e">CorrectionTypes::PU</a>, 
-<a class="el" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934ab8b5d0c91bd1f06360fb4cc1d639a070">CorrectionTypes::MuonLowPt</a>
-<br />
- }</td></tr>
-<tr class="separator:a91da7242fa6e7bbdfa52592fe7b6b934"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -275,38 +261,6 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-</div>
-</div>
-<h2 class="groupheader">Enumeration Type Documentation</h2>
-<a id="a91da7242fa6e7bbdfa52592fe7b6b934"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a91da7242fa6e7bbdfa52592fe7b6b934">&#9670;&nbsp;</a></span>CorrectionTypes</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934">CorrectionTypes</a></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a91da7242fa6e7bbdfa52592fe7b6b934a9d5fe4ef7ae72e9b7ec98cd08d03e7aa"></a>TriggerSFMuonLowPt&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a91da7242fa6e7bbdfa52592fe7b6b934aa7ee39d8d01013aed54ec0aae74fde41"></a>TriggerSFMuonHighPt&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a91da7242fa6e7bbdfa52592fe7b6b934ad2b704461a5087ea895c1b4636c98f0d"></a>TriggerSFElectronLowPt&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a91da7242fa6e7bbdfa52592fe7b6b934a60dbfac5bc7214d8c59509687e03350c"></a>TriggerSFElectronHighPt&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a91da7242fa6e7bbdfa52592fe7b6b934afd22b656b23ca07a276181a4953ba2c4"></a>Photon&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a91da7242fa6e7bbdfa52592fe7b6b934abfd2343910378a1b537c3c8036a5c07e"></a>PU&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a91da7242fa6e7bbdfa52592fe7b6b934ab8b5d0c91bd1f06360fb4cc1d639a070"></a>MuonLowPt&#160;</td><td class="fielddoc"></td></tr>
-</table>
 
 </div>
 </div>

@@ -1,5 +1,14 @@
 var NAVTREEINDEX2 =
 {
+"dir_d9a5dcf96a65706fb5055617cf9fd7a6.html":[8,0,0,0,0,0,1,0],
+"dir_dcf38d83ed060d855df96b9bfaafe34b.html":[8,0,0],
+"dir_e73412be9015231e3f29f815ecf2e2d5.html":[8,0,0,0],
+"files.html":[8,0],
+"functions.html":[7,3,0],
+"functions.html":[7,3,0,0],
+"functions_b.html":[7,3,0,1],
+"functions_c.html":[7,3,0,2],
+"functions_d.html":[7,3,0,3],
 "functions_e.html":[7,3,0,4],
 "functions_enum.html":[7,3,4],
 "functions_eval.html":[7,3,5],
@@ -104,10 +113,10 @@ var NAVTREEINDEX2 =
 "namespaceIndexHelpers.html":[6,0,10],
 "namespaceMUSiCTools.html":[6,0,11],
 "namespaceMUSiCTools.html":[7,0,0],
-"namespaceNanoObjects.html":[7,0,1],
 "namespaceNanoObjects.html":[6,0,12],
-"namespaceObjConfig.html":[7,0,2],
+"namespaceNanoObjects.html":[7,0,1],
 "namespaceObjConfig.html":[6,0,13],
+"namespaceObjConfig.html":[7,0,2],
 "namespacePDFAlphaSWeights.html":[6,0,14],
 "namespacePDG.html":[7,0,3],
 "namespacePDG.html":[6,0,15],
@@ -240,14 +249,5 @@ var NAVTREEINDEX2 =
 "structNanoObjects_1_1Muons.html#a4ab1317632b039f01f7e00c431a0a522":[7,0,1,6,6],
 "structNanoObjects_1_1Muons.html#a7b9032a40efd1cba577cff523ecaf2cf":[7,0,1,6,2],
 "structNanoObjects_1_1Muons.html#aa28280015adf9735cc87f0cfcee8561d":[7,0,1,6,5],
-"structNanoObjects_1_1Muons.html#ab12ee1b092e15f118b84dc86b14ddf04":[7,0,1,6,1],
-"structNanoObjects_1_1Muons.html#adb4f19c66df899c6efc00b2d3a26c30b":[7,0,1,6,0],
-"structNanoObjects_1_1Muons.html#ae29a5b649dfc83808279453889761ded":[7,0,1,6,7],
-"structNanoObjects_1_1Muons.html#afe93706b26f29fb5486fd96f2b4ed3d2":[7,0,1,6,3],
-"structNanoObjects_1_1Photons.html":[7,0,1,7],
-"structNanoObjects_1_1Photons.html#a1f78fb6edb513ad4d1dc0dfd368172c8":[7,0,1,7,1],
-"structNanoObjects_1_1Photons.html#a219ae28d249a32888f8d68d741f1de40":[7,0,1,7,0],
-"structNanoObjects_1_1Photons.html#a349bcc9a8affc9c9cd83c803636c5791":[7,0,1,7,3],
-"structNanoObjects_1_1Photons.html#a3f5bbc4ea5c011c9eb2d3003291bc82f":[7,0,1,7,6],
-"structNanoObjects_1_1Photons.html#a70aaaaf1f03727e71301313c2afd8a49":[7,0,1,7,7]
+"structNanoObjects_1_1Muons.html#ab12ee1b092e15f118b84dc86b14ddf04":[7,0,1,6,1]
 };

@@ -4,6 +4,7 @@ var hierarchy =
     [ "Corrector", "classCorrector.html", null ],
     [ "ObjConfig::ElectronConfig", "structObjConfig_1_1ElectronConfig.html", null ],
     [ "NanoObjects::Electrons", "structNanoObjects_1_1Electrons.html", null ],
+    [ "ElectronSFCorrector", "classElectronSFCorrector.html", null ],
     [ "ElectronTriggerSF", "classElectronTriggerSF.html", null ],
     [ "Enumerate< T >", "classEnumerate.html", null ],
     [ "EventData", "classEventData.html", null ],

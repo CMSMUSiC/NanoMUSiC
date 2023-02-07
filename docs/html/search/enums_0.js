@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['correctiontypes_1061',['CorrectionTypes',['../CorrectionSets_8hpp.html#a91da7242fa6e7bbdfa52592fe7b6b934',1,'CorrectionSets.hpp']]]
+  ['ptregime_1079',['PtRegime',['../classElectronTriggerSF.html#a01fab8a308807ee40d846b459d2d4418',1,'ElectronTriggerSF']]]
 ];
