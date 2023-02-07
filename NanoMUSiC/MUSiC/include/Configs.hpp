@@ -113,6 +113,7 @@ constexpr std::array<ElectronConfig, Year::kTotalYears> Electrons = {Electron201
 struct PhotonConfig
 {
     float MinPt = 25;
+    int cutBasedId = 3; // (tight) greater than this
 };
 
 constexpr auto Photon2016APV = PhotonConfig{};

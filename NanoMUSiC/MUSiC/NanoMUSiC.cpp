@@ -98,6 +98,10 @@ auto main(int argc, char *argv[]) -> int
     std::cout << colors.def << "[ Initializing ] Electron SFs ..." << colors.def << std::endl;
     auto electron_sf = ElectronSFCorrector(configuration.year, configuration.is_data);
 
+    std::cout << colors.def << "[ Initializing ] Photon SFs ..." << colors.def << std::endl;
+    auto photon_id_sf = PhotonSFCorrector("PhotonID", configuration.year, configuration.is_data);
+    auto photon_pixel_seed_sf = PhotonSFCorrector("PixelSeed", configuration.year, configuration.is_data);
+
     std::cout << colors.def << "[ Initializing ] Trigger matchers ..." << colors.def << std::endl;
     std::map<std::string_view, TrgObjMatcher> matchers = make_trgobj_matcher(configuration.year, configuration.is_data);
 
@@ -396,7 +400,7 @@ auto main(int argc, char *argv[]) -> int
                          .set_muon_SFs(outputs, muon_sf_reco, muon_sf_id_low_pt, muon_sf_id_high_pt, muon_sf_iso_low_pt,
                                        muon_sf_iso_high_pt)
                          .set_electron_SFs(outputs, electron_sf)
-                         .set_photon_SFs(outputs)
+                         .set_photon_SFs(outputs, photon_id_sf, photon_pixel_seed_sf)
                          .set_tau_SFs(outputs)
                          .set_jet_SFs(outputs)
                          .set_bjet_SFs(outputs)

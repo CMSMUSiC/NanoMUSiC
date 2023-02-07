@@ -902,4 +902,138 @@ class ElectronSFCorrector
     }
 };
 
+class PhotonSFCorrector
+{
+  public:
+    std::string correction_type;
+    const Year year;
+    const bool is_data;
+    CorrectionlibRef_t correction_ref;
+    std::string year_str;
+
+    PhotonSFCorrector(const std::string &_correction_type, const Year _year, bool _is_data)
+        : correction_type(_correction_type),
+          year(_year),
+          is_data(_is_data)
+    {
+
+        std::string key = ""s;
+        if (correction_type == "PhotonID"s)
+        {
+            key = "UL-Photon-ID-SF";
+        }
+        else if (correction_type == "PixelSeed"s)
+        {
+            key = "UL-Photon-PixVeto-SF";
+        }
+        else
+        {
+            throw std::runtime_error(fmt::format("Non valid key ({}) was provided.", correction_type));
+        }
+
+        switch (year)
+        {
+        case Year::Run2016APV:
+            correction_ref =
+                correction::CorrectionSet::from_file(
+                    "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2016preVFP_UL/photon.json.gz")
+                    ->at(key);
+            year_str = "2016preVFP"s;
+            break;
+        case Year::Run2016:
+            correction_ref =
+                correction::CorrectionSet::from_file(
+                    "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2016postVFP_UL/photon.json.gz")
+                    ->at(key);
+            year_str = "2016postVFP"s;
+            break;
+        case Year::Run2017:
+            correction_ref =
+                correction::CorrectionSet::from_file(
+                    "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2017_UL/photon.json.gz")
+                    ->at(key);
+            year_str = "2017"s;
+            break;
+        case Year::Run2018:
+            correction_ref =
+                correction::CorrectionSet::from_file(
+                    "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2018_UL/photon.json.gz")
+                    ->at(key);
+            year_str = "2018"s;
+            break;
+        default:
+            throw std::runtime_error("Year (" + std::to_string(year) +
+                                     ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
+        }
+    }
+
+    // correctionlib default call
+    template <class T = const std::vector<std::variant<int, double, std::string>>>
+    auto get_sf(T &&values) const -> double
+    {
+        if (not is_data)
+        {
+            return correction_ref->evaluate(std::forward<T>(values));
+        }
+        return 1.;
+    }
+
+    ////////////////////////////////////////////////////////
+    /// correctionlib
+    /// For a given collection of objects, get its total scale factor, according to a binary operator and a initial
+    /// value (should be the null value of the given operator)
+    template <typename T = float, typename BinOp = std::multiplies<T>>
+    auto operator()(const std::string &variation, const RVec<T> &pt, const RVec<T> &eta = {},
+                    BinOp Op = std::multiplies<T>(), float initial_value = 1.f) const -> float
+    {
+        static_assert(std::is_floating_point<T>::value, "The type must be floating point.");
+
+        if (not is_data)
+        {
+            // check if correction type is PhotonID
+            if (correction_type == "PhotonID"s)
+            {
+                RVec<float> sfs = RVec<float>(pt.size(), initial_value);
+
+                sfs = VecOps::Map(pt, eta, [&](const T &_pt, const T &_eta) {
+                    return this->get_sf({year_str,                  //
+                                         variation,                 //
+                                         "Tight",                   //
+                                         static_cast<double>(_eta), //
+                                         static_cast<double>(_pt)});
+                });
+
+                return std::reduce(sfs.cbegin(), sfs.cend(), initial_value, Op);
+
+                // auto weight = std::reduce(sfs.cbegin(), sfs.cend(), initial_value, Op);
+                // if (pt.size() > 0)
+                // {
+                //     fmt::print("Weight (PhotonID): {}\n", weight);
+                // }
+                // return weight;
+            }
+
+            // if not PhotonID, then it is PixelSeed
+            RVec<float> sfs = RVec<float>(pt.size(), initial_value);
+
+            sfs = VecOps::Map(pt, [&](const T &_pt) {
+                return this->get_sf({year_str,  //
+                                     variation, //
+                                     "Tight",   //
+                                     "EBInc"});
+            });
+
+            return std::reduce(sfs.cbegin(), sfs.cend(), initial_value, Op);
+
+            // auto weight = std::reduce(sfs.cbegin(), sfs.cend(), initial_value, Op);
+            // if (pt.size() > 0)
+            // {
+            //     fmt::print("Weight (PixelSeed): {}\n", weight);
+            // }
+            // return weight;
+        }
+        return 1.;
+    }
+};
+
 #endif /*CORRECTIONSET_H*/
