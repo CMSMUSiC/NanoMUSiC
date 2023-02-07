@@ -1028,19 +1028,41 @@ class EventData
     /// Examples:
     /// - year: 2016preVFP, 2016postVFP, 2017, 2018
     /// - variation: sf/sfup/sfdown (sfup = sf + syst, sfdown = sf - syst)
-    /// - WorkingPoint: Loose, Medium, RecoAbove20, RecoBelow20, Tight, Veto, wp80iso, wp80noiso, wp90iso, wp90noiso\
+    /// - WorkingPoint: Loose, Medium, RecoAbove20, RecoBelow20, Tight, Veto, wp80iso, wp80noiso, wp90iso, wp90noiso
     /// - eta: [-inf, inf)                                                                           │
     /// - pt [10., inf)
     ///
     /// Parameters
     /// Low pT
-    /// RECO:
-    /// ID:
-    /// ISO:
+    /// RECO: RecoAbove20
+    /// ID: Tight
+    /// ISO: No recomendations (already incorporated).
     /// TODO: High Pt
-    /// RECO:
-    /// ID:
-    /// ISO:
+    /// RECO: Same as Low Pt.
+    /// ID: Example:
+    /// https://github.com/CMSLQ/rootNtupleAnalyzerV2/blob/2dd8f9415e7a9c3465c7e28916eb68866ff337ff/src/ElectronScaleFactors.C
+    /// 2016 prompt: 0.971±0.001 (stat) (EB), 0.983±0.001 (stat) (EE)
+    ///              uncertainty (syst?): EB ET < 90 GeV: 1% else min(1+(ET-90)*0.0022)%,3%)
+    ///              uncertainty (syst?): EE ET < 90 GeV: 1% else min(1+(ET-90)*0.0143)%,4%)
+    ///
+    /// 2016 legacy: 0.983±0.000 (stat) (EB), 0.991±0.001 (stat) (EE) (taken from slide 10 of [0])
+    ///              uncertainty (syst?): EB ET < 90 GeV: 1% else min(1+(ET-90)*0.0022)%,3%)
+    ///              uncertainty (syst?): EE ET < 90 GeV: 2% else min(1+(ET-90)*0.0143)%,5%)
+    ///
+    /// 2017 prompt: 0.968±0.001 (stat) (EB), 0.973±0.002 (stat) (EE)
+    ///              uncertainty (syst?): EB ET < 90 GeV: 1% else min(1+(ET-90)*0.0022)%,3%)
+    ///              uncertainty (syst?): EE ET < 90 GeV: 2% else min(1+(ET-90)*0.0143)%,5%)
+    ///
+    /// 2018 rereco (Autumn 18): 0.969 +/- 0.000 (stat) (EB), and 0.984 +/- 0.001 (stat) (EE).
+    ///                          uncertainty (syst?): EB ET < 90 GeV: 1% else min(1+(ET-90)*0.0022)%,3%)
+    ///                          uncertainty (syst?): EE ET < 90 GeV: 2% else min(1+(ET-90)*0.0143)%,5%)
+
+    /// For more details see here https://twiki.cern.ch/twiki/bin/view/CMS/HEEPElectronIdentificationRun2#Scale_Factor.
+    /// As always, HEEP ID SF are just two numbers, one for EB and one for EE.
+    ///
+    /// [0] -
+    /// https://indico.cern.ch/event/831669/contributions/3485543/attachments/1871797/3084930/ApprovalSlides_EE_v3.pdf
+
     auto set_electron_SFs(Outputs &outputs) -> EventData &
     {
         if (*this)
@@ -1051,6 +1073,8 @@ class EventData
     }
 
     /// TODO: Photons
+    /// RECO: From Twiki [0]: "The scale factor to reconstruct a supercluster with H/E<0.5 is assumed to be 100%."
+    /// [0] - https://twiki.cern.ch/twiki/bin/view/CMS/EgammaRunIIRecommendations#E_gamma_RECO
     auto set_photon_SFs(Outputs &outputs) -> EventData &
     {
         if (*this)

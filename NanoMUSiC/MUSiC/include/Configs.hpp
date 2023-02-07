@@ -99,7 +99,7 @@ struct ElectronConfig
     float MaxLowPt = 100;
     float MaxAbsEta = 2.5;
     float MaxDeltaRTriggerMatch = 0.3;
-    int cutBasedId = 4; // greater than this
+    int cutBasedId = 4; // (tight) greater than this
 };
 
 constexpr auto Electron2016APV = ElectronConfig{};
