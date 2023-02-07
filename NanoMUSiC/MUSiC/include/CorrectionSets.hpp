@@ -415,17 +415,6 @@ using CorrectionlibRef_t = correction::Correction::Ref;
 using RochesterCorrection_t = RoccoR;
 using ElectronTriggerSF_t = ElectronTriggerSF;
 
-// enum class CorrectionTypes
-// {
-//     TriggerSFMuonLowPt,
-//     TriggerSFMuonHighPt,
-//     TriggerSFElectronLowPt,
-//     TriggerSFElectronHighPt,
-//     Photon,
-//     PU,
-//     MuonLowPt,
-// };
-
 class Corrector
 {
   public:
@@ -643,11 +632,11 @@ class Corrector
 
         if (not is_data)
         {
-            if (correction_type == "MuonReco"        //
-                or correction_type == "MuonIdLowPt"  //
-                or correction_type == "MuonIdHighPt" //
-                or correction_type == "MuonIsoLowPt" //
-                or correction_type == "MuonIsoHighPt")
+            if (correction_type == "MuonReco"sv        //
+                or correction_type == "MuonIdLowPt"sv  //
+                or correction_type == "MuonIdHighPt"sv //
+                or correction_type == "MuonIsoLowPt"sv //
+                or correction_type == "MuonIsoHighPt"sv)
             {
 
                 RVec<float> sfs = RVec<float>(pt.size(), initial_value);
@@ -665,6 +654,8 @@ class Corrector
                 // fmt::print("Weight: {}\n", weight);
                 // return weight;
             }
+
+            // default case
             throw std::runtime_error(
                 fmt::format("No matching was fouund for this correction type: {}.", correction_type));
         }
@@ -702,6 +693,212 @@ class Corrector
             return std::get<RochesterCorrection_t>(correction_ref).kSmearMC(Q, pt, eta, phi, n, u, s, m);
         }
         throw std::runtime_error("The signature of the used method is only valid for MC samples.");
+    }
+};
+
+class ElectronSFCorrector
+{
+  public:
+    const Year year;
+    const bool is_data;
+    CorrectionlibRef_t correction_ref;
+    std::string year_str;
+
+    ElectronSFCorrector(const Year _year, bool _is_data)
+        : year(_year),
+          is_data(_is_data)
+    {
+        switch (year)
+        {
+        case Year::Run2016APV:
+            correction_ref =
+                correction::CorrectionSet::from_file(
+                    "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2016preVFP_UL/electron.json.gz")
+                    ->at("UL-Electron-ID-SF");
+            year_str = "2016preVFP"s;
+            break;
+        case Year::Run2016:
+            correction_ref =
+                correction::CorrectionSet::from_file(
+                    "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2016postVFP_UL/electron.json.gz")
+                    ->at("UL-Electron-ID-SF");
+            year_str = "2016postVFP"s;
+            break;
+        case Year::Run2017:
+            correction_ref =
+                correction::CorrectionSet::from_file(
+                    "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2017_UL/electron.json.gz")
+                    ->at("UL-Electron-ID-SF");
+            year_str = "2017"s;
+            break;
+        case Year::Run2018:
+            correction_ref =
+                correction::CorrectionSet::from_file(
+                    "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2018_UL/electron.json.gz")
+                    ->at("UL-Electron-ID-SF");
+            year_str = "2018"s;
+            break;
+        default:
+            throw std::runtime_error("Year (" + std::to_string(year) +
+                                     ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
+        }
+    }
+
+    //////////////////////////////////
+    /// Get HEEP Id SF
+    /// Ref:
+    /// https://twiki.cern.ch/twiki/bin/view/CMS/HEEPElectronIdentificationRun2#Scale_Factor
+    auto get_high_pt_sf(const Year &year, const std::string &variation, const float &pt, const float &eta) const
+        -> float
+    {
+        bool is_EB = false;
+        if (std::fabs(eta) < 1.566)
+        {
+            is_EB = true;
+        }
+        else if (std::fabs(eta) <= 2.5)
+        {
+            is_EB = false;
+        }
+        else
+        {
+            throw std::runtime_error(fmt::format("The Eta SC ({}) value is out of range.", eta));
+        }
+
+        auto syst = [&](float a, float b, float c) -> float {
+            if (pt < 90.)
+                return a / 100.;
+            else
+                return 0.01 * std::min(1 + (pt - 90.f) * b, c);
+        };
+
+        auto syst_multiplier = [&]() -> float {
+            if (variation == "sf")
+            {
+                return 0.;
+            }
+            if (variation == "sfup")
+            {
+                return 1.;
+            }
+            if (variation == "sfdown")
+            {
+                return -1.;
+            }
+            throw std::runtime_error(fmt::format("Invalid variation parameter ({}).", variation));
+        };
+
+        switch (year)
+        {
+            /// 2016 legacy: 0.983±0.000 (stat) (EB), 0.991±0.001 (stat) (EE) (taken from slide 10 of [0])
+            ///              uncertainty (syst?): EB ET < 90 GeV: 1% else min(1+(ET-90)*0.0022)%,3%)
+            ///              uncertainty (syst?): EE ET < 90 GeV: 2% else min(1+(ET-90)*0.0143)%,5%)
+        case Year::Run2016APV:
+            if (is_EB)
+            {
+                return 0.983 + syst_multiplier() * std::sqrt(std::pow(0., 2) + std::pow(syst(1., 0.0022, 3.), 2));
+            }
+            return 0.991 + syst_multiplier() * std::sqrt(std::pow(0.001, 2) + std::pow(syst(2., 0.0143, 5.), 2));
+
+        case Year::Run2016:
+            if (is_EB)
+            {
+                return 0.983 + syst_multiplier() * std::sqrt(std::pow(0., 2) + std::pow(syst(1., 0.0022, 3.), 2));
+            }
+            return 0.991 + syst_multiplier() * std::sqrt(std::pow(0.001, 2) + std::pow(syst(2., 0.0143, 5.), 2));
+
+            /// 2017 prompt: 0.968±0.001 (stat) (EB), 0.973±0.002 (stat) (EE)
+            ///              uncertainty (syst?): EB ET < 90 GeV: 1% else min(1+(ET-90)*0.0022)%,3%)
+            ///              uncertainty (syst?): EE ET < 90 GeV: 2% else min(1+(ET-90)*0.0143)%,5%)
+        case Year::Run2017:
+            if (is_EB)
+            {
+                return 0.968 + syst_multiplier() * std::sqrt(std::pow(0.001, 2) + std::pow(syst(1., 0.0022, 3.), 2));
+            }
+            return 0.973 + syst_multiplier() * std::sqrt(std::pow(0.002, 2) + std::pow(syst(2., 0.0143, 5.), 2));
+
+            /// 2018 rereco (Autumn 18): 0.969 +/- 0.000 (stat) (EB), and 0.984 +/- 0.001 (stat) (EE).
+            ///                          uncertainty (syst?): EB ET < 90 GeV: 1% else min(1+(ET-90)*0.0022)%,3%)
+            ///                          uncertainty (syst?): EE ET < 90 GeV: 2% else min(1+(ET-90)*0.0143)%,5%)
+        case Year::Run2018:
+            if (is_EB)
+            {
+                return 0.969 + syst_multiplier() * std::sqrt(std::pow(0., 2) + std::pow(syst(1., 0.0022, 3.), 2));
+            }
+            return 0.984 + syst_multiplier() * std::sqrt(std::pow(0.001, 2) + std::pow(syst(2., 0.0143, 5.), 2));
+
+        default:
+            throw std::runtime_error("Year (" + std::to_string(year) +
+                                     ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
+        }
+    }
+
+    // correctionlib default call
+    template <class T = const std::vector<std::variant<int, double, std::string>>>
+    auto get_low_pt_sf(T &&values) const -> double
+    {
+        if (not is_data)
+        {
+            return correction_ref->evaluate(std::forward<T>(values));
+        }
+        return 1.;
+    }
+
+    ////////////////////////////////////////////////////////
+    /// correctionlib
+    /// For a given collection of objects, get its total scale factor, according to a binary operator and a initial
+    /// value (should be the null value of the given operator)
+    template <typename T, typename BinOp = std::multiplies<T>>
+    auto operator()(const std::string &variation, const std::string &working_point, const RVec<T> &pt,
+                    const RVec<T> &eta, BinOp Op = std::multiplies<T>(), float initial_value = 1.f) const -> float
+    {
+        static_assert(std::is_floating_point<T>::value, "The type must be floating point.");
+
+        if (not is_data)
+        {
+            // check if it is HEEP Id
+            if (working_point == "HEEPId")
+            {
+                RVec<float> sfs = RVec<float>(pt.size(), initial_value);
+
+                sfs = VecOps::Map(pt, eta, [&](const T &_pt, const T &_eta) {
+                    return this->get_high_pt_sf(year,                     //
+                                                variation,                //
+                                                static_cast<double>(_pt), //
+                                                static_cast<double>(_eta));
+                });
+
+                return std::reduce(sfs.cbegin(), sfs.cend(), initial_value, Op);
+
+                // auto weight = std::reduce(sfs.cbegin(), sfs.cend(), initial_value, Op);
+                // if (pt.size() > 0)
+                // {
+                //     fmt::print("Weight: {}\n", weight);
+                // }
+                // return weight;
+            }
+
+            // if not HEEP ID, then it is Low Pt
+            RVec<float> sfs = RVec<float>(pt.size(), initial_value);
+
+            sfs = VecOps::Map(pt, eta, [&](const T &_pt, const T &_eta) {
+                return this->get_low_pt_sf({year_str,                  //
+                                            variation,                 //
+                                            working_point,             //
+                                            static_cast<double>(_eta), //
+                                            static_cast<double>(_pt)});
+            });
+
+            return std::reduce(sfs.cbegin(), sfs.cend(), initial_value, Op);
+
+            // auto weight = std::reduce(sfs.cbegin(), sfs.cend(), initial_value, Op);
+            // if (pt.size() > 0)
+            // {
+            //     fmt::print("Weight: {}\n", weight);
+            // }
+            // return weight;
+        }
+        return 1.;
     }
 };
 

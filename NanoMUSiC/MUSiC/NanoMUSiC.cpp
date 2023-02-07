@@ -95,6 +95,9 @@ auto main(int argc, char *argv[]) -> int
     auto muon_sf_iso_low_pt = Corrector("MuonIsoLowPt"sv, configuration.year, configuration.is_data);
     auto muon_sf_iso_high_pt = Corrector("MuonIsoHighPt"sv, configuration.year, configuration.is_data);
 
+    std::cout << colors.def << "[ Initializing ] Electron SFs ..." << colors.def << std::endl;
+    auto electron_sf = ElectronSFCorrector(configuration.year, configuration.is_data);
+
     std::cout << colors.def << "[ Initializing ] Trigger matchers ..." << colors.def << std::endl;
     std::map<std::string_view, TrgObjMatcher> matchers = make_trgobj_matcher(configuration.year, configuration.is_data);
 
@@ -392,7 +395,7 @@ auto main(int argc, char *argv[]) -> int
                          .set_l1_pre_firing_SFs(outputs)
                          .set_muon_SFs(outputs, muon_sf_reco, muon_sf_id_low_pt, muon_sf_id_high_pt, muon_sf_iso_low_pt,
                                        muon_sf_iso_high_pt)
-                         .set_electron_SFs(outputs)
+                         .set_electron_SFs(outputs, electron_sf)
                          .set_photon_SFs(outputs)
                          .set_tau_SFs(outputs)
                          .set_jet_SFs(outputs)

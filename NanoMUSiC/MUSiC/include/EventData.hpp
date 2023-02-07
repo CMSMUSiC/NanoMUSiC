@@ -1022,7 +1022,7 @@ class EventData
         return *this;
     }
 
-    /// Electrons
+    /////////////////////////////////////////////////////////////////////////////////////////
     /// Electron  SFs, in the correctionlib JSONs, are implemented in a single key: UL-Electron-ID-SF
     /// inputs: year (string), variation (string), WorkingPoint (string), eta_SC (real), pt (real)
     /// Examples:
@@ -1032,12 +1032,12 @@ class EventData
     /// - eta: [-inf, inf)                                                                           │
     /// - pt [10., inf)
     ///
-    /// Parameters
     /// Low pT
     /// RECO: RecoAbove20
     /// ID: Tight
     /// ISO: No recomendations (already incorporated).
-    /// TODO: High Pt
+    ///
+    /// TODO: High Pt - Doesn't use the Correctionlib
     /// RECO: Same as Low Pt.
     /// ID: Example:
     /// https://github.com/CMSLQ/rootNtupleAnalyzerV2/blob/2dd8f9415e7a9c3465c7e28916eb68866ff337ff/src/ElectronScaleFactors.C
@@ -1063,10 +1063,43 @@ class EventData
     /// [0] -
     /// https://indico.cern.ch/event/831669/contributions/3485543/attachments/1871797/3084930/ApprovalSlides_EE_v3.pdf
 
-    auto set_electron_SFs(Outputs &outputs) -> EventData &
+    auto set_electron_SFs(Outputs &outputs, const ElectronSFCorrector &electron_sf) -> EventData &
     {
         if (*this)
         {
+            RVec<float> good_electrons_pt = electrons.pt[good_electrons_mask];
+            RVec<float> good_electrons_pt_low_pt = electrons.pt[good_low_pt_electrons_mask];
+            RVec<float> good_electrons_pt_high_pt = electrons.pt[good_high_pt_electrons_mask];
+
+            RVec<float> good_electrons_eta_sc = (electrons.eta + electrons.deltaEtaSC)[good_electrons_mask];
+            RVec<float> good_electrons_eta_sc_low_pt =
+                (electrons.eta + electrons.deltaEtaSC)[good_low_pt_electrons_mask];
+            RVec<float> good_electrons_eta_sc_high_pt =
+                (electrons.eta + electrons.deltaEtaSC)[good_high_pt_electrons_mask];
+
+            // Electron Reco
+            outputs.set_event_weight("ElectronReco", "Nominal",
+                                     electron_sf("sf", "RecoAbove20", good_electrons_pt, good_electrons_eta_sc));
+            outputs.set_event_weight("ElectronReco", "Up",
+                                     electron_sf("sfup", "RecoAbove20", good_electrons_pt, good_electrons_eta_sc));
+            outputs.set_event_weight("ElectronReco", "Down",
+                                     electron_sf("sfup", "RecoAbove20", good_electrons_pt, good_electrons_eta_sc));
+
+            // Electron ID
+            outputs.set_event_weight(
+                "ElectronId", "Nominal",
+                electron_sf("sf", "Tight", good_electrons_pt_low_pt, good_electrons_eta_sc_low_pt) *
+                    electron_sf("sf", "HEEPId", good_electrons_pt_high_pt, good_electrons_eta_sc_high_pt));
+            outputs.set_event_weight(
+                "ElectronId", "Up",
+                electron_sf("sfup", "Tight", good_electrons_pt_low_pt, good_electrons_eta_sc_low_pt) *
+                    electron_sf("sfup", "HEEPId", good_electrons_pt_high_pt, good_electrons_eta_sc_high_pt));
+            outputs.set_event_weight(
+                "ElectronId", "Down",
+                electron_sf("sfdown", "Tight", good_electrons_pt_low_pt, good_electrons_eta_sc_low_pt) *
+                    electron_sf("sfdown", "HEEPId", good_electrons_pt_high_pt, good_electrons_eta_sc_high_pt));
+
+            // return modified event_data
             return *this;
         }
         return *this;
