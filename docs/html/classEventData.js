@@ -24,7 +24,7 @@ var classEventData =
     [ "operator bool", "classEventData.html#a01ed84187a22b855c554f1e1d8dcc08d", null ],
     [ "photon_corrections", "classEventData.html#a88773386da6e0dc07944b1e6b20d7d02", null ],
     [ "run_lumi_filter", "classEventData.html#a6b4db8fc73c3efcc40248f7cfc195c16", null ],
-    [ "set_bjet_SFs", "classEventData.html#a586f05f87d67c4e0e1d7cdfc5da9adf0", null ],
+    [ "set_bjet_SFs", "classEventData.html#a3a887b6cc1da6bf3c696586d3666d977", null ],
     [ "set_bjets", "classEventData.html#a6dc4412318460cac999afe39af23ce63", null ],
     [ "set_bjets", "classEventData.html#a5066a6764769156a6aa1db61979a26fe", null ],
     [ "set_const_weights", "classEventData.html#ac45cbd7c9a5d916cd3532133708b4789", null ],

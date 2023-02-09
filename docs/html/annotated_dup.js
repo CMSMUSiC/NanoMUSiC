@@ -5,6 +5,7 @@ var annotated_dup =
     [ "ObjConfig", "namespaceObjConfig.html", "namespaceObjConfig" ],
     [ "PDG", "namespacePDG.html", null ],
     [ "RunConfig", "namespaceRunConfig.html", "namespaceRunConfig" ],
+    [ "BTagSFCorrector", "classBTagSFCorrector.html", "classBTagSFCorrector" ],
     [ "Corrector", "classCorrector.html", "classCorrector" ],
     [ "ElectronSFCorrector", "classElectronSFCorrector.html", "classElectronSFCorrector" ],
     [ "ElectronTriggerSF", "classElectronTriggerSF.html", "classElectronTriggerSF" ],

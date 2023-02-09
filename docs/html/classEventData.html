@@ -285,9 +285,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ae9f5fb6661b6a9506f56dad9a9fb0379"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a80493a30dbeb8439626093f6ce82c59f"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a80493a30dbeb8439626093f6ce82c59f">set_jet_SFs</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs) -&gt; <a class="el" href="classEventData.html">EventData</a> &amp;</td></tr>
 <tr class="separator:a80493a30dbeb8439626093f6ce82c59f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a586f05f87d67c4e0e1d7cdfc5da9adf0"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a586f05f87d67c4e0e1d7cdfc5da9adf0">set_bjet_SFs</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs) -&gt; <a class="el" href="classEventData.html">EventData</a> &amp;</td></tr>
-<tr class="memdesc:a586f05f87d67c4e0e1d7cdfc5da9adf0"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO: BJets.  <a href="classEventData.html#a586f05f87d67c4e0e1d7cdfc5da9adf0">More...</a><br /></td></tr>
-<tr class="separator:a586f05f87d67c4e0e1d7cdfc5da9adf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a887b6cc1da6bf3c696586d3666d977"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a3a887b6cc1da6bf3c696586d3666d977">set_bjet_SFs</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs, const <a class="el" href="classBTagSFCorrector.html">BTagSFCorrector</a> &amp;btag_sf) -&gt; <a class="el" href="classEventData.html">EventData</a> &amp;</td></tr>
+<tr class="separator:a3a887b6cc1da6bf3c696586d3666d977"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1a751cc31b71062b58203015b28285b1"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a1a751cc31b71062b58203015b28285b1">set_met_SFs</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs) -&gt; <a class="el" href="classEventData.html">EventData</a> &amp;</td></tr>
 <tr class="separator:a1a751cc31b71062b58203015b28285b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7c2d263113747c45f248e2f0e444a3ed"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a7c2d263113747c45f248e2f0e444a3ed">set_trigger_SFs</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs) -&gt; <a class="el" href="classEventData.html">EventData</a> &amp;</td></tr>
@@ -1063,8 +1062,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a586f05f87d67c4e0e1d7cdfc5da9adf0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a586f05f87d67c4e0e1d7cdfc5da9adf0">&#9670;&nbsp;</a></span>set_bjet_SFs()</h2>
+<a id="a3a887b6cc1da6bf3c696586d3666d977"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a887b6cc1da6bf3c696586d3666d977">&#9670;&nbsp;</a></span>set_bjet_SFs()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1076,8 +1075,18 @@ Private Attributes</h2></td></tr>
           <td class="memname">auto EventData::set_bjet_SFs </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
-          <td class="paramname"><em>outputs</em></td><td>)</td>
-          <td> -&gt; <a class="el" href="classEventData.html">EventData</a> &amp;
+          <td class="paramname"><em>outputs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classBTagSFCorrector.html">BTagSFCorrector</a> &amp;&#160;</td>
+          <td class="paramname"><em>btag_sf</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; <a class="el" href="classEventData.html">EventData</a> &amp;
     </td>
         </tr>
       </table>
@@ -1087,8 +1096,28 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>TODO: BJets. </p>
+<p>BTagging Using Method 1A - Per event weight References:</p><ul>
+<li><a href="https://twiki.cern.ch/twiki/bin/view/CMS/BTagSFMethods#1a_Event_reweighting_using_scale">https://twiki.cern.ch/twiki/bin/view/CMS/BTagSFMethods#1a_Event_reweighting_using_scale</a></li>
+<li><a href="https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideCMSDataAnalysisSchoolLPC2023TaggingExercise">https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideCMSDataAnalysisSchoolLPC2023TaggingExercise</a></li>
+<li><a href="https://github.com/IreneZoi/CMSDAS2023-BTV/tree/master/BTaggingExercise">https://github.com/IreneZoi/CMSDAS2023-BTV/tree/master/BTaggingExercise</a></li>
+<li><a href="https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation#UltraLegacy_scale_factor_uncerta">https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation#UltraLegacy_scale_factor_uncerta</a></li>
+</ul>
+<p>systematic (string): central, down, down_correlated, down_uncorrelated, up, up_correlated, working_point (string): L, M, T flavor (int): 5=b, 4=c, 0=udsg abseta (real) pt (real) Official instructions on systematics:</p><ul>
+<li>Simple "up" and "down" uncertainties are only to be used when one single data era is analyzed</li>
+<li>A breakdown of SFbc and SFlight uncertainties into "up/down_correlated/uncorrelated" is to be used when the fullRunII dataset is analyzed. The "uncorrelated" uncertainties are to be decorrelated between years, and the "correlated" uncertainties are to be correlated between years With this scheme you should have 10 uncertainties</li>
+<li>related to the b-tagging SFs in the end:</li>
+</ul>
+<p>btagSFbc_correlated</p><ul>
+<li>btagSFlight_correlated</li>
+<li>btagSFbc_2018</li>
+<li>btagSFlight_2018</li>
+<li>btagSFbc_2017</li>
+<li>btagSFlight_2017</li>
+<li>btagSFbc_2016postVFP</li>
+<li>btagSFlight_2016postVFP</li>
+<li>btagSFbc_2016preVFP</li>
+<li>btagSFlight_2016preVFP </li>
+</ul>
 
 </div>
 </div>

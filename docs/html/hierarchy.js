@@ -1,6 +1,7 @@
 var hierarchy =
 [
     [ "ObjConfig::BjetsConfig", "structObjConfig_1_1BjetsConfig.html", null ],
+    [ "BTagSFCorrector", "classBTagSFCorrector.html", null ],
     [ "Corrector", "classCorrector.html", null ],
     [ "ObjConfig::ElectronConfig", "structObjConfig_1_1ElectronConfig.html", null ],
     [ "NanoObjects::Electrons", "structNanoObjects_1_1Electrons.html", null ],

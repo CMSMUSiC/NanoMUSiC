@@ -17,5 +17,6 @@ var searchData=
   ['bjets2018_60',['Bjets2018',['../namespaceObjConfig.html#ac0e217bf79fc1623de7b071c0e0589f8',1,'ObjConfig']]],
   ['bjetsconfig_61',['BjetsConfig',['../structObjConfig_1_1BjetsConfig.html',1,'ObjConfig']]],
   ['btagdeepflavb_62',['btagDeepFlavB',['../structNanoObjects_1_1Jets.html#aa5621a8f0a66ec48f810c5e8149ed278',1,'NanoObjects::Jets']]],
-  ['buffer_5fsize_63',['buffer_size',['../classOutputs.html#aef0940481404cb0a12985a10756aa55c',1,'Outputs']]]
+  ['btagsfcorrector_63',['BTagSFCorrector',['../classBTagSFCorrector.html',1,'BTagSFCorrector'],['../classBTagSFCorrector.html#ae4996f0784ff563adf0daec1cfeae46a',1,'BTagSFCorrector::BTagSFCorrector()']]],
+  ['buffer_5fsize_64',['buffer_size',['../classOutputs.html#aef0940481404cb0a12985a10756aa55c',1,'Outputs']]]
 ];

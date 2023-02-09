@@ -21,7 +21,7 @@
     <meta name="twitter:description"
         content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
     <!-- END twitter metadata -->
-    <title>NanoMUSiC: Class Members</title>
+    <title>NanoMUSiC: Member List</title>
     <link href="tabs.css" rel="stylesheet" type="text/css" />
     <link rel="icon" type="image/svg+xml" href="logo.drawio.svg" />
     <script type="text/javascript" src="jquery.js"></script>
@@ -143,7 +143,7 @@ $(function() {
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
-$(document).ready(function(){initNavTree('functions_j.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('classBTagSFCorrector.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -161,33 +161,24 @@ $(document).ready(function(){initNavTree('functions_j.html',''); initResizable()
 </iframe>
 </div>
 
+<div class="header">
+  <div class="headertitle">
+<div class="title">BTagSFCorrector Member List</div>  </div>
+</div><!--header-->
 <div class="contents">
-<div class="textblock">Here is a list of all class members with links to the classes they belong to:</div>
 
-<h3><a id="index_j"></a>- j -</h3><ul>
-<li>jet_corrections()
-: <a class="el" href="classEventData.html#ae761acc7459bafca55cd38c0863b0812">EventData</a>
-</li>
-<li>Jet_eta
-: <a class="el" href="classOutputs.html#aceb0e4645316076ee01a0c6bcde1555a">Outputs</a>
-</li>
-<li>Jet_phi
-: <a class="el" href="classOutputs.html#a88474ac88713666eeb915feee5a4fed9">Outputs</a>
-</li>
-<li>Jet_pt
-: <a class="el" href="classOutputs.html#a7aa5af3baf77a36cd4b192d3395cf309">Outputs</a>
-</li>
-<li>jetId
-: <a class="el" href="structNanoObjects_1_1Jets.html#a9be5554ce582aefb6c7db71aa8b6c0a2">NanoObjects::Jets</a>
-</li>
-<li>jets
-: <a class="el" href="classEventData.html#a2a303650c4cc597138c370790fc7722f">EventData</a>
-</li>
-<li>Jets()
-: <a class="el" href="structNanoObjects_1_1Jets.html#a5b50c32a43404ba7193c6d2bf7628eeb">NanoObjects::Jets</a>
-</li>
-</ul>
-</div><!-- contents -->
+<p>This is the complete list of members for <a class="el" href="classBTagSFCorrector.html">BTagSFCorrector</a>, including all inherited members.</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classBTagSFCorrector.html#ae4996f0784ff563adf0daec1cfeae46a">BTagSFCorrector</a>(const Year _year, bool _is_data)</td><td class="entry"><a class="el" href="classBTagSFCorrector.html">BTagSFCorrector</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="classBTagSFCorrector.html#a268e200c6a9dc52e9634084913c45032">correction_ref_bjet</a></td><td class="entry"><a class="el" href="classBTagSFCorrector.html">BTagSFCorrector</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classBTagSFCorrector.html#ace70190cc503f77f2539d909e81762dc">correction_ref_light_jet</a></td><td class="entry"><a class="el" href="classBTagSFCorrector.html">BTagSFCorrector</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="classBTagSFCorrector.html#aa8c0633a74c02f187dc19fbbee46b6e5">get_eff</a>(const float &amp;_pt, const float &amp;_eta, const int &amp;_flavour) const -&gt; double</td><td class="entry"><a class="el" href="classBTagSFCorrector.html">BTagSFCorrector</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classBTagSFCorrector.html#ad00e6b12c30c18586cc696076e7efcb9">get_sf_bjet</a>(T &amp;&amp;values) const -&gt; double</td><td class="entry"><a class="el" href="classBTagSFCorrector.html">BTagSFCorrector</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="classBTagSFCorrector.html#a9399489af12340aa93537793ce2b75a3">get_sf_light_jet</a>(T &amp;&amp;values) const -&gt; double</td><td class="entry"><a class="el" href="classBTagSFCorrector.html">BTagSFCorrector</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classBTagSFCorrector.html#ace6d141c46c2c34a28fe5f26f9f700ba">is_data</a></td><td class="entry"><a class="el" href="classBTagSFCorrector.html">BTagSFCorrector</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="classBTagSFCorrector.html#ad757ab08d86b28141769125b9b277f2e">operator()</a>(const std::string &amp;variation_bjet, const std::string &amp;variation_light_jet, const RVec&lt; float &gt; &amp;tagged_jets_pt, const RVec&lt; float &gt; &amp;tagged_jets_abseta, const RVec&lt; int &gt; &amp;tagged_jets_hadronFlavour, const RVec&lt; float &gt; &amp;untagged_jets_pt, const RVec&lt; float &gt; &amp;untagged_jets_abseta, const RVec&lt; int &gt; &amp;untagged_jets_hadronFlavour) const -&gt; float</td><td class="entry"><a class="el" href="classBTagSFCorrector.html">BTagSFCorrector</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classBTagSFCorrector.html#a3c5489ae3b8c91e4cb6a913cad2dc684">year</a></td><td class="entry"><a class="el" href="classBTagSFCorrector.html">BTagSFCorrector</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

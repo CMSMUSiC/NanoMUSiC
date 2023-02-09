@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['bjetsconfig_530',['BjetsConfig',['../structObjConfig_1_1BjetsConfig.html',1,'ObjConfig']]]
+  ['bjetsconfig_537',['BjetsConfig',['../structObjConfig_1_1BjetsConfig.html',1,'ObjConfig']]],
+  ['btagsfcorrector_538',['BTagSFCorrector',['../classBTagSFCorrector.html',1,'']]]
 ];
