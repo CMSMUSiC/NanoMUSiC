@@ -70,7 +70,8 @@ class Outputs
                                                 "TriggerCut", "AtLeastOneSelectedObject", "TriggerMatch");
     static constexpr auto Weights =
         make_enumerate("Generator", "PileUp", "Lumi", "L1PreFiring", "Trigger", "MuonReco", "MuonId", "MuonIso",
-                       "ElectronReco", "ElectronId", "PhotonId", "PhotonPixelSeed");
+                       "ElectronReco", "ElectronId", "PhotonId", "PhotonPixelSeed", "BJetCorrelated",
+                       "LightJetCorrelated", "BJetUncorrelated", "LightJetUncorrelated");
     // static constexpr auto Variations =
     //     make_enumerate("Default", "JEC", "JER", "MuonScale", "MuonResolution", "ElectronScale",
     //     "ElectronResolution");

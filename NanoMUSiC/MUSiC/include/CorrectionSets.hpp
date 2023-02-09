@@ -2,6 +2,7 @@
 #ifndef CORRECTIONSET_H
 #define CORRECTIONSET_H
 
+#include <functional>
 #include <stdexcept>
 #include <string>
 
@@ -1031,6 +1032,192 @@ class PhotonSFCorrector
             //     fmt::print("Weight (PixelSeed): {}\n", weight);
             // }
             // return weight;
+        }
+        return 1.;
+    }
+};
+
+class BTagSFCorrector
+{
+  public:
+    const Year year;
+    const bool is_data;
+    CorrectionlibRef_t correction_ref_bjet;
+    CorrectionlibRef_t correction_ref_light_jet;
+
+    BTagSFCorrector(const Year _year, bool _is_data)
+        : year(_year),
+          is_data(_is_data)
+    {
+        switch (year)
+        {
+        case Year::Run2016APV:
+            correction_ref_bjet =
+                correction::CorrectionSet::from_file(
+                    "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/2016preVFP_UL/btagging.json.gz")
+                    ->at("deepJet_comb");
+            correction_ref_light_jet =
+                correction::CorrectionSet::from_file(
+                    "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/2016preVFP_UL/btagging.json.gz")
+                    ->at("deepJet_incl");
+            break;
+        case Year::Run2016:
+            correction_ref_bjet =
+                correction::CorrectionSet::from_file(
+                    "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/2016postVFP_UL/btagging.json.gz")
+                    ->at("deepJet_comb");
+            correction_ref_light_jet =
+                correction::CorrectionSet::from_file(
+                    "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/2016postVFP_UL/btagging.json.gz")
+                    ->at("deepJet_incl");
+            break;
+        case Year::Run2017:
+            correction_ref_bjet =
+                correction::CorrectionSet::from_file(
+                    "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/2017_UL/btagging.json.gz")
+                    ->at("deepJet_comb");
+            correction_ref_light_jet =
+                correction::CorrectionSet::from_file(
+                    "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/2017_UL/btagging.json.gz")
+                    ->at("deepJet_incl");
+            break;
+        case Year::Run2018:
+            correction_ref_bjet =
+                correction::CorrectionSet::from_file(
+                    "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/2018_UL/btagging.json.gz")
+                    ->at("deepJet_comb");
+            correction_ref_light_jet =
+                correction::CorrectionSet::from_file(
+                    "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/2018_UL/btagging.json.gz")
+                    ->at("deepJet_incl");
+            break;
+        default:
+            throw std::runtime_error("Year (" + std::to_string(year) +
+                                     ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
+        }
+    }
+
+    // correctionlib default call
+    template <class T = const std::vector<std::variant<int, double, std::string>>>
+    auto get_sf_bjet(T &&values) const -> double
+    {
+        if (not is_data)
+        {
+            return correction_ref_bjet->evaluate(std::forward<T>(values));
+        }
+        return 1.;
+    }
+
+    // correctionlib default call
+    template <class T = const std::vector<std::variant<int, double, std::string>>>
+    auto get_sf_light_jet(T &&values) const -> double
+    {
+        if (not is_data)
+        {
+            return correction_ref_light_jet->evaluate(std::forward<T>(values));
+        }
+        return 1.;
+    }
+
+    //////////////////////////////////////
+    /// get btag efficiencies
+    /// TODO: Produce these maps for each sample
+    /// For now we are taking the mean value of what was used for the 2016 papper
+    auto get_eff(const float &_pt, const float &_eta, const int &_flavour) const -> double
+    {
+        if (not is_data)
+        {
+            if (_flavour == 5)
+            {
+                return 0.41;
+            }
+            if (_flavour == 4)
+            {
+                return 0.024;
+            }
+            return 0.002;
+        }
+        return 1.;
+    }
+
+    ////////////////////////////////////////////////////////
+    /// Using Method 1A - Per event weight
+    /// References:
+    /// - https://twiki.cern.ch/twiki/bin/view/CMS/BTagSFMethods#1a_Event_reweighting_using_scale
+    /// - https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideCMSDataAnalysisSchoolLPC2023TaggingExercise
+    /// - https://github.com/IreneZoi/CMSDAS2023-BTV/tree/master/BTaggingExercise
+    /// - https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation#UltraLegacy_scale_factor_uncerta
+    ///
+    /// systematic (string): central, down, down_correlated, down_uncorrelated, up, up_correlated,
+    /// working_point (string): L, M, T
+    /// flavor (int): 5=b, 4=c, 0=udsg
+    /// abseta (real)
+    /// pt (real)
+
+    auto operator()(const std::string &variation_bjet,          //
+                    const std::string &variation_light_jet,     //
+                    const RVec<float> &tagged_jets_pt,          //
+                    const RVec<float> &tagged_jets_abseta,      //
+                    const RVec<int> &tagged_jets_hadronFlavour, //
+                    const RVec<float> &untagged_jets_pt,        //
+                    const RVec<float> &untagged_jets_abseta,    //
+                    const RVec<int> &untagged_jets_hadronFlavour) const -> float
+    {
+
+        if (not is_data)
+        {
+            RVec<float> pmc_tagged_vec = VecOps::Map(
+                tagged_jets_pt, tagged_jets_abseta, tagged_jets_hadronFlavour,
+                [&](const float &_pt, const float &_eta, const int &_flavour) { return get_eff(_pt, _eta, _flavour); });
+
+            RVec<float> pmc_untagged_vec =
+                VecOps::Map(untagged_jets_pt, untagged_jets_abseta, untagged_jets_hadronFlavour,
+                            [&](const float &_pt, const float &_eta, const int &_flavour) {
+                                return (1. - get_eff(_pt, _eta, _flavour));
+                            });
+
+            RVec<float> pdata_tagged_vec = VecOps::Map(
+                tagged_jets_pt, tagged_jets_abseta, tagged_jets_hadronFlavour,
+                [&](const float &_pt, const float &_eta, const int &_flavour) {
+                    if (_flavour == 0)
+                    {
+                        return get_sf_light_jet({variation_light_jet, "T", _flavour, _eta, _pt}) *
+                               get_eff(_pt, _eta, _flavour);
+                    }
+                    return get_sf_bjet({variation_bjet, "T", _flavour, _eta, _pt}) * get_eff(_pt, _eta, _flavour);
+                });
+
+            RVec<float> pdata_untagged_vec =
+                VecOps::Map(untagged_jets_pt, untagged_jets_abseta, untagged_jets_hadronFlavour,
+                            [&](const float &_pt, const float &_eta, const int &_flavour) {
+                                if (_flavour == 0)
+                                {
+                                    return (1. - (get_sf_light_jet({variation_light_jet, "T", _flavour, _eta, _pt}) *
+                                                  get_eff(_pt, _eta, _flavour)));
+                                }
+                                return (1. - (get_sf_bjet({variation_bjet, "T", _flavour, _eta, _pt}) *
+                                              get_eff(_pt, _eta, _flavour)));
+                            });
+
+            float pmc = std::reduce(pmc_tagged_vec.cbegin(), pmc_tagged_vec.cend(), 1.f, std::multiplies<float>()) *
+                        std::reduce(pmc_untagged_vec.cbegin(), pmc_untagged_vec.cend(), 1.f, std::multiplies<float>());
+
+            float pdata =
+                std::reduce(pdata_tagged_vec.cbegin(), pdata_tagged_vec.cend(), 1.f, std::multiplies<float>()) *
+                std::reduce(pdata_untagged_vec.cbegin(), pdata_untagged_vec.cend(), 1.f, std::multiplies<float>());
+
+            float weight = 1.0;
+            if (pmc != 0.0)
+            {
+                weight = pdata / pmc;
+            }
+
+            // if (tagged_jets_pt.size() > 0 or untagged_jets_pt.size() > 0)
+            // {
+            // fmt::print("Weight (BTag): (weight) {} = {}/{} (pdata)/(pmc)\n", weight, pdata, pmc);
+            // }
+
+            return weight;
         }
         return 1.;
     }

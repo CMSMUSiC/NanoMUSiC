@@ -244,15 +244,17 @@ struct Jets
     RVec<float> phi;
     RVec<int> jetId;
     RVec<float> btagDeepFlavB;
+    RVec<int> hadronFlavour;
 
     Jets(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {},
-         const RVec<int> &_jetId = {}, const RVec<float> &_btagDeepFlavB = {})
+         const RVec<int> &_jetId = {}, const RVec<float> &_btagDeepFlavB = {}, const RVec<int> &_hadronFlavour = {})
         : size(_pt.size()),
           pt(_pt),
           eta(_eta),
           phi(_phi),
           jetId(_jetId),
-          btagDeepFlavB(_btagDeepFlavB)
+          btagDeepFlavB(_btagDeepFlavB),
+          hadronFlavour((_pt.size() > 0 and _hadronFlavour.size() == 0) ? RVec<int>(_pt.size()) : _hadronFlavour)
     {
     }
 };

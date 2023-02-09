@@ -102,6 +102,9 @@ auto main(int argc, char *argv[]) -> int
     auto photon_id_sf = PhotonSFCorrector("PhotonID", configuration.year, configuration.is_data);
     auto photon_pixel_seed_sf = PhotonSFCorrector("PixelSeed", configuration.year, configuration.is_data);
 
+    std::cout << colors.def << "[ Initializing ] BTag SFs ..." << colors.def << std::endl;
+    auto btag_sf = BTagSFCorrector(configuration.year, configuration.is_data);
+
     std::cout << colors.def << "[ Initializing ] Trigger matchers ..." << colors.def << std::endl;
     std::map<std::string_view, TrgObjMatcher> matchers = make_trgobj_matcher(configuration.year, configuration.is_data);
 
@@ -242,6 +245,7 @@ auto main(int argc, char *argv[]) -> int
     ADD_ARRAY_READER(Jet_phi, float);
     ADD_ARRAY_READER(Jet_jetId, int);
     ADD_ARRAY_READER(Jet_btagDeepFlavB, float);
+    ADD_ARRAY_READER(Jet_hadronFlavour, int);
 
     // met
     ADD_VALUE_READER(MET_pt, float);
@@ -362,17 +366,19 @@ auto main(int argc, char *argv[]) -> int
                                             unwrap(Tau_eta), //
                                             unwrap(Tau_phi)))
                 // bjets
-                .set_bjets(NanoObjects::BJets(unwrap(Jet_pt),    //
-                                              unwrap(Jet_eta),   //
-                                              unwrap(Jet_phi),   //
-                                              unwrap(Jet_jetId), //
-                                              unwrap(Jet_btagDeepFlavB)))
+                .set_bjets(NanoObjects::BJets(unwrap(Jet_pt),            //
+                                              unwrap(Jet_eta),           //
+                                              unwrap(Jet_phi),           //
+                                              unwrap(Jet_jetId),         //
+                                              unwrap(Jet_btagDeepFlavB), //
+                                              unwrap(Jet_hadronFlavour)))
                 // jets
-                .set_jets(NanoObjects::Jets(unwrap(Jet_pt),    //
-                                            unwrap(Jet_eta),   //
-                                            unwrap(Jet_phi),   //
-                                            unwrap(Jet_jetId), //
-                                            unwrap(Jet_btagDeepFlavB)))
+                .set_jets(NanoObjects::Jets(unwrap(Jet_pt),            //
+                                            unwrap(Jet_eta),           //
+                                            unwrap(Jet_phi),           //
+                                            unwrap(Jet_jetId),         //
+                                            unwrap(Jet_btagDeepFlavB), //
+                                            unwrap(Jet_hadronFlavour)))
                 // met
                 .set_met(NanoObjects::MET({unwrap(MET_pt)}, //
                                           {0.},             //
@@ -403,7 +409,7 @@ auto main(int argc, char *argv[]) -> int
                          .set_photon_SFs(outputs, photon_id_sf, photon_pixel_seed_sf)
                          .set_tau_SFs(outputs)
                          .set_jet_SFs(outputs)
-                         .set_bjet_SFs(outputs)
+                         .set_bjet_SFs(outputs, btag_sf)
                          .set_met_SFs(outputs)
                          .set_trigger_SFs(outputs)
                          .muon_corrections()
