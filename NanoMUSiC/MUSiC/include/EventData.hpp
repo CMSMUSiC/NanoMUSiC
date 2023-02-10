@@ -18,6 +18,7 @@
 #pragma GCC diagnostic pop
 
 #include "Configs.hpp"
+#include "GeneratorFilters.hpp"
 #include "NanoObjects.hpp"
 #include "Outputs.hpp"
 #include "RunLumiFilter.hpp"
@@ -79,11 +80,12 @@ class EventData
     bool is_data = true;
     Year year = Year::kTotalYears;
 
-    EventData(const bool &_is_data, const Year &_year)
+    EventData(const bool &_is_data, const Year &_year, Outputs &outputs)
         : is_null(false),
           is_data(_is_data),
           year(_year)
     {
+        outputs.fill_cutflow_histo("NoCuts", 1.);
     }
 
     // builder interface
@@ -465,10 +467,9 @@ class EventData
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Filter events based on their Generator process. This is implemented in order to avoid overlap of phase-space
-    /// between MC samples.
-    /// Should come after all constant weights are available.
-    auto generator_filter(Outputs &outputs) -> EventData &
+    /// TODO: Filter events based on their Generator process. This is implemented in order to avoid overlap of
+    /// phase-space between MC samples. Should come after all constant weights are available.
+    auto generator_filter(Outputs &outputs, const std::string &process) -> EventData &
     {
         if (*this)
         {
@@ -477,17 +478,24 @@ class EventData
             if (!is_data)
             {
                 /////////////////////////////////////////////////
-                // FIXME: check if it is good gen event
+                // TODO: check if it is good gen event
                 /////////////////////////////////////////////////
                 if (true)
                 {
-                    is_good_gen = true;
+                    // fmt::print("{}\n", generator_info.binvar);
+                    // fmt::print("{}\n", lhe_info.);
+                    if (GeneratorFilters::filters.count(process) > 0)
+                    {
+                        GeneratorFilters::Inputs_t foo = {
+                            1, "foo", 4.20f, true, RVec<float>({1.2, 3.4}), RVec<int>({1, 3})};
+                        is_good_gen = GeneratorFilters::filters.at(process)(foo);
+                    }
                 }
             }
             if (is_good_gen)
             {
                 // // fmt::print("\nDEBUG - generator_filter");
-                outputs.fill_cutflow_histo("NoCuts", 1.);
+                outputs.fill_cutflow_histo("GeneratorFilter", 1.);
                 outputs.fill_cutflow_histo("GeneratorWeight", outputs.get_event_weight());
                 return *this;
             }

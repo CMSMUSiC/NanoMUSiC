@@ -18,12 +18,16 @@ class TaskConfiguration
     const std::string golden_json_file;
 
     TaskConfiguration(const std::string _run_config_file)
-        : run_config_file(_run_config_file), run_config(TOMLConfig::make_toml_config(run_config_file)),
-          output_directory(run_config.get<std::string>("output")), process(run_config.get<std::string>("process")),
-          dataset(run_config.get<std::string>("dataset")), is_data(run_config.get<bool>("is_data")),
+        : run_config_file(_run_config_file),
+          run_config(TOMLConfig::make_toml_config(run_config_file)),
+          output_directory(run_config.get<std::string>("output")),
+          process(run_config.get<std::string>("process")),
+          dataset(run_config.get<std::string>("dataset")),
+          is_data(run_config.get<bool>("is_data")),
           is_crab_job(run_config.get<bool>("is_crab_job")),
           x_section_file(MUSiCTools::parse_and_expand_music_base(run_config.get<std::string>("x_section_file"))),
-          year_str(run_config.get<std::string>("year")), input_files(run_config.get_vector<std::string>("input_files")),
+          year_str(run_config.get<std::string>("year")),
+          input_files(run_config.get_vector<std::string>("input_files")),
           year(get_runyear(year_str)),
           golden_json_file(MUSiCTools::parse_and_expand_music_base(RunConfig::Runs[year].golden_json))
     {

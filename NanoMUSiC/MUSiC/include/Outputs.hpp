@@ -66,8 +66,8 @@ class Outputs
 
   public:
     // variations, shifts, weights and cuts
-    static constexpr auto Cuts = make_enumerate("NoCuts", "GeneratorWeight", "RunLumi", "nPV", "METFilters",
-                                                "TriggerCut", "AtLeastOneSelectedObject", "TriggerMatch");
+    static constexpr auto Cuts = make_enumerate("NoCuts", "GeneratorFilter", "GeneratorWeight", "RunLumi", "nPV",
+                                                "METFilters", "TriggerCut", "AtLeastOneSelectedObject", "TriggerMatch");
     static constexpr auto Weights =
         make_enumerate("Generator", "PileUp", "Lumi", "L1PreFiring", "Trigger", "MuonReco", "MuonId", "MuonIso",
                        "ElectronReco", "ElectronId", "PhotonId", "PhotonPixelSeed", "BJetCorrelated",

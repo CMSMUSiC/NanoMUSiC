@@ -290,7 +290,7 @@ auto main(int argc, char *argv[]) -> int
 
         // build event data
         auto event_data =
-            EventData(configuration.is_data, configuration.year)
+            EventData(configuration.is_data, configuration.year, outputs)
                 // event info
                 .set_event_info(NanoObjects::EventInfo(unwrap(run),                       //
                                                        unwrap(lumi),                      //
@@ -393,7 +393,7 @@ auto main(int argc, char *argv[]) -> int
         event_data = event_data.set_pdf_alpha_s_weights(lha_indexes, default_pdf_sets)
                          .set_scale_weights()
                          .set_const_weights(outputs, pu_weight)
-                         .generator_filter(outputs)
+                         .generator_filter(outputs, configuration.process)
                          .run_lumi_filter(outputs, run_lumi_filter)
                          .npv_filter(outputs)
                          .met_filter(outputs)
