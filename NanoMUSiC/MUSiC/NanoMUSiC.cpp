@@ -207,6 +207,8 @@ auto main(int argc, char *argv[]) -> int
     ADD_ARRAY_READER(LHEPdfWeight, float);
     ADD_ARRAY_READER(LHEScaleWeight, float);
     ADD_VALUE_READER(LHEWeight_originalXWGTUP, float);
+    ADD_VALUE_READER(LHE_HT, Float_t);
+    ADD_VALUE_READER(LHE_HTIncoming, Float_t);
 
     // GenParticles
     ADD_ARRAY_READER(GenPart_eta, float);
@@ -345,9 +347,10 @@ auto main(int argc, char *argv[]) -> int
                                                                unwrap(Generator_id2)))       //
 
                 // lhe info
-                .set_lhe_info(NanoObjects::LHEInfo(unwrap(LHEPdfWeight),                  //
-                                                   unwrap(LHEScaleWeight),                //
-                                                   unwrap(LHEWeight_originalXWGTUP, 1.))) //
+                .set_lhe_info(NanoObjects::LHEInfo(unwrap(LHEPdfWeight),   //
+                                                   unwrap(LHEScaleWeight), //
+                                                   unwrap(LHEWeight_originalXWGTUP, 1.), unwrap(LHE_HT),
+                                                   unwrap(LHE_HTIncoming))) //
 
                 // gen particles
                 .set_gen_particles(NanoObjects::GenParticles(unwrap(GenPart_pt), unwrap(GenPart_eta),

@@ -133,14 +133,18 @@ struct LHEInfo
     std::size_t nLHEScaleWeight;
     RVec<float> LHEScaleWeight;
     float originalXWGTUP;
+    float HT;
+    float HTIncoming;
 
     LHEInfo(const RVec<float> &_LHEPdfWeight = {}, const RVec<float> &_LHEScaleWeight = {},
-            const float &_originalXWGTUP = 1.)
+            const float &_originalXWGTUP = 1., const float &_HT = 0., const float &_HTIncoming = 0.)
         : nLHEPdfWeight(_LHEPdfWeight.size()),
           LHEPdfWeight(_LHEPdfWeight),
           nLHEScaleWeight(_LHEScaleWeight.size()),
           LHEScaleWeight(_LHEScaleWeight),
-          originalXWGTUP(_originalXWGTUP)
+          originalXWGTUP(_originalXWGTUP),
+          HT(_HT),
+          HTIncoming(_HTIncoming)
     {
     }
 };
