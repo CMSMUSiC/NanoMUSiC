@@ -208,6 +208,16 @@ auto main(int argc, char *argv[]) -> int
     ADD_ARRAY_READER(LHEScaleWeight, float);
     ADD_VALUE_READER(LHEWeight_originalXWGTUP, float);
 
+    // GenParticles
+    ADD_ARRAY_READER(GenPart_eta, float);
+    ADD_ARRAY_READER(GenPart_mass, float);
+    ADD_ARRAY_READER(GenPart_phi, float);
+    ADD_ARRAY_READER(GenPart_pt, float);
+    ADD_ARRAY_READER(GenPart_genPartIdxMother, int);
+    ADD_ARRAY_READER(GenPart_pdgId, int);
+    ADD_ARRAY_READER(GenPart_status, int);
+    ADD_ARRAY_READER(GenPart_statusFlags, int);
+
     // muons
     ADD_ARRAY_READER(Muon_pt, float);
     ADD_ARRAY_READER(Muon_eta, float);
@@ -338,6 +348,13 @@ auto main(int argc, char *argv[]) -> int
                 .set_lhe_info(NanoObjects::LHEInfo(unwrap(LHEPdfWeight),                  //
                                                    unwrap(LHEScaleWeight),                //
                                                    unwrap(LHEWeight_originalXWGTUP, 1.))) //
+
+                // gen particles
+                .set_gen_particles(NanoObjects::GenParticles(unwrap(GenPart_pt), unwrap(GenPart_eta),
+                                                             unwrap(GenPart_phi), unwrap(GenPart_mass),
+                                                             unwrap(GenPart_genPartIdxMother), unwrap(GenPart_pdgId),
+                                                             unwrap(GenPart_status), unwrap(GenPart_statusFlags)))
+
                 // muons
                 .set_muons(NanoObjects::Muons(unwrap(Muon_pt),             //
                                               unwrap(Muon_eta),            //

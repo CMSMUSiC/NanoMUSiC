@@ -145,6 +145,34 @@ struct LHEInfo
     }
 };
 
+struct GenParticles
+{
+    std::size_t nGenParticles;
+    RVec<float> pt;
+    RVec<float> eta;
+    RVec<float> phi;
+    RVec<float> mass;
+    RVec<int> genPartIdxMother;
+    RVec<int> pdgId;
+    RVec<int> status;
+    RVec<int> statusFlags;
+
+    GenParticles(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {},
+                 const RVec<float> &_mass = {}, const RVec<int> &_genPartIdxMother = {}, const RVec<int> &_pdgId = {},
+                 const RVec<int> &_status = {}, const RVec<int> &_statusFlags = {})
+        : nGenParticles(_pt.size()),
+          pt(_pt),
+          eta(_eta),
+          phi(_phi),
+          mass(_mass),
+          genPartIdxMother(_genPartIdxMother),
+          pdgId(_pdgId),
+          status(_status),
+          statusFlags(_statusFlags)
+    {
+    }
+};
+
 struct Muons
 {
     std::size_t size;

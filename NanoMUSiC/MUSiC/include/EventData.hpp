@@ -49,6 +49,8 @@ class EventData
     float scale_envelope_weight_up = 1.;
     float scale_envelope_weight_down = 1.;
 
+    NanoObjects::GenParticles gen_particles;
+
     NanoObjects::Muons muons;
     RVec<int> good_muons_mask;
     RVec<int> good_low_pt_muons_mask;
@@ -114,6 +116,16 @@ class EventData
         if (*this)
         {
             lhe_info = _lhe_info;
+            return *this;
+        }
+        return *this;
+    }
+
+    auto set_gen_particles(NanoObjects::GenParticles &&_gen_particles) -> EventData &
+    {
+        if (*this)
+        {
+            gen_particles = _gen_particles;
             return *this;
         }
         return *this;
