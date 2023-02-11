@@ -166,12 +166,13 @@ $(document).ready(function(){initNavTree('NanoObjects_8hpp.html',''); initResiza
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
+<a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">NanoObjects.hpp File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;fmt/core.h&quot;</code><br />
+<div class="textblock"><code>#include &quot;fmt/format.h&quot;</code><br />
 <code>#include &lt;ROOT/RVec.hxx&gt;</code><br />
 <code>#include &lt;variant&gt;</code><br />
 </div>
@@ -184,6 +185,10 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNanoObjects_1_1GeneratorInfo.html">NanoObjects::GeneratorInfo</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNanoObjects_1_1LHEInfo.html">NanoObjects::LHEInfo</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNanoObjects_1_1GenParticles.html">NanoObjects::GenParticles</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNanoObjects_1_1Muons.html">NanoObjects::Muons</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -202,6 +207,8 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Namespaces</h2></td></tr>
+<tr class="memitem:namespaceLorentzVectorHelper"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceLorentzVectorHelper.html">LorentzVectorHelper</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceNanoObjects"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNanoObjects.html">NanoObjects</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -211,6 +218,13 @@ Typedefs</h2></td></tr>
 <tr class="separator:a7be87612d389c646e9a31974fa6a3d8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0aa103dc78a6067354bc625c0ca06cae"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceNanoObjects.html#a0aa103dc78a6067354bc625c0ca06cae">NanoObjects::NanoAODObjects_t</a> = std::tuple&lt; Muons, Electrons, Photons, Taus, BJets, Jets, MET &gt;</td></tr>
 <tr class="separator:a0aa103dc78a6067354bc625c0ca06cae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a536486f196a07b6bcf212e9a7900bb82"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceLorentzVectorHelper.html#a536486f196a07b6bcf212e9a7900bb82">LorentzVectorHelper::mass</a> (const float &amp;pt1, const float &amp;eta1, const float &amp;phi1, const float &amp;mass1, const float &amp;pt2, const float &amp;eta2, const float &amp;phi2, const float &amp;mass2) -&gt; float</td></tr>
+<tr class="separator:a536486f196a07b6bcf212e9a7900bb82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e7c9eebdf3bdf3473a095cc3611b39b"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceLorentzVectorHelper.html#a4e7c9eebdf3bdf3473a095cc3611b39b">LorentzVectorHelper::pt</a> (const float &amp;pt1, const float &amp;phi1, const float &amp;pt2, const float &amp;phi2) -&gt; float</td></tr>
+<tr class="separator:a4e7c9eebdf3bdf3473a095cc3611b39b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>

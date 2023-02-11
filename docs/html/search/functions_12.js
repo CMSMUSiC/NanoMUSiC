@@ -1,6 +1,13 @@
 var searchData=
 [
-  ['unset_5fnull_833',['unset_null',['../classEventData.html#a9e7aa84ed7898124b187d9a02d247076',1,'EventData']]],
-  ['unsorted_5ferror_834',['unsorted_error',['../classMUSiCTools_1_1unsorted__error.html#a9ad8a296edcb85c6afcd1e332beb8b4f',1,'MUSiCTools::unsorted_error']]],
-  ['unwrap_835',['unwrap',['../NanoMUSiC_8hpp.html#a7d1de4e8c7ef08ec45ab65b0def9694d',1,'unwrap(std::optional&lt; TTreeReaderValue&lt; T &gt;&gt; &amp;value) -&gt; T:&#160;NanoMUSiC.hpp'],['../NanoMUSiC_8hpp.html#a7552522b8f930e87e100d91cb6872ab4',1,'unwrap(std::optional&lt; TTreeReaderValue&lt; T &gt;&gt; &amp;value, Q &amp;&amp;default_value=Q()) -&gt; T:&#160;NanoMUSiC.hpp'],['../NanoMUSiC_8hpp.html#ac7fe4b41c75070bb4ee32517a6818ff1',1,'unwrap(std::optional&lt; TTreeReaderArray&lt; T &gt;&gt; &amp;array) -&gt; RVec&lt; T &gt;:&#160;NanoMUSiC.hpp']]]
+  ['taskconfiguration_865',['TaskConfiguration',['../classTaskConfiguration.html#a50d1372a998413a6dae80de83e1df615',1,'TaskConfiguration']]],
+  ['tau_5fcorrections_866',['tau_corrections',['../classEventData.html#afa33df501b742a09a26c431af8dc969c',1,'EventData']]],
+  ['taus_867',['Taus',['../structNanoObjects_1_1Taus.html#aed8601d31c25e9f11db2c8ea6022c2a1',1,'NanoObjects::Taus']]],
+  ['tomlconfig_868',['TOMLConfig',['../classTOMLConfig.html#ade397ed67829cb6a15ac3bd13a7b55cb',1,'TOMLConfig']]],
+  ['tostring_869',['toString',['../namespaceMUSiCTools.html#ad618d52734e8c29c83bce57b8fde32dc',1,'MUSiCTools']]],
+  ['trgobjmatcher_870',['TrgObjMatcher',['../classTrgObjMatcher.html#afc42c12efbf73f86f9eb7534c8a2dbae',1,'TrgObjMatcher']]],
+  ['trgobjs_871',['TrgObjs',['../structNanoObjects_1_1TrgObjs.html#a1175e68aeec4da4132b027b6bb52705b',1,'NanoObjects::TrgObjs']]],
+  ['trigger_5ffilter_872',['trigger_filter',['../classEventData.html#a707470dc8bec83b541fd28451de47c31',1,'EventData']]],
+  ['trigger_5fmatch_5ffilter_873',['trigger_match_filter',['../classEventData.html#a6cc52ca9d7d48304b68f808cde8b34ba',1,'EventData']]],
+  ['trigger_5fmatcher_874',['trigger_matcher',['../namespaceTrigger.html#a019ed351f7b271deb1f72f15057ab800',1,'Trigger']]]
 ];

@@ -7,6 +7,7 @@ var dir_7aaf294a99fae0b1961be37b302bde84 =
     [ "EventData.hpp", "EventData_8hpp.html", [
       [ "EventData", "classEventData.html", "classEventData" ]
     ] ],
+    [ "GeneratorFilters.hpp", "GeneratorFilters_8hpp.html", "GeneratorFilters_8hpp" ],
     [ "music.hpp", "music_8hpp.html", "music_8hpp" ],
     [ "MUSiCTools.hpp", "MUSiCTools_8hpp.html", "MUSiCTools_8hpp" ],
     [ "nano2pxl_utils.hpp", "nano2pxl__utils_8hpp.html", "nano2pxl__utils_8hpp" ],

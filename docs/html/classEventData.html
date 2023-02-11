@@ -176,14 +176,16 @@ $(document).ready(function(){initNavTree('classEventData.html',''); initResizabl
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a01d94ef15e548dd44309004ef9860b9f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a01d94ef15e548dd44309004ef9860b9f">EventData</a> (const bool &amp;_is_data, const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;_year)</td></tr>
-<tr class="separator:a01d94ef15e548dd44309004ef9860b9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaca8e403019f7aa7fafd1f48dcd28834"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#aaca8e403019f7aa7fafd1f48dcd28834">EventData</a> (const bool &amp;_is_data, const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;_year, <a class="el" href="classOutputs.html">Outputs</a> &amp;outputs)</td></tr>
+<tr class="separator:aaca8e403019f7aa7fafd1f48dcd28834"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4484e3b8860cc57debb56927aee61c47"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a4484e3b8860cc57debb56927aee61c47">set_event_info</a> (<a class="el" href="structNanoObjects_1_1EventInfo.html">NanoObjects::EventInfo</a> &amp;&amp;_event_info) -&gt; <a class="el" href="classEventData.html">EventData</a> &amp;</td></tr>
 <tr class="separator:a4484e3b8860cc57debb56927aee61c47"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aefd91da160a0a24f1bc83d5a835bf6d0"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#aefd91da160a0a24f1bc83d5a835bf6d0">set_generator_info</a> (<a class="el" href="structNanoObjects_1_1GeneratorInfo.html">NanoObjects::GeneratorInfo</a> &amp;&amp;_generator_info) -&gt; <a class="el" href="classEventData.html">EventData</a> &amp;</td></tr>
 <tr class="separator:aefd91da160a0a24f1bc83d5a835bf6d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad1986f17fffa2046052f24631873c792"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#ad1986f17fffa2046052f24631873c792">set_lhe_info</a> (<a class="el" href="structNanoObjects_1_1LHEInfo.html">NanoObjects::LHEInfo</a> &amp;&amp;_lhe_info) -&gt; <a class="el" href="classEventData.html">EventData</a> &amp;</td></tr>
 <tr class="separator:ad1986f17fffa2046052f24631873c792"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad739d92b2ee6aa1a5248369d9aafff93"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#ad739d92b2ee6aa1a5248369d9aafff93">set_lhe_particles</a> (<a class="el" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a> &amp;&amp;_lhe_particles) -&gt; <a class="el" href="classEventData.html">EventData</a> &amp;</td></tr>
+<tr class="separator:ad739d92b2ee6aa1a5248369d9aafff93"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a33e726876bb6ddd65b5ad9ef8b1aead2"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a33e726876bb6ddd65b5ad9ef8b1aead2">set_muons</a> (<a class="el" href="structNanoObjects_1_1Muons.html">NanoObjects::Muons</a> &amp;&amp;_muons, RVec&lt; int &gt; &amp;&amp;mask) -&gt; <a class="el" href="classEventData.html">EventData</a> &amp;</td></tr>
 <tr class="separator:a33e726876bb6ddd65b5ad9ef8b1aead2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a308b540fad913b7245ea3675fe497231"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a308b540fad913b7245ea3675fe497231">set_muons</a> (<a class="el" href="structNanoObjects_1_1Muons.html">NanoObjects::Muons</a> &amp;&amp;_muons) -&gt; <a class="el" href="classEventData.html">EventData</a> &amp;</td></tr>
@@ -232,8 +234,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:af3b16443ddf3fa18d1b84a3f256537de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac45cbd7c9a5d916cd3532133708b4789"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#ac45cbd7c9a5d916cd3532133708b4789">set_const_weights</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs, <a class="el" href="classCorrector.html">Corrector</a> &amp;pu_weight) -&gt; <a class="el" href="classEventData.html">EventData</a> &amp;</td></tr>
 <tr class="separator:ac45cbd7c9a5d916cd3532133708b4789"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a70dc3390ff246ac89db261af2a226a71"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a70dc3390ff246ac89db261af2a226a71">generator_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs) -&gt; <a class="el" href="classEventData.html">EventData</a> &amp;</td></tr>
-<tr class="separator:a70dc3390ff246ac89db261af2a226a71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b4a63ef4f2a2810cf35dc16ece00393"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a7b4a63ef4f2a2810cf35dc16ece00393">generator_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs, const std::string &amp;process) -&gt; <a class="el" href="classEventData.html">EventData</a> &amp;</td></tr>
+<tr class="separator:a7b4a63ef4f2a2810cf35dc16ece00393"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b4db8fc73c3efcc40248f7cfc195c16"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a6b4db8fc73c3efcc40248f7cfc195c16">run_lumi_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs, const <a class="el" href="classRunLumiFilter.html">RunLumiFilter</a> &amp;_run_lumi_filter) -&gt; <a class="el" href="classEventData.html">EventData</a> &amp;</td></tr>
 <tr class="separator:a6b4db8fc73c3efcc40248f7cfc195c16"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a53bb707e5465215a946e7373e50f7215"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a53bb707e5465215a946e7373e50f7215">npv_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs) -&gt; <a class="el" href="classEventData.html">EventData</a> &amp;</td></tr>
@@ -341,6 +343,10 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a7859125fe1cd3ecd881b4d2c528f62a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8fa498bce9001ee8c74fa75cb80b9aa9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a8fa498bce9001ee8c74fa75cb80b9aa9">scale_envelope_weight_down</a> = 1.</td></tr>
 <tr class="separator:a8fa498bce9001ee8c74fa75cb80b9aa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc4c9a6fc02fdeb4c25f85672bd670da"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNanoObjects_1_1GenParticles.html">NanoObjects::GenParticles</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#adc4c9a6fc02fdeb4c25f85672bd670da">gen_particles</a></td></tr>
+<tr class="separator:adc4c9a6fc02fdeb4c25f85672bd670da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af487f8d58cd2842ccfd1a075109bf633"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#af487f8d58cd2842ccfd1a075109bf633">lhe_particles</a></td></tr>
+<tr class="separator:af487f8d58cd2842ccfd1a075109bf633"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0cd7c3f2ca17c0fb8d962f47ff902869"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNanoObjects_1_1Muons.html">NanoObjects::Muons</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a0cd7c3f2ca17c0fb8d962f47ff902869">muons</a></td></tr>
 <tr class="separator:a0cd7c3f2ca17c0fb8d962f47ff902869"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a47b29912cf5e762706dfb82ef2a3a697"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventData.html#a47b29912cf5e762706dfb82ef2a3a697">good_muons_mask</a></td></tr>
@@ -392,8 +398,8 @@ Private Attributes</h2></td></tr>
 <tr class="separator:a7434374ae697bc801f9b09f4ffa45e8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a01d94ef15e548dd44309004ef9860b9f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a01d94ef15e548dd44309004ef9860b9f">&#9670;&nbsp;</a></span>EventData()</h2>
+<a id="aaca8e403019f7aa7fafd1f48dcd28834"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaca8e403019f7aa7fafd1f48dcd28834">&#9670;&nbsp;</a></span>EventData()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -411,7 +417,13 @@ Private Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;&#160;</td>
-          <td class="paramname"><em>_year</em>&#160;</td>
+          <td class="paramname"><em>_year</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -512,8 +524,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a70dc3390ff246ac89db261af2a226a71"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a70dc3390ff246ac89db261af2a226a71">&#9670;&nbsp;</a></span>generator_filter()</h2>
+<a id="a7b4a63ef4f2a2810cf35dc16ece00393"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b4a63ef4f2a2810cf35dc16ece00393">&#9670;&nbsp;</a></span>generator_filter()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -525,8 +537,18 @@ Private Attributes</h2></td></tr>
           <td class="memname">auto EventData::generator_filter </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
-          <td class="paramname"><em>outputs</em></td><td>)</td>
-          <td> -&gt; <a class="el" href="classEventData.html">EventData</a> &amp;
+          <td class="paramname"><em>outputs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>process</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; <a class="el" href="classEventData.html">EventData</a> &amp;
     </td>
         </tr>
       </table>
@@ -536,7 +558,7 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Filter events based on their Generator process. This is implemented in order to avoid overlap of phase-space between MC samples. Should come after all constant weights are available. </p>
+<p>TODO: Filter events based on their Generator process. This is implemented in order to avoid overlap of phase-space between MC samples. Should come after all constant weights are available. </p>
 
 </div>
 </div>
@@ -1537,6 +1559,33 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="ad739d92b2ee6aa1a5248369d9aafff93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad739d92b2ee6aa1a5248369d9aafff93">&#9670;&nbsp;</a></span>set_lhe_particles()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventData::set_lhe_particles </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_lhe_particles</em></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventData.html">EventData</a> &amp;
+    </td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a9e4ad10b2a0c39957a43233d6bd7fcd0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9e4ad10b2a0c39957a43233d6bd7fcd0">&#9670;&nbsp;</a></span>set_met() <span class="overload">[1/2]</span></h2>
 
@@ -2377,6 +2426,20 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="adc4c9a6fc02fdeb4c25f85672bd670da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc4c9a6fc02fdeb4c25f85672bd670da">&#9670;&nbsp;</a></span>gen_particles</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structNanoObjects_1_1GenParticles.html">NanoObjects::GenParticles</a> EventData::gen_particles</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a40be20a41dd43cb29105159cb91accae"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a40be20a41dd43cb29105159cb91accae">&#9670;&nbsp;</a></span>generator_info</h2>
 
@@ -2631,6 +2694,20 @@ Private Attributes</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="structNanoObjects_1_1LHEInfo.html">NanoObjects::LHEInfo</a> EventData::lhe_info</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af487f8d58cd2842ccfd1a075109bf633"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af487f8d58cd2842ccfd1a075109bf633">&#9670;&nbsp;</a></span>lhe_particles</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a> EventData::lhe_particles</td>
         </tr>
       </table>
 </div><div class="memdoc">

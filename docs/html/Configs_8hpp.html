@@ -179,6 +179,7 @@ $(document).ready(function(){initNavTree('Configs_8hpp.html',''); initResizable(
 <code>#include &lt;fmt/color.h&gt;</code><br />
 <code>#include &lt;fmt/core.h&gt;</code><br />
 <code>#include &lt;limits&gt;</code><br />
+<code>#include &lt;stdexcept&gt;</code><br />
 </div>
 <p><a href="Configs_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -205,13 +206,19 @@ Classes</h2></td></tr>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacePDG"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDG.html">PDG</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacePDG_1_1Electron"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDG_1_1Electron.html">PDG::Electron</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacePDG_1_1Muon"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDG_1_1Muon.html">PDG::Muon</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacePDG_1_1Electron"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDG_1_1Electron.html">PDG::Electron</a></td></tr>
+<tr class="memitem:namespacePDG_1_1Tau"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDG_1_1Tau.html">PDG::Tau</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacePDG_1_1Gluon"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDG_1_1Gluon.html">PDG::Gluon</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacePDG_1_1Photon"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDG_1_1Photon.html">PDG::Photon</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacePDG_1_1Tau"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDG_1_1Tau.html">PDG::Tau</a></td></tr>
+<tr class="memitem:namespacePDG_1_1Z"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDG_1_1Z.html">PDG::Z</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacePDG_1_1W"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDG_1_1W.html">PDG::W</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceObjConfig"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html">ObjConfig</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -233,27 +240,41 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a6244e8324665318f189b9b82937e1f87"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDG.html#a6244e8324665318f189b9b82937e1f87">PDG::get_mass_by_id</a> (const int &amp;id) -&gt; float</td></tr>
+<tr class="separator:a6244e8324665318f189b9b82937e1f87"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab2bcc6de72277af49c9a757fc875b6b7"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Configs_8hpp.html#ab2bcc6de72277af49c9a757fc875b6b7">get_runyear</a> (const std::string &amp;year_str) -&gt; <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a></td></tr>
 <tr class="separator:ab2bcc6de72277af49c9a757fc875b6b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a6770167c45bc977033963ebf5fc8ac9d"><td class="memItemLeft" align="right" valign="top">constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDG_1_1Muon.html#a6770167c45bc977033963ebf5fc8ac9d">PDG::Muon::Id</a> = 13</td></tr>
-<tr class="separator:a6770167c45bc977033963ebf5fc8ac9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8d472c504aa08006f32aba1b41ee07e9"><td class="memItemLeft" align="right" valign="top">constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDG_1_1Muon.html#a8d472c504aa08006f32aba1b41ee07e9">PDG::Muon::Mass</a> = 105.6583755 / 1000.0</td></tr>
-<tr class="separator:a8d472c504aa08006f32aba1b41ee07e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a37cff7dc078ed6f0d68d5d9df9c903f0"><td class="memItemLeft" align="right" valign="top">constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDG_1_1Electron.html#a37cff7dc078ed6f0d68d5d9df9c903f0">PDG::Electron::Id</a> = 11</td></tr>
 <tr class="separator:a37cff7dc078ed6f0d68d5d9df9c903f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6400768cb9df1fb3297bafb718fd2e2e"><td class="memItemLeft" align="right" valign="top">constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDG_1_1Electron.html#a6400768cb9df1fb3297bafb718fd2e2e">PDG::Electron::Mass</a> = 0.51099895 / 1000.0</td></tr>
 <tr class="separator:a6400768cb9df1fb3297bafb718fd2e2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6770167c45bc977033963ebf5fc8ac9d"><td class="memItemLeft" align="right" valign="top">constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDG_1_1Muon.html#a6770167c45bc977033963ebf5fc8ac9d">PDG::Muon::Id</a> = 13</td></tr>
+<tr class="separator:a6770167c45bc977033963ebf5fc8ac9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d472c504aa08006f32aba1b41ee07e9"><td class="memItemLeft" align="right" valign="top">constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDG_1_1Muon.html#a8d472c504aa08006f32aba1b41ee07e9">PDG::Muon::Mass</a> = 105.6583755 / 1000.0</td></tr>
+<tr class="separator:a8d472c504aa08006f32aba1b41ee07e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad15d57b6ab63de955ccbeaa4f36fcd1a"><td class="memItemLeft" align="right" valign="top">constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDG_1_1Tau.html#ad15d57b6ab63de955ccbeaa4f36fcd1a">PDG::Tau::Id</a> = 15</td></tr>
+<tr class="separator:ad15d57b6ab63de955ccbeaa4f36fcd1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d444d5a1e5ccd1b72e6675b2ae3eb9f"><td class="memItemLeft" align="right" valign="top">constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDG_1_1Tau.html#a4d444d5a1e5ccd1b72e6675b2ae3eb9f">PDG::Tau::Mass</a> = 1776.86 / 1000.</td></tr>
+<tr class="separator:a4d444d5a1e5ccd1b72e6675b2ae3eb9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a5c15589ac67893658a5ea0f7f6e6a6"><td class="memItemLeft" align="right" valign="top">constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDG_1_1Gluon.html#a9a5c15589ac67893658a5ea0f7f6e6a6">PDG::Gluon::Id</a> = 21</td></tr>
+<tr class="separator:a9a5c15589ac67893658a5ea0f7f6e6a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9204dca39e12d23bdf23637164e9cecf"><td class="memItemLeft" align="right" valign="top">constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDG_1_1Gluon.html#a9204dca39e12d23bdf23637164e9cecf">PDG::Gluon::Mass</a> = 0.</td></tr>
+<tr class="separator:a9204dca39e12d23bdf23637164e9cecf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afcfbda4a4f0ed984814ef1691f9d74ce"><td class="memItemLeft" align="right" valign="top">constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDG_1_1Photon.html#afcfbda4a4f0ed984814ef1691f9d74ce">PDG::Photon::Id</a> = 22</td></tr>
 <tr class="separator:afcfbda4a4f0ed984814ef1691f9d74ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a11b6cb6af473f03a1dd83f8e52a544bf"><td class="memItemLeft" align="right" valign="top">constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDG_1_1Photon.html#a11b6cb6af473f03a1dd83f8e52a544bf">PDG::Photon::Mass</a> = 0</td></tr>
 <tr class="separator:a11b6cb6af473f03a1dd83f8e52a544bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad15d57b6ab63de955ccbeaa4f36fcd1a"><td class="memItemLeft" align="right" valign="top">constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDG_1_1Tau.html#ad15d57b6ab63de955ccbeaa4f36fcd1a">PDG::Tau::Id</a> = 15</td></tr>
-<tr class="separator:ad15d57b6ab63de955ccbeaa4f36fcd1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d444d5a1e5ccd1b72e6675b2ae3eb9f"><td class="memItemLeft" align="right" valign="top">constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDG_1_1Tau.html#a4d444d5a1e5ccd1b72e6675b2ae3eb9f">PDG::Tau::Mass</a> = 1776.86</td></tr>
-<tr class="separator:a4d444d5a1e5ccd1b72e6675b2ae3eb9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7233ddcb356587735d2e78dbb7c312bf"><td class="memItemLeft" align="right" valign="top">constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDG_1_1Z.html#a7233ddcb356587735d2e78dbb7c312bf">PDG::Z::Id</a> = 23</td></tr>
+<tr class="separator:a7233ddcb356587735d2e78dbb7c312bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fd2525c20e1eb584bc49ba76d736bd4"><td class="memItemLeft" align="right" valign="top">constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDG_1_1Z.html#a5fd2525c20e1eb584bc49ba76d736bd4">PDG::Z::Mass</a> = 91.1876</td></tr>
+<tr class="separator:a5fd2525c20e1eb584bc49ba76d736bd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9e52f227f33658c1cdbad604f45ebf7"><td class="memItemLeft" align="right" valign="top">constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDG_1_1W.html#aa9e52f227f33658c1cdbad604f45ebf7">PDG::W::Id</a> = 24</td></tr>
+<tr class="separator:aa9e52f227f33658c1cdbad604f45ebf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f397b9c32c04f4bb9588ffcc7595196"><td class="memItemLeft" align="right" valign="top">constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacePDG_1_1W.html#a5f397b9c32c04f4bb9588ffcc7595196">PDG::W::Mass</a> = 80.379</td></tr>
+<tr class="separator:a5f397b9c32c04f4bb9588ffcc7595196"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad4e1cfb9b93034c238ab627ab35a21a6"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#ad4e1cfb9b93034c238ab627ab35a21a6">ObjConfig::Muon2016APV</a> = MuonConfig{}</td></tr>
 <tr class="separator:ad4e1cfb9b93034c238ab627ab35a21a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab46f42728104c7577db1cc223b80e09b"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceObjConfig.html#ab46f42728104c7577db1cc223b80e09b">ObjConfig::Muon2016</a> = MuonConfig{}</td></tr>
