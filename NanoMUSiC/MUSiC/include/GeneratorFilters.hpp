@@ -64,12 +64,13 @@ auto get_arg(const Inputs_t &args, std::size_t index, const std::string &error_m
     }
 }
 
-inline auto dy_mass_filter(const Inputs_t &args) -> bool
+inline auto dy_mass_filter(const NanoObjects::GenParticles &gen_particles, const float &mass_min, const float &mass_max)
+    -> bool
 {
-    auto gen_particles = get_arg<NanoObjects::GenParticles>(args, 0, "NanoObjets");
+    // auto gen_particles = get_arg<NanoObjects::GenParticles>(args, 0, "NanoObjets");
 
-    auto mass_min = get_arg<float>(args, 1, "mass_min");
-    auto mass_max = get_arg<float>(args, 2, "mass_max");
+    // auto mass_min = get_arg<float>(args, 1, "mass_min");
+    // auto mass_max = get_arg<float>(args, 2, "mass_max");
 
     // filter by Z or gamma mass
     auto is_Z = gen_particles.pdgId == PDG::Z::Id;
@@ -90,12 +91,16 @@ inline auto dy_mass_filter(const Inputs_t &args) -> bool
     // fmt::print("filtered_masses: {}\n", filtered_masses);
     // fmt::print("filtered_ids: {}\n", filtered_ids);
 
-    // filter by Lep+Lep- pair
+    // filter by Z/gamma or Lep+Lep- pair
+    // std::optional<std::size_t> idx_Z_or_gamma = std::nullopt;
     std::optional<std::size_t> idx_lepton_plus = std::nullopt;
     std::optional<std::size_t> idx_lepton_minus = std::nullopt;
 
     for (std::size_t i = 0; i < gen_particles.nGenParticles; i++)
     {
+        // if (not idx_Z_or_gamma)
+        // {
+        // }
         if (not(idx_lepton_plus) and not(idx_lepton_minus))
         {
             if (gen_particles.pdgId.at(i) == PDG::Electron::Id //
@@ -159,7 +164,7 @@ inline auto dy_mass_filter(const Inputs_t &args) -> bool
 
     // fmt::print("------------------------\n");
     // fmt::print("------------------------\n");
-    fmt::print("[ Generator Filter ] Didn't pass: DY Mass Cut. Skipping ...\n");
+    // fmt::print("[ Generator Filter ] Didn't pass: DY Mass Cut. Skipping ...\n");
     return false;
 }
 
@@ -168,8 +173,11 @@ inline auto dy_pt_filter(const Inputs_t &args) -> bool
     return true;
 }
 
-const std::map<std::string, std::function<bool(Inputs_t)>> filters = {
-    {"DYJetsToLL_M-50_13TeV_AM"s, dy_mass_filter}, //
+const std::map<std::string, std::function<bool(const NanoObjects::GenParticles &)>> filters = {
+    {"DYJetsToLL_M-50_13TeV_AM"s,
+     [](const NanoObjects::GenParticles &gen_particles) -> bool {
+         return dy_mass_filter(gen_particles, 50., 120.);
+     }}, //
 };
 
 } // namespace GeneratorFilters

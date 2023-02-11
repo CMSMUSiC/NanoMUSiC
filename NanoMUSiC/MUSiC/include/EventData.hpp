@@ -500,8 +500,7 @@ class EventData
                     // fmt::print("$$$$$$$$$$$$$$$$$$$$\n");
                     if (GeneratorFilters::filters.count(process) > 0)
                     {
-                        is_good_gen = GeneratorFilters::filters.at(process)(
-                            {gen_particles, 50.f, std::numeric_limits<float>::max()});
+                        is_good_gen = GeneratorFilters::filters.at(process)(gen_particles);
                     }
                 }
             }
