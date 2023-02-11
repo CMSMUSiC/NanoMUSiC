@@ -154,7 +154,9 @@ inline auto PrintProcessInfo() -> void
 
 // (async) TFile download
 using OptionalFuture_t = std::optional<std::future<std::unique_ptr<TFile>>>;
-inline auto file_loader(const std::string &file_path, const bool cacheread, const std::string &cache_dir,
+inline auto file_loader(const std::string &file_path,
+                        const bool cacheread,
+                        const std::string &cache_dir,
                         const bool verbose_load) -> std::unique_ptr<TFile>
 {
     std::cout << "Loading file [ " << file_path << " ]" << std::endl;
@@ -234,7 +236,9 @@ inline auto prepare_output_buffer(const TaskConfiguration &configuration) -> voi
     system(("cp " + configuration.x_section_file + " . ").c_str());
 }
 
-inline auto print_report(const double &dTime1, const unsigned long &event_counter, TH1F &cutflow_histo,
+inline auto print_report(const double &dTime1,
+                         const unsigned long &event_counter,
+                         TH1F &cutflow_histo,
                          bool is_final = false) -> void
 {
     double dTime2 = getCpuTime();
@@ -248,10 +252,11 @@ inline auto print_report(const double &dTime1, const unsigned long &event_counte
     fmt::print("\n=====================================\n");
     fmt::print("               Cutflow:              \n");
     fmt::print("-------------------------------------\n");
-    for (auto &&cut : IndexHelpers::make_index(Outputs::kTotalCuts))
+    for (auto &&cut : IndexHelpers::make_index(2, Outputs::kTotalCuts-1))
     {
-        fmt::print(" {:25}: {: >6.2f} %\n", Outputs::Cuts[cut],
-                   cutflow.GetBinContent(cut + 1) / cutflow.GetBinContent(2) * 100);
+        fmt::print(" {:25}: {: >6.2f} %\n",
+                   Outputs::Cuts[cut],
+                   cutflow.GetBinContent(cut + 1) / cutflow.GetBinContent(3) * 100);
         // fmt::print("--> {:8}: {:>0.2f}|\n", s);
     }
     fmt::print("=====================================\n");

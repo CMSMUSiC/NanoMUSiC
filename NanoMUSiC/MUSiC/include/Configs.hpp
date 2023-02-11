@@ -10,31 +10,91 @@
 #include <fmt/color.h>
 #include <fmt/core.h>
 #include <limits>
+#include <stdexcept>
 
 using namespace std::literals;
 
+// Reference:
+// https://pdg.lbl.gov/2019/reviews/rpp2019-rev-monte-carlo-numbering.pdf
 namespace PDG
 {
-namespace Muon
-{
-constexpr int Id = 13;
-constexpr float Mass = 105.6583755 / 1000.0;
-} // namespace Muon
 namespace Electron
 {
 constexpr int Id = 11;
 constexpr float Mass = 0.51099895 / 1000.0;
 } // namespace Electron
+
+namespace Muon
+{
+constexpr int Id = 13;
+constexpr float Mass = 105.6583755 / 1000.0;
+} // namespace Muon
+
+namespace Tau
+{
+constexpr int Id = 15;
+constexpr float Mass = 1776.86 / 1000.;
+} // namespace Tau
+
+namespace Gluon
+{
+constexpr int Id = 21;
+constexpr float Mass = 0.;
+} // namespace Gluon
+
 namespace Photon
 {
 constexpr int Id = 22;
 constexpr float Mass = 0;
 } // namespace Photon
-namespace Tau
+
+namespace Z
 {
-constexpr int Id = 15;
-constexpr float Mass = 1776.86;
-} // namespace Tau
+constexpr int Id = 23;
+constexpr float Mass = 91.1876;
+} // namespace Z
+
+namespace W
+{
+constexpr int Id = 24;
+constexpr float Mass = 80.379; // NOT the CDF result
+} // namespace W
+
+inline auto get_mass_by_id(const int &id) -> float
+{
+    if (std::abs(id) == Electron::Id)
+    {
+        return Electron::Mass;
+    }
+    if (std::abs(id) == Muon::Id)
+    {
+        return Muon::Mass;
+    }
+    if (std::abs(id) == Tau::Id)
+    {
+        return Tau::Mass;
+    }
+
+    if (std::abs(id) == Gluon::Id)
+    {
+        return Gluon::Mass;
+    }
+    if (std::abs(id) == Photon::Id)
+    {
+        return Photon::Mass;
+    }
+    if (std::abs(id) == Z::Id)
+    {
+        return Z::Mass;
+    }
+    if (std::abs(id) == W::Id)
+    {
+        return W::Mass;
+    }
+
+    throw(std::runtime_error(fmt::format("Invalid PDG Id ({}).", id)));
+}
+
 } // namespace PDG
 
 enum Year
@@ -106,7 +166,9 @@ constexpr auto Electron2016APV = ElectronConfig{};
 constexpr auto Electron2016 = ElectronConfig{};
 constexpr auto Electron2017 = ElectronConfig{};
 constexpr auto Electron2018 = ElectronConfig{};
-constexpr std::array<ElectronConfig, Year::kTotalYears> Electrons = {Electron2016APV, Electron2016, Electron2017,
+constexpr std::array<ElectronConfig, Year::kTotalYears> Electrons = {Electron2016APV,
+                                                                     Electron2016,
+                                                                     Electron2017,
                                                                      Electron2018};
 
 // Photons

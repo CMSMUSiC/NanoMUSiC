@@ -7,6 +7,7 @@
 #include <complex>
 #include <exception>
 #include <functional>
+#include <limits>
 #include <stdexcept>
 #include <string_view>
 
@@ -289,10 +290,10 @@ class EventData
     /// Those are tricky beasts, since they are not simple weights added to the event, but rather, should be treated as
     /// variations and have their uncert. squared-summed in the end of the processing (classification).
     /// This method also saves the LHA ID that was used during generation or rescaling.
-    auto set_pdf_alpha_s_weights(
-        const std::optional<std::pair<unsigned int, unsigned int>> &lha_indexes,
-        const std::tuple<std::vector<std::unique_ptr<LHAPDF::PDF>>, std::unique_ptr<LHAPDF::PDF>,
-                         std::unique_ptr<LHAPDF::PDF>> &default_pdf_sets) -> EventData &
+    auto set_pdf_alpha_s_weights(const std::optional<std::pair<unsigned int, unsigned int>> &lha_indexes,
+                                 const std::tuple<std::vector<std::unique_ptr<LHAPDF::PDF>>,
+                                                  std::unique_ptr<LHAPDF::PDF>,
+                                                  std::unique_ptr<LHAPDF::PDF>> &default_pdf_sets) -> EventData &
     {
         if (*this)
         {
@@ -496,11 +497,11 @@ class EventData
                 {
                     // fmt::print("{}\n", generator_info.binvar);
                     // fmt::print("{}\n", lhe_info.);
+                    // fmt::print("$$$$$$$$$$$$$$$$$$$$\n");
                     if (GeneratorFilters::filters.count(process) > 0)
                     {
-                        GeneratorFilters::Inputs_t foo = {
-                            1, "foo", 4.20f, true, RVec<float>({1.2, 3.4}), RVec<int>({1, 3})};
-                        is_good_gen = GeneratorFilters::filters.at(process)(foo);
+                        is_good_gen = GeneratorFilters::filters.at(process)(
+                            {gen_particles, 50.f, std::numeric_limits<float>::max()});
                     }
                 }
             }
@@ -636,8 +637,9 @@ class EventData
                 trigger_bits.set("SingleMuonLowPt", event_info.HLT_IsoMu24 || event_info.HLT_IsoTkMu24)
                     .set("SingleMuonHighPt", event_info.HLT_Mu50 || event_info.HLT_TkMu50)
                     .set("SingleElectronLowPt", event_info.HLT_Ele27_WPTight_Gsf || event_info.HLT_Photon175)
-                    .set("SingleElectronHighPt", event_info.HLT_Ele27_WPTight_Gsf || event_info.HLT_Photon175 ||
-                                                     event_info.HLT_Ele115_CaloIdVT_GsfTrkIdT)
+                    .set("SingleElectronHighPt",
+                         event_info.HLT_Ele27_WPTight_Gsf || event_info.HLT_Photon175 ||
+                             event_info.HLT_Ele115_CaloIdVT_GsfTrkIdT)
                     .set("DoubleMuon", false)
                     .set("DoubleElectron", false)
                     // .set("Photon", event_info.HLT_Photon200)
@@ -651,8 +653,9 @@ class EventData
                 trigger_bits.set("SingleMuonLowPt", event_info.HLT_IsoMu24 || event_info.HLT_IsoTkMu24)
                     .set("SingleMuonHighPt", event_info.HLT_Mu50 || event_info.HLT_TkMu50)
                     .set("SingleElectronLowPt", event_info.HLT_Ele27_WPTight_Gsf || event_info.HLT_Photon175)
-                    .set("SingleElectronHighPt", event_info.HLT_Ele27_WPTight_Gsf || event_info.HLT_Photon175 ||
-                                                     event_info.HLT_Ele115_CaloIdVT_GsfTrkIdT)
+                    .set("SingleElectronHighPt",
+                         event_info.HLT_Ele27_WPTight_Gsf || event_info.HLT_Photon175 ||
+                             event_info.HLT_Ele115_CaloIdVT_GsfTrkIdT)
                     .set("DoubleMuon", false)
                     .set("DoubleElectron", false)
                     // .set("Photon", event_info.HLT_Photon200)
@@ -666,8 +669,9 @@ class EventData
                 trigger_bits.set("SingleMuonLowPt", event_info.HLT_IsoMu27)
                     .set("SingleMuonHighPt", event_info.HLT_Mu50 || event_info.HLT_TkMu100 || event_info.HLT_OldMu100)
                     .set("SingleElectronLowPt", event_info.HLT_Ele35_WPTight_Gsf || event_info.HLT_Photon200)
-                    .set("SingleElectronHighPt", event_info.HLT_Ele35_WPTight_Gsf || event_info.HLT_Photon200 ||
-                                                     event_info.HLT_Ele115_CaloIdVT_GsfTrkIdT)
+                    .set("SingleElectronHighPt",
+                         event_info.HLT_Ele35_WPTight_Gsf || event_info.HLT_Photon200 ||
+                             event_info.HLT_Ele115_CaloIdVT_GsfTrkIdT)
                     .set("DoubleMuon", false)
                     .set("DoubleElectron", false)
                     // .set("Photon", event_info.HLT_Photon200)
@@ -681,8 +685,9 @@ class EventData
                 trigger_bits.set("SingleMuonLowPt", event_info.HLT_IsoMu24)
                     .set("SingleMuonHighPt", event_info.HLT_Mu50 || event_info.HLT_TkMu100 || event_info.HLT_OldMu100)
                     .set("SingleElectronLowPt", event_info.HLT_Ele32_WPTight_Gsf || event_info.HLT_Photon200)
-                    .set("SingleElectronHighPt", event_info.HLT_Ele32_WPTight_Gsf || event_info.HLT_Photon200 ||
-                                                     event_info.HLT_Ele115_CaloIdVT_GsfTrkIdT)
+                    .set("SingleElectronHighPt",
+                         event_info.HLT_Ele32_WPTight_Gsf || event_info.HLT_Photon200 ||
+                             event_info.HLT_Ele115_CaloIdVT_GsfTrkIdT)
                     .set("DoubleMuon", false)
                     .set("DoubleElectron", false)
                     // .set("Photon", event_info.HLT_Photon200)
@@ -1012,29 +1017,35 @@ class EventData
             outputs.set_event_weight("MuonReco", "Down", muon_sf_reco(year, good_muons_pt, good_muons_eta, "systdown"));
 
             // Muon Id
-            outputs.set_event_weight("MuonId", "Nominal",
+            outputs.set_event_weight("MuonId",
+                                     "Nominal",
                                      muon_sf_id_low_pt(year, good_muons_pt_low_pt, good_muons_eta_low_pt, "sf") *
                                          muon_sf_id_high_pt(year, good_muons_pt_high_pt, good_muons_eta_high_pt, "sf"));
             outputs.set_event_weight(
-                "MuonId", "Up",
+                "MuonId",
+                "Up",
                 muon_sf_id_low_pt(year, good_muons_pt_low_pt, good_muons_eta_low_pt, "systup") *
                     muon_sf_id_high_pt(year, good_muons_pt_high_pt, good_muons_eta_high_pt, "systup"));
             outputs.set_event_weight(
-                "MuonId", "Down",
+                "MuonId",
+                "Down",
                 muon_sf_id_low_pt(year, good_muons_pt_low_pt, good_muons_eta_low_pt, "systdown") *
                     muon_sf_id_high_pt(year, good_muons_pt_high_pt, good_muons_eta_high_pt, "systdown"));
 
             // Muon Iso
             outputs.set_event_weight(
-                "MuonIso", "Nominal",
+                "MuonIso",
+                "Nominal",
                 muon_sf_iso_low_pt(year, good_muons_pt_low_pt, good_muons_eta_low_pt, "sf") *
                     muon_sf_iso_high_pt(year, good_muons_pt_high_pt, good_muons_eta_high_pt, "sf"));
             outputs.set_event_weight(
-                "MuonIso", "Up",
+                "MuonIso",
+                "Up",
                 muon_sf_iso_low_pt(year, good_muons_pt_low_pt, good_muons_eta_low_pt, "systup") *
                     muon_sf_iso_high_pt(year, good_muons_pt_high_pt, good_muons_eta_high_pt, "systup"));
             outputs.set_event_weight(
-                "MuonIso", "Down",
+                "MuonIso",
+                "Down",
                 muon_sf_iso_low_pt(year, good_muons_pt_low_pt, good_muons_eta_low_pt, "systdown") *
                     muon_sf_iso_high_pt(year, good_muons_pt_high_pt, good_muons_eta_high_pt, "systdown"));
 
@@ -1099,24 +1110,27 @@ class EventData
                 (electrons.eta + electrons.deltaEtaSC)[good_high_pt_electrons_mask];
 
             // Electron Reco
-            outputs.set_event_weight("ElectronReco", "Nominal",
-                                     electron_sf("sf", "RecoAbove20", good_electrons_pt, good_electrons_eta_sc));
-            outputs.set_event_weight("ElectronReco", "Up",
-                                     electron_sf("sfup", "RecoAbove20", good_electrons_pt, good_electrons_eta_sc));
-            outputs.set_event_weight("ElectronReco", "Down",
-                                     electron_sf("sfup", "RecoAbove20", good_electrons_pt, good_electrons_eta_sc));
+            outputs.set_event_weight(
+                "ElectronReco", "Nominal", electron_sf("sf", "RecoAbove20", good_electrons_pt, good_electrons_eta_sc));
+            outputs.set_event_weight(
+                "ElectronReco", "Up", electron_sf("sfup", "RecoAbove20", good_electrons_pt, good_electrons_eta_sc));
+            outputs.set_event_weight(
+                "ElectronReco", "Down", electron_sf("sfup", "RecoAbove20", good_electrons_pt, good_electrons_eta_sc));
 
             // Electron ID
             outputs.set_event_weight(
-                "ElectronId", "Nominal",
+                "ElectronId",
+                "Nominal",
                 electron_sf("sf", "Tight", good_electrons_pt_low_pt, good_electrons_eta_sc_low_pt) *
                     electron_sf("sf", "HEEPId", good_electrons_pt_high_pt, good_electrons_eta_sc_high_pt));
             outputs.set_event_weight(
-                "ElectronId", "Up",
+                "ElectronId",
+                "Up",
                 electron_sf("sfup", "Tight", good_electrons_pt_low_pt, good_electrons_eta_sc_low_pt) *
                     electron_sf("sfup", "HEEPId", good_electrons_pt_high_pt, good_electrons_eta_sc_high_pt));
             outputs.set_event_weight(
-                "ElectronId", "Down",
+                "ElectronId",
+                "Down",
                 electron_sf("sfdown", "Tight", good_electrons_pt_low_pt, good_electrons_eta_sc_low_pt) *
                     electron_sf("sfdown", "HEEPId", good_electrons_pt_high_pt, good_electrons_eta_sc_high_pt));
 
@@ -1149,7 +1163,8 @@ class EventData
     /// - WorkingPoint (SFs available for the cut-based and MVA IDs): Loose, MVA, Medium, Tight
     /// - HasPixBin: For each working point of choice, they are dependent on the photon pseudorapidity and R9: Possible
     /// bin choices: ['EBInc','EBHighR9','EBLowR9','EEInc','EEHighR9','EELowR9']
-    auto set_photon_SFs(Outputs &outputs, const PhotonSFCorrector &photon_id_sf,
+    auto set_photon_SFs(Outputs &outputs,
+                        const PhotonSFCorrector &photon_id_sf,
                         const PhotonSFCorrector &photon_pixel_seed_sf) -> EventData &
     {
         if (*this)
@@ -1238,95 +1253,131 @@ class EventData
             RVec<float> good_jets_hadronFlavour = jets.hadronFlavour[good_jets_mask];
 
             // BJetCorrelated
-            outputs.set_event_weight("BJetCorrelated", "Nominal",
-                                     btag_sf("central", "central", good_bjets_pt, //
-                                             good_bjets_abseta,                   //
-                                             good_bjets_hadronFlavour,            //
-                                             good_jets_pt,                        //
-                                             good_jets_abseta, //                                       //
+            outputs.set_event_weight("BJetCorrelated",
+                                     "Nominal",
+                                     btag_sf("central",
+                                             "central",
+                                             good_bjets_pt,            //
+                                             good_bjets_abseta,        //
+                                             good_bjets_hadronFlavour, //
+                                             good_jets_pt,             //
+                                             good_jets_abseta,         //                                       //
                                              good_jets_hadronFlavour));
-            outputs.set_event_weight("BJetCorrelated", "Up",
-                                     btag_sf("up_correlated", "central", good_bjets_pt, //
-                                             good_bjets_abseta,                         //
-                                             good_bjets_hadronFlavour,                  //
-                                             good_jets_pt,                              //
-                                             good_jets_abseta, //                                       //
+            outputs.set_event_weight("BJetCorrelated",
+                                     "Up",
+                                     btag_sf("up_correlated",
+                                             "central",
+                                             good_bjets_pt,            //
+                                             good_bjets_abseta,        //
+                                             good_bjets_hadronFlavour, //
+                                             good_jets_pt,             //
+                                             good_jets_abseta,         //                                       //
                                              good_jets_hadronFlavour));
-            outputs.set_event_weight("BJetCorrelated", "Down",
-                                     btag_sf("down_correlated", "central", good_bjets_pt, //
-                                             good_bjets_abseta,                           //
-                                             good_bjets_hadronFlavour,                    //
-                                             good_jets_pt,                                //
-                                             good_jets_abseta, //                                       //
+            outputs.set_event_weight("BJetCorrelated",
+                                     "Down",
+                                     btag_sf("down_correlated",
+                                             "central",
+                                             good_bjets_pt,            //
+                                             good_bjets_abseta,        //
+                                             good_bjets_hadronFlavour, //
+                                             good_jets_pt,             //
+                                             good_jets_abseta,         //                                       //
                                              good_jets_hadronFlavour));
 
             // LightJetCorrelated
-            outputs.set_event_weight("LightJetCorrelated", "Nominal",
-                                     btag_sf("central", "central", good_bjets_pt, //
-                                             good_bjets_abseta,                   //
-                                             good_bjets_hadronFlavour,            //
-                                             good_jets_pt,                        //
-                                             good_jets_abseta, //                                       //
+            outputs.set_event_weight("LightJetCorrelated",
+                                     "Nominal",
+                                     btag_sf("central",
+                                             "central",
+                                             good_bjets_pt,            //
+                                             good_bjets_abseta,        //
+                                             good_bjets_hadronFlavour, //
+                                             good_jets_pt,             //
+                                             good_jets_abseta,         //                                       //
                                              good_jets_hadronFlavour));
-            outputs.set_event_weight("LightJetCorrelated", "Up",
-                                     btag_sf("central", "up_correlated", good_bjets_pt, //
-                                             good_bjets_abseta,                         //
-                                             good_bjets_hadronFlavour,                  //
-                                             good_jets_pt,                              //
-                                             good_jets_abseta, //                                       //
+            outputs.set_event_weight("LightJetCorrelated",
+                                     "Up",
+                                     btag_sf("central",
+                                             "up_correlated",
+                                             good_bjets_pt,            //
+                                             good_bjets_abseta,        //
+                                             good_bjets_hadronFlavour, //
+                                             good_jets_pt,             //
+                                             good_jets_abseta,         //                                       //
                                              good_jets_hadronFlavour));
-            outputs.set_event_weight("LightJetCorrelated", "Down",
-                                     btag_sf("central", "down_correlated", good_bjets_pt, //
-                                             good_bjets_abseta,                           //
-                                             good_bjets_hadronFlavour,                    //
-                                             good_jets_pt,                                //
-                                             good_jets_abseta, //                                       //
+            outputs.set_event_weight("LightJetCorrelated",
+                                     "Down",
+                                     btag_sf("central",
+                                             "down_correlated",
+                                             good_bjets_pt,            //
+                                             good_bjets_abseta,        //
+                                             good_bjets_hadronFlavour, //
+                                             good_jets_pt,             //
+                                             good_jets_abseta,         //                                       //
                                              good_jets_hadronFlavour));
 
             // BJetUncorrelated
-            outputs.set_event_weight("BJetUncorrelated", "Nominal",
-                                     btag_sf("central", "central", good_bjets_pt, //
-                                             good_bjets_abseta,                   //
-                                             good_bjets_hadronFlavour,            //
-                                             good_jets_pt,                        //
-                                             good_jets_abseta, //                                       //
+            outputs.set_event_weight("BJetUncorrelated",
+                                     "Nominal",
+                                     btag_sf("central",
+                                             "central",
+                                             good_bjets_pt,            //
+                                             good_bjets_abseta,        //
+                                             good_bjets_hadronFlavour, //
+                                             good_jets_pt,             //
+                                             good_jets_abseta,         //                                       //
                                              good_jets_hadronFlavour));
-            outputs.set_event_weight("BJetUncorrelated", "Up",
-                                     btag_sf("up_uncorrelated", "central", good_bjets_pt, //
-                                             good_bjets_abseta,                           //
-                                             good_bjets_hadronFlavour,                    //
-                                             good_jets_pt,                                //
-                                             good_jets_abseta, //                                       //
+            outputs.set_event_weight("BJetUncorrelated",
+                                     "Up",
+                                     btag_sf("up_uncorrelated",
+                                             "central",
+                                             good_bjets_pt,            //
+                                             good_bjets_abseta,        //
+                                             good_bjets_hadronFlavour, //
+                                             good_jets_pt,             //
+                                             good_jets_abseta,         //                                       //
                                              good_jets_hadronFlavour));
-            outputs.set_event_weight("BJetUncorrelated", "Down",
-                                     btag_sf("down_uncorrelated", "central", good_bjets_pt, //
-                                             good_bjets_abseta,                             //
-                                             good_bjets_hadronFlavour,                      //
-                                             good_jets_pt,                                  //
-                                             good_jets_abseta, //                                       //
+            outputs.set_event_weight("BJetUncorrelated",
+                                     "Down",
+                                     btag_sf("down_uncorrelated",
+                                             "central",
+                                             good_bjets_pt,            //
+                                             good_bjets_abseta,        //
+                                             good_bjets_hadronFlavour, //
+                                             good_jets_pt,             //
+                                             good_jets_abseta,         //                                       //
                                              good_jets_hadronFlavour));
 
             // LightJetUncorrelated
-            outputs.set_event_weight("LightJetUncorrelated", "Nominal",
-                                     btag_sf("central", "central", good_bjets_pt, //
-                                             good_bjets_abseta,                   //
-                                             good_bjets_hadronFlavour,            //
-                                             good_jets_pt,                        //
-                                             good_jets_abseta, //                                       //
+            outputs.set_event_weight("LightJetUncorrelated",
+                                     "Nominal",
+                                     btag_sf("central",
+                                             "central",
+                                             good_bjets_pt,            //
+                                             good_bjets_abseta,        //
+                                             good_bjets_hadronFlavour, //
+                                             good_jets_pt,             //
+                                             good_jets_abseta,         //                                       //
                                              good_jets_hadronFlavour));
-            outputs.set_event_weight("LightJetUncorrelated", "Up",
-                                     btag_sf("central", "up_uncorrelated", good_bjets_pt, //
-                                             good_bjets_abseta,                           //
-                                             good_bjets_hadronFlavour,                    //
-                                             good_jets_pt,                                //
-                                             good_jets_abseta, //                                       //
+            outputs.set_event_weight("LightJetUncorrelated",
+                                     "Up",
+                                     btag_sf("central",
+                                             "up_uncorrelated",
+                                             good_bjets_pt,            //
+                                             good_bjets_abseta,        //
+                                             good_bjets_hadronFlavour, //
+                                             good_jets_pt,             //
+                                             good_jets_abseta,         //                                       //
                                              good_jets_hadronFlavour));
-            outputs.set_event_weight("LightJetUncorrelated", "Down",
-                                     btag_sf("central", "down_uncorrelated", good_bjets_pt, //
-                                             good_bjets_abseta,                             //
-                                             good_bjets_hadronFlavour,                      //
-                                             good_jets_pt,                                  //
-                                             good_jets_abseta, //                                       //
+            outputs.set_event_weight("LightJetUncorrelated",
+                                     "Down",
+                                     btag_sf("central",
+                                             "down_uncorrelated",
+                                             good_bjets_pt,            //
+                                             good_bjets_abseta,        //
+                                             good_bjets_hadronFlavour, //
+                                             good_jets_pt,             //
+                                             good_jets_abseta,         //                                       //
                                              good_jets_hadronFlavour));
 
             return *this;

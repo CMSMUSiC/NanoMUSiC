@@ -349,14 +349,19 @@ auto main(int argc, char *argv[]) -> int
                 // lhe info
                 .set_lhe_info(NanoObjects::LHEInfo(unwrap(LHEPdfWeight),   //
                                                    unwrap(LHEScaleWeight), //
-                                                   unwrap(LHEWeight_originalXWGTUP, 1.), unwrap(LHE_HT),
+                                                   unwrap(LHEWeight_originalXWGTUP, 1.),
+                                                   unwrap(LHE_HT),
                                                    unwrap(LHE_HTIncoming))) //
 
                 // gen particles
-                .set_gen_particles(NanoObjects::GenParticles(unwrap(GenPart_pt), unwrap(GenPart_eta),
-                                                             unwrap(GenPart_phi), unwrap(GenPart_mass),
-                                                             unwrap(GenPart_genPartIdxMother), unwrap(GenPart_pdgId),
-                                                             unwrap(GenPart_status), unwrap(GenPart_statusFlags)))
+                .set_gen_particles(NanoObjects::GenParticles(unwrap(GenPart_pt),
+                                                             unwrap(GenPart_eta),
+                                                             unwrap(GenPart_phi),
+                                                             unwrap(GenPart_mass),
+                                                             unwrap(GenPart_genPartIdxMother),
+                                                             unwrap(GenPart_pdgId),
+                                                             unwrap(GenPart_status),
+                                                             unwrap(GenPart_statusFlags)))
 
                 // muons
                 .set_muons(NanoObjects::Muons(unwrap(Muon_pt),             //
@@ -423,7 +428,11 @@ auto main(int argc, char *argv[]) -> int
                          .has_selected_objects_filter(outputs)
                          .trigger_match_filter(outputs, matchers)
                          .set_l1_pre_firing_SFs(outputs)
-                         .set_muon_SFs(outputs, muon_sf_reco, muon_sf_id_low_pt, muon_sf_id_high_pt, muon_sf_iso_low_pt,
+                         .set_muon_SFs(outputs,
+                                       muon_sf_reco,
+                                       muon_sf_id_low_pt,
+                                       muon_sf_id_high_pt,
+                                       muon_sf_iso_low_pt,
                                        muon_sf_iso_high_pt)
                          .set_electron_SFs(outputs, electron_sf)
                          .set_photon_SFs(outputs, photon_id_sf, photon_pixel_seed_sf)

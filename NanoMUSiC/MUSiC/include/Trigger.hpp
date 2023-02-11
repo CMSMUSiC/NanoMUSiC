@@ -369,7 +369,11 @@ class TrgObjMatcher
     const bool is_data;
     const Corrector trigger_sf_correctors;
 
-    TrgObjMatcher(const std::string_view &_hlt_path, double _max_deltar_r, double _pt_min, int _id, Year _year,
+    TrgObjMatcher(const std::string_view &_hlt_path,
+                  double _max_deltar_r,
+                  double _pt_min,
+                  int _id,
+                  Year _year,
                   bool _is_data)
         : hlt_path(_hlt_path),
           id(_id),
@@ -386,7 +390,8 @@ class TrgObjMatcher
         {
             throw std::runtime_error(
                 fmt::format("The Trigger SF name ({}) is not present in the array of defined HLT paths ({}).\n",
-                            hlt_path, Trigger::ActivatedHLTPath));
+                            hlt_path,
+                            Trigger::ActivatedHLTPath));
         }
     }
 
@@ -457,13 +462,19 @@ class TrgObjMatcher
 
                 trigger_sf_nominal = //
                     trigger_sf_correctors({CorrectionHelpers::get_year_for_muon_sf(year),
-                                           fabs(_matched_nano_object_eta), _matched_nano_object_pt, "sf"});
+                                           fabs(_matched_nano_object_eta),
+                                           _matched_nano_object_pt,
+                                           "sf"});
                 trigger_sf_up = //
                     trigger_sf_correctors({CorrectionHelpers::get_year_for_muon_sf(year),
-                                           fabs(_matched_nano_object_eta), _matched_nano_object_pt, "systup"});
+                                           fabs(_matched_nano_object_eta),
+                                           _matched_nano_object_pt,
+                                           "systup"});
                 trigger_sf_down = //
                     trigger_sf_correctors({CorrectionHelpers::get_year_for_muon_sf(year),
-                                           fabs(_matched_nano_object_eta), _matched_nano_object_pt, "systdown"});
+                                           fabs(_matched_nano_object_eta),
+                                           _matched_nano_object_pt,
+                                           "systdown"});
             }
             else if (id == PDG::Electron::Id)
             {
