@@ -44,6 +44,21 @@ inline auto mass(const float &pt1,
     return std::sqrt(e * e - x * x - y * y - z * z);
 }
 
+inline auto pt(const float &pt1, const float &phi1, const float &pt2, const float &phi2) -> float
+{
+    const auto x1 = pt1 * std::cos(phi1);
+    const auto y1 = pt1 * std::sin(phi1);
+
+    const auto x2 = pt2 * std::cos(phi2);
+    const auto y2 = pt2 * std::sin(phi2);
+
+    // Addition of particle 2d-vector components
+    const auto x = x1 + x2;
+    const auto y = y1 + y2;
+
+    return std::sqrt(x * x + y * y);
+}
+
 } // namespace LorentzVectorHelper
 namespace NanoObjects
 {
@@ -237,6 +252,36 @@ struct GenParticles
           pdgId(_pdgId),
           status(_status),
           statusFlags(_statusFlags)
+    {
+    }
+};
+
+struct LHEParticles
+{
+    std::size_t nLHEParticles;
+    RVec<float> pt;
+    RVec<float> eta;
+    RVec<float> phi;
+    RVec<float> mass;
+    RVec<float> incomingpz;
+    RVec<int> pdgId;
+    RVec<int> status;
+
+    LHEParticles(const RVec<float> _pt = {},
+                 const RVec<float> _eta = {},
+                 const RVec<float> _phi = {},
+                 const RVec<float> _mass = {},
+                 const RVec<float> _incomingpz = {},
+                 const RVec<int> _pdgId = {},
+                 const RVec<int> _status = {})
+        : nLHEParticles(_pt.size()),
+          pt(_pt),
+          eta(_eta),
+          phi(_phi),
+          mass(_mass),
+          incomingpz(_incomingpz),
+          pdgId(_pdgId),
+          status(_status)
     {
     }
 };

@@ -252,7 +252,9 @@ inline auto print_report(const double &dTime1,
     fmt::print("\n=====================================\n");
     fmt::print("               Cutflow:              \n");
     fmt::print("-------------------------------------\n");
-    for (auto &&cut : IndexHelpers::make_index(2, Outputs::kTotalCuts-1))
+    fmt::print(" {:25}: {: >6.2f} %\n", "GeneratorFilter", cutflow.GetBinContent(2) / cutflow.GetBinContent(1) * 100);
+    fmt::print(". . . . . . . . . . . . . . . . . . .\n");
+    for (auto &&cut : IndexHelpers::make_index(2, Outputs::kTotalCuts - 1))
     {
         fmt::print(" {:25}: {: >6.2f} %\n",
                    Outputs::Cuts[cut],

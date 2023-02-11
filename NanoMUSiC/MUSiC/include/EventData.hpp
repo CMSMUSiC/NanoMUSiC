@@ -52,6 +52,8 @@ class EventData
 
     NanoObjects::GenParticles gen_particles;
 
+    NanoObjects::LHEParticles lhe_particles;
+
     NanoObjects::Muons muons;
     RVec<int> good_muons_mask;
     RVec<int> good_low_pt_muons_mask;
@@ -88,7 +90,6 @@ class EventData
           is_data(_is_data),
           year(_year)
     {
-        outputs.fill_cutflow_histo("NoCuts", 1.);
     }
 
     // builder interface
@@ -122,11 +123,21 @@ class EventData
         return *this;
     }
 
-    auto set_gen_particles(NanoObjects::GenParticles &&_gen_particles) -> EventData &
+    // auto set_gen_particles(NanoObjects::GenParticles &&_gen_particles) -> EventData &
+    // {
+    //     if (*this)
+    //     {
+    //         gen_particles = _gen_particles;
+    //         return *this;
+    //     }
+    //     return *this;
+    // }
+
+    auto set_lhe_particles(NanoObjects::LHEParticles &&_lhe_particles) -> EventData &
     {
         if (*this)
         {
-            gen_particles = _gen_particles;
+            lhe_particles = _lhe_particles;
             return *this;
         }
         return *this;
@@ -490,6 +501,8 @@ class EventData
             // if MC
             if (!is_data)
             {
+                // fmt::print("lhe_particles.mass: {}\n", lhe_particles.mass);
+                // fmt::print("lhe_particles.pdgId: {}\n", lhe_particles.pdgId);
                 /////////////////////////////////////////////////
                 // TODO: check if it is good gen event
                 /////////////////////////////////////////////////
@@ -498,16 +511,25 @@ class EventData
                     // fmt::print("{}\n", generator_info.binvar);
                     // fmt::print("{}\n", lhe_info.);
                     // fmt::print("$$$$$$$$$$$$$$$$$$$$\n");
-                    if (GeneratorFilters::filters.count(process) > 0)
+                    try
                     {
-                        is_good_gen = GeneratorFilters::filters.at(process)(gen_particles);
+                        is_good_gen = GeneratorFilters::filters.at(process)(lhe_particles);
+                    }
+                    catch (const std::out_of_range &e)
+                    {
+                        fmt::print("[ Generator Filter ] No Generator Filter was found for process: {}.", process);
+                        exit(-1);
                     }
                 }
             }
+
+            // first filter - it is needed in order to calculate the effective x_section_file
+            // xSec_eff = xSec *  pass(GeneratorFilter)/pass(NoCuts)
+            outputs.fill_cutflow_histo("NoCuts", outputs.get_event_weight("Generator"));
             if (is_good_gen)
             {
                 // // fmt::print("\nDEBUG - generator_filter");
-                outputs.fill_cutflow_histo("GeneratorFilter", 1.);
+                outputs.fill_cutflow_histo("GeneratorFilter", outputs.get_event_weight("Generator"));
                 outputs.fill_cutflow_histo("GeneratorWeight", outputs.get_event_weight());
                 return *this;
             }

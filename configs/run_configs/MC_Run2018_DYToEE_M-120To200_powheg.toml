@@ -1,12 +1,12 @@
-output = 'test_mc_2018_QCD'
+output = 'test_mc_2018_DYToEE_M-120To200'
 is_data = false                                    # Is Data?
 x_section_file = '$MUSIC_BASE/configs/xsections_and_lumi/x_sections.toml'
 year = '2018'
-process = 'QCD_SOMETHING'
+process = 'DYToEE_M-120To200_TuneCP5_13TeV-powheg-pythia8'
 dataset = '/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM'
 is_crab_job = false
 
 input_files = [
-    '/disk1/silva/projects/NanoMUSiC_Test_Data/QCD_2018/f01.root',
+    '/disk1/silva/projects/NanoMUSiC_Test_Data/DY2018_DYToEE_M-120To200_TuneCP5_13TeV-powheg-pythia8/f01.root'
     ]
 

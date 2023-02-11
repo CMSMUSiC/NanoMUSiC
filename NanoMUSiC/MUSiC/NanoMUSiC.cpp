@@ -148,6 +148,7 @@ auto main(int argc, char *argv[]) -> int
     Outputs outputs(output_file_name);
 
     // create file chain and tree reader
+    std::cout << colors.def << "Loading input file ..." << colors.def << std::endl;
     auto chain = TChain("Events");
     for (auto &&file : configuration.input_files)
     {
@@ -203,6 +204,16 @@ auto main(int argc, char *argv[]) -> int
     ADD_VALUE_READER(Generator_id1, int);
     ADD_VALUE_READER(Generator_id2, int);
 
+    // // GenParticles
+    // ADD_ARRAY_READER(GenPart_eta, float);
+    // ADD_ARRAY_READER(GenPart_mass, float);
+    // ADD_ARRAY_READER(GenPart_phi, float);
+    // ADD_ARRAY_READER(GenPart_pt, float);
+    // ADD_ARRAY_READER(GenPart_genPartIdxMother, int);
+    // ADD_ARRAY_READER(GenPart_pdgId, int);
+    // ADD_ARRAY_READER(GenPart_status, int);
+    // ADD_ARRAY_READER(GenPart_statusFlags, int);
+
     // LHE info
     ADD_ARRAY_READER(LHEPdfWeight, float);
     ADD_ARRAY_READER(LHEScaleWeight, float);
@@ -210,15 +221,14 @@ auto main(int argc, char *argv[]) -> int
     ADD_VALUE_READER(LHE_HT, Float_t);
     ADD_VALUE_READER(LHE_HTIncoming, Float_t);
 
-    // GenParticles
-    ADD_ARRAY_READER(GenPart_eta, float);
-    ADD_ARRAY_READER(GenPart_mass, float);
-    ADD_ARRAY_READER(GenPart_phi, float);
-    ADD_ARRAY_READER(GenPart_pt, float);
-    ADD_ARRAY_READER(GenPart_genPartIdxMother, int);
-    ADD_ARRAY_READER(GenPart_pdgId, int);
-    ADD_ARRAY_READER(GenPart_status, int);
-    ADD_ARRAY_READER(GenPart_statusFlags, int);
+    // LHE Particles
+    ADD_ARRAY_READER(LHEPart_pt, float);
+    ADD_ARRAY_READER(LHEPart_eta, float);
+    ADD_ARRAY_READER(LHEPart_phi, float);
+    ADD_ARRAY_READER(LHEPart_mass, float);
+    ADD_ARRAY_READER(LHEPart_incomingpz, float);
+    ADD_ARRAY_READER(LHEPart_pdgId, int);
+    ADD_ARRAY_READER(LHEPart_status, int);
 
     // muons
     ADD_ARRAY_READER(Muon_pt, float);
@@ -353,15 +363,24 @@ auto main(int argc, char *argv[]) -> int
                                                    unwrap(LHE_HT),
                                                    unwrap(LHE_HTIncoming))) //
 
-                // gen particles
-                .set_gen_particles(NanoObjects::GenParticles(unwrap(GenPart_pt),
-                                                             unwrap(GenPart_eta),
-                                                             unwrap(GenPart_phi),
-                                                             unwrap(GenPart_mass),
-                                                             unwrap(GenPart_genPartIdxMother),
-                                                             unwrap(GenPart_pdgId),
-                                                             unwrap(GenPart_status),
-                                                             unwrap(GenPart_statusFlags)))
+                // // gen particles
+                // .set_gen_particles(NanoObjects::GenParticles(unwrap(GenPart_pt),
+                //                                              unwrap(GenPart_eta),
+                //                                              unwrap(GenPart_phi),
+                //                                              unwrap(GenPart_mass),
+                //                                              unwrap(GenPart_genPartIdxMother),
+                //                                              unwrap(GenPart_pdgId),
+                //                                              unwrap(GenPart_status),
+                //                                              unwrap(GenPart_statusFlags)))
+
+                // lhe particles
+                .set_lhe_particles(NanoObjects::LHEParticles(unwrap(LHEPart_pt),
+                                                             unwrap(LHEPart_eta),
+                                                             unwrap(LHEPart_phi),
+                                                             unwrap(LHEPart_mass),
+                                                             unwrap(LHEPart_incomingpz),
+                                                             unwrap(LHEPart_pdgId),
+                                                             unwrap(LHEPart_status)))
 
                 // muons
                 .set_muons(NanoObjects::Muons(unwrap(Muon_pt),             //

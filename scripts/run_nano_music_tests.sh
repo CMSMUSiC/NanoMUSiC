@@ -27,6 +27,12 @@ echo \[ $! \] `ps -p $! -o args` | sed -e "s/COMMAND//"
 nano_music --run-config ../configs/run_configs/MC_Run2018.toml > Test_Ouputs_MC_Run2018.txt  2>&1 &
 echo \[ $! \] `ps -p $! -o args` | sed -e "s/COMMAND//"
 
+nano_music --run-config ../configs/run_configs/MC_Run2018_DY_pT_filter_400_650.toml > Test_Ouputs_MC_Run2018_DY_pT_filter_400_650.txt  2>&1 &
+echo \[ $! \] `ps -p $! -o args` | sed -e "s/COMMAND//"
+
+nano_music --run-config ../configs/run_configs/MC_Run2018_DYToEE_M-120To200_powheg.toml > Test_Ouputs_MC_Run2018_DYToEE_M-120To200_powheg.txt  2>&1 &
+echo \[ $! \] `ps -p $! -o args` | sed -e "s/COMMAND//"
+
 nano_music --run-config ../configs/run_configs/MC_Run2018_Pythia_only.toml > Test_Ouputs_MC_Run2018_Pythia_only.txt  2>&1 &
 echo \[ $! \] `ps -p $! -o args` | sed -e "s/COMMAND//"
 
