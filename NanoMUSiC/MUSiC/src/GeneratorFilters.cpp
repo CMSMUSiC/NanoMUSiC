@@ -77,7 +77,17 @@ auto dy_filter(const NanoObjects::LHEParticles &lhe_particles,
             // fmt::print("pt: {}\n", pt);
             // fmt::print("mass: {}\n", mass);
 
-            if ((mass >= mass_min - .5 and mass <= mass_max + .5) and (pt >= pt_min - .5 and mass <= pt_max + .5))
+            // allow Taus decay to leak to the high mass region
+            // this covers the high mass phase-space,
+            // since we do no include tau simulation in the POWHEG samples
+            float actual_max_mass = mass_max;
+            if (lhe_particles.pdgId[*idx_lepton_minus] == PDG::Tau::Id)
+            {
+                actual_max_mass = max_float;
+            }
+
+            if ((mass >= mass_min - .5 and mass <= actual_max_mass + .5) and
+                (pt >= pt_min - .5 and mass <= pt_max + .5))
             {
                 return true;
             }
@@ -131,7 +141,7 @@ auto wg_filter(const NanoObjects::LHEParticles &lhe_particles, const float &pt_m
 //     return false;
 // }
 
-auto wwtro2l2nu_filter(const NanoObjects::LHEParticles &lhe_particles, const float &mass_max) -> bool
+auto wwto2l2nu_filter(const NanoObjects::LHEParticles &lhe_particles, const float &mass_max) -> bool
 {
     // filter Lep+Lep- pair
     std::optional<std::size_t> idx_lepton_plus = std::nullopt;
