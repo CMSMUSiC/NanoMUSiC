@@ -63,7 +63,8 @@
 #include "Outputs.hpp"
 // #include "ObjectCorrections.hpp"
 #include "Enumerate.hpp"
-#include "EventData.hpp"
+#include "EventAnalyzer.hpp"
+#include "TOMLConfig.hpp"
 #include "TaskConfiguration.hpp"
 #include "Trigger.hpp"
 

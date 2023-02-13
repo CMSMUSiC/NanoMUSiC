@@ -311,8 +311,8 @@ auto main(int argc, char *argv[]) -> int
         outputs.clear_event_tree();
 
         // build event data
-        auto event_data =
-            EventData(configuration.is_data, configuration.year, outputs)
+        auto event_analyzer =
+            EventAnalyzer(configuration.is_data, configuration.year, outputs)
                 // event info
                 .set_event_info(NanoObjects::EventInfo(unwrap(run),                       //
                                                        unwrap(lumi),                      //
@@ -434,43 +434,43 @@ auto main(int argc, char *argv[]) -> int
                                                   unwrap(TrigObj_id),  //
                                                   unwrap(TrigObj_filterBits)));
 
-        event_data = event_data.set_pdf_alpha_s_weights(lha_indexes, default_pdf_sets)
-                         .set_scale_weights()
-                         .set_const_weights(outputs, pu_weight)
-                         .generator_filter(outputs, configuration.process)
-                         .run_lumi_filter(outputs, run_lumi_filter)
-                         .npv_filter(outputs)
-                         .met_filter(outputs)
-                         .set_trigger_bits()
-                         .trigger_filter(outputs)
-                         .object_selection()
-                         .has_selected_objects_filter(outputs)
-                         .trigger_match_filter(outputs, matchers)
-                         .set_l1_pre_firing_SFs(outputs)
-                         .set_muon_SFs(outputs,
-                                       muon_sf_reco,
-                                       muon_sf_id_low_pt,
-                                       muon_sf_id_high_pt,
-                                       muon_sf_iso_low_pt,
-                                       muon_sf_iso_high_pt)
-                         .set_electron_SFs(outputs, electron_sf)
-                         .set_photon_SFs(outputs, photon_id_sf, photon_pixel_seed_sf)
-                         .set_tau_SFs(outputs)
-                         .set_jet_SFs(outputs)
-                         .set_bjet_SFs(outputs, btag_sf)
-                         .set_met_SFs(outputs)
-                         .set_trigger_SFs(outputs)
-                         .muon_corrections()
-                         .electron_corrections()
-                         .photon_corrections()
-                         .tau_corrections()
-                         .bjet_corrections()
-                         .jet_corrections()
-                         .met_corrections()
-                         .fill_event_content(outputs);
+        event_analyzer = event_analyzer.set_pdf_alpha_s_weights(lha_indexes, default_pdf_sets)
+                             .set_scale_weights()
+                             .set_const_weights(outputs, pu_weight)
+                             .generator_filter(outputs, configuration.process)
+                             .run_lumi_filter(outputs, run_lumi_filter)
+                             .npv_filter(outputs)
+                             .met_filter(outputs)
+                             .set_trigger_bits()
+                             .trigger_filter(outputs)
+                             .object_selection()
+                             .has_selected_objects_filter(outputs)
+                             .trigger_match_filter(outputs, matchers)
+                             .set_l1_pre_firing_SFs(outputs)
+                             .set_muon_SFs(outputs,
+                                           muon_sf_reco,
+                                           muon_sf_id_low_pt,
+                                           muon_sf_id_high_pt,
+                                           muon_sf_iso_low_pt,
+                                           muon_sf_iso_high_pt)
+                             .set_electron_SFs(outputs, electron_sf)
+                             .set_photon_SFs(outputs, photon_id_sf, photon_pixel_seed_sf)
+                             .set_tau_SFs(outputs)
+                             .set_jet_SFs(outputs)
+                             .set_bjet_SFs(outputs, btag_sf)
+                             .set_met_SFs(outputs)
+                             .set_trigger_SFs(outputs)
+                             .muon_corrections()
+                             .electron_corrections()
+                             .photon_corrections()
+                             .tau_corrections()
+                             .bjet_corrections()
+                             .jet_corrections()
+                             .met_corrections()
+                             .fill_event_content(outputs);
 
         // fill output event tree
-        if (event_data)
+        if (event_analyzer)
         {
             outputs.fill_event_tree();
         }

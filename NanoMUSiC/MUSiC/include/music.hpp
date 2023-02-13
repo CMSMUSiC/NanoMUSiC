@@ -1,3 +1,5 @@
+#ifndef MUSIC_OLD_HPP
+#define MUSIC_OLD_HPP
 
 #include <algorithm>
 #include <csignal>
@@ -69,8 +71,13 @@ unsigned int getIntYear(std::string year)
 // nano_reader->getVal<UInt_t>("nMuon")
 // nano_reader->getVec<Float_t>("Muon_pt")
 // nano_reader->getVal<Bool_t>("HLT_Mu18_Mu9")
-std::unique_ptr<pxl::Event> make_pxlevent(unsigned int i_evt, NanoAODReader &nano_reader, std::string year,
-                                          std::string process, std::string dataset, bool isData, int debug)
+std::unique_ptr<pxl::Event> make_pxlevent(unsigned int i_evt,
+                                          NanoAODReader &nano_reader,
+                                          std::string year,
+                                          std::string process,
+                                          std::string dataset,
+                                          bool isData,
+                                          int debug)
 {
 
     if (debug > 3)
@@ -219,3 +226,4 @@ std::unique_ptr<pxl::Event> make_pxlevent(unsigned int i_evt, NanoAODReader &nan
     // return the produced pxl::Event
     return event;
 }
+#endif // !MUSIC_OLD_HPP

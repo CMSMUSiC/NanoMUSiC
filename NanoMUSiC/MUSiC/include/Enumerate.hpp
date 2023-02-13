@@ -1,5 +1,5 @@
-#ifndef ENUMERATE
-#define ENUMERATE
+#ifndef ENUMERATE_H
+#define ENUMERATE_H
 
 #include <fmt/core.h>
 #include <fmt/ostream.h>
@@ -42,7 +42,8 @@ class Enumerate
   public:
     std::array<CT, N> categories;
 
-    constexpr Enumerate(T &&...values) : categories(std::array<CT, sizeof...(T)>{values...})
+    constexpr Enumerate(T &&...values)
+        : categories(std::array<CT, sizeof...(T)>{values...})
     {
         // static_assert(number_of_duplicates(values...) == 0,
         //               "Must not have duplicated elements.");
@@ -147,4 +148,4 @@ constexpr auto make_enumerate(Ts &&...args)
     }
 }
 
-#endif /*ENUMERATE*/
+#endif /*ENUMERATE_H*/
