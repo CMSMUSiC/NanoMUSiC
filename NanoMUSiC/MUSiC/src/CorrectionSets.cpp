@@ -30,7 +30,8 @@ auto ElectronTriggerSF::get_limits(const TH2F &histo) -> std::tuple<double, doub
                            pt_upper_limit,  //
                            pt_lower_limit);
 }
-
+// Reference:
+// https://twiki.cern.ch/twiki/bin/view/CMS/EgHLTScaleFactorMeasurements
 ElectronTriggerSF::ElectronTriggerSF(const PtRegime &_pt_regime, const Year &_year)
     : pt_regime(_pt_regime),
       year(_year)

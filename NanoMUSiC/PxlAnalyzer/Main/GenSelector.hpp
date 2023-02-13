@@ -38,13 +38,16 @@ class GenSelector
     // Check if the given number of particles is sensible.
     bool CheckNumberOfParticles(pxlParticles const &s3_particlesSelected) const;
     // Check if a gamma is found to close to a parton / lepton for Gjets / ZJets cleaning
-    bool passGammaCuts(pxl::EventView const *EvtView, std::vector<pxl::Particle *> genParts,
+    bool passGammaCuts(pxl::EventView const *EvtView,
+                       std::vector<pxl::Particle *> genParts,
                        std::vector<pxl::Particle *> genJets) const;
     // For DY vs Zy cleaning
-    bool passDYGammaCuts(pxl::EventView const *EvtView, std::vector<pxl::Particle *> genParts,
+    bool passDYGammaCuts(pxl::EventView const *EvtView,
+                         std::vector<pxl::Particle *> genParts,
                          std::vector<pxl::Particle *> genJets) const;
     // For Zy vs DY cleaning
-    bool passZyGammaCuts(pxl::EventView const *EvtView, std::vector<pxl::Particle *> genParts,
+    bool passZyGammaCuts(pxl::EventView const *EvtView,
+                         std::vector<pxl::Particle *> genParts,
                          std::vector<pxl::Particle *> genJets) const;
 
     std::vector<pxl::Particle *> getGenParticles(pxl::EventView *GenEvtView, std::string gen_label) const;

@@ -32,6 +32,8 @@ auto dy_filter(const NanoObjects::LHEParticles &lhe_particles,
 
 auto ttbar_filter(const NanoObjects::LHEParticles &lhe_particles, const float &mass_min, const float &mass_max) -> bool;
 auto wg_filter(const NanoObjects::LHEParticles &lhe_particles, const float &pt_max) -> bool;
+auto zg_filter(const NanoObjects::LHEParticles &lhe_particles, const float &pt_max) -> bool;
+auto wwtro2l2nu_filter(const NanoObjects::LHEParticles &lhe_particles, const float &mass_max) -> bool;
 
 constexpr float max_float = std::numeric_limits<float>::max();
 
@@ -56,6 +58,11 @@ const std::map<std::string, std::function<bool(const NanoObjects::LHEParticles &
     {"TTToSemiLeptonic_2018"s,
      [](const NanoObjects::LHEParticles &lhe_particles) -> bool { return ttbar_filter(lhe_particles, 0., 700.); }}, //
     {"WG"s, [](const NanoObjects::LHEParticles &lhe_particles) -> bool { return wg_filter(lhe_particles, 500.); }}, //
+    // Not needed for now. Samples have to be requested/followed-up.
+    // {"ZG"s, [](const NanoObjects::LHEParticles &lhe_particles) -> bool { return zg_filter(lhe_particles, 500.); }},
+    // //
+    {"WWTo2L2Nu_13TeV_PH"s,
+     [](const NanoObjects::LHEParticles &lhe_particles) -> bool { return wwtro2l2nu_filter(lhe_particles, 200.); }}, //
 };
 } // namespace GeneratorFilters
 
