@@ -30,10 +30,13 @@ auto dy_filter(const NanoObjects::LHEParticles &lhe_particles,
                const float &pt_min,
                const float &pt_max) -> bool;
 
+auto ttbar_filter(const NanoObjects::LHEParticles &lhe_particles, const float &mass_min, const float &mass_max) -> bool;
+auto wg_filter(const NanoObjects::LHEParticles &lhe_particles, const float &pt_max) -> bool;
+
 constexpr float max_float = std::numeric_limits<float>::max();
 
 const std::map<std::string, std::function<bool(const NanoObjects::LHEParticles &)>> filters = {
-    {"QCD_SOMETHING"s, no_filter}, //
+    // {"QCD_SOMETHING"s, no_filter}, //
     {"DYJetsToLL_M-10To50_13TeV_AM"s,
      [](const NanoObjects::LHEParticles &lhe_particles) -> bool {
          return dy_filter(lhe_particles, 0., max_float, 0., 100.);
@@ -50,6 +53,9 @@ const std::map<std::string, std::function<bool(const NanoObjects::LHEParticles &
      [](const NanoObjects::LHEParticles &lhe_particles) -> bool {
          return dy_filter(lhe_particles, 120., max_float, 0., max_float);
      }}, //
+    {"TTToSemiLeptonic_2018"s,
+     [](const NanoObjects::LHEParticles &lhe_particles) -> bool { return ttbar_filter(lhe_particles, 0., 700.); }}, //
+    {"WG"s, [](const NanoObjects::LHEParticles &lhe_particles) -> bool { return wg_filter(lhe_particles, 500.); }}, //
 };
 } // namespace GeneratorFilters
 

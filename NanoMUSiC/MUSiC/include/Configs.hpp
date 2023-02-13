@@ -35,6 +35,17 @@ constexpr int Id = 15;
 constexpr float Mass = 1776.86 / 1000.;
 } // namespace Tau
 
+namespace Bottom
+{
+constexpr int Id = 5;
+constexpr float Mass = 4.18;
+} // namespace Bottom
+namespace Top
+{
+constexpr int Id = 6;
+constexpr float Mass = 172.76;
+} // namespace Top
+
 namespace Gluon
 {
 constexpr int Id = 21;

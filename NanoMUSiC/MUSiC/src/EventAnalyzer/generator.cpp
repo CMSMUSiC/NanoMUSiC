@@ -11,17 +11,12 @@ auto EventAnalyzer::generator_filter(Outputs &outputs, const std::string &proces
         // if MC
         if (!is_data)
         {
-            // fmt::print("lhe_particles.mass: {}\n", lhe_particles.mass);
-            // fmt::print("lhe_particles.pdgId: {}\n", lhe_particles.pdgId);
-            /////////////////////////////////////////////////
-            // TODO: check if it is good gen event
-            /////////////////////////////////////////////////
-            if (true)
+            if (GeneratorFilters::filters.count(process) > 0)
             {
-                if (GeneratorFilters::filters.count(process) > 0)
-                {
-                    is_good_gen = GeneratorFilters::filters.at(process)(lhe_particles);
-                }
+                is_good_gen = GeneratorFilters::filters.at(process)(lhe_particles);
+            }
+            else
+            {
                 is_good_gen = true;
             }
         }
