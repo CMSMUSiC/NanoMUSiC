@@ -1,5 +1,8 @@
+#include "ROOT/RDataFrame.hxx"
 #include "ROOT/RVec.hxx"
+#include "TFile.h"
 #include "TTree.h"
+#include "fmt/core.h"
 #include "fmt/format.h"
 
 #include <optional>
@@ -143,9 +146,31 @@ void lhe_particles_inspector()
     //     "WGToLNuG_01J_5f_PtG_130_TuneCP5_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/"
     //     "130000/69972AEE-D53B-FF40-9925-3424B94F337A.root");
 
+    // TFile *_file0 = TFile::Open(
+    //     "root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL18NanoAODv9/WWTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/"
+    //     "NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v2/260000/C9232127-81AC-AE46-8B94-6D3A16ACF5AA.root");
+
+    // TFile *_file0 = TFile::Open("/disk1/silva/projects/NanoMUSiC_Test_Data/QCD_2018/f01.root");
+
     TFile *_file0 = TFile::Open(
-        "root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL18NanoAODv9/WWTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/"
-        "NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v2/260000/C9232127-81AC-AE46-8B94-6D3A16ACF5AA.root");
+        "root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL18NanoAODv9/"
+        "QCD_HT200to300_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/2830000/"
+        "132DA3A2-2F6C-CB47-A503-0F85A1262F31.root");
+
+    // TFile *_file0 = TFile::Open(
+    //     "root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL18NanoAODv9/"
+    //     "GJets_HT-40To100_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/2560000/"
+    //     "085FD353-993E-7849-9FD9-9D6191CC7561.root");
+
+    // TFile *_file0 = TFile::Open(
+    //     "root://cms-xrd-global.cern.ch///store/mc/RunIISummer20UL18NanoAODv9/"
+    //     "GJets_DR-0p4_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/"
+    //     "130000/8DF98C3B-9798-E847-9484-036223E38F21.root");
+
+    // TFile *_file0 = TFile::Open(
+    //     "root://cms-xrd-global.cern.ch// "
+    //     "/store/mc/RunIISummer20UL18NanoAODv9/GJets_DR-0p4_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/"
+    //     "106X_upgrade2018_realistic_v16_L1v1-v1/130000/C477CD42-A586-FA45-9DAA-EC52D0E33BBD.root");
 
     auto t = _file0->Get<TTree>("Events");
 
@@ -153,6 +178,8 @@ void lhe_particles_inspector()
         *t, {"LHEPart_pdgId", "LHEPart_status", "LHEPart_pt", "LHEPart_eta", "LHEPart_phi", "LHEPart_mass"});
     ULong64_t total = 0;
     ULong64_t accepted = 0;
+
+    float min_delta_r = 999999.;
 
     fmt::print("Starting ...\n");
     df.Foreach(
@@ -163,84 +190,110 @@ void lhe_particles_inspector()
             ROOT::RVec<float> phi,
             ROOT::RVec<float> mass) {
             total++;
+
+            auto is_photon = (pdgId) == 22;
+            if (not ROOT::VecOps::Any(is_photon))
+            {
+                return;
+            }
+            auto not_photon = (pdgId) != 22;
             // std::cout << "------------------------" << std::endl;
             // std::cout << pdgId << std::endl;
             // std::cout << status << std::endl;
             // std::cout << pt << std::endl;
 
-            auto filter = [&](const float &mass_max) -> bool {
-                // filter Lep+Lep- pair
-                std::optional<std::size_t> idx_lepton_plus = std::nullopt;
-                std::optional<std::size_t> idx_lepton_minus = std::nullopt;
+            // fmt::print("ROOT::VecOps::Any(pdgId[status == 1] == 22): {}\n",
+            //            ROOT::VecOps::Any((pdgId[status == 1]) == 22));
 
-                for (std::size_t i = 0; i < pt.size(); i++)
+            // std::cout << "is_photon: " << is_photon << std::endl;
+
+            for (std::size_t i = 0; i < (pt).size(); i++)
+            {
+                if (pdgId[i] != 22 and status[i] > 0)
                 {
-                    if (not(idx_lepton_plus) and not(idx_lepton_minus))
+                    // std::cout << ROOT::VecOps::DeltaR(eta[is_photon][0], eta[i], phi[is_photon][0], phi[i])
+                    //           << std::endl;
+                    if (ROOT::VecOps::DeltaR(eta[is_photon][0], eta[i], phi[is_photon][0], phi[i]) < min_delta_r)
                     {
-                        if (pdgId.at(i) == PDG::Electron::Id //
-                            or pdgId.at(i) == PDG::Muon::Id  //
-                            or pdgId.at(i) == PDG::Tau::Id)
-                        {
-                            idx_lepton_plus = i;
-                        }
-                        if (pdgId.at(i) == -PDG::Electron::Id //
-                            or pdgId.at(i) == -PDG::Muon::Id  //
-                            or pdgId.at(i) == -PDG::Tau::Id)
-                        {
-                            idx_lepton_minus = i;
-                        }
-                    }
-
-                    if (idx_lepton_plus and not(idx_lepton_minus))
-                    {
-                        if (pdgId.at(i) * pdgId.at(*idx_lepton_plus) < 0)
-                        {
-                            idx_lepton_minus = i;
-                        }
-                    }
-
-                    if (not(idx_lepton_plus) and idx_lepton_minus)
-                    {
-                        if (pdgId.at(i) * pdgId.at(*idx_lepton_minus) < 0)
-                        {
-                            idx_lepton_plus = i;
-                        }
-                    }
-
-                    if (idx_lepton_plus and idx_lepton_minus)
-                    {
-                        auto mass = LorentzVectorHelper::mass(pt[*idx_lepton_plus],
-                                                              eta[*idx_lepton_plus],
-                                                              phi[*idx_lepton_plus],
-                                                              PDG::get_mass_by_id(pdgId[*idx_lepton_plus]),
-                                                              pt[*idx_lepton_minus],
-                                                              eta[*idx_lepton_minus],
-                                                              phi[*idx_lepton_minus],
-                                                              PDG::get_mass_by_id(pdgId[*idx_lepton_minus]));
-
-                        // fmt::print("############################\n");
-                        // fmt::print("pt: {}\n", pt);
-                        // fmt::print("mass: {}\n", mass);
-
-                        if (mass <= mass_max + .5)
-                        {
-                            return true;
-                        }
+                        min_delta_r = ROOT::VecOps::DeltaR(eta[is_photon][0], eta[i], phi[is_photon][0], phi[i]);
                     }
                 }
-
-                // fmt::print("[ Generator Filter ] Didn't pass: DY Mass Cut. Skipping ...\n");
-                return false;
-            };
-
-            if (filter(500.))
-            {
-                accepted++;
             }
+
+            // auto filter = [&](const float &mass_max) -> bool {
+            //     // filter Lep+Lep- pair
+            //     std::optional<std::size_t> idx_lepton_plus = std::nullopt;
+            //     std::optional<std::size_t> idx_lepton_minus = std::nullopt;
+
+            //     for (std::size_t i = 0; i < pt.size(); i++)
+            //     {
+            //         if (not(idx_lepton_plus) and not(idx_lepton_minus))
+            //         {
+            //             if (pdgId.at(i) == PDG::Electron::Id //
+            //                 or pdgId.at(i) == PDG::Muon::Id  //
+            //                 or pdgId.at(i) == PDG::Tau::Id)
+            //             {
+            //                 idx_lepton_plus = i;
+            //             }
+            //             if (pdgId.at(i) == -PDG::Electron::Id //
+            //                 or pdgId.at(i) == -PDG::Muon::Id  //
+            //                 or pdgId.at(i) == -PDG::Tau::Id)
+            //             {
+            //                 idx_lepton_minus = i;
+            //             }
+            //         }
+
+            //         if (idx_lepton_plus and not(idx_lepton_minus))
+            //         {
+            //             if (pdgId.at(i) * pdgId.at(*idx_lepton_plus) < 0)
+            //             {
+            //                 idx_lepton_minus = i;
+            //             }
+            //         }
+
+            //         if (not(idx_lepton_plus) and idx_lepton_minus)
+            //         {
+            //             if (pdgId.at(i) * pdgId.at(*idx_lepton_minus) < 0)
+            //             {
+            //                 idx_lepton_plus = i;
+            //             }
+            //         }
+
+            //         if (idx_lepton_plus and idx_lepton_minus)
+            //         {
+            //             auto mass = LorentzVectorHelper::mass(pt[*idx_lepton_plus],
+            //                                                   eta[*idx_lepton_plus],
+            //                                                   phi[*idx_lepton_plus],
+            //                                                   PDG::get_mass_by_id(pdgId[*idx_lepton_plus]),
+            //                                                   pt[*idx_lepton_minus],
+            //                                                   eta[*idx_lepton_minus],
+            //                                                   phi[*idx_lepton_minus],
+            //                                                   PDG::get_mass_by_id(pdgId[*idx_lepton_minus]));
+
+            //             // fmt::print("############################\n");
+            //             // fmt::print("pt: {}\n", pt);
+            //             // fmt::print("mass: {}\n", mass);
+
+            //             if (mass <= mass_max + .5)
+            //             {
+            //                 return true;
+            //             }
+            //         }
+            //     }
+
+            //     // fmt::print("[ Generator Filter ] Didn't pass: DY Mass Cut. Skipping ...\n");
+            //     return false;
+            // };
+
+            // if (filter(500.))
+            // {
+            //     accepted++;
+            // }
         },
         {"LHEPart_pdgId", "LHEPart_status", "LHEPart_pt", "LHEPart_eta", "LHEPart_phi", "LHEPart_mass"});
 
-    fmt::print("Filter result: {}\n", static_cast<float>(accepted) / static_cast<float>(total));
+    fmt::print("{}\n", min_delta_r);
+    // fmt::print("Filter result: {}\n", static_cast<float>(accepted) / static_cast<float>(total));
 
     std::cout << _file0->GetName() << std::endl;
 }

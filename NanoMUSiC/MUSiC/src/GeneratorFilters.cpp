@@ -81,10 +81,11 @@ auto dy_filter(const NanoObjects::LHEParticles &lhe_particles,
             // this covers the high mass phase-space,
             // since we do no include tau simulation in the POWHEG samples
             float actual_max_mass = mass_max;
-            if (lhe_particles.pdgId[*idx_lepton_minus] == PDG::Tau::Id)
-            {
-                actual_max_mass = max_float;
-            }
+            // skip this for now ... will be re-evaluated after presentation at 22/02/2023.
+            // if (lhe_particles.pdgId[*idx_lepton_minus] == PDG::Tau::Id)
+            // {
+            //     actual_max_mass = max_float;
+            // }
 
             if ((mass >= mass_min - .5 and mass <= actual_max_mass + .5) and
                 (pt >= pt_min - .5 and mass <= pt_max + .5))

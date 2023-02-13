@@ -8,9 +8,7 @@
 #include "Main/EventSelector.hpp"
 
 GenSelector::GenSelector(Tools::MConfig const &cfg)
-    :
-
-      m_gen_label(cfg.GetItem<std::string>("Generator.Label")),
+    : m_gen_label(cfg.GetItem<std::string>("Generator.Label")),
       m_gen_jet_label(cfg.GetItem<std::string>("Jet.Type.Gen")),
 
       // for cuts on single particle, what to do if particle not found
@@ -19,7 +17,8 @@ GenSelector::GenSelector(Tools::MConfig const &cfg)
       m_binningValue_max(cfg.GetItem<double>("Generator.BinningValue.max")),
 
       // Cut on generator level HT of the event.
-      m_ht_min(cfg.GetItem<double>("Generator.ht.min", 0)), m_ht_max(cfg.GetItem<double>("Generator.ht.max", 0)),
+      m_ht_min(cfg.GetItem<double>("Generator.ht.min", 0)),
+      m_ht_max(cfg.GetItem<double>("Generator.ht.max", 0)),
 
       // Cuts on invariant mass of resonance particle.
       m_mass_min(cfg.GetItem<double>("Generator.Mass.min", 0)),
@@ -34,7 +33,8 @@ GenSelector::GenSelector(Tools::MConfig const &cfg)
           Tools::splitString<std::string>(cfg.GetItem<std::string>("Generator.Mass.Types.double.second"), true)),
 
       // Cuts on transverse momentum of resonance particle.
-      m_pt_min(cfg.GetItem<double>("Generator.pt.min", 0)), m_pt_max(cfg.GetItem<double>("Generator.pt.max", 0)),
+      m_pt_min(cfg.GetItem<double>("Generator.pt.min", 0)),
+      m_pt_max(cfg.GetItem<double>("Generator.pt.max", 0)),
       m_pt_use_single(cfg.GetItem<bool>("Generator.pt.use.single")),
       m_pt_use_double(cfg.GetItem<bool>("Generator.pt.use.double")),
       m_pt_single_types(Tools::splitString<std::string>(cfg.GetItem<std::string>("Generator.pt.Types.single"))),
@@ -43,14 +43,14 @@ GenSelector::GenSelector(Tools::MConfig const &cfg)
       m_pt_double_types_second(
           Tools::splitString<std::string>(cfg.GetItem<std::string>("Generator.pt.Types.double.second"), true)),
       // cuts for gamma cleaning
-      m_gamma_use(cfg.GetItem<bool>("Generator.Gamma.use")), m_gammaDY_use(cfg.GetItem<bool>("Generator.GammaDY.use")),
+      m_gamma_use(cfg.GetItem<bool>("Generator.Gamma.use")),
+      m_gammaDY_use(cfg.GetItem<bool>("Generator.GammaDY.use")),
       m_gammaZy_use(cfg.GetItem<bool>("Generator.GammaZy.use")),
       m_gamma_cutmode(cfg.GetItem<std::string>("Generator.Gamma.cutmode")),
       m_gamma_statuses(Tools::splitString<int>(cfg.GetItem<std::string>("Generator.Gamma.statuses"))),
       m_gamma_dR_max(cfg.GetItem<double>("Generator.Gamma.dR.max")),
       m_gamma_genPtCut(cfg.GetItem<double>("Generator.Gamma.genPtCut")),
       m_gamma_gen_partner_id(Tools::splitString<int>(cfg.GetItem<std::string>("Generator.Gamma.PartnerIds")))
-
 {
 }
 
@@ -309,7 +309,8 @@ pxl::LorentzVector GenSelector::getGenCutObject(std::vector<pxl::Particle *> gen
 }
 
 // sar change
-bool GenSelector::passGammaCuts(pxl::EventView const *EvtView, std::vector<pxl::Particle *> genParts,
+bool GenSelector::passGammaCuts(pxl::EventView const *EvtView,
+                                std::vector<pxl::Particle *> genParts,
                                 std::vector<pxl::Particle *> genJets) const
 {
     // check if gamma ucuts should be applied
@@ -335,7 +336,8 @@ bool GenSelector::passGammaCuts(pxl::EventView const *EvtView, std::vector<pxl::
             continue;
         }
         // make sure candidate gamma has one of the allowed codes
-        if (std::find(m_gamma_statuses.begin(), m_gamma_statuses.end(),
+        if (std::find(m_gamma_statuses.begin(),
+                      m_gamma_statuses.end(),
                       std::abs(gam->getUserRecord("Status").toInt32())) == m_gamma_statuses.end())
         {
             continue;
@@ -376,7 +378,8 @@ bool GenSelector::passGammaCuts(pxl::EventView const *EvtView, std::vector<pxl::
             }
 
             // Check if gen particle is in list of partners to check dR to
-            if (std::find(m_gamma_gen_partner_id.begin(), m_gamma_gen_partner_id.end(),
+            if (std::find(m_gamma_gen_partner_id.begin(),
+                          m_gamma_gen_partner_id.end(),
                           std::abs(genP->getPdgNumber())) == m_gamma_gen_partner_id.end())
             {
                 continue;
@@ -431,7 +434,8 @@ bool GenSelector::passGammaCuts(pxl::EventView const *EvtView, std::vector<pxl::
 }
 
 // The DY sample remove events with one photon from ISR or Z at least
-bool GenSelector::passDYGammaCuts(pxl::EventView const *EvtView, std::vector<pxl::Particle *> genParts,
+bool GenSelector::passDYGammaCuts(pxl::EventView const *EvtView,
+                                  std::vector<pxl::Particle *> genParts,
                                   std::vector<pxl::Particle *> genJets) const
 {
     // check if gamma ucuts should be applied
@@ -509,7 +513,8 @@ bool GenSelector::passDYGammaCuts(pxl::EventView const *EvtView, std::vector<pxl
 
 // sar change
 // The Zy sample must contain one photon from ISR or Z at least
-bool GenSelector::passZyGammaCuts(pxl::EventView const *EvtView, std::vector<pxl::Particle *> genParts,
+bool GenSelector::passZyGammaCuts(pxl::EventView const *EvtView,
+                                  std::vector<pxl::Particle *> genParts,
                                   std::vector<pxl::Particle *> genJets) const
 {
     // check if gamma ucuts should be applied
