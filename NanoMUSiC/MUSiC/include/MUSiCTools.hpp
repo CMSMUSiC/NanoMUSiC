@@ -6,6 +6,7 @@
 #include <exception>
 #include <iostream>
 #include <map>
+#include <optional>
 #include <random>
 #include <regex>
 #include <sstream>
@@ -38,7 +39,8 @@ typedef boost::filesystem::path Path;
 class value_error : public std::runtime_error
 {
   public:
-    value_error(std::string const &msg) : std::runtime_error(msg)
+    value_error(std::string const &msg)
+        : std::runtime_error(msg)
     {
     }
 };
@@ -46,7 +48,8 @@ class value_error : public std::runtime_error
 class config_error : public std::runtime_error
 {
   public:
-    config_error(std::string const &msg) : std::runtime_error(msg)
+    config_error(std::string const &msg)
+        : std::runtime_error(msg)
     {
     }
 };
@@ -54,7 +57,8 @@ class config_error : public std::runtime_error
 class unsorted_error : public std::runtime_error
 {
   public:
-    unsorted_error(std::string const &msg) : std::runtime_error(msg)
+    unsorted_error(std::string const &msg)
+        : std::runtime_error(msg)
     {
     }
 };
@@ -63,7 +67,8 @@ class file_not_found : public std::exception
 {
   public:
     file_not_found(std::string const &filename, std::string const &filetype = "")
-        : m_filename(filename), m_filetype(filetype)
+        : m_filename(filename),
+          m_filetype(filetype)
     {
     }
     ~file_not_found() throw()
@@ -86,7 +91,7 @@ class file_not_found : public std::exception
 
 // returns the abolute path to file given with a path relative to PXLANALYZER_BASE
 // returns the given path if it is already absolute (starts with a /)
-std::string musicAbsPath(std::string relPath)
+inline std::string musicAbsPath(std::string relPath)
 {
     if (relPath.substr(0, 1) == "/")
         return relPath;
@@ -105,7 +110,7 @@ std::string musicAbsPath(std::string relPath)
 }
 
 // Remove comment from line.
-std::string removeComment(std::string line, char const commentChar = '#')
+inline std::string removeComment(std::string line, char const commentChar = '#')
 {
     if (line.empty())
     {
@@ -123,7 +128,7 @@ std::string removeComment(std::string line, char const commentChar = '#')
     return line;
 }
 
-std::string random_string(size_t length)
+inline std::string random_string(size_t length)
 {
     auto randchar = []() -> char {
         const char charset[] =
@@ -139,7 +144,7 @@ std::string random_string(size_t length)
 }
 
 // return a vector of string identifiers for each physics object type
-std::vector<std::string> getParticleTypeAbbreviations(bool isRec = true)
+inline std::vector<std::string> getParticleTypeAbbreviations(bool isRec = true)
 {
     std::vector<std::string> partList;
     partList.push_back("Ele");
@@ -168,7 +173,7 @@ std::vector<std::string> getParticleTypeAbbreviations(bool isRec = true)
     return partList;
 }
 
-std::map<int, std::string> pdg_id_type_map(bool useBJet = false)
+inline std::map<int, std::string> pdg_id_type_map(bool useBJet = false)
 {
     std::map<int, std::string> outMap = std::map<int, std::string>();
     outMap.emplace(11, "Ele");
@@ -228,7 +233,9 @@ std::string inline fromString<std::string>(const std::string &input)
 // splits the input string at each occurence of sep and puts the parts into the result vector
 // if ignore empty is not set, the output vector will contain default values for repeated separators
 template <class T>
-void splitString(std::vector<T> &result, const std::string &input, const std::string &sep = ",",
+void splitString(std::vector<T> &result,
+                 const std::string &input,
+                 const std::string &sep = ",",
                  bool ignoreEmpty = false)
 {
     result.clear();
@@ -300,7 +307,7 @@ inline std::string AbsolutePath(Path const &path)
     return complete(AbsPath).string();
 }
 
-std::string parse_and_expand_music_base(std::string_view path)
+inline std::string parse_and_expand_music_base(std::string_view path)
 {
     return std::regex_replace(std::string(path), std::regex("\\$MUSIC_BASE"), std::string(std::getenv("MUSIC_BASE")));
 }
@@ -321,7 +328,7 @@ std::optional<T> MinElem(const std::vector<T> &seq)
     return std::nullopt;
 }
 
-double generate_uniform()
+inline double generate_uniform()
 {
     static std::default_random_engine e;
     static std::uniform_real_distribution<> dis(0, std::nextafter(1, std::numeric_limits<double>::max())); // rage 0 - 1

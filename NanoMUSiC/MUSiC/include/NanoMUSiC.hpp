@@ -42,10 +42,6 @@
 #include "TTreeReaderArray.h"
 #include "TTreeReaderValue.h"
 
-// toml++ v3.1.0
-// https://github.com/marzer/tomlplusplus
-#include "toml.hpp"
-
 #include "color.hpp"
 #include "emoji.hpp"
 
@@ -57,7 +53,6 @@
 
 // Configurarion and filter
 #include "MUSiCTools.hpp"
-#include "TOMLConfig.hpp"
 
 // Filters (lumi, gen phase-space, ...)
 #include "RunLumiFilter.hpp"
