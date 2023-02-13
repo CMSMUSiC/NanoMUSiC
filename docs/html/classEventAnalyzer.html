@@ -1,0 +1,2361 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    <meta name="generator" content="Doxygen 1.8.18" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- BEGIN opengraph metadata -->
+    <meta property="og:title" content="Doxygen Awesome" />
+    <meta property="og:image"
+        content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+    <meta property="og:description"
+        content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+    <meta property="og:url" content="https://jothepro.github.io/doxygen-awesome-css/" />
+    <!-- END opengraph metadata -->
+    <!-- BEGIN twitter metadata -->
+    <meta name="twitter:image:src"
+        content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+    <meta name="twitter:title" content="Doxygen Awesome" />
+    <meta name="twitter:description"
+        content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+    <!-- END twitter metadata -->
+    <title>NanoMUSiC: EventAnalyzer Class Reference</title>
+    <link href="tabs.css" rel="stylesheet" type="text/css" />
+    <link rel="icon" type="image/svg+xml" href="logo.drawio.svg" />
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="dynsections.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+    <script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+    <script type="text/javascript" src="toggle-alternative-theme.js"></script>
+    <script type="text/javascript">
+        DoxygenAwesomeFragmentCopyButton.init()
+        DoxygenAwesomeDarkModeToggle.init()
+        DoxygenAwesomeParagraphLink.init()
+        DoxygenAwesomeInteractiveToc.init()
+    </script>
+    <link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+    <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+    <link href="doxygen.css" rel="stylesheet" type="text/css" />
+    <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+    <!-- https://tholman.com/github-corners/ -->
+    <a href="https://github.com/cmsmusic/nanomusic" class="github-corner" title="View source on GitHub" target="_blank">
+        <svg viewBox="0 0 250 250" width="40" height="40"
+            style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+            <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+            <path
+                d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+                fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+            <path
+                d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+                fill="currentColor" class="octo-body"></path>
+        </svg></a>
+    <style>
+        .github-corner:hover .octo-arm {
+            animation: octocat-wave 560ms ease-in-out
+        }
+        @keyframes octocat-wave {
+            0%,
+            100% {
+                transform: rotate(0)
+            }
+            20%,
+            60% {
+                transform: rotate(-25deg)
+            }
+            40%,
+            80% {
+                transform: rotate(10deg)
+            }
+        }
+        @media (max-width:500px) {
+            .github-corner:hover .octo-arm {
+                animation: none
+            }
+            .github-corner .octo-arm {
+                animation: octocat-wave 560ms ease-in-out
+            }
+        }
+    </style>
+    <div id="top">
+        <!-- do not remove this div, it is closed by doxygen! -->
+        <div id="titlearea">
+            <table cellspacing="0" cellpadding="0">
+                <tbody>
+                    <tr style="height: 56px;">
+                        <td id="projectalign" style="padding-left: 0.5em;">
+                            <div id="projectname">NanoMUSiC
+                            </div>
+                            <div id="projectbrief">CMS MUSiC using NanoAOD</div>
+                            <div> <a href="https://github.com/cmsmusic/nanomusic" class="github-corner"
+                                    title="View source on GitHub" target="_blank">Github repo</a></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- end header part --><!-- Generated by Doxygen 1.8.18 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'Search');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(document).ready(function(){initNavTree('classEventAnalyzer.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classEventAnalyzer-members.html">List of all members</a>  </div>
+  <div class="headertitle">
+<div class="title">EventAnalyzer Class Reference</div>  </div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="EventAnalyzer_8hpp_source.html">EventAnalyzer.hpp</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a48d28120fc794a69f1546086f8a1216f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a48d28120fc794a69f1546086f8a1216f">EventAnalyzer</a> (const bool &amp;_is_data, const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;_year, <a class="el" href="classOutputs.html">Outputs</a> &amp;outputs)</td></tr>
+<tr class="separator:a48d28120fc794a69f1546086f8a1216f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28d34a4f4ff78bd6ea3e8a48c239cf78"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a28d34a4f4ff78bd6ea3e8a48c239cf78">set_event_info</a> (<a class="el" href="structNanoObjects_1_1EventInfo.html">NanoObjects::EventInfo</a> &amp;&amp;_event_info) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:a28d34a4f4ff78bd6ea3e8a48c239cf78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1579887b7918c068589c77ae327d82ca"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a1579887b7918c068589c77ae327d82ca">set_generator_info</a> (<a class="el" href="structNanoObjects_1_1GeneratorInfo.html">NanoObjects::GeneratorInfo</a> &amp;&amp;_generator_info) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:a1579887b7918c068589c77ae327d82ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9f7eb7c0c05c123c3b780d0d26362f1"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#ab9f7eb7c0c05c123c3b780d0d26362f1">set_lhe_info</a> (<a class="el" href="structNanoObjects_1_1LHEInfo.html">NanoObjects::LHEInfo</a> &amp;&amp;_lhe_info) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:ab9f7eb7c0c05c123c3b780d0d26362f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad07a0d962a91a99b8dd02b7ed22231b"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#aad07a0d962a91a99b8dd02b7ed22231b">set_lhe_particles</a> (<a class="el" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a> &amp;&amp;_lhe_particles) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:aad07a0d962a91a99b8dd02b7ed22231b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5ef968d611907d9832f0c56513ac6c3"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#ab5ef968d611907d9832f0c56513ac6c3">set_muons</a> (<a class="el" href="structNanoObjects_1_1Muons.html">NanoObjects::Muons</a> &amp;&amp;_muons, RVec&lt; int &gt; &amp;&amp;mask) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:ab5ef968d611907d9832f0c56513ac6c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f9a73708e414a19e65d1a668063346e"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a7f9a73708e414a19e65d1a668063346e">set_muons</a> (<a class="el" href="structNanoObjects_1_1Muons.html">NanoObjects::Muons</a> &amp;&amp;_muons) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:a7f9a73708e414a19e65d1a668063346e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af45d5eafb13bebc7d0ad449ad5186aa3"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#af45d5eafb13bebc7d0ad449ad5186aa3">set_electrons</a> (<a class="el" href="structNanoObjects_1_1Electrons.html">NanoObjects::Electrons</a> &amp;&amp;_electrons, RVec&lt; int &gt; &amp;&amp;mask) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:af45d5eafb13bebc7d0ad449ad5186aa3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa15000aafcec783cba0cbef4cb0028cf"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#aa15000aafcec783cba0cbef4cb0028cf">set_electrons</a> (<a class="el" href="structNanoObjects_1_1Electrons.html">NanoObjects::Electrons</a> &amp;&amp;_electrons) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:aa15000aafcec783cba0cbef4cb0028cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77ba7eae6c6eb33c831a4d0ea13a0a66"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a77ba7eae6c6eb33c831a4d0ea13a0a66">set_photons</a> (<a class="el" href="structNanoObjects_1_1Photons.html">NanoObjects::Photons</a> &amp;&amp;_photons, RVec&lt; int &gt; &amp;&amp;mask) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:a77ba7eae6c6eb33c831a4d0ea13a0a66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d9f10611c19fc519c6627e79898ff7b"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a6d9f10611c19fc519c6627e79898ff7b">set_photons</a> (<a class="el" href="structNanoObjects_1_1Photons.html">NanoObjects::Photons</a> &amp;&amp;_photons) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:a6d9f10611c19fc519c6627e79898ff7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a723adff95316f6fb4abb6d3cff63d81a"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a723adff95316f6fb4abb6d3cff63d81a">set_taus</a> (<a class="el" href="structNanoObjects_1_1Taus.html">NanoObjects::Taus</a> &amp;&amp;_taus, RVec&lt; int &gt; &amp;&amp;mask) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:a723adff95316f6fb4abb6d3cff63d81a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb84ffbcccd2cdd6d7d8f6203f15c83b"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#adb84ffbcccd2cdd6d7d8f6203f15c83b">set_taus</a> (<a class="el" href="structNanoObjects_1_1Taus.html">NanoObjects::Taus</a> &amp;&amp;_taus) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:adb84ffbcccd2cdd6d7d8f6203f15c83b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a864ca12b3223ad03a856383a8962f7ed"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a864ca12b3223ad03a856383a8962f7ed">set_bjets</a> (<a class="el" href="namespaceNanoObjects.html#a7be87612d389c646e9a31974fa6a3d8b">NanoObjects::BJets</a> &amp;&amp;_bjets, RVec&lt; int &gt; &amp;&amp;mask) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:a864ca12b3223ad03a856383a8962f7ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0bafe5720606a87b79aeaa6fd2bc8b4c"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a0bafe5720606a87b79aeaa6fd2bc8b4c">set_bjets</a> (<a class="el" href="namespaceNanoObjects.html#a7be87612d389c646e9a31974fa6a3d8b">NanoObjects::BJets</a> &amp;&amp;_bjets) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:a0bafe5720606a87b79aeaa6fd2bc8b4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a7e75b6cdca1a991a2c855887ed8c55"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a4a7e75b6cdca1a991a2c855887ed8c55">set_jets</a> (<a class="el" href="structNanoObjects_1_1Jets.html">NanoObjects::Jets</a> &amp;&amp;_jets, RVec&lt; int &gt; &amp;&amp;mask) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:a4a7e75b6cdca1a991a2c855887ed8c55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58a2a3651dc7a6170b77fc4fd7fed5a5"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a58a2a3651dc7a6170b77fc4fd7fed5a5">set_jets</a> (<a class="el" href="structNanoObjects_1_1Jets.html">NanoObjects::Jets</a> &amp;&amp;_jets) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:a58a2a3651dc7a6170b77fc4fd7fed5a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac54c3c28a2f5b28b5da9f77a507c5e99"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#ac54c3c28a2f5b28b5da9f77a507c5e99">set_met</a> (<a class="el" href="structNanoObjects_1_1MET.html">NanoObjects::MET</a> &amp;&amp;_met, RVec&lt; int &gt; &amp;&amp;mask) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:ac54c3c28a2f5b28b5da9f77a507c5e99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a591b2de6dd5f107e814e469fadb22398"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a591b2de6dd5f107e814e469fadb22398">set_met</a> (<a class="el" href="structNanoObjects_1_1MET.html">NanoObjects::MET</a> &amp;&amp;_met) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:a591b2de6dd5f107e814e469fadb22398"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f91191eccc0b2eefce362deaf05cdcb"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a4f91191eccc0b2eefce362deaf05cdcb">set_trgobjs</a> (<a class="el" href="structNanoObjects_1_1TrgObjs.html">NanoObjects::TrgObjs</a> &amp;&amp;_trgobjs, RVec&lt; int &gt; &amp;&amp;mask) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:a4f91191eccc0b2eefce362deaf05cdcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8abc435d820d7c320c120f79eec867a1"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a8abc435d820d7c320c120f79eec867a1">set_trgobjs</a> (<a class="el" href="structNanoObjects_1_1TrgObjs.html">NanoObjects::TrgObjs</a> &amp;&amp;_trgobjs) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:a8abc435d820d7c320c120f79eec867a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaaf83cefd80d5dd36dff58d0701b4349"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#aaaf83cefd80d5dd36dff58d0701b4349">operator bool</a> () const</td></tr>
+<tr class="memdesc:aaaf83cefd80d5dd36dff58d0701b4349"><td class="mdescLeft">&#160;</td><td class="mdescRight">is it a null event  <a href="classEventAnalyzer.html#aaaf83cefd80d5dd36dff58d0701b4349">More...</a><br /></td></tr>
+<tr class="separator:aaaf83cefd80d5dd36dff58d0701b4349"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95f2a4cf1c9a7eb0f37a9783e325d2f9"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a95f2a4cf1c9a7eb0f37a9783e325d2f9">set_null</a> () -&gt; void</td></tr>
+<tr class="memdesc:a95f2a4cf1c9a7eb0f37a9783e325d2f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">null-ify the event  <a href="classEventAnalyzer.html#a95f2a4cf1c9a7eb0f37a9783e325d2f9">More...</a><br /></td></tr>
+<tr class="separator:a95f2a4cf1c9a7eb0f37a9783e325d2f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f2744fc406d5ba8f6ed0a5e355a3491"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a8f2744fc406d5ba8f6ed0a5e355a3491">unset_null</a> () -&gt; void</td></tr>
+<tr class="memdesc:a8f2744fc406d5ba8f6ed0a5e355a3491"><td class="mdescLeft">&#160;</td><td class="mdescRight">un-null-ify - not sure when/if it would be needed, but ...  <a href="classEventAnalyzer.html#a8f2744fc406d5ba8f6ed0a5e355a3491">More...</a><br /></td></tr>
+<tr class="separator:a8f2744fc406d5ba8f6ed0a5e355a3491"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30927c440869c9aa13adab6115651d08"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a30927c440869c9aa13adab6115651d08">set_pdf_alpha_s_weights</a> (const std::optional&lt; std::pair&lt; unsigned int, unsigned int &gt;&gt; &amp;lha_indexes, const std::tuple&lt; std::vector&lt; std::unique_ptr&lt; LHAPDF::PDF &gt;&gt;, std::unique_ptr&lt; LHAPDF::PDF &gt;, std::unique_ptr&lt; LHAPDF::PDF &gt;&gt; &amp;default_pdf_sets) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:a30927c440869c9aa13adab6115651d08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1a3fd3e9d5ecaf82b69e03789ff734a"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#af1a3fd3e9d5ecaf82b69e03789ff734a">set_scale_weights</a> () -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="memdesc:af1a3fd3e9d5ecaf82b69e03789ff734a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the QCD Scaling weights, using the envelope method. If the sample has no weights are kept as 1.  <a href="classEventAnalyzer.html#af1a3fd3e9d5ecaf82b69e03789ff734a">More...</a><br /></td></tr>
+<tr class="separator:af1a3fd3e9d5ecaf82b69e03789ff734a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade044f65643cdfa49b2827be18d3c38a"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#ade044f65643cdfa49b2827be18d3c38a">set_const_weights</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs, <a class="el" href="classCorrector.html">Corrector</a> &amp;pu_weight) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:ade044f65643cdfa49b2827be18d3c38a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7623b1d29b44917edbdb61f9262ce513"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a7623b1d29b44917edbdb61f9262ce513">generator_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs, const std::string &amp;process) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:a7623b1d29b44917edbdb61f9262ce513"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b267860230bcf6942f1a9fb94a074b1"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a5b267860230bcf6942f1a9fb94a074b1">run_lumi_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs, const <a class="el" href="classRunLumiFilter.html">RunLumiFilter</a> &amp;_run_lumi_filter) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:a5b267860230bcf6942f1a9fb94a074b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fce80a4176d9caf8783f36eba6c3f7b"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a3fce80a4176d9caf8783f36eba6c3f7b">npv_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="memdesc:a3fce80a4176d9caf8783f36eba6c3f7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply good primary vertex filters.  <a href="classEventAnalyzer.html#a3fce80a4176d9caf8783f36eba6c3f7b">More...</a><br /></td></tr>
+<tr class="separator:a3fce80a4176d9caf8783f36eba6c3f7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbdda7d437b76c3e68741522fb54bba0"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#afbdda7d437b76c3e68741522fb54bba0">met_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:afbdda7d437b76c3e68741522fb54bba0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5abd8d6acaecf90590e3f02aed4cbe54"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a5abd8d6acaecf90590e3f02aed4cbe54">set_trigger_bits</a> () -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="memdesc:a5abd8d6acaecf90590e3f02aed4cbe54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set <code><a class="el" href="structTriggerBits.html">TriggerBits</a></code> for this event. They will be checked latter.  <a href="classEventAnalyzer.html#a5abd8d6acaecf90590e3f02aed4cbe54">More...</a><br /></td></tr>
+<tr class="separator:a5abd8d6acaecf90590e3f02aed4cbe54"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ade0eada396b9da999e8f1f6b08e92c"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a8ade0eada396b9da999e8f1f6b08e92c">trigger_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:a8ade0eada396b9da999e8f1f6b08e92c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af72ba48022698a48a81bd6da29400f9d"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#af72ba48022698a48a81bd6da29400f9d">get_low_pt_muons_selection_mask</a> () -&gt; RVec&lt; int &gt;</td></tr>
+<tr class="separator:af72ba48022698a48a81bd6da29400f9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e081534d50679f01a0bf19d72ce7d81"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a8e081534d50679f01a0bf19d72ce7d81">get_high_pt_muons_selection_mask</a> () -&gt; RVec&lt; int &gt;</td></tr>
+<tr class="separator:a8e081534d50679f01a0bf19d72ce7d81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8bfc711b8ae554c87c47f8acdc75db9"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#ad8bfc711b8ae554c87c47f8acdc75db9">get_low_pt_electrons_selection_mask</a> () -&gt; RVec&lt; int &gt;</td></tr>
+<tr class="separator:ad8bfc711b8ae554c87c47f8acdc75db9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76720a0b904f591781fd0f9211134233"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a76720a0b904f591781fd0f9211134233">get_high_pt_electrons_selection_mask</a> () -&gt; RVec&lt; int &gt;</td></tr>
+<tr class="separator:a76720a0b904f591781fd0f9211134233"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a997a22d3ba110c55b65aa8a8677109bf"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a997a22d3ba110c55b65aa8a8677109bf">get_photons_selection_mask</a> () -&gt; RVec&lt; int &gt;</td></tr>
+<tr class="separator:a997a22d3ba110c55b65aa8a8677109bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2de59cb91109f663d148c540812221c"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#aa2de59cb91109f663d148c540812221c">get_taus_selection_mask</a> () -&gt; RVec&lt; int &gt;</td></tr>
+<tr class="separator:aa2de59cb91109f663d148c540812221c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1bb8b8c302faad676b32051f54f57c32"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a1bb8b8c302faad676b32051f54f57c32">get_bjets_selection_mask</a> () -&gt; RVec&lt; int &gt;</td></tr>
+<tr class="separator:a1bb8b8c302faad676b32051f54f57c32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2dfe2efab7bd5f2525caa8c9bea0dc87"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a2dfe2efab7bd5f2525caa8c9bea0dc87">get_jets_selection_mask</a> () -&gt; RVec&lt; int &gt;</td></tr>
+<tr class="separator:a2dfe2efab7bd5f2525caa8c9bea0dc87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68e19fc211d8402866a338e3e7494334"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a68e19fc211d8402866a338e3e7494334">get_met_selection_mask</a> () -&gt; RVec&lt; int &gt;</td></tr>
+<tr class="separator:a68e19fc211d8402866a338e3e7494334"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54a6cab677cd87b20a8412229b899541"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a54a6cab677cd87b20a8412229b899541">object_selection</a> () -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:a54a6cab677cd87b20a8412229b899541"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8824d7253f6e07694ae6567b8b6b3185"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a8824d7253f6e07694ae6567b8b6b3185">has_selected_objects_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="memdesc:a8824d7253f6e07694ae6567b8b6b3185"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns <code>true</code> if the event has at least one object selected.  <a href="classEventAnalyzer.html#a8824d7253f6e07694ae6567b8b6b3185">More...</a><br /></td></tr>
+<tr class="separator:a8824d7253f6e07694ae6567b8b6b3185"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a991854558905c08cc4f3efabbac7ba27"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a991854558905c08cc4f3efabbac7ba27">trigger_match_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs, const std::map&lt; std::string_view, <a class="el" href="classTrgObjMatcher.html">TrgObjMatcher</a> &gt; &amp;matchers) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="memdesc:a991854558905c08cc4f3efabbac7ba27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Will check if the current event has a matched object to a good TrgObj.  <a href="classEventAnalyzer.html#a991854558905c08cc4f3efabbac7ba27">More...</a><br /></td></tr>
+<tr class="separator:a991854558905c08cc4f3efabbac7ba27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e6e42c2af0f10d5bf17e2c610f57b5d"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a5e6e42c2af0f10d5bf17e2c610f57b5d">set_l1_pre_firing_SFs</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:a5e6e42c2af0f10d5bf17e2c610f57b5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2367b06420eb6cd48f1c9ce0f85eb63a"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a2367b06420eb6cd48f1c9ce0f85eb63a">set_muon_SFs</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs, const <a class="el" href="classCorrector.html">Corrector</a> &amp;muon_sf_reco, const <a class="el" href="classCorrector.html">Corrector</a> &amp;muon_sf_id_low_pt, const <a class="el" href="classCorrector.html">Corrector</a> &amp;muon_sf_id_high_pt, const <a class="el" href="classCorrector.html">Corrector</a> &amp;muon_sf_iso_low_pt, const <a class="el" href="classCorrector.html">Corrector</a> &amp;muon_sf_iso_high_pt) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:a2367b06420eb6cd48f1c9ce0f85eb63a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1fe1e632ba0c1c83879d1ddf458fda8"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#ae1fe1e632ba0c1c83879d1ddf458fda8">set_electron_SFs</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs, const <a class="el" href="classElectronSFCorrector.html">ElectronSFCorrector</a> &amp;electron_sf) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:ae1fe1e632ba0c1c83879d1ddf458fda8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad38411a3a6e46165e6dc4d606f771d9d"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#ad38411a3a6e46165e6dc4d606f771d9d">set_photon_SFs</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs, const <a class="el" href="classPhotonSFCorrector.html">PhotonSFCorrector</a> &amp;photon_id_sf, const <a class="el" href="classPhotonSFCorrector.html">PhotonSFCorrector</a> &amp;photon_pixel_seed_sf) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:ad38411a3a6e46165e6dc4d606f771d9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02eb4584162d5b2f83f622b2c521a8a7"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a02eb4584162d5b2f83f622b2c521a8a7">set_tau_SFs</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="memdesc:a02eb4584162d5b2f83f622b2c521a8a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO: Taus.  <a href="classEventAnalyzer.html#a02eb4584162d5b2f83f622b2c521a8a7">More...</a><br /></td></tr>
+<tr class="separator:a02eb4584162d5b2f83f622b2c521a8a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae967747ea3189ba7bc5ffe8d5f905789"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#ae967747ea3189ba7bc5ffe8d5f905789">set_jet_SFs</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:ae967747ea3189ba7bc5ffe8d5f905789"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f619289785339ed9eccbb8b8490041f"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a9f619289785339ed9eccbb8b8490041f">set_bjet_SFs</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs, const <a class="el" href="classBTagSFCorrector.html">BTagSFCorrector</a> &amp;btag_sf) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:a9f619289785339ed9eccbb8b8490041f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a996b2a3cb32d7d00c1898210891f39f2"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a996b2a3cb32d7d00c1898210891f39f2">set_met_SFs</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:a996b2a3cb32d7d00c1898210891f39f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af62f1fe013c7c261124ef39fd8697c81"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#af62f1fe013c7c261124ef39fd8697c81">set_trigger_SFs</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:af62f1fe013c7c261124ef39fd8697c81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b86348085270f9762594dd923bfe048"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a4b86348085270f9762594dd923bfe048">muon_corrections</a> () -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="memdesc:a4b86348085270f9762594dd923bfe048"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO:  <a href="classEventAnalyzer.html#a4b86348085270f9762594dd923bfe048">More...</a><br /></td></tr>
+<tr class="separator:a4b86348085270f9762594dd923bfe048"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca8164c85466feacd7d095b83ef4cfc7"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#aca8164c85466feacd7d095b83ef4cfc7">electron_corrections</a> () -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="memdesc:aca8164c85466feacd7d095b83ef4cfc7"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO:  <a href="classEventAnalyzer.html#aca8164c85466feacd7d095b83ef4cfc7">More...</a><br /></td></tr>
+<tr class="separator:aca8164c85466feacd7d095b83ef4cfc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a330ac746aa8ba628dce701087e43d114"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a330ac746aa8ba628dce701087e43d114">photon_corrections</a> () -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="memdesc:a330ac746aa8ba628dce701087e43d114"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO:  <a href="classEventAnalyzer.html#a330ac746aa8ba628dce701087e43d114">More...</a><br /></td></tr>
+<tr class="separator:a330ac746aa8ba628dce701087e43d114"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15e9986c8df877e5314f929f90930270"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a15e9986c8df877e5314f929f90930270">tau_corrections</a> () -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="memdesc:a15e9986c8df877e5314f929f90930270"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO:  <a href="classEventAnalyzer.html#a15e9986c8df877e5314f929f90930270">More...</a><br /></td></tr>
+<tr class="separator:a15e9986c8df877e5314f929f90930270"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a171996d3d1cd5a820cfd7157dbd0b508"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a171996d3d1cd5a820cfd7157dbd0b508">bjet_corrections</a> () -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="memdesc:a171996d3d1cd5a820cfd7157dbd0b508"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO:  <a href="classEventAnalyzer.html#a171996d3d1cd5a820cfd7157dbd0b508">More...</a><br /></td></tr>
+<tr class="separator:a171996d3d1cd5a820cfd7157dbd0b508"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7193226260e7f8f846229e47ac7bb4cf"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a7193226260e7f8f846229e47ac7bb4cf">jet_corrections</a> () -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="memdesc:a7193226260e7f8f846229e47ac7bb4cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO:  <a href="classEventAnalyzer.html#a7193226260e7f8f846229e47ac7bb4cf">More...</a><br /></td></tr>
+<tr class="separator:a7193226260e7f8f846229e47ac7bb4cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3e7bcd71d576ebe00a4403baa4e69df"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#ab3e7bcd71d576ebe00a4403baa4e69df">met_corrections</a> () -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="memdesc:ab3e7bcd71d576ebe00a4403baa4e69df"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO:  <a href="classEventAnalyzer.html#ab3e7bcd71d576ebe00a4403baa4e69df">More...</a><br /></td></tr>
+<tr class="separator:ab3e7bcd71d576ebe00a4403baa4e69df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22afebd05669ca79ab1aa054876cf8b4"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a22afebd05669ca79ab1aa054876cf8b4">fill_event_content</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
+<tr class="separator:a22afebd05669ca79ab1aa054876cf8b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a592c01b6699c3b1117852708671a4588"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structTriggerBits.html">TriggerBits</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a592c01b6699c3b1117852708671a4588">trigger_bits</a></td></tr>
+<tr class="separator:a592c01b6699c3b1117852708671a4588"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9abcf0cf58b72219ee0654a2a202d56"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#ac9abcf0cf58b72219ee0654a2a202d56">trigger_sf_nominal</a> = 1.</td></tr>
+<tr class="separator:ac9abcf0cf58b72219ee0654a2a202d56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a59fb5cc35015e9ffdd6b4926f96a5e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a4a59fb5cc35015e9ffdd6b4926f96a5e">trigger_sf_up</a> = 1.</td></tr>
+<tr class="separator:a4a59fb5cc35015e9ffdd6b4926f96a5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af17f05f4d345dc4f863201972d0bcbed"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#af17f05f4d345dc4f863201972d0bcbed">trigger_sf_down</a> = 1.</td></tr>
+<tr class="separator:af17f05f4d345dc4f863201972d0bcbed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04a976455a777e9eaa0d6240564eb1dc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNanoObjects_1_1EventInfo.html">NanoObjects::EventInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a04a976455a777e9eaa0d6240564eb1dc">event_info</a></td></tr>
+<tr class="separator:a04a976455a777e9eaa0d6240564eb1dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c05eb7c31dcc8502059641c97616c62"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNanoObjects_1_1GeneratorInfo.html">NanoObjects::GeneratorInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a5c05eb7c31dcc8502059641c97616c62">generator_info</a></td></tr>
+<tr class="separator:a5c05eb7c31dcc8502059641c97616c62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13b7b30bde81d9cbf31693935e5b27b6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNanoObjects_1_1LHEInfo.html">NanoObjects::LHEInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a13b7b30bde81d9cbf31693935e5b27b6">lhe_info</a></td></tr>
+<tr class="separator:a13b7b30bde81d9cbf31693935e5b27b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1efb034d3855445e38a2f0be3e9aa48"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#ad1efb034d3855445e38a2f0be3e9aa48">lha_id</a></td></tr>
+<tr class="separator:ad1efb034d3855445e38a2f0be3e9aa48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a344f94e8e0a8334b241385d62fe65d14"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a344f94e8e0a8334b241385d62fe65d14">alpha_s_up</a> = 1.</td></tr>
+<tr class="separator:a344f94e8e0a8334b241385d62fe65d14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bb2d63ebab25d86526e78cb585711d7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a2bb2d63ebab25d86526e78cb585711d7">alpha_s_down</a> = 1.</td></tr>
+<tr class="separator:a2bb2d63ebab25d86526e78cb585711d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ac06ef6f0da1696388fdd3969a23a4a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a4ac06ef6f0da1696388fdd3969a23a4a">scale_envelope_weight_up</a> = 1.</td></tr>
+<tr class="separator:a4ac06ef6f0da1696388fdd3969a23a4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05a4fab88c3cad7b401ff84141a36c91"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a05a4fab88c3cad7b401ff84141a36c91">scale_envelope_weight_down</a> = 1.</td></tr>
+<tr class="separator:a05a4fab88c3cad7b401ff84141a36c91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9cacb7ecd5ff053310243c2ba37cdc4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNanoObjects_1_1GenParticles.html">NanoObjects::GenParticles</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#ac9cacb7ecd5ff053310243c2ba37cdc4">gen_particles</a></td></tr>
+<tr class="separator:ac9cacb7ecd5ff053310243c2ba37cdc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b1a93812380271d34e4b4822eff5f14"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a0b1a93812380271d34e4b4822eff5f14">lhe_particles</a></td></tr>
+<tr class="separator:a0b1a93812380271d34e4b4822eff5f14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a253f5fb2af94fc2ee4c1f7e60e63e10a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNanoObjects_1_1Muons.html">NanoObjects::Muons</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a253f5fb2af94fc2ee4c1f7e60e63e10a">muons</a></td></tr>
+<tr class="separator:a253f5fb2af94fc2ee4c1f7e60e63e10a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25080ce4b0174a3c4fad0fc01ec5f434"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a25080ce4b0174a3c4fad0fc01ec5f434">good_muons_mask</a></td></tr>
+<tr class="separator:a25080ce4b0174a3c4fad0fc01ec5f434"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac992a3d391a0e0bbb0a1edb943ac1d1c"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#ac992a3d391a0e0bbb0a1edb943ac1d1c">good_low_pt_muons_mask</a></td></tr>
+<tr class="separator:ac992a3d391a0e0bbb0a1edb943ac1d1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a2ab2be6b983f9348ef3847c0b42759"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a7a2ab2be6b983f9348ef3847c0b42759">good_high_pt_muons_mask</a></td></tr>
+<tr class="separator:a7a2ab2be6b983f9348ef3847c0b42759"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc4ad109d45135ecd45c3a4dfd671307"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNanoObjects_1_1Electrons.html">NanoObjects::Electrons</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#afc4ad109d45135ecd45c3a4dfd671307">electrons</a></td></tr>
+<tr class="separator:afc4ad109d45135ecd45c3a4dfd671307"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2413f1d4d1ad9ca85d6a74050c188a07"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a2413f1d4d1ad9ca85d6a74050c188a07">good_electrons_mask</a></td></tr>
+<tr class="separator:a2413f1d4d1ad9ca85d6a74050c188a07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3df3ac0f4a4c5e923f5fa018d3e07e23"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a3df3ac0f4a4c5e923f5fa018d3e07e23">good_low_pt_electrons_mask</a></td></tr>
+<tr class="separator:a3df3ac0f4a4c5e923f5fa018d3e07e23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9e97fab4188f93c0df2c748d05a5f82"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#aa9e97fab4188f93c0df2c748d05a5f82">good_high_pt_electrons_mask</a></td></tr>
+<tr class="separator:aa9e97fab4188f93c0df2c748d05a5f82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad65f8556aa48694b7a33ab7306f356ea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNanoObjects_1_1Photons.html">NanoObjects::Photons</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#ad65f8556aa48694b7a33ab7306f356ea">photons</a></td></tr>
+<tr class="separator:ad65f8556aa48694b7a33ab7306f356ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54702793c6c40ea2151dcde7d706c274"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a54702793c6c40ea2151dcde7d706c274">good_photons_mask</a></td></tr>
+<tr class="separator:a54702793c6c40ea2151dcde7d706c274"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae25c65e66232ffbb2655f8c21f885883"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNanoObjects_1_1Taus.html">NanoObjects::Taus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#ae25c65e66232ffbb2655f8c21f885883">taus</a></td></tr>
+<tr class="separator:ae25c65e66232ffbb2655f8c21f885883"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26847d26c9e1102b1ffa298412fe0438"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a26847d26c9e1102b1ffa298412fe0438">good_taus_mask</a></td></tr>
+<tr class="separator:a26847d26c9e1102b1ffa298412fe0438"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae75b25e8562a9d5b1316efdba3062b3d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceNanoObjects.html#a7be87612d389c646e9a31974fa6a3d8b">NanoObjects::BJets</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#ae75b25e8562a9d5b1316efdba3062b3d">bjets</a></td></tr>
+<tr class="separator:ae75b25e8562a9d5b1316efdba3062b3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6639d27d4ac69d47a1ab64e6e6cf3705"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a6639d27d4ac69d47a1ab64e6e6cf3705">good_bjets_mask</a></td></tr>
+<tr class="separator:a6639d27d4ac69d47a1ab64e6e6cf3705"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6833caf569a21e81bdc750eb8c18e8a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNanoObjects_1_1Jets.html">NanoObjects::Jets</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#ad6833caf569a21e81bdc750eb8c18e8a">jets</a></td></tr>
+<tr class="separator:ad6833caf569a21e81bdc750eb8c18e8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1218b7a7cd177cab2bc6eff13ecec6b"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#ad1218b7a7cd177cab2bc6eff13ecec6b">good_jets_mask</a></td></tr>
+<tr class="separator:ad1218b7a7cd177cab2bc6eff13ecec6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d0505b2e361f4c0cd2fa965c9b8c05b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNanoObjects_1_1MET.html">NanoObjects::MET</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a1d0505b2e361f4c0cd2fa965c9b8c05b">met</a></td></tr>
+<tr class="separator:a1d0505b2e361f4c0cd2fa965c9b8c05b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c6d3a4b831664fee878033d30a95b57"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a7c6d3a4b831664fee878033d30a95b57">good_met_mask</a></td></tr>
+<tr class="separator:a7c6d3a4b831664fee878033d30a95b57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08f5686538301ae1707cc9c92c4aff1b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNanoObjects_1_1TrgObjs.html">NanoObjects::TrgObjs</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a08f5686538301ae1707cc9c92c4aff1b">trgobjs</a></td></tr>
+<tr class="separator:a08f5686538301ae1707cc9c92c4aff1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae90dba9b3c8dc5ec6f3db4e687db550e"><td class="memItemLeft" align="right" valign="top">RVec&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#ae90dba9b3c8dc5ec6f3db4e687db550e">good_trgobjs_mask</a></td></tr>
+<tr class="separator:ae90dba9b3c8dc5ec6f3db4e687db550e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac12a025d539a01cba2857636c98a5335"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#ac12a025d539a01cba2857636c98a5335">is_data</a> = true</td></tr>
+<tr class="separator:ac12a025d539a01cba2857636c98a5335"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af955bc63d2db84007d530652da60020f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#af955bc63d2db84007d530652da60020f">year</a> = <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abfd3e8c0a2e269807b0b07d3cc6ad62c">Year::kTotalYears</a></td></tr>
+<tr class="separator:af955bc63d2db84007d530652da60020f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a3a7f819ee338f932fdc0893c40369382"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a3a7f819ee338f932fdc0893c40369382">is_null</a> = true</td></tr>
+<tr class="separator:a3a7f819ee338f932fdc0893c40369382"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a48d28120fc794a69f1546086f8a1216f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48d28120fc794a69f1546086f8a1216f">&#9670;&nbsp;</a></span>EventAnalyzer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">EventAnalyzer::EventAnalyzer </td>
+          <td>(</td>
+          <td class="paramtype">const bool &amp;&#160;</td>
+          <td class="paramname"><em>_is_data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> &amp;&#160;</td>
+          <td class="paramname"><em>_year</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a171996d3d1cd5a820cfd7157dbd0b508"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a171996d3d1cd5a820cfd7157dbd0b508">&#9670;&nbsp;</a></span>bjet_corrections()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::bjet_corrections </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>TODO: </p>
+
+</div>
+</div>
+<a id="aca8164c85466feacd7d095b83ef4cfc7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca8164c85466feacd7d095b83ef4cfc7">&#9670;&nbsp;</a></span>electron_corrections()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::electron_corrections </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>TODO: </p>
+
+</div>
+</div>
+<a id="a22afebd05669ca79ab1aa054876cf8b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22afebd05669ca79ab1aa054876cf8b4">&#9670;&nbsp;</a></span>fill_event_content()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::fill_event_content </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7623b1d29b44917edbdb61f9262ce513"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7623b1d29b44917edbdb61f9262ce513">&#9670;&nbsp;</a></span>generator_filter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::generator_filter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>process</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>TODO: Filter events based on their Generator process. This is implemented in order to avoid overlap of phase-space between MC samples. Should come after all constant weights are available. </p>
+
+</div>
+</div>
+<a id="a1bb8b8c302faad676b32051f54f57c32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1bb8b8c302faad676b32051f54f57c32">&#9670;&nbsp;</a></span>get_bjets_selection_mask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::get_bjets_selection_mask </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> -&gt; RVec&lt;int&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a76720a0b904f591781fd0f9211134233"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76720a0b904f591781fd0f9211134233">&#9670;&nbsp;</a></span>get_high_pt_electrons_selection_mask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::get_high_pt_electrons_selection_mask </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> -&gt; RVec&lt;int&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8e081534d50679f01a0bf19d72ce7d81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e081534d50679f01a0bf19d72ce7d81">&#9670;&nbsp;</a></span>get_high_pt_muons_selection_mask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::get_high_pt_muons_selection_mask </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> -&gt; RVec&lt;int&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2dfe2efab7bd5f2525caa8c9bea0dc87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2dfe2efab7bd5f2525caa8c9bea0dc87">&#9670;&nbsp;</a></span>get_jets_selection_mask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::get_jets_selection_mask </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> -&gt; RVec&lt;int&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad8bfc711b8ae554c87c47f8acdc75db9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8bfc711b8ae554c87c47f8acdc75db9">&#9670;&nbsp;</a></span>get_low_pt_electrons_selection_mask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::get_low_pt_electrons_selection_mask </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> -&gt; RVec&lt;int&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af72ba48022698a48a81bd6da29400f9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af72ba48022698a48a81bd6da29400f9d">&#9670;&nbsp;</a></span>get_low_pt_muons_selection_mask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::get_low_pt_muons_selection_mask </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> -&gt; RVec&lt;int&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a68e19fc211d8402866a338e3e7494334"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68e19fc211d8402866a338e3e7494334">&#9670;&nbsp;</a></span>get_met_selection_mask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::get_met_selection_mask </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> -&gt; RVec&lt;int&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a997a22d3ba110c55b65aa8a8677109bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a997a22d3ba110c55b65aa8a8677109bf">&#9670;&nbsp;</a></span>get_photons_selection_mask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::get_photons_selection_mask </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> -&gt; RVec&lt;int&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa2de59cb91109f663d148c540812221c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2de59cb91109f663d148c540812221c">&#9670;&nbsp;</a></span>get_taus_selection_mask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::get_taus_selection_mask </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> -&gt; RVec&lt;int&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8824d7253f6e07694ae6567b8b6b3185"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8824d7253f6e07694ae6567b8b6b3185">&#9670;&nbsp;</a></span>has_selected_objects_filter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::has_selected_objects_filter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns <code>true</code> if the event has at least one object selected. </p>
+
+</div>
+</div>
+<a id="a7193226260e7f8f846229e47ac7bb4cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7193226260e7f8f846229e47ac7bb4cf">&#9670;&nbsp;</a></span>jet_corrections()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::jet_corrections </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>TODO: </p>
+
+</div>
+</div>
+<a id="ab3e7bcd71d576ebe00a4403baa4e69df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3e7bcd71d576ebe00a4403baa4e69df">&#9670;&nbsp;</a></span>met_corrections()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::met_corrections </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>TODO: </p>
+
+</div>
+</div>
+<a id="afbdda7d437b76c3e68741522fb54bba0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbdda7d437b76c3e68741522fb54bba0">&#9670;&nbsp;</a></span>met_filter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::met_filter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4b86348085270f9762594dd923bfe048"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b86348085270f9762594dd923bfe048">&#9670;&nbsp;</a></span>muon_corrections()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::muon_corrections </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>TODO: </p>
+
+</div>
+</div>
+<a id="a3fce80a4176d9caf8783f36eba6c3f7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fce80a4176d9caf8783f36eba6c3f7b">&#9670;&nbsp;</a></span>npv_filter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::npv_filter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply good primary vertex filters. </p>
+
+</div>
+</div>
+<a id="a54a6cab677cd87b20a8412229b899541"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54a6cab677cd87b20a8412229b899541">&#9670;&nbsp;</a></span>object_selection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::object_selection </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aaaf83cefd80d5dd36dff58d0701b4349"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaaf83cefd80d5dd36dff58d0701b4349">&#9670;&nbsp;</a></span>operator bool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">EventAnalyzer::operator bool </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>is it a null event </p>
+
+</div>
+</div>
+<a id="a330ac746aa8ba628dce701087e43d114"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a330ac746aa8ba628dce701087e43d114">&#9670;&nbsp;</a></span>photon_corrections()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::photon_corrections </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>TODO: </p>
+
+</div>
+</div>
+<a id="a5b267860230bcf6942f1a9fb94a074b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b267860230bcf6942f1a9fb94a074b1">&#9670;&nbsp;</a></span>run_lumi_filter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::run_lumi_filter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classRunLumiFilter.html">RunLumiFilter</a> &amp;&#160;</td>
+          <td class="paramname"><em>_run_lumi_filter</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Filter events based on their lumi sectiona and run numbers, following the recommendations from the LUMI-POG (aka "golden JSON"). </p>
+
+</div>
+</div>
+<a id="a9f619289785339ed9eccbb8b8490041f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f619289785339ed9eccbb8b8490041f">&#9670;&nbsp;</a></span>set_bjet_SFs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_bjet_SFs </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classBTagSFCorrector.html">BTagSFCorrector</a> &amp;&#160;</td>
+          <td class="paramname"><em>btag_sf</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>BTagging Using Method 1A - Per event weight References:</p><ul>
+<li><a href="https://twiki.cern.ch/twiki/bin/view/CMS/BTagSFMethods#1a_Event_reweighting_using_scale">https://twiki.cern.ch/twiki/bin/view/CMS/BTagSFMethods#1a_Event_reweighting_using_scale</a></li>
+<li><a href="https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideCMSDataAnalysisSchoolLPC2023TaggingExercise">https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideCMSDataAnalysisSchoolLPC2023TaggingExercise</a></li>
+<li><a href="https://github.com/IreneZoi/CMSDAS2023-BTV/tree/master/BTaggingExercise">https://github.com/IreneZoi/CMSDAS2023-BTV/tree/master/BTaggingExercise</a></li>
+<li><a href="https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation#UltraLegacy_scale_factor_uncerta">https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation#UltraLegacy_scale_factor_uncerta</a></li>
+</ul>
+<p>systematic (string): central, down, down_correlated, down_uncorrelated, up, up_correlated, working_point (string): L, M, T flavor (int): 5=b, 4=c, 0=udsg abseta (real) pt (real) Official instructions on systematics:</p><ul>
+<li>Simple "up" and "down" uncertainties are only to be used when one single data era is analyzed</li>
+<li>A breakdown of SFbc and SFlight uncertainties into "up/down_correlated/uncorrelated" is to be used when the fullRunII dataset is analyzed. The "uncorrelated" uncertainties are to be decorrelated between years, and the "correlated" uncertainties are to be correlated between years With this scheme you should have 10 uncertainties</li>
+<li>related to the b-tagging SFs in the end:</li>
+</ul>
+<p>btagSFbc_correlated</p><ul>
+<li>btagSFlight_correlated</li>
+<li>btagSFbc_2018</li>
+<li>btagSFlight_2018</li>
+<li>btagSFbc_2017</li>
+<li>btagSFlight_2017</li>
+<li>btagSFbc_2016postVFP</li>
+<li>btagSFlight_2016postVFP</li>
+<li>btagSFbc_2016preVFP</li>
+<li>btagSFlight_2016preVFP </li>
+</ul>
+
+</div>
+</div>
+<a id="a0bafe5720606a87b79aeaa6fd2bc8b4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0bafe5720606a87b79aeaa6fd2bc8b4c">&#9670;&nbsp;</a></span>set_bjets() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_bjets </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceNanoObjects.html#a7be87612d389c646e9a31974fa6a3d8b">NanoObjects::BJets</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_bjets</em></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a864ca12b3223ad03a856383a8962f7ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a864ca12b3223ad03a856383a8962f7ed">&#9670;&nbsp;</a></span>set_bjets() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_bjets </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceNanoObjects.html#a7be87612d389c646e9a31974fa6a3d8b">NanoObjects::BJets</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_bjets</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">RVec&lt; int &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>mask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ade044f65643cdfa49b2827be18d3c38a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade044f65643cdfa49b2827be18d3c38a">&#9670;&nbsp;</a></span>set_const_weights()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_const_weights </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classCorrector.html">Corrector</a> &amp;&#160;</td>
+          <td class="paramname"><em>pu_weight</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>set generator weight should be called before any <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> method, but only after all weights are available (should wait for PDF and QCD Scale weights). The naming constant weights means weights that are the sample for the whole event, but could differ from one event to another, e.g. pile-up. As a negative example, Muons resolution corretions are not constants, within the whole event. Weights that are related to physical objects (e.g.: muon SFs) are set later, if the event pass the selection. </p>
+
+</div>
+</div>
+<a id="ae1fe1e632ba0c1c83879d1ddf458fda8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1fe1e632ba0c1c83879d1ddf458fda8">&#9670;&nbsp;</a></span>set_electron_SFs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_electron_SFs </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classElectronSFCorrector.html">ElectronSFCorrector</a> &amp;&#160;</td>
+          <td class="paramname"><em>electron_sf</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Electron SFs, in the correctionlib JSONs, are implemented in a single key: UL-Electron-ID-SF inputs: year (string), variation (string), WorkingPoint (string), eta_SC (real), pt (real) Examples:</p><ul>
+<li>year: 2016preVFP, 2016postVFP, 2017, 2018</li>
+<li>variation: sf/sfup/sfdown (sfup = sf + syst, sfdown = sf - syst)</li>
+<li>WorkingPoint: Loose, Medium, RecoAbove20, RecoBelow20, Tight, Veto, wp80iso, wp80noiso, wp90iso, wp90noiso</li>
+<li>eta: [-inf, inf)</li>
+<li>pt [10., inf)</li>
+</ul>
+<p>Low pT RECO: RecoAbove20 ID: Tight ISO: No recomendations (already incorporated).</p>
+<p>TODO: High Pt - Doesn't use the Correctionlib RECO: Same as Low Pt. ID: Example: <a href="https://github.com/CMSLQ/rootNtupleAnalyzerV2/blob/2dd8f9415e7a9c3465c7e28916eb68866ff337ff/src/ElectronScaleFactors.C">https://github.com/CMSLQ/rootNtupleAnalyzerV2/blob/2dd8f9415e7a9c3465c7e28916eb68866ff337ff/src/ElectronScaleFactors.C</a> 2016 prompt: 0.971±0.001 (stat) (EB), 0.983±0.001 (stat) (EE) uncertainty (syst?): EB ET &lt; 90 GeV: 1% else min(1+(ET-90)*0.0022)%,3%) uncertainty (syst?): EE ET &lt; 90 GeV: 1% else min(1+(ET-90)*0.0143)%,4%)</p>
+<p>2016 legacy: 0.983±0.000 (stat) (EB), 0.991±0.001 (stat) (EE) (taken from slide 10 of [0]) uncertainty (syst?): EB ET &lt; 90 GeV: 1% else min(1+(ET-90)*0.0022)%,3%) uncertainty (syst?): EE ET &lt; 90 GeV: 2% else min(1+(ET-90)*0.0143)%,5%)</p>
+<p>2017 prompt: 0.968±0.001 (stat) (EB), 0.973±0.002 (stat) (EE) uncertainty (syst?): EB ET &lt; 90 GeV: 1% else min(1+(ET-90)*0.0022)%,3%) uncertainty (syst?): EE ET &lt; 90 GeV: 2% else min(1+(ET-90)*0.0143)%,5%)</p>
+<p>2018 rereco (Autumn 18): 0.969 +/- 0.000 (stat) (EB), and 0.984 +/- 0.001 (stat) (EE). uncertainty (syst?): EB ET &lt; 90 GeV: 1% else min(1+(ET-90)*0.0022)%,3%) uncertainty (syst?): EE ET &lt; 90 GeV: 2% else min(1+(ET-90)*0.0143)%,5%) For more details see here <a href="https://twiki.cern.ch/twiki/bin/view/CMS/HEEPElectronIdentificationRun2#Scale_Factor">https://twiki.cern.ch/twiki/bin/view/CMS/HEEPElectronIdentificationRun2#Scale_Factor</a>. As always, HEEP ID SF are just two numbers, one for EB and one for EE.</p>
+<p>[0] - <a href="https://indico.cern.ch/event/831669/contributions/3485543/attachments/1871797/3084930/ApprovalSlides_EE_v3.pdf">https://indico.cern.ch/event/831669/contributions/3485543/attachments/1871797/3084930/ApprovalSlides_EE_v3.pdf</a> </p>
+
+</div>
+</div>
+<a id="aa15000aafcec783cba0cbef4cb0028cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa15000aafcec783cba0cbef4cb0028cf">&#9670;&nbsp;</a></span>set_electrons() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_electrons </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1Electrons.html">NanoObjects::Electrons</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_electrons</em></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af45d5eafb13bebc7d0ad449ad5186aa3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af45d5eafb13bebc7d0ad449ad5186aa3">&#9670;&nbsp;</a></span>set_electrons() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_electrons </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1Electrons.html">NanoObjects::Electrons</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_electrons</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">RVec&lt; int &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>mask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a28d34a4f4ff78bd6ea3e8a48c239cf78"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28d34a4f4ff78bd6ea3e8a48c239cf78">&#9670;&nbsp;</a></span>set_event_info()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_event_info </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1EventInfo.html">NanoObjects::EventInfo</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_event_info</em></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1579887b7918c068589c77ae327d82ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1579887b7918c068589c77ae327d82ca">&#9670;&nbsp;</a></span>set_generator_info()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_generator_info </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1GeneratorInfo.html">NanoObjects::GeneratorInfo</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_generator_info</em></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae967747ea3189ba7bc5ffe8d5f905789"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae967747ea3189ba7bc5ffe8d5f905789">&#9670;&nbsp;</a></span>set_jet_SFs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_jet_SFs </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Jets No SFs are assigned to Jets. They have been measured to be close to 1. </p>
+
+</div>
+</div>
+<a id="a58a2a3651dc7a6170b77fc4fd7fed5a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58a2a3651dc7a6170b77fc4fd7fed5a5">&#9670;&nbsp;</a></span>set_jets() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_jets </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1Jets.html">NanoObjects::Jets</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_jets</em></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4a7e75b6cdca1a991a2c855887ed8c55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a7e75b6cdca1a991a2c855887ed8c55">&#9670;&nbsp;</a></span>set_jets() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_jets </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1Jets.html">NanoObjects::Jets</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_jets</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">RVec&lt; int &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>mask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5e6e42c2af0f10d5bf17e2c610f57b5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e6e42c2af0f10d5bf17e2c610f57b5d">&#9670;&nbsp;</a></span>set_l1_pre_firing_SFs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_l1_pre_firing_SFs </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab9f7eb7c0c05c123c3b780d0d26362f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9f7eb7c0c05c123c3b780d0d26362f1">&#9670;&nbsp;</a></span>set_lhe_info()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_lhe_info </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1LHEInfo.html">NanoObjects::LHEInfo</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_lhe_info</em></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aad07a0d962a91a99b8dd02b7ed22231b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad07a0d962a91a99b8dd02b7ed22231b">&#9670;&nbsp;</a></span>set_lhe_particles()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_lhe_particles </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_lhe_particles</em></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a591b2de6dd5f107e814e469fadb22398"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a591b2de6dd5f107e814e469fadb22398">&#9670;&nbsp;</a></span>set_met() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_met </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1MET.html">NanoObjects::MET</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_met</em></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac54c3c28a2f5b28b5da9f77a507c5e99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac54c3c28a2f5b28b5da9f77a507c5e99">&#9670;&nbsp;</a></span>set_met() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_met </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1MET.html">NanoObjects::MET</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_met</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">RVec&lt; int &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>mask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a996b2a3cb32d7d00c1898210891f39f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a996b2a3cb32d7d00c1898210891f39f2">&#9670;&nbsp;</a></span>set_met_SFs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_met_SFs </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>MET MET is present in, virtually, all events. It is not possible to assign SFs. </p>
+
+</div>
+</div>
+<a id="a2367b06420eb6cd48f1c9ce0f85eb63a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2367b06420eb6cd48f1c9ce0f85eb63a">&#9670;&nbsp;</a></span>set_muon_SFs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_muon_SFs </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classCorrector.html">Corrector</a> &amp;&#160;</td>
+          <td class="paramname"><em>muon_sf_reco</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classCorrector.html">Corrector</a> &amp;&#160;</td>
+          <td class="paramname"><em>muon_sf_id_low_pt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classCorrector.html">Corrector</a> &amp;&#160;</td>
+          <td class="paramname"><em>muon_sf_id_high_pt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classCorrector.html">Corrector</a> &amp;&#160;</td>
+          <td class="paramname"><em>muon_sf_iso_low_pt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classCorrector.html">Corrector</a> &amp;&#160;</td>
+          <td class="paramname"><em>muon_sf_iso_high_pt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Muons Ref (2018): <a href="https://cms-nanoaod-integration.web.cern.ch/commonJSONSFs/summaries/MUO_2018_UL_muon_Z.html">https://cms-nanoaod-integration.web.cern.ch/commonJSONSFs/summaries/MUO_2018_UL_muon_Z.html</a> Low Pt Muons should consider: &ndash; Tracking efficiency: ~1.0 &ndash; Reconstruction: NUM_TrackerMuons_DEN_genTracks &ndash; ID: NUM_TightID_DEN_TrackerMuons &ndash; Isolation: NUM_TightRelIso_DEN_TightIDandIPCut &ndash; <a class="el" href="namespaceTrigger.html">Trigger</a>: NUM_IsoMu24_DEN_CutBasedIdTight_and_PFIsoTight (already implemented during trigger matching) High Pt Muons should consider: &ndash; Tracking efficiency: ~1.0 &ndash; Reconstruction: NUM_TrackerMuons_DEN_genTracks &ndash; ID: NUM_HighPtID_DEN_TrackerMuons &ndash; Isolation: NUM_TightRelTkIso_DEN_HighPtIDandIPCut &ndash; <a class="el" href="namespaceTrigger.html">Trigger</a>: NUM_Mu50_or_OldMu100_or_TkMu100_DEN_CutBasedIdGlobalHighPt_and_TkIsoLoose (already implemented during trigger matching) </p>
+
+</div>
+</div>
+<a id="a7f9a73708e414a19e65d1a668063346e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f9a73708e414a19e65d1a668063346e">&#9670;&nbsp;</a></span>set_muons() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_muons </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1Muons.html">NanoObjects::Muons</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_muons</em></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab5ef968d611907d9832f0c56513ac6c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5ef968d611907d9832f0c56513ac6c3">&#9670;&nbsp;</a></span>set_muons() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_muons </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1Muons.html">NanoObjects::Muons</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_muons</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">RVec&lt; int &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>mask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a95f2a4cf1c9a7eb0f37a9783e325d2f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95f2a4cf1c9a7eb0f37a9783e325d2f9">&#9670;&nbsp;</a></span>set_null()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_null </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> -&gt; void</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>null-ify the event </p>
+
+</div>
+</div>
+<a id="a30927c440869c9aa13adab6115651d08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30927c440869c9aa13adab6115651d08">&#9670;&nbsp;</a></span>set_pdf_alpha_s_weights()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_pdf_alpha_s_weights </td>
+          <td>(</td>
+          <td class="paramtype">const std::optional&lt; std::pair&lt; unsigned int, unsigned int &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>lha_indexes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::tuple&lt; std::vector&lt; std::unique_ptr&lt; LHAPDF::PDF &gt;&gt;, std::unique_ptr&lt; LHAPDF::PDF &gt;, std::unique_ptr&lt; LHAPDF::PDF &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>default_pdf_sets</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Set PDF and Alpha_S uncertainties. Those are tricky beasts, since they are not simple weights added to the event, but rather, should be treated as variations and have their uncert. squared-summed in the end of the processing (classification). This method also saves the LHA ID that was used during generation or rescaling. </p>
+
+</div>
+</div>
+<a id="ad38411a3a6e46165e6dc4d606f771d9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad38411a3a6e46165e6dc4d606f771d9d">&#9670;&nbsp;</a></span>set_photon_SFs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_photon_SFs </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classPhotonSFCorrector.html">PhotonSFCorrector</a> &amp;&#160;</td>
+          <td class="paramname"><em>photon_id_sf</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classPhotonSFCorrector.html">PhotonSFCorrector</a> &amp;&#160;</td>
+          <td class="paramname"><em>photon_pixel_seed_sf</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Photons ID SFs, in the correctionlib JSONs, are implemented in: UL-Photon-ID-SF inputs: year (string), variation (string), WorkingPoint (string), eta_SC (real), pt (real)</p><ul>
+<li>year: 2016preVFP, 2016postVFP, 2017, 2018</li>
+<li>variation: sf/sfup/sfdown (sfup = sf + syst, sfdown = sf - syst)</li>
+<li>WorkingPoint: Loose, Medium, Tight, wp80, wp90</li>
+<li>eta: [-inf, inf)</li>
+<li>pt [20., inf)</li>
+</ul>
+<p>Low pT RECO: From Twiki [0]: "The scale factor to reconstruct a supercluster with H/E&lt;0.5 is assumed to be 100%." ID: Tight ISO: No recomendations (already incorporated).</p>
+<p>[0] - <a href="https://twiki.cern.ch/twiki/bin/view/CMS/EgammaRunIIRecommendations#E_gamma_RECO">https://twiki.cern.ch/twiki/bin/view/CMS/EgammaRunIIRecommendations#E_gamma_RECO</a></p>
+<p>Photons PixelSeed SFs, in the correctionlib JSONs, are implemented in: UL-Photon-PixVeto-SF These are the Photon Pixel Veto Scale Factors (nominal, up or down) for 2018 Ultra Legacy dataset.</p><ul>
+<li>year: 2016preVFP, 2016postVFP, 2017, 2018</li>
+<li>variation: sf/sfup/sfdown (sfup = sf + syst, sfdown = sf - syst)</li>
+<li>WorkingPoint (SFs available for the cut-based and MVA IDs): Loose, MVA, Medium, Tight</li>
+<li>HasPixBin: For each working point of choice, they are dependent on the photon pseudorapidity and R9: Possible bin choices: ['EBInc','EBHighR9','EBLowR9','EEInc','EEHighR9','EELowR9'] </li>
+</ul>
+
+</div>
+</div>
+<a id="a6d9f10611c19fc519c6627e79898ff7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d9f10611c19fc519c6627e79898ff7b">&#9670;&nbsp;</a></span>set_photons() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_photons </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1Photons.html">NanoObjects::Photons</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_photons</em></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a77ba7eae6c6eb33c831a4d0ea13a0a66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77ba7eae6c6eb33c831a4d0ea13a0a66">&#9670;&nbsp;</a></span>set_photons() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_photons </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1Photons.html">NanoObjects::Photons</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_photons</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">RVec&lt; int &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>mask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af1a3fd3e9d5ecaf82b69e03789ff734a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1a3fd3e9d5ecaf82b69e03789ff734a">&#9670;&nbsp;</a></span>set_scale_weights()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_scale_weights </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the QCD Scaling weights, using the envelope method. If the sample has no weights are kept as 1. </p>
+
+</div>
+</div>
+<a id="a02eb4584162d5b2f83f622b2c521a8a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02eb4584162d5b2f83f622b2c521a8a7">&#9670;&nbsp;</a></span>set_tau_SFs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_tau_SFs </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>TODO: Taus. </p>
+
+</div>
+</div>
+<a id="adb84ffbcccd2cdd6d7d8f6203f15c83b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb84ffbcccd2cdd6d7d8f6203f15c83b">&#9670;&nbsp;</a></span>set_taus() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_taus </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1Taus.html">NanoObjects::Taus</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_taus</em></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a723adff95316f6fb4abb6d3cff63d81a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a723adff95316f6fb4abb6d3cff63d81a">&#9670;&nbsp;</a></span>set_taus() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_taus </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1Taus.html">NanoObjects::Taus</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_taus</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">RVec&lt; int &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>mask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8abc435d820d7c320c120f79eec867a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8abc435d820d7c320c120f79eec867a1">&#9670;&nbsp;</a></span>set_trgobjs() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_trgobjs </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1TrgObjs.html">NanoObjects::TrgObjs</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_trgobjs</em></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4f91191eccc0b2eefce362deaf05cdcb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f91191eccc0b2eefce362deaf05cdcb">&#9670;&nbsp;</a></span>set_trgobjs() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_trgobjs </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structNanoObjects_1_1TrgObjs.html">NanoObjects::TrgObjs</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>_trgobjs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">RVec&lt; int &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>mask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5abd8d6acaecf90590e3f02aed4cbe54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5abd8d6acaecf90590e3f02aed4cbe54">&#9670;&nbsp;</a></span>set_trigger_bits()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_trigger_bits </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set <code><a class="el" href="structTriggerBits.html">TriggerBits</a></code> for this event. They will be checked latter. </p>
+
+</div>
+</div>
+<a id="af62f1fe013c7c261124ef39fd8697c81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af62f1fe013c7c261124ef39fd8697c81">&#9670;&nbsp;</a></span>set_trigger_SFs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::set_trigger_SFs </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p><a class="el" href="namespaceTrigger.html">Trigger</a> These weights have already been calculated during the trigger matching. </p>
+
+</div>
+</div>
+<a id="a15e9986c8df877e5314f929f90930270"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15e9986c8df877e5314f929f90930270">&#9670;&nbsp;</a></span>tau_corrections()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::tau_corrections </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>TODO: </p>
+
+</div>
+</div>
+<a id="a8ade0eada396b9da999e8f1f6b08e92c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ade0eada396b9da999e8f1f6b08e92c">&#9670;&nbsp;</a></span>trigger_filter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::trigger_filter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em></td><td>)</td>
+          <td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Filter events that did not fired any trigger or do not pass double trigger firing check </p>
+
+</div>
+</div>
+<a id="a991854558905c08cc4f3efabbac7ba27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a991854558905c08cc4f3efabbac7ba27">&#9670;&nbsp;</a></span>trigger_match_filter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::trigger_match_filter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classOutputs.html">Outputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>outputs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::map&lt; std::string_view, <a class="el" href="classTrgObjMatcher.html">TrgObjMatcher</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>matchers</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Will check if the current event has a matched object to a good TrgObj. </p>
+
+</div>
+</div>
+<a id="a8f2744fc406d5ba8f6ed0a5e355a3491"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f2744fc406d5ba8f6ed0a5e355a3491">&#9670;&nbsp;</a></span>unset_null()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::unset_null </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> -&gt; void</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>un-null-ify - not sure when/if it would be needed, but ... </p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a2bb2d63ebab25d86526e78cb585711d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bb2d63ebab25d86526e78cb585711d7">&#9670;&nbsp;</a></span>alpha_s_down</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float EventAnalyzer::alpha_s_down = 1.</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a344f94e8e0a8334b241385d62fe65d14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a344f94e8e0a8334b241385d62fe65d14">&#9670;&nbsp;</a></span>alpha_s_up</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float EventAnalyzer::alpha_s_up = 1.</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae75b25e8562a9d5b1316efdba3062b3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae75b25e8562a9d5b1316efdba3062b3d">&#9670;&nbsp;</a></span>bjets</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceNanoObjects.html#a7be87612d389c646e9a31974fa6a3d8b">NanoObjects::BJets</a> EventAnalyzer::bjets</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afc4ad109d45135ecd45c3a4dfd671307"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc4ad109d45135ecd45c3a4dfd671307">&#9670;&nbsp;</a></span>electrons</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structNanoObjects_1_1Electrons.html">NanoObjects::Electrons</a> EventAnalyzer::electrons</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a04a976455a777e9eaa0d6240564eb1dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04a976455a777e9eaa0d6240564eb1dc">&#9670;&nbsp;</a></span>event_info</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structNanoObjects_1_1EventInfo.html">NanoObjects::EventInfo</a> EventAnalyzer::event_info</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac9cacb7ecd5ff053310243c2ba37cdc4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9cacb7ecd5ff053310243c2ba37cdc4">&#9670;&nbsp;</a></span>gen_particles</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structNanoObjects_1_1GenParticles.html">NanoObjects::GenParticles</a> EventAnalyzer::gen_particles</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5c05eb7c31dcc8502059641c97616c62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c05eb7c31dcc8502059641c97616c62">&#9670;&nbsp;</a></span>generator_info</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structNanoObjects_1_1GeneratorInfo.html">NanoObjects::GeneratorInfo</a> EventAnalyzer::generator_info</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6639d27d4ac69d47a1ab64e6e6cf3705"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6639d27d4ac69d47a1ab64e6e6cf3705">&#9670;&nbsp;</a></span>good_bjets_mask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">RVec&lt;int&gt; EventAnalyzer::good_bjets_mask</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2413f1d4d1ad9ca85d6a74050c188a07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2413f1d4d1ad9ca85d6a74050c188a07">&#9670;&nbsp;</a></span>good_electrons_mask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">RVec&lt;int&gt; EventAnalyzer::good_electrons_mask</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa9e97fab4188f93c0df2c748d05a5f82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9e97fab4188f93c0df2c748d05a5f82">&#9670;&nbsp;</a></span>good_high_pt_electrons_mask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">RVec&lt;int&gt; EventAnalyzer::good_high_pt_electrons_mask</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7a2ab2be6b983f9348ef3847c0b42759"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a2ab2be6b983f9348ef3847c0b42759">&#9670;&nbsp;</a></span>good_high_pt_muons_mask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">RVec&lt;int&gt; EventAnalyzer::good_high_pt_muons_mask</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad1218b7a7cd177cab2bc6eff13ecec6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1218b7a7cd177cab2bc6eff13ecec6b">&#9670;&nbsp;</a></span>good_jets_mask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">RVec&lt;int&gt; EventAnalyzer::good_jets_mask</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3df3ac0f4a4c5e923f5fa018d3e07e23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3df3ac0f4a4c5e923f5fa018d3e07e23">&#9670;&nbsp;</a></span>good_low_pt_electrons_mask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">RVec&lt;int&gt; EventAnalyzer::good_low_pt_electrons_mask</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac992a3d391a0e0bbb0a1edb943ac1d1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac992a3d391a0e0bbb0a1edb943ac1d1c">&#9670;&nbsp;</a></span>good_low_pt_muons_mask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">RVec&lt;int&gt; EventAnalyzer::good_low_pt_muons_mask</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7c6d3a4b831664fee878033d30a95b57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c6d3a4b831664fee878033d30a95b57">&#9670;&nbsp;</a></span>good_met_mask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">RVec&lt;int&gt; EventAnalyzer::good_met_mask</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a25080ce4b0174a3c4fad0fc01ec5f434"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25080ce4b0174a3c4fad0fc01ec5f434">&#9670;&nbsp;</a></span>good_muons_mask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">RVec&lt;int&gt; EventAnalyzer::good_muons_mask</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a54702793c6c40ea2151dcde7d706c274"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54702793c6c40ea2151dcde7d706c274">&#9670;&nbsp;</a></span>good_photons_mask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">RVec&lt;int&gt; EventAnalyzer::good_photons_mask</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a26847d26c9e1102b1ffa298412fe0438"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26847d26c9e1102b1ffa298412fe0438">&#9670;&nbsp;</a></span>good_taus_mask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">RVec&lt;int&gt; EventAnalyzer::good_taus_mask</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae90dba9b3c8dc5ec6f3db4e687db550e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae90dba9b3c8dc5ec6f3db4e687db550e">&#9670;&nbsp;</a></span>good_trgobjs_mask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">RVec&lt;int&gt; EventAnalyzer::good_trgobjs_mask</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac12a025d539a01cba2857636c98a5335"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac12a025d539a01cba2857636c98a5335">&#9670;&nbsp;</a></span>is_data</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool EventAnalyzer::is_data = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3a7f819ee338f932fdc0893c40369382"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a7f819ee338f932fdc0893c40369382">&#9670;&nbsp;</a></span>is_null</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool EventAnalyzer::is_null = true</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad6833caf569a21e81bdc750eb8c18e8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6833caf569a21e81bdc750eb8c18e8a">&#9670;&nbsp;</a></span>jets</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structNanoObjects_1_1Jets.html">NanoObjects::Jets</a> EventAnalyzer::jets</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad1efb034d3855445e38a2f0be3e9aa48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1efb034d3855445e38a2f0be3e9aa48">&#9670;&nbsp;</a></span>lha_id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int EventAnalyzer::lha_id</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a13b7b30bde81d9cbf31693935e5b27b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13b7b30bde81d9cbf31693935e5b27b6">&#9670;&nbsp;</a></span>lhe_info</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structNanoObjects_1_1LHEInfo.html">NanoObjects::LHEInfo</a> EventAnalyzer::lhe_info</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0b1a93812380271d34e4b4822eff5f14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b1a93812380271d34e4b4822eff5f14">&#9670;&nbsp;</a></span>lhe_particles</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a> EventAnalyzer::lhe_particles</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1d0505b2e361f4c0cd2fa965c9b8c05b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d0505b2e361f4c0cd2fa965c9b8c05b">&#9670;&nbsp;</a></span>met</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structNanoObjects_1_1MET.html">NanoObjects::MET</a> EventAnalyzer::met</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a253f5fb2af94fc2ee4c1f7e60e63e10a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a253f5fb2af94fc2ee4c1f7e60e63e10a">&#9670;&nbsp;</a></span>muons</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structNanoObjects_1_1Muons.html">NanoObjects::Muons</a> EventAnalyzer::muons</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad65f8556aa48694b7a33ab7306f356ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad65f8556aa48694b7a33ab7306f356ea">&#9670;&nbsp;</a></span>photons</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structNanoObjects_1_1Photons.html">NanoObjects::Photons</a> EventAnalyzer::photons</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a05a4fab88c3cad7b401ff84141a36c91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05a4fab88c3cad7b401ff84141a36c91">&#9670;&nbsp;</a></span>scale_envelope_weight_down</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float EventAnalyzer::scale_envelope_weight_down = 1.</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4ac06ef6f0da1696388fdd3969a23a4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ac06ef6f0da1696388fdd3969a23a4a">&#9670;&nbsp;</a></span>scale_envelope_weight_up</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float EventAnalyzer::scale_envelope_weight_up = 1.</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae25c65e66232ffbb2655f8c21f885883"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae25c65e66232ffbb2655f8c21f885883">&#9670;&nbsp;</a></span>taus</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structNanoObjects_1_1Taus.html">NanoObjects::Taus</a> EventAnalyzer::taus</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a08f5686538301ae1707cc9c92c4aff1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08f5686538301ae1707cc9c92c4aff1b">&#9670;&nbsp;</a></span>trgobjs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structNanoObjects_1_1TrgObjs.html">NanoObjects::TrgObjs</a> EventAnalyzer::trgobjs</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a592c01b6699c3b1117852708671a4588"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a592c01b6699c3b1117852708671a4588">&#9670;&nbsp;</a></span>trigger_bits</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structTriggerBits.html">TriggerBits</a> EventAnalyzer::trigger_bits</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af17f05f4d345dc4f863201972d0bcbed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af17f05f4d345dc4f863201972d0bcbed">&#9670;&nbsp;</a></span>trigger_sf_down</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float EventAnalyzer::trigger_sf_down = 1.</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac9abcf0cf58b72219ee0654a2a202d56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9abcf0cf58b72219ee0654a2a202d56">&#9670;&nbsp;</a></span>trigger_sf_nominal</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float EventAnalyzer::trigger_sf_nominal = 1.</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4a59fb5cc35015e9ffdd6b4926f96a5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a59fb5cc35015e9ffdd6b4926f96a5e">&#9670;&nbsp;</a></span>trigger_sf_up</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float EventAnalyzer::trigger_sf_up = 1.</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af955bc63d2db84007d530652da60020f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af955bc63d2db84007d530652da60020f">&#9670;&nbsp;</a></span>year</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37">Year</a> EventAnalyzer::year = <a class="el" href="Configs_8hpp.html#ae49013585f0536b639fe09828864fe37abfd3e8c0a2e269807b0b07d3cc6ad62c">Year::kTotalYears</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/.automount/home/home__home1/institut_3a/silva/projects/music/NanoMUSiC/NanoMUSiC/MUSiC/include/<a class="el" href="EventAnalyzer_8hpp_source.html">EventAnalyzer.hpp</a></li>
+<li>/.automount/home/home__home1/institut_3a/silva/projects/music/NanoMUSiC/NanoMUSiC/MUSiC/src/EventAnalyzer/<a class="el" href="corrections_8cpp.html">corrections.cpp</a></li>
+<li>/.automount/home/home__home1/institut_3a/silva/projects/music/NanoMUSiC/NanoMUSiC/MUSiC/src/EventAnalyzer/<a class="el" href="event__filters_8cpp.html">event_filters.cpp</a></li>
+<li>/.automount/home/home__home1/institut_3a/silva/projects/music/NanoMUSiC/NanoMUSiC/MUSiC/src/EventAnalyzer/<a class="el" href="EventAnalyzer_8cpp.html">EventAnalyzer.cpp</a></li>
+<li>/.automount/home/home__home1/institut_3a/silva/projects/music/NanoMUSiC/NanoMUSiC/MUSiC/src/EventAnalyzer/<a class="el" href="generator_8cpp.html">generator.cpp</a></li>
+<li>/.automount/home/home__home1/institut_3a/silva/projects/music/NanoMUSiC/NanoMUSiC/MUSiC/src/EventAnalyzer/<a class="el" href="object__selection_8cpp.html">object_selection.cpp</a></li>
+<li>/.automount/home/home__home1/institut_3a/silva/projects/music/NanoMUSiC/NanoMUSiC/MUSiC/src/EventAnalyzer/<a class="el" href="scale__factors_8cpp.html">scale_factors.cpp</a></li>
+<li>/.automount/home/home__home1/institut_3a/silva/projects/music/NanoMUSiC/NanoMUSiC/MUSiC/src/EventAnalyzer/<a class="el" href="set__objects_8cpp.html">set_objects.cpp</a></li>
+<li>/.automount/home/home__home1/institut_3a/silva/projects/music/NanoMUSiC/NanoMUSiC/MUSiC/src/EventAnalyzer/<a class="el" href="trigger_8cpp.html">trigger.cpp</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="classEventAnalyzer.html">EventAnalyzer</a></li>
+    <li class="footer">Generated by
+    <a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.18 </li>
+  </ul>
+</div>
+</body>
+</html>

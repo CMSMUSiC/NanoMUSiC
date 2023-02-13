@@ -199,8 +199,8 @@ Private Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-static-methods"></a>
 Static Private Member Functions</h2></td></tr>
-<tr class="memitem:a93fb4aca3f76867bc10dd89db381e7ee"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElectronTriggerSF.html#a93fb4aca3f76867bc10dd89db381e7ee">read_xxd_dump</a> (unsigned char arr[], unsigned int _size, const std::string &amp;name=&quot;_&quot;) -&gt; TMemFile</td></tr>
-<tr class="separator:a93fb4aca3f76867bc10dd89db381e7ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33a697ee1ab566cf35ddcb748e7b011a"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElectronTriggerSF.html#a33a697ee1ab566cf35ddcb748e7b011a">read_xxd_dump</a> (const unsigned char arr[], const unsigned int _size, const std::string &amp;name=&quot;_&quot;) -&gt; TMemFile</td></tr>
+<tr class="separator:a33a697ee1ab566cf35ddcb748e7b011a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -260,9 +260,6 @@ Static Private Attributes</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">ElectronTriggerSF::ElectronTriggerSF </td>
@@ -282,11 +279,6 @@ Static Private Attributes</h2></td></tr>
           <td></td><td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 </div>
@@ -306,13 +298,12 @@ Static Private Attributes</h2></td></tr>
           <td>(</td>
           <td class="paramtype">const TH2F &amp;&#160;</td>
           <td class="paramname"><em>histo</em></td><td>)</td>
-          <td> -&gt; std::tuple&lt;double, double, double, double&gt;
-    </td>
+          <td> -&gt; std::tuple&lt;double, double, double, double&gt;</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -325,9 +316,6 @@ Static Private Attributes</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">auto ElectronTriggerSF::operator() </td>
@@ -350,21 +338,15 @@ Static Private Attributes</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td> const -&gt; double
-    </td>
+          <td></td><td> const -&gt; double</td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a93fb4aca3f76867bc10dd89db381e7ee"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a93fb4aca3f76867bc10dd89db381e7ee">&#9670;&nbsp;</a></span>read_xxd_dump()</h2>
+<a id="a33a697ee1ab566cf35ddcb748e7b011a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33a697ee1ab566cf35ddcb748e7b011a">&#9670;&nbsp;</a></span>read_xxd_dump()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -373,15 +355,15 @@ Static Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static auto ElectronTriggerSF::read_xxd_dump </td>
+          <td class="memname">auto ElectronTriggerSF::read_xxd_dump </td>
           <td>(</td>
-          <td class="paramtype">unsigned char&#160;</td>
+          <td class="paramtype">const unsigned char&#160;</td>
           <td class="paramname"><em>arr</em>[], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramtype">const unsigned int&#160;</td>
           <td class="paramname"><em>_size</em>, </td>
         </tr>
         <tr>
@@ -393,13 +375,12 @@ Static Private Attributes</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td> -&gt; TMemFile
-    </td>
+          <td></td><td> -&gt; TMemFile</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">private</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -694,8 +675,9 @@ Static Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li>/.automount/home/home__home1/institut_3a/silva/projects/music/NanoMUSiC/NanoMUSiC/MUSiC/include/<a class="el" href="CorrectionSets_8hpp_source.html">CorrectionSets.hpp</a></li>
+<li>/.automount/home/home__home1/institut_3a/silva/projects/music/NanoMUSiC/NanoMUSiC/MUSiC/src/<a class="el" href="CorrectionSets_8cpp.html">CorrectionSets.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

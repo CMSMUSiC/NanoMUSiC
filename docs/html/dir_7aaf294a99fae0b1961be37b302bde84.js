@@ -4,8 +4,8 @@ var dir_7aaf294a99fae0b1961be37b302bde84 =
     [ "Configs.hpp", "Configs_8hpp.html", "Configs_8hpp" ],
     [ "CorrectionSets.hpp", "CorrectionSets_8hpp.html", "CorrectionSets_8hpp" ],
     [ "Enumerate.hpp", "Enumerate_8hpp.html", "Enumerate_8hpp" ],
-    [ "EventData.hpp", "EventData_8hpp.html", [
-      [ "EventData", "classEventData.html", "classEventData" ]
+    [ "EventAnalyzer.hpp", "EventAnalyzer_8hpp.html", [
+      [ "EventAnalyzer", "classEventAnalyzer.html", "classEventAnalyzer" ]
     ] ],
     [ "GeneratorFilters.hpp", "GeneratorFilters_8hpp.html", "GeneratorFilters_8hpp" ],
     [ "music.hpp", "music_8hpp.html", "music_8hpp" ],

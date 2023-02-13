@@ -166,8 +166,8 @@ $(document).ready(function(){initNavTree('Enumerate_8hpp_source.html',''); initR
 <div class="title">Enumerate.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<a href="Enumerate_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef ENUMERATE</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define ENUMERATE</span></div>
+<a href="Enumerate_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef ENUMERATE_H</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define ENUMERATE_H</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160; </div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;fmt/core.h&gt;</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;fmt/ostream.h&gt;</span></div>
@@ -210,134 +210,135 @@ $(document).ready(function(){initNavTree('Enumerate_8hpp_source.html',''); initR
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00043"></a><span class="lineno"><a class="line" href="classEnumerate.html#aca47267923d68a66f26928057149290c">   43</a></span>&#160;    std::array&lt;CT, N&gt; <a class="code" href="classEnumerate.html#aca47267923d68a66f26928057149290c">categories</a>;</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
-<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="classEnumerate.html#a33d186477d5b81e8a0912a4335670ba5">   45</a></span>&#160;    constexpr <a class="code" href="classEnumerate.html#a33d186477d5b81e8a0912a4335670ba5">Enumerate</a>(T &amp;&amp;...values) : <a class="code" href="classEnumerate.html#aca47267923d68a66f26928057149290c">categories</a>(std::array&lt;<a class="code" href="classEnumerate.html#aabea0708e54d2d9837a9b9e446e240b4">CT</a>, sizeof...(T)&gt;{values...})</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    {</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        <span class="comment">// static_assert(number_of_duplicates(values...) == 0,</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        <span class="comment">//               &quot;Must not have duplicated elements.&quot;);</span></div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    }</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
-<div class="line"><a name="l00051"></a><span class="lineno"><a class="line" href="classEnumerate.html#a82e17966a00f0f4ce4bb80f0ceda6d37">   51</a></span>&#160;    <span class="keyword">using</span> <a class="code" href="classEnumerate.html#a82e17966a00f0f4ce4bb80f0ceda6d37">const_iterator</a> = <span class="keyword">typename</span> std::array&lt;CT, N&gt;::const_iterator;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
-<div class="line"><a name="l00053"></a><span class="lineno"><a class="line" href="classEnumerate.html#a91bfbe393e8e8ab29d5a5df0e77cfb20">   53</a></span>&#160;    constexpr <a class="code" href="classEnumerate.html#a82e17966a00f0f4ce4bb80f0ceda6d37">const_iterator</a> <a class="code" href="classEnumerate.html#a91bfbe393e8e8ab29d5a5df0e77cfb20">begin</a>()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="classEnumerate.html#aca47267923d68a66f26928057149290c">categories</a>.cbegin();</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    }</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
-<div class="line"><a name="l00058"></a><span class="lineno"><a class="line" href="classEnumerate.html#a725b9e53e06562a4ce45849ff33dea63">   58</a></span>&#160;    constexpr <a class="code" href="classEnumerate.html#a82e17966a00f0f4ce4bb80f0ceda6d37">const_iterator</a> <a class="code" href="classEnumerate.html#a725b9e53e06562a4ce45849ff33dea63">end</a>()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="classEnumerate.html#aca47267923d68a66f26928057149290c">categories</a>.cend();</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    }</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
-<div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="classEnumerate.html#ac1bd20338ba22e31bdc403586894e597">   63</a></span>&#160;    constexpr <a class="code" href="classEnumerate.html#a82e17966a00f0f4ce4bb80f0ceda6d37">const_iterator</a> <a class="code" href="classEnumerate.html#ac1bd20338ba22e31bdc403586894e597">cbegin</a>()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="classEnumerate.html#aca47267923d68a66f26928057149290c">categories</a>.cbegin();</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    }</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
-<div class="line"><a name="l00068"></a><span class="lineno"><a class="line" href="classEnumerate.html#ab0ad6a0a10266a763524bbe46b052cfa">   68</a></span>&#160;    constexpr <a class="code" href="classEnumerate.html#a82e17966a00f0f4ce4bb80f0ceda6d37">const_iterator</a> <a class="code" href="classEnumerate.html#ab0ad6a0a10266a763524bbe46b052cfa">cend</a>()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="classEnumerate.html#aca47267923d68a66f26928057149290c">categories</a>.cend();</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    }</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
-<div class="line"><a name="l00073"></a><span class="lineno"><a class="line" href="classEnumerate.html#a21ffb06ee1cf8e893d10a310b9a474fe">   73</a></span>&#160;    constexpr std::size_t <a class="code" href="classEnumerate.html#a21ffb06ee1cf8e893d10a310b9a474fe">size</a>()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="classEnumerate.html#aca47267923d68a66f26928057149290c">categories</a>.size();</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    }</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
-<div class="line"><a name="l00078"></a><span class="lineno"><a class="line" href="classEnumerate.html#a88ef3710cd4f765dbecdc55471ec6f33">   78</a></span>&#160;    constexpr <a class="code" href="classEnumerate.html#aabea0708e54d2d9837a9b9e446e240b4">CT</a> <a class="code" href="classEnumerate.html#a88ef3710cd4f765dbecdc55471ec6f33">operator[]</a>(<span class="keyword">const</span> std::size_t index)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="classEnumerate.html#aca47267923d68a66f26928057149290c">categories</a>[index];</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    }</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160; </div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    template &lt;typename Q = CT, std::enable_if_t&lt;!std::is_integral&lt;Q&gt;::value, <span class="keywordtype">bool</span>&gt; = <span class="keyword">true</span>&gt;</div>
-<div class="line"><a name="l00084"></a><span class="lineno"><a class="line" href="classEnumerate.html#a9c95163a315ace1c93990a9360bcd87d">   84</a></span>&#160;    constexpr std::size_t <a class="code" href="classEnumerate.html#a9c95163a315ace1c93990a9360bcd87d">operator[]</a>(<span class="keyword">const</span> Q &amp;str)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;        <span class="keyword">auto</span> it = std::find(this-&gt;categories.cbegin(), this-&gt;categories.cend(), str);</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;        <span class="keywordflow">return</span> std::distance(this-&gt;categories.cbegin(), it);</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    }</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160; </div>
-<div class="line"><a name="l00090"></a><span class="lineno"><a class="line" href="classEnumerate.html#a4258224ea8b62eef8e1e72379cc83ee4">   90</a></span>&#160;    constexpr std::size_t <a class="code" href="classEnumerate.html#a4258224ea8b62eef8e1e72379cc83ee4">index_of</a>(<span class="keyword">const</span> <a class="code" href="classEnumerate.html#aabea0708e54d2d9837a9b9e446e240b4">CT</a> &amp;val)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        <span class="keyword">auto</span> it = std::find(this-&gt;categories.cbegin(), this-&gt;categories.cend(), val);</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;        <span class="keywordflow">if</span> (it == this-&gt;categories.cend())</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        {</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;            <span class="keywordflow">if</span> constexpr (std::is_constructible_v&lt;std::string, CT&gt;)</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;            {</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;                <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Item \&quot;&quot;</span> + std::string(val) + <span class="stringliteral">&quot;\&quot; not found.&quot;</span>);</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;            }</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;            <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;            {</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;                <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Item \&quot;&quot;</span> + std::to_string(val) + <span class="stringliteral">&quot;\&quot; not found.&quot;</span>);</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;            }</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;        }</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;        <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;        {</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;            <span class="keywordflow">return</span> std::distance(this-&gt;categories.cbegin(), it);</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;        }</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    }</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160; </div>
-<div class="line"><a name="l00110"></a><span class="lineno"><a class="line" href="classEnumerate.html#abed7cac635ace46e98a23e8b5bf80aef">  110</a></span>&#160;    constexpr <a class="code" href="classEnumerate.html#aabea0708e54d2d9837a9b9e446e240b4">CT</a> <a class="code" href="classEnumerate.html#abed7cac635ace46e98a23e8b5bf80aef">at</a>(<span class="keyword">const</span> std::size_t index)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="classEnumerate.html#aca47267923d68a66f26928057149290c">categories</a>.at(index);</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    }</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160; </div>
-<div class="line"><a name="l00115"></a><span class="lineno"><a class="line" href="classEnumerate.html#af2e9a39c411d7e2cc83514dae7df116d">  115</a></span>&#160;    <span class="keyword">friend</span> std::ostream &amp;<a class="code" href="classEnumerate.html#af2e9a39c411d7e2cc83514dae7df116d">operator&lt;&lt;</a>(std::ostream &amp;os, <span class="keyword">const</span> <a class="code" href="classEnumerate.html">Enumerate</a> &amp;_enum)</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    {</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;        os &lt;&lt; <span class="stringliteral">&quot;[&quot;</span>;</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;        <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; _enum.<a class="code" href="classEnumerate.html#aca47267923d68a66f26928057149290c">categories</a>.size(); i++)</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;        {</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;            os &lt;&lt; _enum.<a class="code" href="classEnumerate.html#aca47267923d68a66f26928057149290c">categories</a>[i];</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;            <span class="keywordflow">if</span> (i &lt; _enum.<a class="code" href="classEnumerate.html#aca47267923d68a66f26928057149290c">categories</a>.size() - 1)</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;            {</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;                os &lt;&lt; <span class="stringliteral">&quot; - &quot;</span>;</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;            }</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;        }</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;        os &lt;&lt; <span class="stringliteral">&quot;]&quot;</span>;</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;        <span class="keywordflow">return</span> os;</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;    }</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;};</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160; </div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span>... Ts&gt;</div>
-<div class="line"><a name="l00132"></a><span class="lineno"><a class="line" href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">  132</a></span>&#160;constexpr <span class="keyword">auto</span> <a class="code" href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">make_enumerate</a>(Ts &amp;&amp;...args)</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;{</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;    static_assert(<span class="keyword">sizeof</span>...(Ts) &gt; 0, <span class="stringliteral">&quot;Must have at least one element.&quot;</span>);</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160; </div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;    <span class="comment">// if constexpr (number_of_duplicates(args...) == 0,</span></div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;    <span class="comment">//               &quot;Must not have duplicated elements.&quot;);</span></div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160; </div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;    <span class="keyword">using</span> FirstEntityType = std::tuple_element_t&lt;0, std::tuple&lt;Ts...&gt;&gt;;</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;    <span class="keywordflow">if</span> constexpr (std::is_convertible_v&lt;FirstEntityType, std::string_view&gt;)</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;    {</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="classEnumerate.html">Enumerate</a>(std::string_view(std::forward&lt;Ts&gt;(args))...);</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;    }</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;    <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;    {</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="classEnumerate.html">Enumerate</a>(std::forward&lt;Ts&gt;(args)...);</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;    }</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;}</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160; </div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/*ENUMERATE*/</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="classEnumerate.html#a33d186477d5b81e8a0912a4335670ba5">   45</a></span>&#160;    constexpr <a class="code" href="classEnumerate.html#a33d186477d5b81e8a0912a4335670ba5">Enumerate</a>(T &amp;&amp;...values)</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        : <a class="code" href="classEnumerate.html#aca47267923d68a66f26928057149290c">categories</a>(std::array&lt;<a class="code" href="classEnumerate.html#aabea0708e54d2d9837a9b9e446e240b4">CT</a>, sizeof...(T)&gt;{values...})</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    {</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        <span class="comment">// static_assert(number_of_duplicates(values...) == 0,</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        <span class="comment">//               &quot;Must not have duplicated elements.&quot;);</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    }</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
+<div class="line"><a name="l00052"></a><span class="lineno"><a class="line" href="classEnumerate.html#a82e17966a00f0f4ce4bb80f0ceda6d37">   52</a></span>&#160;    <span class="keyword">using</span> <a class="code" href="classEnumerate.html#a82e17966a00f0f4ce4bb80f0ceda6d37">const_iterator</a> = <span class="keyword">typename</span> std::array&lt;CT, N&gt;::const_iterator;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
+<div class="line"><a name="l00054"></a><span class="lineno"><a class="line" href="classEnumerate.html#a91bfbe393e8e8ab29d5a5df0e77cfb20">   54</a></span>&#160;    constexpr <a class="code" href="classEnumerate.html#a82e17966a00f0f4ce4bb80f0ceda6d37">const_iterator</a> <a class="code" href="classEnumerate.html#a91bfbe393e8e8ab29d5a5df0e77cfb20">begin</a>()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="classEnumerate.html#aca47267923d68a66f26928057149290c">categories</a>.cbegin();</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    }</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; </div>
+<div class="line"><a name="l00059"></a><span class="lineno"><a class="line" href="classEnumerate.html#a725b9e53e06562a4ce45849ff33dea63">   59</a></span>&#160;    constexpr <a class="code" href="classEnumerate.html#a82e17966a00f0f4ce4bb80f0ceda6d37">const_iterator</a> <a class="code" href="classEnumerate.html#a725b9e53e06562a4ce45849ff33dea63">end</a>()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="classEnumerate.html#aca47267923d68a66f26928057149290c">categories</a>.cend();</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    }</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
+<div class="line"><a name="l00064"></a><span class="lineno"><a class="line" href="classEnumerate.html#ac1bd20338ba22e31bdc403586894e597">   64</a></span>&#160;    constexpr <a class="code" href="classEnumerate.html#a82e17966a00f0f4ce4bb80f0ceda6d37">const_iterator</a> <a class="code" href="classEnumerate.html#ac1bd20338ba22e31bdc403586894e597">cbegin</a>()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="classEnumerate.html#aca47267923d68a66f26928057149290c">categories</a>.cbegin();</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    }</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; </div>
+<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="classEnumerate.html#ab0ad6a0a10266a763524bbe46b052cfa">   69</a></span>&#160;    constexpr <a class="code" href="classEnumerate.html#a82e17966a00f0f4ce4bb80f0ceda6d37">const_iterator</a> <a class="code" href="classEnumerate.html#ab0ad6a0a10266a763524bbe46b052cfa">cend</a>()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="classEnumerate.html#aca47267923d68a66f26928057149290c">categories</a>.cend();</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    }</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
+<div class="line"><a name="l00074"></a><span class="lineno"><a class="line" href="classEnumerate.html#a21ffb06ee1cf8e893d10a310b9a474fe">   74</a></span>&#160;    constexpr std::size_t <a class="code" href="classEnumerate.html#a21ffb06ee1cf8e893d10a310b9a474fe">size</a>()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="classEnumerate.html#aca47267923d68a66f26928057149290c">categories</a>.size();</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    }</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
+<div class="line"><a name="l00079"></a><span class="lineno"><a class="line" href="classEnumerate.html#a88ef3710cd4f765dbecdc55471ec6f33">   79</a></span>&#160;    constexpr <a class="code" href="classEnumerate.html#aabea0708e54d2d9837a9b9e446e240b4">CT</a> <a class="code" href="classEnumerate.html#a88ef3710cd4f765dbecdc55471ec6f33">operator[]</a>(<span class="keyword">const</span> std::size_t index)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="classEnumerate.html#aca47267923d68a66f26928057149290c">categories</a>[index];</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    }</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160; </div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    template &lt;typename Q = CT, std::enable_if_t&lt;!std::is_integral&lt;Q&gt;::value, <span class="keywordtype">bool</span>&gt; = <span class="keyword">true</span>&gt;</div>
+<div class="line"><a name="l00085"></a><span class="lineno"><a class="line" href="classEnumerate.html#a9c95163a315ace1c93990a9360bcd87d">   85</a></span>&#160;    constexpr std::size_t <a class="code" href="classEnumerate.html#a9c95163a315ace1c93990a9360bcd87d">operator[]</a>(<span class="keyword">const</span> Q &amp;str)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;        <span class="keyword">auto</span> it = std::find(this-&gt;categories.cbegin(), this-&gt;categories.cend(), str);</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;        <span class="keywordflow">return</span> std::distance(this-&gt;categories.cbegin(), it);</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    }</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160; </div>
+<div class="line"><a name="l00091"></a><span class="lineno"><a class="line" href="classEnumerate.html#a4258224ea8b62eef8e1e72379cc83ee4">   91</a></span>&#160;    constexpr std::size_t <a class="code" href="classEnumerate.html#a4258224ea8b62eef8e1e72379cc83ee4">index_of</a>(<span class="keyword">const</span> <a class="code" href="classEnumerate.html#aabea0708e54d2d9837a9b9e446e240b4">CT</a> &amp;val)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;        <span class="keyword">auto</span> it = std::find(this-&gt;categories.cbegin(), this-&gt;categories.cend(), val);</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        <span class="keywordflow">if</span> (it == this-&gt;categories.cend())</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;        {</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;            <span class="keywordflow">if</span> constexpr (std::is_constructible_v&lt;std::string, CT&gt;)</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;            {</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;                <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Item \&quot;&quot;</span> + std::string(val) + <span class="stringliteral">&quot;\&quot; not found.&quot;</span>);</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;            }</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;            <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;            {</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;                <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Item \&quot;&quot;</span> + std::to_string(val) + <span class="stringliteral">&quot;\&quot; not found.&quot;</span>);</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;            }</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;        }</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;        <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;        {</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;            <span class="keywordflow">return</span> std::distance(this-&gt;categories.cbegin(), it);</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;        }</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    }</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160; </div>
+<div class="line"><a name="l00111"></a><span class="lineno"><a class="line" href="classEnumerate.html#abed7cac635ace46e98a23e8b5bf80aef">  111</a></span>&#160;    constexpr <a class="code" href="classEnumerate.html#aabea0708e54d2d9837a9b9e446e240b4">CT</a> <a class="code" href="classEnumerate.html#abed7cac635ace46e98a23e8b5bf80aef">at</a>(<span class="keyword">const</span> std::size_t index)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="classEnumerate.html#aca47267923d68a66f26928057149290c">categories</a>.at(index);</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    }</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160; </div>
+<div class="line"><a name="l00116"></a><span class="lineno"><a class="line" href="classEnumerate.html#af2e9a39c411d7e2cc83514dae7df116d">  116</a></span>&#160;    <span class="keyword">friend</span> std::ostream &amp;<a class="code" href="classEnumerate.html#af2e9a39c411d7e2cc83514dae7df116d">operator&lt;&lt;</a>(std::ostream &amp;os, <span class="keyword">const</span> <a class="code" href="classEnumerate.html">Enumerate</a> &amp;_enum)</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    {</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;        os &lt;&lt; <span class="stringliteral">&quot;[&quot;</span>;</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;        <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; _enum.<a class="code" href="classEnumerate.html#aca47267923d68a66f26928057149290c">categories</a>.size(); i++)</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;        {</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;            os &lt;&lt; _enum.<a class="code" href="classEnumerate.html#aca47267923d68a66f26928057149290c">categories</a>[i];</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;            <span class="keywordflow">if</span> (i &lt; _enum.<a class="code" href="classEnumerate.html#aca47267923d68a66f26928057149290c">categories</a>.size() - 1)</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;            {</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;                os &lt;&lt; <span class="stringliteral">&quot; - &quot;</span>;</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;            }</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;        }</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;        os &lt;&lt; <span class="stringliteral">&quot;]&quot;</span>;</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;        <span class="keywordflow">return</span> os;</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;    }</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;};</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160; </div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span>... Ts&gt;</div>
+<div class="line"><a name="l00133"></a><span class="lineno"><a class="line" href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">  133</a></span>&#160;constexpr <span class="keyword">auto</span> <a class="code" href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">make_enumerate</a>(Ts &amp;&amp;...args)</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;{</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;    static_assert(<span class="keyword">sizeof</span>...(Ts) &gt; 0, <span class="stringliteral">&quot;Must have at least one element.&quot;</span>);</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160; </div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;    <span class="comment">// if constexpr (number_of_duplicates(args...) == 0,</span></div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;    <span class="comment">//               &quot;Must not have duplicated elements.&quot;);</span></div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160; </div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;    <span class="keyword">using</span> FirstEntityType = std::tuple_element_t&lt;0, std::tuple&lt;Ts...&gt;&gt;;</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;    <span class="keywordflow">if</span> constexpr (std::is_convertible_v&lt;FirstEntityType, std::string_view&gt;)</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;    {</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="classEnumerate.html">Enumerate</a>(std::string_view(std::forward&lt;Ts&gt;(args))...);</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;    }</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;    <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;    {</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="classEnumerate.html">Enumerate</a>(std::forward&lt;Ts&gt;(args)...);</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;    }</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;}</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160; </div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/*ENUMERATE_H*/</span><span class="preprocessor"></span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <div class="ttc" id="aclassEnumerate_html_aca47267923d68a66f26928057149290c"><div class="ttname"><a href="classEnumerate.html#aca47267923d68a66f26928057149290c">Enumerate::categories</a></div><div class="ttdeci">std::array&lt; CT, N &gt; categories</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:43</div></div>
 <div class="ttc" id="aclassEnumerate_html"><div class="ttname"><a href="classEnumerate.html">Enumerate</a></div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:37</div></div>
-<div class="ttc" id="aEnumerate_8hpp_html_a50a6ea831da5d2eec783b7d73d98094a"><div class="ttname"><a href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">make_enumerate</a></div><div class="ttdeci">constexpr auto make_enumerate(Ts &amp;&amp;...args)</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:132</div></div>
+<div class="ttc" id="aEnumerate_8hpp_html_a50a6ea831da5d2eec783b7d73d98094a"><div class="ttname"><a href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">make_enumerate</a></div><div class="ttdeci">constexpr auto make_enumerate(Ts &amp;&amp;...args)</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:133</div></div>
 <div class="ttc" id="aclassEnumerate_html_a24d09c9089c498f463b3eba475b2344c"><div class="ttname"><a href="classEnumerate.html#a24d09c9089c498f463b3eba475b2344c">Enumerate::N</a></div><div class="ttdeci">constexpr static std::size_t N</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:39</div></div>
 <div class="ttc" id="aEnumerate_8hpp_html_abe7adbcaeab1f0e0cb01fcf750c6dc89"><div class="ttname"><a href="Enumerate_8hpp.html#abe7adbcaeab1f0e0cb01fcf750c6dc89">_imp2_number_of_duplicates</a></div><div class="ttdeci">constexpr int _imp2_number_of_duplicates(T &amp;&amp;t1, T &amp;&amp;t2)</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:17</div></div>
-<div class="ttc" id="aclassEnumerate_html_af2e9a39c411d7e2cc83514dae7df116d"><div class="ttname"><a href="classEnumerate.html#af2e9a39c411d7e2cc83514dae7df116d">Enumerate::operator&lt;&lt;</a></div><div class="ttdeci">friend std::ostream &amp; operator&lt;&lt;(std::ostream &amp;os, const Enumerate &amp;_enum)</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:115</div></div>
-<div class="ttc" id="aclassEnumerate_html_a21ffb06ee1cf8e893d10a310b9a474fe"><div class="ttname"><a href="classEnumerate.html#a21ffb06ee1cf8e893d10a310b9a474fe">Enumerate::size</a></div><div class="ttdeci">constexpr std::size_t size() const</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:73</div></div>
+<div class="ttc" id="aclassEnumerate_html_af2e9a39c411d7e2cc83514dae7df116d"><div class="ttname"><a href="classEnumerate.html#af2e9a39c411d7e2cc83514dae7df116d">Enumerate::operator&lt;&lt;</a></div><div class="ttdeci">friend std::ostream &amp; operator&lt;&lt;(std::ostream &amp;os, const Enumerate &amp;_enum)</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:116</div></div>
+<div class="ttc" id="aclassEnumerate_html_a21ffb06ee1cf8e893d10a310b9a474fe"><div class="ttname"><a href="classEnumerate.html#a21ffb06ee1cf8e893d10a310b9a474fe">Enumerate::size</a></div><div class="ttdeci">constexpr std::size_t size() const</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:74</div></div>
 <div class="ttc" id="aEnumerate_8hpp_html_afc210e28676a4c82aec8547d8d66f94e"><div class="ttname"><a href="Enumerate_8hpp.html#afc210e28676a4c82aec8547d8d66f94e">_imp1_number_of_duplicates</a></div><div class="ttdeci">constexpr int _imp1_number_of_duplicates(T &amp;&amp;t, Args &amp;&amp;...args)</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:23</div></div>
 <div class="ttc" id="aclassEnumerate_html_aabea0708e54d2d9837a9b9e446e240b4"><div class="ttname"><a href="classEnumerate.html#aabea0708e54d2d9837a9b9e446e240b4">Enumerate::CT</a></div><div class="ttdeci">std::common_type_t&lt; T... &gt; CT</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:40</div></div>
-<div class="ttc" id="aclassEnumerate_html_a91bfbe393e8e8ab29d5a5df0e77cfb20"><div class="ttname"><a href="classEnumerate.html#a91bfbe393e8e8ab29d5a5df0e77cfb20">Enumerate::begin</a></div><div class="ttdeci">constexpr const_iterator begin() const</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:53</div></div>
-<div class="ttc" id="aclassEnumerate_html_a4258224ea8b62eef8e1e72379cc83ee4"><div class="ttname"><a href="classEnumerate.html#a4258224ea8b62eef8e1e72379cc83ee4">Enumerate::index_of</a></div><div class="ttdeci">constexpr std::size_t index_of(const CT &amp;val) const</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:90</div></div>
+<div class="ttc" id="aclassEnumerate_html_a91bfbe393e8e8ab29d5a5df0e77cfb20"><div class="ttname"><a href="classEnumerate.html#a91bfbe393e8e8ab29d5a5df0e77cfb20">Enumerate::begin</a></div><div class="ttdeci">constexpr const_iterator begin() const</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:54</div></div>
+<div class="ttc" id="aclassEnumerate_html_a4258224ea8b62eef8e1e72379cc83ee4"><div class="ttname"><a href="classEnumerate.html#a4258224ea8b62eef8e1e72379cc83ee4">Enumerate::index_of</a></div><div class="ttdeci">constexpr std::size_t index_of(const CT &amp;val) const</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:91</div></div>
 <div class="ttc" id="aclassEnumerate_html_a33d186477d5b81e8a0912a4335670ba5"><div class="ttname"><a href="classEnumerate.html#a33d186477d5b81e8a0912a4335670ba5">Enumerate::Enumerate</a></div><div class="ttdeci">constexpr Enumerate(T &amp;&amp;...values)</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:45</div></div>
-<div class="ttc" id="aclassEnumerate_html_a9c95163a315ace1c93990a9360bcd87d"><div class="ttname"><a href="classEnumerate.html#a9c95163a315ace1c93990a9360bcd87d">Enumerate::operator[]</a></div><div class="ttdeci">constexpr std::size_t operator[](const Q &amp;str) const</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:84</div></div>
+<div class="ttc" id="aclassEnumerate_html_a9c95163a315ace1c93990a9360bcd87d"><div class="ttname"><a href="classEnumerate.html#a9c95163a315ace1c93990a9360bcd87d">Enumerate::operator[]</a></div><div class="ttdeci">constexpr std::size_t operator[](const Q &amp;str) const</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:85</div></div>
 <div class="ttc" id="aEnumerate_8hpp_html_aa1f77dfb8da10faa62500af8a7048402"><div class="ttname"><a href="Enumerate_8hpp.html#aa1f77dfb8da10faa62500af8a7048402">number_of_duplicates</a></div><div class="ttdeci">constexpr int number_of_duplicates(Args &amp;&amp;...args)</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:29</div></div>
-<div class="ttc" id="aclassEnumerate_html_a725b9e53e06562a4ce45849ff33dea63"><div class="ttname"><a href="classEnumerate.html#a725b9e53e06562a4ce45849ff33dea63">Enumerate::end</a></div><div class="ttdeci">constexpr const_iterator end() const</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:58</div></div>
-<div class="ttc" id="aclassEnumerate_html_abed7cac635ace46e98a23e8b5bf80aef"><div class="ttname"><a href="classEnumerate.html#abed7cac635ace46e98a23e8b5bf80aef">Enumerate::at</a></div><div class="ttdeci">constexpr CT at(const std::size_t index) const</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:110</div></div>
-<div class="ttc" id="aclassEnumerate_html_ac1bd20338ba22e31bdc403586894e597"><div class="ttname"><a href="classEnumerate.html#ac1bd20338ba22e31bdc403586894e597">Enumerate::cbegin</a></div><div class="ttdeci">constexpr const_iterator cbegin() const</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:63</div></div>
-<div class="ttc" id="aclassEnumerate_html_a88ef3710cd4f765dbecdc55471ec6f33"><div class="ttname"><a href="classEnumerate.html#a88ef3710cd4f765dbecdc55471ec6f33">Enumerate::operator[]</a></div><div class="ttdeci">constexpr CT operator[](const std::size_t index) const</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:78</div></div>
-<div class="ttc" id="aclassEnumerate_html_a82e17966a00f0f4ce4bb80f0ceda6d37"><div class="ttname"><a href="classEnumerate.html#a82e17966a00f0f4ce4bb80f0ceda6d37">Enumerate::const_iterator</a></div><div class="ttdeci">typename std::array&lt; CT, N &gt;::const_iterator const_iterator</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:51</div></div>
-<div class="ttc" id="aclassEnumerate_html_ab0ad6a0a10266a763524bbe46b052cfa"><div class="ttname"><a href="classEnumerate.html#ab0ad6a0a10266a763524bbe46b052cfa">Enumerate::cend</a></div><div class="ttdeci">constexpr const_iterator cend() const</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:68</div></div>
+<div class="ttc" id="aclassEnumerate_html_a725b9e53e06562a4ce45849ff33dea63"><div class="ttname"><a href="classEnumerate.html#a725b9e53e06562a4ce45849ff33dea63">Enumerate::end</a></div><div class="ttdeci">constexpr const_iterator end() const</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:59</div></div>
+<div class="ttc" id="aclassEnumerate_html_abed7cac635ace46e98a23e8b5bf80aef"><div class="ttname"><a href="classEnumerate.html#abed7cac635ace46e98a23e8b5bf80aef">Enumerate::at</a></div><div class="ttdeci">constexpr CT at(const std::size_t index) const</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:111</div></div>
+<div class="ttc" id="aclassEnumerate_html_ac1bd20338ba22e31bdc403586894e597"><div class="ttname"><a href="classEnumerate.html#ac1bd20338ba22e31bdc403586894e597">Enumerate::cbegin</a></div><div class="ttdeci">constexpr const_iterator cbegin() const</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:64</div></div>
+<div class="ttc" id="aclassEnumerate_html_a88ef3710cd4f765dbecdc55471ec6f33"><div class="ttname"><a href="classEnumerate.html#a88ef3710cd4f765dbecdc55471ec6f33">Enumerate::operator[]</a></div><div class="ttdeci">constexpr CT operator[](const std::size_t index) const</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:79</div></div>
+<div class="ttc" id="aclassEnumerate_html_a82e17966a00f0f4ce4bb80f0ceda6d37"><div class="ttname"><a href="classEnumerate.html#a82e17966a00f0f4ce4bb80f0ceda6d37">Enumerate::const_iterator</a></div><div class="ttdeci">typename std::array&lt; CT, N &gt;::const_iterator const_iterator</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:52</div></div>
+<div class="ttc" id="aclassEnumerate_html_ab0ad6a0a10266a763524bbe46b052cfa"><div class="ttname"><a href="classEnumerate.html#ab0ad6a0a10266a763524bbe46b052cfa">Enumerate::cend</a></div><div class="ttdeci">constexpr const_iterator cend() const</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:69</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

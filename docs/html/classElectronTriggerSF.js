@@ -8,7 +8,7 @@ var classElectronTriggerSF =
     [ "ElectronTriggerSF", "classElectronTriggerSF.html#a3055a0ca890ac1387095f8aa7de36466", null ],
     [ "get_limits", "classElectronTriggerSF.html#a5ba31b3bbf4f0c238ee19d4764dd3940", null ],
     [ "operator()", "classElectronTriggerSF.html#a170d80ece29641857d49475cd9cad084", null ],
-    [ "read_xxd_dump", "classElectronTriggerSF.html#a93fb4aca3f76867bc10dd89db381e7ee", null ],
+    [ "read_xxd_dump", "classElectronTriggerSF.html#a33a697ee1ab566cf35ddcb748e7b011a", null ],
     [ "barrel_eta_lower_limit", "classElectronTriggerSF.html#ae6ef687091d0288bd856f2351807ba8c", null ],
     [ "barrel_eta_upper_limit", "classElectronTriggerSF.html#a276ccaf2c17d2b36c9c8178d23502d01", null ],
     [ "barrel_pt_lower_limit", "classElectronTriggerSF.html#a775f8e33b1f603b08fac8ab92b6799c8", null ],
