@@ -170,6 +170,11 @@ $(document).ready(function(){initNavTree('GeneratorFilters_8cpp.html',''); initR
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="GeneratorFilters_8hpp_source.html">GeneratorFilters.hpp</a>&quot;</code><br />
+<code>#include &quot;ROOT/RVec.hxx&quot;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;cassert&gt;</code><br />
+<code>#include &lt;functional&gt;</code><br />
+<code>#include &lt;stdexcept&gt;</code><br />
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Namespaces</h2></td></tr>
@@ -180,8 +185,17 @@ Namespaces</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:a63ca879e1ea7e1d92211e36f8be7c1a7"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceGeneratorFilters.html#a63ca879e1ea7e1d92211e36f8be7c1a7">GeneratorFilters::no_filter</a> (const <a class="el" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a> &amp;lhe_particles) -&gt; bool</td></tr>
 <tr class="separator:a63ca879e1ea7e1d92211e36f8be7c1a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b599609be171ef1bf8f5bf3854cc103"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceGeneratorFilters.html#a9b599609be171ef1bf8f5bf3854cc103">GeneratorFilters::wlnujets_filter</a> (const <a class="el" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a> &amp;lhe_particles, const float &amp;mass_min, const float &amp;mass_max, const float &amp;pt_min, const float &amp;pt_max) -&gt; bool</td></tr>
+<tr class="separator:a9b599609be171ef1bf8f5bf3854cc103"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e63a26aaf6b6b5f51093d17b2342458"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceGeneratorFilters.html#a1e63a26aaf6b6b5f51093d17b2342458">GeneratorFilters::dy_filter</a> (const <a class="el" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a> &amp;lhe_particles, const float &amp;mass_min, const float &amp;mass_max, const float &amp;pt_min, const float &amp;pt_max) -&gt; bool</td></tr>
 <tr class="separator:a1e63a26aaf6b6b5f51093d17b2342458"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae364ea12683167781fb047dca1a8b1c1"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceGeneratorFilters.html#ae364ea12683167781fb047dca1a8b1c1">GeneratorFilters::ttbar_filter</a> (const <a class="el" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a> &amp;lhe_particles, const float &amp;mass_min, const float &amp;mass_max) -&gt; bool</td></tr>
+<tr class="separator:ae364ea12683167781fb047dca1a8b1c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3d87fe6fa9facc3229d3b1f78854898"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceGeneratorFilters.html#af3d87fe6fa9facc3229d3b1f78854898">GeneratorFilters::wg_filter</a> (const <a class="el" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a> &amp;lhe_particles, const float &amp;pt_max) -&gt; bool</td></tr>
+<tr class="separator:af3d87fe6fa9facc3229d3b1f78854898"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d53f4c19ccfde1dc4aa9575e93b7710"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceGeneratorFilters.html#a2d53f4c19ccfde1dc4aa9575e93b7710">GeneratorFilters::wwto2l2nu_filter</a> (const <a class="el" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a> &amp;lhe_particles, const float &amp;mass_max) -&gt; bool</td></tr>
+<tr class="memdesc:a2d53f4c19ccfde1dc4aa9575e93b7710"><td class="mdescLeft">&#160;</td><td class="mdescRight">Not needed for now. Samples have to be requested/followed-up.  <a href="namespaceGeneratorFilters.html#a2d53f4c19ccfde1dc4aa9575e93b7710">More...</a><br /></td></tr>
+<tr class="separator:a2d53f4c19ccfde1dc4aa9575e93b7710"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

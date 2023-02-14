@@ -176,6 +176,17 @@ Functions</h2></td></tr>
 <tr class="separator:a63ca879e1ea7e1d92211e36f8be7c1a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e63a26aaf6b6b5f51093d17b2342458"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceGeneratorFilters.html#a1e63a26aaf6b6b5f51093d17b2342458">dy_filter</a> (const <a class="el" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a> &amp;lhe_particles, const float &amp;mass_min, const float &amp;mass_max, const float &amp;pt_min, const float &amp;pt_max) -&gt; bool</td></tr>
 <tr class="separator:a1e63a26aaf6b6b5f51093d17b2342458"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae364ea12683167781fb047dca1a8b1c1"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceGeneratorFilters.html#ae364ea12683167781fb047dca1a8b1c1">ttbar_filter</a> (const <a class="el" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a> &amp;lhe_particles, const float &amp;mass_min, const float &amp;mass_max) -&gt; bool</td></tr>
+<tr class="separator:ae364ea12683167781fb047dca1a8b1c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3d87fe6fa9facc3229d3b1f78854898"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceGeneratorFilters.html#af3d87fe6fa9facc3229d3b1f78854898">wg_filter</a> (const <a class="el" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a> &amp;lhe_particles, const float &amp;pt_max) -&gt; bool</td></tr>
+<tr class="separator:af3d87fe6fa9facc3229d3b1f78854898"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53a2c50cd0e0627e9cea4eb3c8e2a94a"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceGeneratorFilters.html#a53a2c50cd0e0627e9cea4eb3c8e2a94a">zg_filter</a> (const <a class="el" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a> &amp;lhe_particles, const float &amp;pt_max) -&gt; bool</td></tr>
+<tr class="separator:a53a2c50cd0e0627e9cea4eb3c8e2a94a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d53f4c19ccfde1dc4aa9575e93b7710"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceGeneratorFilters.html#a2d53f4c19ccfde1dc4aa9575e93b7710">wwto2l2nu_filter</a> (const <a class="el" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a> &amp;lhe_particles, const float &amp;mass_max) -&gt; bool</td></tr>
+<tr class="memdesc:a2d53f4c19ccfde1dc4aa9575e93b7710"><td class="mdescLeft">&#160;</td><td class="mdescRight">Not needed for now. Samples have to be requested/followed-up.  <a href="namespaceGeneratorFilters.html#a2d53f4c19ccfde1dc4aa9575e93b7710">More...</a><br /></td></tr>
+<tr class="separator:a2d53f4c19ccfde1dc4aa9575e93b7710"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b599609be171ef1bf8f5bf3854cc103"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceGeneratorFilters.html#a9b599609be171ef1bf8f5bf3854cc103">wlnujets_filter</a> (const <a class="el" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a> &amp;lhe_particles, const float &amp;mass_min, const float &amp;mass_max, const float &amp;pt_min, const float &amp;pt_max) -&gt; bool</td></tr>
+<tr class="separator:a9b599609be171ef1bf8f5bf3854cc103"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -249,6 +260,172 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a id="ae364ea12683167781fb047dca1a8b1c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae364ea12683167781fb047dca1a8b1c1">&#9670;&nbsp;</a></span>ttbar_filter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto GeneratorFilters::ttbar_filter </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a> &amp;&#160;</td>
+          <td class="paramname"><em>lhe_particles</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float &amp;&#160;</td>
+          <td class="paramname"><em>mass_min</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float &amp;&#160;</td>
+          <td class="paramname"><em>mass_max</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; bool</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af3d87fe6fa9facc3229d3b1f78854898"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3d87fe6fa9facc3229d3b1f78854898">&#9670;&nbsp;</a></span>wg_filter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto GeneratorFilters::wg_filter </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a> &amp;&#160;</td>
+          <td class="paramname"><em>lhe_particles</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float &amp;&#160;</td>
+          <td class="paramname"><em>pt_max</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; bool</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9b599609be171ef1bf8f5bf3854cc103"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b599609be171ef1bf8f5bf3854cc103">&#9670;&nbsp;</a></span>wlnujets_filter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto GeneratorFilters::wlnujets_filter </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a> &amp;&#160;</td>
+          <td class="paramname"><em>lhe_particles</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float &amp;&#160;</td>
+          <td class="paramname"><em>mass_min</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float &amp;&#160;</td>
+          <td class="paramname"><em>mass_max</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float &amp;&#160;</td>
+          <td class="paramname"><em>pt_min</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float &amp;&#160;</td>
+          <td class="paramname"><em>pt_max</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; bool</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2d53f4c19ccfde1dc4aa9575e93b7710"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d53f4c19ccfde1dc4aa9575e93b7710">&#9670;&nbsp;</a></span>wwto2l2nu_filter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto GeneratorFilters::wwto2l2nu_filter </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a> &amp;&#160;</td>
+          <td class="paramname"><em>lhe_particles</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float &amp;&#160;</td>
+          <td class="paramname"><em>mass_max</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; bool</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Not needed for now. Samples have to be requested/followed-up. </p>
+
+</div>
+</div>
+<a id="a53a2c50cd0e0627e9cea4eb3c8e2a94a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53a2c50cd0e0627e9cea4eb3c8e2a94a">&#9670;&nbsp;</a></span>zg_filter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto GeneratorFilters::zg_filter </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a> &amp;&#160;</td>
+          <td class="paramname"><em>lhe_particles</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float &amp;&#160;</td>
+          <td class="paramname"><em>pt_max</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt;  bool</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2 class="groupheader">Variable Documentation</h2>
 <a id="a0389033984f0ef93652a7f824279f6ce"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0389033984f0ef93652a7f824279f6ce">&#9670;&nbsp;</a></span>filters</h2>
@@ -262,7 +439,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= {</div>
-<div class="line">    {<span class="stringliteral">&quot;QCD_SOMETHING&quot;</span>s, <a class="code" href="namespaceGeneratorFilters.html#a63ca879e1ea7e1d92211e36f8be7c1a7">no_filter</a>}, </div>
+<div class="line">    </div>
 <div class="line">    {<span class="stringliteral">&quot;DYJetsToLL_M-10To50_13TeV_AM&quot;</span>s,</div>
 <div class="line">     [](<span class="keyword">const</span> <a class="code" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a> &amp;lhe_particles) -&gt; <span class="keywordtype">bool</span> {</div>
 <div class="line">         <span class="keywordflow">return</span> <a class="code" href="namespaceGeneratorFilters.html#a1e63a26aaf6b6b5f51093d17b2342458">dy_filter</a>(lhe_particles, 0., <a class="code" href="namespaceGeneratorFilters.html#a636d9a2f4e371d3c86949bb4b0dd26d9">max_float</a>, 0., 100.);</div>
@@ -278,6 +455,17 @@ Variables</h2></td></tr>
 <div class="line">    {<span class="stringliteral">&quot;DYToEE_M-120To200_TuneCP5_13TeV-powheg-pythia8&quot;</span>s,</div>
 <div class="line">     [](<span class="keyword">const</span> <a class="code" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a> &amp;lhe_particles) -&gt; <span class="keywordtype">bool</span> {</div>
 <div class="line">         <span class="keywordflow">return</span> <a class="code" href="namespaceGeneratorFilters.html#a1e63a26aaf6b6b5f51093d17b2342458">dy_filter</a>(lhe_particles, 120., <a class="code" href="namespaceGeneratorFilters.html#a636d9a2f4e371d3c86949bb4b0dd26d9">max_float</a>, 0., <a class="code" href="namespaceGeneratorFilters.html#a636d9a2f4e371d3c86949bb4b0dd26d9">max_float</a>);</div>
+<div class="line">     }}, </div>
+<div class="line">    {<span class="stringliteral">&quot;TTToSemiLeptonic_2018&quot;</span>s,</div>
+<div class="line">     [](<span class="keyword">const</span> <a class="code" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a> &amp;lhe_particles) -&gt; <span class="keywordtype">bool</span> { <span class="keywordflow">return</span> <a class="code" href="namespaceGeneratorFilters.html#ae364ea12683167781fb047dca1a8b1c1">ttbar_filter</a>(lhe_particles, 0., 700.); }}, </div>
+<div class="line">    {<span class="stringliteral">&quot;WG&quot;</span>s, [](<span class="keyword">const</span> <a class="code" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a> &amp;lhe_particles) -&gt; <span class="keywordtype">bool</span> { <span class="keywordflow">return</span> <a class="code" href="namespaceGeneratorFilters.html#af3d87fe6fa9facc3229d3b1f78854898">wg_filter</a>(lhe_particles, 500.); }}, </div>
+<div class="line">    </div>
+<div class="line">    </div>
+<div class="line">    {<span class="stringliteral">&quot;WWTo2L2Nu_13TeV_PH&quot;</span>s,</div>
+<div class="line">     [](<span class="keyword">const</span> <a class="code" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a> &amp;lhe_particles) -&gt; <span class="keywordtype">bool</span> { <span class="keywordflow">return</span> <a class="code" href="namespaceGeneratorFilters.html#a2d53f4c19ccfde1dc4aa9575e93b7710">wwto2l2nu_filter</a>(lhe_particles, 200.); }}, </div>
+<div class="line">    {<span class="stringliteral">&quot;WJets&quot;</span>s,</div>
+<div class="line">     [](<span class="keyword">const</span> <a class="code" href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a> &amp;lhe_particles) -&gt; <span class="keywordtype">bool</span> {</div>
+<div class="line">         <span class="keywordflow">return</span> <a class="code" href="namespaceGeneratorFilters.html#a9b599609be171ef1bf8f5bf3854cc103">wlnujets_filter</a>(lhe_particles, 0., 120., 0., 500.);</div>
 <div class="line">     }}, </div>
 <div class="line">}</div>
 </div><!-- fragment -->
@@ -307,10 +495,13 @@ Variables</h2></td></tr>
 </div>
 </div><!-- contents -->
 </div><!-- doc-content -->
-<div class="ttc" id="anamespaceGeneratorFilters_html_a1e63a26aaf6b6b5f51093d17b2342458"><div class="ttname"><a href="namespaceGeneratorFilters.html#a1e63a26aaf6b6b5f51093d17b2342458">GeneratorFilters::dy_filter</a></div><div class="ttdeci">auto dy_filter(const NanoObjects::LHEParticles &amp;lhe_particles, const float &amp;mass_min, const float &amp;mass_max, const float &amp;pt_min, const float &amp;pt_max) -&gt; bool</div><div class="ttdef"><b>Definition:</b> GeneratorFilters.cpp:10</div></div>
+<div class="ttc" id="anamespaceGeneratorFilters_html_a1e63a26aaf6b6b5f51093d17b2342458"><div class="ttname"><a href="namespaceGeneratorFilters.html#a1e63a26aaf6b6b5f51093d17b2342458">GeneratorFilters::dy_filter</a></div><div class="ttdeci">auto dy_filter(const NanoObjects::LHEParticles &amp;lhe_particles, const float &amp;mass_min, const float &amp;mass_max, const float &amp;pt_min, const float &amp;pt_max) -&gt; bool</div><div class="ttdef"><b>Definition:</b> GeneratorFilters.cpp:91</div></div>
 <div class="ttc" id="astructNanoObjects_1_1LHEParticles_html"><div class="ttname"><a href="structNanoObjects_1_1LHEParticles.html">NanoObjects::LHEParticles</a></div><div class="ttdef"><b>Definition:</b> NanoObjects.hpp:163</div></div>
-<div class="ttc" id="anamespaceGeneratorFilters_html_a636d9a2f4e371d3c86949bb4b0dd26d9"><div class="ttname"><a href="namespaceGeneratorFilters.html#a636d9a2f4e371d3c86949bb4b0dd26d9">GeneratorFilters::max_float</a></div><div class="ttdeci">constexpr float max_float</div><div class="ttdef"><b>Definition:</b> GeneratorFilters.hpp:33</div></div>
-<div class="ttc" id="anamespaceGeneratorFilters_html_a63ca879e1ea7e1d92211e36f8be7c1a7"><div class="ttname"><a href="namespaceGeneratorFilters.html#a63ca879e1ea7e1d92211e36f8be7c1a7">GeneratorFilters::no_filter</a></div><div class="ttdeci">auto no_filter(const NanoObjects::LHEParticles &amp;lhe_particles) -&gt; bool</div><div class="ttdef"><b>Definition:</b> GeneratorFilters.cpp:5</div></div>
+<div class="ttc" id="anamespaceGeneratorFilters_html_ae364ea12683167781fb047dca1a8b1c1"><div class="ttname"><a href="namespaceGeneratorFilters.html#ae364ea12683167781fb047dca1a8b1c1">GeneratorFilters::ttbar_filter</a></div><div class="ttdeci">auto ttbar_filter(const NanoObjects::LHEParticles &amp;lhe_particles, const float &amp;mass_min, const float &amp;mass_max) -&gt; bool</div><div class="ttdef"><b>Definition:</b> GeneratorFilters.cpp:176</div></div>
+<div class="ttc" id="anamespaceGeneratorFilters_html_a9b599609be171ef1bf8f5bf3854cc103"><div class="ttname"><a href="namespaceGeneratorFilters.html#a9b599609be171ef1bf8f5bf3854cc103">GeneratorFilters::wlnujets_filter</a></div><div class="ttdeci">auto wlnujets_filter(const NanoObjects::LHEParticles &amp;lhe_particles, const float &amp;mass_min, const float &amp;mass_max, const float &amp;pt_min, const float &amp;pt_max) -&gt; bool</div><div class="ttdef"><b>Definition:</b> GeneratorFilters.cpp:16</div></div>
+<div class="ttc" id="anamespaceGeneratorFilters_html_af3d87fe6fa9facc3229d3b1f78854898"><div class="ttname"><a href="namespaceGeneratorFilters.html#af3d87fe6fa9facc3229d3b1f78854898">GeneratorFilters::wg_filter</a></div><div class="ttdeci">auto wg_filter(const NanoObjects::LHEParticles &amp;lhe_particles, const float &amp;pt_max) -&gt; bool</div><div class="ttdef"><b>Definition:</b> GeneratorFilters.cpp:193</div></div>
+<div class="ttc" id="anamespaceGeneratorFilters_html_a2d53f4c19ccfde1dc4aa9575e93b7710"><div class="ttname"><a href="namespaceGeneratorFilters.html#a2d53f4c19ccfde1dc4aa9575e93b7710">GeneratorFilters::wwto2l2nu_filter</a></div><div class="ttdeci">auto wwto2l2nu_filter(const NanoObjects::LHEParticles &amp;lhe_particles, const float &amp;mass_max) -&gt; bool</div><div class="ttdoc">Not needed for now. Samples have to be requested/followed-up.</div><div class="ttdef"><b>Definition:</b> GeneratorFilters.cpp:219</div></div>
+<div class="ttc" id="anamespaceGeneratorFilters_html_a636d9a2f4e371d3c86949bb4b0dd26d9"><div class="ttname"><a href="namespaceGeneratorFilters.html#a636d9a2f4e371d3c86949bb4b0dd26d9">GeneratorFilters::max_float</a></div><div class="ttdeci">constexpr float max_float</div><div class="ttdef"><b>Definition:</b> GeneratorFilters.hpp:43</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
