@@ -1,0 +1,12 @@
+output = 'test_mc_2018_WJets'
+is_data = false                                    # Is Data?
+x_section_file = '$MUSIC_BASE/configs/xsections_and_lumi/x_sections.toml'
+year = '2018'
+process = 'WJets'
+dataset = '/WJetsToLNu_Pt-400To600_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM='
+is_crab_job = false
+
+input_files = [
+    '/disk1/silva/projects/NanoMUSiC_Test_Data/WJets_2018/f01.root',
+    ]
+

@@ -23,17 +23,35 @@ constexpr int Id = 11;
 constexpr float Mass = 0.51099895 / 1000.0;
 } // namespace Electron
 
+namespace ElectronNeutrino
+{
+constexpr int Id = 12;
+constexpr float Mass = 0.;
+} // namespace ElectronNeutrino
+
 namespace Muon
 {
 constexpr int Id = 13;
 constexpr float Mass = 105.6583755 / 1000.0;
 } // namespace Muon
 
+namespace MuonNeutrino
+{
+constexpr int Id = 14;
+constexpr float Mass = 0.;
+} // namespace MuonNeutrino
+
 namespace Tau
 {
 constexpr int Id = 15;
 constexpr float Mass = 1776.86 / 1000.;
 } // namespace Tau
+
+namespace TauNeutrino
+{
+constexpr int Id = 16;
+constexpr float Mass = 0.;
+} // namespace TauNeutrino
 
 namespace Bottom
 {
@@ -76,27 +94,47 @@ inline auto get_mass_by_id(const int &id) -> float
     {
         return Electron::Mass;
     }
+
+    if (std::abs(id) == ElectronNeutrino::Id)
+    {
+        return ElectronNeutrino::Mass;
+    }
+
     if (std::abs(id) == Muon::Id)
     {
         return Muon::Mass;
     }
+
+    if (std::abs(id) == MuonNeutrino::Id)
+    {
+        return MuonNeutrino::Mass;
+    }
+
     if (std::abs(id) == Tau::Id)
     {
         return Tau::Mass;
+    }
+
+    if (std::abs(id) == TauNeutrino::Id)
+    {
+        return TauNeutrino::Mass;
     }
 
     if (std::abs(id) == Gluon::Id)
     {
         return Gluon::Mass;
     }
+
     if (std::abs(id) == Photon::Id)
     {
         return Photon::Mass;
     }
+
     if (std::abs(id) == Z::Id)
     {
         return Z::Mass;
     }
+
     if (std::abs(id) == W::Id)
     {
         return W::Mass;

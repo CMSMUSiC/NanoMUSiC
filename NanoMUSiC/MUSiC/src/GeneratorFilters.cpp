@@ -13,6 +13,81 @@ auto no_filter(const NanoObjects::LHEParticles &lhe_particles) -> bool
     return true;
 }
 
+auto wlnujets_filter(const NanoObjects::LHEParticles &lhe_particles,
+                     const float &mass_min,
+                     const float &mass_max,
+                     const float &pt_min,
+                     const float &pt_max) -> bool
+{
+    // filter Lep+Lep- pair
+    std::optional<std::size_t> idx_lepton = std::nullopt;
+    std::optional<std::size_t> idx_neutrino = std::nullopt;
+
+    for (std::size_t i = 0; i < lhe_particles.nLHEParticles; i++)
+    {
+        if (not(idx_lepton) and not(idx_neutrino))
+        {
+            if (std::abs(lhe_particles.pdgId.at(i)) == PDG::Electron::Id //
+                or std::abs(lhe_particles.pdgId.at(i)) == PDG::Muon::Id  //
+                or std::abs(lhe_particles.pdgId.at(i)) == PDG::Tau::Id)
+            {
+                idx_lepton = i;
+            }
+            if (std::abs(lhe_particles.pdgId.at(i)) == PDG::ElectronNeutrino::Id //
+                or std::abs(lhe_particles.pdgId.at(i)) == PDG::MuonNeutrino::Id  //
+                or std::abs(lhe_particles.pdgId.at(i)) == PDG::TauNeutrino::Id)
+            {
+                idx_neutrino = i;
+            }
+        }
+
+        if (idx_lepton and not(idx_neutrino))
+        {
+            if (std::abs(lhe_particles.pdgId.at(i)) == std::abs(lhe_particles.pdgId.at(*idx_lepton)) + 1)
+            {
+                idx_neutrino = i;
+            }
+        }
+
+        if (not(idx_lepton) and idx_neutrino)
+        {
+            if (std::abs(lhe_particles.pdgId.at(i)) == std::abs(lhe_particles.pdgId.at(*idx_neutrino)) - 1)
+            {
+                idx_lepton = i;
+            }
+        }
+
+        if (idx_lepton and idx_neutrino)
+        {
+            auto mass = LorentzVectorHelper::mass(lhe_particles.pt[*idx_lepton],
+                                                  lhe_particles.eta[*idx_lepton],
+                                                  lhe_particles.phi[*idx_lepton],
+                                                  PDG::get_mass_by_id(lhe_particles.pdgId[*idx_lepton]),
+                                                  lhe_particles.pt[*idx_neutrino],
+                                                  lhe_particles.eta[*idx_neutrino],
+                                                  lhe_particles.phi[*idx_neutrino],
+                                                  PDG::get_mass_by_id(lhe_particles.pdgId[*idx_neutrino]));
+
+            auto pt = LorentzVectorHelper::pt(lhe_particles.pt[*idx_lepton],
+                                              lhe_particles.phi[*idx_lepton],
+                                              lhe_particles.pt[*idx_neutrino],
+                                              lhe_particles.phi[*idx_neutrino]);
+
+            // fmt::print("############################\n");
+            // fmt::print("pt: {}\n", pt);
+            // fmt::print("mass: {}\n", mass);
+
+            if ((mass >= mass_min - .5 and mass <= mass_max + .5) and (pt >= pt_min - .5 and pt <= pt_max + .5))
+            {
+                return true;
+            }
+        }
+    }
+
+    // fmt::print("[ Generator Filter ] Didn't pass: DY Mass Cut. Skipping ...\n");
+    return false;
+}
+
 auto dy_filter(const NanoObjects::LHEParticles &lhe_particles,
                const float &mass_min,
                const float &mass_max,
@@ -87,8 +162,7 @@ auto dy_filter(const NanoObjects::LHEParticles &lhe_particles,
             //     actual_max_mass = max_float;
             // }
 
-            if ((mass >= mass_min - .5 and mass <= actual_max_mass + .5) and
-                (pt >= pt_min - .5 and mass <= pt_max + .5))
+            if ((mass >= mass_min - .5 and mass <= actual_max_mass + .5) and (pt >= pt_min - .5 and pt <= pt_max + .5))
             {
                 return true;
             }
