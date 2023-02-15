@@ -14,13 +14,13 @@ LCG list of available software: https://lcginfo.cern.ch/release_packages/x86_64-
 ```
 git clone git@github.com:CMSMUSiC/NanoMUSiC.git
 cd NanoMUSiC
-./setup_music.sh
+./bootstrap_music.sh
 ```
 
 ## Configuring the environment (for every new session)
 
 ```
-source music_setenv.sh
+source setenv.sh
 ```
 
 ## Compilation
