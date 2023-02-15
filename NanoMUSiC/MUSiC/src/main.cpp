@@ -272,10 +272,13 @@ auto main(int argc, char *argv[]) -> int
     ADD_ARRAY_READER(Jet_pt, float);
     ADD_ARRAY_READER(Jet_eta, float);
     ADD_ARRAY_READER(Jet_phi, float);
+    ADD_ARRAY_READER(Jet_mass, float);
     ADD_ARRAY_READER(Jet_jetId, int);
     ADD_ARRAY_READER(Jet_btagDeepFlavB, float);
     ADD_ARRAY_READER(Jet_hadronFlavour, int);
     ADD_ARRAY_READER(Jet_genJetIdx, int);
+    ADD_ARRAY_READER(Jet_rawFactor, float);
+    ADD_ARRAY_READER(Jet_area, float);
 
     // met
     ADD_VALUE_READER(MET_pt, float);
@@ -422,20 +425,27 @@ auto main(int argc, char *argv[]) -> int
                                             unwrap(Tau_eta), //
                                             unwrap(Tau_phi)))
                 // bjets
-                .set_bjets(NanoObjects::BJets(unwrap(Jet_pt),            //
-                                              unwrap(Jet_eta),           //
-                                              unwrap(Jet_phi),           //
+                .set_bjets(NanoObjects::BJets(unwrap(Jet_pt),  //
+                                              unwrap(Jet_eta), //
+                                              unwrap(Jet_phi),
+                                              unwrap(Jet_mass),          //
                                               unwrap(Jet_jetId),         //
                                               unwrap(Jet_btagDeepFlavB), //
                                               unwrap(Jet_hadronFlavour),
-                                              unwrap(Jet_genJetIdx)))
+                                              unwrap(Jet_genJetIdx),
+                                              unwrap(Jet_rawFactor),
+                                              unwrap(Jet_area)))
                 // jets
-                .set_jets(NanoObjects::Jets(unwrap(Jet_pt),            //
-                                            unwrap(Jet_eta),           //
-                                            unwrap(Jet_phi),           //
+                .set_jets(NanoObjects::Jets(unwrap(Jet_pt),  //
+                                            unwrap(Jet_eta), //
+                                            unwrap(Jet_phi),
+                                            unwrap(Jet_mass),          //
                                             unwrap(Jet_jetId),         //
                                             unwrap(Jet_btagDeepFlavB), //
-                                            unwrap(Jet_hadronFlavour)))
+                                            unwrap(Jet_hadronFlavour),
+                                            unwrap(Jet_genJetIdx),
+                                            unwrap(Jet_rawFactor),
+                                            unwrap(Jet_area)))
                 // met
                 .set_met(NanoObjects::MET({unwrap(MET_pt)}, //
                                           {0.},             //

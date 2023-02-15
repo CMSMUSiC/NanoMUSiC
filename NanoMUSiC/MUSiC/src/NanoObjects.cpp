@@ -263,18 +263,24 @@ Taus::Taus(const RVec<float> &_pt, const RVec<float> &_eta, const RVec<float> &_
 Jets::Jets(const RVec<float> &_pt,
            const RVec<float> &_eta,
            const RVec<float> &_phi,
+           const RVec<float> &_mass,
            const RVec<int> &_jetId,
            const RVec<float> &_btagDeepFlavB,
            const RVec<int> &_hadronFlavour,
-           const RVec<int> &_genJetIdx)
+           const RVec<int> &_genJetIdx,
+           const RVec<float> &_rawFactor,
+           const RVec<float> &_area)
     : size(_pt.size()),
       pt(_pt),
       eta(_eta),
       phi(_phi),
+      mass(_mass),
       jetId(_jetId),
       btagDeepFlavB(_btagDeepFlavB),
       hadronFlavour((_pt.size() > 0 and _hadronFlavour.size() == 0) ? RVec<int>(_pt.size()) : _hadronFlavour),
-      genJetIdx(_genJetIdx)
+      genJetIdx(_genJetIdx),
+      rawFactor(_rawFactor),
+      area(_area)
 {
 }
 

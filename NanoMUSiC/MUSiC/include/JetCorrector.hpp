@@ -19,14 +19,18 @@ class JetCorrector
 {
   private:
     const Year year;
+    const std::string &era;
     const bool is_data;
     TRandom3 rand;
     correction::Correction::Ref pt_resolution_correction_ref;
     correction::Correction::Ref scale_factor_correction_ref;
+    correction::Correction::Ref scale_correction_ref;
+    correction::Correction::Ref scale_uncertainty_correction_ref;
     constexpr static double min_correction_factor = 1E-9;
 
   public:
     JetCorrector(const Year &_year,
+                 const std::string &_era,
                  const bool _is_data,
                  const std::string &_correction_file,
                  const std::string &_correction_key);
@@ -41,6 +45,13 @@ class JetCorrector
                                    float gen_jet_eta,
                                    float gen_jet_phi,
                                    const std::string &variation = "Nominal") -> float;
+    auto get_scale_correction(float raw_pt,
+                              float eta,
+                              float phi,
+                              float raw_factor,
+                              float rho,
+                              float area,
+                              const std::string &variation = "Nominal") -> float;
 };
 
 #endif // !JETCORRECTOR_HPP

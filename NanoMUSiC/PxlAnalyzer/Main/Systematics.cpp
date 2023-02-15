@@ -11,17 +11,20 @@
 Systematics::Systematics(const Tools::MConfig &cfg, unsigned int const debug)
     : m_activeSystematics({}),
       // read uncertainties from config
-      m_full(cfg.GetItem<bool>("General.Syst.fullview")), m_emptyShift(cfg.GetItem<bool>("General.Syst.emptyShift")),
+      m_full(cfg.GetItem<bool>("General.Syst.fullview")),
+      m_emptyShift(cfg.GetItem<bool>("General.Syst.emptyShift")),
       m_useJetEnergyResCorrection(cfg.GetItem<bool>("Jet.Resolutions.Corr.use")),
       m_ratioEleBarrel(cfg.GetItem<double>("Ele.Syst.Scale.Barrel")),
       m_ratioEleEndcap(cfg.GetItem<double>("Ele.Syst.Scale.Endcap")),
       m_ratioEleHEEP(cfg.GetItem<double>("Ele.Syst.Scale.HEEP")),
       m_ele_switchpt(cfg.GetItem<double>("Ele.ID.switchpt")),
       m_muoScaleMapFile(cfg.GetItem<std::string>("Muon.Syst.ScaleMap")),
-      m_muoScaleType(cfg.GetItem<std::string>("Muon.Syst.ScaleType")), m_resMuo(cfg.GetItem<double>("Muon.Syst.Res")),
+      m_muoScaleType(cfg.GetItem<std::string>("Muon.Syst.ScaleType")),
+      m_resMuo(cfg.GetItem<double>("Muon.Syst.Res")),
       m_ratioTau(cfg.GetItem<double>("Tau.Syst.Scale")),
       // read lepton names from config
-      m_TauType(cfg.GetItem<std::string>("Tau.Type.Rec")), m_JetType(cfg.GetItem<std::string>("Jet.Type.Rec")),
+      m_TauType(cfg.GetItem<std::string>("Tau.Type.Rec")),
+      m_JetType(cfg.GetItem<std::string>("Jet.Type.Rec")),
       m_METType(cfg.GetItem<std::string>("MET.Type.Rec")),
       m_ratioGammaBarrel(cfg.GetItem<double>("Gamma.Syst.Scale.Barrel")),
       m_ratioGammaEndcap(cfg.GetItem<double>("Gamma.Syst.Scale.Endcap")),
@@ -30,7 +33,9 @@ Systematics::Systematics(const Tools::MConfig &cfg, unsigned int const debug)
           correction::CorrectionSet::from_file(Tools::AbsolutePath(cfg.GetItem<std::string>("Jet.JSONFile")))),
       m_fat_jec_correction_set(
           correction::CorrectionSet::from_file(Tools::AbsolutePath(cfg.GetItem<std::string>("FatJet.JSONFile")))),
-      m_jetRes(cfg, "Jet"), m_fatjetRes(cfg, "FatJet"), m_use_bJets(cfg.GetItem<bool>("Jet.BJets.use")),
+      m_jetRes(cfg, "Jet"),
+      m_fatjetRes(cfg, "FatJet"),
+      m_use_bJets(cfg.GetItem<bool>("Jet.BJets.use")),
       m_bJet_algo(cfg.GetItem<std::string>("Jet.BJets.Algo")),
       m_bJet_discriminatorThreshold(cfg.GetItem<float>("Jet.BJets.Discr.min")),
       m_bJets_sfMethod(cfg.GetItem<std::string>("Jet.BJets.SF.Method")), // which method of scale factor to apply
@@ -51,8 +56,10 @@ Systematics::Systematics(const Tools::MConfig &cfg, unsigned int const debug)
                    {"MET_Scale", std::bind(&Systematics::shiftMETUnclustered, this, "Scale")}}),
       m_particleUseMap(Tools::getConfigParticleMap(cfg, "use", true)),
       m_particleIDTypeMap(Tools::getConfigParticleMap(cfg, "ID.Type", std::string("dummy"))),
-      m_particleRecoNameMap(getConfigParticleReverseMap(cfg, "Type.Rec", std::string("dummy"))), m_gen_rec_map(cfg),
-      m_debug(debug), m_particleMap(std::map<std::string, std::vector<pxl::Particle *>>()),
+      m_particleRecoNameMap(getConfigParticleReverseMap(cfg, "Type.Rec", std::string("dummy"))),
+      m_gen_rec_map(cfg),
+      m_debug(debug),
+      m_particleMap(std::map<std::string, std::vector<pxl::Particle *>>()),
       m_jet_rho_label(cfg.GetItem<std::string>("Jet.Rho.Label"))
 {
     auto year = cfg.GetItem<std::string>("year");
@@ -554,21 +561,31 @@ std::pair<double, double> Systematics::getObjResolutionShift(pxl::Particle *obj,
             {
                 pxl::Particle *genPart = dynamic_cast<pxl::Particle *>(
                     obj->getSoftRelations().getFirst(m_GenEvtView->getObjectOwner(), "priv-gen-rec"));
-                ratio_up =
-                    m_jetRes.getJetResolutionCorrFactor(obj, genPart, RecEvtView->getUserRecord(m_jet_rho_label),
-                                                        m_GenEvtView->getUserRecord("NumVerticesPU").toDouble(), 1);
+                ratio_up = m_jetRes.getJetResolutionCorrFactor(obj,
+                                                               genPart,
+                                                               RecEvtView->getUserRecord(m_jet_rho_label),
+                                                               m_GenEvtView->getUserRecord("NumVerticesPU").toDouble(),
+                                                               1);
                 ratio_down =
-                    m_jetRes.getJetResolutionCorrFactor(obj, genPart, RecEvtView->getUserRecord(m_jet_rho_label),
-                                                        m_GenEvtView->getUserRecord("NumVerticesPU").toDouble(), -1);
+                    m_jetRes.getJetResolutionCorrFactor(obj,
+                                                        genPart,
+                                                        RecEvtView->getUserRecord(m_jet_rho_label),
+                                                        m_GenEvtView->getUserRecord("NumVerticesPU").toDouble(),
+                                                        -1);
             }
             else
             {
-                ratio_up =
-                    m_jetRes.getJetResolutionCorrFactor(obj, 0, RecEvtView->getUserRecord(m_jet_rho_label),
-                                                        m_GenEvtView->getUserRecord("NumVerticesPU").toDouble(), 1);
+                ratio_up = m_jetRes.getJetResolutionCorrFactor(obj,
+                                                               0,
+                                                               RecEvtView->getUserRecord(m_jet_rho_label),
+                                                               m_GenEvtView->getUserRecord("NumVerticesPU").toDouble(),
+                                                               1);
                 ratio_down =
-                    m_jetRes.getJetResolutionCorrFactor(obj, 0, RecEvtView->getUserRecord(m_jet_rho_label),
-                                                        m_GenEvtView->getUserRecord("NumVerticesPU").toDouble(), -1);
+                    m_jetRes.getJetResolutionCorrFactor(obj,
+                                                        0,
+                                                        RecEvtView->getUserRecord(m_jet_rho_label),
+                                                        m_GenEvtView->getUserRecord("NumVerticesPU").toDouble(),
+                                                        -1);
             }
         }
         return std::make_pair(ratio_up, ratio_down);
@@ -586,20 +603,32 @@ std::pair<double, double> Systematics::getObjResolutionShift(pxl::Particle *obj,
                 pxl::Particle *genPart = dynamic_cast<pxl::Particle *>(
                     obj->getSoftRelations().getFirst(m_GenEvtView->getObjectOwner(), "priv-gen-rec"));
                 ratio_up =
-                    m_fatjetRes.getJetResolutionCorrFactor(obj, genPart, RecEvtView->getUserRecord(m_jet_rho_label),
-                                                           m_GenEvtView->getUserRecord("NumVerticesPU").toDouble(), 1);
+                    m_fatjetRes.getJetResolutionCorrFactor(obj,
+                                                           genPart,
+                                                           RecEvtView->getUserRecord(m_jet_rho_label),
+                                                           m_GenEvtView->getUserRecord("NumVerticesPU").toDouble(),
+                                                           1);
                 ratio_down =
-                    m_fatjetRes.getJetResolutionCorrFactor(obj, genPart, RecEvtView->getUserRecord(m_jet_rho_label),
-                                                           m_GenEvtView->getUserRecord("NumVerticesPU").toDouble(), -1);
+                    m_fatjetRes.getJetResolutionCorrFactor(obj,
+                                                           genPart,
+                                                           RecEvtView->getUserRecord(m_jet_rho_label),
+                                                           m_GenEvtView->getUserRecord("NumVerticesPU").toDouble(),
+                                                           -1);
             }
             else
             {
                 ratio_up =
-                    m_fatjetRes.getJetResolutionCorrFactor(obj, 0, RecEvtView->getUserRecord(m_jet_rho_label),
-                                                           m_GenEvtView->getUserRecord("NumVerticesPU").toDouble(), 1);
+                    m_fatjetRes.getJetResolutionCorrFactor(obj,
+                                                           0,
+                                                           RecEvtView->getUserRecord(m_jet_rho_label),
+                                                           m_GenEvtView->getUserRecord("NumVerticesPU").toDouble(),
+                                                           1);
                 ratio_down =
-                    m_fatjetRes.getJetResolutionCorrFactor(obj, 0, RecEvtView->getUserRecord(m_jet_rho_label),
-                                                           m_GenEvtView->getUserRecord("NumVerticesPU").toDouble(), -1);
+                    m_fatjetRes.getJetResolutionCorrFactor(obj,
+                                                           0,
+                                                           RecEvtView->getUserRecord(m_jet_rho_label),
+                                                           m_GenEvtView->getUserRecord("NumVerticesPU").toDouble(),
+                                                           -1);
             }
         }
         return std::make_pair(ratio_up, ratio_down);
@@ -607,7 +636,8 @@ std::pair<double, double> Systematics::getObjResolutionShift(pxl::Particle *obj,
     return std::make_pair(1., 1.);
 }
 
-std::pair<double, double> Systematics::getObjShiftValue(pxl::Particle *obj, std::string const &partName,
+std::pair<double, double> Systematics::getObjShiftValue(pxl::Particle *obj,
+                                                        std::string const &partName,
                                                         std::string const &shiftType)
 {
     if (shiftType == "Scale")
@@ -721,7 +751,10 @@ void Systematics::initMET(pxl::EventView *ev, pxl::Particle *&metpart)
     return;
 }
 
-void Systematics::shiftParticle(pxl::EventView *eview, pxl::Particle *const part, double const &ratio, double &dPx,
+void Systematics::shiftParticle(pxl::EventView *eview,
+                                pxl::Particle *const part,
+                                double const &ratio,
+                                double &dPx,
                                 double &dPy)
 {
     // create a copy of the original particle
@@ -730,8 +763,10 @@ void Systematics::shiftParticle(pxl::EventView *eview, pxl::Particle *const part
     dPx += shiftedParticle->getPx() * (ratio - 1);
     dPy += shiftedParticle->getPy() * (ratio - 1);
     // WARNING change the particle content for the particle in the new event view
-    shiftedParticle->setP4(ratio * shiftedParticle->getPx(), ratio * shiftedParticle->getPy(),
-                           ratio * shiftedParticle->getPz(), ratio * shiftedParticle->getE());
+    shiftedParticle->setP4(ratio * shiftedParticle->getPx(),
+                           ratio * shiftedParticle->getPy(),
+                           ratio * shiftedParticle->getPz(),
+                           ratio * shiftedParticle->getE());
 
     // if full event view was created remove original particle
     if (m_full)
