@@ -10,6 +10,12 @@ MUSIC_BASE = os.getenv('MUSIC_BASE')
 
 task_files = glob.glob(f"{MUSIC_BASE}/configs/task_configs/*.toml")
 
+print(f"[{datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Cleanning ...")
+
+subprocess.run(shlex.split("rm -rf Test_Ouputs_*"), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+subprocess.run(shlex.split("rm -rf test_mc_*"), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+subprocess.run(shlex.split("rm -rf test_data_*"), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
 print(f"[{datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Starting ...")
 
 procs = []
@@ -27,7 +33,7 @@ for p in procs:
     return_codes.append(p.wait())
 
 if all(r == 0 for r in return_codes):
-    print(f"[{datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] YAY !!!")
+    print(f"[{datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] YAY !!")
 else:
     print(f"[{datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Oops ...")
 
