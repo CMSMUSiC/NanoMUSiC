@@ -40,7 +40,7 @@ class Sample:
         self.era = ""
         self.is_data = False
 
-    def parse_name(self, options, generators, showers=[], blacklist=[]):
+    def parse_name(self, options, generators, showers=[], redlist=[]):
         # format of datasetpath: /.../.../...
         # first part contains name + additional tags ( cme, tune, .. )
         # second part has additional information ( campaign, extention sample? ,... )
@@ -85,7 +85,7 @@ class Sample:
                     break
                 else:
                     self.generator = "unknown"
-            for item in blacklist:
+            for item in redlist:
                 ds_pt1 = re.sub(r"(?i)[_-]*" + item, "", ds_pt1)
 
             # get year
@@ -231,7 +231,7 @@ def main():
     showers = ["pythia8", "pythia6", "pythia", "herwigpp"]
 
     # list of tags which will be removed from name (case insensitive)
-    blacklist = [
+    redlist = [
         "13tev",
         "madspin",
         "FXFX",
@@ -247,7 +247,7 @@ def main():
     # read samples from file and parse name
     sample_list = readSamplesFromFile(args[0])
     for sample in tqdm(sample_list):
-        sample.parse_name(options, generators, showers, blacklist)
+        sample.parse_name(options, generators, showers, redlist)
 
     # write .json file for each sample
     datasets = {}

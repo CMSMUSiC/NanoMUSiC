@@ -37,8 +37,8 @@ def build_crab_config(process_name, das_name, year, is_data):
 
     # copy config TOML to current directory
     config_toml_file = {
-        True: "../../configs/run_configs/Data.toml", # Data
-        False: "../../configs/run_configs/MC.toml", # MC
+        True: "../../configs/task_configs/Data.toml", # Data
+        False: "../../configs/task_configs/MC.toml", # MC
     }
 
     os.system(
