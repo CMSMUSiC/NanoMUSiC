@@ -50,6 +50,7 @@ struct EventInfo
     bool Flag_BadPFMuonDzFilter;
     bool Flag_eeBadScFilter;
     bool Flag_ecalBadCalibFilter;
+    float rho;
     bool HLT_IsoMu27;
     bool HLT_IsoMu24;
     bool HLT_IsoTkMu24;
@@ -82,6 +83,7 @@ struct EventInfo
               const bool &_Flag_BadPFMuonDzFilter = false,
               const bool &_Flag_eeBadScFilter = false,
               const bool &_Flag_ecalBadCalibFilter = false,
+              const float &_rho = 0.,
               const bool &_HLT_IsoMu27 = false,
               const bool &_HLT_IsoMu24 = false,
               const bool &_HLT_IsoTkMu24 = false,

@@ -179,6 +179,7 @@ auto main(int argc, char *argv[]) -> int
     ADD_VALUE_READER(Flag_BadPFMuonDzFilter, bool);
     ADD_VALUE_READER(Flag_eeBadScFilter, bool);
     ADD_VALUE_READER(Flag_ecalBadCalibFilter, bool);
+    ADD_VALUE_READER(fixedGridRhoFastjetAll, float);
     ADD_VALUE_READER(HLT_IsoMu27, bool);
     ADD_VALUE_READER(HLT_IsoMu24, bool);
     ADD_VALUE_READER(HLT_IsoTkMu24, bool);
@@ -337,19 +338,20 @@ auto main(int argc, char *argv[]) -> int
                                                        unwrap(Flag_BadPFMuonFilter),                    //
                                                        unwrap(Flag_BadPFMuonDzFilter),                  //
                                                        unwrap(Flag_eeBadScFilter),                      //
-                                                       unwrap(Flag_ecalBadCalibFilter),                 //
-                                                       unwrap(HLT_IsoMu27),                             //
-                                                       unwrap(HLT_IsoMu24),                             //
-                                                       unwrap(HLT_IsoTkMu24),                           //
-                                                       unwrap(HLT_Mu50),                                //
-                                                       unwrap(HLT_TkMu50),                              //
-                                                       unwrap(HLT_TkMu100),                             //
-                                                       unwrap(HLT_OldMu100),                            //
-                                                       unwrap(HLT_Ele27_WPTight_Gsf),                   //
-                                                       unwrap(HLT_Ele35_WPTight_Gsf),                   //
-                                                       unwrap(HLT_Ele32_WPTight_Gsf),                   //
-                                                       unwrap(HLT_Photon200),                           //
-                                                       unwrap(HLT_Photon175),                           //
+                                                       unwrap(Flag_ecalBadCalibFilter),
+                                                       unwrap(fixedGridRhoFastjetAll), //
+                                                       unwrap(HLT_IsoMu27),            //
+                                                       unwrap(HLT_IsoMu24),            //
+                                                       unwrap(HLT_IsoTkMu24),          //
+                                                       unwrap(HLT_Mu50),               //
+                                                       unwrap(HLT_TkMu50),             //
+                                                       unwrap(HLT_TkMu100),            //
+                                                       unwrap(HLT_OldMu100),           //
+                                                       unwrap(HLT_Ele27_WPTight_Gsf),  //
+                                                       unwrap(HLT_Ele35_WPTight_Gsf),  //
+                                                       unwrap(HLT_Ele32_WPTight_Gsf),  //
+                                                       unwrap(HLT_Photon200),          //
+                                                       unwrap(HLT_Photon175),          //
                                                        unwrap(HLT_Ele115_CaloIdVT_GsfTrkIdT)))
                 // generator info
                 .set_generator_info(NanoObjects::GeneratorInfo(unwrap(Generator_binvar),     //
