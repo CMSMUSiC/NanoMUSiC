@@ -1,6 +1,6 @@
 var structNanoObjects_1_1EventInfo =
 [
-    [ "EventInfo", "structNanoObjects_1_1EventInfo.html#af07eef954fddfd6f7bafa04dca7ed7aa", null ],
+    [ "EventInfo", "structNanoObjects_1_1EventInfo.html#a01e273b3a604a6e1b6c91fd26613071f", null ],
     [ "event", "structNanoObjects_1_1EventInfo.html#adf3eba3f4ae10b73e86f12c89c09f46b", null ],
     [ "Flag_BadPFMuonDzFilter", "structNanoObjects_1_1EventInfo.html#a0163024b3ec370d8f7f66e5429f35b21", null ],
     [ "Flag_BadPFMuonFilter", "structNanoObjects_1_1EventInfo.html#a4ff6c02be34c6b6514b41638d2f133f3", null ],
@@ -31,5 +31,6 @@ var structNanoObjects_1_1EventInfo =
     [ "lumi", "structNanoObjects_1_1EventInfo.html#abe56111e9dc3e4ef1e149c2365c0c914", null ],
     [ "Pileup_nTrueInt", "structNanoObjects_1_1EventInfo.html#a687e0712ca1bffe927b4eb4f82569cef", null ],
     [ "PV_npvsGood", "structNanoObjects_1_1EventInfo.html#a6e62e1b16c34a471cfa636111219dea4", null ],
+    [ "rho", "structNanoObjects_1_1EventInfo.html#a5b5fe546192c3561e98fc89c0b5e0cc2", null ],
     [ "run", "structNanoObjects_1_1EventInfo.html#a6ce9f8b628c6362efeb8c3f2c39244d5", null ]
 ];

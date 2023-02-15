@@ -22,8 +22,10 @@ var hierarchy =
       [ "MUSiCTools::file_not_found", "classMUSiCTools_1_1file__not__found.html", null ]
     ] ],
     [ "NanoObjects::GeneratorInfo", "structNanoObjects_1_1GeneratorInfo.html", null ],
+    [ "NanoObjects::GenJets", "structNanoObjects_1_1GenJets.html", null ],
     [ "NanoObjects::GenParticles", "structNanoObjects_1_1GenParticles.html", null ],
     [ "ObjConfig::JetConfig", "structObjConfig_1_1JetConfig.html", null ],
+    [ "JetCorrector", "classJetCorrector.html", null ],
     [ "NanoObjects::Jets", "structNanoObjects_1_1Jets.html", null ],
     [ "NanoObjects::LHEInfo", "structNanoObjects_1_1LHEInfo.html", null ],
     [ "NanoObjects::LHEParticles", "structNanoObjects_1_1LHEParticles.html", null ],

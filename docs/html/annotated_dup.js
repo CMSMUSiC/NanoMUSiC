@@ -19,6 +19,7 @@ var annotated_dup =
     [ "ElectronTriggerSF", "classElectronTriggerSF.html", "classElectronTriggerSF" ],
     [ "Enumerate", "classEnumerate.html", "classEnumerate" ],
     [ "EventAnalyzer", "classEventAnalyzer.html", "classEventAnalyzer" ],
+    [ "JetCorrector", "classJetCorrector.html", "classJetCorrector" ],
     [ "NanoAODReader", "classNanoAODReader.html", "classNanoAODReader" ],
     [ "Outputs", "classOutputs.html", "classOutputs" ],
     [ "overloaded", "structoverloaded.html", null ],

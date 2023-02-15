@@ -5,6 +5,7 @@ var NanoObjects_8hpp =
     [ "LHEInfo", "structNanoObjects_1_1LHEInfo.html", "structNanoObjects_1_1LHEInfo" ],
     [ "GenParticles", "structNanoObjects_1_1GenParticles.html", "structNanoObjects_1_1GenParticles" ],
     [ "LHEParticles", "structNanoObjects_1_1LHEParticles.html", "structNanoObjects_1_1LHEParticles" ],
+    [ "GenJets", "structNanoObjects_1_1GenJets.html", "structNanoObjects_1_1GenJets" ],
     [ "Muons", "structNanoObjects_1_1Muons.html", "structNanoObjects_1_1Muons" ],
     [ "Electrons", "structNanoObjects_1_1Electrons.html", "structNanoObjects_1_1Electrons" ],
     [ "Photons", "structNanoObjects_1_1Photons.html", "structNanoObjects_1_1Photons" ],

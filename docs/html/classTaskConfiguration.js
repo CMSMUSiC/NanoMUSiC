@@ -2,6 +2,7 @@ var classTaskConfiguration =
 [
     [ "TaskConfiguration", "classTaskConfiguration.html#a50d1372a998413a6dae80de83e1df615", null ],
     [ "dataset", "classTaskConfiguration.html#a65473d54346d90226088c15ad9e271b7", null ],
+    [ "era", "classTaskConfiguration.html#a55b4ccd6adb1efb015bdd94c7d0f61b5", null ],
     [ "golden_json_file", "classTaskConfiguration.html#a21b4dd14d2912ba34956e8d22d816213", null ],
     [ "input_files", "classTaskConfiguration.html#afeb9970bc0155ba6be6cc2af03394ad9", null ],
     [ "is_crab_job", "classTaskConfiguration.html#a20c4b31c7bfab2f4ae8a143afe0d526f", null ],

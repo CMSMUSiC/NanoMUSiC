@@ -8,6 +8,9 @@ var dir_7aaf294a99fae0b1961be37b302bde84 =
       [ "EventAnalyzer", "classEventAnalyzer.html", "classEventAnalyzer" ]
     ] ],
     [ "GeneratorFilters.hpp", "GeneratorFilters_8hpp.html", "GeneratorFilters_8hpp" ],
+    [ "JetCorrector.hpp", "JetCorrector_8hpp.html", [
+      [ "JetCorrector", "classJetCorrector.html", "classJetCorrector" ]
+    ] ],
     [ "music.hpp", "music_8hpp.html", "music_8hpp" ],
     [ "MUSiCTools.hpp", "MUSiCTools_8hpp.html", "MUSiCTools_8hpp" ],
     [ "nano2pxl_utils.hpp", "nano2pxl__utils_8hpp.html", "nano2pxl__utils_8hpp" ],

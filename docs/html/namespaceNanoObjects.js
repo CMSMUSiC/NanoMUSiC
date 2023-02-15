@@ -3,6 +3,7 @@ var namespaceNanoObjects =
     [ "Electrons", "structNanoObjects_1_1Electrons.html", "structNanoObjects_1_1Electrons" ],
     [ "EventInfo", "structNanoObjects_1_1EventInfo.html", "structNanoObjects_1_1EventInfo" ],
     [ "GeneratorInfo", "structNanoObjects_1_1GeneratorInfo.html", "structNanoObjects_1_1GeneratorInfo" ],
+    [ "GenJets", "structNanoObjects_1_1GenJets.html", "structNanoObjects_1_1GenJets" ],
     [ "GenParticles", "structNanoObjects_1_1GenParticles.html", "structNanoObjects_1_1GenParticles" ],
     [ "Jets", "structNanoObjects_1_1Jets.html", "structNanoObjects_1_1Jets" ],
     [ "LHEInfo", "structNanoObjects_1_1LHEInfo.html", "structNanoObjects_1_1LHEInfo" ],
