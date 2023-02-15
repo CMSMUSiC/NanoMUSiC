@@ -230,6 +230,12 @@ auto main(int argc, char *argv[]) -> int
     ADD_ARRAY_READER(LHEPart_pdgId, int);
     ADD_ARRAY_READER(LHEPart_status, int);
 
+    // generator jets
+    ADD_ARRAY_READER(GenJet_eta, float);
+    // ADD_ARRAY_READER(GenJet_mass, float);
+    ADD_ARRAY_READER(GenJet_phi, float);
+    ADD_ARRAY_READER(GenJet_pt, float);
+
     // muons
     ADD_ARRAY_READER(Muon_pt, float);
     ADD_ARRAY_READER(Muon_eta, float);
@@ -381,6 +387,9 @@ auto main(int argc, char *argv[]) -> int
                                                              unwrap(LHEPart_incomingpz),
                                                              unwrap(LHEPart_pdgId),
                                                              unwrap(LHEPart_status)))
+
+                // GenJet_mass
+                .set_gen_jets(NanoObjects::GenJets(unwrap(GenJet_pt), unwrap(GenJet_eta), unwrap(GenJet_phi)))
 
                 // muons
                 .set_muons(NanoObjects::Muons(unwrap(Muon_pt),             //

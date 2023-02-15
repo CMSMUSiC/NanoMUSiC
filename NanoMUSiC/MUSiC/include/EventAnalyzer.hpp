@@ -50,6 +50,8 @@ class EventAnalyzer
 
     NanoObjects::LHEParticles lhe_particles;
 
+    NanoObjects::GenJets gen_jets;
+
     NanoObjects::Muons muons;
     RVec<int> good_muons_mask;
     RVec<int> good_low_pt_muons_mask;
@@ -89,6 +91,7 @@ class EventAnalyzer
     auto set_lhe_info(NanoObjects::LHEInfo &&_lhe_info) -> EventAnalyzer &;
     // auto set_gen_particles(NanoObjects::GenParticles &&_gen_particles) -> EventAnalyzer &;
     auto set_lhe_particles(NanoObjects::LHEParticles &&_lhe_particles) -> EventAnalyzer &;
+    auto set_gen_jets(NanoObjects::GenJets &&_gen_jets) -> EventAnalyzer &;
     auto set_muons(NanoObjects::Muons &&_muons, RVec<int> &&mask) -> EventAnalyzer &;
     auto set_muons(NanoObjects::Muons &&_muons) -> EventAnalyzer &;
     auto set_electrons(NanoObjects::Electrons &&_electrons, RVec<int> &&mask) -> EventAnalyzer &;

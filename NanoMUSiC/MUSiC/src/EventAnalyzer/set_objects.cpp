@@ -51,6 +51,16 @@ auto EventAnalyzer::set_lhe_particles(NanoObjects::LHEParticles &&_lhe_particles
     return *this;
 }
 
+auto EventAnalyzer::set_gen_jets(NanoObjects::GenJets &&_gen_jets) -> EventAnalyzer &
+{
+    if (*this)
+    {
+        gen_jets = _gen_jets;
+        return *this;
+    }
+    return *this;
+}
+
 auto EventAnalyzer::set_muons(NanoObjects::Muons &&_muons, RVec<int> &&mask) -> EventAnalyzer &
 {
     if (*this)

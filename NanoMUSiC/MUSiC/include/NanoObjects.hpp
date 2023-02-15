@@ -179,6 +179,16 @@ struct LHEParticles
                  const RVec<int> _status = {});
 };
 
+struct GenJets
+{
+    std::size_t nLHEParticles;
+    RVec<float> pt;
+    RVec<float> eta;
+    RVec<float> phi;
+
+    GenJets(const RVec<float> _pt = {}, const RVec<float> _eta = {}, const RVec<float> _phi = {});
+};
+
 struct Muons
 {
     std::size_t size;

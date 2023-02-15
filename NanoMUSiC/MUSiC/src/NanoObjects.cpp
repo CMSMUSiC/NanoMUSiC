@@ -190,6 +190,14 @@ LHEParticles::LHEParticles(const RVec<float> _pt,
 {
 }
 
+GenJets::GenJets(const RVec<float> _pt, const RVec<float> _eta, const RVec<float> _phi)
+    : nLHEParticles(_pt.size()),
+      pt(_pt),
+      eta(_eta),
+      phi(_phi)
+{
+}
+
 Muons::Muons(const RVec<float> &_pt,
              const RVec<float> &_eta,
              const RVec<float> &_phi,
