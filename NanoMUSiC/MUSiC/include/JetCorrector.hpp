@@ -26,7 +26,7 @@ class JetCorrector
                  const bool _is_data,
                  const std::string &_correction_file,
                  const std::string &_correction_key);
-    auto get_resolution_correction(float pt, float eta, float rho) -> float;
+    auto get_resolution_correction(float pt, float eta, float rho, const std::string &variation = "Nominal") -> float;
     auto get_resolution(float pt, float eta, float rho) const -> float;
     auto get_resolution_scale_factor(float eta, const std::string &variation = "Nominal") const -> float;
 };

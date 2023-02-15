@@ -59,12 +59,45 @@ JetCorrector::JetCorrector(const Year &_year,
 }
 
 //////////////////////////////////////////////////////////
+/// References:
 /// https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#JER_Scaling_factors_and_Uncertai
-auto JetCorrector::get_resolution_correction(float pt, float eta, float rho) -> float
+/// https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#Smearing_procedures
+auto JetCorrector::get_resolution_correction(float pt, float eta, float rho, const std::string &variation) -> float
 {
     if (not is_data)
     {
-        return 1.;
+        double const recJetPt = pt;
+        double recJetEta = eta;
+        // no eta>5 possible set it to 5 times the sign of eta
+        if (std::fabs(recJetEta) >= 5)
+        {
+            recJetEta = 4.99 * recJetEta / std::fabs(recJetEta);
+        }
+
+        double scaling_factor = 1.0;
+        scaling_factor = get_resolution_scale_factor(recJetEta, variation);
+
+        double jetCorrFactor = 1.0;
+
+        // Found a match?
+        if (genJet)
+        {
+            double const genJetPt = genJet->getPt();
+            jetCorrFactor = std::max(0.0, 1 + (scaling_factor - 1) * (recJetPt - genJetPt) / recJetPt);
+
+            // If not, just smear with a Gaussian.
+        }
+        else
+        {
+            double const sigma_MC = get_resolution(recJetPt, recJetEta, rho);
+
+            jetCorrFactor = std::max(
+                0.0, 1 + m_rand.Gaus(0, sigma_MC) * std::sqrt(std::max(scaling_factor * scaling_factor - 1.0, 0.0)));
+        }
+
+        // WARNING: 0 can be returned! Catch this case at the place this function is
+        // used!
+        return jetCorrFactor;
     }
     return 1.;
 }
