@@ -3,8 +3,13 @@
 #include <stdexcept>
 #include <string>
 
+#include <ROOT/RVec.hxx>
+#include <TRandom3.h>
+
 #include "fmt/format.h"
 
+using namespace ROOT;
+using namespace ROOT::VecOps;
 using namespace std::string_literals;
 
 JetCorrector::JetCorrector(const Year &_year,
@@ -12,7 +17,8 @@ JetCorrector::JetCorrector(const Year &_year,
                            const std::string &_correction_file,
                            const std::string &_correction_key)
     : year(_year),
-      is_data(_is_data)
+      is_data(_is_data),
+      rand(TRandom3())
 {
     switch (year)
     {
@@ -58,50 +64,6 @@ JetCorrector::JetCorrector(const Year &_year,
     }
 }
 
-//////////////////////////////////////////////////////////
-/// References:
-/// https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#JER_Scaling_factors_and_Uncertai
-/// https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#Smearing_procedures
-auto JetCorrector::get_resolution_correction(float pt, float eta, float rho, const std::string &variation) -> float
-{
-    if (not is_data)
-    {
-        double const recJetPt = pt;
-        double recJetEta = eta;
-        // no eta>5 possible set it to 5 times the sign of eta
-        if (std::fabs(recJetEta) >= 5)
-        {
-            recJetEta = 4.99 * recJetEta / std::fabs(recJetEta);
-        }
-
-        double scaling_factor = 1.0;
-        scaling_factor = get_resolution_scale_factor(recJetEta, variation);
-
-        double jetCorrFactor = 1.0;
-
-        // Found a match?
-        if (genJet)
-        {
-            double const genJetPt = genJet->getPt();
-            jetCorrFactor = std::max(0.0, 1 + (scaling_factor - 1) * (recJetPt - genJetPt) / recJetPt);
-
-            // If not, just smear with a Gaussian.
-        }
-        else
-        {
-            double const sigma_MC = get_resolution(recJetPt, recJetEta, rho);
-
-            jetCorrFactor = std::max(
-                0.0, 1 + m_rand.Gaus(0, sigma_MC) * std::sqrt(std::max(scaling_factor * scaling_factor - 1.0, 0.0)));
-        }
-
-        // WARNING: 0 can be returned! Catch this case at the place this function is
-        // used!
-        return jetCorrFactor;
-    }
-    return 1.;
-}
-
 auto JetCorrector::get_resolution(float pt, float eta, float rho) const -> float
 {
     return pt_resolution_correction_ref->evaluate({eta, pt, rho});
@@ -122,4 +84,59 @@ auto JetCorrector::get_resolution_scale_factor(float eta, const std::string &var
         return scale_factor_correction_ref->evaluate({eta, "down"});
     }
     throw(std::runtime_error(fmt::format("The requested variation ({}) is not available.", variation)));
+}
+
+//////////////////////////////////////////////////////////
+/// Calculate JER factor using the Hybrid Mode.
+/// References:
+/// https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#JER_Scaling_factors_and_Uncertai
+/// https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#Smearing_procedures
+auto JetCorrector::get_resolution_correction(float pt,
+                                             float eta,
+                                             float phi,
+                                             float rho,
+                                             int genjet_idx,
+                                             float gen_jet_pt,
+                                             float gen_jet_eta,
+                                             float gen_jet_phi,
+                                             const std::string &variation) -> float
+{
+    if (not is_data)
+    {
+        // no eta>5 possible set it to 5 times the sign of eta
+        if (std::fabs(eta) >= 5)
+        {
+            eta = 4.99 * eta / std::fabs(eta);
+        }
+
+        double scaling_factor = 1.0;
+        scaling_factor = get_resolution_scale_factor(eta, variation);
+        double const resolution = get_resolution(pt, eta, rho);
+
+        // Found a match?
+        auto is_good_match = [&]() -> bool
+        {
+            if (genjet_idx >= 0)
+            {
+                const double radius = 0.4;
+                const double dr = VecOps::DeltaR(eta, gen_jet_eta, phi, gen_jet_phi);
+                const double dpt = std::fabs(pt - gen_jet_pt);
+                if ((dr < radius / 2.) and (dpt < 3 * resolution * pt))
+                {
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        if (is_good_match())
+        {
+            return std::max(min_correction_factor, 1 + (scaling_factor - 1) * (pt - gen_jet_pt) / pt);
+        }
+
+        // If not, just smear with a Gaussian.
+        return std::max(min_correction_factor,
+                        1 + rand.Gaus(0, resolution) * std::sqrt(std::max(std::pow(scaling_factor, 2) - 1.0, 0.0)));
+    }
+    return 1.;
 }
