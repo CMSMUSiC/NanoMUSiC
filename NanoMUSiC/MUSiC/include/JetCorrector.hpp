@@ -29,11 +29,7 @@ class JetCorrector
     constexpr static double min_correction_factor = 1E-9;
 
   public:
-    JetCorrector(const Year &_year,
-                 const std::string &_era,
-                 const bool _is_data,
-                 const std::string &_correction_file,
-                 const std::string &_correction_key);
+    JetCorrector(const Year &_year, const std::string &_era, const bool _is_data);
     auto get_resolution(float pt, float eta, float rho) const -> float;
     auto get_resolution_scale_factor(float eta, const std::string &variation = "Nominal") const -> float;
     auto get_resolution_correction(float pt,

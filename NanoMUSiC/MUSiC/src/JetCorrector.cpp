@@ -12,11 +12,7 @@ using namespace ROOT;
 using namespace ROOT::VecOps;
 using namespace std::string_literals;
 
-JetCorrector::JetCorrector(const Year &_year,
-                           const std::string &_era,
-                           const bool _is_data,
-                           const std::string &_correction_file,
-                           const std::string &_correction_key)
+JetCorrector::JetCorrector(const Year &_year, const std::string &_era, const bool _is_data)
     : year(_year),
       era(_era),
       is_data(_is_data),
@@ -219,10 +215,21 @@ auto JetCorrector::get_scale_correction(float pt,
     // if MC
     if (not is_data)
     {
+        if (variation == "Nominal"s)
+        {
+            return (1 - raw_factor) * scale_correction_ref->evaluate({area, eta, pt * (1. - raw_factor), rho});
+        }
+        if (variation == "Up"s)
+        {
+            return (1 - raw_factor) * scale_correction_ref->evaluate({area, eta, pt * (1. - raw_factor), rho}) *
+                   (1. + scale_uncertainty_correction_ref->evaluate({eta, pt * (1. - raw_factor)}));
+        }
+        if (variation == "Down"s)
+        {
+            return (1 - raw_factor) * scale_correction_ref->evaluate({area, eta, pt * (1. - raw_factor), rho}) *
+                   (1. - scale_uncertainty_correction_ref->evaluate({eta, pt * (1. - raw_factor)}));
+        }
+        throw(std::runtime_error(fmt::format("The requested variation ({}) is not available.", variation)));
     }
-    if (era == "A")
-    {
-        return 1.;
-    }
-    return 1.;
+    return (1 - raw_factor) * scale_correction_ref->evaluate({area, eta, pt * (1. - raw_factor), rho});
 }

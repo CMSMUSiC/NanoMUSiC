@@ -88,6 +88,9 @@ auto main(int argc, char *argv[]) -> int
     std::cout << colors.def << "[ Initializing ] Rochester Muon Momentum Corrections ..." << colors.def << std::endl;
     auto rochester_corrections = Corrector("MuonLowPt"sv, configuration.year, configuration.is_data);
 
+    std::cout << colors.def << "[ Initializing ] Jet Corrections ..." << colors.def << std::endl;
+    auto jet_corrections = JetCorrector(configuration.year, configuration.era, configuration.is_data);
+
     std::cout << colors.def << "[ Initializing ] Muon SFs ..." << colors.def << std::endl;
     auto muon_sf_reco = Corrector("MuonReco"sv, configuration.year, configuration.is_data);
     auto muon_sf_id_low_pt = Corrector("MuonIdLowPt"sv, configuration.year, configuration.is_data);
