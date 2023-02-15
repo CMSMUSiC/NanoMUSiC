@@ -1,5 +1,12 @@
 #include "JetCorrector.hpp"
 
+#include <stdexcept>
+#include <string>
+
+#include "fmt/format.h"
+
+using namespace std::string_literals;
+
 JetCorrector::JetCorrector(const Year &_year,
                            const bool _is_data,
                            const std::string &_correction_file,
@@ -51,24 +58,35 @@ JetCorrector::JetCorrector(const Year &_year,
     }
 }
 
-auto JetCorrector::get_correction(const float &pt) -> float
+//////////////////////////////////////////////////////////
+/// https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#JER_Scaling_factors_and_Uncertai
+auto JetCorrector::get_resolution_correction(float pt, float eta, float rho) -> float
 {
     if (not is_data)
     {
-        // return correction_ref->evaluate({pt});
         return 1.;
     }
     return 1.;
 }
 
-//////////////////////////////////////////////////////////
-/// https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#JER_Scaling_factors_and_Uncertai
-auto JetCorrector::get_resolution(const float &pt) -> float
+auto JetCorrector::get_resolution(float pt, float eta, float rho) const -> float
 {
-    if (not is_data)
+    return pt_resolution_correction_ref->evaluate({eta, pt, rho});
+}
+
+auto JetCorrector::get_resolution_scale_factor(float eta, const std::string &variation) const -> float
+{
+    if (variation == "Nominal"s)
     {
-        // return correction_ref->evaluate({pt});
-        return 1.;
+        return scale_factor_correction_ref->evaluate({eta, "nom"});
     }
-    return 1.;
+    if (variation == "Up"s)
+    {
+        return scale_factor_correction_ref->evaluate({eta, "up"});
+    }
+    if (variation == "Down"s)
+    {
+        return scale_factor_correction_ref->evaluate({eta, "down"});
+    }
+    throw(std::runtime_error(fmt::format("The requested variation ({}) is not available.", variation)));
 }
