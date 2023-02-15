@@ -49,7 +49,23 @@ add_link_options(
     -lstdc++fs
 )
 
-add_executable(nano_music src/main.cpp src/GeneratorFilters.cpp src/EventAnalyzer/generator.cpp src/EventAnalyzer/event_filters.cpp src/EventAnalyzer/trigger.cpp src/EventAnalyzer/scale_factors.cpp src/EventAnalyzer/scale_factors_muons.cpp src/EventAnalyzer/scale_factors_egamma.cpp src/EventAnalyzer/scale_factors_bjets.cpp src/EventAnalyzer/corrections.cpp src/EventAnalyzer/object_selection.cpp src/EventAnalyzer/set_objects.cpp src/EventAnalyzer/EventAnalyzer.cpp src/TaskConfiguration.cpp src/NanoObjects.cpp src/TOMLConfig.cpp src/CorrectionSets.cpp external/roccor/RoccoR.cc)
+add_executable(nano_music src/main.cpp /
+    src/GeneratorFilters.cpp /
+    src/EventAnalyzer/generator.cpp /
+    src/EventAnalyzer/event_filters.cpp /
+    src/EventAnalyzer/trigger.cpp /
+    src/EventAnalyzer/scale_factors.cpp /
+    src/EventAnalyzer/scale_factors_muons.cpp /
+    src/JetCorrector.cpp /
+    src/EventAnalyzer/scale_factors_egamma.cpp /
+    src/EventAnalyzer/scale_factors_bjets.cpp /
+    src/EventAnalyzer/corrections.cpp /
+    src/EventAnalyzer/object_selection.cpp /
+    src/EventAnalyzer/set_objects.cpp /
+    src/EventAnalyzer/EventAnalyzer.cpp /
+    src/TaskConfiguration.cpp src/NanoObjects.cpp /
+    src/TOMLConfig.cpp src/CorrectionSets.cpp /
+    external/roccor/RoccoR.cc)
 target_link_libraries(nano_music LINK_PUBLIC)
 install(TARGETS nano_music DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 
