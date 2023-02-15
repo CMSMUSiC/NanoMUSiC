@@ -275,6 +275,7 @@ auto main(int argc, char *argv[]) -> int
     ADD_ARRAY_READER(Jet_jetId, int);
     ADD_ARRAY_READER(Jet_btagDeepFlavB, float);
     ADD_ARRAY_READER(Jet_hadronFlavour, int);
+    ADD_ARRAY_READER(Jet_genJetIdx, int);
 
     // met
     ADD_VALUE_READER(MET_pt, float);
@@ -426,7 +427,8 @@ auto main(int argc, char *argv[]) -> int
                                               unwrap(Jet_phi),           //
                                               unwrap(Jet_jetId),         //
                                               unwrap(Jet_btagDeepFlavB), //
-                                              unwrap(Jet_hadronFlavour)))
+                                              unwrap(Jet_hadronFlavour),
+                                              unwrap(Jet_genJetIdx)))
                 // jets
                 .set_jets(NanoObjects::Jets(unwrap(Jet_pt),            //
                                             unwrap(Jet_eta),           //

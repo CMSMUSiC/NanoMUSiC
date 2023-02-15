@@ -267,13 +267,14 @@ struct Jets
     RVec<int> jetId;
     RVec<float> btagDeepFlavB;
     RVec<int> hadronFlavour;
-
+    RVec<int> genJetIdx;
     Jets(const RVec<float> &_pt = {},
          const RVec<float> &_eta = {},
          const RVec<float> &_phi = {},
          const RVec<int> &_jetId = {},
          const RVec<float> &_btagDeepFlavB = {},
-         const RVec<int> &_hadronFlavour = {});
+         const RVec<int> &_hadronFlavour = {},
+         const RVec<int> &_genJetIdx = {});
 };
 
 using BJets = Jets;

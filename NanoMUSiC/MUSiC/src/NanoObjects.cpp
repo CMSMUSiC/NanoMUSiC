@@ -265,14 +265,16 @@ Jets::Jets(const RVec<float> &_pt,
            const RVec<float> &_phi,
            const RVec<int> &_jetId,
            const RVec<float> &_btagDeepFlavB,
-           const RVec<int> &_hadronFlavour)
+           const RVec<int> &_hadronFlavour,
+           const RVec<int> &_genJetIdx)
     : size(_pt.size()),
       pt(_pt),
       eta(_eta),
       phi(_phi),
       jetId(_jetId),
       btagDeepFlavB(_btagDeepFlavB),
-      hadronFlavour((_pt.size() > 0 and _hadronFlavour.size() == 0) ? RVec<int>(_pt.size()) : _hadronFlavour)
+      hadronFlavour((_pt.size() > 0 and _hadronFlavour.size() == 0) ? RVec<int>(_pt.size()) : _hadronFlavour),
+      genJetIdx(_genJetIdx)
 {
 }
 
