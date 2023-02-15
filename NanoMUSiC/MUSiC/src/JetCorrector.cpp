@@ -47,11 +47,12 @@ JetCorrector::JetCorrector(const Year &_year, const std::string &_era, const boo
         else
         {
             scale_correction_key = "Summer19UL16APV_V7_MC_L1L2L3Res_AK4PFchs";
-            scale_uncertainty_correction_key = "Summer19UL16APV_V7_MC_Total_AK4PFchs";
         }
-        scale_correction_ref = correction::CorrectionSet::from_file(json_file)->at(scale_correction_key);
+        scale_uncertainty_correction_key = "Summer19UL16APV_V7_MC_Total_AK4PFchs";
+        scale_correction_ref = correction::CorrectionSet::from_file(json_file)->compound().at(scale_correction_key);
         scale_uncertainty_correction_ref =
             correction::CorrectionSet::from_file(json_file)->at(scale_uncertainty_correction_key);
+        break;
     case Year::Run2016:
         json_file = "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/2016postVFP_UL/jet_jerc.json.gz"s;
 
@@ -69,11 +70,13 @@ JetCorrector::JetCorrector(const Year &_year, const std::string &_era, const boo
         else
         {
             scale_correction_key = "Summer19UL16_V7_MC_L1L2L3Res_AK4PFchs";
-            scale_uncertainty_correction_key = "Summer19UL16_V7_MC_Total_AK4PFchs";
         }
-        scale_correction_ref = correction::CorrectionSet::from_file(json_file)->at(scale_correction_key);
+        scale_uncertainty_correction_key = "Summer19UL16_V7_MC_Total_AK4PFchs";
+
+        scale_correction_ref = correction::CorrectionSet::from_file(json_file)->compound().at(scale_correction_key);
         scale_uncertainty_correction_ref =
             correction::CorrectionSet::from_file(json_file)->at(scale_uncertainty_correction_key);
+        break;
     case Year::Run2017:
         json_file = "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/2017_UL/jet_jerc.json.gz"s;
 
@@ -91,11 +94,12 @@ JetCorrector::JetCorrector(const Year &_year, const std::string &_era, const boo
         else
         {
             scale_correction_key = "Summer19UL17_V5_MC_L1L2L3Res_AK4PFchs";
-            scale_uncertainty_correction_key = "Summer19UL17_V5_MC_Total_AK4PFchs";
         }
-        scale_correction_ref = correction::CorrectionSet::from_file(json_file)->at(scale_correction_key);
+        scale_uncertainty_correction_key = "Summer19UL17_V5_MC_Total_AK4PFchs";
+        scale_correction_ref = correction::CorrectionSet::from_file(json_file)->compound().at(scale_correction_key);
         scale_uncertainty_correction_ref =
             correction::CorrectionSet::from_file(json_file)->at(scale_uncertainty_correction_key);
+        break;
     case Year::Run2018:
         json_file = "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/2018_UL/jet_jerc.json.gz"s;
 
@@ -113,11 +117,15 @@ JetCorrector::JetCorrector(const Year &_year, const std::string &_era, const boo
         else
         {
             scale_correction_key = "Summer19UL18_V5_MC_L1L2L3Res_AK4PFchs";
-            scale_uncertainty_correction_key = "Summer19UL18_V5_MC_Total_AK4PFchs";
         }
-        scale_correction_ref = correction::CorrectionSet::from_file(json_file)->at(scale_correction_key);
+        scale_uncertainty_correction_key = "Summer19UL18_V5_MC_Total_AK4PFchs";
+
+        fmt::print("--> {} - {}\n", scale_correction_key, scale_uncertainty_correction_key);
+
+        scale_correction_ref = correction::CorrectionSet::from_file(json_file)->compound().at(scale_correction_key);
         scale_uncertainty_correction_ref =
             correction::CorrectionSet::from_file(json_file)->at(scale_uncertainty_correction_key);
+        break;
     default:
         throw std::runtime_error(
             fmt::format("Year ({}) not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).\n", year));
@@ -204,6 +212,7 @@ auto JetCorrector::get_resolution_correction(float pt,
 /// JESType
 /// Reference:
 /// https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetCorUncertainties
+/// https://twiki.cern.ch/twiki/bin/view/CMS/JECUncertaintySources
 auto JetCorrector::get_scale_correction(float pt,
                                         float eta,
                                         float phi,

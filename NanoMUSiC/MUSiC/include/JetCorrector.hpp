@@ -24,7 +24,8 @@ class JetCorrector
     TRandom3 rand;
     correction::Correction::Ref pt_resolution_correction_ref;
     correction::Correction::Ref scale_factor_correction_ref;
-    correction::Correction::Ref scale_correction_ref;
+    // correction::Correction::Ref scale_correction_ref;
+    correction::CompoundCorrection::Ref scale_correction_ref;
     correction::Correction::Ref scale_uncertainty_correction_ref;
     constexpr static double min_correction_factor = 1E-9;
 
