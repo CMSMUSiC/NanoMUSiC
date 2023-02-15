@@ -2,6 +2,7 @@ output = 'test_data_2017'
 is_data = true                                    # Is Data?
 x_section_file = '$MUSIC_BASE/configs/xsections_and_lumi/x_sections.toml'
 year = '2017'
+era = 'C'
 process = 'SingleMuonX_2017'
 dataset = '/SingleMuonX/bar/abc/NANOAOD'
 is_crab_job = false

@@ -19,6 +19,7 @@ class TaskConfiguration
     const std::string year_str;
     const std::vector<std::string> input_files;
     const Year year;
+    const std::string era;
     const std::string golden_json_file;
 
     TaskConfiguration(const std::string _run_config_file);
