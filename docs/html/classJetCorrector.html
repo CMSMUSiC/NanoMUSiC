@@ -182,10 +182,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a2764d538dc8f61e46008aebe718a7860"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af6b33106caf99c2deb0cf128ce57dbb0"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classJetCorrector.html#af6b33106caf99c2deb0cf128ce57dbb0">get_resolution_scale_factor</a> (float eta, const std::string &amp;variation=&quot;Nominal&quot;) const -&gt; float</td></tr>
 <tr class="separator:af6b33106caf99c2deb0cf128ce57dbb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a781e49ff43ade5f751abd1f177eb097a"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classJetCorrector.html#a781e49ff43ade5f751abd1f177eb097a">get_resolution_correction</a> (float pt, float eta, float phi, float rho, int genjet_idx, float gen_jet_pt, float gen_jet_eta, float gen_jet_phi, const std::string &amp;variation=&quot;Nominal&quot;) -&gt; float</td></tr>
-<tr class="separator:a781e49ff43ade5f751abd1f177eb097a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a284729ce2a0061932f755e19a1b3ddff"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classJetCorrector.html#a284729ce2a0061932f755e19a1b3ddff">get_scale_correction</a> (float raw_pt, float eta, float phi, float raw_factor, float rho, float area, const std::string &amp;variation=&quot;Nominal&quot;) -&gt; float</td></tr>
-<tr class="separator:a284729ce2a0061932f755e19a1b3ddff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abcb0bc4fa6377e81b0a8d59fa893ad85"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classJetCorrector.html#abcb0bc4fa6377e81b0a8d59fa893ad85">get_resolution_correction</a> (float pt, float eta, float phi, float rho, int genjet_idx, const <a class="el" href="structNanoObjects_1_1GenJets.html">NanoObjects::GenJets</a> &amp;gen_jets, const std::string &amp;variation=&quot;Nominal&quot;) -&gt; float</td></tr>
+<tr class="separator:abcb0bc4fa6377e81b0a8d59fa893ad85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ed37ff1d566105fe8993ab452e3f376"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classJetCorrector.html#a2ed37ff1d566105fe8993ab452e3f376">get_scale_correction</a> (float pt, float eta, float phi, float raw_factor, float rho, float area, const std::string &amp;variation=&quot;Nominal&quot;) const -&gt; float</td></tr>
+<tr class="separator:a2ed37ff1d566105fe8993ab452e3f376"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -281,8 +281,8 @@ Static Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a781e49ff43ade5f751abd1f177eb097a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a781e49ff43ade5f751abd1f177eb097a">&#9670;&nbsp;</a></span>get_resolution_correction()</h2>
+<a id="abcb0bc4fa6377e81b0a8d59fa893ad85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abcb0bc4fa6377e81b0a8d59fa893ad85">&#9670;&nbsp;</a></span>get_resolution_correction()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -320,20 +320,8 @@ Static Private Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float&#160;</td>
-          <td class="paramname"><em>gen_jet_pt</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">float&#160;</td>
-          <td class="paramname"><em>gen_jet_eta</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">float&#160;</td>
-          <td class="paramname"><em>gen_jet_phi</em>, </td>
+          <td class="paramtype">const <a class="el" href="structNanoObjects_1_1GenJets.html">NanoObjects::GenJets</a> &amp;&#160;</td>
+          <td class="paramname"><em>gen_jets</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -348,7 +336,7 @@ Static Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Calculate JER factor using the Hybrid Mode. References: <a href="https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#JER_Scaling_factors_and_Uncertai">https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#JER_Scaling_factors_and_Uncertai</a> <a href="https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#Smearing_procedures">https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#Smearing_procedures</a> </p>
+<p>Calculate JER factor using the Hybrid Mode. References: <a href="https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#JER_Scaling_factors_and_Uncertai">https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#JER_Scaling_factors_and_Uncertai</a> <a href="https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#Smearing_procedures">https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#Smearing_procedures</a> <a href="https://cms-jerc.web.cern.ch/JEC/">https://cms-jerc.web.cern.ch/JEC/</a> </p>
 
 </div>
 </div>
@@ -380,8 +368,8 @@ Static Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a284729ce2a0061932f755e19a1b3ddff"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a284729ce2a0061932f755e19a1b3ddff">&#9670;&nbsp;</a></span>get_scale_correction()</h2>
+<a id="a2ed37ff1d566105fe8993ab452e3f376"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ed37ff1d566105fe8993ab452e3f376">&#9670;&nbsp;</a></span>get_scale_correction()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -431,11 +419,11 @@ Static Private Attributes</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td> -&gt; float</td>
+          <td></td><td> const -&gt; float</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>JESType Reference: <a href="https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetCorUncertainties">https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetCorUncertainties</a> <a href="https://twiki.cern.ch/twiki/bin/view/CMS/JECUncertaintySources">https://twiki.cern.ch/twiki/bin/view/CMS/JECUncertaintySources</a> </p>
+<p>JESType Reference: <a href="https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetCorUncertainties">https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetCorUncertainties</a> <a href="https://twiki.cern.ch/twiki/bin/view/CMS/JECUncertaintySources">https://twiki.cern.ch/twiki/bin/view/CMS/JECUncertaintySources</a> <a href="https://cms-jerc.web.cern.ch/JEC/">https://cms-jerc.web.cern.ch/JEC/</a> </p>
 
 </div>
 </div>

@@ -8,8 +8,16 @@ var structNanoObjects_1_1Jets =
     [ "hadronFlavour", "structNanoObjects_1_1Jets.html#a171f86fb9a12c3533de9dd59860e39dd", null ],
     [ "jetId", "structNanoObjects_1_1Jets.html#a9be5554ce582aefb6c7db71aa8b6c0a2", null ],
     [ "mass", "structNanoObjects_1_1Jets.html#a0a529a1968f00030ae2519412cb5ebb9", null ],
+    [ "mass_JER_down", "structNanoObjects_1_1Jets.html#a93082f5b79ec5a2a419d84dc8801a87c", null ],
+    [ "mass_JER_up", "structNanoObjects_1_1Jets.html#aac313671707892bd5092b64c807d16a5", null ],
+    [ "mass_JES_down", "structNanoObjects_1_1Jets.html#aaacf493bc9b65ffb782f8eb19229e919", null ],
+    [ "mass_JES_up", "structNanoObjects_1_1Jets.html#a9e1b1a0e895827a79ece1a95d5810f11", null ],
     [ "phi", "structNanoObjects_1_1Jets.html#a62cf77769afef55267d8cd7cc308198a", null ],
     [ "pt", "structNanoObjects_1_1Jets.html#a28501fc98cdcc3176269d5997ed61aff", null ],
+    [ "pt_JER_down", "structNanoObjects_1_1Jets.html#ae13cfa630395e747677b0242c786c30e", null ],
+    [ "pt_JER_up", "structNanoObjects_1_1Jets.html#ac8750dd7e03a8215b174908a7a90b8f3", null ],
+    [ "pt_JES_down", "structNanoObjects_1_1Jets.html#a5e45a9f5c527c501230491ad04c30232", null ],
+    [ "pt_JES_up", "structNanoObjects_1_1Jets.html#ae36671a54909cdfc93a29e3d2157d2fd", null ],
     [ "rawFactor", "structNanoObjects_1_1Jets.html#aa03095ec28c602c1f4b673991a44612e", null ],
     [ "size", "structNanoObjects_1_1Jets.html#a7c5aee555bb1aad708b15ae7c3f1a171", null ]
 ];
