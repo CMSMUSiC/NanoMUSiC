@@ -14,6 +14,7 @@
 #include "TRandom3.h"
 
 #include "Configs.hpp"
+#include "NanoObjects.hpp"
 
 class JetCorrector
 {
@@ -38,17 +39,15 @@ class JetCorrector
                                    float phi,
                                    float rho,
                                    int genjet_idx,
-                                   float gen_jet_pt,
-                                   float gen_jet_eta,
-                                   float gen_jet_phi,
+                                   const NanoObjects::GenJets &gen_jets,
                                    const std::string &variation = "Nominal") -> float;
-    auto get_scale_correction(float raw_pt,
+    auto get_scale_correction(float pt,
                               float eta,
                               float phi,
                               float raw_factor,
                               float rho,
                               float area,
-                              const std::string &variation = "Nominal") -> float;
+                              const std::string &variation = "Nominal") const -> float;
 };
 
 #endif // !JETCORRECTOR_HPP

@@ -193,7 +193,7 @@ LHEParticles::LHEParticles(const RVec<float> _pt,
 }
 
 GenJets::GenJets(const RVec<float> _pt, const RVec<float> _eta, const RVec<float> _phi)
-    : nLHEParticles(_pt.size()),
+    : size(_pt.size()),
       pt(_pt),
       eta(_eta),
       phi(_phi)
@@ -280,20 +280,29 @@ Jets::Jets(const RVec<float> &_pt,
       hadronFlavour((_pt.size() > 0 and _hadronFlavour.size() == 0) ? RVec<int>(_pt.size()) : _hadronFlavour),
       genJetIdx(_genJetIdx),
       rawFactor(_rawFactor),
-      area(_area)
+      area(_area),
+      // Corrections variations
+      pt_JES_up(_pt),
+      mass_JES_up(_pt),
+      pt_JES_down(_pt),
+      mass_JES_down(_pt),
+      pt_JER_up(_pt),
+      mass_JER_up(_pt),
+      pt_JER_down(_pt),
+      mass_JER_down(_pt)
 {
 }
-
-std::size_t size;
-RVec<float> pt;
-RVec<float> eta;
-RVec<float> phi;
 
 MET::MET(const RVec<float> &_pt, const RVec<float> &_eta, const RVec<float> &_phi)
     : size(_pt.size()),
       pt(_pt),
       eta(_eta),
-      phi(_phi)
+      phi(_phi),
+      // Corrections variations
+      JES_up(_pt),
+      JES_down(_pt),
+      JER_up(_pt),
+      JER_down(_pt)
 {
 }
 

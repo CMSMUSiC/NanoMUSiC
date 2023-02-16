@@ -16,7 +16,7 @@ JetCorrector::JetCorrector(const Year &_year, const std::string &_era, const boo
     : year(_year),
       era(_era),
       is_data(_is_data),
-      rand(TRandom3())
+      rand()
 {
     std::string json_file = ""s;
     std::string scale_correction_key = ""s;
@@ -120,8 +120,6 @@ JetCorrector::JetCorrector(const Year &_year, const std::string &_era, const boo
         }
         scale_uncertainty_correction_key = "Summer19UL18_V5_MC_Total_AK4PFchs";
 
-        fmt::print("--> {} - {}\n", scale_correction_key, scale_uncertainty_correction_key);
-
         scale_correction_ref = correction::CorrectionSet::from_file(json_file)->compound().at(scale_correction_key);
         scale_uncertainty_correction_ref =
             correction::CorrectionSet::from_file(json_file)->at(scale_uncertainty_correction_key);
@@ -159,14 +157,13 @@ auto JetCorrector::get_resolution_scale_factor(float eta, const std::string &var
 /// References:
 /// https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#JER_Scaling_factors_and_Uncertai
 /// https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#Smearing_procedures
+/// https://cms-jerc.web.cern.ch/JEC/
 auto JetCorrector::get_resolution_correction(float pt,
                                              float eta,
                                              float phi,
                                              float rho,
                                              int genjet_idx,
-                                             float gen_jet_pt,
-                                             float gen_jet_eta,
-                                             float gen_jet_phi,
+                                             const NanoObjects::GenJets &gen_jets,
                                              const std::string &variation) -> float
 {
     if (not is_data)
@@ -184,11 +181,12 @@ auto JetCorrector::get_resolution_correction(float pt,
         // Found a match?
         auto is_good_match = [&]() -> bool
         {
-            if (genjet_idx >= 0)
+            if (genjet_idx >= 0 and static_cast<std::size_t>(genjet_idx) < gen_jets.size)
             {
                 const double radius = 0.4;
-                const double dr = VecOps::DeltaR(eta, gen_jet_eta, phi, gen_jet_phi);
-                const double dpt = std::fabs(pt - gen_jet_pt);
+                // fmt::print("gen_jets.eta.size() - genjet_idx: {} - {}\n", gen_jets.eta.size(), genjet_idx);
+                const double dr = VecOps::DeltaR(eta, gen_jets.eta.at(genjet_idx), phi, gen_jets.phi.at(genjet_idx));
+                const double dpt = std::fabs(pt - gen_jets.pt.at(genjet_idx));
                 if ((dr < radius / 2.) and (dpt < 3 * resolution * pt))
                 {
                     return true;
@@ -199,7 +197,7 @@ auto JetCorrector::get_resolution_correction(float pt,
 
         if (is_good_match())
         {
-            return std::max(min_correction_factor, 1 + (scaling_factor - 1) * (pt - gen_jet_pt) / pt);
+            return std::max(min_correction_factor, 1 + (scaling_factor - 1) * (pt - gen_jets.pt.at(genjet_idx)) / pt);
         }
 
         // If not, just smear with a Gaussian.
@@ -208,37 +206,43 @@ auto JetCorrector::get_resolution_correction(float pt,
     }
     return 1.;
 }
+
 /////////////////////////////////////////////
 /// JESType
 /// Reference:
 /// https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetCorUncertainties
 /// https://twiki.cern.ch/twiki/bin/view/CMS/JECUncertaintySources
+/// https://cms-jerc.web.cern.ch/JEC/
 auto JetCorrector::get_scale_correction(float pt,
                                         float eta,
                                         float phi,
                                         float raw_factor,
                                         float rho,
                                         float area,
-                                        const std::string &variation) -> float
+                                        const std::string &variation) const -> float
 {
+    double correction_factor =
+        (1 - raw_factor) * scale_correction_ref->evaluate({area, eta, pt * (1. - raw_factor), rho});
+
     // if MC
     if (not is_data)
     {
+        double correction_uncertainty = scale_uncertainty_correction_ref->evaluate({eta, pt * correction_factor});
+
         if (variation == "Nominal"s)
         {
-            return (1 - raw_factor) * scale_correction_ref->evaluate({area, eta, pt * (1. - raw_factor), rho});
+
+            return correction_factor;
         }
         if (variation == "Up"s)
         {
-            return (1 - raw_factor) * scale_correction_ref->evaluate({area, eta, pt * (1. - raw_factor), rho}) *
-                   (1. + scale_uncertainty_correction_ref->evaluate({eta, pt * (1. - raw_factor)}));
+            return correction_factor * (1. + correction_uncertainty);
         }
         if (variation == "Down"s)
         {
-            return (1 - raw_factor) * scale_correction_ref->evaluate({area, eta, pt * (1. - raw_factor), rho}) *
-                   (1. - scale_uncertainty_correction_ref->evaluate({eta, pt * (1. - raw_factor)}));
+            return correction_factor * (1. - correction_uncertainty);
         }
         throw(std::runtime_error(fmt::format("The requested variation ({}) is not available.", variation)));
     }
-    return (1 - raw_factor) * scale_correction_ref->evaluate({area, eta, pt * (1. - raw_factor), rho});
+    return correction_factor;
 }

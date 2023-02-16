@@ -486,13 +486,12 @@ auto main(int argc, char *argv[]) -> int
                              .set_bjet_SFs(outputs, btag_sf)
                              .set_met_SFs(outputs)
                              .set_trigger_SFs(outputs)
-                             .muon_corrections()
-                             .electron_corrections()
-                             .photon_corrections()
-                             .tau_corrections()
-                             .bjet_corrections()
-                             .jet_corrections()
-                             .met_corrections()
+                             .transform_muons()
+                             .transform_electrons()
+                             .transform_photons()
+                             .transform_taus()
+                             .transform_bjets_and_jets(jet_corrections)
+                             .transform_met()
                              .fill_event_content(outputs);
 
         // fill output event tree

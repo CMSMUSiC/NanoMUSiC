@@ -75,6 +75,7 @@ class Outputs
                                                 "TriggerCut",
                                                 "AtLeastOneSelectedObject",
                                                 "TriggerMatch");
+
     static constexpr auto Weights = make_enumerate("Generator",
                                                    "PileUp",
                                                    "Lumi",

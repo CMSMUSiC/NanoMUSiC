@@ -59,7 +59,7 @@ add_executable(nano_music src/main.cpp /
     src/JetCorrector.cpp /
     src/EventAnalyzer/scale_factors_egamma.cpp /
     src/EventAnalyzer/scale_factors_bjets.cpp /
-    src/EventAnalyzer/corrections.cpp /
+    src/EventAnalyzer/transformations.cpp /
     src/EventAnalyzer/object_selection.cpp /
     src/EventAnalyzer/set_objects.cpp /
     src/EventAnalyzer/EventAnalyzer.cpp /

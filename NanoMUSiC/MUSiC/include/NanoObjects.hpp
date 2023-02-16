@@ -183,7 +183,7 @@ struct LHEParticles
 
 struct GenJets
 {
-    std::size_t nLHEParticles;
+    std::size_t size;
     RVec<float> pt;
     RVec<float> eta;
     RVec<float> phi;
@@ -271,6 +271,17 @@ struct Jets
     RVec<int> genJetIdx;
     RVec<float> rawFactor;
     RVec<float> area;
+
+    // Corrections variations
+    RVec<float> pt_JES_up;
+    RVec<float> mass_JES_up;
+    RVec<float> pt_JES_down;
+    RVec<float> mass_JES_down;
+    RVec<float> pt_JER_up;
+    RVec<float> mass_JER_up;
+    RVec<float> pt_JER_down;
+    RVec<float> mass_JER_down;
+
     Jets(const RVec<float> &_pt = {},
          const RVec<float> &_eta = {},
          const RVec<float> &_phi = {},
@@ -291,6 +302,12 @@ struct MET
     RVec<float> pt;
     RVec<float> eta;
     RVec<float> phi;
+
+    // Corrections variations
+    RVec<float> JES_up;
+    RVec<float> JES_down;
+    RVec<float> JER_up;
+    RVec<float> JER_down;
 
     MET(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {});
 };

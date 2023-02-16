@@ -56,8 +56,12 @@ class EventClassFactory : public pxl::AnalysisProcess
         bool has_scale_variation;
     };
 
-    EventClassFactory(const Tools::MConfig &cutconfig, const TOMLConfig &xsecs, EventSelector &selector,
-                      Systematics &syst_shifter, const std::string outfilename = "", const string hash = "dummyhash",
+    EventClassFactory(const Tools::MConfig &cutconfig,
+                      const TOMLConfig &xsecs,
+                      EventSelector &selector,
+                      Systematics &syst_shifter,
+                      const std::string outfilename = "",
+                      const string hash = "dummyhash",
                       const bool debug = 1);
     virtual ~EventClassFactory()
     {
@@ -178,10 +182,15 @@ class EventClassFactory : public pxl::AnalysisProcess
 
     void fillFilterCutFlow(const double weight);
     void fillCutFlow(const pxl::Event *event, const double weight);
-    void fillCutFlow(const double sumPt, const double invMass, const double met, const int numPart,
-                     const std::map<std::string, int> &countMap, const double weight);
+    void fillCutFlow(const double sumPt,
+                     const double invMass,
+                     const double met,
+                     const int numPart,
+                     const std::map<std::string, int> &countMap,
+                     const double weight);
 
-    void FinishEventClasses(std::map<std::string, TEventClass *> &EvtClasses, std::set<std::string> &ProcessList,
+    void FinishEventClasses(std::map<std::string, TEventClass *> &EvtClasses,
+                            std::set<std::string> &ProcessList,
                             const std::string &Label);
     // Strip out extension sample strings from process name
     void prepareProcessName(std::string &proc);
@@ -227,17 +236,30 @@ class EventClassFactory : public pxl::AnalysisProcess
     // Fill given TEventClass with given event (i.e. set of particles).
     // Same function for data and MC, for data the weights are simply not used
     // at all!
-    void FillEventClass(TEventClass *EventClassToFill, EventInfo &event_info, std::string const &process,
-                        ParticleMap &particleMap, std::map<std::string, int> &countMap, double const eventWeight = 1.0,
+    void FillEventClass(TEventClass *EventClassToFill,
+                        EventInfo &event_info,
+                        std::string const &process,
+                        ParticleMap &particleMap,
+                        std::map<std::string, int> &countMap,
+                        double const eventWeight = 1.0,
                         std::string systName = "");
 
     void FillInclusiveRecursive(std::map<std::string, TEventClass *> &inclEventClasses,
-                                std::vector<std::string> partNameVector, std::string Type, std::string Process,
-                                double const weight, EventInfo &event_info, int iterator,
-                                std::map<std::string, int> recCountMap, std::map<std::string, int> refCountMap,
-                                ParticleMap &particleMap, std::string systName, std::string nameSuffix);
+                                std::vector<std::string> partNameVector,
+                                std::string Type,
+                                std::string Process,
+                                double const weight,
+                                EventInfo &event_info,
+                                int iterator,
+                                std::map<std::string, int> recCountMap,
+                                std::map<std::string, int> refCountMap,
+                                ParticleMap &particleMap,
+                                std::string systName,
+                                std::string nameSuffix);
 
-    void Fill(pxl::EventView *EvtView, double const weight, EventInfo &event_info,
+    void Fill(pxl::EventView *EvtView,
+              double const weight,
+              EventInfo &event_info,
               std::string systName = "" // Differential syst are filled using the same functions but with
     );                                  //   systName
 
@@ -245,8 +267,11 @@ class EventClassFactory : public pxl::AnalysisProcess
     bool CheckEventToList(double const sumPt, double const Minv, double const MET) const;
 
     void FillEventList(std::string const &ECname, EventInfo const &event_info);
-    TEventClass *InitTEventClass(std::string const &Type, std::string const &ECName, ParticleMap &particleMap,
-                                 std::map<std::string, int> countMap, int const absCharge,
+    TEventClass *InitTEventClass(std::string const &Type,
+                                 std::string const &ECName,
+                                 ParticleMap &particleMap,
+                                 std::map<std::string, int> countMap,
+                                 int const absCharge,
                                  bool const inclusiveEC) const;
 
     // Create a text file for each EventClass to store the "most interesting" events.

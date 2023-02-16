@@ -28,36 +28,63 @@ using namespace pxl;
 void splitGammaRegions(std::map<std::string, std::vector<pxl::Particle *>> &map)
 {
     return Splitting::split(
-        map, [](pxl::Particle *particle) { return particle->getUserRecord("isEndcap"); }, "Gamma", "GammaEE",
+        map,
+        [](pxl::Particle *particle)
+        {
+            return particle->getUserRecord("isEndcap");
+        },
+        "Gamma",
+        "GammaEE",
         "GammaEB");
 }
 
 void splitEleRegions(std::map<std::string, std::vector<pxl::Particle *>> &map)
 {
     return Splitting::split(
-        map, [](pxl::Particle *particle) { return particle->getUserRecord("isEndcap"); }, "Ele", "EleEE", "EleEB");
+        map,
+        [](pxl::Particle *particle)
+        {
+            return particle->getUserRecord("isEndcap");
+        },
+        "Ele",
+        "EleEE",
+        "EleEB");
 }
 
-EventClassFactory::EventClassFactory(const Tools::MConfig &cutconfig, const TOMLConfig &xsecs, EventSelector &selector,
-                                     Systematics &syst_shifter, const std::string outfilename, const string hash,
+EventClassFactory::EventClassFactory(const Tools::MConfig &cutconfig,
+                                     const TOMLConfig &xsecs,
+                                     EventSelector &selector,
+                                     Systematics &syst_shifter,
+                                     const std::string outfilename,
+                                     const string hash,
                                      const bool debug)
-    : m_XSections(xsecs), m_pdfTool(cutconfig, debug), m_selector(selector), systematics(syst_shifter),
-      m_outfilename(outfilename), m_runHash(hash), m_debug(debug),
+    : m_XSections(xsecs),
+      m_pdfTool(cutconfig, debug),
+      m_selector(selector),
+      systematics(syst_shifter),
+      m_outfilename(outfilename),
+      m_runHash(hash),
+      m_debug(debug),
 
       m_cme(cutconfig.GetItem<double>("General.CME")),
 
-      m_usePDF(cutconfig.GetItem<bool>("General.usePDF")), m_useTrigger(cutconfig.GetItem<bool>("General.UseTriggers")),
+      m_usePDF(cutconfig.GetItem<bool>("General.usePDF")),
+      m_useTrigger(cutconfig.GetItem<bool>("General.UseTriggers")),
       m_use_prefire_check(cutconfig.GetItem<bool>("Prefire.check.use")),
 
-      m_syst_initialized(false), m_cutFlowUnweighted(TH1F("cutflow_unweighted", "cutflow_unweighted", 10, 0, 10)),
+      m_syst_initialized(false),
+      m_cutFlowUnweighted(TH1F("cutflow_unweighted", "cutflow_unweighted", 10, 0, 10)),
       m_cutFlowWeighted(TH1F("cutflow_weighted", "cutflow_weighted", 10, 0, 10)),
       m_cutFlowFilterUnweighted(TH1F("cutflow_filter_unweighted", "cutflow_filter_unweighted", 10, 0, 10)),
       m_cutFlowFilterWeighted(TH1F("cutflow_filter_weighted", "cutflow_filter_weighted", 10, 0, 10)),
       m_lastprocessGroup("uninitialized"),
 
-      m_muo_use(cutconfig.GetItem<bool>("Muon.use")), m_ele_use(cutconfig.GetItem<bool>("Ele.use")),
-      m_tau_use(cutconfig.GetItem<bool>("Tau.use")), m_gam_use(cutconfig.GetItem<bool>("Gamma.use")),
-      m_jet_use(cutconfig.GetItem<bool>("Jet.use")), m_met_use(cutconfig.GetItem<bool>("MET.use")),
+      m_muo_use(cutconfig.GetItem<bool>("Muon.use")),
+      m_ele_use(cutconfig.GetItem<bool>("Ele.use")),
+      m_tau_use(cutconfig.GetItem<bool>("Tau.use")),
+      m_gam_use(cutconfig.GetItem<bool>("Gamma.use")),
+      m_jet_use(cutconfig.GetItem<bool>("Jet.use")),
+      m_met_use(cutconfig.GetItem<bool>("MET.use")),
 
       m_ec_recOnly(cutconfig.GetItem<bool>("EventClass.RecOnly")),
       m_ec_genOnly(cutconfig.GetItem<bool>("EventClass.GenOnly")),
@@ -70,7 +97,9 @@ EventClassFactory::EventClassFactory(const Tools::MConfig &cutconfig, const TOML
       m_num_listed_events_max(cutconfig.GetItem<int>("EventClass.num.ListedEvents.max")),
       m_max_jet_ec(cutconfig.GetItem<int>("EventClass.Jets.max")),
 
-      m_events_by_sumpt(), m_events_by_minv(), m_events_by_met(),
+      m_events_by_sumpt(),
+      m_events_by_minv(),
+      m_events_by_met(),
 
       m_fudge_sumpt(cutconfig.GetItem<double>("Resolution.fudge.sumpt")),
       m_fudge_minv(cutconfig.GetItem<double>("Resolution.fudge.minv")),
@@ -80,11 +109,14 @@ EventClassFactory::EventClassFactory(const Tools::MConfig &cutconfig, const TOML
       m_useBJets(cutconfig.GetItem<bool>("Jet.BJets.use")),
       m_jet_bJets_algo(cutconfig.GetItem<std::string>("Jet.BJets.Algo")),
       m_gam_regions_use(cutconfig.GetItem<bool>("Gamma.regions.use")),
-      m_ele_regions_use(cutconfig.GetItem<bool>("Ele.regions.use")), splittings(),
+      m_ele_regions_use(cutconfig.GetItem<bool>("Ele.regions.use")),
+      splittings(),
 
-      m_fakeErrorMap(readFakeErrorMap(cutconfig)), m_chargeErrorMap(readChargeErrorMap(cutconfig)),
+      m_fakeErrorMap(readFakeErrorMap(cutconfig)),
+      m_chargeErrorMap(readChargeErrorMap(cutconfig)),
 
-      m_xsOrderErrorMap(cutconfig), m_gen_rec_map(cutconfig)
+      m_xsOrderErrorMap(cutconfig),
+      m_gen_rec_map(cutconfig)
 
 {
 
@@ -200,7 +232,8 @@ std::string EventClassFactory::getQCDSystWeightName(std::string shift_type) cons
 }
 
 void EventClassFactory::FinishEventClasses(map<std::string, TEventClass *> &EvtClasses,
-                                           std::set<std::string> &ProcessList, const string &Label)
+                                           std::set<std::string> &ProcessList,
+                                           const string &Label)
 {
 
     TFile OutputFile(Label.c_str(), "update");
@@ -310,7 +343,8 @@ void EventClassFactory::endJob(const Serializable *)
         }
     }
     for (map<std::string, TEventClass *>::iterator Iter = _recInclEventClasses.begin();
-         Iter != _recInclEventClasses.end(); Iter++)
+         Iter != _recInclEventClasses.end();
+         Iter++)
     {
         if (Iter->second != 0)
         {
@@ -318,7 +352,8 @@ void EventClassFactory::endJob(const Serializable *)
         }
     }
     for (map<std::string, TEventClass *>::iterator Iter = _recJetInclEventClasses.begin();
-         Iter != _recJetInclEventClasses.end(); Iter++)
+         Iter != _recJetInclEventClasses.end();
+         Iter++)
     {
         if (Iter->second != 0)
         {
@@ -336,7 +371,8 @@ void EventClassFactory::endJob(const Serializable *)
             }
         }
         for (map<std::string, TEventClass *>::iterator Iter = _genInclEventClasses.begin();
-             Iter != _genInclEventClasses.end(); Iter++)
+             Iter != _genInclEventClasses.end();
+             Iter++)
         {
             if (Iter->second != 0)
             {
@@ -344,7 +380,8 @@ void EventClassFactory::endJob(const Serializable *)
             }
         }
         for (map<std::string, TEventClass *>::iterator Iter = _genJetInclEventClasses.begin();
-             Iter != _genJetInclEventClasses.end(); Iter++)
+             Iter != _genJetInclEventClasses.end();
+             Iter++)
         {
             if (Iter->second != 0)
             {
@@ -471,8 +508,12 @@ void EventClassFactory::fillCutFlow(const pxl::Event *event, const double weight
     m_cutFlowWeighted.Fill("topo_accept", weight);
 }
 
-void EventClassFactory::fillCutFlow(const double sumPt, const double invMass, const double met, const int numPart,
-                                    const std::map<std::string, int> &countMap, const double weight)
+void EventClassFactory::fillCutFlow(const double sumPt,
+                                    const double invMass,
+                                    const double met,
+                                    const int numPart,
+                                    const std::map<std::string, int> &countMap,
+                                    const double weight)
 {
     if (sumPt < m_ec_sumpt_min)
         return;
@@ -783,22 +824,48 @@ void EventClassFactory::Fill(pxl::EventView *EvtView, double const weight, Event
         count.second = 0;
     }
     std::string nameSuffixIncl = "+X";
-    FillInclusiveRecursive(inclEventClasses, particleNames, type, processName, weight, event_info, 0, recCountMap,
-                           countMap, particleMap, systName, nameSuffixIncl);
+    FillInclusiveRecursive(inclEventClasses,
+                           particleNames,
+                           type,
+                           processName,
+                           weight,
+                           event_info,
+                           0,
+                           recCountMap,
+                           countMap,
+                           particleMap,
+                           systName,
+                           nameSuffixIncl);
 
     std::map<std::string, int> jetRecCountMap = std::map<std::string, int>(countMap);
     jetRecCountMap["Jet"] = 0;
     std::string nameSuffixJetIncl = "+NJets";
-    FillInclusiveRecursive(jetInclEventClasses, particleNames, type, processName, weight, event_info, 0, jetRecCountMap,
-                           countMap, particleMap, systName, nameSuffixJetIncl);
+    FillInclusiveRecursive(jetInclEventClasses,
+                           particleNames,
+                           type,
+                           processName,
+                           weight,
+                           event_info,
+                           0,
+                           jetRecCountMap,
+                           countMap,
+                           particleMap,
+                           systName,
+                           nameSuffixJetIncl);
 }
 
 void EventClassFactory::FillInclusiveRecursive(std::map<std::string, TEventClass *> &inclEventClasses,
-                                               std::vector<std::string> partNameVector, std::string Type,
-                                               std::string Process, double const weight, EventInfo &event_info,
-                                               int iterator, std::map<std::string, int> recCountMap,
-                                               std::map<std::string, int> refCountMap, ParticleMap &particleMap,
-                                               std::string systName, std::string nameSuffix)
+                                               std::vector<std::string> partNameVector,
+                                               std::string Type,
+                                               std::string Process,
+                                               double const weight,
+                                               EventInfo &event_info,
+                                               int iterator,
+                                               std::map<std::string, int> recCountMap,
+                                               std::map<std::string, int> refCountMap,
+                                               ParticleMap &particleMap,
+                                               std::string systName,
+                                               std::string nameSuffix)
 {
 
     std::string EventClassName;
@@ -845,7 +912,10 @@ void EventClassFactory::FillInclusiveRecursive(std::map<std::string, TEventClass
                 TEventClass *InclEventClasstoFill = inclEventClasses[EventClassName];
                 if (InclEventClasstoFill == 0 && !hasTooManyJets(recCountMap))
                 {
-                    InclEventClasstoFill = InitTEventClass(Type, EventClassName, particleMap, recCountMap,
+                    InclEventClasstoFill = InitTEventClass(Type,
+                                                           EventClassName,
+                                                           particleMap,
+                                                           recCountMap,
                                                            iCharge, //   !!!
                                                            true);
                     inclEventClasses[EventClassName] = InclEventClasstoFill;
@@ -857,15 +927,25 @@ void EventClassFactory::FillInclusiveRecursive(std::map<std::string, TEventClass
                 }
                 else
                 {
-                    FillEventClass(InclEventClasstoFill, event_info, Process, particleMap, recCountMap, weight,
-                                   systName);
+                    FillEventClass(
+                        InclEventClasstoFill, event_info, Process, particleMap, recCountMap, weight, systName);
                 }
             }
         }
         else
         { // we are not at the deepest level yet
-            FillInclusiveRecursive(inclEventClasses, partNameVector, Type, Process, weight, event_info, iterator + 1,
-                                   recCountMap, refCountMap, particleMap, systName, nameSuffix);
+            FillInclusiveRecursive(inclEventClasses,
+                                   partNameVector,
+                                   Type,
+                                   Process,
+                                   weight,
+                                   event_info,
+                                   iterator + 1,
+                                   recCountMap,
+                                   refCountMap,
+                                   particleMap,
+                                   systName,
+                                   nameSuffix);
         }
     }
 }
@@ -876,9 +956,12 @@ void EventClassFactory::FillInclusiveRecursive(std::map<std::string, TEventClass
 // (bin edges, etc.). This wrapper function does this calculation, because they
 // are always the same for all kinds of EventClasses (exclusive, inclusive,
 // empty).
-TEventClass *EventClassFactory::InitTEventClass(std::string const &Type, std::string const &ECName,
-                                                ParticleMap &particleMap, std::map<std::string, int> countMap,
-                                                int const absCharge, bool const inclusiveEC) const
+TEventClass *EventClassFactory::InitTEventClass(std::string const &Type,
+                                                std::string const &ECName,
+                                                ParticleMap &particleMap,
+                                                std::map<std::string, int> countMap,
+                                                int const absCharge,
+                                                bool const inclusiveEC) const
 {
     // Calculate bin edges, depending on resolution.
     std::vector<double> const sumptBins =
@@ -930,14 +1013,31 @@ TEventClass *EventClassFactory::InitTEventClass(std::string const &Type, std::st
         }
     }
     std::cout << "Adding new class " << ECName << std::endl;
-    return new TEventClass(Type, ECName, m_runHash, m_data, m_cme, countMap, m_useBJets, distTypeBins, m_ec_charge_use,
-                           absCharge, inclusiveEC, distTypMins, m_pdfTool.m_pdfInfo.getNumPDFs(), distTypeMinsRequire,
-                           m_XSections.get<double>("Lumi"), systNames);
+    return new TEventClass(Type,
+                           ECName,
+                           m_runHash,
+                           m_data,
+                           m_cme,
+                           countMap,
+                           m_useBJets,
+                           distTypeBins,
+                           m_ec_charge_use,
+                           absCharge,
+                           inclusiveEC,
+                           distTypMins,
+                           m_pdfTool.m_pdfInfo.getNumPDFs(),
+                           distTypeMinsRequire,
+                           m_XSections.get<double>("Lumi"),
+                           systNames);
 }
 
-void EventClassFactory::FillEventClass(TEventClass *EventClassToFill, EventInfo &event_info, std::string const &process,
-                                       ParticleMap &particleMap, std::map<std::string, int> &countMap,
-                                       double const eventWeight, std::string systName)
+void EventClassFactory::FillEventClass(TEventClass *EventClassToFill,
+                                       EventInfo &event_info,
+                                       std::string const &process,
+                                       ParticleMap &particleMap,
+                                       std::map<std::string, int> &countMap,
+                                       double const eventWeight,
+                                       std::string systName)
 {
     // What kind of EventClass are we dealing with?
     std::string const ECtype(EventClassToFill->getType()); // Gen or Rec

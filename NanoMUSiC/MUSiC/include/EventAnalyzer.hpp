@@ -16,6 +16,7 @@
 
 #include "Configs.hpp"
 #include "GeneratorFilters.hpp"
+#include "JetCorrector.hpp"
 #include "NanoObjects.hpp"
 #include "Outputs.hpp"
 #include "RunLumiFilter.hpp"
@@ -366,25 +367,197 @@ class EventAnalyzer
     auto set_trigger_SFs(Outputs &outputs) -> EventAnalyzer &;
 
     /// TODO:
-    auto muon_corrections() -> EventAnalyzer &;
+    auto transform_muons() -> EventAnalyzer &;
 
     /// TODO:
-    auto electron_corrections() -> EventAnalyzer &;
+    auto transform_electrons() -> EventAnalyzer &;
 
     /// TODO:
-    auto photon_corrections() -> EventAnalyzer &;
+    auto transform_photons() -> EventAnalyzer &;
 
     /// TODO:
-    auto tau_corrections() -> EventAnalyzer &;
+    auto transform_taus() -> EventAnalyzer &;
+
+    template <typename T>
+    auto jet_transformer(T &_jets, RVec<int> &_mask, JetCorrector &jet_corrections) -> void
+    { // Nominal
+        auto dX_nominal = RVec<float>(_jets.size);
+        auto dY_nominal = RVec<float>(_jets.size);
+        auto new_pt_nominal = _jets.pt;
+        auto new_mass_nominal = _jets.pt;
+
+        // JES: Up - JER: Nominal
+        auto dX_up_nominal = RVec<float>(_jets.size);
+        auto dY_up_nominal = RVec<float>(_jets.size);
+        auto new_pt_up_nominal = _jets.pt;
+        auto new_mass_up_nominal = _jets.pt;
+
+        //  JES: Up - JER: Nominal
+        auto dX_down_nominal = RVec<float>(_jets.size);
+        auto dY_down_nominal = RVec<float>(_jets.size);
+        auto new_pt_down_nominal = _jets.pt;
+        auto new_mass_down_nominal = _jets.pt;
+
+        // JES: Nominal - JER: Up
+        auto dX_nominal_up = RVec<float>(_jets.size);
+        auto dY_nominal_up = RVec<float>(_jets.size);
+        auto new_pt_nominal_up = _jets.pt;
+        auto new_mass_nominal_up = _jets.pt;
+
+        //  JES: Nominal - JER: Down
+        auto dX_nominal_down = RVec<float>(_jets.size);
+        auto dY_nominal_down = RVec<float>(_jets.size);
+        auto new_pt_nominal_down = _jets.pt;
+        auto new_mass_nominal_down = _jets.pt;
+
+        for (std::size_t i = 0; i < _jets.size; i++)
+        {
+            if (_mask[i] == 1)
+            { // JES: Nominal - JER: Nominal
+                float scale_correction_nominal = jet_corrections.get_scale_correction(_jets.pt[i],
+                                                                                      _jets.eta[i],
+                                                                                      _jets.phi[i],
+                                                                                      _jets.rawFactor[i],
+                                                                                      event_info.rho,
+                                                                                      _jets.area[i],
+                                                                                      "Nominal"s);
+
+                new_pt_nominal[i] = _jets.pt[i] * scale_correction_nominal;
+
+                float resolution_correction_nominal = jet_corrections.get_resolution_correction(new_pt_nominal[i],
+                                                                                                _jets.eta[i],
+                                                                                                _jets.phi[i],
+                                                                                                event_info.rho,
+                                                                                                _jets.genJetIdx[i],
+                                                                                                gen_jets,
+                                                                                                "Nominal"s);
+
+                new_pt_nominal[i] = _jets.pt[i] * scale_correction_nominal * resolution_correction_nominal;
+                new_mass_nominal[i] = _jets.mass[i] * scale_correction_nominal * resolution_correction_nominal;
+                dX_nominal[i] = (new_pt_nominal[i] - _jets.pt[i]) * std::cos(_jets.phi[i]);
+                dY_nominal[i] = (new_pt_nominal[i] - _jets.pt[i]) * std::sin(_jets.phi[i]);
+
+                // JES: Up - JER: Nominal
+                auto scale_correction_up = jet_corrections.get_scale_correction(
+                    _jets.pt[i], _jets.eta[i], _jets.phi[i], _jets.rawFactor[i], event_info.rho, _jets.area[i], "Up"s);
+
+                new_pt_up_nominal[i] = _jets.pt[i] * scale_correction_up;
+
+                resolution_correction_nominal = jet_corrections.get_resolution_correction(new_pt_up_nominal[i],
+                                                                                          _jets.eta[i],
+                                                                                          _jets.phi[i],
+                                                                                          event_info.rho,
+                                                                                          _jets.genJetIdx[i],
+                                                                                          gen_jets,
+                                                                                          "Nominal"s);
+
+                new_pt_up_nominal[i] = _jets.pt[i] * scale_correction_up * resolution_correction_nominal;
+                new_mass_up_nominal[i] = _jets.mass[i] * scale_correction_up * resolution_correction_nominal;
+                dX_up_nominal[i] = (new_pt_up_nominal[i] - _jets.pt[i]) * std::cos(_jets.phi[i]);
+                dY_up_nominal[i] = (new_pt_up_nominal[i] - _jets.pt[i]) * std::sin(_jets.phi[i]);
+
+                // JES: Down - JER: Nominal
+                auto scale_correction_down = jet_corrections.get_scale_correction(_jets.pt[i],
+                                                                                  _jets.eta[i],
+                                                                                  _jets.phi[i],
+                                                                                  _jets.rawFactor[i],
+                                                                                  event_info.rho,
+                                                                                  _jets.area[i],
+                                                                                  "Down"s);
+
+                new_pt_down_nominal[i] = _jets.pt[i] * scale_correction_down;
+
+                resolution_correction_nominal = jet_corrections.get_resolution_correction(new_pt_down_nominal[i],
+                                                                                          _jets.eta[i],
+                                                                                          _jets.phi[i],
+                                                                                          event_info.rho,
+                                                                                          _jets.genJetIdx[i],
+                                                                                          gen_jets,
+                                                                                          "Nominal"s);
+
+                new_pt_down_nominal[i] = _jets.pt[i] * scale_correction_down * resolution_correction_nominal;
+                new_mass_down_nominal[i] = _jets.mass[i] * scale_correction_down * resolution_correction_nominal;
+                dX_down_nominal[i] = (new_pt_down_nominal[i] - _jets.pt[i]) * std::cos(_jets.phi[i]);
+                dY_down_nominal[i] = (new_pt_down_nominal[i] - _jets.pt[i]) * std::sin(_jets.phi[i]);
+
+                // JES: Nominal - JER: Up
+                new_pt_nominal_up[i] = _jets.pt[i] * scale_correction_nominal;
+
+                float resolution_correction_up = jet_corrections.get_resolution_correction(new_pt_nominal_up[i],
+                                                                                           _jets.eta[i],
+                                                                                           _jets.phi[i],
+                                                                                           event_info.rho,
+                                                                                           _jets.genJetIdx[i],
+                                                                                           gen_jets,
+                                                                                           "Up"s);
+
+                new_pt_nominal_up[i] = _jets.pt[i] * scale_correction_nominal * resolution_correction_up;
+                new_mass_nominal_up[i] = _jets.mass[i] * scale_correction_nominal * resolution_correction_up;
+                dX_nominal_up[i] = (new_pt_nominal_up[i] - _jets.pt[i]) * std::cos(_jets.phi[i]);
+                dY_nominal_up[i] = (new_pt_nominal_up[i] - _jets.pt[i]) * std::sin(_jets.phi[i]);
+
+                // JES: Nominal - JER: Down
+                new_pt_nominal_down[i] = _jets.pt[i] * scale_correction_nominal;
+
+                float resolution_correction_down = jet_corrections.get_resolution_correction(new_pt_nominal_down[i],
+                                                                                             _jets.eta[i],
+                                                                                             _jets.phi[i],
+                                                                                             event_info.rho,
+                                                                                             _jets.genJetIdx[i],
+                                                                                             gen_jets,
+                                                                                             "Down"s);
+
+                new_pt_nominal_down[i] = _jets.pt[i] * scale_correction_nominal * resolution_correction_down;
+                new_mass_nominal_down[i] = _jets.mass[i] * scale_correction_nominal * resolution_correction_down;
+                dX_nominal_down[i] = (new_pt_nominal_down[i] - _jets.pt[i]) * std::cos(_jets.phi[i]);
+                dY_nominal_down[i] = (new_pt_nominal_down[i] - _jets.pt[i]) * std::sin(_jets.phi[i]);
+            }
+        }
+
+        // set new values
+        // nominal
+        _jets.pt = new_pt_nominal;
+        _jets.mass = new_mass_nominal;
+
+        // JES
+        _jets.pt_JES_up = new_pt_nominal_up;
+        _jets.mass_JES_up = new_mass_nominal_up;
+        _jets.pt_JES_down = new_pt_nominal_down;
+        _jets.mass_JES_down = new_mass_nominal_down;
+
+        // JER
+        _jets.pt_JER_up = new_pt_up_nominal;
+        _jets.mass_JER_up = new_mass_up_nominal;
+        _jets.pt_JER_down = new_pt_down_nominal;
+        _jets.mass_JER_down = new_mass_down_nominal;
+
+        // MET
+        auto met_x = (met.pt[0] * std::cos(met.phi[0])) - VecOps::Sum(dX_up_nominal);
+        auto met_y = (met.pt[0] * std::sin(met.phi[0])) - VecOps::Sum(dY_up_nominal);
+        met.JES_up[0] = std::sqrt(met_x * met_x + met_y * met_y);
+
+        met_x = (met.pt[0] * std::cos(met.phi[0])) - VecOps::Sum(dX_down_nominal);
+        met_y = (met.pt[0] * std::sin(met.phi[0])) - VecOps::Sum(dY_down_nominal);
+        met.JES_down[0] = std::sqrt(met_x * met_x + met_y * met_y);
+
+        met_x = (met.pt[0] * std::cos(met.phi[0])) - VecOps::Sum(dX_nominal_up);
+        met_y = (met.pt[0] * std::sin(met.phi[0])) - VecOps::Sum(dY_nominal_up);
+        met.JER_up[0] = std::sqrt(met_x * met_x + met_y * met_y);
+
+        met_x = (met.pt[0] * std::cos(met.phi[0])) - VecOps::Sum(dX_nominal_down);
+        met_y = (met.pt[0] * std::sin(met.phi[0])) - VecOps::Sum(dY_nominal_down);
+        met.JER_down[0] = std::sqrt(met_x * met_x + met_y * met_y);
+
+        met_x = (met.pt[0] * std::cos(met.phi[0])) - VecOps::Sum(dX_nominal);
+        met_y = (met.pt[0] * std::sin(met.phi[0])) - VecOps::Sum(dY_nominal);
+        met.pt[0] = std::sqrt(met_x * met_x + met_y * met_y);
+    }
 
     /// TODO:
-    auto bjet_corrections() -> EventAnalyzer &;
+    auto transform_bjets_and_jets(JetCorrector &jet_corrections) -> EventAnalyzer &;
 
     /// TODO:
-    auto jet_corrections() -> EventAnalyzer &;
-
-    /// TODO:
-    auto met_corrections() -> EventAnalyzer &;
+    auto transform_met() -> EventAnalyzer &;
 
     auto fill_event_content(Outputs &outputs) -> EventAnalyzer &;
 };
