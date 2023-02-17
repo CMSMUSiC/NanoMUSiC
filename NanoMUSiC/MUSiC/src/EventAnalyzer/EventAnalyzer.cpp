@@ -39,6 +39,7 @@ auto EventAnalyzer::set_const_weights(Outputs &outputs, Corrector &pu_weight) ->
             // different. for safety, will consider originalXWGTUP
             // outputs.set_event_weight("Generator", event_info.genWeight);
             outputs.set_event_weight("Generator", lhe_info.originalXWGTUP);
+            outputs.set_event_weight("L1PreFiring", lhe_info.originalXWGTUP);
             outputs.set_event_weight("PileUp", "Nominal", pu_weight({event_info.Pileup_nTrueInt, "nominal"}));
             outputs.set_event_weight("PileUp", "Up", pu_weight({event_info.Pileup_nTrueInt, "up"}));
             outputs.set_event_weight("PileUp", "Down", pu_weight({event_info.Pileup_nTrueInt, "down"}));

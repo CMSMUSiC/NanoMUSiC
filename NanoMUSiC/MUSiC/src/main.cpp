@@ -249,7 +249,7 @@ auto main(int argc, char *argv[]) -> int
     ADD_ARRAY_READER(Muon_pfRelIso04_all, float);
     ADD_ARRAY_READER(Muon_tkRelIso, float);
     ADD_ARRAY_READER(Muon_highPurity, bool);
-    
+    ADD_ARRAY_READER(Muon_tunepRelPt, float);
 
     // electrons
     ADD_ARRAY_READER(Electron_pt, float);
@@ -410,7 +410,8 @@ auto main(int argc, char *argv[]) -> int
                                               unwrap(Muon_highPtId),       //
                                               unwrap(Muon_pfRelIso04_all), //
                                               unwrap(Muon_tkRelIso),
-                                              unwrap(Muon_highPurity)))
+                                              unwrap(Muon_highPurity),
+                                              unwrap(Muon_tunepRelPt)))
                 // electrons
                 .set_electrons(NanoObjects::Electrons(unwrap(Electron_pt),            //
                                                       unwrap(Electron_eta),           //

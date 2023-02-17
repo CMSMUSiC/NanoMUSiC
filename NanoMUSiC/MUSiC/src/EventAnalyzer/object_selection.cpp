@@ -1,4 +1,6 @@
 #include "EventAnalyzer.hpp"
+#include "Math/Vector4D.h"
+#include "Math/Vector4Dfwd.h"
 #include "ROOT/RVec.hxx"
 #include <cmath>
 
@@ -17,8 +19,9 @@ auto EventAnalyzer::get_high_pt_muons_selection_mask() -> RVec<int>
 {
     return (muons.pt >= ObjConfig::Muons[year].MaxLowPt)                   //
            && (VecOps::abs(muons.eta) <= ObjConfig::Muons[year].MaxAbsEta) //
-           && (muons.highPtId >= 1)                                        //
-           && (muons.tkRelIso < ObjConfig::Muons[year].TkRelIso_WP);
+           && (muons.highPtId >= 2)                                        //
+           && (muons.pfRelIso04_all < ObjConfig::Muons[year].PFRelIso_WP);
+    //    && (muons.tkRelIso < ObjConfig::Muons[year].TkRelIso_WP);
 }
 
 // Low pT Electrons
@@ -95,6 +98,28 @@ auto EventAnalyzer::object_selection() -> EventAnalyzer &
         // muons
         good_low_pt_muons_mask = good_low_pt_muons_mask && get_low_pt_muons_selection_mask();
         good_high_pt_muons_mask = good_high_pt_muons_mask && get_high_pt_muons_selection_mask();
+
+        // loop over HighPt muons and ajust their pT to tunepRelPt*PF_pt
+        auto dX = RVec<float>(muons.size);
+        auto dY = RVec<float>(muons.size);
+        for (std::size_t i = 0; i < good_high_pt_muons_mask.size(); i++)
+        {
+            if (good_high_pt_muons_mask[i] == 1)
+            {
+                dX[i] = (muons.tunepRelPt[i] * muons.pt[i] - muons.pt[i]) * std::cos(muons.phi[i]);
+                dY[i] = (muons.tunepRelPt[i] * muons.pt[i] - muons.pt[i]) * std::sin(muons.phi[i]);
+                muons.pt[i] = muons.tunepRelPt[i] * muons.pt[i];
+            }
+        }
+
+        // transform MET accordingly
+        auto current_met = Math::PtEtaPhiMVector(met.pt[0], 0., met.phi[0], 0.);
+        auto new_met =
+            Math::PxPyPzMVector(current_met.X() - VecOps::Sum(dX), current_met.Y() - VecOps::Sum(dY), 0., 0.);
+        met.pt[0] = new_met.pt();
+        met.phi[0] = new_met.phi();
+
+        // set global muon mask ("cocktail")
         good_muons_mask = good_low_pt_muons_mask || good_high_pt_muons_mask;
 
         // clear muons against themselves

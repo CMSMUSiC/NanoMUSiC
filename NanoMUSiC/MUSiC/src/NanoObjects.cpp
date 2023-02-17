@@ -207,7 +207,8 @@ Muons::Muons(const RVec<float> &_pt,
              const RVec<UChar_t> &_highPtId,
              const RVec<float> &_pfRelIso04_all,
              const RVec<float> &_tkRelIso,
-             const RVec<bool> &_highPurity)
+             const RVec<bool> &_highPurity,
+             const RVec<float> &_tunepRelPt)
     : size(_pt.size()),
       pt(_pt),
       eta(_eta),
@@ -216,8 +217,8 @@ Muons::Muons(const RVec<float> &_pt,
       highPtId(_highPtId),
       pfRelIso04_all(_pfRelIso04_all),
       tkRelIso(_tkRelIso),
-      highPurity(_highPurity)
-
+      highPurity(_highPurity),
+      tunepRelPt(_tunepRelPt)
 {
 }
 

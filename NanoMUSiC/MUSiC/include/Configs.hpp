@@ -180,8 +180,10 @@ inline auto get_runyear(const std::string &year_str) -> Year
 
 namespace ObjConfig
 {
-// Muons
-//  REF: https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonUL2017
+/// Muons
+/// References:
+/// https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonUL2017
+/// https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2#Tracker_based_Isolation
 struct MuonConfig
 {
     float MinLowPt = 25.;

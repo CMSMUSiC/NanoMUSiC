@@ -202,6 +202,7 @@ struct Muons
     RVec<float> pfRelIso04_all;
     RVec<float> tkRelIso;
     RVec<bool> highPurity;
+    RVec<float> tunepRelPt;
 
     Muons(const RVec<float> &_pt = {},
           const RVec<float> &_eta = {},
@@ -210,7 +211,8 @@ struct Muons
           const RVec<unsigned char> &_highPtId = {},
           const RVec<float> &_pfRelIso04_all = {},
           const RVec<float> &_tkRelIso = {},
-          const RVec<bool> &_highPurity = {});
+          const RVec<bool> &_highPurity = {},
+          const RVec<float> &_tunepRelPt = {});
 };
 
 struct Electrons
