@@ -198,17 +198,19 @@ struct Muons
     RVec<float> eta;
     RVec<float> phi;
     RVec<bool> tightId;
-    RVec<UChar_t> highPtId;
+    RVec<unsigned char> highPtId;
     RVec<float> pfRelIso04_all;
     RVec<float> tkRelIso;
+    RVec<bool> highPurity;
 
     Muons(const RVec<float> &_pt = {},
           const RVec<float> &_eta = {},
           const RVec<float> &_phi = {},
           const RVec<bool> &_tightId = {},
-          const RVec<UChar_t> &_highPtId = {},
+          const RVec<unsigned char> &_highPtId = {},
           const RVec<float> &_pfRelIso04_all = {},
-          const RVec<float> &_tkRelIso = {});
+          const RVec<float> &_tkRelIso = {},
+          const RVec<bool> &_highPurity = {});
 };
 
 struct Electrons

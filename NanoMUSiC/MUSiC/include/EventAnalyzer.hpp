@@ -206,10 +206,56 @@ class EventAnalyzer
     // MET
     auto get_met_selection_mask() -> RVec<int>;
 
+    // object_cleanners
+    auto get_cross_cleanning_mask(const RVec<float> &eta1,
+                                  const RVec<float> &phi1,
+                                  const RVec<float> &eta2,
+                                  const RVec<float> &phi2,
+                                  float max_delta_r) -> RVec<int>;
+
+    //////////////////////////////////////////////////////////////////
+    /// Will clean (eta, phi) against it self
+    /// Returns a mask, such that, if two distinct objects they match in DeltaR, one should be filtered.
+    /// The callable `filter` should return `true` to keep the object or `false` to remove it. 
+    template <typename T, typename F>
+    auto get_self_cleanning_mask(const T objects, RVec<int> mask, float max_delta_r, F &&filter) -> RVec<int>
+    {
+        auto cleanning_mask = RVec<int>(1, objects.size);
+
+        fmt::print("size: {}\n", objects.size > 1);
+
+        if (objects.size >= 2)
+        {
+            for (std::size_t i = 0; i < objects.size; i++)
+            {
+                if (mask[i])
+                {
+                    auto cleanning_result = true;
+                    for (std::size_t j = 0; j < objects.eta.size(); j++)
+                    {
+                        if (i != j)
+                        {
+                            auto delta_phi = VecOps::DeltaPhi(objects.phi[i], objects.phi[i]);
+                            auto delta_eta = std::abs(objects.eta[i] - objects.eta[i]);
+                            auto delta_r = std::sqrt(delta_phi * delta_phi + delta_eta * delta_eta);
+                            if (delta_r < max_delta_r)
+                            {
+                                cleanning_result = cleanning_result && filter(objects, i, j);
+                            }
+                        }
+                    }
+
+                    cleanning_mask[i] = static_cast<int>(cleanning_result);
+                }
+            }
+        }
+        return cleanning_mask;
+    }
+
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Fill masks in order to select objects.
-    // ATTENTION: Care should be taken to do not forget to merge (AND operation) all different masks per object. It is
-    // need in order to filter out events that have no objects selected.
+    // ATTENTION: Care should be taken to do not forget to merge (AND operation) all different masks per object. It
+    // is need in order to filter out events that have no objects selected.
     auto object_selection() -> EventAnalyzer &;
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
