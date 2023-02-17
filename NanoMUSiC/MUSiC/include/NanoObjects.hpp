@@ -241,6 +241,7 @@ struct Photons
     RVec<bool> pixelSeed;
     RVec<bool> isScEtaEB;
     RVec<bool> isScEtaEE;
+
     Photons(const RVec<float> &_pt = {},
             const RVec<float> &_eta = {},
             const RVec<float> &_phi = {},

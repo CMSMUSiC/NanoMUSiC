@@ -83,32 +83,6 @@ auto EventAnalyzer::get_met_selection_mask() -> RVec<int>
     return met.pt >= ObjConfig::MET[year].MinPt;
 }
 
-//////////////////////////////////////////////////////////////////
-/// Will clean (eta1, phi1) x (eta2, phi2).
-/// Returns a mask, such that, if they match in DeltaR, object2 in filtered.
-/// (This means that the mask should be applied on object2)
-auto EventAnalyzer::get_cross_cleanning_mask(const RVec<float> &eta1,
-                                             const RVec<float> &phi1,
-                                             const RVec<float> &eta2,
-                                             const RVec<float> &phi2,
-                                             float max_delta_r) -> RVec<int>
-{
-    auto cleanning_mask = RVec<int>(1, eta2.size());
-
-    if (eta1.size() > 0 and eta2.size() > 0)
-    {
-        for (std::size_t i = 0; i < eta2.size(); i++)
-        {
-            auto delta_phi = VecOps::DeltaPhi(phi1, phi2[i]);
-            auto delta_eta = VecOps::abs(eta1 - eta2[i]);
-            auto delta_r = VecOps::sqrt(delta_phi * delta_phi + delta_eta * delta_eta);
-            cleanning_mask[i] = static_cast<int>(VecOps::Any(delta_r < max_delta_r));
-        }
-    }
-
-    return cleanning_mask;
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Fill masks in order to select objects.
 // ATTENTION: Care should be taken to do not forget to merge (AND operation) all different masks per object. It is
@@ -117,7 +91,6 @@ auto EventAnalyzer::object_selection() -> EventAnalyzer &
 {
     if (*this)
     {
-        // launch object selection
         //////////////////////////////////////
         // muons
         good_low_pt_muons_mask = good_low_pt_muons_mask && get_low_pt_muons_selection_mask();
@@ -125,18 +98,19 @@ auto EventAnalyzer::object_selection() -> EventAnalyzer &
         good_muons_mask = good_low_pt_muons_mask || good_high_pt_muons_mask;
 
         // clear muons against themselves
-        fmt::print("get_self_cleanning_mask: {}\n",
-                   get_self_cleanning_mask(muons,
-                                           good_muons_mask,
-                                           0.4,
-                                           [&](const NanoObjects::Muons &muons, std::size_t i, std::size_t j)
-                                           {
-                                               return true;
-                                           }));
-
-        fmt::print("muons ...\n");
-        good_muons_mask =
-            good_muons_mask && get_self_cleanning_mask(muons.eta[good_muons_mask], muons.phi[good_muons_mask], 0.4);
+        // should we do it????
+        good_muons_mask = good_muons_mask &&
+                          get_self_cleanning_mask(muons,
+                                                  good_muons_mask,
+                                                  0.4,
+                                                  [&](const NanoObjects::Muons &muons, std::size_t i, std::size_t j)
+                                                  {
+                                                      if (not(muons.highPurity[i]) and muons.highPurity[j])
+                                                      {
+                                                          return false;
+                                                      }
+                                                      return true;
+                                                  });
 
         //////////////////////////////////////
         // electrons
@@ -144,48 +118,38 @@ auto EventAnalyzer::object_selection() -> EventAnalyzer &
         good_high_pt_electrons_mask = good_high_pt_electrons_mask && get_high_pt_electrons_selection_mask();
         good_electrons_mask = good_low_pt_electrons_mask || good_high_pt_electrons_mask;
 
-        // clear electrons against themselves
-        fmt::print("electrons ...\n");
+        // clear electrons against muons
         good_electrons_mask =
-            good_electrons_mask &&
-            get_self_cleanning_mask(electrons.eta[good_electrons_mask], electrons.phi[good_electrons_mask], 0.4);
+            good_electrons_mask && get_cross_cleanning_mask(electrons, muons, good_electrons_mask, 0.4);
 
         //////////////////////////////////////
         // photons
         good_photons_mask = good_photons_mask && get_photons_selection_mask();
-
-        // clear photons against themselves
-        fmt::print("photons ...\n");
-        good_photons_mask =
-            good_photons_mask &&
-            get_self_cleanning_mask(photons.eta[good_photons_mask], photons.phi[good_photons_mask], 0.4);
+        good_photons_mask = good_photons_mask && get_cross_cleanning_mask(photons, muons, good_photons_mask, 0.4);
+        good_photons_mask = good_photons_mask && get_cross_cleanning_mask(photons, electrons, good_photons_mask, 0.4);
 
         //////////////////////////////////////
         // taus
         good_taus_mask = good_taus_mask && get_taus_selection_mask();
-
-        // clear taus against themselves
-        fmt::print("taus ...\n");
-        good_taus_mask =
-            good_taus_mask && get_self_cleanning_mask(taus.eta[good_taus_mask], taus.phi[good_taus_mask], 0.4);
+        good_taus_mask = good_taus_mask && get_cross_cleanning_mask(taus, muons, good_taus_mask, 0.4);
+        good_taus_mask = good_taus_mask && get_cross_cleanning_mask(taus, electrons, good_taus_mask, 0.4);
+        good_taus_mask = good_taus_mask && get_cross_cleanning_mask(taus, photons, good_taus_mask, 0.4);
 
         //////////////////////////////////////
         // bjets
-        fmt::print("bjets ...\n");
         good_bjets_mask = good_bjets_mask && get_bjets_selection_mask();
-
-        // clear bjets against themselves
-        good_bjets_mask =
-            good_bjets_mask && get_self_cleanning_mask(bjets.eta[good_bjets_mask], bjets.phi[good_bjets_mask], 0.4);
+        good_bjets_mask = good_bjets_mask && get_cross_cleanning_mask(bjets, muons, good_bjets_mask, 0.5);
+        good_bjets_mask = good_bjets_mask && get_cross_cleanning_mask(bjets, electrons, good_bjets_mask, 0.5);
+        good_bjets_mask = good_bjets_mask && get_cross_cleanning_mask(bjets, photons, good_bjets_mask, 0.5);
+        good_bjets_mask = good_bjets_mask && get_cross_cleanning_mask(bjets, taus, good_bjets_mask, 0.5);
 
         //////////////////////////////////////
         // jets
         good_jets_mask = good_jets_mask && get_jets_selection_mask();
-
-        // clear jets against themselves
-        fmt::print("jets ...\n");
-        good_jets_mask =
-            good_jets_mask && get_self_cleanning_mask(jets.eta[good_jets_mask], jets.phi[good_jets_mask], 0.4);
+        good_jets_mask = good_jets_mask && get_cross_cleanning_mask(jets, muons, good_jets_mask, 0.5);
+        good_jets_mask = good_jets_mask && get_cross_cleanning_mask(jets, electrons, good_jets_mask, 0.5);
+        good_jets_mask = good_jets_mask && get_cross_cleanning_mask(jets, photons, good_jets_mask, 0.5);
+        good_jets_mask = good_jets_mask && get_cross_cleanning_mask(jets, taus, good_jets_mask, 0.5);
 
         //////////////////////////////////////
         // met
