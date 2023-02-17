@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['lorentzvectorhelper_674',['LorentzVectorHelper',['../namespaceLorentzVectorHelper.html',1,'']]]
+  ['lorentzvectorhelper_677',['LorentzVectorHelper',['../namespaceLorentzVectorHelper.html',1,'']]]
 ];

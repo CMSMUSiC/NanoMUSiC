@@ -1,8 +1,9 @@
 var structNanoObjects_1_1Muons =
 [
-    [ "Muons", "structNanoObjects_1_1Muons.html#adb4f19c66df899c6efc00b2d3a26c30b", null ],
+    [ "Muons", "structNanoObjects_1_1Muons.html#ace344f7d6760af720d8136cf19f203f5", null ],
     [ "eta", "structNanoObjects_1_1Muons.html#ab12ee1b092e15f118b84dc86b14ddf04", null ],
-    [ "highPtId", "structNanoObjects_1_1Muons.html#a7b9032a40efd1cba577cff523ecaf2cf", null ],
+    [ "highPtId", "structNanoObjects_1_1Muons.html#a0e7cdbc9c3dc9fcb58ba9ace4b3be1a5", null ],
+    [ "highPurity", "structNanoObjects_1_1Muons.html#a6f4bffd1ce4f26425c9900aa3321d05b", null ],
     [ "pfRelIso04_all", "structNanoObjects_1_1Muons.html#afe93706b26f29fb5486fd96f2b4ed3d2", null ],
     [ "phi", "structNanoObjects_1_1Muons.html#a37b95350ffe48ec233cd2cc88a38f80e", null ],
     [ "pt", "structNanoObjects_1_1Muons.html#aa28280015adf9735cc87f0cfcee8561d", null ],

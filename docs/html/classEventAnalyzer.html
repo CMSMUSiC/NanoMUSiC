@@ -268,6 +268,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a2dfe2efab7bd5f2525caa8c9bea0dc87"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a68e19fc211d8402866a338e3e7494334"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a68e19fc211d8402866a338e3e7494334">get_met_selection_mask</a> () -&gt; RVec&lt; int &gt;</td></tr>
 <tr class="separator:a68e19fc211d8402866a338e3e7494334"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a746a6042b492dd516d3b49ff673a174e"><td class="memTemplParams" colspan="2">template&lt;typename T , typename F &gt; </td></tr>
+<tr class="memitem:a746a6042b492dd516d3b49ff673a174e"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a746a6042b492dd516d3b49ff673a174e">get_self_cleanning_mask</a> (const T objects, RVec&lt; int &gt; mask, float max_delta_r, F &amp;&amp;filter) -&gt; RVec&lt; int &gt;</td></tr>
+<tr class="separator:a746a6042b492dd516d3b49ff673a174e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69cb2926d57243e1859870bfcc2cecd8"><td class="memTemplParams" colspan="2">template&lt;typename T1 , typename T2 &gt; </td></tr>
+<tr class="memitem:a69cb2926d57243e1859870bfcc2cecd8"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a69cb2926d57243e1859870bfcc2cecd8">get_cross_cleanning_mask</a> (const T1 &amp;obj1, const T2 &amp;obj2, const RVec&lt; int &gt; &amp;mask, float max_delta_r) -&gt; RVec&lt; int &gt;</td></tr>
+<tr class="separator:a69cb2926d57243e1859870bfcc2cecd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54a6cab677cd87b20a8412229b899541"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a54a6cab677cd87b20a8412229b899541">object_selection</a> () -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
 <tr class="separator:a54a6cab677cd87b20a8412229b899541"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8824d7253f6e07694ae6567b8b6b3185"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEventAnalyzer.html#a8824d7253f6e07694ae6567b8b6b3185">has_selected_objects_filter</a> (<a class="el" href="classOutputs.html">Outputs</a> &amp;outputs) -&gt; <a class="el" href="classEventAnalyzer.html">EventAnalyzer</a> &amp;</td></tr>
@@ -501,6 +507,58 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a69cb2926d57243e1859870bfcc2cecd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69cb2926d57243e1859870bfcc2cecd8">&#9670;&nbsp;</a></span>get_cross_cleanning_mask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T1 , typename T2 &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::get_cross_cleanning_mask </td>
+          <td>(</td>
+          <td class="paramtype">const T1 &amp;&#160;</td>
+          <td class="paramname"><em>obj1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T2 &amp;&#160;</td>
+          <td class="paramname"><em>obj2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const RVec&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>mask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>max_delta_r</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; RVec&lt;int&gt;
+    </td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Will clean (eta1, phi1) x (eta2, phi2). Returns a mask, such that, if they match in DeltaR, object2 in filtered. (This means that the mask should be applied on object2) </p>
+
+</div>
+</div>
 <a id="a76720a0b904f591781fd0f9211134233"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a76720a0b904f591781fd0f9211134233">&#9670;&nbsp;</a></span>get_high_pt_electrons_selection_mask()</h2>
 
@@ -617,6 +675,58 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="a746a6042b492dd516d3b49ff673a174e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a746a6042b492dd516d3b49ff673a174e">&#9670;&nbsp;</a></span>get_self_cleanning_mask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename F &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto EventAnalyzer::get_self_cleanning_mask </td>
+          <td>(</td>
+          <td class="paramtype">const T&#160;</td>
+          <td class="paramname"><em>objects</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">RVec&lt; int &gt;&#160;</td>
+          <td class="paramname"><em>mask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>max_delta_r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">F &amp;&amp;&#160;</td>
+          <td class="paramname"><em>filter</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; RVec&lt;int&gt;
+    </td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Will clean (eta, phi) against it self Returns a mask, such that, if two distinct objects they match in DeltaR, one should be filtered. The callable <code>filter</code> will receive the objects being self-cleanned and the indexes (<code>i</code> and <code>j</code>) of the tested objects. It should return <code>true</code> to keep the i-th object or <code>false</code> to remove it. </p>
 
 </div>
 </div>
