@@ -28,18 +28,20 @@ class EventAdaptor
 
     void initEvent(pxl::EventView const *RecEvtView);
     void applyCocktailMuons() const;
-    // void applyHEEPElectrons() const;
+    void applyHEEPElectrons() const;
     void applyPUPPIFatJets() const;
 
-    void applyJETMETSmearing(pxl::EventView const *GenEvtView, pxl::EventView const *RecEvtView,
+    void applyJETMETSmearing(pxl::EventView const *GenEvtView,
+                             pxl::EventView const *RecEvtView,
                              std::string const &linkName);
-    void applyFatJETMETSmearing(pxl::EventView const *GenEvtView, pxl::EventView const *RecEvtView,
+    void applyFatJETMETSmearing(pxl::EventView const *GenEvtView,
+                                pxl::EventView const *RecEvtView,
                                 std::string const &linkName);
     static void adaptDoubleEleTrigger(const int run, pxl::EventView *trigger_view);
 
   private:
     void adaptMuon(pxl::Particle *muon) const;
-    // void adaptEle( pxl::Particle *ele ) const;
+    void adaptEle(pxl::Particle *ele) const;
     void adaptFatJet(pxl::Particle *fatjet) const;
     float getPUPPIweight(const float puppipt, const float puppieta) const;
     unsigned int const m_debug;
@@ -71,8 +73,10 @@ class EventAdaptor
 
     std::string const m_jet_rho_label;
 
-    void applyJetMetSmearing(pxl::EventView const *GenEvtView, pxl::EventView const *RecEvtView,
-                             std::string const &linkName, std::string const &recName);
+    void applyJetMetSmearing(pxl::EventView const *GenEvtView,
+                             pxl::EventView const *RecEvtView,
+                             std::string const &linkName,
+                             std::string const &recName);
 };
 
 #endif /*EVENTADAPTOR*/

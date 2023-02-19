@@ -16,9 +16,14 @@
 #include "TLorentzVector.h"
 
 EventAdaptor::EventAdaptor(Tools::MConfig const &cfg, unsigned int const debug)
-    : m_debug(debug), m_gen_rec_map(cfg), m_jet_res(cfg, "Jet"), m_fatjet_res(cfg, "FatJet"),
+    : m_debug(debug),
+      m_gen_rec_map(cfg),
+      m_jet_res(cfg, "Jet"),
+      m_fatjet_res(cfg, "FatJet"),
 
-      m_met(0), m_muo_list(std::vector<pxl::Particle *>()), m_ele_list(std::vector<pxl::Particle *>()),
+      m_met(0),
+      m_muo_list(std::vector<pxl::Particle *>()),
+      m_ele_list(std::vector<pxl::Particle *>()),
       m_fatjet_list(std::vector<pxl::Particle *>()),
 
       m_muo_useCocktail(cfg.GetItem<bool>("Muon.UseCocktail")),
@@ -27,11 +32,15 @@ EventAdaptor::EventAdaptor(Tools::MConfig const &cfg, unsigned int const debug)
       m_jet_res_corr_use(cfg.GetItem<bool>("Jet.Resolutions.Corr.use")),
       m_fatjet_mass_corr_file(cfg.GetItem<std::string>("FatJet.PUPPI.SDMassCorrection")),
 
-      puppisd_corrGEN(), puppisd_corrRECO_cen(), puppisd_corrRECO_for(),
+      puppisd_corrGEN(),
+      puppisd_corrRECO_cen(),
+      puppisd_corrRECO_for(),
 
       // Cache the particle names.
-      m_ele_RecName(m_gen_rec_map.get("Ele").RecName), m_muo_RecName(m_gen_rec_map.get("Muon").RecName),
-      m_jet_RecName(m_gen_rec_map.get("Jet").RecName), m_fatjet_RecName(m_gen_rec_map.get("FatJet").RecName),
+      m_ele_RecName(m_gen_rec_map.get("Ele").RecName),
+      m_muo_RecName(m_gen_rec_map.get("Muon").RecName),
+      m_jet_RecName(m_gen_rec_map.get("Jet").RecName),
+      m_fatjet_RecName(m_gen_rec_map.get("FatJet").RecName),
       m_met_RecName(m_gen_rec_map.get("MET").RecName),
 
       m_jet_rho_label(cfg.GetItem<std::string>("Jet.Rho.Label"))
@@ -110,8 +119,10 @@ void EventAdaptor::adaptMuon(pxl::Particle *muon) const
         muon->setUserRecord("validCocktail", true);
         // Change muon 4-vector
         auto cocktail = pxl::Particle();
-        cocktail.setPtEtaPhiM((muon->getPt()) * (muon->getUserRecord("tunepRelPt").asFloat()), muon->getEta(),
-                              muon->getPhi(), muon->getMass());
+        cocktail.setPtEtaPhiM((muon->getPt()) * (muon->getUserRecord("tunepRelPt").asFloat()),
+                              muon->getEta(),
+                              muon->getPhi(),
+                              muon->getMass());
 
         // PAT px,py is substracted from cocktail px to take the sign flip for the
         // MET correction w.r.t. to the muon into account
@@ -141,50 +152,48 @@ void EventAdaptor::adaptMuon(pxl::Particle *muon) const
 // it is not possible to do it anymore, using NanoAOD.
 // This function changes the Muon quantities from "normal" (PF) to "HEEP" which is largely driven by
 // super cluster information from the ECAL
-// void EventAdaptor::applyHEEPElectrons() const
-// {
-//    for (auto &ele : m_ele_list)
-//    {
-//       if (ele->getPt() > m_ele_switchpt)
-//          adaptEle(ele);
-//    }
-// }
+void EventAdaptor::applyHEEPElectrons() const
+{
+    for (auto &ele : m_ele_list)
+    {
+        if (ele->getPt() > m_ele_switchpt)
+            adaptEle(ele);
+    }
+}
 
 // It is not possible to do it anymore, using NanoAOD: Electron SC information is no available.
-// void EventAdaptor::adaptEle(pxl::Particle *ele) const
-// {
-// // Get Et and Eta from super cluster
-// double const SCEt = ele->getUserRecord("SCEt");
-// double const SCEta = ele->getUserRecord("SCeta");
+void EventAdaptor::adaptEle(pxl::Particle *ele) const
+{
+    // Get Et and Eta from super cluster
+    double const SCEt = ele->getUserRecord("SCEt");
+    double const SCEta = ele->getUserRecord("SCeta");
 
-// // check if SCeta has eta outside acceptance and show warning
-// if (fabs(SCEta) > 3.)
-// {
-//    std::cerr << "[WARNING] Electron with SCEta "
-//              << SCEta
-//              << " (>3/<-3) detected" << std::endl;
-// }
+    // check if SCeta has eta outside acceptance and show warning
+    if (fabs(SCEta) > 3.)
+    {
+        std::cerr << "[WARNING] Electron with SCEta " << SCEta << " (>3/<-3) detected" << std::endl;
+    }
 
-// auto temp_lor = pxl::Particle();
-// temp_lor.setPtEtaPhiM(SCEt, SCEta, ele->getPhi(), 0.);
+    auto temp_lor = pxl::Particle();
+    temp_lor.setPtEtaPhiM(SCEt, SCEta, ele->getPhi(), 0.);
 
-// // PAT px,py is substracted from cocktail px to take the sign flip for the
-// // MET correction w.r.t. to the ele into account
-// double const dpx = temp_lor.Px() - ele->getPx();
-// double const dpy = temp_lor.Py() - ele->getPy();
+    // PAT px,py is substracted from cocktail px to take the sign flip for the
+    // MET correction w.r.t. to the ele into account
+    double const dpx = temp_lor.getPx() - ele->getPx();
+    double const dpy = temp_lor.getPy() - ele->getPy();
 
-// // change ele 4-vector
-// ele->setP4(temp_lor.Px(), temp_lor.Py(), temp_lor.Pz(), temp_lor.E());
+    // change ele 4-vector
+    ele->setP4(temp_lor.getPx(), temp_lor.getPy(), temp_lor.getPz(), temp_lor.getE());
 
-// // Adapt MET
-// if (m_met)
-// {
-//    double met_px = m_met->getPx() - dpx;
-//    double met_py = m_met->getPy() - dpy;
-//    double met_e = std::sqrt(met_px * met_px + met_py * met_py + m_met->getPz() * m_met->getPz());
-//    m_met->setP4(met_px, met_py, m_met->getPz(), met_e);
-// }
-// }
+    // Adapt MET
+    if (m_met)
+    {
+        double met_px = m_met->getPx() - dpx;
+        double met_py = m_met->getPy() - dpy;
+        double met_e = std::sqrt(met_px * met_px + met_py * met_py + m_met->getPz() * m_met->getPz());
+        m_met->setP4(met_px, met_py, m_met->getPz(), met_e);
+    }
+}
 
 // This function changes the AK8CHS jet kinematics to the matched PUPPI jet
 void EventAdaptor::applyPUPPIFatJets() const
@@ -222,8 +231,10 @@ float EventAdaptor::getPUPPIweight(const float puppipt, const float puppieta) co
 void EventAdaptor::adaptFatJet(pxl::Particle *fatjet) const
 {
     TLorentzVector temp_lor = TLorentzVector();
-    temp_lor.SetPtEtaPhiM(fatjet->getUserRecord("puppi_pt"), fatjet->getUserRecord("puppi_eta"),
-                          fatjet->getUserRecord("puppi_phi"), fatjet->getUserRecord("puppi_mass"));
+    temp_lor.SetPtEtaPhiM(fatjet->getUserRecord("puppi_pt"),
+                          fatjet->getUserRecord("puppi_eta"),
+                          fatjet->getUserRecord("puppi_phi"),
+                          fatjet->getUserRecord("puppi_mass"));
     // adapt met if puppi met is not used
     if (m_met_RecName != "slimmedMETsPuppi" and m_met)
     {
@@ -241,22 +252,26 @@ void EventAdaptor::adaptFatJet(pxl::Particle *fatjet) const
 }
 
 // Wrapper to smear AK8
-void EventAdaptor::applyFatJETMETSmearing(pxl::EventView const *GenEvtView, pxl::EventView const *RecEvtView,
+void EventAdaptor::applyFatJETMETSmearing(pxl::EventView const *GenEvtView,
+                                          pxl::EventView const *RecEvtView,
                                           std::string const &linkName)
 {
     applyJetMetSmearing(GenEvtView, RecEvtView, linkName, m_fatjet_RecName);
 }
 
 // Wrapper to smear AK4
-void EventAdaptor::applyJETMETSmearing(pxl::EventView const *GenEvtView, pxl::EventView const *RecEvtView,
+void EventAdaptor::applyJETMETSmearing(pxl::EventView const *GenEvtView,
+                                       pxl::EventView const *RecEvtView,
                                        std::string const &linkName)
 {
     applyJetMetSmearing(GenEvtView, RecEvtView, linkName, m_jet_RecName);
 }
 
 // Obviously, this can only be done on MC!
-void EventAdaptor::applyJetMetSmearing(pxl::EventView const *GenEvtView, pxl::EventView const *RecEvtView,
-                                       std::string const &linkName, std::string const &recName)
+void EventAdaptor::applyJetMetSmearing(pxl::EventView const *GenEvtView,
+                                       pxl::EventView const *RecEvtView,
+                                       std::string const &linkName,
+                                       std::string const &recName)
 {
     if (not m_jet_res_corr_use)
     {
@@ -324,16 +339,22 @@ void EventAdaptor::applyJetMetSmearing(pxl::EventView const *GenEvtView, pxl::Ev
             const auto matchedJet =
                 m_jet_res.matchGenJet(recJet, gen_jets, 0.4, GenEvtView->getUserRecord("NumVerticesPU").toDouble());
             jetPtCorrFactor =
-                m_jet_res.getJetResolutionCorrFactor(recJet, matchedJet, RecEvtView->getUserRecord(m_jet_rho_label),
-                                                     GenEvtView->getUserRecord("NumVerticesPU").toDouble(), 0);
+                m_jet_res.getJetResolutionCorrFactor(recJet,
+                                                     matchedJet,
+                                                     RecEvtView->getUserRecord(m_jet_rho_label),
+                                                     GenEvtView->getUserRecord("NumVerticesPU").toDouble(),
+                                                     0);
         }
         else if (recName == m_fatjet_RecName)
         {
             const auto matchedJet =
                 m_fatjet_res.matchGenJet(recJet, gen_jets, 0.8, GenEvtView->getUserRecord("NumVerticesPU").toDouble());
             jetPtCorrFactor =
-                m_fatjet_res.getJetResolutionCorrFactor(recJet, matchedJet, RecEvtView->getUserRecord(m_jet_rho_label),
-                                                        GenEvtView->getUserRecord("NumVerticesPU").toDouble(), 0);
+                m_fatjet_res.getJetResolutionCorrFactor(recJet,
+                                                        matchedJet,
+                                                        RecEvtView->getUserRecord(m_jet_rho_label),
+                                                        GenEvtView->getUserRecord("NumVerticesPU").toDouble(),
+                                                        0);
         }
         else
             std::cerr << "[WARNING] (EventAdaptor): Unknown RecName '" << recName << "' used. No smearing."

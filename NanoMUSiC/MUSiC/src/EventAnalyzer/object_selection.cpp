@@ -20,8 +20,8 @@ auto EventAnalyzer::get_high_pt_muons_selection_mask() -> RVec<int>
     return (muons.pt >= ObjConfig::Muons[year].MaxLowPt)                   //
            && (VecOps::abs(muons.eta) <= ObjConfig::Muons[year].MaxAbsEta) //
            && (muons.highPtId >= 2)                                        //
-           && (muons.pfRelIso04_all < ObjConfig::Muons[year].PFRelIso_WP);
-    //    && (muons.tkRelIso < ObjConfig::Muons[year].TkRelIso_WP);
+           //    && (muons.pfRelIso04_all < ObjConfig::Muons[year].PFRelIso_WP);
+           && (muons.tkRelIso < ObjConfig::Muons[year].TkRelIso_WP); // only RelTkIso is available as SFs
 }
 
 // Low pT Electrons

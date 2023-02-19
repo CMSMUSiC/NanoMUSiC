@@ -258,6 +258,11 @@ auto main(int argc, char *argv[]) -> int
     ADD_ARRAY_READER(Electron_cutBased, int);
     ADD_ARRAY_READER(Electron_cutBased_HEEP, bool);
     ADD_ARRAY_READER(Electron_deltaEtaSC, float);
+    ADD_ARRAY_READER(Electron_dEscaleDown, float);
+    ADD_ARRAY_READER(Electron_dEscaleUp, float);
+    ADD_ARRAY_READER(Electron_dEsigmaDown, float);
+    ADD_ARRAY_READER(Electron_dEsigmaUp, float);
+    // ADD_ARRAY_READER(Electron_eCorr, float);
 
     // photons
     ADD_ARRAY_READER(Photon_pt, float);
@@ -399,7 +404,7 @@ auto main(int argc, char *argv[]) -> int
                                                              unwrap(LHEPart_pdgId),
                                                              unwrap(LHEPart_status)))
 
-                // GenJet_mass
+                // GenJets
                 .set_gen_jets(NanoObjects::GenJets(unwrap(GenJet_pt), unwrap(GenJet_eta), unwrap(GenJet_phi)))
 
                 // muons
@@ -418,7 +423,11 @@ auto main(int argc, char *argv[]) -> int
                                                       unwrap(Electron_phi),           //
                                                       unwrap(Electron_cutBased),      //
                                                       unwrap(Electron_cutBased_HEEP), //
-                                                      unwrap(Electron_deltaEtaSC)))
+                                                      unwrap(Electron_deltaEtaSC),
+                                                      unwrap(Electron_dEscaleDown),
+                                                      unwrap(Electron_dEscaleUp),
+                                                      unwrap(Electron_dEsigmaDown),
+                                                      unwrap(Electron_dEsigmaUp)))
                 // photons
                 .set_photons(NanoObjects::Photons(unwrap(Photon_pt),        //
                                                   unwrap(Photon_eta),       //

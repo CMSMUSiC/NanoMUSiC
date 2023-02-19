@@ -227,14 +227,28 @@ Electrons::Electrons(const RVec<float> &_pt,
                      const RVec<float> &_phi,
                      const RVec<int> &_cutBased,
                      const RVec<bool> &_cutBased_HEEP,
-                     const RVec<float> &_deltaEtaSC)
+                     const RVec<float> &_deltaEtaSC,
+                     const RVec<float> &_dEscaleDown,
+                     const RVec<float> &_dEscaleUp,
+                     const RVec<float> &_dEsigmaDown,
+                     const RVec<float> &_dEsigmaUp)
+
     : size(_pt.size()),
       pt(_pt),
       eta(_eta),
       phi(_phi),
       cutBased(_cutBased),
       cutBased_HEEP(_cutBased_HEEP),
-      deltaEtaSC(_deltaEtaSC)
+      deltaEtaSC(_deltaEtaSC),
+      dEscaleDown(_dEscaleDown),
+      dEscaleUp(_dEscaleUp),
+      dEsigmaDown(_dEsigmaDown),
+      dEsigmaUp(_dEsigmaUp),
+      // Corrections and Variations
+      pt_Scale_up(_pt),
+      pt_Scale_down(_pt),
+      pt_Resolution_up(_pt),
+      pt_Resolution_down(_pt)
 {
 }
 
@@ -286,6 +300,8 @@ Jets::Jets(const RVec<float> &_pt,
       rawFactor(_rawFactor),
       area(_area),
       // Corrections variations
+      pt_nominal(_pt),
+      mass_nominal(_pt),
       pt_JES_up(_pt),
       mass_JES_up(_pt),
       pt_JES_down(_pt),
@@ -303,10 +319,16 @@ MET::MET(const RVec<float> &_pt, const RVec<float> &_eta, const RVec<float> &_ph
       eta(_eta),
       phi(_phi),
       // Corrections variations
+      et_nominal(_pt),
       JES_up(_pt),
       JES_down(_pt),
       JER_up(_pt),
-      JER_down(_pt)
+      JER_down(_pt),
+      Electron_Scale_up(_pt),
+      Electron_Scale_down(_pt),
+      Electron_Resolution_up(_pt),
+      Electron_Resolution_down(_pt)
+
 {
 }
 

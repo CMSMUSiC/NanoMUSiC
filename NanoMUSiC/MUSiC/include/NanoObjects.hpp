@@ -224,13 +224,26 @@ struct Electrons
     RVec<int> cutBased;
     RVec<bool> cutBased_HEEP;
     RVec<float> deltaEtaSC;
+    RVec<float> dEscaleDown;
+    RVec<float> dEscaleUp;
+    RVec<float> dEsigmaDown;
+    RVec<float> dEsigmaUp;
+    // Corections and variations
+    RVec<float> pt_Scale_up;
+    RVec<float> pt_Scale_down;
+    RVec<float> pt_Resolution_up;
+    RVec<float> pt_Resolution_down;
 
     Electrons(const RVec<float> &_pt = {},
               const RVec<float> &_eta = {},
               const RVec<float> &_phi = {},
               const RVec<int> &_cutBased = {},
               const RVec<bool> &_cutBased_HEEP = {},
-              const RVec<float> &_deltaEtaSC = {});
+              const RVec<float> &_deltaEtaSC = {},
+              const RVec<float> &_dEscaleDown = {},
+              const RVec<float> &_dEscaleUp = {},
+              const RVec<float> &_dEsigmaDown = {},
+              const RVec<float> &_dEsigmaUp = {});
 };
 
 struct Photons
@@ -278,6 +291,8 @@ struct Jets
     RVec<float> area;
 
     // Corrections variations
+    RVec<float> pt_nominal;
+    RVec<float> mass_nominal;
     RVec<float> pt_JES_up;
     RVec<float> mass_JES_up;
     RVec<float> pt_JES_down;
@@ -309,10 +324,15 @@ struct MET
     RVec<float> phi;
 
     // Corrections variations
+    RVec<float> et_nominal;
     RVec<float> JES_up;
     RVec<float> JES_down;
     RVec<float> JER_up;
     RVec<float> JER_down;
+    RVec<float> Electron_Scale_up;
+    RVec<float> Electron_Scale_down;
+    RVec<float> Electron_Resolution_up;
+    RVec<float> Electron_Resolution_down;
 
     MET(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {});
 };

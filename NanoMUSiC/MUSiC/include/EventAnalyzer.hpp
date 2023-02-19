@@ -447,35 +447,36 @@ class EventAnalyzer
 
     template <typename T>
     auto jet_transformer(T &_jets, RVec<int> &_mask, JetCorrector &jet_corrections) -> void
-    { // Nominal
+    {
+        // Nominal
         auto dX_nominal = RVec<float>(_jets.size);
         auto dY_nominal = RVec<float>(_jets.size);
         auto new_pt_nominal = _jets.pt;
-        auto new_mass_nominal = _jets.pt;
+        auto new_mass_nominal = _jets.mass;
 
         // JES: Up - JER: Nominal
         auto dX_up_nominal = RVec<float>(_jets.size);
         auto dY_up_nominal = RVec<float>(_jets.size);
         auto new_pt_up_nominal = _jets.pt;
-        auto new_mass_up_nominal = _jets.pt;
+        auto new_mass_up_nominal = _jets.mass;
 
         //  JES: Up - JER: Nominal
         auto dX_down_nominal = RVec<float>(_jets.size);
         auto dY_down_nominal = RVec<float>(_jets.size);
         auto new_pt_down_nominal = _jets.pt;
-        auto new_mass_down_nominal = _jets.pt;
+        auto new_mass_down_nominal = _jets.mass;
 
         // JES: Nominal - JER: Up
         auto dX_nominal_up = RVec<float>(_jets.size);
         auto dY_nominal_up = RVec<float>(_jets.size);
         auto new_pt_nominal_up = _jets.pt;
-        auto new_mass_nominal_up = _jets.pt;
+        auto new_mass_nominal_up = _jets.mass;
 
         //  JES: Nominal - JER: Down
         auto dX_nominal_down = RVec<float>(_jets.size);
         auto dY_nominal_down = RVec<float>(_jets.size);
         auto new_pt_nominal_down = _jets.pt;
-        auto new_mass_nominal_down = _jets.pt;
+        auto new_mass_nominal_down = _jets.mass;
 
         for (std::size_t i = 0; i < _jets.size; i++)
         {
@@ -583,8 +584,8 @@ class EventAnalyzer
 
         // set new values
         // nominal
-        _jets.pt = new_pt_nominal;
-        _jets.mass = new_mass_nominal;
+        _jets.pt_nominal = new_pt_nominal;
+        _jets.mass_nominal = new_mass_nominal;
 
         // JES
         _jets.pt_JES_up = new_pt_nominal_up;
@@ -617,7 +618,7 @@ class EventAnalyzer
 
         met_x = (met.pt[0] * std::cos(met.phi[0])) - VecOps::Sum(dX_nominal);
         met_y = (met.pt[0] * std::sin(met.phi[0])) - VecOps::Sum(dY_nominal);
-        met.pt[0] = std::sqrt(met_x * met_x + met_y * met_y);
+        met.et_nominal[0] = std::sqrt(met_x * met_x + met_y * met_y);
     }
 
     /// TODO:
