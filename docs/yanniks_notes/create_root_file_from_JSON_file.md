@@ -3,5 +3,4 @@
 
 -> PythonScriptName: _create_root_from_JSON.py_
 
-#MUSiC #ToDo #PxlAnalyzer #ROOT
 

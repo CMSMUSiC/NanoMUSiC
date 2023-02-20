@@ -124,5 +124,3 @@
 
 ##### Ein Eventclass ==plotten==:
 - `ECPlot_root.py  --filter-systematics "*/*qcdWeightGamma*" "*/*qcdWeightQCD*" "*/*xs*NLO" --mc bg.root --signal ../../Sensitvity_nov14_Wprime/WPRIME3000/WPRIME3000.root  -j 10 --filter Rec_1Muon_1MET --out TestPlots --detailed-groups strong --legend-include-yield False --ymin 0.001 --ymax 100000 --legend-number-columns 1 --header-subtitle " Simulation Preliminary" --text-size-scale-factor 1.4 --legend-label-uncert 'Bkg. uncert.' --ymin 0.01 --ymax 500000 --legend-number-columns 1 --legend-xlow 0.75 --legend-xup 0.92 --legend-yup 0.9  --canvas-width 1600 --canvas-height 1400`
-
-#MUSiC #Commands 

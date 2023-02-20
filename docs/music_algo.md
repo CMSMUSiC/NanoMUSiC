@@ -1,6 +1,6 @@
-# Kinematical distributions of interest
+### Kinematical distributions of interest
 
-## Sum pT: $\sum_{i}|\vec{p_{i}}_{T}|$
+#### Sum pT: $\sum_{i}|\vec{p_{i}}_{T}|$
 
 $$\sum_{i}|\vec{p_{i}}_{T}|$$
 

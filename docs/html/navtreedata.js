@@ -25,40 +25,61 @@
 var NAVTREE =
 [
   [ "NanoMUSiC", "index.html", [
-    [ "About", "index.html#autotoc_md5", null ],
-    [ "License", "index.html#autotoc_md6", null ],
-    [ "Electron Trigger Scale Factors", "md___8automount_home_home__home1_institut_3a_silva_projects_music_NanoMUSiC_NanoMUSiC_MUSiC_include_ElectronTriggerSF_README.html", [
-      [ "Content of SF files", "md___8automount_home_home__home1_institut_3a_silva_projects_music_NanoMUSiC_NanoMUSiC_MUSiC_include_ElectronTriggerSF_README.html#autotoc_md1", [
-        [ "Barrrel", "md___8automount_home_home__home1_institut_3a_silva_projects_music_NanoMUSiC_NanoMUSiC_MUSiC_include_ElectronTriggerSF_README.html#autotoc_md2", null ],
-        [ "Endcap", "md___8automount_home_home__home1_institut_3a_silva_projects_music_NanoMUSiC_NanoMUSiC_MUSiC_include_ElectronTriggerSF_README.html#autotoc_md3", null ]
+    [ "About", "index.html#autotoc_md1", [
+      [ "License", "index.html#autotoc_md2", null ]
+    ] ],
+    [ "The MUSiC algorithm in a nutsheld", "index.html#autotoc_md3", [
+      [ "Kinematical distributions of interest", "index.html#autotoc_md4", [
+        [ "Sum pT: $\\sum_{i}|\\vec{p_{i}}_{T}|$", "index.html#autotoc_md5", null ]
       ] ]
     ] ],
-    [ "Setup", "md_installation.html", [
-      [ "Dependencies", "md_installation.html#autotoc_md8", null ],
-      [ "Setup the environment (only once)", "md_installation.html#autotoc_md9", null ],
-      [ "Configuring the environment (for every new session)", "md_installation.html#autotoc_md10", null ],
-      [ "Compilation", "md_installation.html#autotoc_md11", null ],
-      [ "Installations directories", "md_installation.html#autotoc_md12", null ]
+    [ "Setup and instructiond", "index.html#autotoc_md6", null ],
+    [ "Setup", "index.html#autotoc_md7", [
+      [ "Dependencies", "index.html#autotoc_md8", null ],
+      [ "Setup the environment (only once)", "index.html#autotoc_md9", null ],
+      [ "Configuring the environment (for every new session)", "index.html#autotoc_md10", null ],
+      [ "Compilation", "index.html#autotoc_md11", null ],
+      [ "Installations directories", "index.html#autotoc_md12", null ]
     ] ],
-    [ "Running the analysis", "md_running.html", [
-      [ "Skim", "md_running.html#autotoc_md14", [
-        [ "Run Config File", "md_running.html#autotoc_md15", [
-          [ "Single process", "md_running.html#autotoc_md16", null ]
+    [ "Running the analysis", "index.html#autotoc_md13", [
+      [ "Skim", "index.html#autotoc_md14", [
+        [ "Run Config File", "index.html#autotoc_md15", [
+          [ "Single process", "index.html#autotoc_md16", null ]
         ] ]
+      ] ],
+      [ "Reference material", "index.html#autotoc_md17", [
+        [ "NanoAOD file Content", "index.html#autotoc_md18", null ],
+        [ "PDF recomendations", "index.html#autotoc_md19", null ],
+        [ "HLT Bits", "index.html#autotoc_md20", null ],
+        [ "2017", "index.html#autotoc_md21", [
+          [ "Muons", "index.html#autotoc_md22", null ]
+        ] ],
+        [ "Run2 Generator Output", "index.html#autotoc_md23", null ],
+        [ "Electron Trigger Scale Factors", "index.html#autotoc_md24", null ]
       ] ]
     ] ],
-    [ "NanoAOD file Content", "md_nanoaod_content.html", [
-      [ "MC", "md_nanoaod_content.html#autotoc_md18", [
-        [ "2016APV", "md_nanoaod_content.html#autotoc_md19", null ],
-        [ "2016", "md_nanoaod_content.html#autotoc_md20", null ],
-        [ "2017", "md_nanoaod_content.html#autotoc_md21", null ],
-        [ "2018", "md_nanoaod_content.html#autotoc_md22", null ]
-      ] ],
-      [ "Data", "md_nanoaod_content.html#autotoc_md23", [
-        [ "2016APV", "md_nanoaod_content.html#autotoc_md24", null ],
-        [ "2016", "md_nanoaod_content.html#autotoc_md25", null ],
-        [ "2017", "md_nanoaod_content.html#autotoc_md26", null ],
-        [ "2018", "md_nanoaod_content.html#autotoc_md27", null ]
+    [ "Notes on the Legacy Code (German)", "index.html#autotoc_md25", [
+      [ "1) <strong>Alle MC & Data Samples auf <a href=\"https://cmsweb.cern.ch/das/request?view=list&limit=50&instance=prod%2Fglobal&input=dataset%3D%2FZToMuMu_*%2FRunIISummer20UL18MiniAODv2*%2FMINIAODSIM*\">DAS</a>, <a href=\"https://cms-pdmv.cern.ch/grasp/samples?dataset_query=ZToMuMu_M-3500To4500_TuneCP5_13TeV-powheg-pythia8&campaign=Run3Winter22*GS,RunIISummer20UL16*GEN,RunIISummer20UL16*GENAPV,RunIISummer20UL17*GEN,RunIISummer20UL18*GEN\">Grasp</a> etc. suchen wie <a href=\"https://docs.google.com/spreadsheets/d/1C3wC3vG5VHEX0-bk-s6qdhGR0Hy7KcVLkG9efDYlN6Q/edit#gid=1654878574\">hier</a></strong>", "index.html#autotoc_md31", null ],
+      [ "2) <strong>[[MUSiC einrichten]]</strong>", "index.html#autotoc_md32", null ],
+      [ "- <tt>voms-proxy-init --voms cms --voms cms:/cms/dcms --valid 198:0</tt>", "index.html#autotoc_md33", null ],
+      [ "- <strong>WICHTIG:</strong> Manchmal entsteht ein Buffer Overflow, wenn das passiert einfach nochmal das Kommando nutzen (solange bis alle Samples einen Eintrag in der Database haben der nicht 0 ist)", "index.html#autotoc_md34", null ],
+      [ "- Wenn die Classification zu Beginn Failed dann Fehler suchen und in einem <strong>NEUEM</strong> Ordner alles nochmal starten", "index.html#autotoc_md35", [
+        [ "<strong>PxlAnalyzer</strong>", "index.html#autotoc_md27", null ],
+        [ "<strong>MUSiC-Configs</strong>", "index.html#autotoc_md28", null ],
+        [ "<strong>PxlSkimmer</strong>", "index.html#autotoc_md29", null ],
+        [ "MUSiC installieren", "index.html#autotoc_md36", null ],
+        [ "PxlSkimmer installieren", "index.html#autotoc_md37", null ],
+        [ "Git SSH", "index.html#autotoc_md38", null ],
+        [ "Zertifikate einrichten", "index.html#autotoc_md39", null ],
+        [ "VOMS", "index.html#autotoc_md40", null ],
+        [ "HyperNews", "index.html#autotoc_md41", null ],
+        [ "Analyse Vorbereitung:", "index.html#autotoc_md42", null ],
+        [ "Zusatz:", "index.html#autotoc_md43", [
+          [ "Für PxlAnalyzer/ConfigFiles/Objects/ScaleFactors/ele_sf.cff", "index.html#autotoc_md26", null ],
+          [ "ParseSampleList", "index.html#autotoc_md44", null ],
+          [ "Data parse...", "index.html#autotoc_md45", null ]
+        ] ],
+        [ "Wichtige Seiten:", "index.html#autotoc_md68", null ]
       ] ]
     ] ],
     [ "Namespaces", "namespaces.html", [
@@ -104,7 +125,8 @@ var NAVTREEINDEX =
 "Configs_8hpp.html",
 "classCorrector.html#aae719be4f4bac28c4f01b66d823f3d0f",
 "classOutputs.html#ac460194c479cd9f4b58ce67c63711ab1",
-"pages.html"
+"nano2pxl__utils_8hpp.html#a841cb5df4f2982810ea920e71a6d50c9",
+"structObjConfig_1_1TauConfig.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

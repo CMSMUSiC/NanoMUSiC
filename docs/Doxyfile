@@ -825,9 +825,9 @@ WARN_LOGFILE           =
 
 INPUT                  = ../NanoMUSiC/MUSiC \
                          index.md \
-                         installation.md \
-                         running.md \
-                         nanoaod_content.md \
+                        #  installation.md \
+                        #  running.md \
+                        #  nanood_content.md \
                         #  /nanoaod_content_Data_2016APV.md \
                         #  nanoaod_content/nanoaod_content_Data_2016.md \
                         #  nanoaod_content/nanoaod_content_Data_2016.txt \
@@ -970,7 +970,7 @@ EXCLUDE_SYMBOLS        =
 # that contain example code fragments that are included (see the \include
 # command).
 
-EXAMPLE_PATH           = nanoaod_content
+EXAMPLE_PATH           = . 
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp and

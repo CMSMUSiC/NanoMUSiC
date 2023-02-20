@@ -1,13 +1,11 @@
-#  NanoMUSiC
+# NanoMUSiC 
 
-![music](https://raw.githubusercontent.com/CMSMUSiC/NanoMUSiC/main/docs/images/music.svg)    	
+![music](https://raw.githubusercontent.com/CMSMUSiC/NanoMUSiC/main/docs/images/music_t.svg)   
 
 
-**MUSiC - Model Unspecific Search in CMS **
+**MUSiC - Model Unspecific Search in CMS**
 
 📶 Run 2 - Ultra Legacy, using NanoAOD 📶
-
-Full Documentation: https://cmsmusic.github.io/NanoMUSiC/
 
 ## About 
 
@@ -35,5 +33,40 @@ All the credit goes, to the authors of the legacy repositories.
 The LICENSING inherits from them, also. When not this is not applicable, MIT license applies.
 
 
+## The MUSiC algorithm in a nutsheld
+![[music_algo.md]]
+
+## Setup and instructiond
+![[installation.md]]
+
+![[running.md]]
 
 
+
+## Reference material
+
+![[nanoaod_content.md]]
+
+![[pdf_recommendations.md]]
+
+![[hlt_bits.md]]
+
+![[run2_gen.md]]
+
+![[electron_trigger_sf.md]]
+
+# Notes on the Legacy Code (German)
+
+![[yanniks_notes/create_root_file_for_electron_ScaleFactor_HEEP.md]]
+
+![[yanniks_notes/create_root_file_from_JSON_file.md]]
+
+![[yanniks_notes/links_ie_PxlAnalyser_MUSiC-Config_config_Files.md]]
+
+![[yanniks_notes/MUSiC_Anleitung.md]]
+
+![[yanniks_notes/MUSiC_einrichten.md]]
+
+![[yanniks_notes/wichtige_commands.md]]
+
+![[yanniks_notes/wichtige_MUSiC_Internetseiten.md]]

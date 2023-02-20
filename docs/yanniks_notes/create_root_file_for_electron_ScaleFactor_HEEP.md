@@ -6,5 +6,3 @@
 
 -> PythonScriptName: _create_root_histogram.py_
 
-
-#MUSiC #ToDo #PxlAnalyzer #ROOT

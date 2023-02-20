@@ -1,6 +1,6 @@
-# HLT Bits
+### HLT Bits
 
-## 2017
+### 2017
 
 ```
 1 = CaloIdL_TrackIdL_IsoVL
@@ -70,7 +70,7 @@
 --  bit 1 for hltPFCentralJetsLooseIDQuad30HT300 or hltPFCentralJetsLooseIDQuad30HT330 for MHT
 ```
 
-### Muons
+#### Muons
 
 ```
 hltL3crIsoL1sMu22Or25L1f0L2f10QL3f27QL3trkIsoFiltered0p07 -> HLT_IsoMu27 - bit: 8

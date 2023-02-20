@@ -14,5 +14,3 @@
 - [CMS-Cric](https://cms-cric.cern.ch/accounts/account/list/)
 - [CMS-Talk](https://cms-talk.web.cern.ch/)
 - [Database](https://cms-project-aachen3a-db.web.cern.ch/)
-
-#MUSiC #DAS #MUSiC-Configs #PxlSkimmer #PxlAnalyzer 

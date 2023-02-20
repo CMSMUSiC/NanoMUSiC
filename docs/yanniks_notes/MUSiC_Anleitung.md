@@ -106,5 +106,3 @@
 					- `python delete_scan.py -d Scan_InvMass_Scan_30001_31_08`
 						- das Lösch-Script löscht manchmal einen gefailten Ordner nicht, daher am Ende sicherheitshalber den Scancheck nochmal laufen lassen und den übrig gebliebenen Ordner in der Failes***.txt per Hand löschen
 			- Scan Kommando erneut nutzen
-
-#MUSiC #DAS #Commands #CRAB #Classification #PxlSkimmer #ParseSampleList #Scan #Watchdog 

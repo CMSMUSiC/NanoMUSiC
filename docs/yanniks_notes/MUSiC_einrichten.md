@@ -30,5 +30,3 @@
 ### Zusatz:
 - [[Wichtige MUSiC Internetseiten]]
 
-
-#MUSiC #VOMS #HyperNews
