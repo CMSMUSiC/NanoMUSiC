@@ -78,12 +78,12 @@ auto EventAnalyzer::transform_electrons() -> EventAnalyzer &
         }
 
         // Scale
-        electrons.pt_Scale_up = new_pt_nominal_up;
-        electrons.pt_Scale_down = new_pt_nominal_down;
+        electrons.pt_Scale_up = new_pt_up_nominal;
+        electrons.pt_Scale_down = new_pt_down_nominal;
 
-        // JER
-        electrons.pt_Resolution_up = new_pt_up_nominal;
-        electrons.pt_Resolution_down = new_pt_down_nominal;
+        // Resolution
+        electrons.pt_Resolution_up = new_pt_nominal_up;
+        electrons.pt_Resolution_down = new_pt_nominal_down;
 
         // MET
         auto met_x = (met.pt[0] * std::cos(met.phi[0])) - VecOps::Sum(dX_up_nominal);

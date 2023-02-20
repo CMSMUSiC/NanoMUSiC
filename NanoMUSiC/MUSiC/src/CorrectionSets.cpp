@@ -474,8 +474,18 @@ ElectronSFCorrector::ElectronSFCorrector(const Year _year, bool _is_data)
 
 //////////////////////////////////
 /// Get HEEP Id SF
-/// Ref:
-/// https://twiki.cern.ch/twiki/bin/view/CMS/HEEPElectronIdentificationRun2#Scale_Factor
+/// Full 2016:
+/// Barrel : 0.980 +/- 0.001 (stat) +/- 0.005 (syst)
+/// Endcap: 0.989 +/- 0.004 (stat) +/- 0.007 (syst)
+/// 2017:
+/// Barrel :  0.979 +/- 0.001 (stat) +/- 0.005 (syst)
+/// Endcap: 0.987 +/- 0.002 (stat) +/- 0.010 (syst)
+/// 2018:
+/// Barrel : 0.973 +/- 0.001 (stat) +/- 0.004 (syst)
+/// Endcap: 0.980 +/- 0.002 (stat) +/- 0.011 (syst)
+/// For more details, see:
+/// https://indico.cern.ch/event/1255216/contributions/5273071/attachments/2594851/4478919/HEEP%20ID%202016UL%20for%20EGamma.pdf
+/// Reference: https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaUL2016To2018
 auto ElectronSFCorrector::get_high_pt_sf(const Year &year,
                                          const std::string &variation,
                                          const float &pt,
@@ -495,14 +505,8 @@ auto ElectronSFCorrector::get_high_pt_sf(const Year &year,
         throw std::runtime_error(fmt::format("The Eta SC ({}) value is out of range.", eta));
     }
 
-    auto syst = [&](float a, float b, float c) -> float {
-        if (pt < 90.)
-            return a / 100.;
-        else
-            return 0.01 * std::min(1 + (pt - 90.f) * b, c);
-    };
-
-    auto syst_multiplier = [&]() -> float {
+    auto syst_multiplier = [&]() -> float
+    {
         if (variation == "sf")
         {
             return 0.;
@@ -520,42 +524,33 @@ auto ElectronSFCorrector::get_high_pt_sf(const Year &year,
 
     switch (year)
     {
-        /// 2016 legacy: 0.983±0.000 (stat) (EB), 0.991±0.001 (stat) (EE) (taken from slide 10 of [0])
-        ///              uncertainty (syst?): EB ET < 90 GeV: 1% else min(1+(ET-90)*0.0022)%,3%)
-        ///              uncertainty (syst?): EE ET < 90 GeV: 2% else min(1+(ET-90)*0.0143)%,5%)
     case Year::Run2016APV:
         if (is_EB)
         {
-            return 0.983 + syst_multiplier() * std::sqrt(std::pow(0., 2) + std::pow(syst(1., 0.0022, 3.), 2));
+            return 0.98 + syst_multiplier() * std::sqrt(std::pow(0.001, 2) + std::pow(0.005, 2));
         }
-        return 0.991 + syst_multiplier() * std::sqrt(std::pow(0.001, 2) + std::pow(syst(2., 0.0143, 5.), 2));
+        return 0.989 + syst_multiplier() * std::sqrt(std::pow(0.004, 2) + std::pow(0.007, 2));
 
     case Year::Run2016:
         if (is_EB)
         {
-            return 0.983 + syst_multiplier() * std::sqrt(std::pow(0., 2) + std::pow(syst(1., 0.0022, 3.), 2));
+            return 0.98 + syst_multiplier() * std::sqrt(std::pow(0.001, 2) + std::pow(0.005, 2));
         }
-        return 0.991 + syst_multiplier() * std::sqrt(std::pow(0.001, 2) + std::pow(syst(2., 0.0143, 5.), 2));
+        return 0.989 + syst_multiplier() * std::sqrt(std::pow(0.004, 2) + std::pow(0.007, 2));
 
-        /// 2017 prompt: 0.968±0.001 (stat) (EB), 0.973±0.002 (stat) (EE)
-        ///              uncertainty (syst?): EB ET < 90 GeV: 1% else min(1+(ET-90)*0.0022)%,3%)
-        ///              uncertainty (syst?): EE ET < 90 GeV: 2% else min(1+(ET-90)*0.0143)%,5%)
     case Year::Run2017:
         if (is_EB)
         {
-            return 0.968 + syst_multiplier() * std::sqrt(std::pow(0.001, 2) + std::pow(syst(1., 0.0022, 3.), 2));
+            return 0.979 + syst_multiplier() * std::sqrt(std::pow(0.001, 2) + std::pow(0.005, 2));
         }
-        return 0.973 + syst_multiplier() * std::sqrt(std::pow(0.002, 2) + std::pow(syst(2., 0.0143, 5.), 2));
+        return 0.987 + syst_multiplier() * std::sqrt(std::pow(0.002, 2) + std::pow(0.010, 2));
 
-        /// 2018 rereco (Autumn 18): 0.969 +/- 0.000 (stat) (EB), and 0.984 +/- 0.001 (stat) (EE).
-        ///                          uncertainty (syst?): EB ET < 90 GeV: 1% else min(1+(ET-90)*0.0022)%,3%)
-        ///                          uncertainty (syst?): EE ET < 90 GeV: 2% else min(1+(ET-90)*0.0143)%,5%)
     case Year::Run2018:
         if (is_EB)
         {
-            return 0.969 + syst_multiplier() * std::sqrt(std::pow(0., 2) + std::pow(syst(1., 0.0022, 3.), 2));
+            return 0.973 + syst_multiplier() * std::sqrt(std::pow(0.001, 2) + std::pow(0.004, 2));
         }
-        return 0.984 + syst_multiplier() * std::sqrt(std::pow(0.001, 2) + std::pow(syst(2., 0.0143, 5.), 2));
+        return 0.980 + syst_multiplier() * std::sqrt(std::pow(0.002, 2) + std::pow(0.011, 2));
 
     default:
         throw std::runtime_error("Year (" + std::to_string(year) +
@@ -716,16 +711,19 @@ auto BTagSFCorrector::operator()(const std::string &variation_bjet,          //
 
     if (not is_data)
     {
-        RVec<float> pmc_tagged_vec = VecOps::Map(
-            tagged_jets_pt,
-            tagged_jets_abseta,
-            tagged_jets_hadronFlavour,
-            [&](const float &_pt, const float &_eta, const int &_flavour) { return get_eff(_pt, _eta, _flavour); });
+        RVec<float> pmc_tagged_vec = VecOps::Map(tagged_jets_pt,
+                                                 tagged_jets_abseta,
+                                                 tagged_jets_hadronFlavour,
+                                                 [&](const float &_pt, const float &_eta, const int &_flavour)
+                                                 {
+                                                     return get_eff(_pt, _eta, _flavour);
+                                                 });
 
         RVec<float> pmc_untagged_vec = VecOps::Map(untagged_jets_pt,
                                                    untagged_jets_abseta,
                                                    untagged_jets_hadronFlavour,
-                                                   [&](const float &_pt, const float &_eta, const int &_flavour) {
+                                                   [&](const float &_pt, const float &_eta, const int &_flavour)
+                                                   {
                                                        return (1. - get_eff(_pt, _eta, _flavour));
                                                    });
 
@@ -733,7 +731,8 @@ auto BTagSFCorrector::operator()(const std::string &variation_bjet,          //
             tagged_jets_pt,
             tagged_jets_abseta,
             tagged_jets_hadronFlavour,
-            [&](const float &_pt, const float &_eta, const int &_flavour) {
+            [&](const float &_pt, const float &_eta, const int &_flavour)
+            {
                 if (_flavour == 0)
                 {
                     return get_sf_light_jet({variation_light_jet, "T", _flavour, _eta, _pt}) *
@@ -746,7 +745,8 @@ auto BTagSFCorrector::operator()(const std::string &variation_bjet,          //
             untagged_jets_pt,
             untagged_jets_abseta,
             untagged_jets_hadronFlavour,
-            [&](const float &_pt, const float &_eta, const int &_flavour) {
+            [&](const float &_pt, const float &_eta, const int &_flavour)
+            {
                 if (_flavour == 0)
                 {
                     return (1. - (get_sf_light_jet({variation_light_jet, "T", _flavour, _eta, _pt}) *
