@@ -19,6 +19,9 @@ auto EventAnalyzer::transform_muons() -> EventAnalyzer &
     return *this;
 }
 
+///////////////////////////////////////////////////////////////
+/// References:
+/// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaMiniAODV2#Applying_the_Energy_Scale_and_sm
 auto EventAnalyzer::transform_electrons() -> EventAnalyzer &
 {
     if (*this)
@@ -111,7 +114,10 @@ auto EventAnalyzer::transform_electrons() -> EventAnalyzer &
     return *this;
 }
 
+///////////////////////////////////////////////////////////////
 /// TODO:
+/// References:
+/// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaMiniAODV2#Applying_the_Energy_Scale_and_sm
 auto EventAnalyzer::transform_photons() -> EventAnalyzer &
 {
     if (*this)
