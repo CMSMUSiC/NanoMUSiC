@@ -218,7 +218,28 @@ Muons::Muons(const RVec<float> &_pt,
       pfRelIso04_all(_pfRelIso04_all),
       tkRelIso(_tkRelIso),
       highPurity(_highPurity),
-      tunepRelPt(_tunepRelPt)
+      tunepRelPt(_tunepRelPt),
+      good_muons_mask({
+          {"nominal", RVec<int>(size, 1)},
+          {"scale_up", RVec<int>(size, 1)},
+          {"scale_down", RVec<int>(size, 1)},
+          {"resolution_up", RVec<int>(size, 1)},
+          {"resolution_down", RVec<int>(size, 1)},
+      }),
+      good_low_pt_muons_mask({
+          {"nominal", RVec<int>(size, 1)},
+          {"scale_up", RVec<int>(size, 1)},
+          {"scale_down", RVec<int>(size, 1)},
+          {"resolution_up", RVec<int>(size, 1)},
+          {"resolution_down", RVec<int>(size, 1)},
+      }),
+      good_high_pt_muons_mask({
+          {"nominal", RVec<int>(size, 1)},
+          {"scale_up", RVec<int>(size, 1)},
+          {"scale_down", RVec<int>(size, 1)},
+          {"resolution_up", RVec<int>(size, 1)},
+          {"resolution_down", RVec<int>(size, 1)},
+      })
 {
 }
 
@@ -248,7 +269,28 @@ Electrons::Electrons(const RVec<float> &_pt,
       pt_Scale_up(_pt),
       pt_Scale_down(_pt),
       pt_Resolution_up(_pt),
-      pt_Resolution_down(_pt)
+      pt_Resolution_down(_pt),
+      good_electrons_mask({
+          {"nominal", RVec<int>(size, 1)},
+          {"scale_up", RVec<int>(size, 1)},
+          {"scale_down", RVec<int>(size, 1)},
+          {"resolution_up", RVec<int>(size, 1)},
+          {"resolution_down", RVec<int>(size, 1)},
+      }),
+      good_low_pt_electrons_mask({
+          {"nominal", RVec<int>(size, 1)},
+          {"scale_up", RVec<int>(size, 1)},
+          {"scale_down", RVec<int>(size, 1)},
+          {"resolution_up", RVec<int>(size, 1)},
+          {"resolution_down", RVec<int>(size, 1)},
+      }),
+      good_high_pt_electrons_mask({
+          {"nominal", RVec<int>(size, 1)},
+          {"scale_up", RVec<int>(size, 1)},
+          {"scale_down", RVec<int>(size, 1)},
+          {"resolution_up", RVec<int>(size, 1)},
+          {"resolution_down", RVec<int>(size, 1)},
+      })
 {
 }
 
@@ -266,7 +308,14 @@ Photons::Photons(const RVec<float> &_pt,
       cutBased(_cutBased),
       pixelSeed(_pixelSeed),
       isScEtaEB(_isScEtaEB),
-      isScEtaEE(_isScEtaEE)
+      isScEtaEE(_isScEtaEE),
+      good_photons_mask({
+          {"nominal", RVec<int>(size, 1)},
+          {"scale_up", RVec<int>(size, 1)},
+          {"scale_down", RVec<int>(size, 1)},
+          {"resolution_up", RVec<int>(size, 1)},
+          {"resolution_down", RVec<int>(size, 1)},
+      })
 {
 }
 
@@ -274,7 +323,14 @@ Taus::Taus(const RVec<float> &_pt, const RVec<float> &_eta, const RVec<float> &_
     : size(_pt.size()),
       pt(_pt),
       eta(_eta),
-      phi(_phi)
+      phi(_phi),
+      good_taus_mask({
+          {"nominal", RVec<int>(size, 1)},
+          {"scale_up", RVec<int>(size, 1)},
+          {"scale_down", RVec<int>(size, 1)},
+          {"resolution_up", RVec<int>(size, 1)},
+          {"resolution_down", RVec<int>(size, 1)},
+      })
 {
 }
 
@@ -309,7 +365,14 @@ Jets::Jets(const RVec<float> &_pt,
       pt_JER_up(_pt),
       mass_JER_up(_pt),
       pt_JER_down(_pt),
-      mass_JER_down(_pt)
+      mass_JER_down(_pt),
+      good_jets_mask({
+          {"nominal", RVec<int>(size, 1)},
+          {"scale_up", RVec<int>(size, 1)},
+          {"scale_down", RVec<int>(size, 1)},
+          {"resolution_up", RVec<int>(size, 1)},
+          {"resolution_down", RVec<int>(size, 1)},
+      })
 {
 }
 
@@ -327,8 +390,12 @@ MET::MET(const RVec<float> &_pt, const RVec<float> &_eta, const RVec<float> &_ph
       Electron_Scale_up(_pt),
       Electron_Scale_down(_pt),
       Electron_Resolution_up(_pt),
-      Electron_Resolution_down(_pt)
-
+      Electron_Resolution_down(_pt),
+      good_met_mask({
+          {"nominal", RVec<int>(size, 1)},
+          {"unclustered_energy_up", RVec<int>(size, 1)},
+          {"unclustered_energy_down", RVec<int>(size, 1)},
+      })
 {
 }
 
@@ -342,7 +409,10 @@ TrgObjs::TrgObjs(const RVec<float> &_pt,
       eta(_eta),
       phi(_phi),
       id(_id),
-      filterBits(_filterBits)
+      filterBits(_filterBits),
+      good_trgobjs_mask({
+          {"nominal", RVec<int>(size, 1)},
+      })
 {
 }
 

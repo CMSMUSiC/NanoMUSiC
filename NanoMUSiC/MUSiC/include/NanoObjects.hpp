@@ -3,6 +3,8 @@
 
 #include "fmt/format.h"
 #include <ROOT/RVec.hxx>
+#include <string>
+#include <unordered_map>
 #include <variant>
 
 constexpr float Muon_mass = 105.6583755 / 1000.;
@@ -11,6 +13,8 @@ constexpr float Tau_mass = 1776.86 / 1000.;
 
 using namespace ROOT;
 using namespace ROOT::VecOps;
+
+using namespace std::string_literals;
 
 namespace LorentzVectorHelper
 {
@@ -203,6 +207,9 @@ struct Muons
     RVec<float> tkRelIso;
     RVec<bool> highPurity;
     RVec<float> tunepRelPt;
+    std::unordered_map<std::string_view, RVec<int>> good_muons_mask;
+    std::unordered_map<std::string_view, RVec<int>> good_low_pt_muons_mask;
+    std::unordered_map<std::string_view, RVec<int>> good_high_pt_muons_mask;
 
     Muons(const RVec<float> &_pt = {},
           const RVec<float> &_eta = {},
@@ -233,6 +240,9 @@ struct Electrons
     RVec<float> pt_Scale_down;
     RVec<float> pt_Resolution_up;
     RVec<float> pt_Resolution_down;
+    std::unordered_map<std::string_view, RVec<int>> good_electrons_mask;
+    std::unordered_map<std::string_view, RVec<int>> good_low_pt_electrons_mask;
+    std::unordered_map<std::string_view, RVec<int>> good_high_pt_electrons_mask;
 
     Electrons(const RVec<float> &_pt = {},
               const RVec<float> &_eta = {},
@@ -256,6 +266,7 @@ struct Photons
     RVec<bool> pixelSeed;
     RVec<bool> isScEtaEB;
     RVec<bool> isScEtaEE;
+    std::unordered_map<std::string_view, RVec<int>> good_photons_mask;
 
     Photons(const RVec<float> &_pt = {},
             const RVec<float> &_eta = {},
@@ -272,6 +283,7 @@ struct Taus
     RVec<float> pt;
     RVec<float> eta;
     RVec<float> phi;
+    std::unordered_map<std::string_view, RVec<int>> good_taus_mask;
 
     Taus(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {});
 };
@@ -301,6 +313,8 @@ struct Jets
     RVec<float> mass_JER_up;
     RVec<float> pt_JER_down;
     RVec<float> mass_JER_down;
+
+    std::unordered_map<std::string_view, RVec<int>> good_jets_mask;
 
     Jets(const RVec<float> &_pt = {},
          const RVec<float> &_eta = {},
@@ -333,6 +347,7 @@ struct MET
     RVec<float> Electron_Scale_down;
     RVec<float> Electron_Resolution_up;
     RVec<float> Electron_Resolution_down;
+    std::unordered_map<std::string_view, RVec<int>> good_met_mask;
 
     MET(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {});
 };
@@ -347,6 +362,7 @@ struct TrgObjs
     // Muon, 15 = Tau, 1 = Jet, 6 = FatJet, 2 = MET, 3 = HT, 4 = MHT
     RVec<int> id;
     RVec<int> filterBits;
+    std::unordered_map<std::string_view, RVec<int>> good_trgobjs_mask;
 
     TrgObjs(const RVec<float> &_pt = {},
             const RVec<float> &_eta = {},
