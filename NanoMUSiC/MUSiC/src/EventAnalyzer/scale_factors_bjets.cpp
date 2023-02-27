@@ -34,13 +34,13 @@ auto EventAnalyzer::set_bjet_SFs(Outputs &outputs, const BTagSFCorrector &btag_s
 {
     if (*this)
     {
-        RVec<float> good_bjets_pt = bjets.pt[good_bjets_mask];
-        RVec<float> good_bjets_abseta = VecOps::abs(bjets.eta[good_bjets_mask]);
-        RVec<float> good_bjets_hadronFlavour = bjets.hadronFlavour[good_bjets_mask];
+        RVec<float> good_bjets_pt = bjets.pt[bjets.good_jets_mask["nominal"]];
+        RVec<float> good_bjets_abseta = VecOps::abs(bjets.eta[bjets.good_jets_mask["nominal"]]);
+        RVec<float> good_bjets_hadronFlavour = bjets.hadronFlavour[bjets.good_jets_mask["nominal"]];
 
-        RVec<float> good_jets_pt = jets.pt[good_jets_mask];
-        RVec<float> good_jets_abseta = VecOps::abs(jets.eta[good_jets_mask]);
-        RVec<float> good_jets_hadronFlavour = jets.hadronFlavour[good_jets_mask];
+        RVec<float> good_jets_pt = jets.pt[jets.good_jets_mask["nominal"]];
+        RVec<float> good_jets_abseta = VecOps::abs(jets.eta[jets.good_jets_mask["nominal"]]);
+        RVec<float> good_jets_hadronFlavour = jets.hadronFlavour[jets.good_jets_mask["nominal"]];
 
         // BJetCorrelated
         outputs.set_event_weight("BJetCorrelated",

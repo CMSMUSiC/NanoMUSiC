@@ -66,9 +66,9 @@ auto EventAnalyzer::set_muons(NanoObjects::Muons &&_muons, RVec<int> &&mask) -> 
     if (*this)
     {
         muons = _muons;
-        good_muons_mask = mask;
-        good_low_pt_muons_mask = mask;
-        good_high_pt_muons_mask = mask;
+        muons.good_muons_mask["nominal"] = mask;
+        muons.good_low_pt_muons_mask["nominal"] = mask;
+        muons.good_high_pt_muons_mask["nominal"] = mask;
         return *this;
     }
     return *this;
@@ -84,9 +84,9 @@ auto EventAnalyzer::set_electrons(NanoObjects::Electrons &&_electrons, RVec<int>
     if (*this)
     {
         electrons = _electrons;
-        good_electrons_mask = mask;
-        good_low_pt_electrons_mask = mask;
-        good_high_pt_electrons_mask = mask;
+        electrons.good_electrons_mask["nominal"] = mask;
+        electrons.good_low_pt_electrons_mask["nominal"] = mask;
+        electrons.good_high_pt_electrons_mask["nominal"] = mask;
         return *this;
     }
     return *this;
@@ -102,7 +102,7 @@ auto EventAnalyzer::set_photons(NanoObjects::Photons &&_photons, RVec<int> &&mas
     if (*this)
     {
         photons = _photons;
-        good_photons_mask = mask;
+        photons.good_photons_mask["nominal"] = mask;
         return *this;
     }
     return *this;
@@ -118,7 +118,7 @@ auto EventAnalyzer::set_taus(NanoObjects::Taus &&_taus, RVec<int> &&mask) -> Eve
     if (*this)
     {
         taus = _taus;
-        good_taus_mask = mask;
+        taus.good_taus_mask["nominal"] = mask;
         return *this;
     }
     return *this;
@@ -134,7 +134,7 @@ auto EventAnalyzer::set_bjets(NanoObjects::BJets &&_bjets, RVec<int> &&mask) -> 
     if (*this)
     {
         bjets = _bjets;
-        good_bjets_mask = mask;
+        bjets.good_jets_mask["nominal"] = mask;
         return *this;
     }
     return *this;
@@ -150,7 +150,7 @@ auto EventAnalyzer::set_jets(NanoObjects::Jets &&_jets, RVec<int> &&mask) -> Eve
     if (*this)
     {
         jets = _jets;
-        good_jets_mask = mask;
+        jets.good_jets_mask["nominal"] = mask;
         return *this;
     }
     return *this;
@@ -166,7 +166,7 @@ auto EventAnalyzer::set_met(NanoObjects::MET &&_met, RVec<int> &&mask) -> EventA
     if (*this)
     {
         met = _met;
-        good_met_mask = mask;
+        met.good_met_mask["nominal"] = mask;
         return *this;
     }
     return *this;
@@ -182,7 +182,7 @@ auto EventAnalyzer::set_trgobjs(NanoObjects::TrgObjs &&_trgobjs, RVec<int> &&mas
     if (*this)
     {
         trgobjs = _trgobjs;
-        good_trgobjs_mask = mask;
+        trgobjs.good_trgobjs_mask["nominal"] = mask;
         return *this;
     }
     return *this;

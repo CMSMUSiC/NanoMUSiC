@@ -1,4 +1,5 @@
 #include "NanoObjects.hpp"
+#include "Math/Vector4Dfwd.h"
 
 namespace LorentzVectorHelper
 {
@@ -239,6 +240,13 @@ Muons::Muons(const RVec<float> &_pt,
           {"scale_down", RVec<int>(size, 1)},
           {"resolution_up", RVec<int>(size, 1)},
           {"resolution_down", RVec<int>(size, 1)},
+      }),
+      delta_p({
+          {"nominal", Math::PtEtaPhiMVector()},
+          {"scale_up", Math::PtEtaPhiMVector()},
+          {"scale_down", Math::PtEtaPhiMVector()},
+          {"resolution_up", Math::PtEtaPhiMVector()},
+          {"resolution_down", Math::PtEtaPhiMVector()},
       })
 {
 }
@@ -290,6 +298,13 @@ Electrons::Electrons(const RVec<float> &_pt,
           {"scale_down", RVec<int>(size, 1)},
           {"resolution_up", RVec<int>(size, 1)},
           {"resolution_down", RVec<int>(size, 1)},
+      }),
+      delta_p({
+          {"nominal", Math::PtEtaPhiMVector()},
+          {"scale_up", Math::PtEtaPhiMVector()},
+          {"scale_down", Math::PtEtaPhiMVector()},
+          {"resolution_up", Math::PtEtaPhiMVector()},
+          {"resolution_down", Math::PtEtaPhiMVector()},
       })
 {
 }
@@ -315,6 +330,13 @@ Photons::Photons(const RVec<float> &_pt,
           {"scale_down", RVec<int>(size, 1)},
           {"resolution_up", RVec<int>(size, 1)},
           {"resolution_down", RVec<int>(size, 1)},
+      }),
+      delta_p({
+          {"nominal", Math::PtEtaPhiMVector()},
+          {"scale_up", Math::PtEtaPhiMVector()},
+          {"scale_down", Math::PtEtaPhiMVector()},
+          {"resolution_up", Math::PtEtaPhiMVector()},
+          {"resolution_down", Math::PtEtaPhiMVector()},
       })
 {
 }
@@ -330,6 +352,13 @@ Taus::Taus(const RVec<float> &_pt, const RVec<float> &_eta, const RVec<float> &_
           {"scale_down", RVec<int>(size, 1)},
           {"resolution_up", RVec<int>(size, 1)},
           {"resolution_down", RVec<int>(size, 1)},
+      }),
+      delta_p({
+          {"nominal", Math::PtEtaPhiMVector()},
+          {"scale_up", Math::PtEtaPhiMVector()},
+          {"scale_down", Math::PtEtaPhiMVector()},
+          {"resolution_up", Math::PtEtaPhiMVector()},
+          {"resolution_down", Math::PtEtaPhiMVector()},
       })
 {
 }
@@ -372,6 +401,13 @@ Jets::Jets(const RVec<float> &_pt,
           {"scale_down", RVec<int>(size, 1)},
           {"resolution_up", RVec<int>(size, 1)},
           {"resolution_down", RVec<int>(size, 1)},
+      }),
+      delta_p({
+          {"nominal", Math::PtEtaPhiMVector()},
+          {"scale_up", Math::PtEtaPhiMVector()},
+          {"scale_down", Math::PtEtaPhiMVector()},
+          {"resolution_up", Math::PtEtaPhiMVector()},
+          {"resolution_down", Math::PtEtaPhiMVector()},
       })
 {
 }
@@ -395,6 +431,11 @@ MET::MET(const RVec<float> &_pt, const RVec<float> &_eta, const RVec<float> &_ph
           {"nominal", RVec<int>(size, 1)},
           {"unclustered_energy_up", RVec<int>(size, 1)},
           {"unclustered_energy_down", RVec<int>(size, 1)},
+      }),
+      delta_p({
+          {"nominal", Math::PtEtaPhiMVector()},
+          {"unclustered_energy_up", Math::PtEtaPhiMVector()},
+          {"unclustered_energy_down", Math::PtEtaPhiMVector()},
       })
 {
 }

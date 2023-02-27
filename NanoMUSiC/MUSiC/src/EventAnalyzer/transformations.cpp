@@ -1,6 +1,7 @@
 #include "EventAnalyzer.hpp"
 
 #include <Math/Vector4D.h>
+#include <stdexcept>
 #include <utility>
 #include <variant>
 
@@ -10,11 +11,31 @@
 using namespace ROOT::Math;
 
 /// TODO
-auto EventAnalyzer::transform_muons() -> EventAnalyzer &
+auto EventAnalyzer::transform_muons(const std::string_view &variation) -> EventAnalyzer &
 {
     if (*this)
     {
-        return *this;
+        if (variation == "nominal")
+        {
+            return *this;
+        }
+        if (variation == "scale_up")
+        {
+            return *this;
+        }
+        if (variation == "scale_down")
+        {
+            return *this;
+        }
+        if (variation == "resolution_up")
+        {
+            return *this;
+        }
+        if (variation == "resolution_down")
+        {
+            return *this;
+        }
+        throw std::runtime_error(fmt::format("ERROR: Bad variation request: {}."));
     }
     return *this;
 }
@@ -22,10 +43,31 @@ auto EventAnalyzer::transform_muons() -> EventAnalyzer &
 ///////////////////////////////////////////////////////////////
 /// References:
 /// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaMiniAODV2#Applying_the_Energy_Scale_and_sm
-auto EventAnalyzer::transform_electrons() -> EventAnalyzer &
+auto EventAnalyzer::transform_electrons(const std::string_view &variation) -> EventAnalyzer &
 {
     if (*this)
     {
+        if (variation == "nominal")
+        {
+            return *this;
+        }
+        if (variation == "scale_up")
+        {
+            return *this;
+        }
+        if (variation == "scale_down")
+        {
+            return *this;
+        }
+        if (variation == "resolution_up")
+        {
+            return *this;
+        }
+        if (variation == "resolution_down")
+        {
+            return *this;
+        }
+        throw std::runtime_error(fmt::format("ERROR: Bad variation request: {}."));
         // Scale: Up - Resolution: Nominal
         auto dX_up_nominal = RVec<float>(electrons.size);
         auto dY_up_nominal = RVec<float>(electrons.size);
@@ -56,7 +98,7 @@ auto EventAnalyzer::transform_electrons() -> EventAnalyzer &
 
         for (std::size_t i = 0; i < electrons.size; i++)
         {
-            if (good_electrons_mask[i] == 1)
+            if (electrons.good_electrons_mask["nominal"][i] == 1)
             {
                 // Scale: Up - Resolution: Nominal
                 new_pt_up_nominal[i] = electrons.pt[i] * (1.f - electrons.dEscaleUp[i] / energies[i]);
@@ -118,34 +160,98 @@ auto EventAnalyzer::transform_electrons() -> EventAnalyzer &
 /// TODO:
 /// References:
 /// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaMiniAODV2#Applying_the_Energy_Scale_and_sm
-auto EventAnalyzer::transform_photons() -> EventAnalyzer &
+auto EventAnalyzer::transform_photons(const std::string_view &variation) -> EventAnalyzer &
 {
     if (*this)
     {
+        if (variation == "nominal")
+        {
+            return *this;
+        }
+        if (variation == "scale_up")
+        {
+            return *this;
+        }
+        if (variation == "scale_down")
+        {
+            return *this;
+        }
+        if (variation == "resolution_up")
+        {
+            return *this;
+        }
+        if (variation == "resolution_down")
+        {
+            return *this;
+        }
+        throw std::runtime_error(fmt::format("ERROR: Bad variation request: {}."));
         return *this;
     }
     return *this;
 }
 
 /// TODO:
-auto EventAnalyzer::transform_taus() -> EventAnalyzer &
+auto EventAnalyzer::transform_taus(const std::string_view &variation) -> EventAnalyzer &
 {
     if (*this)
     {
+        if (variation == "nominal")
+        {
+            return *this;
+        }
+        if (variation == "scale_up")
+        {
+            return *this;
+        }
+        if (variation == "scale_down")
+        {
+            return *this;
+        }
+        if (variation == "resolution_up")
+        {
+            return *this;
+        }
+        if (variation == "resolution_down")
+        {
+            return *this;
+        }
+        throw std::runtime_error(fmt::format("ERROR: Bad variation request: {}."));
         return *this;
     }
     return *this;
 }
 
 /// TODO:
-auto EventAnalyzer::transform_bjets_and_jets(JetCorrector &jet_corrections) -> EventAnalyzer &
+auto EventAnalyzer::transform_bjets_and_jets(const std::string_view &variation, JetCorrector &jet_corrections)
+    -> EventAnalyzer &
 {
     if (*this)
     {
+        if (variation == "nominal")
+        {
+            return *this;
+        }
+        if (variation == "scale_up")
+        {
+            return *this;
+        }
+        if (variation == "scale_down")
+        {
+            return *this;
+        }
+        if (variation == "resolution_up")
+        {
+            return *this;
+        }
+        if (variation == "resolution_down")
+        {
+            return *this;
+        }
+        throw std::runtime_error(fmt::format("ERROR: Bad variation request: {}."));
         // Jets
-        jet_transformer(jets, good_jets_mask, jet_corrections);
+        jet_transformer(variation, jets, jets.good_jets_mask["nominal"], jet_corrections);
         // BJets
-        jet_transformer(bjets, good_bjets_mask, jet_corrections);
+        jet_transformer(variation, bjets, bjets.good_jets_mask["nominal"], jet_corrections);
 
         return *this;
     }
@@ -153,10 +259,23 @@ auto EventAnalyzer::transform_bjets_and_jets(JetCorrector &jet_corrections) -> E
 }
 
 /// TODO:
-auto EventAnalyzer::transform_met() -> EventAnalyzer &
+auto EventAnalyzer::transform_met(const std::string_view &variation) -> EventAnalyzer &
 {
     if (*this)
     {
+        if (variation == "nominal")
+        {
+            return *this;
+        }
+        if (variation == "unclustered_energy_up")
+        {
+            return *this;
+        }
+        if (variation == "unclustered_energy_down")
+        {
+            return *this;
+        }
+        throw std::runtime_error(fmt::format("ERROR: Bad variation request: {}."));
         return *this;
     }
     return *this;

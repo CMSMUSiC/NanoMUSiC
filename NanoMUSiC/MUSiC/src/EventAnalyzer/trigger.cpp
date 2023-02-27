@@ -134,7 +134,7 @@ auto EventAnalyzer::trigger_match_filter(Outputs &outputs, const std::map<std::s
                 if (hlt_path.find("SingleMuonLowPt") != std::string_view::npos)
                 {
                     const auto [has_trigger_match, _trigger_sf_nominal, _trigger_sf_up, _trigger_sf_down] =
-                        matchers.at(hlt_path)(trgobjs, muons, good_low_pt_muons_mask);
+                        matchers.at(hlt_path)(trgobjs, muons, muons.good_low_pt_muons_mask["nominal"]);
                     if (has_trigger_match)
                     {
                         // set scale factors
@@ -148,7 +148,7 @@ auto EventAnalyzer::trigger_match_filter(Outputs &outputs, const std::map<std::s
                 if (hlt_path.find("SingleMuonHighPt") != std::string_view::npos)
                 {
                     const auto [has_trigger_match, _trigger_sf_nominal, _trigger_sf_up, _trigger_sf_down] =
-                        matchers.at(hlt_path)(trgobjs, muons, good_high_pt_muons_mask);
+                        matchers.at(hlt_path)(trgobjs, muons, muons.good_high_pt_muons_mask["nominal"]);
                     if (has_trigger_match)
                     {
                         // set scale factors
@@ -162,7 +162,7 @@ auto EventAnalyzer::trigger_match_filter(Outputs &outputs, const std::map<std::s
                 if (hlt_path.find("SingleElectronLowPt") != std::string_view::npos)
                 {
                     const auto [has_trigger_match, _trigger_sf_nominal, _trigger_sf_up, _trigger_sf_down] =
-                        matchers.at(hlt_path)(trgobjs, electrons, good_low_pt_electrons_mask);
+                        matchers.at(hlt_path)(trgobjs, electrons, electrons.good_low_pt_electrons_mask["nominal"]);
                     if (has_trigger_match)
                     { // set scale factors
                         trigger_sf_nominal = _trigger_sf_nominal;
@@ -175,7 +175,7 @@ auto EventAnalyzer::trigger_match_filter(Outputs &outputs, const std::map<std::s
                 if (hlt_path.find("SingleElectronHighPt") != std::string_view::npos)
                 {
                     const auto [has_trigger_match, _trigger_sf_nominal, _trigger_sf_up, _trigger_sf_down] =
-                        matchers.at(hlt_path)(trgobjs, electrons, good_high_pt_electrons_mask);
+                        matchers.at(hlt_path)(trgobjs, electrons, electrons.good_high_pt_electrons_mask["nominal"]);
                     if (has_trigger_match)
                     {
                         // set scale factors

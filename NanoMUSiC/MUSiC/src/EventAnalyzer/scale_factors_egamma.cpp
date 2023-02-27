@@ -45,13 +45,16 @@ auto EventAnalyzer::set_electron_SFs(Outputs &outputs, const ElectronSFCorrector
 {
     if (*this)
     {
-        RVec<float> good_electrons_pt = electrons.pt[good_electrons_mask];
-        RVec<float> good_electrons_pt_low_pt = electrons.pt[good_low_pt_electrons_mask];
-        RVec<float> good_electrons_pt_high_pt = electrons.pt[good_high_pt_electrons_mask];
+        RVec<float> good_electrons_pt = electrons.pt[electrons.good_electrons_mask["nominal"]];
+        RVec<float> good_electrons_pt_low_pt = electrons.pt[electrons.good_low_pt_electrons_mask["nominal"]];
+        RVec<float> good_electrons_pt_high_pt = electrons.pt[electrons.good_high_pt_electrons_mask["nominal"]];
 
-        RVec<float> good_electrons_eta_sc = (electrons.eta + electrons.deltaEtaSC)[good_electrons_mask];
-        RVec<float> good_electrons_eta_sc_low_pt = (electrons.eta + electrons.deltaEtaSC)[good_low_pt_electrons_mask];
-        RVec<float> good_electrons_eta_sc_high_pt = (electrons.eta + electrons.deltaEtaSC)[good_high_pt_electrons_mask];
+        RVec<float> good_electrons_eta_sc =
+            (electrons.eta + electrons.deltaEtaSC)[electrons.good_electrons_mask["nominal"]];
+        RVec<float> good_electrons_eta_sc_low_pt =
+            (electrons.eta + electrons.deltaEtaSC)[electrons.good_low_pt_electrons_mask["nominal"]];
+        RVec<float> good_electrons_eta_sc_high_pt =
+            (electrons.eta + electrons.deltaEtaSC)[electrons.good_high_pt_electrons_mask["nominal"]];
 
         // Electron Reco
         outputs.set_event_weight(
@@ -113,8 +116,8 @@ auto EventAnalyzer::set_photon_SFs(Outputs &outputs,
 {
     if (*this)
     {
-        RVec<float> good_photons_pt = photons.pt[good_photons_mask];
-        RVec<float> good_photons_eta = photons.eta[good_photons_mask];
+        RVec<float> good_photons_pt = photons.pt[photons.good_photons_mask["nominal"]];
+        RVec<float> good_photons_eta = photons.eta[photons.good_photons_mask["nominal"]];
 
         // PhotonId
         outputs.set_event_weight("PhotonId", "Nominal", photon_id_sf("sf", good_photons_pt, good_photons_eta));

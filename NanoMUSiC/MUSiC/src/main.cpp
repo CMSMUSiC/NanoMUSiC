@@ -482,6 +482,12 @@ auto main(int argc, char *argv[]) -> int
                              .met_filter(outputs)
                              .set_trigger_bits()
                              .trigger_filter(outputs)
+                             .transform_muons("nominal")
+                             .transform_electrons("nominal")
+                             .transform_photons("nominal")
+                             .transform_taus("nominal")
+                             .transform_bjets_and_jets("nominal", jet_corrections)
+                             .transform_met("nominal")
                              .object_selection()
                              .has_selected_objects_filter(outputs)
                              .trigger_match_filter(outputs, matchers)
@@ -499,12 +505,6 @@ auto main(int argc, char *argv[]) -> int
                              .set_bjet_SFs(outputs, btag_sf)
                              .set_met_SFs(outputs)
                              .set_trigger_SFs(outputs)
-                             .transform_muons()
-                             .transform_electrons()
-                             .transform_photons()
-                             .transform_taus()
-                             .transform_bjets_and_jets(jet_corrections)
-                             .transform_met()
                              .fill_event_content(outputs);
 
         // fill output event tree

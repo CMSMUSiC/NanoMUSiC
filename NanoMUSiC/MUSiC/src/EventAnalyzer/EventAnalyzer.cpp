@@ -66,32 +66,32 @@ auto EventAnalyzer::fill_event_content(Outputs &outputs) -> EventAnalyzer &
             std::move(lhe_info.LHEPdfWeight), //
 
             // muons
-            muons.pt[good_muons_mask],  //
-            muons.eta[good_muons_mask], //
-            muons.phi[good_muons_mask], //
+            muons.pt[muons.good_muons_mask["nominal"]],  //
+            muons.eta[muons.good_muons_mask["nominal"]], //
+            muons.phi[muons.good_muons_mask["nominal"]], //
             // electrons
-            electrons.pt[good_electrons_mask],  //
-            electrons.eta[good_electrons_mask], //
-            electrons.phi[good_electrons_mask], //
+            electrons.pt[electrons.good_electrons_mask["nominal"]],  //
+            electrons.eta[electrons.good_electrons_mask["nominal"]], //
+            electrons.phi[electrons.good_electrons_mask["nominal"]], //
             // photons
-            photons.pt[good_photons_mask],  //
-            photons.eta[good_photons_mask], //
-            photons.phi[good_photons_mask], //
+            photons.pt[photons.good_photons_mask["nominal"]],  //
+            photons.eta[photons.good_photons_mask["nominal"]], //
+            photons.phi[photons.good_photons_mask["nominal"]], //
             // taus
-            taus.pt[good_taus_mask],  //
-            taus.eta[good_taus_mask], //
-            taus.phi[good_taus_mask], //
+            taus.pt[taus.good_taus_mask["nominal"]],  //
+            taus.eta[taus.good_taus_mask["nominal"]], //
+            taus.phi[taus.good_taus_mask["nominal"]], //
             // bjets
-            bjets.pt[good_bjets_mask],  //
-            bjets.eta[good_bjets_mask], //
-            bjets.phi[good_bjets_mask], //
+            bjets.pt[bjets.good_jets_mask["nominal"]],  //
+            bjets.eta[bjets.good_jets_mask["nominal"]], //
+            bjets.phi[bjets.good_jets_mask["nominal"]], //
             // jets
-            jets.pt[good_jets_mask],  //
-            jets.eta[good_jets_mask], //
-            jets.phi[good_jets_mask], //
+            jets.pt[jets.good_jets_mask["nominal"]],  //
+            jets.eta[jets.good_jets_mask["nominal"]], //
+            jets.phi[jets.good_jets_mask["nominal"]], //
             // met
-            met.pt[good_met_mask], //
-            met.phi[good_met_mask]);
+            met.pt[met.good_met_mask["nominal"]], //
+            met.phi[met.good_met_mask["nominal"]]);
 
         return *this;
     }

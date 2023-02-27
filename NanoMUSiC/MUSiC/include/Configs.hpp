@@ -248,6 +248,7 @@ constexpr auto Tau2018 = TauConfig{};
 constexpr std::array<TauConfig, Year::kTotalYears> Taus = {Tau2016APV, Tau2016, Tau2017, Tau2018};
 
 // Bjets
+// REF: https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL17#AK4_b_tagging
 struct BjetsConfig
 {
     float MinPt = 50;
@@ -263,7 +264,6 @@ constexpr auto Bjets2018 = BjetsConfig{.MinBTagWPTight = 0.71};
 constexpr std::array<BjetsConfig, Year::kTotalYears> BJets = {Bjets2016APV, Bjets2016, Bjets2017, Bjets2018};
 
 // Jets
-// REF: https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL17#AK4_b_tagging
 struct JetConfig
 {
     float MinPt = 50;

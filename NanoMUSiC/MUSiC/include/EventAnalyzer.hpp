@@ -54,32 +54,20 @@ class EventAnalyzer
     NanoObjects::GenJets gen_jets;
 
     NanoObjects::Muons muons;
-    RVec<int> good_muons_mask;
-    RVec<int> good_low_pt_muons_mask;
-    RVec<int> good_high_pt_muons_mask;
 
     NanoObjects::Electrons electrons;
-    RVec<int> good_electrons_mask;
-    RVec<int> good_low_pt_electrons_mask;
-    RVec<int> good_high_pt_electrons_mask;
 
     NanoObjects::Photons photons;
-    RVec<int> good_photons_mask;
 
     NanoObjects::Taus taus;
-    RVec<int> good_taus_mask;
 
     NanoObjects::BJets bjets;
-    RVec<int> good_bjets_mask;
 
     NanoObjects::Jets jets;
-    RVec<int> good_jets_mask;
 
     NanoObjects::MET met;
-    RVec<int> good_met_mask;
 
     NanoObjects::TrgObjs trgobjs;
-    RVec<int> good_trgobjs_mask;
 
     bool is_data = true;
     Year year = Year::kTotalYears;
@@ -434,19 +422,20 @@ class EventAnalyzer
     auto set_trigger_SFs(Outputs &outputs) -> EventAnalyzer &;
 
     /// TODO:
-    auto transform_muons() -> EventAnalyzer &;
+    auto transform_muons(const std::string_view &variation) -> EventAnalyzer &;
 
     /// TODO:
-    auto transform_electrons() -> EventAnalyzer &;
+    auto transform_electrons(const std::string_view &variation) -> EventAnalyzer &;
 
     /// TODO:
-    auto transform_photons() -> EventAnalyzer &;
+    auto transform_photons(const std::string_view &variation) -> EventAnalyzer &;
 
     /// TODO:
-    auto transform_taus() -> EventAnalyzer &;
+    auto transform_taus(const std::string_view &variation) -> EventAnalyzer &;
 
     template <typename T>
-    auto jet_transformer(T &_jets, RVec<int> &_mask, JetCorrector &jet_corrections) -> void
+    auto jet_transformer(const std::string_view &variation, T &_jets, RVec<int> &_mask, JetCorrector &jet_corrections)
+        -> void
     {
         // Nominal
         auto dX_nominal = RVec<float>(_jets.size);
@@ -622,10 +611,10 @@ class EventAnalyzer
     }
 
     /// TODO:
-    auto transform_bjets_and_jets(JetCorrector &jet_corrections) -> EventAnalyzer &;
+    auto transform_bjets_and_jets(const std::string_view &variation, JetCorrector &jet_corrections) -> EventAnalyzer &;
 
     /// TODO:
-    auto transform_met() -> EventAnalyzer &;
+    auto transform_met(const std::string_view &variation) -> EventAnalyzer &;
 
     auto fill_event_content(Outputs &outputs) -> EventAnalyzer &;
 };

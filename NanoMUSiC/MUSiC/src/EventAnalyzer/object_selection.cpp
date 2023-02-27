@@ -96,15 +96,17 @@ auto EventAnalyzer::object_selection() -> EventAnalyzer &
     {
         //////////////////////////////////////
         // muons
-        good_low_pt_muons_mask = good_low_pt_muons_mask && get_low_pt_muons_selection_mask();
-        good_high_pt_muons_mask = good_high_pt_muons_mask && get_high_pt_muons_selection_mask();
+        muons.good_low_pt_muons_mask["nominal"] =
+            muons.good_low_pt_muons_mask["nominal"] && get_low_pt_muons_selection_mask();
+        muons.good_high_pt_muons_mask["nominal"] =
+            muons.good_high_pt_muons_mask["nominal"] && get_high_pt_muons_selection_mask();
 
         // loop over HighPt muons and ajust their pT to tunepRelPt*PF_pt
         auto dX = RVec<float>(muons.size);
         auto dY = RVec<float>(muons.size);
-        for (std::size_t i = 0; i < good_high_pt_muons_mask.size(); i++)
+        for (std::size_t i = 0; i < muons.good_high_pt_muons_mask["nominal"].size(); i++)
         {
-            if (good_high_pt_muons_mask[i] == 1)
+            if (muons.good_high_pt_muons_mask["nominal"][i] == 1)
             {
                 dX[i] = (muons.tunepRelPt[i] * muons.pt[i] - muons.pt[i]) * std::cos(muons.phi[i]);
                 dY[i] = (muons.tunepRelPt[i] * muons.pt[i] - muons.pt[i]) * std::sin(muons.phi[i]);
@@ -120,65 +122,88 @@ auto EventAnalyzer::object_selection() -> EventAnalyzer &
         met.phi[0] = new_met.phi();
 
         // set global muon mask ("cocktail")
-        good_muons_mask = good_low_pt_muons_mask || good_high_pt_muons_mask;
+        muons.good_muons_mask["nominal"] =
+            muons.good_low_pt_muons_mask["nominal"] || muons.good_high_pt_muons_mask["nominal"];
 
         // clear muons against themselves
         // should we do it????
-        good_muons_mask = good_muons_mask &&
-                          get_self_cleanning_mask(muons,
-                                                  good_muons_mask,
-                                                  0.4,
-                                                  [&](const NanoObjects::Muons &muons, std::size_t i, std::size_t j)
-                                                  {
-                                                      if (not(muons.highPurity[i]) and muons.highPurity[j])
-                                                      {
-                                                          return false;
-                                                      }
-                                                      return true;
-                                                  });
+        muons.good_muons_mask["nominal"] =
+            muons.good_muons_mask["nominal"] &&
+            get_self_cleanning_mask(muons,
+                                    muons.good_muons_mask["nominal"],
+                                    0.4,
+                                    [&](const NanoObjects::Muons &muons, std::size_t i, std::size_t j)
+                                    {
+                                        if (not(muons.highPurity[i]) and muons.highPurity[j])
+                                        {
+                                            return false;
+                                        }
+                                        return true;
+                                    });
 
         //////////////////////////////////////
         // electrons
-        good_low_pt_electrons_mask = good_low_pt_electrons_mask && get_low_pt_electrons_selection_mask();
-        good_high_pt_electrons_mask = good_high_pt_electrons_mask && get_high_pt_electrons_selection_mask();
-        good_electrons_mask = good_low_pt_electrons_mask || good_high_pt_electrons_mask;
+        electrons.good_low_pt_electrons_mask["nominal"] =
+            electrons.good_low_pt_electrons_mask["nominal"] && get_low_pt_electrons_selection_mask();
+        electrons.good_high_pt_electrons_mask["nominal"] =
+            electrons.good_high_pt_electrons_mask["nominal"] && get_high_pt_electrons_selection_mask();
+        electrons.good_electrons_mask["nominal"] =
+            electrons.good_low_pt_electrons_mask["nominal"] || electrons.good_high_pt_electrons_mask["nominal"];
 
         // clear electrons against muons
-        good_electrons_mask =
-            good_electrons_mask && get_cross_cleanning_mask(electrons, muons, good_electrons_mask, 0.4);
+        electrons.good_electrons_mask["nominal"] =
+            electrons.good_electrons_mask["nominal"] &&
+            get_cross_cleanning_mask(electrons, muons, electrons.good_electrons_mask["nominal"], 0.4);
 
         //////////////////////////////////////
         // photons
-        good_photons_mask = good_photons_mask && get_photons_selection_mask();
-        good_photons_mask = good_photons_mask && get_cross_cleanning_mask(photons, muons, good_photons_mask, 0.4);
-        good_photons_mask = good_photons_mask && get_cross_cleanning_mask(photons, electrons, good_photons_mask, 0.4);
+        photons.good_photons_mask["nominal"] = photons.good_photons_mask["nominal"] && get_photons_selection_mask();
+        photons.good_photons_mask["nominal"] =
+            photons.good_photons_mask["nominal"] &&
+            get_cross_cleanning_mask(photons, muons, photons.good_photons_mask["nominal"], 0.4);
+        photons.good_photons_mask["nominal"] =
+            photons.good_photons_mask["nominal"] &&
+            get_cross_cleanning_mask(photons, electrons, photons.good_photons_mask["nominal"], 0.4);
 
         //////////////////////////////////////
         // taus
-        good_taus_mask = good_taus_mask && get_taus_selection_mask();
-        good_taus_mask = good_taus_mask && get_cross_cleanning_mask(taus, muons, good_taus_mask, 0.4);
-        good_taus_mask = good_taus_mask && get_cross_cleanning_mask(taus, electrons, good_taus_mask, 0.4);
-        good_taus_mask = good_taus_mask && get_cross_cleanning_mask(taus, photons, good_taus_mask, 0.4);
+        taus.good_taus_mask["nominal"] = taus.good_taus_mask["nominal"] && get_taus_selection_mask();
+        taus.good_taus_mask["nominal"] = taus.good_taus_mask["nominal"] &&
+                                         get_cross_cleanning_mask(taus, muons, taus.good_taus_mask["nominal"], 0.4);
+        taus.good_taus_mask["nominal"] = taus.good_taus_mask["nominal"] &&
+                                         get_cross_cleanning_mask(taus, electrons, taus.good_taus_mask["nominal"], 0.4);
+        taus.good_taus_mask["nominal"] = taus.good_taus_mask["nominal"] &&
+                                         get_cross_cleanning_mask(taus, photons, taus.good_taus_mask["nominal"], 0.4);
 
         //////////////////////////////////////
         // bjets
-        good_bjets_mask = good_bjets_mask && get_bjets_selection_mask();
-        good_bjets_mask = good_bjets_mask && get_cross_cleanning_mask(bjets, muons, good_bjets_mask, 0.5);
-        good_bjets_mask = good_bjets_mask && get_cross_cleanning_mask(bjets, electrons, good_bjets_mask, 0.5);
-        good_bjets_mask = good_bjets_mask && get_cross_cleanning_mask(bjets, photons, good_bjets_mask, 0.5);
-        good_bjets_mask = good_bjets_mask && get_cross_cleanning_mask(bjets, taus, good_bjets_mask, 0.5);
+        bjets.good_jets_mask["nominal"] = bjets.good_jets_mask["nominal"] && get_bjets_selection_mask();
+        bjets.good_jets_mask["nominal"] = bjets.good_jets_mask["nominal"] &&
+                                          get_cross_cleanning_mask(bjets, muons, bjets.good_jets_mask["nominal"], 0.5);
+        bjets.good_jets_mask["nominal"] =
+            bjets.good_jets_mask["nominal"] &&
+            get_cross_cleanning_mask(bjets, electrons, bjets.good_jets_mask["nominal"], 0.5);
+        bjets.good_jets_mask["nominal"] =
+            bjets.good_jets_mask["nominal"] &&
+            get_cross_cleanning_mask(bjets, photons, bjets.good_jets_mask["nominal"], 0.5);
+        bjets.good_jets_mask["nominal"] = bjets.good_jets_mask["nominal"] &&
+                                          get_cross_cleanning_mask(bjets, taus, bjets.good_jets_mask["nominal"], 0.5);
 
         //////////////////////////////////////
         // jets
-        good_jets_mask = good_jets_mask && get_jets_selection_mask();
-        good_jets_mask = good_jets_mask && get_cross_cleanning_mask(jets, muons, good_jets_mask, 0.5);
-        good_jets_mask = good_jets_mask && get_cross_cleanning_mask(jets, electrons, good_jets_mask, 0.5);
-        good_jets_mask = good_jets_mask && get_cross_cleanning_mask(jets, photons, good_jets_mask, 0.5);
-        good_jets_mask = good_jets_mask && get_cross_cleanning_mask(jets, taus, good_jets_mask, 0.5);
+        jets.good_jets_mask["nominal"] = jets.good_jets_mask["nominal"] && get_jets_selection_mask();
+        jets.good_jets_mask["nominal"] = jets.good_jets_mask["nominal"] &&
+                                         get_cross_cleanning_mask(jets, muons, jets.good_jets_mask["nominal"], 0.5);
+        jets.good_jets_mask["nominal"] = jets.good_jets_mask["nominal"] &&
+                                         get_cross_cleanning_mask(jets, electrons, jets.good_jets_mask["nominal"], 0.5);
+        jets.good_jets_mask["nominal"] = jets.good_jets_mask["nominal"] &&
+                                         get_cross_cleanning_mask(jets, photons, jets.good_jets_mask["nominal"], 0.5);
+        jets.good_jets_mask["nominal"] =
+            jets.good_jets_mask["nominal"] && get_cross_cleanning_mask(jets, taus, jets.good_jets_mask["nominal"], 0.5);
 
         //////////////////////////////////////
         // met
-        good_met_mask = good_met_mask && get_met_selection_mask();
+        met.good_met_mask["nominal"] = met.good_met_mask["nominal"] && get_met_selection_mask();
         return *this;
     }
     return *this;
@@ -190,14 +215,14 @@ auto EventAnalyzer::has_selected_objects_filter(Outputs &outputs) -> EventAnalyz
 {
     if (*this)
     {
-        if (                                          //
-            (VecOps::Sum(good_muons_mask) > 0) ||     //
-            (VecOps::Sum(good_electrons_mask) > 0) || //
-            (VecOps::Sum(good_photons_mask) > 0) ||   //
-            (VecOps::Sum(good_taus_mask) > 0) ||      //
-            (VecOps::Sum(good_bjets_mask) > 0) ||     //
-            (VecOps::Sum(good_jets_mask) > 0) ||      //
-            (VecOps::Sum(good_met_mask) > 0)          //
+        if (                                                               //
+            (VecOps::Sum(muons.good_muons_mask["nominal"]) > 0) ||         //
+            (VecOps::Sum(electrons.good_electrons_mask["nominal"]) > 0) || //
+            (VecOps::Sum(photons.good_photons_mask["nominal"]) > 0) ||     //
+            (VecOps::Sum(taus.good_taus_mask["nominal"]) > 0) ||           //
+            (VecOps::Sum(bjets.good_jets_mask["nominal"]) > 0) ||          //
+            (VecOps::Sum(jets.good_jets_mask["nominal"]) > 0) ||           //
+            (VecOps::Sum(met.good_met_mask["nominal"]) > 0)                //
         )
         {
             outputs.fill_cutflow_histo("AtLeastOneSelectedObject", outputs.get_event_weight());

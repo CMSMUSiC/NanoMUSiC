@@ -1,7 +1,10 @@
 #ifndef MUSIC_NANOOBJECTS
 #define MUSIC_NANOOBJECTS
 
+#include "Math/GenVector/LorentzVector.h"
+#include "Math/Vector4Dfwd.h"
 #include "fmt/format.h"
+#include <Math/Vector4D.h>
 #include <ROOT/RVec.hxx>
 #include <string>
 #include <unordered_map>
@@ -210,6 +213,7 @@ struct Muons
     std::unordered_map<std::string_view, RVec<int>> good_muons_mask;
     std::unordered_map<std::string_view, RVec<int>> good_low_pt_muons_mask;
     std::unordered_map<std::string_view, RVec<int>> good_high_pt_muons_mask;
+    std::unordered_map<std::string_view, Math::PtEtaPhiMVector> delta_p;
 
     Muons(const RVec<float> &_pt = {},
           const RVec<float> &_eta = {},
@@ -243,6 +247,7 @@ struct Electrons
     std::unordered_map<std::string_view, RVec<int>> good_electrons_mask;
     std::unordered_map<std::string_view, RVec<int>> good_low_pt_electrons_mask;
     std::unordered_map<std::string_view, RVec<int>> good_high_pt_electrons_mask;
+    std::unordered_map<std::string_view, Math::PtEtaPhiMVector> delta_p;
 
     Electrons(const RVec<float> &_pt = {},
               const RVec<float> &_eta = {},
@@ -267,6 +272,7 @@ struct Photons
     RVec<bool> isScEtaEB;
     RVec<bool> isScEtaEE;
     std::unordered_map<std::string_view, RVec<int>> good_photons_mask;
+    std::unordered_map<std::string_view, Math::PtEtaPhiMVector> delta_p;
 
     Photons(const RVec<float> &_pt = {},
             const RVec<float> &_eta = {},
@@ -284,6 +290,7 @@ struct Taus
     RVec<float> eta;
     RVec<float> phi;
     std::unordered_map<std::string_view, RVec<int>> good_taus_mask;
+    std::unordered_map<std::string_view, Math::PtEtaPhiMVector> delta_p;
 
     Taus(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {});
 };
@@ -315,6 +322,7 @@ struct Jets
     RVec<float> mass_JER_down;
 
     std::unordered_map<std::string_view, RVec<int>> good_jets_mask;
+    std::unordered_map<std::string_view, Math::PtEtaPhiMVector> delta_p;
 
     Jets(const RVec<float> &_pt = {},
          const RVec<float> &_eta = {},
@@ -348,6 +356,7 @@ struct MET
     RVec<float> Electron_Resolution_up;
     RVec<float> Electron_Resolution_down;
     std::unordered_map<std::string_view, RVec<int>> good_met_mask;
+    std::unordered_map<std::string_view, Math::PtEtaPhiMVector> delta_p;
 
     MET(const RVec<float> &_pt = {}, const RVec<float> &_eta = {}, const RVec<float> &_phi = {});
 };

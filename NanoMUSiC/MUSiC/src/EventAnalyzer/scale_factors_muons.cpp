@@ -26,12 +26,12 @@ auto EventAnalyzer::set_muon_SFs(Outputs &outputs,                    //
     if (*this)
     {
 
-        RVec<float> good_muons_pt = muons.pt[good_muons_mask];
-        RVec<float> good_muons_pt_low_pt = muons.pt[good_low_pt_muons_mask];
-        RVec<float> good_muons_pt_high_pt = muons.pt[good_high_pt_muons_mask];
-        RVec<float> good_muons_eta = VecOps::abs(muons.eta[good_muons_mask]);
-        RVec<float> good_muons_eta_low_pt = VecOps::abs(muons.eta[good_low_pt_muons_mask]);
-        RVec<float> good_muons_eta_high_pt = VecOps::abs(muons.eta[good_high_pt_muons_mask]);
+        RVec<float> good_muons_pt = muons.pt[muons.good_muons_mask["nominal"]];
+        RVec<float> good_muons_pt_low_pt = muons.pt[muons.good_low_pt_muons_mask["nominal"]];
+        RVec<float> good_muons_pt_high_pt = muons.pt[muons.good_high_pt_muons_mask["nominal"]];
+        RVec<float> good_muons_eta = VecOps::abs(muons.eta[muons.good_muons_mask["nominal"]]);
+        RVec<float> good_muons_eta_low_pt = VecOps::abs(muons.eta[muons.good_low_pt_muons_mask["nominal"]]);
+        RVec<float> good_muons_eta_high_pt = VecOps::abs(muons.eta[muons.good_high_pt_muons_mask["nominal"]]);
 
         // Muon Reco
         outputs.set_event_weight("MuonReco", "Nominal", muon_sf_reco(year, good_muons_pt, good_muons_eta, "sf"));
