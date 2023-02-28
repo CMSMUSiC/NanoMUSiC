@@ -1,0 +1,22 @@
+output = 'test_mc_2018'
+is_data = false                                    # Is Data?
+x_section_file = '$MUSIC_BASE/configs/xsections_and_lumi/x_sections.toml'
+process = 'DYJetsToLL_M-50_13TeV_AM'
+
+# input_files = [
+#     '/disk1/silva/projects/NanoMUSiC_Test_Data/DY2018/f01.root',
+#     '/disk1/silva/projects/NanoMUSiC_Test_Data/DY2018/f01.root',
+#     '/disk1/silva/projects/NanoMUSiC_Test_Data/DY2018/f01.root'
+#     ]
+
+# input_files = [
+#     '/tmp/silva/nano_music_24.root',
+#     '/tmp/silva/nano_music_23.root',
+#     '/tmp/silva/nano_music_22.root'
+#     ]
+
+input_files = [
+    'dcap://grid-dcap-extern.physik.rwth-aachen.de/pnfs/physik.rwth-aachen.de/cms/store/user/ftorresd/nano_music/crab_nano_music_date_2023_02_28_time_11_44_37/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/DYJetsToLL_M-50_13TeV_AM_2018/230228_104451/0000/nano_music_24.root',
+    'dcap://grid-dcap-extern.physik.rwth-aachen.de/pnfs/physik.rwth-aachen.de/cms/store/user/ftorresd/nano_music/crab_nano_music_date_2023_02_28_time_11_44_37/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/DYJetsToLL_M-50_13TeV_AM_2018/230228_104451/0000/nano_music_23.root',
+    'dcap://grid-dcap-extern.physik.rwth-aachen.de/pnfs/physik.rwth-aachen.de/cms/store/user/ftorresd/nano_music/crab_nano_music_date_2023_02_28_time_11_44_37/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/DYJetsToLL_M-50_13TeV_AM_2018/230228_104451/0000/nano_music_22.root'
+    ]
