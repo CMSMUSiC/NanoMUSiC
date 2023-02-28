@@ -4,6 +4,7 @@
 # echo Check if TTY
 if [ "`tty`" != "not a tty" ]; then
   echo "YOU SHOULD NOT RUN THIS IN AN INTERACTIVE TERMINAL! IT CAN MAKE A MESS IN YOUR LOCAL FILES!"
+  exit 42
 else
   echo "================= [ BEGIN ] Input arguments =================="
   echo $@

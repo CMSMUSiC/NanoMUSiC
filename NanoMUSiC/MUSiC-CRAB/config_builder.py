@@ -62,7 +62,6 @@ def modify_config():
     config = tomli.loads(Path(toml_config).read_text(encoding="utf-8"))
     config["input_files"] = get_input_files()
     config["is_crab_job"] = True
-    config["n_threads"] = 1
     config["output"] = "outputs"
 
     new_config = to_toml_dumps(config)

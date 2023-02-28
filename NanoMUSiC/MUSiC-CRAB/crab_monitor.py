@@ -13,8 +13,7 @@ from CRABAPI.RawCommand import crabCommand
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Monitor CRAB MUSiC jobs.')
-    parser.add_argument('-ec','--exclude-completed', action='store_true', help='will not report COMPLETED taks.', required=True)
-    # parser.add_argument('-b','--bar', help='Description for bar argument', required=True)
+    parser.add_argument('-ec','--exclude-completed', action='store_true', help='will not report COMPLETED taks.', required=False)
     return vars(parser.parse_args())
 
 
@@ -101,6 +100,10 @@ def monitor(dir, idx, completed, failing, others, total_task, exclude_completed)
         if "failed" in jobsPerStatus:
             print(f"{bcolors.WARNING}Resubmit command:{bcolors.ENDC}")
             print(f"crab resubmit -d {dir}")
+        print(f"{bcolors.WARNING}Kill command:{bcolors.ENDC}")
+        print(f"crab kill -d {dir}")
+
+
         idx += 1
     return idx, completed, failing, others 
     
@@ -108,7 +111,7 @@ def next_command():
     next_cmd = "invalid"
     while next_cmd == "invalid":
         cmd = input(f"{bcolors.BOLD}\nCommand: [q] quit - [<ENTER>] reload:{bcolors.ENDC} ")
-        if cmd == "q":
+        if cmd == "q" or cmd == "quit":
             exit(0)
         elif cmd == "":
             print("Reloading ...")
@@ -128,17 +131,14 @@ def main():
         others = 0
         for dir in get_crab_dirs():
             idx, completed, failing, others = monitor(dir, idx, completed, failing, others, len(get_crab_dirs()), exclude_completed)
-        if exclude_completed:
-            print(f"\n{bcolors.BOLD}==================== [ REPORT ] ===================={bcolors.ENDC}")
-            print(f"{bcolors.OKGREEN}Completed{bcolors.ENDC}: {completed}/{len(get_crab_dirs())} tasks{bcolors.ENDC}")
-            print(f"{bcolors.FAIL}Failing{bcolors.ENDC}: {failing}/{len(get_crab_dirs())} tasks{bcolors.ENDC}")
-            print(f"{bcolors.ENDC}Others{bcolors.ENDC}: {others}/{len(get_crab_dirs())} tasks{bcolors.ENDC}")
+       
+        print(f"\n{bcolors.BOLD}==================== [ REPORT ] ===================={bcolors.ENDC}")
+        print(f"{bcolors.OKGREEN}Completed{bcolors.ENDC}: {completed}/{len(get_crab_dirs())} tasks{bcolors.ENDC}")
+        print(f"{bcolors.FAIL}Failed{bcolors.ENDC}: {failing}/{len(get_crab_dirs())} tasks{bcolors.ENDC}")
+        print(f"{bcolors.ENDC}Others{bcolors.ENDC}: {others}/{len(get_crab_dirs())} tasks{bcolors.ENDC}")
+        
         if next_command() == "reload":
             pass
-
-
-            
-        
 
 if __name__=="__main__":
     main()

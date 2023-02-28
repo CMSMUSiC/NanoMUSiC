@@ -19,7 +19,7 @@ test_*
 Test_Outputs_*.txt
 Test_Ouputs_MC_*.txt
 Test_Ouputs_Data_*.txt
-
+NanoMUSiC/MUSiC-CRAB/crab_nano_music*
 ##### PYTHON #####
 
 # Byte-compiled / optimized / DLL files
@@ -226,3 +226,4 @@ ref_rdataframe_slot.cpp
 foo
 .gitignore
 gdb.txt
+NanoMUSiC/MUSiC-CRAB/task.tar.gz

@@ -9,6 +9,42 @@ from CRABAPI.RawCommand import crabCommand
 
 from sample_list import sample_list
 
+from pathlib import Path
+import tomli
+from helpers import *
+
+from pygments import highlight
+from pygments.lexers import get_lexer_by_name
+from pygments.formatters import Terminal256Formatter, HtmlFormatter
+
+def make_task_config_file(process_name, das_name, year, era, is_data):
+    # copy config TOML to current directory
+    # True for Data, False for MC
+    config_toml_file = {
+        True: "../../configs/task_configs/template_Data.toml", # Data
+        False: "../../configs/task_configs/template_MC.toml", # MC
+    }
+
+    config = tomli.loads(Path("../../configs/task_configs/CRAB_template.toml").read_text(encoding="utf-8"))
+    config["era"] = era
+    config["is_crab_job"] = True
+    config["output"] = "outputs"
+    config["process"] = process_name
+    config["dataset"] = das_name
+    config["year"] = year
+    config["is_data"] = is_data 
+
+    new_config = to_toml_dumps(config)
+    print("\n*************** Modified task config file: ******************\n")
+    print(highlight(new_config, 
+                lexer=get_lexer_by_name("toml"), 
+                formatter=Terminal256Formatter(style="monokai")))
+    print("\n" + "*" * 56)
+
+    # dump new config to file
+    os.system("rm raw_config.toml > /dev/null 2>&1")
+    with open("raw_config.toml", "w") as new_config_file:
+        new_config_file.write(new_config)
 
 def get_username():
     res = subprocess.check_output(
@@ -35,16 +71,6 @@ def build_crab_config(process_name, das_name, year, is_data):
     this_config.JobType.psetName = "crab_music_pset.py"
     this_config.JobType.scriptExe = "run_nano_music.sh"
 
-    # copy config TOML to current directory
-    config_toml_file = {
-        True: "../../configs/task_configs/Data.toml", # Data
-        False: "../../configs/task_configs/MC.toml", # MC
-    }
-
-    os.system(
-        f"rm raw_config.toml > /dev/null 2>&1 ; cp {config_toml_file[is_data]} raw_config.toml"
-    )
-
     this_config.JobType.inputFiles = ["task.tar.gz", "raw_config.toml"]
 
     this_config.Data.inputDataset = das_name
@@ -58,10 +84,9 @@ def build_crab_config(process_name, das_name, year, is_data):
         f"/store/user/{get_username()}/nano_music/{this_config.General.workArea}"
     )
 
-    # this_config.JobType.outputFiles = [
-    #     f"nano_music_{process_name}_0.root",
-    #     # f'outputs_{process_name}/nano_music_DYJetsToLL_M-50_13TeV_AM_0.classes'
-    # ]
+    this_config.JobType.outputFiles = [
+        r"nano_music.root"
+    ]
     this_config.User.voGroup = "dcms"
     this_config.Site.storageSite = "T2_DE_RWTH"
 
@@ -69,7 +94,8 @@ def build_crab_config(process_name, das_name, year, is_data):
 
 
 def submit(sample):
-    process_name, das_name, year, is_data = sample
+    process_name, das_name, year, era, is_data = sample
+    make_task_config_file(process_name, das_name, year, era, is_data)
     crabCommand(
         "submit", config=build_crab_config(process_name, das_name, year, is_data)
     )

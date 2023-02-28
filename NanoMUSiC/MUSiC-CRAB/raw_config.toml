@@ -1,0 +1,9 @@
+output = "outputs"
+is_data = true
+x_section_file = "$MUSIC_BASE/configs/xsections_and_lumi/x_sections.toml"
+year = "2018"
+era = "D"
+process = "SingleMuonD_2018"
+dataset = "/SingleMuon/Run2018D-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD"
+is_crab_job = true
+input_files = ["__dummy__"]
