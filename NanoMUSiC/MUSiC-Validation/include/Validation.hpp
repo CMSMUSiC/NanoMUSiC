@@ -24,7 +24,10 @@
 
 #include "MUSiCTools.hpp"
 #include "TOMLConfig.hpp"
+#include "ZToLepLepX.hpp"
+#include "emoji.hpp"
 
+using namespace ROOT;
 using namespace ROOT::Math;
 using namespace ROOT::VecOps;
 
