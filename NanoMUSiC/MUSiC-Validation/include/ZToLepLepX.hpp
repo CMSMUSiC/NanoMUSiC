@@ -2,12 +2,16 @@
 #define ZTOLEPLEPX
 
 #include "Histograms.hpp"
+#include <TFile.h>
 #include <TH1F.h>
+#include <memory>
 #include <string_view>
 
 class ZToLepLepX
 {
   public:
+    std::unique_ptr<TFile> output_file;
+
     // histograms
     ADD_TH1F(h_invariant_mass, n_energy_bins, min_energy, max_energy);
     ADD_TH1F(h_sum_pt, n_energy_bins, min_energy, max_energy);
@@ -23,7 +27,7 @@ class ZToLepLepX
     ADD_TH1F(h_jet_multiplicity, n_multiplicity_bins, min_multiplicity, max_multiplicity);
     ADD_TH1F(h_bjet_multiplicity, n_multiplicity_bins, min_multiplicity, max_multiplicity);
 
-    ZToLepLepX();
+    ZToLepLepX(const std::string &output_path);
 
     auto fill(float lepton_1_pt,
               float lepton_1_eta,
@@ -48,7 +52,7 @@ class ZToLepLepX
               float met,
               float weight = 1.) -> void;
 
-    auto dump_outputs(const std::string_view &output_path) -> void;
+    auto dump_outputs() -> void;
 };
 
 #endif // !ZTOLEPLEPX

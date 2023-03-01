@@ -3,6 +3,8 @@
 #include "TTreeReader.h"
 #include "TTreeReaderValue.h"
 #include "Validation.hpp"
+#include <cstdlib>
+#include <filesystem>
 
 auto main(int argc, char *argv[]) -> int
 {
@@ -24,7 +26,6 @@ auto main(int argc, char *argv[]) -> int
 
     // task configuration
     const auto task_config = TOMLConfig::make_toml_config(config_file);
-    const auto output_folder = task_config.get<std::string>("output");
     const auto is_data = task_config.get<bool>("is_data");
     const auto x_section_file(MUSiCTools::parse_and_expand_music_base(task_config.get<std::string>("x_section_file")));
     const auto process = task_config.get<std::string>("process");
@@ -32,7 +33,6 @@ auto main(int argc, char *argv[]) -> int
 
     fmt::print("********************* Task Configuration *********************\n");
     fmt::print("Process: {}\n", process);
-    fmt::print("Output Folder: {}\n", output_folder);
     fmt::print("Is Data(?): {}\n", is_data);
     // fmt::print("Cross-sections file: {}\n", x_section_file);
     fmt::print("**************************************************************\n");
@@ -75,17 +75,24 @@ auto main(int argc, char *argv[]) -> int
     ADD_VALUE_READER(nMET, unsigned int);
     ADD_ARRAY_READER(MET_pt, float);
 
+    fmt::print("\n[MUSiC Validation] Cleanning output folder ...\n");
+    std::filesystem::create_directories("validation_outputs");
+    const std::string outputs_path = fmt::format("validation_outputs/{}", process, config_file);
+    std::filesystem::remove_all(outputs_path);
+    std::filesystem::create_directories(outputs_path);
+    std::filesystem::copy_file(config_file, fmt::format("{}/task_config.toml", outputs_path));
+
     fmt::print("\n[MUSiC Validation] Initializing Z -> MuMU + X ...\n");
-    auto z_to_mu_mu_x = ZToLepLepX();
+    auto z_to_mu_mu_x = ZToLepLepX(fmt::format("{}/z_to_mu_mu_x.root", outputs_path));
 
     fmt::print("\n[MUSiC Validation] Initializing Z -> EleEle + X ...\n");
-    auto z_to_ele_ele_x = ZToLepLepX();
+    auto z_to_ele_ele_x = ZToLepLepX(fmt::format("{}/z_to_ele_ele_x.root", outputs_path));
 
     fmt::print("\n[MUSiC Validation] Initializing Z -> MuMU + X (Z mass) ...\n");
-    auto z_to_mu_mu_x_Z_mass = ZToLepLepX();
+    auto z_to_mu_mu_x_Z_mass = ZToLepLepX(fmt::format("{}/z_to_mu_mu_x_Z_mass.root", outputs_path));
 
     fmt::print("\n[MUSiC Validation] Initializing Z -> EleEle (Z mass) + X ...\n");
-    auto z_to_ele_ele_x_Z_mass = ZToLepLepX();
+    auto z_to_ele_ele_x_Z_mass = ZToLepLepX(fmt::format("{}/z_to_ele_ele_x_Z_mass.root", outputs_path));
 
     fmt::print("\n[MUSiC Validation] Starting timer  ...\n");
     // auto dTime1 = getCpuTime(); // Start Timer
@@ -141,12 +148,13 @@ auto main(int argc, char *argv[]) -> int
         // }
     }
     fmt::print("\n[MUSiC Validation] Saving outputs ...\n");
-    z_to_mu_mu_x.dump_outputs(fmt::format("{}/z_to_mu_mu_x.root", output_folder));
-    z_to_ele_ele_x.dump_outputs(fmt::format("{}/z_to_mu_mu_x.root", output_folder));
-    z_to_mu_mu_x_Z_mass.dump_outputs(fmt::format("{}/z_to_mu_mu_x.root", output_folder));
-    z_to_ele_ele_x_Z_mass.dump_outputs(fmt::format("{}/z_to_mu_mu_x.root", output_folder));
+    z_to_mu_mu_x.dump_outputs();
+    z_to_ele_ele_x.dump_outputs();
+    z_to_mu_mu_x_Z_mass.dump_outputs();
+    z_to_ele_ele_x_Z_mass.dump_outputs();
 
     fmt::print("\n[MUSiC Validation] Done ...\n");
     PrintProcessInfo();
-    return 0;
+
+    return EXIT_SUCCESS;
 }

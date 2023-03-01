@@ -1,9 +1,11 @@
 #include "ZToLepLepX.hpp"
 #include "Histograms.hpp"
+#include <filesystem>
 #include <fmt/format.h>
 #include <string_view>
 
-ZToLepLepX::ZToLepLepX()
+ZToLepLepX::ZToLepLepX(const std::string &output_path)
+    : output_file(std::unique_ptr<TFile>(TFile::Open(output_path.c_str(), "RECREATE")))
 {
 }
 
@@ -32,7 +34,11 @@ auto ZToLepLepX::fill(float lepton_1_pt,
 {
 }
 
-auto ZToLepLepX::dump_outputs(const std::string_view &output_path) -> void
+auto ZToLepLepX::dump_outputs() -> void
 {
-    fmt::print("Saving outputs to: {}\n", output_path);
+
+    fmt::print("Saving outputs to: {}\n", output_file->GetPath());
+    output_file->cd();
+    h_invariant_mass.Write();
+    output_file->Close();
 }

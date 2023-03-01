@@ -1,4 +1,3 @@
-output = 'test_mc_2018'
 is_data = false                                    # Is Data?
 x_section_file = '$MUSIC_BASE/configs/xsections_and_lumi/x_sections.toml'
 process = 'DYJetsToLL_M-50_13TeV_AM'
