@@ -1,14 +1,23 @@
+#include "Configs.hpp"
+#include "Math/Vector4Dfwd.h"
 #include "ROOT/RVec.hxx"
+#include "TFile.h"
 #include "TH1.h"
 #include "TTreeReader.h"
 #include "TTreeReaderValue.h"
 #include "Validation.hpp"
 #include <cstdlib>
 #include <filesystem>
+#include <memory>
+#include <optional>
+#include <stdexcept>
 
 auto main(int argc, char *argv[]) -> int
 {
-    std::cout << emojicpp::emojize("\n\n              :signal_strength: [ MUSiC Validation ] :signal_strength:")
+    // set SumW2 as default
+    TH1::SetDefaultSumw2(true);
+
+    std::cout << emojicpp::emojize("\n\n              :signal_strength: [ MUSiC Validation ] :signal_strength:\n\n")
               << std::endl;
 
     // command line options
@@ -97,6 +106,26 @@ auto main(int argc, char *argv[]) -> int
     fmt::print("\n[MUSiC Validation] Starting timer  ...\n");
     // auto dTime1 = getCpuTime(); // Start Timer
 
+    fmt::print("\n[MUSiC Validation] Merging cutflow histograms ...\n");
+    std::string hadd_command = "hadd -f -T " + outputs_path + "/cutflow.root ";
+    for (auto &&file : input_files)
+    {
+        hadd_command += file + " ";
+    }
+    int merger_exit_code, ret = std::system(hadd_command.c_str());
+    merger_exit_code = WEXITSTATUS(ret);
+    if (merger_exit_code != 0)
+    {
+        throw std::runtime_error(
+            fmt::format("ERROR: Could not merge cutflow histograms.\n Command: {}.\n Return code: {}.",
+                        hadd_command,
+                        merger_exit_code));
+    }
+
+    fmt::print("\n[MUSiC Validation] Loading cutflow histograms ...\n");
+    auto cutflow_file = std::unique_ptr<TFile>(TFile::Open(fmt::format("{}/cutflow.root", outputs_path).c_str()));
+    auto cutflow_histo = cutflow_file->Get<TH1F>("curflow");
+
     // launch event loop for Data or MC
     fmt::print("\n[MUSiC Validation] Launching event loop ...\n");
 
@@ -107,45 +136,84 @@ auto main(int argc, char *argv[]) -> int
 
         // reorder objects
         // muons
-        auto muon_reordering_mask = VecOps::Argsort(unwrap(Muon_pt));
-        auto muon_pt = unwrap(Muon_pt)[muon_reordering_mask];
-        auto muon_eta = unwrap(Muon_eta)[muon_reordering_mask];
-        auto muon_phi = unwrap(Muon_phi)[muon_reordering_mask];
+        const auto muon_reordering_mask = VecOps::Argsort(unwrap(Muon_pt));
+        const auto muon_pt = unwrap(Muon_pt)[muon_reordering_mask];
+        const auto muon_eta = unwrap(Muon_eta)[muon_reordering_mask];
+        const auto muon_phi = unwrap(Muon_phi)[muon_reordering_mask];
 
         // electrons
-        auto electron_reordering_mask = VecOps::Argsort(unwrap(Electron_pt));
-        auto electron_pt = unwrap(Electron_pt)[electron_reordering_mask];
-        auto electron_eta = unwrap(Electron_eta)[electron_reordering_mask];
-        auto electron_phi = unwrap(Electron_phi)[electron_reordering_mask];
+        const auto electron_reordering_mask = VecOps::Argsort(unwrap(Electron_pt));
+        const auto electron_pt = unwrap(Electron_pt)[electron_reordering_mask];
+        const auto electron_eta = unwrap(Electron_eta)[electron_reordering_mask];
+        const auto electron_phi = unwrap(Electron_phi)[electron_reordering_mask];
 
         // // photons
-        // auto photon_reordering_mask = VecOps::Argsort(unwrap(Photon_pt));
-        // auto photon_pt = unwrap(Photon_pt)[photon_reordering_mask];
-        // auto photon_eta = unwrap(Photon_eta)[photon_reordering_mask];
-        // auto photon_phi = unwrap(Photon_phi)[photon_reordering_mask];
+        // const  auto photon_reordering_mask = VecOps::Argsort(unwrap(Photon_pt));
+        // const auto photon_pt = unwrap(Photon_pt)[photon_reordering_mask];
+        // const auto photon_eta = unwrap(Photon_eta)[photon_reordering_mask];
+        // const auto photon_phi = unwrap(Photon_phi)[photon_reordering_mask];
 
         // bjets
-        auto bjet_reordering_mask = VecOps::Argsort(unwrap(BJet_pt));
-        auto bjet_pt = unwrap(BJet_pt)[bjet_reordering_mask];
-        auto bjet_eta = unwrap(BJet_eta)[bjet_reordering_mask];
-        auto bjet_phi = unwrap(BJet_phi)[bjet_reordering_mask];
+        const auto bjet_reordering_mask = VecOps::Argsort(unwrap(BJet_pt));
+        const auto bjet_pt = unwrap(BJet_pt)[bjet_reordering_mask];
+        const auto bjet_eta = unwrap(BJet_eta)[bjet_reordering_mask];
+        const auto bjet_phi = unwrap(BJet_phi)[bjet_reordering_mask];
 
         // jets
-        auto jet_reordering_mask = VecOps::Argsort(unwrap(Jet_pt));
-        auto jet_pt = unwrap(Jet_pt)[jet_reordering_mask];
-        auto jet_eta = unwrap(Jet_eta)[jet_reordering_mask];
-        auto jet_phi = unwrap(Jet_phi)[jet_reordering_mask];
+        const auto jet_reordering_mask = VecOps::Argsort(unwrap(Jet_pt));
+        const auto jet_pt = unwrap(Jet_pt)[jet_reordering_mask];
+        const auto jet_eta = unwrap(Jet_eta)[jet_reordering_mask];
+        const auto jet_phi = unwrap(Jet_phi)[jet_reordering_mask];
 
         // MET
         auto met_pt = unwrap(MET_pt);
 
+        auto get_leading = [](RVec<float> pt, RVec<float> eta, RVec<float> phi) -> std::optional<Math::PtEtaPhiMVector>
+        {
+            if (pt.size() == 0)
+            {
+                return std::nullopt;
+            }
+            return Math::PtEtaPhiMVector(pt[0], eta[0], phi[0], 1E-9);
+        };
+
+        auto get_met = [](RVec<float> met_pt) -> std::optional<float>
+        {
+            if (met_pt.size() == 0)
+            {
+                return std::nullopt;
+            }
+            return met_pt[0];
+        };
+
+        // MuMu + X
+        if (muon_pt.size() >= 2)
+        {
+            auto muon_1 = Math::PtEtaPhiMVector(muon_pt[0], muon_eta[0], muon_phi[0], PDG::Muon::Mass);
+            auto muon_2 = Math::PtEtaPhiMVector(muon_pt[1], muon_eta[1], muon_phi[1], PDG::Muon::Mass);
+            auto bjet = get_leading(bjet_pt, bjet_eta, bjet_phi);
+            auto jet = get_leading(jet_pt, jet_eta, jet_phi);
+            auto met = get_met(met_pt);
+
+            // wide mass range
+            z_to_mu_mu_x.fill(muon_1, muon_2, bjet, jet, met, 1.);
+
+            // Z mass range
+            if ((muon_1 + muon_2).mass() > PDG::Z::Mass - 20. and (muon_1 + muon_2).mass() < PDG::Z::Mass + 20.)
+            {
+                z_to_mu_mu_x_Z_mass.fill(muon_1, muon_2, bjet, jet, met, 1.);
+            }
+        }
+
         // process monitoring
-        // if (event < 10 || (event < 100 && event % 10 == 0) || (event < 1000 && event % 100 == 0) ||
-        // (event < 10000 && event % 1000 == 0) || (event >= 10000 && event % 10000 == 0))
-        // {
-        // fmt::print("\n\n[MUSiC Validation] Processed {} out of {} events.\n", event, total_number_of_events);
-        // PrintProcessInfo();
-        // }
+        if (event < 10 || (event < 100 && event % 10 == 0) || (event < 1000 && event % 100 == 0) ||
+            (event < 10000 && event % 1000 == 0) || (event < 100000 && event % 10000 == 0) ||
+            (event < 1000000 && event % 100000 == 0) || (event < 10000000 && event % 1000000 == 0) ||
+            (event >= 10000000 && event % 10000000 == 0))
+        {
+            fmt::print("\n\n[MUSiC Validation] Processed {} events.\n", event);
+            PrintProcessInfo();
+        }
     }
     fmt::print("\n[MUSiC Validation] Saving outputs ...\n");
     z_to_mu_mu_x.dump_outputs();

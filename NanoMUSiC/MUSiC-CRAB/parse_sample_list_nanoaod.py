@@ -137,7 +137,7 @@ def readSamplesFromFile(filename):
 def main():
 
     usage = "%prog [options] SAMPLELIST YEAR"
-    description = "This script parses a given file SAMPLELIST and writes a customizable list that can be given to music_crab."
+    description = "This script parses a given file SAMPLELIST and writes a customizable list."
 
     parser = optparse.OptionParser(
         usage=usage, description=description, version="%prog 0"
