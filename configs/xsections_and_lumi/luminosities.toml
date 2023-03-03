@@ -1,0 +1,10 @@
+[Lumi]
+2016APV = 19520.0
+2016 = 16810.0
+2017 = 41480.0
+2018 = 59830.0
+Unit = "pb-1"
+
+# Lumi error (CMS PAS LUM-13-001):
+[Global]
+ScalefactorError = 0.026

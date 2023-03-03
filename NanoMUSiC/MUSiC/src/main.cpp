@@ -136,8 +136,8 @@ auto main(int argc, char *argv[]) -> int
     std::get<2>(default_pdf_sets) = std::unique_ptr<LHAPDF::PDF>(LHAPDF::mkPDF(319300));
 
     // read cross-sections files
-    std::cout << colors.def << "[ Initializing ] X-Sections ..." << colors.def << std::endl;
-    const auto x_sections = TOMLConfig::make_toml_config(configuration.x_section_file);
+    // std::cout << colors.def << "[ Initializing ] X-Sections ..." << colors.def << std::endl;
+    // const auto x_sections = TOMLConfig::make_toml_config(configuration.x_section_file);
 
     // performance monitoring
     std::cout << colors.def << "[ Initializing ] Event counter and timer ..." << colors.def << std::endl;

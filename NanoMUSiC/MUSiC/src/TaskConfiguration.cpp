@@ -8,7 +8,7 @@ TaskConfiguration::TaskConfiguration(const std::string _run_config_file)
       dataset(run_config.get<std::string>("dataset")),
       is_data(run_config.get<bool>("is_data")),
       is_crab_job(run_config.get<bool>("is_crab_job")),
-      x_section_file(MUSiCTools::parse_and_expand_music_base(run_config.get<std::string>("x_section_file"))),
+      //   x_section_file(MUSiCTools::parse_and_expand_music_base(run_config.get<std::string>("x_section_file"))),
       year_str(run_config.get<std::string>("year")),
       input_files(run_config.get_vector<std::string>("input_files")),
       year(get_runyear(year_str)),
@@ -39,7 +39,7 @@ TaskConfiguration::TaskConfiguration(const std::string _run_config_file)
     fmt::print(fmt::emphasis::bold, "Dataset: {}\n", dataset);
     fmt::print(fmt::emphasis::bold, "Is Data (?): {}\n", is_data);
     fmt::print(fmt::emphasis::bold, "Is a CRAB job (?): {}\n", is_crab_job);
-    fmt::print(fmt::emphasis::bold, "Cross-sections File: {}\n", x_section_file);
+    // fmt::print(fmt::emphasis::bold, "Cross-sections File: {}\n", x_section_file);
     fmt::print(fmt::emphasis::bold, "Year: {}\n", year_str);
     if (is_data)
     {

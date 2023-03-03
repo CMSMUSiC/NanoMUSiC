@@ -21,7 +21,7 @@ auto ZToLepLepX::fill(Math::PtEtaPhiMVector lepton_1,
 
 auto ZToLepLepX::dump_outputs() -> void
 {
-    fmt::print("Saving outputs to: {}\n", output_file->GetPath());
+    // fmt::print("Saving outputs to: {}\n", output_file->GetPath());
     output_file->cd();
     h_invariant_mass.Write();
     output_file->Close();

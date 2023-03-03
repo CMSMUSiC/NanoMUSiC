@@ -1,6 +1,6 @@
 output = 'test_data_2016APV'
 is_data = true                                    # Is Data?
-x_section_file = '$MUSIC_BASE/configs/xsections_and_lumi/x_sections.toml'
+# x_section_file = '$MUSIC_BASE/configs/xsections_and_lumi/x_sections.toml'
 year = '2016APV'
 era = 'C'
 process = 'SingleMuonX_2017'

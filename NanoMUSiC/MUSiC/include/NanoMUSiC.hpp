@@ -230,7 +230,7 @@ inline auto prepare_output_buffer(const TaskConfiguration &configuration) -> voi
         system("mkdir -p Event-lists");
 
     // save other configs with output
-    system(("cp " + configuration.x_section_file + " . ").c_str());
+    // system(("cp " + configuration.x_section_file + " . ").c_str());
 }
 
 inline auto print_report(const double &dTime1,

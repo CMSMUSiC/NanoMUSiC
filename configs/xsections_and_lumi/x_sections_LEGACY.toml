@@ -9,7 +9,6 @@ Unit = "pb-1"
 [Global]
 ScalefactorError = 0.026
 
-
 [DY1JetsToLL_M-50_13TeV_AM]
 XSec = 6104.0
 FilterEff = 1.0

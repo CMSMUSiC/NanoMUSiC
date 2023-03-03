@@ -15,7 +15,7 @@ class TaskConfiguration
     const std::string dataset;
     const bool is_data;
     const bool is_crab_job;
-    const std::string x_section_file;
+    // const std::string x_section_file;
     const std::string year_str;
     const std::vector<std::string> input_files;
     const Year year;

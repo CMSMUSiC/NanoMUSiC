@@ -1,3 +1,7 @@
+def build_sample_list(samples_file):
+    pass
+# sample_list = build_sample_list("samples_file")
+
 sample_list = [
     # (process_name, das_name, year, is_data)
     (

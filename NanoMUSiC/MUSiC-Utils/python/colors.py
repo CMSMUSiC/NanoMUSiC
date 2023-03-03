@@ -34,7 +34,7 @@ PROCESS_GROUP_STYLES = {
     "TTGG":             HistStyle( label=r"t $\bar{t} + \gamma \gamma$", html="tt&tmacr;+&gamma&gamma", color= ROOT.TColor.GetColor( '#ccaf14' ), colorhex='#ccaf14' ),
     "W":                HistStyle( label=r"W + Jets",            color= ROOT.TColor.GetColor( '#514608' ), colorhex='#514608' ),
     "WG":               HistStyle( label=r"W + $\gamma$", html="W + &gamma",    color= ROOT.TColor.GetColor( '#0c3468' ), colorhex='#0c3468' ),
-    "WGStar":           HistStyle( label=r"W + $\gamma*$",       color= ROOT.TColor.GetColor( '#0c3468' ), colorhex='#0c3468' ),
+    "WGStar":           HistStyle( label=r"W + $\gamma*$",       color= ROOT.TColor.GetColor( '#0c3468' ), colorhex='#a468' ),
     "WGG":              HistStyle( label=r"W + $\gamma \gamma$", color= ROOT.TColor.GetColor( '#244877' ), colorhex='#244877' ),
     "WWG":              HistStyle( label=r"WW + $\gamma$",       color= ROOT.TColor.GetColor( '#793e82' ), colorhex='#793e82' ),
     "DrellYan":         HistStyle( label=r"Drell-Yan",           color= ROOT.TColor.GetColor( '#ee7600' ), colorhex='#ee7600' ),
