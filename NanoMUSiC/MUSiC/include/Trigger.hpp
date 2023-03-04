@@ -80,12 +80,15 @@ constexpr std::tuple<bool, std::size_t> trigger_matcher(const T1 &trigger_object
 
     if (nano_objects_pt.size() > 0 and trigger_objects_pt.size() > 0)
     {
-        auto [matches_distances, matches_rel_pT] = get_matches(trigger_objects_pt,  //
-                                                               trigger_objects_eta, //
-                                                               trigger_objects_phi, //
-                                                               nano_objects_pt,     //
-                                                               nano_objects_eta,    //
-                                                               nano_objects_phi);
+        auto [matches_distances, matches_rel_pT] = //
+            get_matches(                           //
+                trigger_objects_pt,                //
+                trigger_objects_eta,               //
+                trigger_objects_phi,               //
+                nano_objects_pt,                   //
+                nano_objects_eta,                  //
+                nano_objects_phi                   //
+            );
 
         auto good_delta_r = matches_distances <= max_delta_r;
         if (VecOps::Any(good_delta_r))
@@ -326,7 +329,10 @@ inline auto get_pt(const std::variant<NanoObjects::Muons, NanoObjects::Electrons
 {
     return std::visit(
         overloaded{
-            [](auto nano_obj) -> RVec<float> { return nano_obj.pt; },
+            [](auto nano_obj) -> RVec<float>
+            {
+                return nano_obj.pt;
+            },
         },
         var_);
 }
@@ -335,7 +341,10 @@ inline auto get_eta(const std::variant<NanoObjects::Muons, NanoObjects::Electron
 {
     return std::visit(
         overloaded{
-            [](auto nano_obj) -> RVec<float> { return nano_obj.eta; },
+            [](auto nano_obj) -> RVec<float>
+            {
+                return nano_obj.eta;
+            },
         },
         var_);
 }
@@ -344,18 +353,28 @@ inline auto get_phi(const std::variant<NanoObjects::Muons, NanoObjects::Electron
 {
     return std::visit(
         overloaded{
-            [](auto nano_obj) -> RVec<float> { return nano_obj.phi; },
+            [](auto nano_obj) -> RVec<float>
+            {
+                return nano_obj.phi;
+            },
         },
         var_);
 }
 
 inline auto get_delta_eta_sc(const std::variant<NanoObjects::Muons, NanoObjects::Electrons> &var_) -> RVec<float>
 {
-    return std::visit(overloaded{
-                          [](const NanoObjects::Electrons &nano_obj) -> RVec<float> { return nano_obj.deltaEtaSC; },
-                          [](auto nano_obj) -> RVec<float> { return RVec<float>(0., nano_obj.size); },
-                      },
-                      var_);
+    return std::visit(
+        overloaded{
+            [](const NanoObjects::Electrons &nano_obj) -> RVec<float>
+            {
+                return nano_obj.deltaEtaSC;
+            },
+            [](auto nano_obj) -> RVec<float>
+            {
+                return RVec<float>(0., nano_obj.size);
+            },
+        },
+        var_);
 }
 
 class TrgObjMatcher

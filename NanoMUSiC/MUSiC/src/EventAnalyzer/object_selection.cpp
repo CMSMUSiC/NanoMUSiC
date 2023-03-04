@@ -127,19 +127,19 @@ auto EventAnalyzer::object_selection() -> EventAnalyzer &
 
         // clear muons against themselves
         // should we do it????
-        muons.good_muons_mask["nominal"] =
-            muons.good_muons_mask["nominal"] &&
-            get_self_cleanning_mask(muons,
-                                    muons.good_muons_mask["nominal"],
-                                    0.4,
-                                    [&](const NanoObjects::Muons &muons, std::size_t i, std::size_t j)
-                                    {
-                                        if (not(muons.highPurity[i]) and muons.highPurity[j])
-                                        {
-                                            return false;
-                                        }
-                                        return true;
-                                    });
+        // muons.good_muons_mask["nominal"] =
+        //     muons.good_muons_mask["nominal"] &&
+        //     get_self_cleanning_mask(muons,
+        //                             muons.good_muons_mask["nominal"],
+        //                             0.4,
+        //                             [&](const NanoObjects::Muons &muons, std::size_t i, std::size_t j)
+        //                             {
+        //                                 if (not(muons.highPurity[i]) and muons.highPurity[j])
+        //                                 {
+        //                                     return false;
+        //                                 }
+        //                                 return true;
+        //                             });
 
         //////////////////////////////////////
         // electrons
@@ -204,6 +204,7 @@ auto EventAnalyzer::object_selection() -> EventAnalyzer &
         //////////////////////////////////////
         // met
         met.good_met_mask["nominal"] = met.good_met_mask["nominal"] && get_met_selection_mask();
+
         return *this;
     }
     return *this;
@@ -223,6 +224,7 @@ auto EventAnalyzer::has_selected_objects_filter(Outputs &outputs) -> EventAnalyz
             (VecOps::Sum(bjets.good_jets_mask["nominal"]) > 0) ||          //
             (VecOps::Sum(jets.good_jets_mask["nominal"]) > 0) ||           //
             (VecOps::Sum(met.good_met_mask["nominal"]) > 0)                //
+            // (VecOps::Sum(muons.good_muons_mask["nominal"]) > 1)//
         )
         {
             outputs.fill_cutflow_histo("AtLeastOneSelectedObject", outputs.get_event_weight());

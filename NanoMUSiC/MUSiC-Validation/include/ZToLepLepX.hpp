@@ -10,6 +10,7 @@
 #include <string_view>
 
 using namespace ROOT;
+using namespace ROOT::Math;
 
 class ZToLepLepX
 {
@@ -31,14 +32,18 @@ class ZToLepLepX
     ADD_TH1F(h_jet_multiplicity, n_multiplicity_bins, min_multiplicity, max_multiplicity);
     ADD_TH1F(h_bjet_multiplicity, n_multiplicity_bins, min_multiplicity, max_multiplicity);
 
-    ZToLepLepX(const std::string &output_path);
+    ZToLepLepX(const std::string &output_path, bool is_Z_mass_validation = false);
 
     auto fill(Math::PtEtaPhiMVector lepton_1,
               Math::PtEtaPhiMVector lepton_2,
+              unsigned int nBJet,
               std::optional<Math::PtEtaPhiMVector> bjet,
+              unsigned int nJet,
               std::optional<Math::PtEtaPhiMVector> jet,
               std::optional<float> met,
               float weight = 1.) -> void;
+
+    auto save_histo(TH1F &histo) -> void;
 
     auto dump_outputs() -> void;
 };

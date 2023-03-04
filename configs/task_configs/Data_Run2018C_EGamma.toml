@@ -1,0 +1,13 @@
+output = 'test_data_EGamma_2018C'
+is_data = true                            # Is Data?
+# x_section_file = '$MUSIC_BASE/configs/xsections_and_lumi/x_sections.toml'
+year = '2018'
+era = 'C'
+process = 'EGamma2018C'
+dataset = '/EGamma2018C/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM'
+is_crab_job = false
+
+input_files = [
+    '/disk1/silva/projects/NanoMUSiC_Test_Data/EGamma2018C/f01.root',
+    ]
+

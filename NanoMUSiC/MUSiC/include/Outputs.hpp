@@ -66,15 +66,17 @@ class Outputs
 
   public:
     // variations, shifts, weights and cuts
-    static constexpr auto Cuts = make_enumerate("NoCuts",
-                                                "GeneratorFilter",
-                                                "GeneratorWeight",
-                                                "RunLumi",
-                                                "nPV",
-                                                "METFilters",
-                                                "TriggerCut",
-                                                "AtLeastOneSelectedObject",
-                                                "TriggerMatch");
+    static constexpr auto Cuts = make_enumerate( //
+        "NoCuts",                                // 1
+        "GeneratorFilter",                       // 2
+        "GeneratorWeight",                       // 3
+        "RunLumi",                               // 4
+        "nPV",                                   // 5
+        "METFilters",                            // 6
+        "TriggerCut",                            // 7
+        "AtLeastOneSelectedObject",              // 8
+        "TriggerMatch"                           // 9
+    );
 
     static constexpr auto Weights = make_enumerate("Generator",
                                                    "PileUp",
@@ -271,6 +273,28 @@ class Outputs
     }
 
     auto get_event_weight(std::string_view weight = "", std::string_view shift = "Nominal") -> float
+    {
+        auto nominal_weight = std::reduce(weights_nominal.cbegin(), weights_nominal.cend(), 1.f, std::multiplies());
+
+        if (shift == "Up")
+        {
+            return weights_up.at(Outputs::Weights.index_of(weight)) /
+                   weights_nominal.at(Outputs::Weights.index_of(weight)) * nominal_weight;
+        }
+        if (shift == "Down")
+        {
+            return weights_down.at(Outputs::Weights.index_of(weight)) /
+                   weights_nominal.at(Outputs::Weights.index_of(weight)) * nominal_weight;
+        }
+        return nominal_weight;
+    }
+
+    static auto get_event_weight(const RVec<float> &weights_nominal, //
+                                 const RVec<float> &weights_up,      //
+                                 const RVec<float> &weights_down,    //
+                                 std::string_view weight = "",       //
+                                 std::string_view shift = "Nominal"  //
+                                 ) -> float
     {
         auto nominal_weight = std::reduce(weights_nominal.cbegin(), weights_nominal.cend(), 1.f, std::multiplies());
 

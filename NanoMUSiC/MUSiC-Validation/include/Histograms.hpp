@@ -21,9 +21,9 @@ constexpr int n_phi_bins = 20;
 constexpr float min_phi = -M_PI;
 constexpr float max_phi = M_PI;
 
-constexpr int n_dR_bins = 10;
 constexpr float min_dR = 0;
 constexpr float max_dR = 10;
+constexpr int n_dR_bins = static_cast<int>((max_dR - min_dR) / 0.4);
 
 constexpr int n_multiplicity_bins = 11;
 constexpr float min_multiplicity = -0.5;

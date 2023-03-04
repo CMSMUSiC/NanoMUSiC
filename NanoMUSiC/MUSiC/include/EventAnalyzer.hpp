@@ -607,7 +607,7 @@ class EventAnalyzer
 
         met_x = (met.pt[0] * std::cos(met.phi[0])) - VecOps::Sum(dX_nominal);
         met_y = (met.pt[0] * std::sin(met.phi[0])) - VecOps::Sum(dY_nominal);
-        met.et_nominal[0] = std::sqrt(met_x * met_x + met_y * met_y);
+        met.pt[0] = std::sqrt(met_x * met_x + met_y * met_y);
     }
 
     /// TODO:

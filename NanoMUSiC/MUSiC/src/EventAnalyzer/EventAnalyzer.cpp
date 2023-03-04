@@ -93,7 +93,7 @@ auto EventAnalyzer::fill_event_content(Outputs &outputs) -> EventAnalyzer &
             jets.phi[jets.good_jets_mask["nominal"]],        //
             // met
             // met.pt[met.good_met_mask["nominal"]], //
-            met.et_nominal[met.good_met_mask["nominal"]], //
+            met.pt[met.good_met_mask["nominal"]], //
             met.phi[met.good_met_mask["nominal"]]);
 
         return *this;
