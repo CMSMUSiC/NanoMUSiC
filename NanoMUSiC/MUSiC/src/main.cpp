@@ -42,7 +42,7 @@ auto main(int argc, char *argv[]) -> int
     if (!batch_mode)
     {
         system("clear");
-        std::cout << " " << std::endl;
+        std::cout << "Chinmay " << std::endl;
         std::cout << " " << std::endl;
         std::cout << " " << std::endl;
         std::cout << " " << std::endl;
