@@ -95,7 +95,7 @@
   // "C_Cpp.loggingLevel": "Debug",
   "clang-format.executable": "/.automount/home/home__home1/institut_3a/silva/.local/bin/clang-format",
   "python.formatting.provider": "black",
-  "python.formatting.blackPath": "/.automount/home/home__home1/institut_3a/silva/.local/bin/black",
+  "python.formatting.blackPath": "/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/bin/python3 /.automount/home/home__home1/institut_3a/silva/.local/bin/black",
   "editor.formatOnSave": true,
   // custom command runner
   "command-runner.terminal.name": "MUSiC",

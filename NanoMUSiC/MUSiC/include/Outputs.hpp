@@ -297,7 +297,6 @@ class Outputs
                                  ) -> float
     {
         auto nominal_weight = std::reduce(weights_nominal.cbegin(), weights_nominal.cend(), 1.f, std::multiplies());
-
         if (shift == "Up")
         {
             return weights_up.at(Outputs::Weights.index_of(weight)) /

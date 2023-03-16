@@ -104,9 +104,11 @@ auto main(int argc, char *argv[]) -> int
                                                         year),
                                             true);
 
-    auto cutflow_file = std::unique_ptr<TFile>(TFile::Open(fmt::format("{}/cutflow.root", output_path).c_str()));
-    auto cutflow_histo = cutflow_file->Get<TH1F>("cutflow");
-    auto total_generator_weight = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("GeneratorWeight") + 1);
+    const auto cutflow_file = std::unique_ptr<TFile>(TFile::Open(fmt::format("{}/cutflow.root", output_path).c_str()));
+    const auto cutflow_histo = cutflow_file->Get<TH1F>("cutflow");
+    const auto total_generator_weight = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("GeneratorWeight") + 1);
+    const auto no_cuts = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("NoCuts") + 1);
+    const auto generator_filter = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("GeneratorFilter") + 1);
 
     // fmt::print("\n[MUSiC Validation] Creating set of processed events ...\n");
     std::unordered_map<unsigned int, std::unordered_set<unsigned long>> processed_data_events;
@@ -152,7 +154,16 @@ auto main(int argc, char *argv[]) -> int
                 {
                     weight =
                         Outputs::get_event_weight(unwrap(weights_nominal), unwrap(weights_up), unwrap(weights_down)) /
-                        total_generator_weight * effective_x_section;
+                        generator_filter * effective_x_section;
+
+                    fmt::print("------------------\n");
+                    fmt::print(
+                        "event weight: {}\n",
+                        Outputs::get_event_weight(unwrap(weights_nominal), unwrap(weights_up), unwrap(weights_down)));
+                    fmt::print("weights_nominal: {}\n", weights_nominal);
+                    fmt::print("Eff xSec: {}\n", effective_x_section);
+                    fmt::print("Weight: {}\n", weight);
+                    fmt::print("total gen weight: {}\n", generator_filter);
                 }
 
                 // reorder objects
@@ -262,6 +273,7 @@ auto main(int argc, char *argv[]) -> int
     }
     else
     {
+        //
         throw std::runtime_error(fmt::format("EMPTY: {}", process));
     }
     // fmt::print("\n[MUSiC Validation] Saving outputs ...\n");

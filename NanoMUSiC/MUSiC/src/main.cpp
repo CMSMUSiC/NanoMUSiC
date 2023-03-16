@@ -548,7 +548,17 @@ auto main(int argc, char *argv[]) -> int
     outputs.write_data();
 
     PrintProcessInfo();
-    std::cout << colors.green << "\nDone ..." << colors.def << std::endl;
 
+    // this is a dummy file, create to flag if the codde run all the way to the end
+    // should be used by CRAB to confirm the completion of the task
+    if (batch_mode)
+    {
+        fmt::print("Saving success_flag.out ...\n");
+        std::ofstream success_flag("success_flag.out");
+        success_flag << "Yay!";
+        success_flag.close();
+    }
+
+    std::cout << colors.green << "\nDone ..." << colors.def << std::endl;
     return 0;
 }

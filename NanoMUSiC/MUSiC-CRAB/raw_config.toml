@@ -1,8 +1,8 @@
 output = "outputs"
 is_data = true
 year = "2018"
-era = "C"
-process = "SingleMuonC_2018"
-dataset = "/SingleMuon/Run2018C-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD"
+era = "D"
+process = "SingleMuonD_2018"
+dataset = "/SingleMuon/Run2018D-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD"
 is_crab_job = true
 input_files = ["__dummy__"]

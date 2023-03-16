@@ -280,7 +280,7 @@ auto ElectronTriggerSF::operator()(float eta_sc, float pt, std::string_view vari
 
         return nominal + uncert;
     }
-    if (std::fabs(eta_sc) >= 1.566 and std::fabs(eta_sc) < 2.5)
+    if (std::fabs(eta_sc) >= 1.566 and std::fabs(eta_sc) <= 2.5)
     {
         // check limits
         if (pt >= endcap_pt_upper_limit)

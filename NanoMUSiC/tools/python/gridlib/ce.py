@@ -1147,7 +1147,7 @@ class Task(TaskSettings):
                     p1=inurl
                     inurl=inurl.replace("/gridpack","/test")
                     head, tail = inurl.split("/test")
-                    head= head +"/test" + m + ".tar.bz2"
+                    head= head +"/test" + m +"_" +tail+".tar.bz2"
                     inurl = head
                     #midcmd="srmls " + head
                     #if(os.system(midcmd) != 0):

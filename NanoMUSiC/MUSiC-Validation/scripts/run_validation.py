@@ -12,14 +12,18 @@ import subprocess
 import glob
 
 
-def load_samples(process):
+def load_samples(process, year):
     samples_files = glob.glob(
         f"{os.getenv('MUSIC_BASE')}/configs/xsections_and_lumi/samples/*.toml"
     )
     samples = {}
     for f in samples_files:
         samples = samples | toml.load(f)
-    return samples[process]
+
+    luminosity = toml.load(
+        f"{os.getenv('MUSIC_BASE')}/configs/xsections_and_lumi/luminosities.toml"
+    )["Lumi"][year]
+    return luminosity, samples[process]
 
 
 parser = argparse.ArgumentParser()
@@ -27,6 +31,9 @@ parser.add_argument("config", help="task configuration file")
 parser.add_argument("--veto", help="path to run_number/event_number veto maps")
 parser.add_argument(
     "--merge", help="will merge validation results", action="store_true"
+)
+parser.add_argument(
+    "--debug", help="print debugging info", action="store_true"
 )
 
 args = parser.parse_args()
@@ -48,6 +55,8 @@ def merge_cutflow_histograms(output_path, input_files):
         ["hadd", "-f", "-T", f"{output_path}/cutflow.root", *input_files],
         capture_output=True,
     )
+    if args.debug:
+        print(merge_result.stdout.decode("utf-8"))
     if merge_result.returncode != 0:
         error = merge_result.stderr.decode("utf-8")
         raise RuntimeError(f"ERROR: could not merge cutflow files.\n{error}")
@@ -56,10 +65,21 @@ def merge_cutflow_histograms(output_path, input_files):
 def run_validation(input_file, config_file, output_path, effective_x_section):
     # print(f"Exectuting: {input_file, config_file, output_path}")
     validation_result = subprocess.run(
-        ["validation", "-c", config_file, "-o", output_path, "-x", str(effective_x_section), "-i", input_file],
+        [
+            "validation",
+            "-c",
+            config_file,
+            "-o",
+            output_path,
+            "-x",
+            str(effective_x_section),
+            "-i",
+            input_file,
+        ],
         capture_output=True,
     )
-    # print(validation_result.stdout.decode("utf-8"))
+    if args.debug:
+        print(validation_result.stdout.decode("utf-8"))
     if validation_result.returncode != 0:
         error = validation_result.stderr.decode("utf-8")
         raise RuntimeError(f"ERROR: could process validation.\n{error}\n{input_file}")
@@ -72,14 +92,14 @@ def main():
     print(f"[ MUSiC Validation ] Process: {process} - Year: {year}\n")
 
     print("[ MUSiC Validation ] Loading samples ...\n")
-    sample_config = load_samples(process)
     effective_x_section = 1.0
     if not is_data:
+        luminosity, sample_config = load_samples(process, year)
         effective_x_section = (
             sample_config["x_section"]
             * sample_config["filter_efficiency"]
             * sample_config["k_factor"]
-        )
+        ) * luminosity
 
     print("[ MUSiC Validation ] Preparing output directory ...\n")
     shutil.rmtree(output_path, ignore_errors=True)
@@ -99,7 +119,7 @@ def main():
                         run_validation,
                         config_file=task_config_file,
                         output_path=output_path,
-                        effective_x_section=effective_x_section
+                        effective_x_section=effective_x_section,
                     ),
                     input_files,
                 ),
@@ -130,10 +150,10 @@ def main():
             raise RuntimeError(f"ERROR: could not merge validation files.\n{error}")
 
         # cleanning ...
-        # cleanning_result = subprocess.run(["rm", "-rf", *glob.glob(f"{output_path}/{output}_*.root")], capture_output=True)
-        # if cleanning_result.returncode != 0:
-        #     error = cleanning_result.stderr.decode("utf-8")
-        #     raise RuntimeError(f"ERROR: could not clear output path.\n{error}")
+        cleanning_result = subprocess.run(["rm", "-rf", *glob.glob(f"{output_path}/{output}_*.root")], capture_output=True)
+        if cleanning_result.returncode != 0:
+            error = cleanning_result.stderr.decode("utf-8")
+            raise RuntimeError(f"ERROR: could not clear output path.\n{error}")
 
 
 if __name__ == "__main__":

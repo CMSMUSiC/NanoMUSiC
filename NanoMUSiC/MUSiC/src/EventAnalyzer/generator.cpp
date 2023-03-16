@@ -27,6 +27,8 @@ auto EventAnalyzer::generator_filter(Outputs &outputs, const std::string &proces
         if (is_good_gen)
         {
             // // fmt::print("\nDEBUG - generator_filter");
+            // fmt::print("Event weight: {}\n", outputs.get_event_weight());
+            // fmt::print("Event weights: {}\n", outputs.weights_nominal);
             outputs.fill_cutflow_histo("GeneratorFilter", outputs.get_event_weight("Generator"));
             outputs.fill_cutflow_histo("GeneratorWeight", outputs.get_event_weight());
             return *this;

@@ -76,7 +76,10 @@ def build_crab_config(process_name, das_name, year, is_data):
     this_config.Data.inputDataset = das_name
     this_config.Data.inputDBS = "global"
     this_config.Data.splitting = "FileBased"
-    this_config.Data.unitsPerJob = 10
+    if is_data:
+        this_config.Data.unitsPerJob = 10
+    else:
+        this_config.Data.unitsPerJob = 5
     this_config.Data.totalUnits = -1
     this_config.Data.publication = False
     this_config.Data.outputDatasetTag = process_name

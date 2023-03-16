@@ -11,20 +11,20 @@ sample_list = [
     #     "_",
     #     False,
     # ),
-    # (
-    #     "SingleMuonA_2018",
-    #     "/SingleMuon/Run2018A-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD",
-    #     "2018",
-    #     "A",
-    #     True,
-    # ),
-    # (
-    #     "SingleMuonB_2018",
-    #     "/SingleMuon/Run2018B-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD",
-    #     "2018",
-    #     "B",
-    #     True,
-    # ),
+    (
+        "SingleMuonA_2018",
+        "/SingleMuon/Run2018A-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD",
+        "2018",
+        "A",
+        True,
+    ),
+    (
+        "SingleMuonB_2018",
+        "/SingleMuon/Run2018B-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD",
+        "2018",
+        "B",
+        True,
+    ),
     (
         "SingleMuonC_2018",
         "/SingleMuon/Run2018C-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD",
@@ -32,13 +32,13 @@ sample_list = [
         "C",
         True,
     ),
-    # (
-    #     "SingleMuonD_2018",
-    #     "/SingleMuon/Run2018D-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD",
-    #     "2018",
-    #     "D",
-    #     True,
-    # ),
+    (
+        "SingleMuonD_2018",
+        "/SingleMuon/Run2018D-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD",
+        "2018",
+        "D",
+        True,
+    ),
 ]
 
 
