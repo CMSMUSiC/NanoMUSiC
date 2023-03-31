@@ -8,17 +8,19 @@
 #include <stdexcept>
 
 ParticleMap::ParticleMap(const std::map<std::string, std::vector<pxl::Particle *>> &particleMap)
-    : m_map(), m_countMap(std::map<std::string, int>()), m_resolutionFuncMap({{"Ele", Resolutions::electron},
-                                                                              {"EleEE", Resolutions::electron},
-                                                                              {"EleEB", Resolutions::electron},
-                                                                              {"Muon", Resolutions::muon},
-                                                                              {"Gamma", Resolutions::gamma},
-                                                                              {"GammaEB", Resolutions::gamma},
-                                                                              {"GammaEE", Resolutions::gamma},
-                                                                              {"Tau", Resolutions::tau},
-                                                                              {"Jet", Resolutions::jet},
-                                                                              {"bJet", Resolutions::jet},
-                                                                              {"MET", Resolutions::met}}),
+    : m_map(),
+      m_countMap(std::map<std::string, int>()),
+      m_resolutionFuncMap({{"Ele", Resolutions::electron},
+                           {"EleEE", Resolutions::electron},
+                           {"EleEB", Resolutions::electron},
+                           {"Muon", Resolutions::muon},
+                           {"Gamma", Resolutions::gamma},
+                           {"GammaEB", Resolutions::gamma},
+                           {"GammaEE", Resolutions::gamma},
+                           {"Tau", Resolutions::tau},
+                           {"Jet", Resolutions::jet},
+                           {"bJet", Resolutions::jet},
+                           {"MET", Resolutions::met}}),
       m_funcMap({{"pt", std::bind(&pxl::Particle::getPt, std::placeholders::_1)},
                  {"et", std::bind(&pxl::Particle::getEt, std::placeholders::_1)},
                  {"px", std::bind(&pxl::Particle::getPx, std::placeholders::_1)},
@@ -32,8 +34,10 @@ ParticleMap::ParticleMap(const std::map<std::string, std::vector<pxl::Particle *
 }
 
 // split one particle in two new particles according to splittingFunc
-void ParticleMap::split(std::vector<pxl::Particle *> particles, std::function<bool(pxl::Particle *)> splittingFunc,
-                        const std::string name1, const std::string name2)
+void ParticleMap::split(std::vector<pxl::Particle *> particles,
+                        std::function<bool(pxl::Particle *)> splittingFunc,
+                        const std::string name1,
+                        const std::string name2)
 {
     std::vector<pxl::Particle *> first = std::vector<pxl::Particle *>();
     std::vector<pxl::Particle *> second = std::vector<pxl::Particle *>();
@@ -260,8 +264,12 @@ std::map<std::string, int> ParticleMap::getChargeFakeMap(const std::map<std::str
     return fakeMap;
 }
 
-std::vector<double> ParticleMap::getBinLimits(std::string distribution, std::map<std::string, int> &countMap,
-                                              double min, double max, double step_size, double const fudge) const
+std::vector<double> ParticleMap::getBinLimits(std::string distribution,
+                                              std::map<std::string, int> &countMap,
+                                              double min,
+                                              double max,
+                                              double step_size,
+                                              double const fudge) const
 {
     // check a number of things
     if (min < 0)
@@ -283,13 +291,15 @@ std::vector<double> ParticleMap::getBinLimits(std::string distribution, std::map
     std::function<double(std::map<std::string, int>, double, double const)> resfunc;
     if (distribution == "MET")
     {
-        resfunc = [this](std::map<std::string, int> countMap, double sumpt, double const fudge) {
+        resfunc = [this](std::map<std::string, int> countMap, double sumpt, double const fudge)
+        {
             return getApproximateResolutionMET(countMap, sumpt, fudge);
         };
     }
     else
     {
-        resfunc = [this](std::map<std::string, int> countMap, double sumpt, double const fudge) {
+        resfunc = [this](std::map<std::string, int> countMap, double sumpt, double const fudge)
+        {
             return getApproximateResolution(countMap, sumpt, fudge);
         };
     }
@@ -379,7 +389,8 @@ double ParticleMap::getApproximateResolution(const std::map<std::string, int> &c
     return getApproximateResolution(countMap, sumpt, fudge);
 }
 
-double ParticleMap::getApproximateResolution(const std::map<std::string, int> &countMap, double sumpt,
+double ParticleMap::getApproximateResolution(const std::map<std::string, int> &countMap,
+                                             double sumpt,
                                              double const fudge) const
 {
     double res = 0;
@@ -402,7 +413,8 @@ double ParticleMap::getApproximateResolution(const std::map<std::string, int> &c
     return fudge * std::sqrt(res);
 }
 
-double ParticleMap::getApproximateResolutionMET(const std::map<std::string, int> &countMap, double sumpt,
+double ParticleMap::getApproximateResolutionMET(const std::map<std::string, int> &countMap,
+                                                double sumpt,
                                                 double const fudge) const
 {
     return fudge * callResolutionFunction("MET", sumpt);

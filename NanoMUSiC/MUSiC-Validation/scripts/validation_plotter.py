@@ -1,228 +1,216 @@
 #!/usr/bin/env python3
 import os
-import array
+import uproot
+import hist
+import numpy as np
+import matplotlib as mpl
 
-from binning import base_binning
+mpl.use("Agg")
+import matplotlib.pyplot as plt
+import mplhep as hep
+
+hep.style.use("CMS")
+
+from binning import base_binning, rebin_hist
 
 music_base = os.environ["MUSIC_BASE"]
 
-import ROOT
 
-h = ROOT.TH1F("asd", "asd", 1,0,10)
-
-
-ROOT.gStyle.SetOptStat(0)
-ROOT.gROOT.SetBatch()  # don't pop up canvases
-ROOT.TH1.SetDefaultSumw2()
-
-# Set TDR styles
-ROOT.gROOT.LoadMacro(f"{music_base}/NanoMUSiC/MUSiC-Validation/plotter/tdrstyle.C")
-ROOT.gInterpreter.ProcessLine("setTDRStyle();")
-ROOT.gROOT.LoadMacro(f"{music_base}/NanoMUSiC/MUSiC-Validation/plotter/CMS_lumi.C")
-
-ROOT.gROOT.ProcessLine(
-    "tdrStyle->SetPadRightMargin(0.05);"
-)  # fix a margin issuie of the CMS macros
-
-ROOT.gStyle.SetLegendBorderSize(
-    0
-)  # define standard border size for legends (no border)
-ROOT.gStyle.SetLegendFillColor(0)  # legeneds backgrounds should be white
-ROOT.gStyle.SetLegendTextSize(0.0)  # no title for legends
 class Plotter:
     def __init__(
         self,
         outputs_reference: str,
-        input_mc_files: str,
+        input_mc_files: dict[str, dict],
         input_data_files: str,
         outputs_dir: str,
     ) -> None:
         self.outputs_reference = outputs_reference
-        self.input_mc = []
-        for f in input_mc_files:
-            self.input_mc.append(ROOT.TFile.Open(f))
-        self.input_data = ROOT.TFile.Open(input_data_files)
+        self.input_mc_files = input_mc_files
+        self.input_data_files = input_data_files
         self.outputs_dir = outputs_dir
 
         # prepare outputs area
         os.system(f"rm -rf {self.outputs_dir}/{self.outputs_reference} > /dev/null")
         os.system(f"mkdir -p {self.outputs_dir}/{self.outputs_reference}")
 
-    def print_canvas(self, canvas: ROOT.TCanvas, histogram_name: str):
-        # canvas.Draw()  # print the canvas to the screen
-        canvas.SaveAs(
-            f"{self.outputs_dir}/{self.outputs_reference}/{histogram_name}.png"        )
-        # canvas.Print(
-        #     f"{self.outputs_dir}/{self.outputs_reference}/{histogram_name}.pdf", ".pdf"
-        # )
-        # canvas.Print(
-        #     f"{self.outputs_dir}/{self.outputs_reference}/{histogram_name}.root",
-        #     ".root",
-        # )
-        # canvas.Print(
-        #     f"{self.outputs_dir}/{self.outputs_reference}/{histogram_name}.C", ".C"
-        # )
+    def print_canvas(self, fig, histogram_name):
+        fig.savefig(f"{self.outputs_dir}/{self.outputs_reference}/{histogram_name}.png")
+        fig.savefig(f"{self.outputs_dir}/{self.outputs_reference}/{histogram_name}.pdf")
 
     def plot(
         self,
         histogram_name: str,
         x_axis_label,
         run_lumi_tag,
+        lumi,
         rebin_callable,
         change_last_bin,
-        set_lower_bound=False,
     ):
         # get MC histograms
-        histos_mc = []
-        for h in self.input_mc:
-            histos_mc.append(h.Get(histogram_name))
-        
-        # get Data histograms
-        histo_data = self.input_data.Get(histogram_name)
-        
+        histos_mc = {}
+        for sample in self.input_mc_files:
+            histos_mc[sample] = uproot.open(
+                f"{self.input_mc_files[sample]}:{histogram_name}"
+            ).to_hist()
+
+        # get Data histogram
+        histo_data = uproot.open(f"{self.input_data_files}:{histogram_name}").to_hist()
+
+        # setup figure
+        fig = plt.figure()
+        grid = fig.add_gridspec(2, 1, hspace=0, height_ratios=[3, 1])
+        ax1 = fig.add_subplot(grid[0])
+        ax2 = fig.add_subplot(grid[1], sharex=ax1)
+        plt.setp(ax1.get_xticklabels(), visible=False)
+
         # rebin
         histo_data, histos_mc = rebin_callable(histo_data, histos_mc, change_last_bin)
 
-        # configure data
-        histo_data.SetMarkerStyle(20)  # set black dots as Data marker
-        histo_data.SetMarkerSize(0.7)
-        histo_data.SetMarkerColor(ROOT.kBlack)
+        total_mc_histo = histos_mc[(list(histos_mc.keys()))[0]].copy(deep=True)
+        for sample in histos_mc:
+            if sample != list(histos_mc.keys())[0]:
+                total_mc_histo += histos_mc[sample]
 
-        # configure MC
-        h_stack = ROOT.THStack("h_temp_stack", f";{x_axis_label};Events")
-        histo_mc_sum = histos_mc[0].Clone()
-        histo_mc_sum.Reset()
-        for h in histos_mc:
-            h.SetLineWidth(0)
-            h.SetFillColor(ROOT.kOrange - 2)
-            h_stack.Add(
-                h, "histsame"
-            )
-            histo_mc_sum.Add(h)  
+        # plot ratio
+        histo_data.plot_ratio(total_mc_histo, ax_dict={"main_ax": ax1, "ratio_ax": ax2})
 
-        h_stack.SetMinimum(min(histo_mc_sum.GetMinimum(0.), histo_data.GetMinimum(0.)))
-        h_stack.SetMaximum(max(histo_mc_sum.GetMaximum(), histo_data.GetMaximum())*1.1)
+        # the top histogram has to be cleared, in order to print per sample plot
+        ax1.clear()
 
-        # configure legend
-        # define position of the legend
-        x1_l = 0.8
-        y1_l = 0.90
-        dx_l = 0.30
-        dy_l = 0.1
-        x0_l = x1_l - dx_l
-        y0_l = y1_l - dy_l
+        # print CMS labels
+        hep.cms.label(run_lumi_tag, data=True, lumi=lumi, ax=ax1)
 
-        legend = ROOT.TLegend(x0_l, y0_l, x1_l, y1_l)
-        legend.AddEntry(histo_data, "Data", "PE")  # add Data histogram to legend
-        for h in histos_mc:
-            legend.AddEntry(
-                h, "Drell-Yan (M_{LepLep} > 50 GeV)", "f"
-            )  
+        # plot distributions on top subplot
+        _histos_mc = []
+        _histos_mc_samples = []
+        for sample in histos_mc:
+            _histos_mc.append(histos_mc[sample])
+            _histos_mc_samples.append(sample)
+        hep.histplot(
+            _histos_mc,
+            yerr=False,
+            stack=True,
+            label=_histos_mc_samples,
+            ax=ax1,
+            histtype="fill",
+            linewidth=0,
+        )
+
+        # plot MC uncertanties
+        # TODO: make variations assymmetric. One could have two ax.bar (up and down)
+        mc_errors = np.sqrt(total_mc_histo.variances()) * 2.0
+        ax1.bar(
+            # x
+            total_mc_histo.axes[0].centers,
+            # height
+            mc_errors,
+            # width
+            total_mc_histo.axes[0].edges[1:] - total_mc_histo.axes[0].edges[:-1],
+            # bottom
+            total_mc_histo.values() - mc_errors / 2.0,
+            # kwargs
+            fill=True,
+            linewidth=0,
+            edgecolor="gray",
+            color="gray",
+            alpha=0.4,
+            hatch="///",
+            # label="Stats. and Syst. Uncert.",
+            label="Stats. Uncert.",
+        )
+
+        # plot ratio error bars
+        up_mc_errors = np.zeros_like(total_mc_histo.values())
+        dw_mc_errors = np.zeros_like(total_mc_histo.values())
+        _mc_errors = mc_errors / 2.0
+        with np.errstate(all="ignore"):
+            up_mc_errors = (
+                total_mc_histo.values() + _mc_errors
+            ) / total_mc_histo.values()
+            dw_mc_errors = (
+                total_mc_histo.values() - _mc_errors
+            ) / total_mc_histo.values()
+
+        # Set 0 and inf to nan to hide during plotting
+        # up_mc_errors[up_mc_errors == 0] = np.nan
+        up_mc_errors[np.isinf(up_mc_errors)] = np.nan
+        # down_mc_errors[down_mc_errors == 0] = np.nan
+        dw_mc_errors[np.isinf(dw_mc_errors)] = np.nan
+        # print(up_mc_errors, dw_mc_errors)
+
+        up_mc_errors = np.nan_to_num(up_mc_errors)
+        dw_mc_errors = np.nan_to_num(dw_mc_errors)
+
+        ax2.bar(
+            # x
+            total_mc_histo.axes[0].centers,
+            # height
+            (up_mc_errors - dw_mc_errors),
+            # width
+            total_mc_histo.axes[0].edges[1:] - total_mc_histo.axes[0].edges[:-1],
+            # bottom
+            dw_mc_errors,
+            # kwargs
+            fill=True,
+            linewidth=0,
+            edgecolor="gray",
+            color="gray",
+            alpha=0.3,
+        )
+
+        # plot data
+        hep.histplot(
+            histo_data,
+            yerr=True,
+            stack=False,
+            label="Data",
+            ax=ax1,
+            histtype="errorbar",
+            color="black",
+            marker=".",
+            markersize=10.0,
+            elinewidth=1,
+        )
+
+        ax1.set_yscale("log")
+        plt.setp(ax1.get_yticklabels()[0], visible=False)
+
+        # legend
+        ax1.legend(loc="upper right")
+
+        y_min, y_max = ax1.get_ylim()
+        minval_data = np.min(histo_data.values()[histo_data.values() > 0]) * 0.7
+        minval_mc = np.min(total_mc_histo.values()[total_mc_histo.values() > 0]) * 0.7
+        if ((y_max - y_min) / y_min) < 1000.0:
+            ax1.set_ylim(y_max / 1000, y_max * 100)
+        else:
+            ax1.set_ylim(min(minval_data, minval_mc), y_max)
+
+        # set axes names
+        ax1.set_ylabel("Events")
+        # ax2.set_ylabel(r"$\frac{Data}{Simulation}$", verticalalignment="center")
+        ax2.set_ylabel(r"Data/MC", loc="center")
+        ax2.set_xlabel(x_axis_label, loc="right")
+
+        fig.tight_layout()
+
+        self.print_canvas(fig, histogram_name)
 
 
-        # calculate ratio
-        c = ROOT.TCanvas("c")
-        c.SetLogy()
-        ratio = ROOT.TRatioPlot(histo_data, histo_mc_sum)
-        ratio.Draw()
-        upper_pad = ratio.GetUpperPad()
-
-        upper_pad.cd()
-        lp = upper_pad.GetListOfPrimitives() 
-        for p in lp:
-            lp.Remove(p)
-        # h_stack.SetHistogram(ROOT.TH1F())
-        # h_stack.GetHistogram().GetYaxis().SetLabelSize(0.)
-        # h_stack.SetLabelSize(0.)
-        # h_stack.Draw()
-        # histo_data.Draw("same")
-        # c.Update()
-
-
-        # ratio=_ratio.GetCalculationOutputGraph()
-        # ratio=histo_mc_sum
-        # ratio.SetMinimum(-4)
-        # ratio.SetMaximum(4)
-
-
-        # configure ratio
-
-        # #  canvas and pads
-        # # create canvas and pads
-        # c = ROOT.TCanvas("c")
-        # upper_pad = ROOT.TPad("upper_pad", "upper_pad", 0, 0.2, 1, 1.0)
-        # upper_pad.SetBottomMargin(0)  # joins upper and lower plot
-        # # upper_pad.SetGridx()
-        # upper_pad.Draw()
-        
-
-
-        # # Lower ratio plot is pad2
-        # c.cd()  # returns to main canvas before defining pad2
-        # lower_pad = ROOT.TPad("lower_pad", "lower_pad", 0, 0.05, 1, 0.2)
-        # lower_pad.SetTopMargin(0)  # joins upper and lower plot
-        # # lower_pad.SetBottomMargin(0.2)
-        # # lower_pad.SetGridx()
-        # lower_pad.Draw()
-
-        
-        # # draw upper
-        # upper_pad.cd()
-        # # h_stack.SetMinimum(0.0001)
-        # h_stack.Draw()
-        # histo_data.Draw("same")
-        # # Do not draw the Y axis label on the upper plot and redraw a small
-        # # axis instead, in order to avoid the first label (0) to be clipped.
-        # upper_pad.SetLogy()
-        
-        # # draw legend
-        # legend.Draw()
-
-        # # draw lower
-        # lower_pad.cd()
-        # ratio.Draw("AP")
-
-        # # print to file
-        # upper_pad.Update()  # update the canvas with all modifications
-        # lower_pad.Update()
-
-        self.print_canvas(c, histogram_name)
-
-
-        # this_plot.GetXaxis().SetLabelSize(0.025)
-        # this_plot.GetUpYaxis().SetLabelSize(0.025)
-        # this_plot.GetLowYaxis().SetLabelSize(0.025)
-
-        # if set_lower_bound:
-            # h_stack.SetMinimum(0.001)
-        # h_stack.SetMaximum(h_stack.GetMaximum() * 100)
-        # print(h_stack.GetMaximum())
-
-
-        # ROOT.gROOT.ProcessLine(
-        #     f'CMS_lumi(upper_pad, 0, 11, "Work in progress", "{run_lumi_tag}");',
-        # )  # add information abou which period this Data corresponds
-
-        # upper_pad.SetLogy()
-
-
-
-def no_rebinning(histo_data: ROOT.TH1F, histo_mc: ROOT.TH1F, change_last_bin=False):
+def no_rebinning(histo_data, histo_mc, change_last_bin=False):
     return histo_data, histo_mc
 
 
-def rebin_energy_like(
-    histo_data: ROOT.TH1F, histos_mc: ROOT.TH1F, change_last_bin=False
-):
+def rebin_energy_like(histo_data, histos_mc, change_last_bin=False):
     """
     Will rebin energy-like histograms. Last bin is reduce to encopass data and a more coarse binning is applied.
     """
     new_binning = base_binning
     if change_last_bin:
         last_data_point = -1
-        for idx_bin in range(1300, 0, -1):
-            if histo_data.GetBinContent(idx_bin) != 0:
-                last_data_point = histo_data.GetBinCenter(idx_bin)
+        for idx_bin in range(1300 - 1, 0, -1):
+            if histo_data[idx_bin].value != 0:
+                last_data_point = histo_data.axes[0].centers[idx_bin]
                 break
 
         for idx, _ in enumerate(base_binning[:-1]):
@@ -233,111 +221,118 @@ def rebin_energy_like(
                 new_binning = base_binning[: idx + 2]
                 break
 
-    rebinned_data = histo_data.Rebin(
-        len(new_binning) - 1, "histo_data", array.array("d", new_binning)
-    )
-    rebinned_mc = []
+    rebinned_data = rebin_hist(histo_data, new_binning)
+    rebinned_mc = {}
     for h in histos_mc:
-        rebinned_mc.append(
-            h.Rebin(len(new_binning) - 1, "histo_mc", array.array("d", new_binning))
-        )
-
+        rebinned_mc[h] = rebin_hist(histos_mc[h], new_binning)
     return rebinned_data, rebinned_mc
 
 
-def leplep_plots(lepton, root_latex_name, name, input_mc, input_data):
+def leplep_plots(latex_name, name, input_mc, input_data):
+    lumi = 58.83
     z_LepLep_X = Plotter(
         name,
         input_mc,
         input_data,
         "validation_plots",
     )
+
     z_LepLep_X.plot(
         "h_invariant_mass",
-        "M_{inv}",
-        "Run2018 [59.83 fb^{-1} (13 TeV)]",
+        "$M_{inv}$",
+        "Work in progress",
+        lumi,
         rebin_energy_like,
         True,
     )
     z_LepLep_X.plot(
         "h_sum_pt",
-        "#Sigma p_{T}",
-        "Run2018 [59.83 fb^{-1} (13 TeV)]",
+        "$\Sigma p_{T}$",
+        "Work in progress",
+        lumi,
         rebin_energy_like,
         True,
     )
     z_LepLep_X.plot(
-        "h_met", "MET", "Run2018 [59.83 fb^{-1} (13 TeV)]", rebin_energy_like, True
+        "h_met", "MET", "Work in progress", lumi,  rebin_energy_like, True
     )
     z_LepLep_X.plot(
         "h_lepton_1_pt",
-        f"p_{{T}}^{{lead {root_latex_name}}}",
-        "Run2018 [59.83 fb^{-1} (13 TeV)]",
+        f"$p_{{T}}^{{lead-{latex_name}}}$",
+        "Work in progress",
+        lumi,
         rebin_energy_like,
         True,
     )
     z_LepLep_X.plot(
         "h_lepton_2_pt",
-        f"p_{{T}}^{{sublead {root_latex_name}}}",
-        "Run2018 [59.83 fb^{-1} (13 TeV)]",
+        f"$p_{{T}}^{{sublead-{latex_name}}}$",
+        "Work in progress",
+        lumi,
         rebin_energy_like,
         True,
     )
     z_LepLep_X.plot(
         "h_lepton_1_eta",
-        f"#eta^{{lead {root_latex_name}}}",
-        "Run2018 [59.83 fb^{-1} (13 TeV)]",
+        f"$\eta^{{lead-{latex_name}}}$",
+        "Work in progress",
+        lumi,
         no_rebinning,
         True,
     )
     z_LepLep_X.plot(
         "h_lepton_2_eta",
-        f"#eta^{{sublead {root_latex_name}}}",
-        "Run2018 [59.83 fb^{-1} (13 TeV)]",
+        f"$\eta^{{sublead-{latex_name}}}$",
+        "Work in progress",
+        lumi,
         no_rebinning,
         True,
     )
     z_LepLep_X.plot(
         "h_lepton_1_phi",
-        f"#phi^{{lead {root_latex_name}}}",
-        "Run2018 [59.83 fb^{-1} (13 TeV)]",
+        f"$\phi^{{lead-{latex_name}}}$",
+        "Work in progress",
+        lumi,
         no_rebinning,
-        True,
         True,
     )
     z_LepLep_X.plot(
         "h_lepton_2_phi",
-        f"#phi^{{sublead {root_latex_name}}}",
-        "Run2018 [59.83 fb^{-1} (13 TeV)]",
+        f"$\phi^{{sublead-{latex_name}}}$",
+        "Work in progress",
+        lumi,
         no_rebinning,
-        True,
         True,
     )
     z_LepLep_X.plot(
         "h_lepton_1_jet_1_dPhi",
-        f"#Delta #phi({root_latex_name}, jet_{{lead}})",
-        "Run2018 [59.83 fb^{-1} (13 TeV)]",
+        f"$\Delta \phi({latex_name}, jet_{{lead}})$",
+        "Work in progress",
+        lumi,
         no_rebinning,
         True,
     )
     z_LepLep_X.plot(
         "h_lepton_1_jet_1_dR",
-        f"#Delta R({root_latex_name}, jet_{{lead}})",
-        "Run2018 [59.83 fb^{-1} (13 TeV)]",
+        f"$\Delta R({latex_name}, jet_{{lead}})$",
+        "Work in progress",
+        lumi,
         no_rebinning,
         True,
     )
     z_LepLep_X.plot(
         "h_jet_multiplicity",
         "N Jets",
-        "Run2018 [59.83 fb^{-1} (13 TeV)]",
+        "Work in progress",
+        lumi,
         no_rebinning,
         True,
     )
     z_LepLep_X.plot(
         "h_bjet_multiplicity",
         "N BJets",
-        "Run2018 [59.83 fb^{-1} (13 TeV)]",
+        "Work in progress",
+        lumi,
         no_rebinning,
         True,
     )
@@ -345,19 +340,13 @@ def leplep_plots(lepton, root_latex_name, name, input_mc, input_data):
 
 def main():
     leplep_plots(
-        "mu",
-        "#mu",
+        "\mu",
         "z_MuMu_X",
-        ["validation_outputs_BKP/DYJetsToLL_M-50_13TeV_AM_z_to_mu_mu_x.root"],
+        {
+            "DYJetsToLL_M-50_13TeV": "validation_outputs_BKP/DYJetsToLL_M-50_13TeV_AM_z_to_mu_mu_x.root"
+        },
         "validation_outputs_BKP/SingleMuon_z_to_mu_mu_x.root",
     )
-    # leplep_plots(
-    #     "e",
-    #     "e",
-    #     "z_EleEle_X",
-    #     ["validation_outputs_BKP/DYJetsToLL_M-50_13TeV_AM_z_to_ele_ele_x.root"],
-    #     "validation_outputs_BKP/SingleMuon_z_to_ele_ele_x.root",
-    # )
 
 
 if __name__ == "__main__":
