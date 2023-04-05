@@ -3,12 +3,16 @@
 from datetime import datetime
 import subprocess
 import os
+import argparse
 
 from CRABClient.UserUtilities import config
 from CRABAPI.RawCommand import crabCommand
 
-from sample_list import sample_list
+from sample_list import make_sample_list
 
+parser = argparse.ArgumentParser()
+parser.add_argument("path")
+args = parser.parse_args()
 
 def get_username():
     res = subprocess.check_output(
@@ -86,7 +90,7 @@ def build_task_tarball():
 
 def main():
     build_task_tarball()
-    for sample in sample_list:
+    for sample in make_sample_list(args.path):
         submit(sample)
 
 
