@@ -1,46 +1,60 @@
-def build_sample_list(samples_file):
-    pass
-# sample_list = build_sample_list("samples_file")
+from pathlib import Path
+import optparse
+import tomli
+import pprint
 
-sample_list = [
-    # (process_name, das_name, year, is_data)
-    # (
-    #     "DYJetsToLL_M-50_13TeV_AM",
-    #     "/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v2/NANOAODSIM",
-    #     "2018",
-    #     "_",
-    #     False,
-    # ),
-    (
-        "SingleMuonA_2018",
-        "/SingleMuon/Run2018A-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD",
-        "2018",
-        "A",
-        True,
-    ),
-    (
-        "SingleMuonB_2018",
-        "/SingleMuon/Run2018B-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD",
-        "2018",
-        "B",
-        True,
-    ),
-    (
-        "SingleMuonC_2018",
-        "/SingleMuon/Run2018C-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD",
-        "2018",
-        "C",
-        True,
-    ),
-    (
-        "SingleMuonD_2018",
-        "/SingleMuon/Run2018D-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD",
-        "2018",
-        "D",
-        True,
-    ),
-]
+usage = "%prog [options]  CROSS_SECTION_FILE"
+description = "This script creates the sample list for crab_music using cross section file."
+
+parser = optparse.OptionParser(
+    usage=usage, description=description, version="%prog 0"   )
+    
+parser.add_option(
+     "-o",
+     "--output_filename",
+     action="store",
+     default="xSections_list",
+     metavar="FILENAME",
+     help="Specify a filename for your output file.",
+ )
+(options, args) = parser.parse_args()                                                                                                                                                                          
 
 
+def make_sample_list(xSection_file_path):
+    input_file=""
+    
+    try:
+        input_file=args[0]
+    except:
+        input_file=xSection_file_path
+    
+    xsections = tomli.loads(Path(input_file).read_text(encoding="utf-8"))
+    sample_list=[]
+    for mName in xsections:
+        if "das_name_2016APV" in xsections[mName]: 
+            for das_name in xsections[mName]["das_name_2016APV"]:
+                             sample_list.append((mName,das_name,"2016APV",False))
+        if "das_name_2016" in xsections[mName]:
+            for das_name in xsections[mName]["das_name_2016"]:
+                             sample_list.append((mName,das_name,"2016",False))
+        if "das_name_2017" in xsections[mName]:
+            for das_name in xsections[mName]["das_name_2017"]:
+                             sample_list.append((mName,das_name,"2017",False))
+        if "das_name_2018" in xsections[mName]:
+            for das_name in xsections[mName]["das_name_2018"]:
+                             sample_list.append((mName,das_name,"2018",False))
+
+        else:
+            continue
+
+    return sample_list
+
+def main():
+
+    pprint.pprint(make_sample_list(args[0]))
+
+
+if __name__ == "__main__":
+    main()
 
 

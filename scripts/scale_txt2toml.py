@@ -1,6 +1,7 @@
+#!/usr/bin/env python3 
 def main():
     buffer = {}
-    with open('../NanoMUSiC/MUSiC-Configs/MC/scales.txt', 'r') as f_in:
+    with open('/disk1/ykaiser/sharing/scales.txt', 'r') as f_in:
         for line in filter(None, (line.rstrip() for line in f_in)):
             if not line.startswith("#") and not line.startswith(" ") and not line.startswith("Lumi") and line != "":
                 config, value = line.split("=")

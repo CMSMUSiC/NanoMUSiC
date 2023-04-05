@@ -3,11 +3,12 @@
 from datetime import datetime
 import subprocess
 import os
+import argparse
 
 from CRABClient.UserUtilities import config
 from CRABAPI.RawCommand import crabCommand
 
-from sample_list import sample_list
+from sample_list import make_sample_list
 
 from pathlib import Path
 import tomli
@@ -16,6 +17,10 @@ from helpers import *
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import Terminal256Formatter, HtmlFormatter
+
+parser = argparse.ArgumentParser()
+parser.add_argument("path")
+args = parser.parse_args()
 
 def make_task_config_file(process_name, das_name, year, era, is_data):
     # copy config TOML to current directory
@@ -115,7 +120,7 @@ def build_task_tarball():
 
 def main():
     build_task_tarball()
-    for sample in sample_list:
+    for sample in make_sample_list(args.path):
         submit(sample)
 
 
