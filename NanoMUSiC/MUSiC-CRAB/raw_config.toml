@@ -1,8 +1,8 @@
 output = "outputs"
-is_data = true
-year = "2018"
-era = "D"
-process = "SingleMuonD_2018"
-dataset = "/SingleMuon/Run2018D-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD"
+is_data = false
+year = "2016APV"
+era = "_"
+process = "DYJetsToLL_LHEFilterPtZ-100To250_MatchEWPDG20_13TeV_AM"
+dataset = "/DYJetsToLL_LHEFilterPtZ-100To250_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM"
 is_crab_job = true
 input_files = ["__dummy__"]

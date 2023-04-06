@@ -19,7 +19,8 @@ from pygments.lexers import get_lexer_by_name
 from pygments.formatters import Terminal256Formatter, HtmlFormatter
 
 parser = argparse.ArgumentParser()
-parser.add_argument("path")
+parser.add_argument("xsection_file_path",help="Give path to the toml file containing cross-sections per sample")
+parser.add_argument("-btg", "--btageff", action="store_true",help="Set true to run the b-tag efficiency code")
 args = parser.parse_args()
 
 def make_task_config_file(process_name, das_name, year, era, is_data):
@@ -75,6 +76,9 @@ def build_crab_config(process_name, das_name, year, is_data):
     this_config.JobType.pluginName = "Analysis"
     this_config.JobType.psetName = "crab_music_pset.py"
     this_config.JobType.scriptExe = "run_nano_music.sh"
+    if args.btageff:
+        print ("B-TAG!!!")
+        this_config.JobType.scriptExe = "run_btageff.sh"
 
     this_config.JobType.inputFiles = ["task.tar.gz", "raw_config.toml"]
 
@@ -94,6 +98,10 @@ def build_crab_config(process_name, das_name, year, is_data):
 
     this_config.JobType.outputFiles = [
         r"nano_music.root"
+    ]
+    if args.btageff:
+        this_config.JobType.outputFiles = [
+        r"efficiency_hist.root"
     ]
     this_config.User.voGroup = "dcms"
     this_config.Site.storageSite = "T2_DE_RWTH"
@@ -120,7 +128,7 @@ def build_task_tarball():
 
 def main():
     build_task_tarball()
-    for sample in make_sample_list(args.path):
+    for sample in make_sample_list(args.xsection_file_path):
         submit(sample)
 
 
