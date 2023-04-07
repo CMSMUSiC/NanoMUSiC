@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 import sys
 
-if not sys.version_info >= (3, 6):
-    print("This script should run only with Python 3.6+.")
-    exit(9)
-
 import tomli
 from helpers import *
 import logging
@@ -29,7 +25,7 @@ class Sample:
         self.year = ""
         self.era = ""
         self.is_data = False
-        self.is_ext= False 
+        self.is_ext = False
 
     def parse_name(self, options, generators, showers=[], redlist=[]):
         # format of datasetpath: /.../.../...
@@ -37,7 +33,7 @@ class Sample:
         # second part has additional information ( campaign, extention sample? ,... )
         # third part contains sample 'format' (AOD, MINIAOD, ...)
         dataset_split = self.dataset.split("/")
-        
+
         ds_pt1 = dataset_split[1]
         ds_pt2 = dataset_split[2]
         ds_pt3 = dataset_split[3].strip()
@@ -46,7 +42,7 @@ class Sample:
         if ds_pt3 == "NANOAOD":
             self.is_data = True
             self.generator = "data"
-            
+
             # get year
             if re.search("Run2016.*-HIPM.*UL2016", ds_pt2):
                 self.year = "2016APV"
@@ -57,11 +53,10 @@ class Sample:
             if re.search("Run2018.*UL2018", ds_pt2):
                 self.year = "2018"
 
-            #check for extensions
+            # check for extensions
             if re.search("_ext", ds_pt2):
                 self.is_ext = True
-            
-                
+
             # get era
             match_era = re.search("Run201.*-UL", ds_pt2)
             if match_era.group():
@@ -94,17 +89,10 @@ class Sample:
             if re.search("20UL18NanoAODv9", ds_pt2):
                 self.year = "2018"
 
-            #match = re.search("ext\d\d*", ds_pt2)
-            self.name = (
-                    ds_pt1
-                    + "_"
-                    + options.cme
-                    + "TeV_"
-                    + generators[self.generator]
-                )
-                # end if MC
+            # match = re.search("ext\d\d*", ds_pt2)
+            self.name = ds_pt1 + "_" + options.cme + "TeV_" + generators[self.generator]
+            # end if MC
 
-        
 
 def readSamplesFromFile(filename):
     with open(filename, "r") as file:
@@ -112,14 +100,8 @@ def readSamplesFromFile(filename):
 
 
 def main():
-
-<<<<<<< HEAD
-    usage = "%prog [options] SAMPLELIST YEAR"
-    description = "This script parses a given file SAMPLELIST and writes a customizable list."
-=======
     usage = "%prog [options] SAMPLELIST CROSS_SECTION_FILE"
     description = "This script parses a given file with cross-sections and a sample list and writes a custom list that can be provided to music_crab."
->>>>>>> origin/auto_mapping_sampleList
 
     parser = optparse.OptionParser(
         usage=usage, description=description, version="%prog 0"
@@ -140,12 +122,13 @@ def main():
         metavar="FILENAME",
         help="Specify a filename for your output file.",
     )
-    
-    
+
     (options, args) = parser.parse_args()
 
     if len(args) != 2:
-        parser.error("Exactly 2 argument needed: state the file you want to parse and the cross-section file.")
+        parser.error(
+            "Exactly 2 argument needed: state the file you want to parse and the cross-section file."
+        )
 
     # dict of generators with shortname
     generators = OrderedDict()
@@ -203,23 +186,23 @@ def main():
             "generator": sample.generator,
             "year": sample.year,
             "is_data": sample.is_data,
-            }
+        }
     xsections = tomli.loads(Path(args[1]).read_text(encoding="utf-8"))
     for sample in sample_list:
         try:
-            dName="das_name_"+sample.year
+            dName = "das_name_" + sample.year
             if not dName in xsections[sample.name]:
-                xsections[sample.name][dName]=[]
+                xsections[sample.name][dName] = []
             xsections[sample.name][dName].append(sample.dataset)
         except:
-            print (sample.name)
-        
-    # dump new config to file                                                                                                                                                           
+            print(sample.name)
+
+    # dump new config to file
     xSections_list = to_toml_dumps(xsections)
     os.system("rm xSections.toml > /dev/null 2>&1")
     with open(options.output_filename, "w") as new_xsection_file:
         new_xsection_file.write(xSections_list)
 
-        
+
 if __name__ == "__main__":
     main()

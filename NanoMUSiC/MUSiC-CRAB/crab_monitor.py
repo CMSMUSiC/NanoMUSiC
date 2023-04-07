@@ -12,10 +12,15 @@ from CRABAPI.RawCommand import crabCommand
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='Monitor CRAB MUSiC jobs.')
-    parser.add_argument('-ec','--exclude-completed', action='store_true', help='will not report COMPLETED taks.', required=False)
+    parser = argparse.ArgumentParser(description="Monitor CRAB MUSiC jobs.")
+    parser.add_argument(
+        "-ec",
+        "--exclude-completed",
+        action="store_true",
+        help="will not report COMPLETED taks.",
+        required=False,
+    )
     return vars(parser.parse_args())
-
 
 
 def get_crab_dirs():
@@ -25,28 +30,34 @@ def get_crab_dirs():
 # define clear function
 def clear():
     # check and make call for specific operating system
-    _ = subprocess.run('clear ; clear ; clear ; clear ; clear ' if os.name == 'posix' else 'cls', shell=True)
+    _ = subprocess.run(
+        "clear ; clear ; clear ; clear ; clear " if os.name == "posix" else "cls",
+        shell=True,
+    )
+
 
 @contextmanager
 def suppress_stdout():
     with open(os.devnull, "w") as devnull:
         old_stdout = sys.stdout
         sys.stdout = devnull
-        try:  
+        try:
             yield
         finally:
             sys.stdout = old_stdout
 
+
 class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
+    HEADER = "\033[95m"
+    OKBLUE = "\033[94m"
+    OKCYAN = "\033[96m"
+    OKGREEN = "\033[92m"
+    WARNING = "\033[93m"
+    FAIL = "\033[91m"
+    ENDC = "\033[0m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
+
 
 def get_emojis(status):
     if status == "finished" or status == "COMPLETED":
@@ -55,8 +66,9 @@ def get_emojis(status):
         return "😡❌"
     elif status == "transfering":
         return "😋🆗"
-    else: 
+    else:
         return "🤔"
+
 
 def print_colored(status):
     if status == "finished" or status == "COMPLETED":
@@ -65,19 +77,30 @@ def print_colored(status):
         return f"{bcolors.FAIL}{status.capitalize()}{bcolors.ENDC}"
     elif status == "transfering":
         return f"{bcolors.OKBLUE}{status.capitalize()}{bcolors.ENDC}"
-    else: 
+    else:
         return f"{status.capitalize()}"
 
-def monitor(dir, idx, completed, failing, others, total_task, exclude_completed):
+
+def monitor(
+    dir,
+    idx,
+    completed,
+    failing,
+    others,
+    total_task,
+    exclude_completed,
+    kill_commands,
+    retry_commands,
+):
     with suppress_stdout():
         res = crabCommand("status", dir=dir)
 
     inputDataset = res["inputDataset"]
     jobsPerStatus = res["jobsPerStatus"]
-    proxiedWebDir=res["proxiedWebDir"].split("/")[-1]
+    proxiedWebDir = res["proxiedWebDir"].split("/")[-1]
     task_status = res["status"]
     monitoring_url = f"https://cmsweb.cern.ch/crabserver/ui/task/{proxiedWebDir}"
-    
+
     if "failed" in jobsPerStatus:
         failing += 1
     elif task_status == "COMPLETED":
@@ -88,30 +111,48 @@ def monitor(dir, idx, completed, failing, others, total_task, exclude_completed)
     if not (exclude_completed and task_status == "COMPLETED"):
         if idx == 0:
             clear()
-        
-        print(f"\n{bcolors.HEADER}===================={bcolors.ENDC}{bcolors.BOLD} CRAB Task: [{idx+1}/{total_task}] {bcolors.ENDC}{bcolors.ENDC}{bcolors.HEADER}===================={bcolors.ENDC}")
+
+        print(
+            f"\n{bcolors.HEADER}===================={bcolors.ENDC}{bcolors.BOLD} CRAB Task: [{idx+1}/{total_task}] {bcolors.ENDC}{bcolors.ENDC}{bcolors.HEADER}===================={bcolors.ENDC}"
+        )
         print(f"Task directory: {bcolors.BOLD}{dir}{bcolors.ENDC}")
         print(f"Input Dataset: {bcolors.BOLD}{inputDataset}{bcolors.ENDC}")
         print(f"Task status: {print_colored(task_status)}")
         print(f"Monitoring URL: {bcolors.BOLD}{monitoring_url}{bcolors.ENDC}")
         print(f"Jobs per status:")
         for status in jobsPerStatus:
-            print(f"{print_colored(status)} : {jobsPerStatus[status]} {get_emojis(status)}")
+            print(
+                f"{print_colored(status)} : {jobsPerStatus[status]} {get_emojis(status)}"
+            )
         if "failed" in jobsPerStatus:
             print(f"{bcolors.WARNING}Resubmit command:{bcolors.ENDC}")
             print(f"crab resubmit -d {dir}")
+            retry_commands.append(f"crab resubmit -d {dir}")
         print(f"{bcolors.WARNING}Kill command:{bcolors.ENDC}")
         print(f"crab kill -d {dir}")
+        kill_commands.append(f"crab kill -d {dir}")
+
+    idx += 1
+    return idx, completed, failing, others, kill_commands, retry_commands
 
 
-        idx += 1
-    return idx, completed, failing, others 
-    
-def next_command():
+def next_command(kill_commands, retry_commands):
     next_cmd = "invalid"
     while next_cmd == "invalid":
-        cmd = input(f"{bcolors.BOLD}\nCommand: [q] quit - [<ENTER>] reload:{bcolors.ENDC} ")
+        cmd = input(
+            f"{bcolors.BOLD}\nCommand: [q | quit] quit - [kill] kill all tasks - [retry] retry all failed tasks - [<ENTER>] reload:{bcolors.ENDC} "
+        )
         if cmd == "q" or cmd == "quit":
+            exit(0)
+        elif cmd == "retry":
+            print("Resubminting all failed tasks ...")
+            for command in retry_commands:
+                os.system(command)
+            return "reload"
+        elif cmd == "kill":
+            print("Killing all tasks ...")
+            for command in kill_commands:
+                os.system(command)
             exit(0)
         elif cmd == "":
             print("Reloading ...")
@@ -120,25 +161,45 @@ def next_command():
             print("[ ERROR ] Invalid option.")
 
 
-
 def main():
     args = parse_args()
     exclude_completed = args["exclude_completed"]
-    while(True):
+    while True:
         idx = 0
         completed = 0
         failing = 0
         others = 0
+        kill_commands = []
+        retry_commands = []
         for dir in get_crab_dirs():
-            idx, completed, failing, others = monitor(dir, idx, completed, failing, others, len(get_crab_dirs()), exclude_completed)
-       
-        print(f"\n{bcolors.BOLD}==================== [ REPORT ] ===================={bcolors.ENDC}")
-        print(f"{bcolors.OKGREEN}Completed{bcolors.ENDC}: {completed}/{len(get_crab_dirs())} tasks{bcolors.ENDC}")
-        print(f"{bcolors.FAIL}Failed{bcolors.ENDC}: {failing}/{len(get_crab_dirs())} tasks{bcolors.ENDC}")
-        print(f"{bcolors.ENDC}Others{bcolors.ENDC}: {others}/{len(get_crab_dirs())} tasks{bcolors.ENDC}")
-        
-        if next_command() == "reload":
+            idx, completed, failing, others, kill_commands, retry_commands = monitor(
+                dir,
+                idx,
+                completed,
+                failing,
+                others,
+                len(get_crab_dirs()),
+                exclude_completed,
+                kill_commands,
+                retry_commands,
+            )
+
+        print(
+            f"\n{bcolors.BOLD}==================== [ REPORT ] ===================={bcolors.ENDC}"
+        )
+        print(
+            f"{bcolors.OKGREEN}Completed{bcolors.ENDC}: {completed}/{len(get_crab_dirs())} tasks{bcolors.ENDC}"
+        )
+        print(
+            f"{bcolors.FAIL}Failed{bcolors.ENDC}: {failing}/{len(get_crab_dirs())} tasks{bcolors.ENDC}"
+        )
+        print(
+            f"{bcolors.ENDC}Others{bcolors.ENDC}: {others}/{len(get_crab_dirs())} tasks{bcolors.ENDC}"
+        )
+
+        if next_command(kill_commands, retry_commands) == "reload":
             pass
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     main()

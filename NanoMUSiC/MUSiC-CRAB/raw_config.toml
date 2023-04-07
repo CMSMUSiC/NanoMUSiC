@@ -1,8 +1,8 @@
 output = "outputs"
 is_data = false
-year = "2016APV"
+year = "2018"
 era = "_"
-process = "DYJetsToLL_LHEFilterPtZ-100To250_MatchEWPDG20_13TeV_AM"
-dataset = "/DYJetsToLL_LHEFilterPtZ-100To250_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM"
+process = "WminusH_HToBB_WToQQ_M-125_13TeV_PH"
+dataset = "/WminusH_HToBB_WToQQ_M-125_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM"
 is_crab_job = true
 input_files = ["__dummy__"]

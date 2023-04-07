@@ -19,38 +19,56 @@ from pygments.lexers import get_lexer_by_name
 from pygments.formatters import Terminal256Formatter, HtmlFormatter
 
 parser = argparse.ArgumentParser()
-parser.add_argument("xsection_file_path",help="Give path to the toml file containing cross-sections per sample")
-parser.add_argument("-btg", "--btageff", action="store_true",help="Set true to run the b-tag efficiency code")
+parser.add_argument(
+    "xsection_file_path",
+    help="Give path to the toml file containing cross-sections per sample",
+)
+parser.add_argument(
+    "-btg",
+    "--btageff",
+    action="store_true",
+    help="Set true to run the b-tag efficiency code",
+)
 args = parser.parse_args()
+
 
 def make_task_config_file(process_name, das_name, year, era, is_data):
     # copy config TOML to current directory
     # True for Data, False for MC
     config_toml_file = {
-        True: "../../configs/task_configs/template_Data.toml", # Data
-        False: "../../configs/task_configs/template_MC.toml", # MC
+        True: "../../configs/task_configs/template_Data.toml",  # Data
+        False: "../../configs/task_configs/template_MC.toml",  # MC
     }
 
-    config = tomli.loads(Path("../../configs/task_configs/CRAB_template.toml").read_text(encoding="utf-8"))
+    config = tomli.loads(
+        Path("../../configs/task_configs/CRAB_template.toml").read_text(
+            encoding="utf-8"
+        )
+    )
     config["era"] = era
     config["is_crab_job"] = True
     config["output"] = "outputs"
     config["process"] = process_name
     config["dataset"] = das_name
     config["year"] = year
-    config["is_data"] = is_data 
+    config["is_data"] = is_data
 
     new_config = to_toml_dumps(config)
     print("\n*************** Modified task config file: ******************\n")
-    print(highlight(new_config, 
-                lexer=get_lexer_by_name("toml"), 
-                formatter=Terminal256Formatter(style="monokai")))
+    print(
+        highlight(
+            new_config,
+            lexer=get_lexer_by_name("toml"),
+            formatter=Terminal256Formatter(style="monokai"),
+        )
+    )
     print("\n" + "*" * 56)
 
     # dump new config to file
     os.system("rm raw_config.toml > /dev/null 2>&1")
     with open("raw_config.toml", "w") as new_config_file:
         new_config_file.write(new_config)
+
 
 def get_username():
     res = subprocess.check_output(
@@ -70,14 +88,14 @@ def build_crab_config(process_name, das_name, year, is_data):
     now = datetime.now().strftime(r"date_%Y_%m_%d_time_%H_%M_%S")
 
     this_config.General.requestName = process_name
-    this_config.General.workArea = f"crab_nano_music_{now}"
+    this_config.General.workArea = f"crab_nano_music_{process_name}_{now}"
     this_config.General.transferOutputs = True
 
     this_config.JobType.pluginName = "Analysis"
     this_config.JobType.psetName = "crab_music_pset.py"
     this_config.JobType.scriptExe = "run_nano_music.sh"
     if args.btageff:
-        print ("B-TAG!!!")
+        print("Will submit BTag Efficiency code ...")
         this_config.JobType.scriptExe = "run_btageff.sh"
 
     this_config.JobType.inputFiles = ["task.tar.gz", "raw_config.toml"]
@@ -95,14 +113,9 @@ def build_crab_config(process_name, das_name, year, is_data):
     this_config.Data.outLFNDirBase = (
         f"/store/user/{get_username()}/nano_music/{this_config.General.workArea}"
     )
-
-    this_config.JobType.outputFiles = [
-        r"nano_music.root"
-    ]
+    this_config.JobType.outputFiles = [r"nano_music.root"]
     if args.btageff:
-        this_config.JobType.outputFiles = [
-        r"efficiency_hist.root"
-    ]
+        this_config.JobType.outputFiles = [r"efficiency_hist.root"]
     this_config.User.voGroup = "dcms"
     this_config.Site.storageSite = "T2_DE_RWTH"
 
