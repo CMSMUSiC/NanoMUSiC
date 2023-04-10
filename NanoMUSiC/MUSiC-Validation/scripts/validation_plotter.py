@@ -253,9 +253,7 @@ def leplep_plots(latex_name, name, input_mc, input_data):
         rebin_energy_like,
         True,
     )
-    z_LepLep_X.plot(
-        "h_met", "MET", "Work in progress", lumi,  rebin_energy_like, True
-    )
+    z_LepLep_X.plot("h_met", "MET", "Work in progress", lumi, rebin_energy_like, True)
     z_LepLep_X.plot(
         "h_lepton_1_pt",
         f"$p_{{T}}^{{lead-{latex_name}}}$",

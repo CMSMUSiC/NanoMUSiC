@@ -13,6 +13,10 @@
 #include <tuple>
 #include <type_traits>
 
+
+namespace Enumerate
+{
+    
 template <typename T>
 constexpr int _imp2_number_of_duplicates(T &&t1, T &&t2)
 {
@@ -148,4 +152,5 @@ constexpr auto make_enumerate(Ts &&...args)
     }
 }
 
+}
 #endif /*ENUMERATE_H*/

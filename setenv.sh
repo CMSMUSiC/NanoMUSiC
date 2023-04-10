@@ -6,8 +6,15 @@ SCRIPTDIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # Set up the LCG environment
 # List of available software:
-# https://lcginfo.cern.ch/release_packages/x86_64-centos7-gcc11-opt/102B/
-source  /cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/setup.sh
+# https://lcginfo.cern.ch/release_packages/x86_6
+if [[ -n ${MUSIC_ALMALINUX9+x} ]]; then
+        echo "[ LCG View ] Using x86_64-centos9-gcc12-opt ..."
+        source /cvmfs/sft.cern.ch/lcg/views/LCG_103/x86_64-centos9-gcc12-opt/setup.sh
+else
+        echo "[ LCG View ] Using x86_64-centos7-gcc12-opt ..."
+        source /cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/setup.sh
+fi
+echo "[ LCG View ] Done ..."86_64-centos7-gcc12-opt/setup.sh
 
 # Set ninja as default CMake generator
 export CMAKE_GENERATOR=Ninja

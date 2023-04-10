@@ -1,11 +1,6 @@
 // #ifndef VARIATIONS
 // #define VARIATIONS
 
-// // On: 28.10.2022
-// // https://ericniebler.github.io/range-v3
-// // https://github.com/ericniebler/range-v3
-// // #include <range/v3/all.hpp>
-
 // #include <fmt/core.h>
 // #include <fmt/ostream.h>
 // #include <fmt/ranges.h>
@@ -39,12 +34,12 @@
 
 // // variations, shifts, weights and cuts
 // constexpr auto Cuts =
-//     make_enumerate("NoCuts", "GeneratorWeight", "RunLumi", "nPV", "METFilters", "TriggerCut", "TriggerMatch",
+//     Enumerate::make_enumerate("NoCuts", "GeneratorWeight", "RunLumi", "nPV", "METFilters", "TriggerCut", "TriggerMatch",
 //     "AtLeastOneClass");
-// constexpr auto Weights = make_enumerate("Generator", "PDF", "Alpha_S", "PileUp", "Lumi", "Trigger");
+// constexpr auto Weights = Enumerate::make_enumerate("Generator", "PDF", "Alpha_S", "PileUp", "Lumi", "Trigger");
 // constexpr auto Variations =
-//     make_enumerate("Default", "JEC", "JER", "MuonScale", "MuonResolution", "ElectronScale", "ElectronResolution");
-// constexpr auto Shifts = make_enumerate("Nominal", "Up", "Down");
+//     Enumerate::make_enumerate("Default", "JEC", "JER", "MuonScale", "MuonResolution", "ElectronScale", "ElectronResolution");
+// constexpr auto Shifts = Enumerate::make_enumerate("Nominal", "Up", "Down");
 
 // constexpr auto kTotalCuts = Outputs::Cuts.size();
 // constexpr auto kTotalWeights = Outputs::Weights.size();

@@ -20,7 +20,7 @@ using namespace std::literals;
 
 namespace Trigger
 {
-constexpr auto HLTPath = make_enumerate("SingleMuonLowPt"sv,      //
+constexpr auto HLTPath = Enumerate::make_enumerate("SingleMuonLowPt"sv,      //
                                         "SingleMuonHighPt"sv,     //
                                         "SingleElectronLowPt"sv,  //
                                         "SingleElectronHighPt"sv, //
@@ -33,7 +33,7 @@ constexpr auto HLTPath = make_enumerate("SingleMuonLowPt"sv,      //
                                         "MET"sv);
 constexpr auto kTotalPaths = HLTPath.size();
 
-constexpr auto ActivatedHLTPath = make_enumerate("SingleMuonLowPt"sv,     //
+constexpr auto ActivatedHLTPath = Enumerate::make_enumerate("SingleMuonLowPt"sv,     //
                                                  "SingleMuonHighPt"sv,    //
                                                  "SingleElectronLowPt"sv, //
                                                  "SingleElectronHighPt"sv);
