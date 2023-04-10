@@ -66,7 +66,7 @@ class Outputs
 
   public:
     // variations, shifts, weights and cuts
-    static constexpr auto Cuts = make_enumerate("NoCuts",
+    static constexpr auto Cuts = Enumerate::make_enumerate("NoCuts",
                                                 "GeneratorFilter",
                                                 "GeneratorWeight",
                                                 "RunLumi",
@@ -76,7 +76,7 @@ class Outputs
                                                 "AtLeastOneSelectedObject",
                                                 "TriggerMatch");
 
-    static constexpr auto Weights = make_enumerate("Generator",
+    static constexpr auto Weights = Enumerate::make_enumerate("Generator",
                                                    "PileUp",
                                                    "Lumi",
                                                    "L1PreFiring",
@@ -93,9 +93,9 @@ class Outputs
                                                    "BJetUncorrelated",
                                                    "LightJetUncorrelated");
     // static constexpr auto Variations =
-    //     make_enumerate("Default", "JEC", "JER", "MuonScale", "MuonResolution", "ElectronScale",
+    //     Enumerate::make_enumerate("Default", "JEC", "JER", "MuonScale", "MuonResolution", "ElectronScale",
     //     "ElectronResolution");
-    static constexpr auto Shifts = make_enumerate("Nominal", "Up", "Down");
+    static constexpr auto Shifts = Enumerate::make_enumerate("Nominal", "Up", "Down");
 
     static constexpr auto kTotalCuts = Outputs::Cuts.size();
     static constexpr unsigned int kTotalWeights = Outputs::Weights.size();
