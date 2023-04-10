@@ -104,15 +104,21 @@ auto EventAnalyzer::object_selection() -> EventAnalyzer &
         // loop over HighPt muons and ajust their pT to tunepRelPt*PF_pt
         auto dX = RVec<float>(muons.size);
         auto dY = RVec<float>(muons.size);
+        // fmt::print("[ DEBUG ] Raw High pT Muons: {}\n", muons.pt);
         for (std::size_t i = 0; i < muons.good_high_pt_muons_mask["nominal"].size(); i++)
         {
             if (muons.good_high_pt_muons_mask["nominal"][i] == 1)
             {
                 dX[i] = (muons.tunepRelPt[i] * muons.pt[i] - muons.pt[i]) * std::cos(muons.phi[i]);
                 dY[i] = (muons.tunepRelPt[i] * muons.pt[i] - muons.pt[i]) * std::sin(muons.phi[i]);
-                muons.pt[i] = muons.tunepRelPt[i] * muons.pt[i];
+                // for some resong, the the Relative pT Tune can yield very low corrected pT. For this reason, they will
+                // be caped to ObjConfig::Muons[year].MinLowPt , in order to not break the JSON SFs bound checks.
+                // https://cms-nanoaod-integration.web.cern.ch/commonJSONSFs/summaries/MUO_2016postVFP_UL_muon_Z.html
+                muons.pt[i] = std::max(muons.tunepRelPt[i] * muons.pt[i], ObjConfig::Muons[year].MinLowPt);
             }
         }
+        // fmt::print("[ DEBUG ] High pT Muon Correction: {}\n", muons.tunepRelPt);
+        // fmt::print("[ DEBUG ] Corrected High pT Muons: {}\n", muons.pt);
 
         // transform MET accordingly
         auto current_met = Math::PtEtaPhiMVector(met.pt[0], 0., met.phi[0], 0.);
@@ -123,7 +129,9 @@ auto EventAnalyzer::object_selection() -> EventAnalyzer &
 
         // set global muon mask ("cocktail")
         muons.good_muons_mask["nominal"] =
-            muons.good_low_pt_muons_mask["nominal"] || muons.good_high_pt_muons_mask["nominal"];
+            muons.good_low_pt_muons_mask["nominal"] | muons.good_high_pt_muons_mask["nominal"];
+        // muons.good_low_pt_muons_mask["nominal"] || muons.good_high_pt_muons_mask["nominal"]; // I am really not sure
+        // what is the proper one. Most probably, it doesn't matter ...
 
         // clear muons against themselves
         // should we do it????
