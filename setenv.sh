@@ -1,13 +1,19 @@
 #!/bin/bash
 
 # This is a set_env script
-SCRIPTDIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-
+SCRIPTDIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 
 # Set up the LCG environment
 # List of available software:
 # https://lcginfo.cern.ch/release_packages/x86_64-centos7-gcc11-opt/102B/
-source  /cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/setup.sh
+if [[ -n ${MUSIC_ALMALINUX9+x} ]]; then
+	echo "[ LCG View ] Using x86_64-centos9-gcc12-opt ..."
+	source /cvmfs/sft.cern.ch/lcg/views/LCG_103/x86_64-centos9-gcc12-opt/setup.sh
+else
+	echo "[ LCG View ] Using x86_64-centos7-gcc12-opt ..."
+	source /cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/setup.sh
+fi
+echo "[ LCG View ] Done ..."
 
 # Set ninja as default CMake generator
 export CMAKE_GENERATOR=Ninja
@@ -28,41 +34,37 @@ export MYPXLANA=EventClassFactory
 cd $SCRIPTDIR/NanoMUSiC/tools/
 source set_env.sh
 
-
 cd $SCRIPTDIR/NanoMUSiC/PxlAnalyzer/
 source set_env.sh
-
 
 cd $SCRIPTDIR/NanoMUSiC/PlotLib/
 source set_env.sh
 
-
 cd $SCRIPTDIR/NanoMUSiC/PxlAnalyzer/EventClassFactory/
 source set_env.sh
-
 
 cd $SCRIPTDIR/NanoMUSiC/MUSiC-Utils/
 source set_env.sh
 
-
 cd $SCRIPTDIR/NanoMUSiC/MUSiC-Configs/
 source set_env.sh
-
 
 cd $SCRIPTDIR/NanoMUSiC/MUSiC-RoIScanner/
 source set_env.sh
 
-
 cd $SCRIPTDIR
 
 # set PATH
+<<<<<<< HEAD
 export PATH=$PATH:$SCRIPTDIR/bin;
 export PATH=$PATH:$SCRIPTDIR/scripts;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-Validation/scripts;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-BTagEff;
+=======
+export PATH=$PATH:$SCRIPTDIR/bin
+export PATH=$PATH:$SCRIPTDIR/scripts
+>>>>>>> main
 # export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-CRAB;
-
-
 
 # rust config
 export RUSTFLAGS="-C linker=$CC"

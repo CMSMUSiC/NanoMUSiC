@@ -3,7 +3,16 @@
 # Set up the LCG environment
 # List of available software:
 # https://lcginfo.cern.ch/release_packages/x86_64-centos7-gcc11-opt/102b/
-source /cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/setup.sh
+if [[ -n ${MUSIC_ALMALINUX9+x} ]]; then
+	echo "[ LCG View ] Using x86_64-centos9-gcc12-opt ..."
+	source /cvmfs/sft.cern.ch/lcg/views/LCG_103/x86_64-centos9-gcc12-opt/setup.sh
+else
+	echo "[ LCG View ] Using x86_64-centos7-gcc12-opt ..."
+	source /cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/setup.sh
+fi
+echo "[ LCG View ] Done ..."
+
+# if [ -z ${MUSIC_ALMALINUX9+x} ]; then echo "var is unset"; else echo "var is set to '$var'"; fi
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 
@@ -24,5 +33,3 @@ cd $SCRIPT_DIR
 
 # install poxy (documentation generation manager, based on doxygen)
 pip install --user poxy
-
-
