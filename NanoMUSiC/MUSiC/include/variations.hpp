@@ -2,9 +2,6 @@
 // #define VARIATIONS
 
 // // On: 28.10.2022
-// // https://ericniebler.github.io/range-v3
-// // https://github.com/ericniebler/range-v3
-// // #include <range/v3/all.hpp>
 
 // #include <fmt/core.h>
 // #include <fmt/ostream.h>
