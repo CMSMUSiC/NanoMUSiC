@@ -2,7 +2,11 @@
 execute_process(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
 separate_arguments(ROOT_CFLAGS)
 add_compile_options(-g)
-add_compile_options(-I/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/include)
+if($ENV{MUSIC_ALMALINUX9})
+    add_compile_options(-I/cvmfs/sft.cern.ch/lcg/views/LCG_103/x86_64-centos7-gcc12-opt/include)
+else()
+    add_compile_options(-I/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/include)
+endif()
 add_compile_options(${ROOT_CFLAGS} -fdiagnostics-color=always -MD -MP -O3 -Wall -march=native -pthread -m64 -ffloat-store)
 
 # root linker options

@@ -22,7 +22,6 @@
 #include <boost/lexical_cast.hpp>
 #pragma GCC diagnostic pop
 
-
 #include "TSystem.h" // for ExpandPathName
 
 namespace MUSiCTools
@@ -124,7 +123,8 @@ inline std::string removeComment(std::string line, char const commentChar = '#')
 
 inline std::string random_string(size_t length)
 {
-    auto randchar = []() -> char {
+    auto randchar = []() -> char
+    {
         const char charset[] =
             "0123456789"
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -298,7 +298,7 @@ inline std::string ExpandPath(Path const &path)
 inline std::string AbsolutePath(Path const &path)
 {
     Path const AbsPath(ExpandPath(path));
-    return complete(AbsPath).string();
+    return absolute(AbsPath).string();
 }
 
 inline std::string parse_and_expand_music_base(std::string_view path)

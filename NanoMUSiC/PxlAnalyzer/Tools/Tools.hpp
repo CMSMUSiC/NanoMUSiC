@@ -26,7 +26,8 @@ typedef boost::filesystem::path Path;
 class value_error : public std::runtime_error
 {
   public:
-    value_error(std::string const &msg) : std::runtime_error(msg)
+    value_error(std::string const &msg)
+        : std::runtime_error(msg)
     {
     }
 };
@@ -34,7 +35,8 @@ class value_error : public std::runtime_error
 class config_error : public std::runtime_error
 {
   public:
-    config_error(std::string const &msg) : std::runtime_error(msg)
+    config_error(std::string const &msg)
+        : std::runtime_error(msg)
     {
     }
 };
@@ -42,7 +44,8 @@ class config_error : public std::runtime_error
 class unsorted_error : public std::runtime_error
 {
   public:
-    unsorted_error(std::string const &msg) : std::runtime_error(msg)
+    unsorted_error(std::string const &msg)
+        : std::runtime_error(msg)
     {
     }
 };
@@ -51,7 +54,8 @@ class file_not_found : public std::exception
 {
   public:
     file_not_found(std::string const &filename, std::string const &filetype = "")
-        : m_filename(filename), m_filetype(filetype)
+        : m_filename(filename),
+          m_filetype(filetype)
     {
     }
     ~file_not_found() throw()
@@ -115,7 +119,9 @@ std::string inline fromString<std::string>(const std::string &input)
 // splits the input string at each occurence of sep and puts the parts into the result vector
 // if ignore empty is not set, the output vector will contain default values for repeated separators
 template <class T>
-void splitString(std::vector<T> &result, const std::string &input, const std::string &sep = ",",
+void splitString(std::vector<T> &result,
+                 const std::string &input,
+                 const std::string &sep = ",",
                  bool ignoreEmpty = false)
 {
     result.clear();
@@ -184,7 +190,7 @@ inline std::string ExpandPath(Path const &path)
 inline std::string AbsolutePath(Path const &path)
 {
     Path const AbsPath(ExpandPath(path));
-    return complete(AbsPath).string();
+    return absolute(AbsPath).string();
 }
 } // namespace Tools
 

@@ -65,8 +65,9 @@ auto EventAnalyzer::set_pdf_alpha_s_weights(const std::optional<std::pair<unsign
             auto [lha_id, _] = lha_indexes.value_or(std::pair<unsigned int, unsigned int>());
             if (lha_id == 0)
             {
-                throw std::runtime_error(fmt::format(
-                    "There are PDF weights written in the file, but the REGEX failed to get a proper LHA ID."));
+                throw std::runtime_error(
+                    fmt::format("ERROR: There are PDF weights written in the file, but the REGEX parser failed to get "
+                                "a proper LHA ID."));
             }
 
             // has alpha_s weights
@@ -110,7 +111,7 @@ auto EventAnalyzer::set_pdf_alpha_s_weights(const std::optional<std::pair<unsign
             else
             {
                 throw std::runtime_error(fmt::format(
-                    "Unexpected number of PDF weights ({}). According to CMSSW "
+                    "ERROR: Unexpected number of PDF weights ({}). According to CMSSW "
                     "(https://github.dev/cms-sw/cmssw/blob/6ef534126e6db3dfdea86c3f0eedb773f0117cbc/PhysicsTools/"
                     "NanoAOD/python/genWeightsTable_cfi.py#L20) if should be eighther 101, 103, 31 or 33.\n",
                     lhe_info.nLHEPdfWeight));
@@ -166,17 +167,36 @@ auto EventAnalyzer::set_scale_weights() -> EventAnalyzer &
         if (lhe_info.nLHEScaleWeight > 0)
         {
 
-            if (lhe_info.nLHEScaleWeight != 9)
+            if (not(lhe_info.nLHEScaleWeight == 9 or lhe_info.nLHEScaleWeight == 8))
             {
-                throw std::runtime_error(fmt::format("Unexpected number of Scale weights ({}). Expected to be 9.\n",
-                                                     lhe_info.nLHEScaleWeight));
+                throw std::runtime_error(fmt::format(
+                    "ERROR: Unexpected number of Scale weights ({}). Expected to be 8 or 9. \nWeights: {}\n",
+                    lhe_info.nLHEScaleWeight,
+                    lhe_info.LHEScaleWeight));
             }
+
+            // fmt::print("{}\n", lhe_info.LHEScaleWeight);
+
             auto murf_nominal = lhe_info.LHEScaleWeight[4];
+            // REFERENCE on how to treat nLHEScaleWeight == 8:
+            // https://github.com/rappoccio/QJetMassUproot/blob/3b12e0d16adf4fe2c8a50aac55d6a8a2a360d4d7/cms_utils.py
+            if (lhe_info.nLHEScaleWeight == 8)
+            {
+                murf_nominal = 1.;
+            }
 
-            // remove indexes 2 and 6 since they corresponds to unphysical values ()
-            lhe_info.LHEScaleWeight.erase(lhe_info.LHEScaleWeight.begin() + 2);
-            lhe_info.LHEScaleWeight.erase(lhe_info.LHEScaleWeight.begin() + 6);
-
+            // remove indexes 2 and 6 or 5 (n ==8) since they corresponds to unphysical values
+            if (lhe_info.nLHEScaleWeight == 9)
+            {
+                lhe_info.LHEScaleWeight.erase(lhe_info.LHEScaleWeight.begin() + 2);
+                lhe_info.LHEScaleWeight.erase(lhe_info.LHEScaleWeight.begin() + 4);
+                lhe_info.LHEScaleWeight.erase(lhe_info.LHEScaleWeight.begin() + 6);
+            }
+            if (lhe_info.nLHEScaleWeight == 8)
+            {
+                lhe_info.LHEScaleWeight.erase(lhe_info.LHEScaleWeight.begin() + 2);
+                lhe_info.LHEScaleWeight.erase(lhe_info.LHEScaleWeight.begin() + 5);
+            }
             // The nominal LHEScaleWeight is expected to be 1.
             // All variations will be normalized to the nominal LHEScaleWeight and it is assumed that the nominal
             // weight is already included in the LHEWeight.

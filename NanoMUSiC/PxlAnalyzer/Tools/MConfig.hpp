@@ -50,13 +50,26 @@ class MConfig
 
   public:
     // constructor for MConfig objects
-    explicit MConfig(const std::string &path = "", const std::string &configBasePath = "", const char commentChar = '#',
-                     const char delimiterChar = '=', const char quoteChar = '"', const bool warnOverwrite = false)
-        : m_configInit(false), m_writeFile(false), m_warnOverwrite(false), m_commentChar(commentChar),
-          m_delimiterChar(delimiterChar), m_quoteChar(quoteChar), m_configBasePath(Tools::ExpandPath(configBasePath)),
-          m_configFilePath(Tools::ExpandPath(path)), m_configFileName(m_configBasePath.filename()), m_writePath("."),
-          m_writeFileName(m_configFilePath.filename()), m_importIdentifier("import"),
-          m_modifiedImportIdentifier1("with"), m_modifiedImportIdentifier2("as")
+    explicit MConfig(const std::string &path = "",
+                     const std::string &configBasePath = "",
+                     const char commentChar = '#',
+                     const char delimiterChar = '=',
+                     const char quoteChar = '"',
+                     const bool warnOverwrite = false)
+        : m_configInit(false),
+          m_writeFile(false),
+          m_warnOverwrite(false),
+          m_commentChar(commentChar),
+          m_delimiterChar(delimiterChar),
+          m_quoteChar(quoteChar),
+          m_configBasePath(Tools::ExpandPath(configBasePath)),
+          m_configFilePath(Tools::ExpandPath(path)),
+          m_configFileName(m_configBasePath.filename()),
+          m_writePath("."),
+          m_writeFileName(m_configFilePath.filename()),
+          m_importIdentifier("import"),
+          m_modifiedImportIdentifier1("with"),
+          m_modifiedImportIdentifier2("as")
     {
         // the different steering character must not be the same!
         if (m_commentChar == m_delimiterChar)
@@ -250,7 +263,8 @@ class MConfig
             m_writeFileName = writeFileName;
     }
 
-    void SetWriteFile(const bool &write = true, const std::string &writePath = "",
+    void SetWriteFile(const bool &write = true,
+                      const std::string &writePath = "",
                       const std::string &writeFileName = "")
     {
         SetWritePathAndName(writePath, writeFileName);
@@ -392,7 +406,7 @@ class MConfig
         if (absPath.empty())
             throw std::runtime_error(
                 "MConfig::Init( const string &path ): string m_configFilePath empty! Opening file failed!");
-        if (!absPath.is_complete())
+        if (!absPath.is_absolute())
             absPath = m_configBasePath / absPath;
         if (!m_configInit)
         {
@@ -417,7 +431,12 @@ class MConfig
 
         // line = boost::trim_copy( line ); This removes only trailing and leading white spaces.
         //  Better:
-        line.erase(std::unique(line.begin(), line.end(), [](char a, char b) { return a == ' ' && b == ' '; }),
+        line.erase(std::unique(line.begin(),
+                               line.end(),
+                               [](char a, char b)
+                               {
+                                   return a == ' ' && b == ' ';
+                               }),
                    line.end());
 
         std::vector<std::string> substrings = Tools::splitString<std::string>(line, false, " ");
@@ -475,7 +494,8 @@ class MConfig
 // The parameter objDummy is a dummy object which determines the type of the object read
 // from config
 template <typename confObjType>
-std::map<std::string, confObjType> getConfigParticleMap(const Tools::MConfig &cfg, const std::string &label,
+std::map<std::string, confObjType> getConfigParticleMap(const Tools::MConfig &cfg,
+                                                        const std::string &label,
                                                         confObjType objDummy)
 {
     std::map<std::string, confObjType> confMap = std::map<std::string, confObjType>();
@@ -490,7 +510,8 @@ std::map<std::string, confObjType> getConfigParticleMap(const Tools::MConfig &cf
 // The parameter objDummy is a dummy object which determines the type of the object read
 // from config
 template <typename confObjType>
-std::map<std::string, confObjType> getConfigParticleReverseMap(const Tools::MConfig &cfg, const std::string &label,
+std::map<std::string, confObjType> getConfigParticleReverseMap(const Tools::MConfig &cfg,
+                                                               const std::string &label,
                                                                confObjType objDummy)
 {
     std::map<std::string, confObjType> confMap = std::map<std::string, confObjType>();

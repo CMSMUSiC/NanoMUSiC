@@ -1,5 +1,6 @@
 #include "NanoMUSiC.hpp"
 #include <optional>
+#include <stdexcept>
 
 auto main(int argc, char *argv[]) -> int
 {
@@ -306,9 +307,6 @@ auto main(int argc, char *argv[]) -> int
     //////////////////////////////////////   loop over events   //////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////
-    std::cout << " " << std::endl;
-    std::cout << colors.green << "Starting Classification ..." << colors.def << std::endl;
-    std::cout << " " << std::endl;
 
     std::cout << " " << std::endl;
     std::cout << colors.green << "Checking for LHE PDF Info ..." << colors.def << std::endl;
@@ -325,6 +323,20 @@ auto main(int argc, char *argv[]) -> int
 
     for (auto &&evt : tree_reader)
     {
+        // check for chain readout quaility
+        // REFERENCE: https://root.cern.ch/doc/v608/classTTreeReader.html#a568e43c7d7d8b1f511bbbeb92c9094a8
+        auto reader_status = tree_reader.GetEntryStatus();
+        if (reader_status == TTreeReader::EEntryStatus::kEntryChainFileError or
+            reader_status == TTreeReader::EEntryStatus::kEntryNotLoaded or
+            reader_status == TTreeReader::EEntryStatus::kEntryNoTree or
+            reader_status == TTreeReader::EEntryStatus::kEntryNotFound or
+            reader_status == TTreeReader::EEntryStatus::kEntryChainSetupError or
+            reader_status == TTreeReader::EEntryStatus::kEntryDictionaryError)
+        {
+            throw std::runtime_error(fmt::format("ERROR: Could not load TChain entry."));
+        }
+
+        // start event processing
         event_counter = evt;
 
         // clear outputs buffers

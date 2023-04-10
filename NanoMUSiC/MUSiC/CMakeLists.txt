@@ -23,7 +23,11 @@ separate_arguments(CORRECTIONLIB_FLAGS)
 execute_process(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
 separate_arguments(ROOT_CFLAGS)
 add_compile_options(-g)
-add_compile_options(-I/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/include)
+if($ENV{MUSIC_ALMALINUX9})
+    add_compile_options(-I/cvmfs/sft.cern.ch/lcg/views/LCG_103/x86_64-centos7-gcc12-opt/include)
+else()
+    add_compile_options(-I/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/include)
+endif()
 add_compile_options(${ROOT_CFLAGS} ${CORRECTIONLIB_FLAGS} -fdiagnostics-color=always -MD -MP -O3 -Wall -pthread -m64 -ffloat-store)
 
 # root linker options
@@ -43,7 +47,6 @@ add_link_options(
     -L${LCG_BASE}/lib64
     -lLHAPDF
     -lfmt
-
     # -L${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-Utils/lib
     -lz
     -lstdc++fs
