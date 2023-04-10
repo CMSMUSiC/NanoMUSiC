@@ -1,5 +1,6 @@
 var annotated_dup =
 [
+    [ "Enumerate", "namespaceEnumerate.html", "namespaceEnumerate" ],
     [ "MUSiCTools", "namespaceMUSiCTools.html", "namespaceMUSiCTools" ],
     [ "NanoObjects", "namespaceNanoObjects.html", "namespaceNanoObjects" ],
     [ "ObjConfig", "namespaceObjConfig.html", "namespaceObjConfig" ],
@@ -17,7 +18,6 @@ var annotated_dup =
     [ "EGTriggerLowPtRun2018", "structEGTriggerLowPtRun2018.html", "structEGTriggerLowPtRun2018" ],
     [ "ElectronSFCorrector", "classElectronSFCorrector.html", "classElectronSFCorrector" ],
     [ "ElectronTriggerSF", "classElectronTriggerSF.html", "classElectronTriggerSF" ],
-    [ "Enumerate", "classEnumerate.html", "classEnumerate" ],
     [ "EventAnalyzer", "classEventAnalyzer.html", "classEventAnalyzer" ],
     [ "JetCorrector", "classJetCorrector.html", "classJetCorrector" ],
     [ "NanoAODReader", "classNanoAODReader.html", "classNanoAODReader" ],

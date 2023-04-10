@@ -15,7 +15,7 @@ var hierarchy =
     [ "NanoObjects::Electrons", "structNanoObjects_1_1Electrons.html", null ],
     [ "ElectronSFCorrector", "classElectronSFCorrector.html", null ],
     [ "ElectronTriggerSF", "classElectronTriggerSF.html", null ],
-    [ "Enumerate< T >", "classEnumerate.html", null ],
+    [ "Enumerate::Enumerate< T >", "classEnumerate_1_1Enumerate.html", null ],
     [ "EventAnalyzer", "classEventAnalyzer.html", null ],
     [ "NanoObjects::EventInfo", "structNanoObjects_1_1EventInfo.html", null ],
     [ "exception", null, [

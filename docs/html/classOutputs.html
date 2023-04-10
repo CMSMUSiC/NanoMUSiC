@@ -164,6 +164,7 @@ $(document).ready(function(){initNavTree('classOutputs.html',''); initResizable(
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
@@ -195,6 +196,11 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a95b1c96b61f520f381aa9a4de75f17ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a859fc83b3772b135fd1a93540048681b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classOutputs.html#a859fc83b3772b135fd1a93540048681b">write_data</a> ()</td></tr>
 <tr class="separator:a859fc83b3772b135fd1a93540048681b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a68c51428b6f1c2e655261c2820b29aa9"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classOutputs.html#a68c51428b6f1c2e655261c2820b29aa9">get_event_weight</a> (const RVec&lt; float &gt; &amp;<a class="el" href="classOutputs.html#a60233b7211dabe186b0ddd01b57a4b9b">weights_nominal</a>, const RVec&lt; float &gt; &amp;<a class="el" href="classOutputs.html#a413c53316500829bb5318eb9f94e5c23">weights_up</a>, const RVec&lt; float &gt; &amp;<a class="el" href="classOutputs.html#a9a97465a47b95c6ca41df9623792067b">weights_down</a>, std::string_view weight=&quot;&quot;, std::string_view shift=&quot;Nominal&quot;) -&gt; float</td></tr>
+<tr class="separator:a68c51428b6f1c2e655261c2820b29aa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -291,7 +297,7 @@ Static Public Attributes</h2></td></tr>
 <tr class="separator:a82e6df3ec0abf230ea32702dda229311"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a13958379a685bb4e61b22fb601633f47"><td class="memItemLeft" align="right" valign="top">static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classOutputs.html#a13958379a685bb4e61b22fb601633f47">Weights</a></td></tr>
 <tr class="separator:a13958379a685bb4e61b22fb601633f47"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac460194c479cd9f4b58ce67c63711ab1"><td class="memItemLeft" align="right" valign="top">static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classOutputs.html#ac460194c479cd9f4b58ce67c63711ab1">Shifts</a> = <a class="el" href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">make_enumerate</a>(&quot;Nominal&quot;, &quot;Up&quot;, &quot;Down&quot;)</td></tr>
+<tr class="memitem:ac460194c479cd9f4b58ce67c63711ab1"><td class="memItemLeft" align="right" valign="top">static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classOutputs.html#ac460194c479cd9f4b58ce67c63711ab1">Shifts</a> = <a class="el" href="namespaceEnumerate.html#aa9d1e3116bd516a8785fff68dff96ab6">Enumerate::make_enumerate</a>(&quot;Nominal&quot;, &quot;Up&quot;, &quot;Down&quot;)</td></tr>
 <tr class="separator:ac460194c479cd9f4b58ce67c63711ab1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a26d9a7eea83b3f66863e26fbd9aa253d"><td class="memItemLeft" align="right" valign="top">static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classOutputs.html#a26d9a7eea83b3f66863e26fbd9aa253d">kTotalCuts</a> = Outputs::Cuts.size()</td></tr>
 <tr class="separator:a26d9a7eea83b3f66863e26fbd9aa253d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -574,8 +580,63 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a68c51428b6f1c2e655261c2820b29aa9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68c51428b6f1c2e655261c2820b29aa9">&#9670;&nbsp;</a></span>get_event_weight() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static auto Outputs::get_event_weight </td>
+          <td>(</td>
+          <td class="paramtype">const RVec&lt; float &gt; &amp;&#160;</td>
+          <td class="paramname"><em>weights_nominal</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const RVec&lt; float &gt; &amp;&#160;</td>
+          <td class="paramname"><em>weights_up</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const RVec&lt; float &gt; &amp;&#160;</td>
+          <td class="paramname"><em>weights_down</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>weight</em> = <code>&quot;&quot;</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>shift</em> = <code>&quot;Nominal&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> -&gt; float
+    </td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a958da199f97021eee3103adf2b059f04"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a958da199f97021eee3103adf2b059f04">&#9670;&nbsp;</a></span>get_event_weight()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a958da199f97021eee3103adf2b059f04">&#9670;&nbsp;</a></span>get_event_weight() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -842,7 +903,7 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">= <a class="code" href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">make_enumerate</a>(<span class="stringliteral">&quot;NoCuts&quot;</span>,</div>
+<b>Initial value:</b><div class="fragment"><div class="line">= <a class="code" href="namespaceEnumerate.html#aa9d1e3116bd516a8785fff68dff96ab6">Enumerate::make_enumerate</a>(<span class="stringliteral">&quot;NoCuts&quot;</span>,</div>
 <div class="line">                                                <span class="stringliteral">&quot;GeneratorFilter&quot;</span>,</div>
 <div class="line">                                                <span class="stringliteral">&quot;GeneratorWeight&quot;</span>,</div>
 <div class="line">                                                <span class="stringliteral">&quot;RunLumi&quot;</span>,</div>
@@ -1394,7 +1455,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr auto Outputs::Shifts = <a class="el" href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">make_enumerate</a>(&quot;Nominal&quot;, &quot;Up&quot;, &quot;Down&quot;)</td>
+          <td class="memname">constexpr auto Outputs::Shifts = <a class="el" href="namespaceEnumerate.html#aa9d1e3116bd516a8785fff68dff96ab6">Enumerate::make_enumerate</a>(&quot;Nominal&quot;, &quot;Up&quot;, &quot;Down&quot;)</td>
         </tr>
       </table>
   </td>
@@ -1481,7 +1542,7 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">= <a class="code" href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">make_enumerate</a>(<span class="stringliteral">&quot;Generator&quot;</span>,</div>
+<b>Initial value:</b><div class="fragment"><div class="line">= <a class="code" href="namespaceEnumerate.html#aa9d1e3116bd516a8785fff68dff96ab6">Enumerate::make_enumerate</a>(<span class="stringliteral">&quot;Generator&quot;</span>,</div>
 <div class="line">                                                   <span class="stringliteral">&quot;PileUp&quot;</span>,</div>
 <div class="line">                                                   <span class="stringliteral">&quot;Lumi&quot;</span>,</div>
 <div class="line">                                                   <span class="stringliteral">&quot;L1PreFiring&quot;</span>,</div>
@@ -1543,11 +1604,11 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>/.automount/home/home__home1/institut_3a/silva/projects/music/NanoMUSiC/NanoMUSiC/MUSiC/include/<a class="el" href="Outputs_8hpp_source.html">Outputs.hpp</a></li>
+<li>/home/ftorresd/projects/music/NanoMUSiC/NanoMUSiC/MUSiC/include/<a class="el" href="Outputs_8hpp_source.html">Outputs.hpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
-<div class="ttc" id="aEnumerate_8hpp_html_a50a6ea831da5d2eec783b7d73d98094a"><div class="ttname"><a href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">make_enumerate</a></div><div class="ttdeci">constexpr auto make_enumerate(Ts &amp;&amp;...args)</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:133</div></div>
+<div class="ttc" id="anamespaceEnumerate_html_aa9d1e3116bd516a8785fff68dff96ab6"><div class="ttname"><a href="namespaceEnumerate.html#aa9d1e3116bd516a8785fff68dff96ab6">Enumerate::make_enumerate</a></div><div class="ttdeci">constexpr auto make_enumerate(Ts &amp;&amp;...args)</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:137</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

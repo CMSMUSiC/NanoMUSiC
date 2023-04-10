@@ -2,6 +2,7 @@ var namespaces_dup =
 [
     [ "anonymous_namespace{nanoaod_content_printer.cpp}", "namespaceanonymous__namespace_02nanoaod__content__printer_8cpp_03.html", null ],
     [ "CorrectionHelpers", "namespaceCorrectionHelpers.html", null ],
+    [ "Enumerate", "namespaceEnumerate.html", null ],
     [ "GeneratorFilters", "namespaceGeneratorFilters.html", null ],
     [ "IndexHelpers", "namespaceIndexHelpers.html", null ],
     [ "LorentzVectorHelper", "namespaceLorentzVectorHelper.html", null ],

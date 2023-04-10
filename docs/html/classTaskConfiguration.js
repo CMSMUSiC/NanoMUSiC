@@ -11,7 +11,6 @@ var classTaskConfiguration =
     [ "process", "classTaskConfiguration.html#a9cc14a9b1ef25b2a4d5400ef4a7793ef", null ],
     [ "run_config", "classTaskConfiguration.html#a0e55c6e8ea93e531854dbc801329e2d0", null ],
     [ "run_config_file", "classTaskConfiguration.html#a381375efc6b6c671476ecc252aa05441", null ],
-    [ "x_section_file", "classTaskConfiguration.html#a72f7b2cfb8d6a97f2f6eab2e1d4b3c14", null ],
     [ "year", "classTaskConfiguration.html#a60b1e28a305778028fdd171ed62c5760", null ],
     [ "year_str", "classTaskConfiguration.html#a2f9878732676540d1a94ad637e0f6d01", null ]
 ];

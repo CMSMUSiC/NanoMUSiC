@@ -5,6 +5,7 @@ var classOutputs =
     [ "fill_branches", "classOutputs.html#acb244bf81c611f0a8df1fdabfc049533", null ],
     [ "fill_cutflow_histo", "classOutputs.html#a95b1c96b61f520f381aa9a4de75f17ab", null ],
     [ "fill_event_tree", "classOutputs.html#aeabc7fa66306f21aff8eeb634d8671c4", null ],
+    [ "get_event_weight", "classOutputs.html#a68c51428b6f1c2e655261c2820b29aa9", null ],
     [ "get_event_weight", "classOutputs.html#a958da199f97021eee3103adf2b059f04", null ],
     [ "set_event_weight", "classOutputs.html#a020c13015105b04cf587c0a1b702dfb4", null ],
     [ "set_event_weight", "classOutputs.html#ac0341104109e6204d0dd7cddd98a5acf", null ],

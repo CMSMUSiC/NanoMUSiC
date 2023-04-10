@@ -21,7 +21,7 @@
     <meta name="twitter:description"
         content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
     <!-- END twitter metadata -->
-    <title>NanoMUSiC: /.automount/home/home__home1/institut_3a/silva/projects/music/NanoMUSiC/NanoMUSiC/MUSiC/include/Outputs.hpp Source File</title>
+    <title>NanoMUSiC: /home/ftorresd/projects/music/NanoMUSiC/NanoMUSiC/MUSiC/include/Outputs.hpp Source File</title>
     <link href="tabs.css" rel="stylesheet" type="text/css" />
     <link rel="icon" type="image/svg+xml" href="logo.drawio.svg" />
     <script type="text/javascript" src="jquery.js"></script>
@@ -230,7 +230,7 @@ $(document).ready(function(){initNavTree('Outputs_8hpp_source.html',''); initRes
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; </div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="comment">// variations, shifts, weights and cuts</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="classOutputs.html#a82e6df3ec0abf230ea32702dda229311">   69</a></span>&#160;    <span class="keyword">static</span> constexpr <span class="keyword">auto</span> Cuts = <a class="code" href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">make_enumerate</a>(<span class="stringliteral">&quot;NoCuts&quot;</span>,</div>
+<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="classOutputs.html#a82e6df3ec0abf230ea32702dda229311">   69</a></span>&#160;    <span class="keyword">static</span> constexpr <span class="keyword">auto</span> Cuts = <a class="code" href="namespaceEnumerate.html#aa9d1e3116bd516a8785fff68dff96ab6">Enumerate::make_enumerate</a>(<span class="stringliteral">&quot;NoCuts&quot;</span>,</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;                                                <span class="stringliteral">&quot;GeneratorFilter&quot;</span>,</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;                                                <span class="stringliteral">&quot;GeneratorWeight&quot;</span>,</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;                                                <span class="stringliteral">&quot;RunLumi&quot;</span>,</div>
@@ -240,7 +240,7 @@ $(document).ready(function(){initNavTree('Outputs_8hpp_source.html',''); initRes
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;                                                <span class="stringliteral">&quot;AtLeastOneSelectedObject&quot;</span>,</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;                                                <span class="stringliteral">&quot;TriggerMatch&quot;</span>);</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
-<div class="line"><a name="l00079"></a><span class="lineno"><a class="line" href="classOutputs.html#a13958379a685bb4e61b22fb601633f47">   79</a></span>&#160;    <span class="keyword">static</span> constexpr <span class="keyword">auto</span> Weights = <a class="code" href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">make_enumerate</a>(<span class="stringliteral">&quot;Generator&quot;</span>,</div>
+<div class="line"><a name="l00079"></a><span class="lineno"><a class="line" href="classOutputs.html#a13958379a685bb4e61b22fb601633f47">   79</a></span>&#160;    <span class="keyword">static</span> constexpr <span class="keyword">auto</span> Weights = <a class="code" href="namespaceEnumerate.html#aa9d1e3116bd516a8785fff68dff96ab6">Enumerate::make_enumerate</a>(<span class="stringliteral">&quot;Generator&quot;</span>,</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;                                                   <span class="stringliteral">&quot;PileUp&quot;</span>,</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;                                                   <span class="stringliteral">&quot;Lumi&quot;</span>,</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;                                                   <span class="stringliteral">&quot;L1PreFiring&quot;</span>,</div>
@@ -257,9 +257,9 @@ $(document).ready(function(){initNavTree('Outputs_8hpp_source.html',''); initRes
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                                                   <span class="stringliteral">&quot;BJetUncorrelated&quot;</span>,</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;                                                   <span class="stringliteral">&quot;LightJetUncorrelated&quot;</span>);</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <span class="comment">// static constexpr auto Variations =</span></div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="comment">//     make_enumerate(&quot;Default&quot;, &quot;JEC&quot;, &quot;JER&quot;, &quot;MuonScale&quot;, &quot;MuonResolution&quot;, &quot;ElectronScale&quot;,</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="comment">//     Enumerate::make_enumerate(&quot;Default&quot;, &quot;JEC&quot;, &quot;JER&quot;, &quot;MuonScale&quot;, &quot;MuonResolution&quot;, &quot;ElectronScale&quot;,</span></div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="comment">//     &quot;ElectronResolution&quot;);</span></div>
-<div class="line"><a name="l00098"></a><span class="lineno"><a class="line" href="classOutputs.html#ac460194c479cd9f4b58ce67c63711ab1">   98</a></span>&#160;    <span class="keyword">static</span> constexpr <span class="keyword">auto</span> Shifts = <a class="code" href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">make_enumerate</a>(<span class="stringliteral">&quot;Nominal&quot;</span>, <span class="stringliteral">&quot;Up&quot;</span>, <span class="stringliteral">&quot;Down&quot;</span>);</div>
+<div class="line"><a name="l00098"></a><span class="lineno"><a class="line" href="classOutputs.html#ac460194c479cd9f4b58ce67c63711ab1">   98</a></span>&#160;    <span class="keyword">static</span> constexpr <span class="keyword">auto</span> Shifts = <a class="code" href="namespaceEnumerate.html#aa9d1e3116bd516a8785fff68dff96ab6">Enumerate::make_enumerate</a>(<span class="stringliteral">&quot;Nominal&quot;</span>, <span class="stringliteral">&quot;Up&quot;</span>, <span class="stringliteral">&quot;Down&quot;</span>);</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160; </div>
 <div class="line"><a name="l00100"></a><span class="lineno"><a class="line" href="classOutputs.html#a26d9a7eea83b3f66863e26fbd9aa253d">  100</a></span>&#160;    <span class="keyword">static</span> constexpr <span class="keyword">auto</span> kTotalCuts = <a class="code" href="classOutputs.html#a82e6df3ec0abf230ea32702dda229311">Outputs::Cuts</a>.size();</div>
 <div class="line"><a name="l00101"></a><span class="lineno"><a class="line" href="classOutputs.html#aacafb21acc283c1fa2b03165f17d1b51">  101</a></span>&#160;    <span class="keyword">static</span> constexpr <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> kTotalWeights = <a class="code" href="classOutputs.html#a13958379a685bb4e61b22fb601633f47">Outputs::Weights</a>.size();</div>
@@ -433,178 +433,199 @@ $(document).ready(function(){initNavTree('Outputs_8hpp_source.html',''); initRes
 <div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;        weights_down.at(<a class="code" href="classOutputs.html#a13958379a685bb4e61b22fb601633f47">Outputs::Weights</a>.index_of(weight)) = value;</div>
 <div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;        weights_nominal.at(<a class="code" href="classOutputs.html#a13958379a685bb4e61b22fb601633f47">Outputs::Weights</a>.index_of(weight)) = value;</div>
 <div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;    }</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160; </div>
-<div class="line"><a name="l00273"></a><span class="lineno"><a class="line" href="classOutputs.html#a958da199f97021eee3103adf2b059f04">  273</a></span>&#160;    <span class="keyword">auto</span> <a class="code" href="classOutputs.html#a958da199f97021eee3103adf2b059f04">get_event_weight</a>(std::string_view weight = <span class="stringliteral">&quot;&quot;</span>, std::string_view shift = <span class="stringliteral">&quot;Nominal&quot;</span>) -&gt; <span class="keywordtype">float</span></div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;    {</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;        <span class="keyword">auto</span> nominal_weight = std::reduce(weights_nominal.cbegin(), weights_nominal.cend(), 1.f, std::multiplies());</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160; </div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;        <span class="keywordflow">if</span> (shift == <span class="stringliteral">&quot;Up&quot;</span>)</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;        {</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;            <span class="keywordflow">return</span> weights_up.at(<a class="code" href="classOutputs.html#a13958379a685bb4e61b22fb601633f47">Outputs::Weights</a>.index_of(weight)) /</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;                   weights_nominal.at(<a class="code" href="classOutputs.html#a13958379a685bb4e61b22fb601633f47">Outputs::Weights</a>.index_of(weight)) * nominal_weight;</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;        }</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;        <span class="keywordflow">if</span> (shift == <span class="stringliteral">&quot;Down&quot;</span>)</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;        {</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;            <span class="keywordflow">return</span> weights_down.at(<a class="code" href="classOutputs.html#a13958379a685bb4e61b22fb601633f47">Outputs::Weights</a>.index_of(weight)) /</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;                   weights_nominal.at(<a class="code" href="classOutputs.html#a13958379a685bb4e61b22fb601633f47">Outputs::Weights</a>.index_of(weight)) * nominal_weight;</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;        }</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;        <span class="keywordflow">return</span> nominal_weight;</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;    }</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160; </div>
-<div class="line"><a name="l00293"></a><span class="lineno"><a class="line" href="classOutputs.html#a781e9ea823a7fa1757a48cfe01f32c9e">  293</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classOutputs.html#a781e9ea823a7fa1757a48cfe01f32c9e">clear_event_tree</a>()</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;    {</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;        run = 0;</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;        lumi_section = 0;</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;        event_number = 0;</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;        trigger_bits = 0;</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;        lha_id = 0;</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160; </div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;        weights_nominal.fill(1.);</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;        weights_up.fill(1.);</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;        weights_down.fill(1.);</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160; </div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;        nLHEPdfWeight = 0;</div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;        LHEPdfWeight.fill(1.);</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;        alpha_s_weight_up = 1.;</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;        alpha_s_weight_down = 1.;</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160; </div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;        nMuon = 0;</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;        Muon_pt.fill(0);</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;        Muon_eta.fill(0);</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;        Muon_phi.fill(0);</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160; </div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;        nElectron = 0;</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;        Electron_pt.fill(0);</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;        Electron_eta.fill(0);</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;        Electron_phi.fill(0);</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160; </div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;        nPhoton = 0;</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;        Photon_pt.fill(0);</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;        Photon_eta.fill(0);</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;        Photon_phi.fill(0);</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160; </div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;        nTau = 0;</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;        Tau_pt.fill(0);</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;        Tau_eta.fill(0);</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;        Tau_phi.fill(0);</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160; </div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;        nBJet = 0;</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;        BJet_pt.fill(0);</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;        BJet_eta.fill(0);</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;        BJet_phi.fill(0);</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160; </div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;        nJet = 0;</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;        Jet_pt.fill(0);</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;        Jet_eta.fill(0);</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;        Jet_phi.fill(0);</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160; </div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;        nMET = 0;</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;        MET_pt.fill(0);</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;        MET_phi.fill(0);</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;    }</div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160; </div>
-<div class="line"><a name="l00345"></a><span class="lineno"><a class="line" href="classOutputs.html#acb244bf81c611f0a8df1fdabfc049533">  345</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classOutputs.html#acb244bf81c611f0a8df1fdabfc049533">fill_branches</a>(RVec&lt;float&gt; &amp;&amp;_lhe_pdf_weights, <span class="comment">//</span></div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;                                                       <span class="comment">// muons</span></div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_muon_pt,         <span class="comment">//</span></div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_muon_eta,        <span class="comment">//</span></div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_muon_phi,        <span class="comment">//</span></div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;                       <span class="comment">// electrons</span></div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_electron_pt,  <span class="comment">//</span></div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_electron_eta, <span class="comment">//</span></div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_electron_phi, <span class="comment">//</span></div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;                       <span class="comment">// photons</span></div>
-<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_photon_pt,  <span class="comment">//</span></div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_photon_eta, <span class="comment">//</span></div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_photon_phi, <span class="comment">//</span></div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;                       <span class="comment">// taus</span></div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_tau_pt,  <span class="comment">//</span></div>
-<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_tau_eta, <span class="comment">//</span></div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_tau_phi, <span class="comment">//</span></div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;                       <span class="comment">// bjets</span></div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_bjet_pt,  <span class="comment">//</span></div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_bjet_eta, <span class="comment">//</span></div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_bjet_phi, <span class="comment">//</span></div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;                       <span class="comment">// jets</span></div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_jet_pt,  <span class="comment">//</span></div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_jet_eta, <span class="comment">//</span></div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_jet_phi, <span class="comment">//</span></div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;                       <span class="comment">// met</span></div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_met_pt, <span class="comment">//</span></div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_met_phi)</div>
-<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;    {</div>
-<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;        nLHEPdfWeight = _lhe_pdf_weights.size();</div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;        std::copy(_lhe_pdf_weights.cbegin(), _lhe_pdf_weights.cend(), LHEPdfWeight.begin());</div>
-<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160; </div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;        nMuon = _muon_pt.size();</div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;        std::copy(_muon_pt.cbegin(), _muon_pt.cend(), Muon_pt.begin());</div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;        std::copy(_muon_eta.cbegin(), _muon_eta.cend(), Muon_eta.begin());</div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;        std::copy(_muon_phi.cbegin(), _muon_phi.cend(), Muon_phi.begin());</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160; </div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;        nElectron = _electron_pt.size();</div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;        std::copy(_electron_pt.cbegin(), _electron_pt.cend(), Electron_pt.begin());</div>
-<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;        std::copy(_electron_eta.cbegin(), _electron_eta.cend(), Electron_eta.begin());</div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;        std::copy(_electron_phi.cbegin(), _electron_phi.cend(), Electron_phi.begin());</div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160; </div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;        nPhoton = _photon_pt.size();</div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;        std::copy(_photon_pt.cbegin(), _photon_pt.cend(), Photon_pt.begin());</div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;        std::copy(_photon_eta.cbegin(), _photon_eta.cend(), Photon_eta.begin());</div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;        std::copy(_photon_phi.cbegin(), _photon_phi.cend(), Photon_phi.begin());</div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160; </div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;        nTau = _tau_pt.size();</div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;        std::copy(_tau_pt.cbegin(), _tau_pt.cend(), Tau_pt.begin());</div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;        std::copy(_tau_eta.cbegin(), _tau_eta.cend(), Tau_eta.begin());</div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;        std::copy(_tau_phi.cbegin(), _tau_phi.cend(), Tau_phi.begin());</div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160; </div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;        nBJet = _bjet_pt.size();</div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;        std::copy(_bjet_pt.cbegin(), _bjet_pt.cend(), BJet_pt.begin());</div>
-<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;        std::copy(_bjet_eta.cbegin(), _bjet_eta.cend(), BJet_eta.begin());</div>
-<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;        std::copy(_bjet_phi.cbegin(), _bjet_phi.cend(), BJet_phi.begin());</div>
-<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160; </div>
-<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;        nJet = _jet_pt.size();</div>
-<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;        std::copy(_jet_pt.cbegin(), _jet_pt.cend(), Jet_pt.begin());</div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;        std::copy(_jet_eta.cbegin(), _jet_eta.cend(), Jet_eta.begin());</div>
-<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;        std::copy(_jet_phi.cbegin(), _jet_phi.cend(), Jet_phi.begin());</div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160; </div>
-<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;        nMET = _met_pt.size();</div>
-<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;        std::copy(_met_pt.cbegin(), _met_pt.cend(), MET_pt.begin());</div>
-<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;        std::copy(_met_phi.cbegin(), _met_phi.cend(), MET_phi.begin());</div>
-<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;    }</div>
-<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160; </div>
-<div class="line"><a name="l00412"></a><span class="lineno"><a class="line" href="classOutputs.html#aeabc7fa66306f21aff8eeb634d8671c4">  412</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classOutputs.html#aeabc7fa66306f21aff8eeb634d8671c4">fill_event_tree</a>()</div>
-<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;    {</div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;        output_tree-&gt;Fill();</div>
-<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;    }</div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160; </div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;    <span class="comment">// fill cutflow</span></div>
-<div class="line"><a name="l00418"></a><span class="lineno"><a class="line" href="classOutputs.html#a95b1c96b61f520f381aa9a4de75f17ab">  418</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classOutputs.html#a95b1c96b61f520f381aa9a4de75f17ab">fill_cutflow_histo</a>(std::string_view cut, <span class="keywordtype">float</span> weight)</div>
-<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;    {</div>
-<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;        cutflow_histo.Fill(<a class="code" href="classOutputs.html#a82e6df3ec0abf230ea32702dda229311">Outputs::Cuts</a>.index_of(cut), weight);</div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;    }</div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160; </div>
-<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;    <span class="comment">// save storaged data</span></div>
-<div class="line"><a name="l00424"></a><span class="lineno"><a class="line" href="classOutputs.html#a859fc83b3772b135fd1a93540048681b">  424</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classOutputs.html#a859fc83b3772b135fd1a93540048681b">write_data</a>()</div>
-<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;    {</div>
-<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;        output_file-&gt;cd();</div>
-<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;        output_tree-&gt;Write();</div>
-<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;        cutflow_histo.Write();</div>
-<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;    }</div>
-<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;};</div>
-<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160; </div>
-<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/*OUTPUTS*/</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;    </div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160; </div>
+<div class="line"><a name="l00274"></a><span class="lineno"><a class="line" href="classOutputs.html#a958da199f97021eee3103adf2b059f04">  274</a></span>&#160;    <span class="keyword">auto</span> <a class="code" href="classOutputs.html#a958da199f97021eee3103adf2b059f04">get_event_weight</a>(std::string_view weight = <span class="stringliteral">&quot;&quot;</span>, std::string_view shift = <span class="stringliteral">&quot;Nominal&quot;</span>) -&gt; <span class="keywordtype">float</span></div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;    {</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;        <span class="keyword">auto</span> nominal_weight = std::reduce(weights_nominal.cbegin(), weights_nominal.cend(), 1.f, std::multiplies());</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160; </div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;        <span class="keywordflow">if</span> (shift == <span class="stringliteral">&quot;Up&quot;</span>)</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;        {</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;            <span class="keywordflow">return</span> weights_up.at(<a class="code" href="classOutputs.html#a13958379a685bb4e61b22fb601633f47">Outputs::Weights</a>.index_of(weight)) /</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;                   weights_nominal.at(<a class="code" href="classOutputs.html#a13958379a685bb4e61b22fb601633f47">Outputs::Weights</a>.index_of(weight)) * nominal_weight;</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;        }</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;        <span class="keywordflow">if</span> (shift == <span class="stringliteral">&quot;Down&quot;</span>)</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;        {</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;            <span class="keywordflow">return</span> weights_down.at(<a class="code" href="classOutputs.html#a13958379a685bb4e61b22fb601633f47">Outputs::Weights</a>.index_of(weight)) /</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;                   weights_nominal.at(<a class="code" href="classOutputs.html#a13958379a685bb4e61b22fb601633f47">Outputs::Weights</a>.index_of(weight)) * nominal_weight;</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;        }</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;        <span class="keywordflow">return</span> nominal_weight;</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;    }</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;    </div>
+<div class="line"><a name="l00291"></a><span class="lineno"><a class="line" href="classOutputs.html#a68c51428b6f1c2e655261c2820b29aa9">  291</a></span>&#160;    <span class="keyword">static</span> <span class="keyword">auto</span> <a class="code" href="classOutputs.html#a68c51428b6f1c2e655261c2820b29aa9">get_event_weight</a>(<span class="keyword">const</span> RVec&lt;float&gt; &amp;weights_nominal, <span class="comment">//</span></div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;                                 <span class="keyword">const</span> RVec&lt;float&gt; &amp;weights_up,      <span class="comment">//</span></div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;                                 <span class="keyword">const</span> RVec&lt;float&gt; &amp;weights_down,    <span class="comment">//</span></div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;                                 std::string_view weight = <span class="stringliteral">&quot;&quot;</span>,       <span class="comment">//</span></div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;                                 std::string_view shift = <span class="stringliteral">&quot;Nominal&quot;</span>  <span class="comment">//</span></div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;                                 ) -&gt; <span class="keywordtype">float</span></div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;    {</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;        <span class="keyword">auto</span> nominal_weight = std::reduce(weights_nominal.cbegin(), weights_nominal.cend(), 1.f, std::multiplies());</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;        <span class="keywordflow">if</span> (shift == <span class="stringliteral">&quot;Up&quot;</span>)</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;        {</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;            <span class="keywordflow">return</span> weights_up.at(<a class="code" href="classOutputs.html#a13958379a685bb4e61b22fb601633f47">Outputs::Weights</a>.index_of(weight)) /</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;                   weights_nominal.at(<a class="code" href="classOutputs.html#a13958379a685bb4e61b22fb601633f47">Outputs::Weights</a>.index_of(weight)) * nominal_weight;</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;        }</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;        <span class="keywordflow">if</span> (shift == <span class="stringliteral">&quot;Down&quot;</span>)</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;        {</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;            <span class="keywordflow">return</span> weights_down.at(<a class="code" href="classOutputs.html#a13958379a685bb4e61b22fb601633f47">Outputs::Weights</a>.index_of(weight)) /</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;                   weights_nominal.at(<a class="code" href="classOutputs.html#a13958379a685bb4e61b22fb601633f47">Outputs::Weights</a>.index_of(weight)) * nominal_weight;</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;        }</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;        <span class="keywordflow">return</span> nominal_weight;</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;    }</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160; </div>
+<div class="line"><a name="l00315"></a><span class="lineno"><a class="line" href="classOutputs.html#a781e9ea823a7fa1757a48cfe01f32c9e">  315</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classOutputs.html#a781e9ea823a7fa1757a48cfe01f32c9e">clear_event_tree</a>()</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;    {</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;        run = 0;</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;        lumi_section = 0;</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;        event_number = 0;</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;        trigger_bits = 0;</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;        lha_id = 0;</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160; </div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;        weights_nominal.fill(1.);</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;        weights_up.fill(1.);</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;        weights_down.fill(1.);</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160; </div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;        nLHEPdfWeight = 0;</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;        LHEPdfWeight.fill(1.);</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;        alpha_s_weight_up = 1.;</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;        alpha_s_weight_down = 1.;</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160; </div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;        nMuon = 0;</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;        Muon_pt.fill(0);</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;        Muon_eta.fill(0);</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;        Muon_phi.fill(0);</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160; </div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;        nElectron = 0;</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;        Electron_pt.fill(0);</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;        Electron_eta.fill(0);</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;        Electron_phi.fill(0);</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160; </div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;        nPhoton = 0;</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;        Photon_pt.fill(0);</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;        Photon_eta.fill(0);</div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;        Photon_phi.fill(0);</div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160; </div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;        nTau = 0;</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;        Tau_pt.fill(0);</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;        Tau_eta.fill(0);</div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;        Tau_phi.fill(0);</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160; </div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;        nBJet = 0;</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;        BJet_pt.fill(0);</div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;        BJet_eta.fill(0);</div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;        BJet_phi.fill(0);</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160; </div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;        nJet = 0;</div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;        Jet_pt.fill(0);</div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;        Jet_eta.fill(0);</div>
+<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;        Jet_phi.fill(0);</div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160; </div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;        nMET = 0;</div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;        MET_pt.fill(0);</div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;        MET_phi.fill(0);</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;    }</div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160; </div>
+<div class="line"><a name="l00367"></a><span class="lineno"><a class="line" href="classOutputs.html#acb244bf81c611f0a8df1fdabfc049533">  367</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classOutputs.html#acb244bf81c611f0a8df1fdabfc049533">fill_branches</a>(RVec&lt;float&gt; &amp;&amp;_lhe_pdf_weights, <span class="comment">//</span></div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;                                                       <span class="comment">// muons</span></div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_muon_pt,         <span class="comment">//</span></div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_muon_eta,        <span class="comment">//</span></div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_muon_phi,        <span class="comment">//</span></div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;                       <span class="comment">// electrons</span></div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_electron_pt,  <span class="comment">//</span></div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_electron_eta, <span class="comment">//</span></div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_electron_phi, <span class="comment">//</span></div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;                       <span class="comment">// photons</span></div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_photon_pt,  <span class="comment">//</span></div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_photon_eta, <span class="comment">//</span></div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_photon_phi, <span class="comment">//</span></div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;                       <span class="comment">// taus</span></div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_tau_pt,  <span class="comment">//</span></div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_tau_eta, <span class="comment">//</span></div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_tau_phi, <span class="comment">//</span></div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;                       <span class="comment">// bjets</span></div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_bjet_pt,  <span class="comment">//</span></div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_bjet_eta, <span class="comment">//</span></div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_bjet_phi, <span class="comment">//</span></div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;                       <span class="comment">// jets</span></div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_jet_pt,  <span class="comment">//</span></div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_jet_eta, <span class="comment">//</span></div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_jet_phi, <span class="comment">//</span></div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;                       <span class="comment">// met</span></div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_met_pt, <span class="comment">//</span></div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;                       RVec&lt;float&gt; &amp;&amp;_met_phi)</div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;    {</div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;        nLHEPdfWeight = _lhe_pdf_weights.size();</div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;        std::copy(_lhe_pdf_weights.cbegin(), _lhe_pdf_weights.cend(), LHEPdfWeight.begin());</div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160; </div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;        nMuon = _muon_pt.size();</div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;        std::copy(_muon_pt.cbegin(), _muon_pt.cend(), Muon_pt.begin());</div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;        std::copy(_muon_eta.cbegin(), _muon_eta.cend(), Muon_eta.begin());</div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;        std::copy(_muon_phi.cbegin(), _muon_phi.cend(), Muon_phi.begin());</div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160; </div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;        nElectron = _electron_pt.size();</div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;        std::copy(_electron_pt.cbegin(), _electron_pt.cend(), Electron_pt.begin());</div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;        std::copy(_electron_eta.cbegin(), _electron_eta.cend(), Electron_eta.begin());</div>
+<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;        std::copy(_electron_phi.cbegin(), _electron_phi.cend(), Electron_phi.begin());</div>
+<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160; </div>
+<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;        nPhoton = _photon_pt.size();</div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;        std::copy(_photon_pt.cbegin(), _photon_pt.cend(), Photon_pt.begin());</div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;        std::copy(_photon_eta.cbegin(), _photon_eta.cend(), Photon_eta.begin());</div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;        std::copy(_photon_phi.cbegin(), _photon_phi.cend(), Photon_phi.begin());</div>
+<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160; </div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;        nTau = _tau_pt.size();</div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;        std::copy(_tau_pt.cbegin(), _tau_pt.cend(), Tau_pt.begin());</div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;        std::copy(_tau_eta.cbegin(), _tau_eta.cend(), Tau_eta.begin());</div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;        std::copy(_tau_phi.cbegin(), _tau_phi.cend(), Tau_phi.begin());</div>
+<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160; </div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;        nBJet = _bjet_pt.size();</div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;        std::copy(_bjet_pt.cbegin(), _bjet_pt.cend(), BJet_pt.begin());</div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;        std::copy(_bjet_eta.cbegin(), _bjet_eta.cend(), BJet_eta.begin());</div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;        std::copy(_bjet_phi.cbegin(), _bjet_phi.cend(), BJet_phi.begin());</div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160; </div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;        nJet = _jet_pt.size();</div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;        std::copy(_jet_pt.cbegin(), _jet_pt.cend(), Jet_pt.begin());</div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;        std::copy(_jet_eta.cbegin(), _jet_eta.cend(), Jet_eta.begin());</div>
+<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;        std::copy(_jet_phi.cbegin(), _jet_phi.cend(), Jet_phi.begin());</div>
+<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160; </div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;        nMET = _met_pt.size();</div>
+<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;        std::copy(_met_pt.cbegin(), _met_pt.cend(), MET_pt.begin());</div>
+<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;        std::copy(_met_phi.cbegin(), _met_phi.cend(), MET_phi.begin());</div>
+<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;    }</div>
+<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160; </div>
+<div class="line"><a name="l00434"></a><span class="lineno"><a class="line" href="classOutputs.html#aeabc7fa66306f21aff8eeb634d8671c4">  434</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classOutputs.html#aeabc7fa66306f21aff8eeb634d8671c4">fill_event_tree</a>()</div>
+<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;    {</div>
+<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;        output_tree-&gt;Fill();</div>
+<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;    }</div>
+<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160; </div>
+<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;    <span class="comment">// fill cutflow</span></div>
+<div class="line"><a name="l00440"></a><span class="lineno"><a class="line" href="classOutputs.html#a95b1c96b61f520f381aa9a4de75f17ab">  440</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classOutputs.html#a95b1c96b61f520f381aa9a4de75f17ab">fill_cutflow_histo</a>(std::string_view cut, <span class="keywordtype">float</span> weight)</div>
+<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;    {</div>
+<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;        cutflow_histo.Fill(<a class="code" href="classOutputs.html#a82e6df3ec0abf230ea32702dda229311">Outputs::Cuts</a>.index_of(cut), weight);</div>
+<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;    }</div>
+<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160; </div>
+<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;    <span class="comment">// save storaged data</span></div>
+<div class="line"><a name="l00446"></a><span class="lineno"><a class="line" href="classOutputs.html#a859fc83b3772b135fd1a93540048681b">  446</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classOutputs.html#a859fc83b3772b135fd1a93540048681b">write_data</a>()</div>
+<div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160;    {</div>
+<div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;        output_file-&gt;cd();</div>
+<div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;        output_tree-&gt;Write();</div>
+<div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;        cutflow_histo.Write();</div>
+<div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;    }</div>
+<div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;};</div>
+<div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160; </div>
+<div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/*OUTPUTS*/</span><span class="preprocessor"></span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <div class="ttc" id="aclassOutputs_html_a2b605b0e4c42208245528603b6b2aa2a"><div class="ttname"><a href="classOutputs.html#a2b605b0e4c42208245528603b6b2aa2a">Outputs::Electron_pt</a></div><div class="ttdeci">std::array&lt; float, kMaxObjects &gt; Electron_pt</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:138</div></div>
-<div class="ttc" id="aclassOutputs_html_a859fc83b3772b135fd1a93540048681b"><div class="ttname"><a href="classOutputs.html#a859fc83b3772b135fd1a93540048681b">Outputs::write_data</a></div><div class="ttdeci">void write_data()</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:424</div></div>
-<div class="ttc" id="aEnumerate_8hpp_html_a50a6ea831da5d2eec783b7d73d98094a"><div class="ttname"><a href="Enumerate_8hpp.html#a50a6ea831da5d2eec783b7d73d98094a">make_enumerate</a></div><div class="ttdeci">constexpr auto make_enumerate(Ts &amp;&amp;...args)</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:133</div></div>
+<div class="ttc" id="aclassOutputs_html_a859fc83b3772b135fd1a93540048681b"><div class="ttname"><a href="classOutputs.html#a859fc83b3772b135fd1a93540048681b">Outputs::write_data</a></div><div class="ttdeci">void write_data()</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:446</div></div>
 <div class="ttc" id="aclassOutputs_html_a413c53316500829bb5318eb9f94e5c23"><div class="ttname"><a href="classOutputs.html#a413c53316500829bb5318eb9f94e5c23">Outputs::weights_up</a></div><div class="ttdeci">std::array&lt; float, kTotalWeights &gt; weights_up</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:124</div></div>
 <div class="ttc" id="aclassOutputs_html"><div class="ttname"><a href="classOutputs.html">Outputs</a></div><div class="ttdef"><b>Definition:</b> Outputs.hpp:63</div></div>
 <div class="ttc" id="aclassOutputs_html_ac3ac2d9ba55088c7e80820e01f549e75"><div class="ttname"><a href="classOutputs.html#ac3ac2d9ba55088c7e80820e01f549e75">Outputs::BJet_phi</a></div><div class="ttdeci">std::array&lt; float, kMaxObjects &gt; BJet_phi</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:155</div></div>
-<div class="ttc" id="aclassOutputs_html_a781e9ea823a7fa1757a48cfe01f32c9e"><div class="ttname"><a href="classOutputs.html#a781e9ea823a7fa1757a48cfe01f32c9e">Outputs::clear_event_tree</a></div><div class="ttdeci">void clear_event_tree()</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:293</div></div>
+<div class="ttc" id="aclassOutputs_html_a781e9ea823a7fa1757a48cfe01f32c9e"><div class="ttname"><a href="classOutputs.html#a781e9ea823a7fa1757a48cfe01f32c9e">Outputs::clear_event_tree</a></div><div class="ttdeci">void clear_event_tree()</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:315</div></div>
 <div class="ttc" id="aclassOutputs_html_ab8e194ffe73fb1ba0ed2262ee4bc9683"><div class="ttname"><a href="classOutputs.html#ab8e194ffe73fb1ba0ed2262ee4bc9683">Outputs::trigger_bits</a></div><div class="ttdeci">unsigned long trigger_bits</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:118</div></div>
 <div class="ttc" id="aclassOutputs_html_aceb0e4645316076ee01a0c6bcde1555a"><div class="ttname"><a href="classOutputs.html#aceb0e4645316076ee01a0c6bcde1555a">Outputs::Jet_eta</a></div><div class="ttdeci">std::array&lt; float, kMaxObjects &gt; Jet_eta</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:159</div></div>
 <div class="ttc" id="aclassOutputs_html_a020c13015105b04cf587c0a1b702dfb4"><div class="ttname"><a href="classOutputs.html#a020c13015105b04cf587c0a1b702dfb4">Outputs::set_event_weight</a></div><div class="ttdeci">auto set_event_weight(std::string_view weight, float value) -&gt; void</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:266</div></div>
 <div class="ttc" id="aclassOutputs_html_ac0341104109e6204d0dd7cddd98a5acf"><div class="ttname"><a href="classOutputs.html#ac0341104109e6204d0dd7cddd98a5acf">Outputs::set_event_weight</a></div><div class="ttdeci">auto set_event_weight(std::string_view weight, std::string_view shift, float value) -&gt; void</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:250</div></div>
-<div class="ttc" id="aclassOutputs_html_a958da199f97021eee3103adf2b059f04"><div class="ttname"><a href="classOutputs.html#a958da199f97021eee3103adf2b059f04">Outputs::get_event_weight</a></div><div class="ttdeci">auto get_event_weight(std::string_view weight=&quot;&quot;, std::string_view shift=&quot;Nominal&quot;) -&gt; float</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:273</div></div>
+<div class="ttc" id="aclassOutputs_html_a958da199f97021eee3103adf2b059f04"><div class="ttname"><a href="classOutputs.html#a958da199f97021eee3103adf2b059f04">Outputs::get_event_weight</a></div><div class="ttdeci">auto get_event_weight(std::string_view weight=&quot;&quot;, std::string_view shift=&quot;Nominal&quot;) -&gt; float</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:274</div></div>
 <div class="ttc" id="aclassOutputs_html_ad7d4461f712895cd8e3221eb2fd38e7e"><div class="ttname"><a href="classOutputs.html#ad7d4461f712895cd8e3221eb2fd38e7e">Outputs::Muon_phi</a></div><div class="ttdeci">std::array&lt; float, kMaxObjects &gt; Muon_phi</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:135</div></div>
 <div class="ttc" id="aclassOutputs_html_adaa42041150626d24ae0d232d1db8c80"><div class="ttname"><a href="classOutputs.html#adaa42041150626d24ae0d232d1db8c80">Outputs::nJet</a></div><div class="ttdeci">unsigned int nJet</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:157</div></div>
 <div class="ttc" id="aclassOutputs_html_ad91358b4fcea3b29b91168463d074810"><div class="ttname"><a href="classOutputs.html#ad91358b4fcea3b29b91168463d074810">Outputs::Electron_phi</a></div><div class="ttdeci">std::array&lt; float, kMaxObjects &gt; Electron_phi</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:140</div></div>
@@ -613,6 +634,7 @@ $(document).ready(function(){initNavTree('Outputs_8hpp_source.html',''); initRes
 <div class="ttc" id="aclassOutputs_html_a8f385fc14e8f56a5133f06149deaa030"><div class="ttname"><a href="classOutputs.html#a8f385fc14e8f56a5133f06149deaa030">Outputs::nElectron</a></div><div class="ttdeci">unsigned int nElectron</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:137</div></div>
 <div class="ttc" id="aclassOutputs_html_a2176a388760c20b7ab7e64fd998e0841"><div class="ttname"><a href="classOutputs.html#a2176a388760c20b7ab7e64fd998e0841">Outputs::Tau_phi</a></div><div class="ttdeci">std::array&lt; float, kMaxObjects &gt; Tau_phi</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:150</div></div>
 <div class="ttc" id="aclassOutputs_html_a55dca26c9636a2fb6b7c277826ee2921"><div class="ttname"><a href="classOutputs.html#a55dca26c9636a2fb6b7c277826ee2921">Outputs::Electron_eta</a></div><div class="ttdeci">std::array&lt; float, kMaxObjects &gt; Electron_eta</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:139</div></div>
+<div class="ttc" id="aclassOutputs_html_a68c51428b6f1c2e655261c2820b29aa9"><div class="ttname"><a href="classOutputs.html#a68c51428b6f1c2e655261c2820b29aa9">Outputs::get_event_weight</a></div><div class="ttdeci">static auto get_event_weight(const RVec&lt; float &gt; &amp;weights_nominal, const RVec&lt; float &gt; &amp;weights_up, const RVec&lt; float &gt; &amp;weights_down, std::string_view weight=&quot;&quot;, std::string_view shift=&quot;Nominal&quot;) -&gt; float</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:291</div></div>
 <div class="ttc" id="aclassOutputs_html_a235be21d2333eede19cfa2786a016c3b"><div class="ttname"><a href="classOutputs.html#a235be21d2333eede19cfa2786a016c3b">Outputs::Tau_pt</a></div><div class="ttdeci">std::array&lt; float, kMaxObjects &gt; Tau_pt</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:148</div></div>
 <div class="ttc" id="aclassOutputs_html_a9a97465a47b95c6ca41df9623792067b"><div class="ttname"><a href="classOutputs.html#a9a97465a47b95c6ca41df9623792067b">Outputs::weights_down</a></div><div class="ttdeci">std::array&lt; float, kTotalWeights &gt; weights_down</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:125</div></div>
 <div class="ttc" id="aclassOutputs_html_a97b89403ff756a95a635f57d3137d5ce"><div class="ttname"><a href="classOutputs.html#a97b89403ff756a95a635f57d3137d5ce">Outputs::lumi_section</a></div><div class="ttdeci">unsigned int lumi_section</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:116</div></div>
@@ -620,7 +642,8 @@ $(document).ready(function(){initNavTree('Outputs_8hpp_source.html',''); initRes
 <div class="ttc" id="aclassOutputs_html_a80ec260f6005a69aa15597483f160483"><div class="ttname"><a href="classOutputs.html#a80ec260f6005a69aa15597483f160483">Outputs::event_number</a></div><div class="ttdeci">unsigned long event_number</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:117</div></div>
 <div class="ttc" id="aclassOutputs_html_a210b203bf8ac73e6be4375205932012e"><div class="ttname"><a href="classOutputs.html#a210b203bf8ac73e6be4375205932012e">Outputs::nTau</a></div><div class="ttdeci">unsigned int nTau</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:147</div></div>
 <div class="ttc" id="aclassOutputs_html_a60233b7211dabe186b0ddd01b57a4b9b"><div class="ttname"><a href="classOutputs.html#a60233b7211dabe186b0ddd01b57a4b9b">Outputs::weights_nominal</a></div><div class="ttdeci">std::array&lt; float, kTotalWeights &gt; weights_nominal</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:123</div></div>
-<div class="ttc" id="aclassOutputs_html_acb244bf81c611f0a8df1fdabfc049533"><div class="ttname"><a href="classOutputs.html#acb244bf81c611f0a8df1fdabfc049533">Outputs::fill_branches</a></div><div class="ttdeci">void fill_branches(RVec&lt; float &gt; &amp;&amp;_lhe_pdf_weights, RVec&lt; float &gt; &amp;&amp;_muon_pt, RVec&lt; float &gt; &amp;&amp;_muon_eta, RVec&lt; float &gt; &amp;&amp;_muon_phi, RVec&lt; float &gt; &amp;&amp;_electron_pt, RVec&lt; float &gt; &amp;&amp;_electron_eta, RVec&lt; float &gt; &amp;&amp;_electron_phi, RVec&lt; float &gt; &amp;&amp;_photon_pt, RVec&lt; float &gt; &amp;&amp;_photon_eta, RVec&lt; float &gt; &amp;&amp;_photon_phi, RVec&lt; float &gt; &amp;&amp;_tau_pt, RVec&lt; float &gt; &amp;&amp;_tau_eta, RVec&lt; float &gt; &amp;&amp;_tau_phi, RVec&lt; float &gt; &amp;&amp;_bjet_pt, RVec&lt; float &gt; &amp;&amp;_bjet_eta, RVec&lt; float &gt; &amp;&amp;_bjet_phi, RVec&lt; float &gt; &amp;&amp;_jet_pt, RVec&lt; float &gt; &amp;&amp;_jet_eta, RVec&lt; float &gt; &amp;&amp;_jet_phi, RVec&lt; float &gt; &amp;&amp;_met_pt, RVec&lt; float &gt; &amp;&amp;_met_phi)</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:345</div></div>
+<div class="ttc" id="anamespaceEnumerate_html_aa9d1e3116bd516a8785fff68dff96ab6"><div class="ttname"><a href="namespaceEnumerate.html#aa9d1e3116bd516a8785fff68dff96ab6">Enumerate::make_enumerate</a></div><div class="ttdeci">constexpr auto make_enumerate(Ts &amp;&amp;...args)</div><div class="ttdef"><b>Definition:</b> Enumerate.hpp:137</div></div>
+<div class="ttc" id="aclassOutputs_html_acb244bf81c611f0a8df1fdabfc049533"><div class="ttname"><a href="classOutputs.html#acb244bf81c611f0a8df1fdabfc049533">Outputs::fill_branches</a></div><div class="ttdeci">void fill_branches(RVec&lt; float &gt; &amp;&amp;_lhe_pdf_weights, RVec&lt; float &gt; &amp;&amp;_muon_pt, RVec&lt; float &gt; &amp;&amp;_muon_eta, RVec&lt; float &gt; &amp;&amp;_muon_phi, RVec&lt; float &gt; &amp;&amp;_electron_pt, RVec&lt; float &gt; &amp;&amp;_electron_eta, RVec&lt; float &gt; &amp;&amp;_electron_phi, RVec&lt; float &gt; &amp;&amp;_photon_pt, RVec&lt; float &gt; &amp;&amp;_photon_eta, RVec&lt; float &gt; &amp;&amp;_photon_phi, RVec&lt; float &gt; &amp;&amp;_tau_pt, RVec&lt; float &gt; &amp;&amp;_tau_eta, RVec&lt; float &gt; &amp;&amp;_tau_phi, RVec&lt; float &gt; &amp;&amp;_bjet_pt, RVec&lt; float &gt; &amp;&amp;_bjet_eta, RVec&lt; float &gt; &amp;&amp;_bjet_phi, RVec&lt; float &gt; &amp;&amp;_jet_pt, RVec&lt; float &gt; &amp;&amp;_jet_eta, RVec&lt; float &gt; &amp;&amp;_jet_phi, RVec&lt; float &gt; &amp;&amp;_met_pt, RVec&lt; float &gt; &amp;&amp;_met_phi)</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:367</div></div>
 <div class="ttc" id="aEnumerate_8hpp_html"><div class="ttname"><a href="Enumerate_8hpp.html">Enumerate.hpp</a></div></div>
 <div class="ttc" id="aclassOutputs_html_aa97e523d3a0538530d4889f29867e914"><div class="ttname"><a href="classOutputs.html#aa97e523d3a0538530d4889f29867e914">Outputs::Muon_pt</a></div><div class="ttdeci">std::array&lt; float, kMaxObjects &gt; Muon_pt</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:133</div></div>
 <div class="ttc" id="aMUSiCTools_8hpp_html"><div class="ttname"><a href="MUSiCTools_8hpp.html">MUSiCTools.hpp</a></div></div>
@@ -635,9 +658,9 @@ $(document).ready(function(){initNavTree('Outputs_8hpp_source.html',''); initRes
 <div class="ttc" id="aclassOutputs_html_ae88701f610dd811f1d5e1e2541cf87a6"><div class="ttname"><a href="classOutputs.html#ae88701f610dd811f1d5e1e2541cf87a6">Outputs::Muon_eta</a></div><div class="ttdeci">std::array&lt; float, kMaxObjects &gt; Muon_eta</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:134</div></div>
 <div class="ttc" id="aclassOutputs_html_a8a077d43a1ce98d220ae2eb465e38bf1"><div class="ttname"><a href="classOutputs.html#a8a077d43a1ce98d220ae2eb465e38bf1">Outputs::nBJet</a></div><div class="ttdeci">unsigned int nBJet</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:152</div></div>
 <div class="ttc" id="aclassOutputs_html_a82e6df3ec0abf230ea32702dda229311"><div class="ttname"><a href="classOutputs.html#a82e6df3ec0abf230ea32702dda229311">Outputs::Cuts</a></div><div class="ttdeci">static constexpr auto Cuts</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:69</div></div>
-<div class="ttc" id="aclassOutputs_html_aeabc7fa66306f21aff8eeb634d8671c4"><div class="ttname"><a href="classOutputs.html#aeabc7fa66306f21aff8eeb634d8671c4">Outputs::fill_event_tree</a></div><div class="ttdeci">void fill_event_tree()</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:412</div></div>
+<div class="ttc" id="aclassOutputs_html_aeabc7fa66306f21aff8eeb634d8671c4"><div class="ttname"><a href="classOutputs.html#aeabc7fa66306f21aff8eeb634d8671c4">Outputs::fill_event_tree</a></div><div class="ttdeci">void fill_event_tree()</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:434</div></div>
 <div class="ttc" id="aclassOutputs_html_a705aac60ad2d90dc0e64712cf2117392"><div class="ttname"><a href="classOutputs.html#a705aac60ad2d90dc0e64712cf2117392">Outputs::nPhoton</a></div><div class="ttdeci">unsigned int nPhoton</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:142</div></div>
-<div class="ttc" id="aclassOutputs_html_a95b1c96b61f520f381aa9a4de75f17ab"><div class="ttname"><a href="classOutputs.html#a95b1c96b61f520f381aa9a4de75f17ab">Outputs::fill_cutflow_histo</a></div><div class="ttdeci">void fill_cutflow_histo(std::string_view cut, float weight)</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:418</div></div>
+<div class="ttc" id="aclassOutputs_html_a95b1c96b61f520f381aa9a4de75f17ab"><div class="ttname"><a href="classOutputs.html#a95b1c96b61f520f381aa9a4de75f17ab">Outputs::fill_cutflow_histo</a></div><div class="ttdeci">void fill_cutflow_histo(std::string_view cut, float weight)</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:440</div></div>
 <div class="ttc" id="aclassOutputs_html_a015485f6595f3af4cbc12cb735d04628"><div class="ttname"><a href="classOutputs.html#a015485f6595f3af4cbc12cb735d04628">Outputs::Photon_eta</a></div><div class="ttdeci">std::array&lt; float, kMaxObjects &gt; Photon_eta</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:144</div></div>
 <div class="ttc" id="aclassOutputs_html_ac460194c479cd9f4b58ce67c63711ab1"><div class="ttname"><a href="classOutputs.html#ac460194c479cd9f4b58ce67c63711ab1">Outputs::Shifts</a></div><div class="ttdeci">static constexpr auto Shifts</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:98</div></div>
 <div class="ttc" id="aclassOutputs_html_a817bab126ff6038060a6308f602c1515"><div class="ttname"><a href="classOutputs.html#a817bab126ff6038060a6308f602c1515">Outputs::Photon_pt</a></div><div class="ttdeci">std::array&lt; float, kMaxObjects &gt; Photon_pt</div><div class="ttdef"><b>Definition:</b> Outputs.hpp:143</div></div>

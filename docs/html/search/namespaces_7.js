@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['objconfig_688',['ObjConfig',['../namespaceObjConfig.html',1,'']]]
+  ['nanoobjects_688',['NanoObjects',['../namespaceNanoObjects.html',1,'']]]
 ];
