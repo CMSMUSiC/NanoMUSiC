@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # This is a set_env script
-SCRIPTDIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-
+SCRIPTDIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 
 # Set up the LCG environment
 # List of available software:
@@ -35,30 +34,23 @@ export MYPXLANA=EventClassFactory
 cd $SCRIPTDIR/NanoMUSiC/tools/
 source set_env.sh
 
-
 cd $SCRIPTDIR/NanoMUSiC/PxlAnalyzer/
 source set_env.sh
-
 
 cd $SCRIPTDIR/NanoMUSiC/PlotLib/
 source set_env.sh
 
-
 cd $SCRIPTDIR/NanoMUSiC/PxlAnalyzer/EventClassFactory/
 source set_env.sh
-
 
 cd $SCRIPTDIR/NanoMUSiC/MUSiC-Utils/
 source set_env.sh
 
-
 cd $SCRIPTDIR/NanoMUSiC/MUSiC-Configs/
 source set_env.sh
 
-
 cd $SCRIPTDIR/NanoMUSiC/MUSiC-RoIScanner/
 source set_env.sh
-
 
 cd $SCRIPTDIR
 
@@ -68,8 +60,6 @@ export PATH=$PATH:$SCRIPTDIR/scripts;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-Validation/scripts;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-BTagEff;
 # export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-CRAB;
-
-
 
 # rust config
 export RUSTFLAGS="-C linker=$CC"

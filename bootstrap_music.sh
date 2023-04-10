@@ -31,5 +31,3 @@ cd $SCRIPT_DIR
 
 # install poxy (documentation generation manager, based on doxygen)
 pip install --user poxy
-
-
