@@ -18,3 +18,5 @@ cmsenv
 pwd
 cd ../..
 
+export PATH="$PWD:$PATH"
+export CRAB_MUSIC_BASE=$PWD
