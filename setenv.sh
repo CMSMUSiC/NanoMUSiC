@@ -58,7 +58,7 @@ cd $SCRIPTDIR
 export PATH=$PATH:$SCRIPTDIR/bin;
 export PATH=$PATH:$SCRIPTDIR/scripts;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-Validation/scripts;
-export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-BTagEff;
+#export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-BTagEff;
 # export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-CRAB;
 
 # rust config
