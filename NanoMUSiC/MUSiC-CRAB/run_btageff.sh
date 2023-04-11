@@ -26,9 +26,9 @@ else
   echo "----> Current directory content:"
   ls
 
-  # copy MUSiC-CRAB directory to working path
+  # copy MUSiC-CRAB and the MUSiC-BTagEff directory to working path
   cp -r NanoMUSiC/MUSiC-CRAB/* .
-
+  cp -r NanoMUSiC/MUSiC-BTagEff/* .
   # get input files from PSet.py and modify the TOML config file 
   python3 config_builder.py $job_id 
 
@@ -39,7 +39,7 @@ else
 
   # set env, run nano_music and save its exit code
   SCRIPTDIR=`pwd`
-  bash -c "eval \`scram unsetenv -sh\` ; echo \"================= [ BEGIN ] MUSiC environment ==================\" ; source /cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/setup.sh ; echo \"ROOT Version\"; root -b -q; export MUSIC_BASE=$SCRIPTDIR; export LD_LIBRARY_PATH=$SCRIPTDIR/lib:\$LD_LIBRARY_PATH ; export PATH=$SCRIPTDIR/bin:\$PATH ; export PATH=$SCRIPTDIR/scripts:\$PATH ; export PATH=$SCRIPTDIR/NanoMUSiC/MUSiC-CRAB:\$PATH ; export ROOT_INCLUDE_PATH=$SCRIPTDIR/NanoMUSiC/MUSiC/include:$SCRIPTDIR/NanoMUSiC/MUSiC:\$ROOT_INCLUDE_PATH  ; env; echo \"================= [ END ] MUSiC environment ==================\" ; ../MUSiC-BTagEff/btageff.py --toml_file_path config.toml"
+  bash -c "eval \`scram unsetenv -sh\` ; echo \"================= [ BEGIN ] MUSiC environment ==================\" ; source /cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/setup.sh ; echo \"ROOT Version\"; root -b -q; export MUSIC_BASE=$SCRIPTDIR; export LD_LIBRARY_PATH=$SCRIPTDIR/lib:\$LD_LIBRARY_PATH ; export PATH=$SCRIPTDIR/bin:\$PATH ; export PATH=$SCRIPTDIR/scripts:\$PATH ; export PATH=$SCRIPTDIR/NanoMUSiC/MUSiC-CRAB:\$PATH ; export ROOT_INCLUDE_PATH=$SCRIPTDIR/NanoMUSiC/MUSiC/include:$SCRIPTDIR/NanoMUSiC/MUSiC:\$ROOT_INCLUDE_PATH  ; env; echo \"================= [ END ] MUSiC environment ==================\" ;root -q -b -l bTagEff.cpp++; ./btageff.py config.toml"
   exit_code=$?
 
   FILE=outputs/success_flag.out
