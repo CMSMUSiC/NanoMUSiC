@@ -1,0 +1,22 @@
+
+[DYJetsToLL_LHEFilterPtZ-250To400_MatchEWPDG20_13TeV_AM]
+XSec = 2.906
+FilterEff = 0.4402
+kFactor = 1.0
+XSecOrder = "NLO"
+ProcessGroup = "DrellYan"
+das_name_2016APV = ["/DYJetsToLL_LHEFilterPtZ-250To400_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM"]
+das_name_2016 = ["/DYJetsToLL_LHEFilterPtZ-250To400_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL16NanoAODv9-106X_mcRun2_asymptotic_v17-v1/NANOAODSIM"]
+das_name_2017 = ["/DYJetsToLL_LHEFilterPtZ-250To400_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"]
+das_name_2018 = ["/DYJetsToLL_LHEFilterPtZ-250To400_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM"]
+crab_task_name = "crab_nano_music_DYJetsToLL_LHEFilterPtZ-250To400_MatchEWPDG20_13TeV_AM_2016APV_date_2023_04_12_time_11_20_33"                                                                                       
+
+[Lumi]                                                                                                                        
+2016APV = 19520.0                                                                                                             
+2016 = 16810.0                                                                                                                
+2017 = 41480.0                                                                                                                
+2018 = 59830.0                                                                                                                
+Unit = "pb-1"
+
+[Global]                                                                                                                      
+ScalefactorError = 0.026                                                                                                      

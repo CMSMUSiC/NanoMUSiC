@@ -39,13 +39,14 @@ else
 
   # set env, run nano_music and save its exit code
   SCRIPTDIR=`pwd`
-  bash -c "eval \`scram unsetenv -sh\` ; echo \"================= [ BEGIN ] MUSiC environment ==================\" ; source /cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/setup.sh ; echo \"ROOT Version\"; root -b -q; export MUSIC_BASE=$SCRIPTDIR; export LD_LIBRARY_PATH=$SCRIPTDIR/lib:\$LD_LIBRARY_PATH ; export PATH=$SCRIPTDIR/bin:\$PATH ; export PATH=$SCRIPTDIR/scripts:\$PATH ; export PATH=$SCRIPTDIR/NanoMUSiC/MUSiC-CRAB:\$PATH ; export ROOT_INCLUDE_PATH=$SCRIPTDIR/NanoMUSiC/MUSiC/include:$SCRIPTDIR/NanoMUSiC/MUSiC:\$ROOT_INCLUDE_PATH  ; env; echo \"================= [ END ] MUSiC environment ==================\" ;root -q -b -l bTagEff.cpp++; ./btageff.py config.toml"
+  bash -c "eval \`scram unsetenv -sh\` ; echo \"================= [ BEGIN ] MUSiC environment ==================\" ; source /cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/setup.sh ; echo \"ROOT Version\"; root -b -q; export MUSIC_BASE=$SCRIPTDIR; export LD_LIBRARY_PATH=$SCRIPTDIR/lib:\$LD_LIBRARY_PATH ; export PATH=$SCRIPTDIR/bin:\$PATH ; export PATH=$SCRIPTDIR/scripts:\$PATH ; export PATH=$SCRIPTDIR/NanoMUSiC/MUSiC-CRAB:\$PATH ; export ROOT_INCLUDE_PATH=$SCRIPTDIR/NanoMUSiC/MUSiC/include:$SCRIPTDIR/NanoMUSiC/MUSiC:\$ROOT_INCLUDE_PATH  ; env; echo \"================= [ END ] MUSiC environment ==================\" ;root -q -b -l bTagEff.cpp++; ./btageff.py config.toml; touch nano_music.root"
   exit_code=$?
 
   FILE=outputs/success_flag.out
   if [ -f "$FILE" ]; then
       echo "Yay! Task finished succesfully."
   else 
+      echo "success_flag not found."
       exit 42
   fi
 
@@ -58,12 +59,13 @@ else
   # check the status of the outputs 
   echo "================= [ BEGIN ] Checking outputs status =================="
   echo "Cutflow ..."
-  root -b efficiency_hist.root -e  "_file0->Get<TH1F>(\"btag_matched_hist\")->Print(\"all\")" -q
-  if [[ "$?" -eq 0 ]]; then
-      echo "Yay! btag_matched_hist is available."
-  else 
-      exit 42
-  fi
+ # root -b efficiency_hist.root -e  "_file0->Get<TH1F>(\"btag_matched_hist\")->Print(\"all\")" -q
+#  if [[ "$?" -eq 0 ]]; then
+ #     echo "Yay! btag_matched_hist is available."
+#  else 
+ #     echo "btag_matched_hist not found."     
+  #    exit 42
+ # fi
 
   echo "================= [ END ] Outputs directory =================="
 

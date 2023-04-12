@@ -94,6 +94,8 @@ def build_crab_config(process_name, das_name, year, is_data):
 
     this_config.JobType.pluginName = "Analysis"
     this_config.JobType.psetName = f"{os.getenv('CRAB_MUSIC_BASE')}/crab_music_pset.py"
+    if args.btageff:
+        this_config.JobType.psetName = f"{os.getenv('CRAB_MUSIC_BASE')}/crab_music_btageff_pset.py"
     this_config.JobType.scriptExe = f"{os.getenv('CRAB_MUSIC_BASE')}/run_nano_music.sh"
     if args.btageff:
         print("Will submit BTag Efficiency code ...")
@@ -139,7 +141,7 @@ def build_task_tarball():
     print("Packing input files ...")
     os.system(r"rm task.tar.gz > /dev/null 2>&1")
     os.system(
-        r'tar --exclude="*.log" --exclude="crab.log" --exclude="raw_config.toml" --exclude="crab_nano_music_date_*" --exclude="crab_music_pset.py" --exclude="task.tar.gz" --exclude="CMSSW_*" --exclude="__pycache*" --exclude="build" --exclude="docs_BKP" --exclude="docs" --exclude="crab_nano_music_date_*" --exclude="NanoMUSiC/tools" --exclude="NanoMUSiC/PxlAnalyzer" --exclude="*.root" --exclude="NanoMUSiC/PlotLib" --exclude="NanoMUSiC/MUSiC-Configs" --exclude="NanoMUSiC/MUSiC-RoIScanner" --exclude="NanoMUSiC/MUSiC-Utils"  -zcvf task.tar.gz $CRAB_MUSIC_BASE/../../*'
+        r'tar --exclude="*.log" --exclude="crab.log" --exclude="raw_config.toml" --exclude="crab_nano_music_date_*" --exclude="crab_music_pset.py" --exclude="task.tar.gz" --exclude="CMSSW_*" --exclude="__pycache*" --exclude="build" --exclude="docs_BKP" --exclude="docs" --exclude="crab_nano_music_date_*" --exclude="NanoMUSiC/tools" --exclude="NanoMUSiC/PxlAnalyzer" --exclude="*.root" --exclude="NanoMUSiC/PlotLib" --exclude="NanoMUSiC/MUSiC-Configs" --exclude="NanoMUSiC/MUSiC-RoIScanner" --exclude="NanoMUSiC/MUSiC-Utils" --exclude="NanoMUSiC/MUSiC-CRAB/crab_nano_music_DYJetsToLL*" -zcvf task.tar.gz $CRAB_MUSIC_BASE/../../*'
     )
     print("")
 

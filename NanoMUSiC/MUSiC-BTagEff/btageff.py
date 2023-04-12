@@ -19,6 +19,7 @@ def calc_bTag_eff():
 
 def main():
     calc_bTag_eff()
+    os.system("touch outputs/success_flag.out")
     
 if __name__=="__main__":
     main()

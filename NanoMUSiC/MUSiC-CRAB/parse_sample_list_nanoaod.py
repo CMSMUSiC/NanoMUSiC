@@ -196,13 +196,46 @@ def main():
             xsections[sample.name][dName].append(sample.dataset)
         except:
             print(sample.name)
+    
 
-    # dump new config to file
+    #remove unwanted entries
+    
+    unwanted_xsections=[]
+    for sample in xsections:
+        dName_16 = "das_name_2016" 
+        dName_16APV = "das_name_2016APV" 
+        dName_17 = "das_name_2017" 
+        dName_18 = "das_name_2018" 
+        if dName_16 and dName_16APV and dName_17 and dName_18 not in xsections[sample]:
+             unwanted_xsections.append(sample)
+    
+    for sample in unwanted_xsections:
+        if sample in xsections.keys():
+            del xsections[sample]
+
+    
+    # dump new config to string
     xSections_list = to_toml_dumps(xsections)
+    # add lumi and global scale factor to toml file
+    xSections_list= xSections_list+r"""
+
+[Lumi]
+2016APV = 19520.0
+2016 = 16810.0
+2017 = 41480.0
+2018 = 59830.0
+Unit = "pb-1"
+
+[Global]
+ScalefactorError = 0.026
+"""
+
     os.system("rm xSections.toml > /dev/null 2>&1")
     with open(options.output_filename, "w") as new_xsection_file:
         new_xsection_file.write(xSections_list)
-
+        
 
 if __name__ == "__main__":
     main()
+
+
