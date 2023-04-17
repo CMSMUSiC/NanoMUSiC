@@ -90,6 +90,8 @@ def build_crab_config(process_name, das_name, year, is_data):
 
     this_config.General.requestName = process_name
     this_config.General.workArea = f"crab_nano_music_{process_name}_{now}"
+    if args.btageff:
+        this_config.General.workArea = f"crab_btageff_{process_name}_{now}"
     this_config.General.transferOutputs = True
 
     this_config.JobType.pluginName = "Analysis"

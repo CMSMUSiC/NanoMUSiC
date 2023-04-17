@@ -4,7 +4,7 @@ import sys
 import tomli
 from helpers import *
 import logging
-import optparse
+import argparse
 import os
 import re
 from collections import OrderedDict
@@ -27,7 +27,7 @@ class Sample:
         self.is_data = False
         self.is_ext = False
 
-    def parse_name(self, options, generators, showers=[], redlist=[]):
+    def parse_name(self, generators, showers=[], redlist=[]):
         # format of datasetpath: /.../.../...
         # first part contains name + additional tags ( cme, tune, .. )
         # second part has additional information ( campaign, extention sample? ,... )
@@ -62,7 +62,7 @@ class Sample:
             if match_era.group():
                 self.era = match_era.group(0)[7:-3]
 
-            self.name = f"{ds_pt1}_{options.cme}TeV_{self.year}_{self.era}"
+            self.name = f"{ds_pt1}_13TeV_{self.year}_{self.era}"
         # if MC
         else:
             for generator in generators.keys():
@@ -90,45 +90,51 @@ class Sample:
                 self.year = "2018"
 
             # match = re.search("ext\d\d*", ds_pt2)
-            self.name = ds_pt1 + "_" + options.cme + "TeV_" + generators[self.generator]
+            self.name = ds_pt1 + "_" + "13TeV_" + generators[self.generator]
             # end if MC
 
 
 def readSamplesFromFile(filename):
+    with open(filename, "r") as file:
+        sample_list = file.read().splitlines()
+        for l in sample_list:
+            if l != "":
+                if sample_list.count(l) > 1:
+                    print(f"Error: Sample list has duplicate entries({l})")
+                    exit(-1)
+    
     with open(filename, "r") as file:
         return [Sample(l.rstrip("\n")) for l in file if l != "\n"]
 
 
 def main():
     usage = "%prog [options] SAMPLELIST CROSS_SECTION_FILE"
-    description = "This script parses a given file with cross-sections and a sample list and writes a custom list that can be provided to music_crab."
+    description = "This script parses a given file with cross-sections and a sample list and writes a custom list that can be provided to music_crab.\n Arguments: SAMPLE_LIST.txt: List of DAS names, one per line, CROSS_SECTION_FILE.toml: Cross section, Filter efficiency, kFactor, cross section order and process group."
 
-    parser = optparse.OptionParser(
-        usage=usage, description=description, version="%prog 0"
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "sample_list",
+        help="Give path to the txt file containing sample das_names per line.",
     )
-    parser.add_option(
-        "-e",
-        "--cme",
-        action="store",
-        default="13",
-        metavar="ENERGY",
-        help="The center-of-mass energy for this sample",
+
+    parser.add_argument(
+        "xsection_file_path",
+        help="Give path to the toml file containing cross-section per sample.",
     )
-    parser.add_option(
+
+
+    parser.add_argument(
         "-o",
         "--output_filename",
         action="store",
-        default="xSections_list",
-        metavar="FILENAME",
+        default="xSections_list.toml",
+        #metavar="FILENAME",
         help="Specify a filename for your output file.",
     )
 
-    (options, args) = parser.parse_args()
+    args = parser.parse_args()
 
-    if len(args) != 2:
-        parser.error(
-            "Exactly 2 argument needed: state the file you want to parse and the cross-section file."
-        )
 
     # dict of generators with shortname
     generators = OrderedDict()
@@ -173,21 +179,12 @@ def main():
     ]
 
     # read samples from file and parse name
-    sample_list = readSamplesFromFile(args[0])
+    sample_list = readSamplesFromFile(args.sample_list)
     for sample in tqdm(sample_list):
-        sample.parse_name(options, generators, showers, redlist)
+        sample.parse_name(generators, showers, redlist)
 
-    # write .json file for each sample
-    datasets = {}
-    for sample in sample_list:
-        datasets[sample.name] = {
-            "dataset": sample.dataset,
-            "name": sample.name,
-            "generator": sample.generator,
-            "year": sample.year,
-            "is_data": sample.is_data,
-        }
-    xsections = tomli.loads(Path(args[1]).read_text(encoding="utf-8"))
+    # read from the cross section toml file
+    xsections = tomli.loads(Path(args.xsection_file_path).read_text(encoding="utf-8"))
     for sample in sample_list:
         try:
             dName = "das_name_" + sample.year
@@ -196,28 +193,44 @@ def main():
             xsections[sample.name][dName].append(sample.dataset)
         except:
             print(sample.name)
-    
 
-    #remove unwanted entries
-    
-    unwanted_xsections=[]
+    # remove unwanted entries
+
+    unwanted_samples = []
     for sample in xsections:
-        dName_16 = "das_name_2016" 
-        dName_16APV = "das_name_2016APV" 
-        dName_17 = "das_name_2017" 
-        dName_18 = "das_name_2018" 
+        dName_16 = "das_name_2016"
+        dName_16APV = "das_name_2016APV"
+        dName_17 = "das_name_2017"
+        dName_18 = "das_name_2018"
         if dName_16 and dName_16APV and dName_17 and dName_18 not in xsections[sample]:
-             unwanted_xsections.append(sample)
-    
-    for sample in unwanted_xsections:
+            unwanted_samples.append(sample)
+
+    for sample in unwanted_samples:
         if sample in xsections.keys():
             del xsections[sample]
 
-    
+    # Loops over all samples and warns if a sample for a year is missing
+
+    for sample in xsections:
+        dName_16 = "das_name_2016"
+        dName_16APV = "das_name_2016APV"
+        dName_17 = "das_name_2017"
+        dName_18 = "das_name_2018"
+        if dName_16 not in xsections[sample]:
+            print("WARNING : Sample for 2016 missing for", sample)
+        if dName_16APV not in xsections[sample]:
+            print("WARNING : Sample for 2016APV missing for", sample)
+        if dName_17 not in xsections[sample]:
+            print("WARNING : Sample for 2017 missing for", sample)
+        if dName_18 not in xsections[sample]:
+            print("WARNING : Sample for 2018 missing for", sample)
+
     # dump new config to string
     xSections_list = to_toml_dumps(xsections)
     # add lumi and global scale factor to toml file
-    xSections_list= xSections_list+r"""
+    xSections_list = (
+        xSections_list
+        + r"""
 
 [Lumi]
 2016APV = 19520.0
@@ -229,13 +242,12 @@ Unit = "pb-1"
 [Global]
 ScalefactorError = 0.026
 """
+    )
 
     os.system("rm xSections.toml > /dev/null 2>&1")
-    with open(options.output_filename, "w") as new_xsection_file:
+    with open(args.output_filename, "w") as new_xsection_file:
         new_xsection_file.write(xSections_list)
-        
+
 
 if __name__ == "__main__":
     main()
-
-

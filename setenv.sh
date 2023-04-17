@@ -27,6 +27,8 @@ export SCRAM_ARCH=slc7_amd64_gcc12
 # This is a TAPAS set_env script. Source it before usage of TAPAS.
 export LD_LIBRARY_PATH=$SCRIPTDIR/lib:$LD_LIBRARY_PATH
 export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/lib/python:$PYTHONPATH
+export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/MUSiC-CRAB:$PYTHONPATH
+
 export MYPXLANA=EventClassFactory
 
 # Source all the needed set_env
@@ -58,7 +60,7 @@ cd $SCRIPTDIR
 export PATH=$PATH:$SCRIPTDIR/bin;
 export PATH=$PATH:$SCRIPTDIR/scripts;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-Validation/scripts;
-#export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-BTagEff;
+export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-BTagEff;
 # export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-CRAB;
 
 # rust config
