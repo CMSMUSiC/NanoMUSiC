@@ -13,7 +13,7 @@ else
         echo "[ LCG View ] Using x86_64-centos7-gcc12-opt ..."
         source /cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/setup.sh
 fi
-echo "[ LCG View ] Done ..."86_64-centos7-gcc12-opt/setup.sh
+echo "[ LCG View ] Done ..."
 
 # Set ninja as default CMake generator
 export CMAKE_GENERATOR=Ninja
