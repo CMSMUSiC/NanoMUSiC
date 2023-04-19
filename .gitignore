@@ -22,6 +22,8 @@ Test_Ouputs_Data_*.txt
 NanoMUSiC/MUSiC-CRAB/crab_nano_music_*
 raw_config.toml
 *~
+*.pcm
+NanoMUSiC/MUSiC-CRAB/Outputs
 ##### PYTHON #####
 # Byte-compiled / optimized / DLL files
 __pycache__/
