@@ -90,8 +90,10 @@ class CondorScheduler:
         self.job_id_to_args[self.job_id]["args"] = [executable_script]
         for arg in arguments:
             self.job_id_to_args[self.job_id]["args"].append(str(arg))
+        os.system(
+            f"condor_submit {self.output_file_path}/job_id_{self.job_id}/condor.jdl"
+        )
         self.job_id += 1
-        os.system(f"{self.output_file_path}/job_id_{self.job_id}/condor.jdl")
 
     def finalise(self):
         with open(f"{self.output_file_path}/job_id_to_args.json", "w") as f:
