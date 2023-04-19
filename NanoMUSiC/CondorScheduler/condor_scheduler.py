@@ -66,7 +66,9 @@ class CondorScheduler:
             executable += r"tar -zxf task.tar.gz;"
 
         executable += f"{self.prologue}; "
-        executable += f"{executable_script} {' '.join(string_arguments)}"
+        executable += f"{executable_script} {' '.join(string_arguments)};"
+        executable += r"rm -rf $working_dir > /dev/null 2>&1"
+
         os.mkdir(f"{self.output_file_path}/job_id_{self.job_id}")
         with open(
             f"{self.output_file_path}/job_id_{self.job_id}/executable.sh", "w"
