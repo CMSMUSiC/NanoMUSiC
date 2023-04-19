@@ -8,7 +8,9 @@ import getpass
 
 class CondorScheduler:
     def __init__(self, output_folder="", input_folder="", prologue=""):
-        self.prologue = "; ".join(prologue)
+        self.prologue = prologue
+        if prologue != "":
+            self.prologue = "; ".join(prologue)
         self.job_id_to_args = {}
         self.job_id = 0
         self.current_dir = os.getenv("PWD")

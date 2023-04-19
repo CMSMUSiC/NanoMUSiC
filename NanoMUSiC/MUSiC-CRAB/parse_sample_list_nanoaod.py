@@ -102,17 +102,13 @@ def readSamplesFromFile(filename):
                 if sample_list.count(l) > 1:
                     print(f"Error: Sample list has duplicate entries({l})")
                     exit(-1)
-    
+
     with open(filename, "r") as file:
         return [Sample(l.rstrip("\n")) for l in file if l != "\n"]
 
 
 def main():
-    usage = "%prog [options] SAMPLELIST CROSS_SECTION_FILE"
-    description = "This script parses a given file with cross-sections and a sample list and writes a custom list that can be provided to music_crab.\n Arguments: SAMPLE_LIST.txt: List of DAS names, one per line, CROSS_SECTION_FILE.toml: Cross section, Filter efficiency, kFactor, cross section order and process group."
-
     parser = argparse.ArgumentParser()
-
     parser.add_argument(
         "sample_list",
         help="Give path to the txt file containing sample das_names per line.",
@@ -123,18 +119,15 @@ def main():
         help="Give path to the toml file containing cross-section per sample.",
     )
 
-
     parser.add_argument(
         "-o",
         "--output_filename",
         action="store",
         default="xSections_list.toml",
-        #metavar="FILENAME",
         help="Specify a filename for your output file.",
     )
 
     args = parser.parse_args()
-
 
     # dict of generators with shortname
     generators = OrderedDict()
@@ -195,7 +188,6 @@ def main():
             print(sample.name)
 
     # remove unwanted entries
-
     unwanted_samples = []
     for sample in xsections:
         dName_16 = "das_name_2016"
@@ -210,7 +202,6 @@ def main():
             del xsections[sample]
 
     # Loops over all samples and warns if a sample for a year is missing
-
     for sample in xsections:
         dName_16 = "das_name_2016"
         dName_16APV = "das_name_2016APV"
@@ -228,9 +219,7 @@ def main():
     # dump new config to string
     xSections_list = to_toml_dumps(xsections)
     # add lumi and global scale factor to toml file
-    xSections_list = (
-        xSections_list
-        + r"""
+    lumi_string = r"""
 
 [Lumi]
 2016APV = 19520.0
@@ -242,8 +231,7 @@ Unit = "pb-1"
 [Global]
 ScalefactorError = 0.026
 """
-    )
-
+    xSections_list += lumi_string
     os.system("rm xSections.toml > /dev/null 2>&1")
     with open(args.output_filename, "w") as new_xsection_file:
         new_xsection_file.write(xSections_list)
