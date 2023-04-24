@@ -33,7 +33,6 @@ class Sample:
         # second part has additional information ( campaign, extention sample? ,... )
         # third part contains sample 'format' (AOD, MINIAOD, ...)
         dataset_split = self.dataset.split("/")
-
         ds_pt1 = dataset_split[1]
         ds_pt2 = dataset_split[2]
         ds_pt3 = dataset_split[3].strip()
@@ -95,20 +94,31 @@ class Sample:
 
 
 def readSamplesFromFile(filename):
+    
+    global error_count 
+    error_count = 0
+
     with open(filename, "r") as file:
         sample_list = file.read().splitlines()
         for l in sample_list:
             if l != "":
                 if sample_list.count(l) > 1:
-                    print(f"Error: Sample list has duplicate entries({l})")
-                    exit(-1)
-
+                    print(f"Error : Sample list has duplicate entries({l})")
+                    error_count += 1
+                if not l.endswith("NANOAODSIM"):
+                    print(f"Error : Invalid Sample ({l})")
+                    error_count += 1
+ 
     with open(filename, "r") as file:
-        return [Sample(l.rstrip("\n")) for l in file if l != "\n"]
+       return [Sample(l.rstrip("\n")) for l in file if l != "\n"]
 
 
 def main():
-    parser = argparse.ArgumentParser()
+    global error_count
+    description = "This script parses the given file with cross-sections and a sample list and writes a custom list that can be provided to music_crab.\nusage: parse_sample_list_nanoaod.py [-h] [-o OUTPUT_FILENAME] sample_list xsection_file_path"
+
+    parser = argparse.ArgumentParser(usage = description)
+
     parser.add_argument(
         "sample_list",
         help="Give path to the txt file containing sample das_names per line.",
@@ -178,6 +188,7 @@ def main():
 
     # read from the cross section toml file
     xsections = tomli.loads(Path(args.xsection_file_path).read_text(encoding="utf-8"))
+    #xsec_miss_samples = []
     for sample in sample_list:
         try:
             dName = "das_name_" + sample.year
@@ -185,7 +196,10 @@ def main():
                 xsections[sample.name][dName] = []
             xsections[sample.name][dName].append(sample.dataset)
         except:
-            print(sample.name)
+            #xsec_miss_samples.append(sample.name)
+            #if not xsec_miss_samples.count(sample.name) > 1: 
+            print(f"ERROR : xSection information unavailable for {sample.dataset}")    # Searching for samples with no cross section information
+            error_count += 1
 
     # remove unwanted entries
     unwanted_samples = []
@@ -231,10 +245,15 @@ Unit = "pb-1"
 [Global]
 ScalefactorError = 0.026
 """
-    xSections_list += lumi_string
-    os.system("rm xSections.toml > /dev/null 2>&1")
-    with open(args.output_filename, "w") as new_xsection_file:
-        new_xsection_file.write(xSections_list)
+    )
+
+    if error_count == 0:
+        os.system("rm xSections.toml > /dev/null 2>&1")
+        with open(args.output_filename, "w") as new_xsection_file:
+            new_xsection_file.write(xSections_list)
+    
+    else:
+        print("Output file not saved")
 
 
 if __name__ == "__main__":

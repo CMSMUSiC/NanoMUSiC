@@ -13,7 +13,7 @@ def main():
             "hostname",
         ],
     )
-    for i in range(1, 100):
+    for i in range(1, 10):
         condor_scheduler.submit_task("./test_computation.py", [i])
     condor_scheduler.finalise()
 
