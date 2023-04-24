@@ -1,7 +1,5 @@
 from pathlib import Path
-import optparse
 import tomli
-import pprint
 
 
 def make_sample_list(xSection_file_path):

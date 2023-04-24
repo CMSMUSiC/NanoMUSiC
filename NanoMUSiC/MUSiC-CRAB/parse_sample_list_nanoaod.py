@@ -43,10 +43,10 @@ class Sample:
             self.generator = "data"
 
             # get year
+            if re.search("Run2016.*UL2016", ds_pt2):
+                self.year = "2016"
             if re.search("Run2016.*-HIPM.*UL2016", ds_pt2):
                 self.year = "2016APV"
-            if re.search("Run2016FUL2016", ds_pt2):
-                self.year = "2016"
             if re.search("Run2017.*UL2017", ds_pt2):
                 self.year = "2017"
             if re.search("Run2018.*UL2018", ds_pt2):
@@ -57,7 +57,7 @@ class Sample:
                 self.is_ext = True
 
             # get era
-            match_era = re.search("Run201.*-UL", ds_pt2)
+            match_era = re.search("Run201.*UL", ds_pt2)
             if match_era.group():
                 self.era = match_era.group(0)[7:-3]
 
@@ -94,8 +94,8 @@ class Sample:
 
 
 def readSamplesFromFile(filename):
-    
-    global error_count 
+
+    global error_count
     error_count = 0
 
     with open(filename, "r") as file:
@@ -105,19 +105,19 @@ def readSamplesFromFile(filename):
                 if sample_list.count(l) > 1:
                     print(f"Error : Sample list has duplicate entries({l})")
                     error_count += 1
-                if not l.endswith("NANOAODSIM"):
+                if not (l.endswith("NANOAODSIM") or l.endswith("NANOAOD")):
                     print(f"Error : Invalid Sample ({l})")
                     error_count += 1
- 
+
     with open(filename, "r") as file:
-       return [Sample(l.rstrip("\n")) for l in file if l != "\n"]
+        return [Sample(l.rstrip("\n")) for l in file if l != "\n"]
 
 
 def main():
     global error_count
     description = "This script parses the given file with cross-sections and a sample list and writes a custom list that can be provided to music_crab.\nusage: parse_sample_list_nanoaod.py [-h] [-o OUTPUT_FILENAME] sample_list xsection_file_path"
 
-    parser = argparse.ArgumentParser(usage = description)
+    parser = argparse.ArgumentParser(usage=description)
 
     parser.add_argument(
         "sample_list",
@@ -188,18 +188,29 @@ def main():
 
     # read from the cross section toml file
     xsections = tomli.loads(Path(args.xsection_file_path).read_text(encoding="utf-8"))
-    #xsec_miss_samples = []
+    # xsec_miss_samples = []
     for sample in sample_list:
         try:
             dName = "das_name_" + sample.year
             if not dName in xsections[sample.name]:
                 xsections[sample.name][dName] = []
             xsections[sample.name][dName].append(sample.dataset)
+            xsections[sample.name]["is_data"] = False
         except:
-            #xsec_miss_samples.append(sample.name)
-            #if not xsec_miss_samples.count(sample.name) > 1: 
-            print(f"ERROR : xSection information unavailable for {sample.dataset}")    # Searching for samples with no cross section information
-            error_count += 1
+            if sample.is_data:
+                xsections[sample.name] = {}
+                dName = "das_name_" + sample.year
+                if not dName in xsections[sample.name]:
+                    xsections[sample.name][dName] = []
+                xsections[sample.name][dName].append(sample.dataset)
+                xsections[sample.name]["is_data"] = True
+            else:
+                # xsec_miss_samples.append(sample.name)
+                # if not xsec_miss_samples.count(sample.name) > 1:
+                print(
+                    f"ERROR : xSection information unavailable for {sample.dataset}"
+                )  # Searching for samples with no cross section information
+                error_count += 1
 
     # remove unwanted entries
     unwanted_samples = []
@@ -208,7 +219,12 @@ def main():
         dName_16APV = "das_name_2016APV"
         dName_17 = "das_name_2017"
         dName_18 = "das_name_2018"
-        if dName_16 and dName_16APV and dName_17 and dName_18 not in xsections[sample]:
+        if (
+            not (dName_16APV in xsections[sample])
+            and not (dName_16 in xsections[sample])
+            and not (dName_17 in xsections[sample])
+            and not (dName_18 in xsections[sample])
+        ):
             unwanted_samples.append(sample)
 
     for sample in unwanted_samples:
@@ -245,15 +261,15 @@ Unit = "pb-1"
 [Global]
 ScalefactorError = 0.026
 """
-    )
 
     if error_count == 0:
-        os.system("rm xSections.toml > /dev/null 2>&1")
+        os.system(f"rm {args.output_filename} > /dev/null 2>&1")
         with open(args.output_filename, "w") as new_xsection_file:
             new_xsection_file.write(xSections_list)
-    
+        print(f"\nOutput file saved: {args.output_filename}")
+
     else:
-        print("Output file not saved")
+        print("\nOutput file not saved")
 
 
 if __name__ == "__main__":
