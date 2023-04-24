@@ -1544,26 +1544,12 @@ kFactor = 1.0
 XSecOrder = "NLO"
 ProcessGroup = "TTZ"
 
-[TTZToQQ_120TeV_AM]
-XSec = 0.5297
-FilterEff = 1.0
-kFactor = 1.0
-XSecOrder = "NLO"
-ProcessGroup = "TTZ"
-
 [TTZToQQ_13TeV_AM]
 XSec = 0.5297
 FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"
 ProcessGroup = "TTZ"
-
-[TT_120TeV_PH]
-XSec = 730.0
-FilterEff = 1.0
-kFactor = 1.1394
-XSecOrder = "NNLO"
-ProcessGroup = "TTbar"
 
 [TT_13TeV_PH]
 XSec = 730.0
@@ -1572,12 +1558,6 @@ kFactor = 1.1394
 XSecOrder = "NNLO"
 ProcessGroup = "TTbar"
 
-[TT_Mtt-1000toInf_120TeV_PH]
-XSec = 730.0
-FilterEff = 0.02474
-kFactor = 1.1394
-XSecOrder = "NNLO"
-ProcessGroup = "TTbar"
 
 [TT_Mtt-1000toInf_13TeV_PH]
 XSec = 730.0

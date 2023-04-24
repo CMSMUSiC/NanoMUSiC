@@ -110,7 +110,11 @@ def readSamplesFromFile(filename):
                     error_count += 1
 
     with open(filename, "r") as file:
-        return [Sample(l.rstrip("\n")) for l in file if l != "\n"]
+        return [
+            Sample(l.rstrip("\n"))
+            for l in file
+            if (l != "\n" and not (l.startswith("#")))
+        ]
 
 
 def main():
@@ -192,23 +196,23 @@ def main():
     for sample in sample_list:
         try:
             dName = "das_name_" + sample.year
+            xsections[sample.name]["is_data"] = False
             if not dName in xsections[sample.name]:
                 xsections[sample.name][dName] = []
             xsections[sample.name][dName].append(sample.dataset)
-            xsections[sample.name]["is_data"] = False
         except:
             if sample.is_data:
                 xsections[sample.name] = {}
                 dName = "das_name_" + sample.year
+                xsections[sample.name]["is_data"] = True
                 if not dName in xsections[sample.name]:
                     xsections[sample.name][dName] = []
                 xsections[sample.name][dName].append(sample.dataset)
-                xsections[sample.name]["is_data"] = True
             else:
                 # xsec_miss_samples.append(sample.name)
                 # if not xsec_miss_samples.count(sample.name) > 1:
                 print(
-                    f"ERROR : xSection information unavailable for {sample.dataset}"
+                    f"ERROR: Cross-section information not available for {sample.name} ({sample.dataset})."
                 )  # Searching for samples with no cross section information
                 error_count += 1
 
@@ -237,14 +241,15 @@ def main():
         dName_16APV = "das_name_2016APV"
         dName_17 = "das_name_2017"
         dName_18 = "das_name_2018"
-        if dName_16 not in xsections[sample]:
-            print("WARNING : Sample for 2016 missing for", sample)
-        if dName_16APV not in xsections[sample]:
-            print("WARNING : Sample for 2016APV missing for", sample)
-        if dName_17 not in xsections[sample]:
-            print("WARNING : Sample for 2017 missing for", sample)
-        if dName_18 not in xsections[sample]:
-            print("WARNING : Sample for 2018 missing for", sample)
+        if not xsections[sample]["is_data"]:
+            if dName_16 not in xsections[sample]:
+                print(f"WARNING: Sample for 2016 missing for {sample}.")
+            if dName_16APV not in xsections[sample]:
+                print(f"WARNING: Sample for 2016APV missing for {sample}.")
+            if dName_17 not in xsections[sample]:
+                print(f"WARNING: Sample for 2017 missing for {sample}.")
+            if dName_18 not in xsections[sample]:
+                print(f"WARNING: Sample for 2018 missing for {sample}.")
 
     # dump new config to string
     xSections_list = to_toml_dumps(xsections)
