@@ -1551,6 +1551,20 @@ kFactor = 1.0
 XSecOrder = "NLO"
 ProcessGroup = "TTZ"
 
+[TTZToLL_5f_13TeV_MG]
+XSec = 0.5272
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "NLO"
+ProcessGroup = "TTZ"
+
+[TTZToNuNu_13TeV_AM]
+XSec = 0.1476
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "NLO"
+ProcessGroup = "TTZ"
+
 [TT_13TeV_PH]
 XSec = 730.0
 FilterEff = 1.0

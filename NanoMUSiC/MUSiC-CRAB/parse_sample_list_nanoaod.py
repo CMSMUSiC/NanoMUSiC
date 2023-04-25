@@ -243,13 +243,13 @@ def main():
         dName_18 = "das_name_2018"
         if not xsections[sample]["is_data"]:
             if dName_16 not in xsections[sample]:
-                print(f"WARNING: Sample for 2016 missing for {sample}.")
+                print(f"WARNING: {sample} missing for 2016.")
             if dName_16APV not in xsections[sample]:
-                print(f"WARNING: Sample for 2016APV missing for {sample}.")
+                print(f"WARNING: {sample} missing for 2016APV.")
             if dName_17 not in xsections[sample]:
-                print(f"WARNING: Sample for 2017 missing for {sample}.")
+                print(f"WARNING: {sample} missing for 2017.")
             if dName_18 not in xsections[sample]:
-                print(f"WARNING: Sample for 2018 missing for {sample}.")
+                print(f"WARNING: {sample} missing for 2018.")
 
     # dump new config to string
     xSections_list = to_toml_dumps(xsections)
