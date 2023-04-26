@@ -13,12 +13,21 @@ MCBin::MCBin()
 {
 }
 
-MCBin::MCBin(const yield_vector &mcEventsPerProcessGroup, const yield_vector &mcStatUncertPerProcessGroup,
-             const name_vector &mcProcessGroupNames, double lowerEdge, double width, const uncert_vector &mcSysUncerts,
+MCBin::MCBin(const yield_vector &mcEventsPerProcessGroup,
+             const yield_vector &mcStatUncertPerProcessGroup,
+             const name_vector &mcProcessGroupNames,
+             double lowerEdge,
+             double width,
+             const uncert_vector &mcSysUncerts,
              const name_vector &mcSysUncertNames)
-    : mcEventsPerProcessGroup(mcEventsPerProcessGroup), mcStatUncertPerProcessGroup(mcStatUncertPerProcessGroup),
-      mcProcessGroupNames(mcProcessGroupNames), lowerEdge(lowerEdge), width(width), mcSysUncerts(mcSysUncerts),
-      mcSysUncertNames(mcSysUncertNames), initialized(true)
+    : mcEventsPerProcessGroup(mcEventsPerProcessGroup),
+      mcStatUncertPerProcessGroup(mcStatUncertPerProcessGroup),
+      mcProcessGroupNames(mcProcessGroupNames),
+      lowerEdge(lowerEdge),
+      width(width),
+      mcSysUncerts(mcSysUncerts),
+      mcSysUncertNames(mcSysUncertNames),
+      initialized(true)
 {
     assert(mcProcessGroupNames.size() == mcEventsPerProcessGroup.size());
     assert(mcProcessGroupNames.size() == mcStatUncertPerProcessGroup.size());
@@ -217,7 +226,10 @@ std::vector<size_t> MCBin::leadingBackgrounds(const double threshold) const
     }
 
     // sort indices based on their processes event counts
-    auto comparator = [=](size_t i1, size_t i2) { return mcEventsPerProcessGroup[i1] > mcEventsPerProcessGroup[i2]; };
+    auto comparator = [=](size_t i1, size_t i2)
+    {
+        return mcEventsPerProcessGroup[i1] > mcEventsPerProcessGroup[i2];
+    };
     std::sort(indices.begin(), indices.end(), comparator);
 
     const double required = getTotalMcEvents() * threshold;
