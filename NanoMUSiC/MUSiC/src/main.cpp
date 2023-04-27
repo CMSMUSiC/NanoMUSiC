@@ -524,7 +524,6 @@ auto main(int argc, char *argv[]) -> int
             outputs.fill_event_tree();
         }
 
-        // fmt::print("a\n");
         // process monitoring
         if (event_counter < 10 || (event_counter < 100 && event_counter % 10 == 0) ||
             (event_counter < 1000 && event_counter % 100 == 0) ||

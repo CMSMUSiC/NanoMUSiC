@@ -67,31 +67,31 @@ class Outputs
   public:
     // variations, shifts, weights and cuts
     static constexpr auto Cuts = Enumerate::make_enumerate("NoCuts",
-                                                "GeneratorFilter",
-                                                "GeneratorWeight",
-                                                "RunLumi",
-                                                "nPV",
-                                                "METFilters",
-                                                "TriggerCut",
-                                                "AtLeastOneSelectedObject",
-                                                "TriggerMatch");
+                                                           "GeneratorFilter",
+                                                           "GeneratorWeight",
+                                                           "RunLumi",
+                                                           "nPV",
+                                                           "METFilters",
+                                                           "TriggerCut",
+                                                           "AtLeastOneSelectedObject",
+                                                           "TriggerMatch");
 
     static constexpr auto Weights = Enumerate::make_enumerate("Generator",
-                                                   "PileUp",
-                                                   "Lumi",
-                                                   "L1PreFiring",
-                                                   "Trigger",
-                                                   "MuonReco",
-                                                   "MuonId",
-                                                   "MuonIso",
-                                                   "ElectronReco",
-                                                   "ElectronId",
-                                                   "PhotonId",
-                                                   "PhotonPixelSeed",
-                                                   "BJetCorrelated",
-                                                   "LightJetCorrelated",
-                                                   "BJetUncorrelated",
-                                                   "LightJetUncorrelated");
+                                                              "PileUp",
+                                                              "Lumi",
+                                                              "L1PreFiring",
+                                                              "Trigger",
+                                                              "MuonReco",
+                                                              "MuonId",
+                                                              "MuonIso",
+                                                              "ElectronReco",
+                                                              "ElectronId",
+                                                              "PhotonId",
+                                                              "PhotonPixelSeed",
+                                                              "BJetCorrelated",
+                                                              "LightJetCorrelated",
+                                                              "BJetUncorrelated",
+                                                              "LightJetUncorrelated");
     // static constexpr auto Variations =
     //     Enumerate::make_enumerate("Default", "JEC", "JER", "MuonScale", "MuonResolution", "ElectronScale",
     //     "ElectronResolution");
@@ -133,31 +133,37 @@ class Outputs
     std::array<float, kMaxObjects> Muon_pt;
     std::array<float, kMaxObjects> Muon_eta;
     std::array<float, kMaxObjects> Muon_phi;
+    std::array<float, kMaxObjects> Muon_mass;
 
     unsigned int nElectron;
     std::array<float, kMaxObjects> Electron_pt;
     std::array<float, kMaxObjects> Electron_eta;
     std::array<float, kMaxObjects> Electron_phi;
+    std::array<float, kMaxObjects> Electron_mass;
 
     unsigned int nPhoton;
     std::array<float, kMaxObjects> Photon_pt;
     std::array<float, kMaxObjects> Photon_eta;
     std::array<float, kMaxObjects> Photon_phi;
+    std::array<float, kMaxObjects> Photon_mass;
 
     unsigned int nTau;
     std::array<float, kMaxObjects> Tau_pt;
     std::array<float, kMaxObjects> Tau_eta;
     std::array<float, kMaxObjects> Tau_phi;
+    std::array<float, kMaxObjects> Tau_mass;
 
     unsigned int nBJet;
     std::array<float, kMaxObjects> BJet_pt;
     std::array<float, kMaxObjects> BJet_eta;
     std::array<float, kMaxObjects> BJet_phi;
+    std::array<float, kMaxObjects> BJet_mass;
 
     unsigned int nJet;
     std::array<float, kMaxObjects> Jet_pt;
     std::array<float, kMaxObjects> Jet_eta;
     std::array<float, kMaxObjects> Jet_phi;
+    std::array<float, kMaxObjects> Jet_mass;
 
     unsigned int nMET;
     std::array<float, kMaxObjects> MET_pt;
@@ -230,11 +236,13 @@ class Outputs
         output_tree->Branch("BJet_pt", BJet_pt.data(), "BJet_pt[nBJet]/F", buffer_size);
         output_tree->Branch("BJet_eta", BJet_eta.data(), "BJet_eta[nBJet]/F", buffer_size);
         output_tree->Branch("BJet_phi", BJet_phi.data(), "BJet_phi[nBJet]/F", buffer_size);
+        output_tree->Branch("BJet_mass", BJet_mass.data(), "BJet_mass[nBJet]/F", buffer_size);
 
         // jets
         output_tree->Branch("Jet_pt", Jet_pt.data(), "Jet_pt[nJet]/F", buffer_size);
         output_tree->Branch("Jet_eta", Jet_eta.data(), "Jet_eta[nJet]/F", buffer_size);
         output_tree->Branch("Jet_phi", Jet_phi.data(), "Jet_phi[nJet]/F", buffer_size);
+        output_tree->Branch("Jet_mass", Jet_mass.data(), "Jet_mass[nJet]/F", buffer_size);
 
         // MET
         output_tree->Branch("MET_pt", MET_pt.data(), "MET_pt[nMET]/F", buffer_size);
@@ -269,7 +277,6 @@ class Outputs
         weights_down.at(Outputs::Weights.index_of(weight)) = value;
         weights_nominal.at(Outputs::Weights.index_of(weight)) = value;
     }
-    
 
     auto get_event_weight(std::string_view weight = "", std::string_view shift = "Nominal") -> float
     {
@@ -287,7 +294,7 @@ class Outputs
         }
         return nominal_weight;
     }
-    
+
     static auto get_event_weight(const RVec<float> &weights_nominal, //
                                  const RVec<float> &weights_up,      //
                                  const RVec<float> &weights_down,    //
@@ -353,11 +360,13 @@ class Outputs
         BJet_pt.fill(0);
         BJet_eta.fill(0);
         BJet_phi.fill(0);
+        BJet_mass.fill(0);
 
         nJet = 0;
         Jet_pt.fill(0);
         Jet_eta.fill(0);
         Jet_phi.fill(0);
+        Jet_mass.fill(0);
 
         nMET = 0;
         MET_pt.fill(0);
@@ -382,13 +391,15 @@ class Outputs
                        RVec<float> &&_tau_eta, //
                        RVec<float> &&_tau_phi, //
                        // bjets
-                       RVec<float> &&_bjet_pt,  //
-                       RVec<float> &&_bjet_eta, //
-                       RVec<float> &&_bjet_phi, //
+                       RVec<float> &&_bjet_pt,   //
+                       RVec<float> &&_bjet_eta,  //
+                       RVec<float> &&_bjet_phi,  //
+                       RVec<float> &&_bjet_mass, //
                        // jets
-                       RVec<float> &&_jet_pt,  //
-                       RVec<float> &&_jet_eta, //
-                       RVec<float> &&_jet_phi, //
+                       RVec<float> &&_jet_pt,   //
+                       RVec<float> &&_jet_eta,  //
+                       RVec<float> &&_jet_phi,  //
+                       RVec<float> &&_jet_mass, //
                        // met
                        RVec<float> &&_met_pt, //
                        RVec<float> &&_met_phi)
@@ -420,11 +431,13 @@ class Outputs
         std::copy(_bjet_pt.cbegin(), _bjet_pt.cend(), BJet_pt.begin());
         std::copy(_bjet_eta.cbegin(), _bjet_eta.cend(), BJet_eta.begin());
         std::copy(_bjet_phi.cbegin(), _bjet_phi.cend(), BJet_phi.begin());
+        std::copy(_bjet_mass.cbegin(), _bjet_mass.cend(), BJet_mass.begin());
 
         nJet = _jet_pt.size();
         std::copy(_jet_pt.cbegin(), _jet_pt.cend(), Jet_pt.begin());
         std::copy(_jet_eta.cbegin(), _jet_eta.cend(), Jet_eta.begin());
         std::copy(_jet_phi.cbegin(), _jet_phi.cend(), Jet_phi.begin());
+        std::copy(_jet_mass.cbegin(), _jet_mass.cend(), Jet_mass.begin());
 
         nMET = _met_pt.size();
         std::copy(_met_pt.cbegin(), _met_pt.cend(), MET_pt.begin());

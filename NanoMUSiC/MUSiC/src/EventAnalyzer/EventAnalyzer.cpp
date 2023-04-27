@@ -86,11 +86,13 @@ auto EventAnalyzer::fill_event_content(Outputs &outputs) -> EventAnalyzer &
             bjets.pt_nominal[bjets.good_jets_mask["nominal"]], //
             bjets.eta[bjets.good_jets_mask["nominal"]],        //
             bjets.phi[bjets.good_jets_mask["nominal"]],        //
+            bjets.mass[bjets.good_jets_mask["nominal"]],       //
             // jets
             // jets.pt[jets.good_jets_mask["nominal"]],         //
             jets.pt_nominal[jets.good_jets_mask["nominal"]], //
             jets.eta[jets.good_jets_mask["nominal"]],        //
             jets.phi[jets.good_jets_mask["nominal"]],        //
+            jets.mass[jets.good_jets_mask["nominal"]],       //
             // met
             // met.pt[met.good_met_mask["nominal"]], //
             met.pt[met.good_met_mask["nominal"]], //
