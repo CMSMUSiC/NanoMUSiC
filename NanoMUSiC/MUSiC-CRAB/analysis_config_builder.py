@@ -16,11 +16,10 @@ from pathlib import Path
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("username", help="Username of the dCache owner.", required=True)
+parser.add_argument("username", help="Username of the dCache owner.")
 parser.add_argument(
     "xsection_file_path",
     help="Give path to the toml file containing cross-section and das_name per sample.",
-    required=True,
 )
 args = parser.parse_args()
 
@@ -30,15 +29,15 @@ def make_outputfile_list():
 
 
 def main():
-
     directory_list = make_outputfile_list()
     xsection_list = tomli.loads(
         Path(args.xsection_file_path).read_text(encoding="utf-8")
     )
     for sample in xsection_list:
+        xsection_list[sample]["crab_task_name"] = []
         for filename in directory_list:
             if re.search(sample, filename):
-                xsection_list[sample]["crab_task_name"] = filename
+                xsection_list[sample]["crab_task_name"].append(filename)
 
     # remove unwanted entries
     unwanted_entries = []
@@ -52,25 +51,24 @@ def main():
 
     job_list = xsection_list
 
-    cmd_str = r"""srmls  -recursion_depth=999 "srm://grid-srm.physik.rwth-aachen.de:8443/srm/managerv2?SFN=/pnfs/physik.rwth-aachen.de/cms/store/user/__USERNAME__/nano_music/__taskname__" """
+    cmd_str = r"""srmls  -recursion_depth=999 "srm://grid-srm.physik.rwth-aachen.de:8443/srm/managerv2?SFN=/pnfs/physik.rwth-aachen.de/cms/store/user/__USERNAME__/nano_music/__taskname__/" """
     cmd_str = cmd_str.replace("__USERNAME__", args.username)
-    for sample in job_list:
+    for sample in tqdm(job_list):
+        address_list = []
         if "crab_task_name" in job_list[sample]:
-            scan_process = subprocess.run(
-                shlex.split(
-                    cmd_str.replace("__taskname__", job_list[sample]["crab_task_name"])
-                ),
-                capture_output=True,
-                text=True,
-            )
-            address_list = []
-            for addr in scan_process.stdout.split("\n"):
-                if "efficiency_hist" in addr:
-                    address = (
-                        "dcap://grid-dcap-extern.physik.rwth-aachen.de"
-                        + addr.split(" ")[-1]
-                    )
-                    address_list.append(address)
+            for task in xsection_list[sample]["crab_task_name"]:
+                scan_process = subprocess.run(
+                    shlex.split(cmd_str.replace("__taskname__", task)),
+                    capture_output=True,
+                    text=True,
+                )
+                for addr in scan_process.stdout.split("\n"):
+                    if "efficiency_hist" in addr:
+                        address = (
+                            "dcap://grid-dcap-extern.physik.rwth-aachen.de"
+                            + addr.split(" ")[-1]
+                        )
+                        address_list.append(address)
             job_list[sample]["output_files"] = address_list
 
     # dump new config to string

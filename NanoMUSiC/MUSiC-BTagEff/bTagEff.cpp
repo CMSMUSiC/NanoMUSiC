@@ -39,7 +39,6 @@ auto bTag_Eff(std::vector<string> my_list) -> void {
     }
   
   
-  //TFile *f = TFile::Open("ttbar_semileptonic.root");
   TTreeReader t(&chain);
   TTreeReaderArray<float> Jet_pt(t, "Jet_pt");
   TTreeReaderArray<float> Jet_eta(t, "Jet_eta");

@@ -20,6 +20,8 @@ Test_Outputs_*.txt
 Test_Ouputs_MC_*.txt
 Test_Ouputs_Data_*.txt
 NanoMUSiC/MUSiC-CRAB/crab_nano_music_*
+NanoMUSiC/MUSiC-CRAB/crab_btageff_*
+NanoMUSiC/MUSiC-BTagEff/Outputs
 raw_config.toml
 *~
 *.pcm

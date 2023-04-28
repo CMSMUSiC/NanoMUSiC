@@ -34,8 +34,10 @@ def main():
     )
     os.system(f"root -b -q -l {os.getenv('MUSIC_BASE')}/NanoMUSiC/MUSiC-BTagEff/TEff.cpp++")
     ROOT.gSystem.Load(f"{os.getenv('MUSIC_BASE')}/NanoMUSiC/MUSiC-BTagEff/TEff_cpp.so")
-    addr_cat = ""
-
+    addr_cat_16APV = ""
+    addr_cat_16 = ""
+    addr_cat_17 = ""
+    addr_cat_18 = ""
     if not os.path.exists("Outputs"):
         os.system(r"mkdir Outputs")
 
@@ -54,10 +56,33 @@ def main():
     for sample in output_file_list:
         if "output_files" in output_file_list[sample]:
             for addr in output_file_list[sample]["output_files"]:
-                addr_cat = addr_cat + addr + " "
-            os.system(r"hadd -f Outputs/RootFiles/" + sample + ".root" + " " + addr_cat)
-            ROOT.BTagEff("Outputs/RootFiles/" + sample + ".root", sample)
-
+                if re.search("2016APV", addr):
+                    addr_cat_16APV = addr_cat_16APV + addr + " "
+                    print (addr_cat_16APV,"\n\n")
+                elif re.search("2016", addr):
+                    addr_cat_16 = addr_cat_16 + addr + " "
+                    print (addr_cat_16,"\n\n")
+                elif re.search("2017", addr):
+                    addr_cat_17 = addr_cat_17 + addr + " "
+                    print (addr_cat_17,"\n\n")
+                elif re.search("2018", addr):
+                    addr_cat_18 = addr_cat_18 + addr + " "
+                    print (addr_cat_18,"\n\n")
+            os.system(r"hadd -f Outputs/RootFiles/" + sample + "_2016APV" + ".root" + " " + addr_cat_16APV)
+            ROOT.BTagEff("Outputs/RootFiles/" + sample + "_2016APV" + ".root", sample , "2016APV")
+            os.system(r"hadd -f Outputs/RootFiles/"+ sample + "_2016" + ".root" + " " + addr_cat_16)
+            ROOT.BTagEff("Outputs/RootFiles/" + sample + "_2016" + ".root", sample , "2016")
+            os.system(r"hadd -f Outputs/RootFiles/" + sample + "_2017" + ".root" + " " + addr_cat_17)
+            ROOT.BTagEff("Outputs/RootFiles/" + sample + "_2017" + ".root", sample , "2017")
+            os.system(r"hadd -f Outputs/RootFiles/" + sample + "_2018" + ".root" + " " + addr_cat_18)
+            ROOT.BTagEff("Outputs/RootFiles/" + sample + "_2018" + ".root", sample , "2018")
 
 if __name__ == "__main__":
     main()
+
+
+
+"""
+            os.system(r"hadd -f Outputs/RootFiles/" + sample + ".root" + " " + addr_cat)
+            ROOT.BTagEff("Outputs/RootFiles/" + sample + ".root", sample)
+"""
