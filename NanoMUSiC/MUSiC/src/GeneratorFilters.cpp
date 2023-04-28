@@ -73,10 +73,6 @@ auto wlnujets_filter(const NanoObjects::LHEParticles &lhe_particles,
                                               lhe_particles.pt[*idx_neutrino],
                                               lhe_particles.phi[*idx_neutrino]);
 
-            // fmt::print("############################\n");
-            // fmt::print("pt: {}\n", pt);
-            // fmt::print("mass: {}\n", mass);
-
             if ((mass >= mass_min - .5 and mass <= mass_max + .5) and (pt >= pt_min - .5 and pt <= pt_max + .5))
             {
                 return true;

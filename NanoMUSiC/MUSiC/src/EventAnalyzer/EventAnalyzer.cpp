@@ -1,10 +1,23 @@
 #include "EventAnalyzer.hpp"
+#include <stdexcept>
 
-EventAnalyzer::EventAnalyzer(const bool &_is_data, const Year &_year, Outputs &outputs)
+EventAnalyzer::EventAnalyzer(const bool &_is_data,
+                             const Year &_year,
+                             const std::optional<std::string> &generator_filter_key,
+                             Outputs &outputs)
     : is_null(false),
       is_data(_is_data),
       year(_year)
 {
+    // checks if the requested generator_filter_key (if any) is available
+    if (generator_filter_key)
+    {
+        if (GeneratorFilters::filters.count(*generator_filter_key) == 0)
+        {
+            fmt::print("ERROR: Requested Generator Filter ({}) not found.\n", *generator_filter_key);
+            exit(-1);
+        }
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////

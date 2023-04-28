@@ -3,9 +3,11 @@
 
 #include <algorithm>
 #include <complex>
+#include <cstddef>
 #include <exception>
 #include <functional>
 #include <limits>
+#include <optional>
 #include <stdexcept>
 #include <string_view>
 
@@ -72,7 +74,10 @@ class EventAnalyzer
     bool is_data = true;
     Year year = Year::kTotalYears;
 
-    EventAnalyzer(const bool &_is_data, const Year &_year, Outputs &outputs);
+    EventAnalyzer(const bool &_is_data,
+                  const Year &_year,
+                  const std::optional<std::string> &generator_filter_key,
+                  Outputs &outputs);
 
     // builder interface
     auto set_event_info(NanoObjects::EventInfo &&_event_info) -> EventAnalyzer &;
@@ -139,7 +144,7 @@ class EventAnalyzer
     ////////////////////////////////////////////////////////////////////////////
     /// TODO: Filter events based on their Generator process. This is implemented in order to avoid overlap of
     /// phase-space between MC samples. Should come after all constant weights are available.
-    auto generator_filter(Outputs &outputs, const std::string &process) -> EventAnalyzer &;
+    auto generator_filter(Outputs &outputs, const std::optional<std::string> &generator_filter_key) -> EventAnalyzer &;
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// Filter events based on their lumi sectiona and run numbers, following the recommendations from the LUMI-POG (aka

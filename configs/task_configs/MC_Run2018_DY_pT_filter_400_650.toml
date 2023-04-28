@@ -4,6 +4,7 @@ is_data = false                                    # Is Data?
 year = '2018'
 era = 'C'
 process = 'DYJetsToLL_LHEFilterPtZ-400To650'
+generator_filter_key = ""
 dataset = '/DYJetsToLL_LHEFilterPtZ-400To650_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM'
 is_crab_job = false
 

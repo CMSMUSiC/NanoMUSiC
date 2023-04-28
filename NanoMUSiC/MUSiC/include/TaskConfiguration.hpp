@@ -21,6 +21,7 @@ class TaskConfiguration
     const Year year;
     const std::string era;
     const std::string golden_json_file;
+    const std::optional<std::string> generator_filter_key;
 
     TaskConfiguration(const std::string _run_config_file);
 };
