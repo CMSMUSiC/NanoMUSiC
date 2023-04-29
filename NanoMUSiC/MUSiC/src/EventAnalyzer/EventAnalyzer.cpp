@@ -1,10 +1,23 @@
 #include "EventAnalyzer.hpp"
+#include <stdexcept>
 
-EventAnalyzer::EventAnalyzer(const bool &_is_data, const Year &_year, Outputs &outputs)
+EventAnalyzer::EventAnalyzer(const bool &_is_data,
+                             const Year &_year,
+                             const std::optional<std::string> &generator_filter_key,
+                             Outputs &outputs)
     : is_null(false),
       is_data(_is_data),
       year(_year)
 {
+    // checks if the requested generator_filter_key (if any) is available
+    if (generator_filter_key)
+    {
+        if (GeneratorFilters::filters.count(*generator_filter_key) == 0)
+        {
+            fmt::print("ERROR: Requested Generator Filter ({}) not found.\n", *generator_filter_key);
+            exit(-1);
+        }
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -86,11 +99,13 @@ auto EventAnalyzer::fill_event_content(Outputs &outputs) -> EventAnalyzer &
             bjets.pt_nominal[bjets.good_jets_mask["nominal"]], //
             bjets.eta[bjets.good_jets_mask["nominal"]],        //
             bjets.phi[bjets.good_jets_mask["nominal"]],        //
+            bjets.mass[bjets.good_jets_mask["nominal"]],       //
             // jets
             // jets.pt[jets.good_jets_mask["nominal"]],         //
             jets.pt_nominal[jets.good_jets_mask["nominal"]], //
             jets.eta[jets.good_jets_mask["nominal"]],        //
             jets.phi[jets.good_jets_mask["nominal"]],        //
+            jets.mass[jets.good_jets_mask["nominal"]],       //
             // met
             // met.pt[met.good_met_mask["nominal"]], //
             met.pt[met.good_met_mask["nominal"]], //

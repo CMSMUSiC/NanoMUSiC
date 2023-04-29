@@ -40,43 +40,52 @@ auto wlnujets_filter(const NanoObjects::LHEParticles &lhe_particles,
                      const float &pt_min,
                      const float &pt_max) -> bool;
 
-constexpr float max_float = std::numeric_limits<float>::max();
-const std::map<std::string, std::function<bool(const NanoObjects::LHEParticles &)>> filters = {};
-// const std::map<std::string, std::function<bool(const NanoObjects::LHEParticles &)>> filters = {
-//     // {"QCD_SOMETHING"s, no_filter}, //
-//     {"DYJetsToLL_M-10To50_13TeV_AM"s,
-//      [](const NanoObjects::LHEParticles &lhe_particles) -> bool
-//      {
-//          return dy_filter(lhe_particles, 0., max_float, 0., 100.);
-//      }},
-//     {"DYJetsToLL_M-50_13TeV_AM"s,
-//      [](const NanoObjects::LHEParticles &lhe_particles) -> bool
-//      {
-//          return dy_filter(lhe_particles, 0., 120., 0., 100.);
-//      }},
-//     {"DYJetsToLL_LHEFilterPtZ-400To650"s,
-//      [](const NanoObjects::LHEParticles &lhe_particles) -> bool
-//      {
-//          return dy_filter(lhe_particles, 0., 120., 100., max_float);
-//      }},
-//     {"DYToEE_M-120To200_TuneCP5_13TeV-powheg-pythia8"s,
-//      [](const NanoObjects::LHEParticles &lhe_particles) -> bool
-//      {
-//          return dy_filter(lhe_particles, 120., max_float, 0., max_float);
-//      }},
-//     {"TTToSemiLeptonic_2018"s,
-//      [](const NanoObjects::LHEParticles &lhe_particles) -> bool
-//      {
-//          return ttbar_filter(lhe_particles, 0., 700.);
-//      }},
-//     {"WG"s,
-//      [](const NanoObjects::LHEParticles &lhe_particles) -> bool
-//      {
-//          return wg_filter(lhe_particles, 500.);
-//      }},
-//     // Not needed for now. Samples have to be requested/followed-up.
-//     // {"ZG"s, [](const NanoObjects::LHEParticles &lhe_particles) -> bool { return zg_filter(lhe_particles, 500.);
-//     }},
+constexpr float MAX_FLOAT = std::numeric_limits<float>::max();
+// dummy filter
+// const std::map<std::string, std::function<bool(const NanoObjects::LHEParticles &)>> filters = {};
+
+const std::map<std::string, std::function<bool(const NanoObjects::LHEParticles &, Year &year)>> filters = {
+    {"dyjets_pt_less_50_mass_less_120"s,
+     [](const NanoObjects::LHEParticles &lhe_particles, Year &year) -> bool
+     {
+         return true;
+     }},
+    {"ttbar_mass_less_700"s,
+     [](const NanoObjects::LHEParticles &lhe_particles, Year &year) -> bool
+     {
+         return ttbar_filter(lhe_particles, 0., 700.);
+     }},
+    {"DYJetsToLL_M-10To50_13TeV_AM"s,
+     // {"DoLL_M-10To50_13TeV_AM"s,
+     [](const NanoObjects::LHEParticles &lhe_particles, Year &year) -> bool
+     {
+         return dy_filter(lhe_particles, 0., MAX_FLOAT, 0., 100.);
+     }},
+    {"DYJetsToLL_M-50_13TeV_AM"s,
+     [](const NanoObjects::LHEParticles &lhe_particles, Year &year) -> bool
+     {
+         return dy_filter(lhe_particles, 0., 120., 0., 100.);
+     }},
+    {"DYJetsToLL_LHEFilterPtZ-400To650"s,
+     [](const NanoObjects::LHEParticles &lhe_particles, Year &year) -> bool
+     {
+         return dy_filter(lhe_particles, 0., 120., 100., MAX_FLOAT);
+     }},
+    {"DYToEE_M-120To200_TuneCP5_13TeV-powheg-pythia8"s,
+     [](const NanoObjects::LHEParticles &lhe_particles, Year &year) -> bool
+     {
+         return dy_filter(lhe_particles, 120., MAX_FLOAT, 0., MAX_FLOAT);
+     }},
+    {"WG"s,
+     [](const NanoObjects::LHEParticles &lhe_particles, Year &year) -> bool
+     {
+         return wg_filter(lhe_particles, 500.);
+     }},
+    // Not needed for now. Samples have to be requested/followed-up.
+    // {"ZG"s, [](const NanoObjects::LHEParticles &lhe_particles) -> bool { return zg_filter(lhe_particles, 500.);
+};
+// }
+// ,
 //     {"WWTo2L2Nu_13TeV_PH"s,
 //      [](const NanoObjects::LHEParticles &lhe_particles) -> bool
 //      {
@@ -87,7 +96,8 @@ const std::map<std::string, std::function<bool(const NanoObjects::LHEParticles &
 //      {
 //          return wlnujets_filter(lhe_particles, 0., 120., 0., 500.);
 //      }},
-// };
+// }
+// ;
 } // namespace GeneratorFilters
 
 #endif // GENERATOR_FILTERS_H

@@ -94,7 +94,6 @@ class Sample:
 
 
 def readSamplesFromFile(filename):
-
     global error_count
     error_count = 0
 

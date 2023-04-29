@@ -2,11 +2,14 @@
 #define TOMLConfig_hh
 
 #include <iostream>
+#include <stdexcept>
 #include <string>
 
 // toml++ v3.1.0
 // https://github.com/marzer/tomlplusplus
 #include "toml.hpp"
+
+#include <fmt/format.h>
 
 // Reads a TOML file with x-section information. Example:
 //
@@ -28,11 +31,18 @@ class TOMLConfig
     std::string config_file_path();
 
     bool check_item(const std::string &key);
+
     // Get a node as an specific type.
     template <typename T>
     T get_value(const std::string &path) const
     {
-        return *(toml_config.at_path(path).value<T>());
+        auto value = toml_config.at_path(path).value<T>();
+        if (value)
+        {
+            return *value;
+        }
+        throw std::runtime_error(fmt::format("ERROR: Path not found in TOML file (\"{}\").\n", path));
+        // return *(toml_config.at_path(path).value<T>());
     }
 
     // Get a node as an specific type.

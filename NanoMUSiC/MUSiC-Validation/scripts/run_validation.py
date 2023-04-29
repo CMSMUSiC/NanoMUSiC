@@ -32,9 +32,7 @@ parser.add_argument("--veto", help="path to run_number/event_number veto maps")
 parser.add_argument(
     "--merge", help="will merge validation results", action="store_true"
 )
-parser.add_argument(
-    "--debug", help="print debugging info", action="store_true"
-)
+parser.add_argument("--debug", help="print debugging info", action="store_true")
 
 args = parser.parse_args()
 
@@ -80,6 +78,7 @@ def run_validation(input_file, config_file, output_path, effective_x_section):
     )
     if args.debug:
         print(validation_result.stdout.decode("utf-8"))
+
     if validation_result.returncode != 0:
         error = validation_result.stderr.decode("utf-8")
         raise RuntimeError(f"ERROR: could process validation.\n{error}\n{input_file}")
@@ -150,7 +149,10 @@ def main():
             raise RuntimeError(f"ERROR: could not merge validation files.\n{error}")
 
         # cleanning ...
-        cleanning_result = subprocess.run(["rm", "-rf", *glob.glob(f"{output_path}/{output}_*.root")], capture_output=True)
+        cleanning_result = subprocess.run(
+            ["rm", "-rf", *glob.glob(f"{output_path}/{output}_*.root")],
+            capture_output=True,
+        )
         if cleanning_result.returncode != 0:
             error = cleanning_result.stderr.decode("utf-8")
             raise RuntimeError(f"ERROR: could not clear output path.\n{error}")

@@ -21,7 +21,6 @@ def make_sample_list(xSection_file_path):
         if "das_name_2018" in xsections[mName]:
             for das_name in xsections[mName]["das_name_2018"]:
                 sample_list.append((mName, das_name, "2018", "_", False))
-
         else:
             continue
 

@@ -155,7 +155,21 @@ auto main(int argc, char *argv[]) -> int
     auto chain = TChain("Events");
     for (auto &&file : configuration.input_files)
     {
-        chain.Add(file.c_str());
+        if (configuration.is_crab_job)
+        {
+            chain.Add(file.c_str());
+        }
+        else
+        {
+            if (file.find("root://"s) != std::string::npos)
+            {
+                chain.Add(load_from_local_cache(file).c_str());
+            }
+            else
+            {
+                chain.Add(file.c_str());
+            }
+        }
     }
 
     // create tree reader and add values and arrays
@@ -344,7 +358,7 @@ auto main(int argc, char *argv[]) -> int
 
         // build event data
         auto event_analyzer =
-            EventAnalyzer(configuration.is_data, configuration.year, outputs)
+            EventAnalyzer(configuration.is_data, configuration.year, configuration.generator_filter_key, outputs)
                 // event info
                 .set_event_info(NanoObjects::EventInfo(unwrap(run),                       //
                                                        unwrap(lumi),                      //
@@ -487,7 +501,7 @@ auto main(int argc, char *argv[]) -> int
         event_analyzer = event_analyzer.set_pdf_alpha_s_weights(lha_indexes, default_pdf_sets)
                              .set_scale_weights()
                              .set_const_weights(outputs, pu_weight)
-                             .generator_filter(outputs, configuration.process)
+                             .generator_filter(outputs, configuration.generator_filter_key)
                              .run_lumi_filter(outputs, run_lumi_filter)
                              .npv_filter(outputs)
                              .met_filter(outputs)
@@ -524,7 +538,6 @@ auto main(int argc, char *argv[]) -> int
             outputs.fill_event_tree();
         }
 
-        // fmt::print("a\n");
         // process monitoring
         if (event_counter < 10 || (event_counter < 100 && event_counter % 10 == 0) ||
             (event_counter < 1000 && event_counter % 100 == 0) ||

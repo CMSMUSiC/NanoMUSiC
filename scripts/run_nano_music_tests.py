@@ -3,61 +3,157 @@
 import os
 import glob
 import shlex, subprocess
-from datetime import datetime
+import argparse
+import tomli
+import json
+from pprint import pprint
+from helpers import *
+import tempfile
 
-# Set environment variables
-MUSIC_BASE = os.getenv("MUSIC_BASE")
 
-task_files = glob.glob(f"{MUSIC_BASE}/configs/task_configs/*.toml")
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Test nano_music in a given sample.")
+    parser.add_argument(
+        "--config",
+        "-c",
+        help="Task config file",
+    )
+    parser.add_argument(
+        "--sample",
+        "-s",
+        help="MUSiC sample name",
+    )
 
-print(f"[{datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Cleanning ...")
+    parser.add_argument(
+        "--year",
+        "-y",
+        choices=["2016", "2016APV", "2017", "2018"],
+        help="Year to be processed",
+        required=True,
+    )
 
-subprocess.run(
-    shlex.split("rm -rf Test_Ouputs_*"),
-    stdout=subprocess.DEVNULL,
-    stderr=subprocess.DEVNULL,
-)
-subprocess.run(
-    shlex.split("rm -rf test_mc_*"),
-    stdout=subprocess.DEVNULL,
-    stderr=subprocess.DEVNULL,
-)
-subprocess.run(
-    shlex.split("rm -rf test_data_*"),
-    stdout=subprocess.DEVNULL,
-    stderr=subprocess.DEVNULL,
-)
+    parser.add_argument(
+        "--executable",
+        "-e",
+        # choices=["nano_music", "NanoMUSiC/MUSiC/nano_music"],
+        help="Path to nano_music executable (i.e. from $PATH or local build directory).",
+        default="nano_music",
+    )
 
-print(f"[{datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Starting ...")
+    return parser.parse_args()
 
-procs = []
-for task_file in task_files:
-    if not "CRAB_" in task_file:
+
+def get_file_from_das(das_name):
+    das_query = subprocess.run(
+        shlex.split(f'dasgoclient -query="file dataset={das_name}"'),
+        capture_output=True,
+    )
+    if das_query.returncode != 0:
+        print(f"ERROR: Could not find files in DAS.")
+        print(das_query.stderr)
+        exit(-1)
+
+    query_result = das_query.stdout.decode("utf-8")
+    if query_result:
+        return f"root://cms-xrd-global.cern.ch//{list(query_result.splitlines())[0]}"
+
+    print(f"ERROR: DAS query returned and empty list of files (das_name).")
+    exit(-1)
+
+
+def get_sample_and_file(config_file, sample_name, year):
+    with open(config_file, mode="rb") as f:
+        samples = tomli.load(f)
+    if sample_name in samples.keys():
+        sample = samples[sample_name]
+    else:
+        print(f"ERROR: Sample not found ({sample_name}).\nAvailable samples are:")
+        pprint(list(samples.keys()))
+        exit(-1)
+
+    try:
+        if len(sample[f"das_name_{year}"]):
+            das_name = sample[f"das_name_{year}"][0]
+            sample["input_files"] = get_file_from_das(das_name)
+            sample["das_name"] = das_name
+            sample["name"] = sample_name
+            return sample
+    except:
         print(
-            f"[{datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Launching: nano_music --run-config {task_file}"
+            f"ERROR: DAS sample name not found (Sample: {sample_name} - Year: {year})."
         )
-        output_file = open(
-            task_file.replace(
-                f"{MUSIC_BASE}/configs/task_configs/", "Test_Ouputs_"
-            ).replace(".toml", ".txt"),
-            "ab",
-        )
-        procs.append(
-            subprocess.Popen(
-                shlex.split(f"nano_music --run-config {task_file}"),
-                stdout=output_file,
-                stderr=output_file,
-            )
-        )
+        exit(-1)
 
 
-print("")
-print(f"[{datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Waiting tasks to finish ...")
-return_codes = []
-for p in procs:
-    return_codes.append(p.wait())
+def check_voms():
+    ret_code = subprocess.run(
+        shlex.split("voms-proxy-info"), capture_output=True
+    ).returncode
 
-if all(r == 0 for r in return_codes):
-    print(f"[{datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] YAY !!")
-else:
-    print(f"[{datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Oops ...")
+    if ret_code == 0:
+        return True
+    return False
+
+
+def get_era(sample):
+    if not sample["is_data"]:
+        return "DUMMY"
+
+    return (
+        sample["name"]
+        .replace("-HIPM", "")
+        .replace("_HIPM", "")
+        .replace("-ver1", "")
+        .replace("-ver2", "")
+        .split("_")[-1]
+    )
+
+
+def make_task_config(config_file, sample_name, year):
+    task_config = {
+        "output": "",
+        "is_data": False,
+        "year": "",
+        "era": "",
+        "process": "",
+        # "generator_filter_key": "",  # only if defined
+        "dataset": "",
+        "is_crab_job": False,
+        "input_files": [],
+    }
+
+    sample = get_sample_and_file(config_file, sample_name, year)
+    if sample:
+        task_config["output"] = f"test_{sample_name}_{year}"
+        task_config["is_data"] = sample["is_data"]
+        task_config["year"] = year
+        task_config["era"] = get_era(sample)
+        task_config["process"] = sample_name
+        if "generator_filter_key" in sample.keys():
+            task_config["generator_filter_key"] = sample["generator_filter_key"]
+        task_config["dataset"] = sample["das_name"]
+        task_config["input_files"] = [sample["input_files"]]
+        return to_toml_dumps(task_config)
+
+
+def main():
+    args = parse_arguments()
+
+    if not (check_voms()):
+        print("ERROR: Could not find valid VOMS proxy.")
+        exit(-1)
+
+    task_config = make_task_config(args.config, args.sample, args.year)
+    if task_config:
+        with tempfile.NamedTemporaryFile(mode="w", delete=False) as f:
+            f.write(task_config)
+
+        subprocess.run(shlex.split(f"{args.executable} --run-config {f.name}"))
+        subprocess.run(shlex.split(f"rm -rf {f.name}"))
+    else:
+        print("ERROR: Task configuration not built.")
+        exit(-1)
+
+
+if __name__ == "__main__":
+    main()

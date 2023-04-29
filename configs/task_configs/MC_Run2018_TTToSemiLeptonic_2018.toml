@@ -6,6 +6,7 @@ era = 'C'
 process = 'TTToSemiLeptonic_2018'
 dataset = '/TTToSemiLeptonic_2018/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM'
 is_crab_job = false
+generator_filter_key="ttbar_mass_less_700"
 
 input_files = [
     '/disk1/silva/projects/NanoMUSiC_Test_Data/TTToSemiLeptonic_2018/f01.root',

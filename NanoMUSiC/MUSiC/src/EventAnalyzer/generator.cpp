@@ -3,30 +3,31 @@
 ////////////////////////////////////////////////////////////////////////////
 /// TODO: Filter events based on their Generator process. This is implemented in order to avoid overlap of
 /// phase-space between MC samples. Should come after all constant weights are available.
-auto EventAnalyzer::generator_filter(Outputs &outputs, const std::string &process) -> EventAnalyzer &
+auto EventAnalyzer::generator_filter(Outputs &outputs, const std::optional<std::string> &generator_filter_key)
+    -> EventAnalyzer &
 {
     if (*this)
     {
-        bool is_good_gen = true;
+        bool pass_gen_filter = true;
         // if MC
         if (!is_data)
         {
-            if (GeneratorFilters::filters.count(process) > 0)
+            if (generator_filter_key)
             {
-                is_good_gen = GeneratorFilters::filters.at(process)(lhe_particles);
+                pass_gen_filter = GeneratorFilters::filters.at(*generator_filter_key)(lhe_particles, year);
             }
             else
             {
-                is_good_gen = true;
+                pass_gen_filter = true;
             }
         }
 
         // first filter - it is needed in order to calculate the effective x_section_file
-        // xSec_eff = xSec *  pass(GeneratorFilter)/pass(NoCuts)
+        // xSec_eff = xSec*pass(GeneratorFilter)/pass(NoCuts)
         outputs.fill_cutflow_histo("NoCuts", outputs.get_event_weight("Generator"));
-        if (is_good_gen)
+        if (pass_gen_filter)
         {
-            // // fmt::print("\nDEBUG - generator_filter");
+            // fmt::print("\nDEBUG - generator_filter");
             // fmt::print("Event weight: {}\n", outputs.get_event_weight());
             // fmt::print("Event weights: {}\n", outputs.weights_nominal);
             outputs.fill_cutflow_histo("GeneratorFilter", outputs.get_event_weight("Generator"));

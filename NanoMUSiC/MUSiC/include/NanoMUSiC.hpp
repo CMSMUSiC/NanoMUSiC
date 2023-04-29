@@ -183,6 +183,42 @@ inline auto file_loader(const std::string &file_path,
     return input_root_file;
 }
 
+inline auto download_file(const std::string &requested_file, const std::string &destination_file_path) -> bool
+{
+    const std::string command_str = fmt::format("xrdcp {} {}", requested_file, destination_file_path);
+    int download_return_code = std::system(command_str.c_str());
+
+    if (download_return_code == 0)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+inline auto load_from_local_cache(const std::string &requested_file) -> std::string
+{
+    const std::string file_hash = std::to_string(std::hash<std::string>{}(requested_file));
+    const std::string username = getlogin();
+    const std::string cache_dir = fmt::format("/user/scratch/{}/cache_dir", username);
+    const std::string file_path = fmt::format("{}/{}.root", cache_dir, file_hash);
+
+    // check if file exists
+    if (std::filesystem::exists(file_path))
+    {
+        return file_path;
+    }
+
+    // if file does not exists, will download it
+    if (download_file(requested_file, file_path))
+    {
+        return load_from_local_cache(requested_file);
+    }
+
+    fmt::print("ERROR: Could not find requested file ({}).\n", requested_file);
+    exit(-1);
+}
+
 inline auto getCpuTime() -> double
 {
     struct timeval tv;
