@@ -14,7 +14,7 @@ auto EventAnalyzer::generator_filter(Outputs &outputs, const std::optional<std::
         {
             if (generator_filter_key)
             {
-                pass_gen_filter = GeneratorFilters::filters.at(*generator_filter_key)(lhe_particles);
+                pass_gen_filter = GeneratorFilters::filters.at(*generator_filter_key)(lhe_particles, year);
             }
             else
             {
@@ -23,7 +23,7 @@ auto EventAnalyzer::generator_filter(Outputs &outputs, const std::optional<std::
         }
 
         // first filter - it is needed in order to calculate the effective x_section_file
-        // xSec_eff = xSec *  pass(GeneratorFilter)/pass(NoCuts)
+        // xSec_eff = xSec*pass(GeneratorFilter)/pass(NoCuts)
         outputs.fill_cutflow_histo("NoCuts", outputs.get_event_weight("Generator"));
         if (pass_gen_filter)
         {

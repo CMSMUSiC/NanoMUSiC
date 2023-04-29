@@ -44,35 +44,35 @@ constexpr float MAX_FLOAT = std::numeric_limits<float>::max();
 // dummy filter
 // const std::map<std::string, std::function<bool(const NanoObjects::LHEParticles &)>> filters = {};
 
-const std::map<std::string, std::function<bool(const NanoObjects::LHEParticles &)>> filters = {
+const std::map<std::string, std::function<bool(const NanoObjects::LHEParticles &, Year &year)>> filters = {
+    {"ttbar_mass_less_700"s,
+     [](const NanoObjects::LHEParticles &lhe_particles, Year &year) -> bool
+     {
+         return ttbar_filter(lhe_particles, 0., 700.);
+     }},
     {"DYJetsToLL_M-10To50_13TeV_AM"s,
      // {"DoLL_M-10To50_13TeV_AM"s,
-     [](const NanoObjects::LHEParticles &lhe_particles) -> bool
+     [](const NanoObjects::LHEParticles &lhe_particles, Year &year) -> bool
      {
          return dy_filter(lhe_particles, 0., MAX_FLOAT, 0., 100.);
      }},
     {"DYJetsToLL_M-50_13TeV_AM"s,
-     [](const NanoObjects::LHEParticles &lhe_particles) -> bool
+     [](const NanoObjects::LHEParticles &lhe_particles, Year &year) -> bool
      {
          return dy_filter(lhe_particles, 0., 120., 0., 100.);
      }},
     {"DYJetsToLL_LHEFilterPtZ-400To650"s,
-     [](const NanoObjects::LHEParticles &lhe_particles) -> bool
+     [](const NanoObjects::LHEParticles &lhe_particles, Year &year) -> bool
      {
          return dy_filter(lhe_particles, 0., 120., 100., MAX_FLOAT);
      }},
     {"DYToEE_M-120To200_TuneCP5_13TeV-powheg-pythia8"s,
-     [](const NanoObjects::LHEParticles &lhe_particles) -> bool
+     [](const NanoObjects::LHEParticles &lhe_particles, Year &year) -> bool
      {
          return dy_filter(lhe_particles, 120., MAX_FLOAT, 0., MAX_FLOAT);
      }},
-    {"TTToSemiLeptonic_2018"s,
-     [](const NanoObjects::LHEParticles &lhe_particles) -> bool
-     {
-         return ttbar_filter(lhe_particles, 0., 700.);
-     }},
     {"WG"s,
-     [](const NanoObjects::LHEParticles &lhe_particles) -> bool
+     [](const NanoObjects::LHEParticles &lhe_particles, Year &year) -> bool
      {
          return wg_filter(lhe_particles, 500.);
      }},
