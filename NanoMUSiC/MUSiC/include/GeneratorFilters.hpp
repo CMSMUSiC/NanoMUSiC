@@ -45,6 +45,11 @@ constexpr float MAX_FLOAT = std::numeric_limits<float>::max();
 // const std::map<std::string, std::function<bool(const NanoObjects::LHEParticles &)>> filters = {};
 
 const std::map<std::string, std::function<bool(const NanoObjects::LHEParticles &, Year &year)>> filters = {
+    {"dyjets_pt_less_50_mass_less_120"s,
+     [](const NanoObjects::LHEParticles &lhe_particles, Year &year) -> bool
+     {
+         return true;
+     }},
     {"ttbar_mass_less_700"s,
      [](const NanoObjects::LHEParticles &lhe_particles, Year &year) -> bool
      {
