@@ -31,15 +31,15 @@ auto EventAnalyzer::set_lhe_info(NanoObjects::LHEInfo &&_lhe_info) -> EventAnaly
     return *this;
 }
 
-// auto EventAnalyzer::set_gen_particles(NanoObjects::GenParticles &&_gen_particles) -> EventAnalyzer &
-// {
-//     if (*this)
-//     {
-//         gen_particles = _gen_particles;
-//         return *this;
-//     }
-//     return *this;
-// }
+auto EventAnalyzer::set_gen_particles(NanoObjects::GenParticles &&_gen_particles) -> EventAnalyzer &
+{
+    if (*this)
+    {
+        gen_particles = _gen_particles;
+        return *this;
+    }
+    return *this;
+}
 
 auto EventAnalyzer::set_lhe_particles(NanoObjects::LHEParticles &&_lhe_particles) -> EventAnalyzer &
 {

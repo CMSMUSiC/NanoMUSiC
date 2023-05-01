@@ -24,6 +24,8 @@
 #include "RunLumiFilter.hpp"
 #include "Trigger.hpp"
 
+#include "debug.hpp"
+
 using namespace ROOT;
 using namespace ROOT::VecOps;
 
@@ -83,7 +85,7 @@ class EventAnalyzer
     auto set_event_info(NanoObjects::EventInfo &&_event_info) -> EventAnalyzer &;
     auto set_generator_info(NanoObjects::GeneratorInfo &&_generator_info) -> EventAnalyzer &;
     auto set_lhe_info(NanoObjects::LHEInfo &&_lhe_info) -> EventAnalyzer &;
-    // auto set_gen_particles(NanoObjects::GenParticles &&_gen_particles) -> EventAnalyzer &;
+    auto set_gen_particles(NanoObjects::GenParticles &&_gen_particles) -> EventAnalyzer &;
     auto set_lhe_particles(NanoObjects::LHEParticles &&_lhe_particles) -> EventAnalyzer &;
     auto set_gen_jets(NanoObjects::GenJets &&_gen_jets) -> EventAnalyzer &;
     auto set_muons(NanoObjects::Muons &&_muons, RVec<int> &&mask) -> EventAnalyzer &;
@@ -144,7 +146,8 @@ class EventAnalyzer
     ////////////////////////////////////////////////////////////////////////////
     /// TODO: Filter events based on their Generator process. This is implemented in order to avoid overlap of
     /// phase-space between MC samples. Should come after all constant weights are available.
-    auto generator_filter(Outputs &outputs, const std::optional<std::string> &generator_filter_key) -> EventAnalyzer &;
+    auto generator_filter(Outputs &outputs, const std::optional<std::string> &generator_filter_key, debugger_t &h_debug)
+        -> EventAnalyzer &;
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// Filter events based on their lumi sectiona and run numbers, following the recommendations from the LUMI-POG (aka

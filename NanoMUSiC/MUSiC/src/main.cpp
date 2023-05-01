@@ -1,4 +1,5 @@
 #include "NanoMUSiC.hpp"
+#include <fmt/core.h>
 #include <optional>
 #include <stdexcept>
 
@@ -222,15 +223,35 @@ auto main(int argc, char *argv[]) -> int
     ADD_VALUE_READER(Generator_id1, int);
     ADD_VALUE_READER(Generator_id2, int);
 
-    // // GenParticles
-    // ADD_ARRAY_READER(GenPart_eta, float);
-    // ADD_ARRAY_READER(GenPart_mass, float);
-    // ADD_ARRAY_READER(GenPart_phi, float);
-    // ADD_ARRAY_READER(GenPart_pt, float);
-    // ADD_ARRAY_READER(GenPart_genPartIdxMother, int);
-    // ADD_ARRAY_READER(GenPart_pdgId, int);
-    // ADD_ARRAY_READER(GenPart_status, int);
-    // ADD_ARRAY_READER(GenPart_statusFlags, int);
+    // GenParticles
+    // Ok, ok ... This is the uglyest code ever written, but I currently don't see any other way around.
+    // The WJets-Mass-Binned samples are binned from Threshold to Infinity and were genrated with Pythia8.
+    // Clear out these samples demands to use GenPart information, wich is A LOT OF DATA!!!
+    // At least with method bellow, this info is only loaded for the needed samples.
+    std::optional<TTreeReaderArray<float>> GenPart_eta = std::nullopt;
+    std::optional<TTreeReaderArray<float>> GenPart_mass = std::nullopt;
+    std::optional<TTreeReaderArray<float>> GenPart_phi = std::nullopt;
+    std::optional<TTreeReaderArray<float>> GenPart_pt = std::nullopt;
+    std::optional<TTreeReaderArray<int>> GenPart_genPartIdxMother = std::nullopt;
+    std::optional<TTreeReaderArray<int>> GenPart_pdgId = std::nullopt;
+    std::optional<TTreeReaderArray<int>> GenPart_status = std::nullopt;
+    std::optional<TTreeReaderArray<int>> GenPart_statusFlags = std::nullopt;
+
+    if (configuration.generator_filter_key)
+    {
+        const std::string w_jets_prefix = "wjets_mass_less_";
+        if (configuration.generator_filter_key->substr(0, w_jets_prefix.length()) == w_jets_prefix)
+        {
+            GenPart_eta = make_array_reader<float>(tree_reader, "GenPart_eta");
+            GenPart_mass = make_array_reader<float>(tree_reader, "GenPart_mass");
+            GenPart_phi = make_array_reader<float>(tree_reader, "GenPart_phi");
+            GenPart_pt = make_array_reader<float>(tree_reader, "GenPart_pt");
+            GenPart_genPartIdxMother = make_array_reader<int>(tree_reader, "GenPart_genPartIdxMother");
+            GenPart_pdgId = make_array_reader<int>(tree_reader, "GenPart_pdgId");
+            GenPart_status = make_array_reader<int>(tree_reader, "GenPart_status");
+            GenPart_statusFlags = make_array_reader<int>(tree_reader, "GenPart_statusFlags");
+        }
+    }
 
     // LHE info
     ADD_ARRAY_READER(LHEPdfWeight, float);
@@ -335,6 +356,10 @@ auto main(int argc, char *argv[]) -> int
     // launch event loop for Data or MC
     std::cout << colors.green << "\nLaunching event loop ..." << colors.def << std::endl;
 
+    //////// DEBUG /////////////////
+    debugger_t h_debug = configuration.is_crab_job ? std::nullopt : make_debugger();
+    ////////////////////////////////
+
     for (auto &&evt : tree_reader)
     {
         // check for chain readout quaility
@@ -410,15 +435,15 @@ auto main(int argc, char *argv[]) -> int
                                                    unwrap(LHE_HT),
                                                    unwrap(LHE_HTIncoming))) //
 
-                // // gen particles
-                // .set_gen_particles(NanoObjects::GenParticles(unwrap(GenPart_pt),
-                //                                              unwrap(GenPart_eta),
-                //                                              unwrap(GenPart_phi),
-                //                                              unwrap(GenPart_mass),
-                //                                              unwrap(GenPart_genPartIdxMother),
-                //                                              unwrap(GenPart_pdgId),
-                //                                              unwrap(GenPart_status),
-                //                                              unwrap(GenPart_statusFlags)))
+                // gen particles
+                .set_gen_particles(NanoObjects::GenParticles(unwrap(GenPart_pt),
+                                                             unwrap(GenPart_eta),
+                                                             unwrap(GenPart_phi),
+                                                             unwrap(GenPart_mass),
+                                                             unwrap(GenPart_genPartIdxMother),
+                                                             unwrap(GenPart_pdgId),
+                                                             unwrap(GenPart_status),
+                                                             unwrap(GenPart_statusFlags)))
 
                 // lhe particles
                 .set_lhe_particles(NanoObjects::LHEParticles(unwrap(LHEPart_pt),
@@ -497,11 +522,11 @@ auto main(int argc, char *argv[]) -> int
                                                   unwrap(TrigObj_phi), //
                                                   unwrap(TrigObj_id),  //
                                                   unwrap(TrigObj_filterBits)));
-
+        // where MUSiC happens
         event_analyzer = event_analyzer.set_pdf_alpha_s_weights(lha_indexes, default_pdf_sets)
                              .set_scale_weights()
                              .set_const_weights(outputs, pu_weight)
-                             .generator_filter(outputs, configuration.generator_filter_key)
+                             .generator_filter(outputs, configuration.generator_filter_key, h_debug)
                              .run_lumi_filter(outputs, run_lumi_filter)
                              .npv_filter(outputs)
                              .met_filter(outputs)
@@ -551,13 +576,35 @@ auto main(int argc, char *argv[]) -> int
     }
 
     std::cout << colors.green << "Event loop done ..." << colors.def << std::endl;
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////       [ END ]        //////////////////////////////////////
     //////////////////////////////////////   loop over events   //////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /////////////////// DEBUG //////////////////////
+    if (h_debug)
+    {
+        fmt::print("\nSaving DEBUG Histogram ...\n");
+        auto c = TCanvas("c");
+        c.SetLogy();
+        // c.SetLogx();
+        h_debug->h_total.SetLineColor(kBlue);
+        h_debug->h_pass.SetLineColor(kRed);
+        h_debug->h_total.Draw("hist");
+        h_debug->h_pass.Draw("same hist");
+
+        auto legend = TLegend(0.1, .9, 0.3, 1.);
+        legend.AddEntry(&h_debug->h_pass, "Pass", "l");
+        legend.AddEntry(&h_debug->h_total, "Total", "l");
+        legend.Draw();
+
+        c.SaveAs("h_debug.png");
+        h_debug->h_pass.Print();
+        h_debug->h_total.Print();
+        fmt::print("... done.\n");
+    }
+    ////////////////////////////////////////////////
 
     std::cout << " " << std::endl;
     std::cout << colors.green << "Classification done ..." << colors.def << std::endl;

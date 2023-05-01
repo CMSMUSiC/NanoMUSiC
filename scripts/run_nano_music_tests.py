@@ -1,12 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-import os
-import glob
 import shlex, subprocess
 import argparse
 import tomli
-import json
-from pprint import pprint
+from pprint import pformat
 from helpers import *
 import tempfile
 
@@ -35,7 +32,6 @@ def parse_arguments():
     parser.add_argument(
         "--executable",
         "-e",
-        # choices=["nano_music", "NanoMUSiC/MUSiC/nano_music"],
         help="Path to nano_music executable (i.e. from $PATH or local build directory).",
         default="nano_music",
     )
@@ -49,16 +45,15 @@ def get_file_from_das(das_name):
         capture_output=True,
     )
     if das_query.returncode != 0:
-        print(f"ERROR: Could not find files in DAS.")
-        print(das_query.stderr)
-        exit(-1)
+        raise RuntimeError(
+            f"ERROR: Could not find files in DAS.\n {das_query.stderr.decode('utf-8')}"
+        )
 
     query_result = das_query.stdout.decode("utf-8")
     if query_result:
         return f"root://cms-xrd-global.cern.ch//{list(query_result.splitlines())[0]}"
 
-    print(f"ERROR: DAS query returned and empty list of files (das_name).")
-    exit(-1)
+    raise RuntimeError(f"ERROR: DAS query returned and empty list of files (das_name).")
 
 
 def get_sample_and_file(config_file, sample_name, year):
@@ -67,9 +62,9 @@ def get_sample_and_file(config_file, sample_name, year):
     if sample_name in samples.keys():
         sample = samples[sample_name]
     else:
-        print(f"ERROR: Sample not found ({sample_name}).\nAvailable samples are:")
-        pprint(list(samples.keys()))
-        exit(-1)
+        raise RuntimeError(
+            f"ERROR: Sample not found ({sample_name}).\nAvailable samples are: {pformat(list(samples.keys()))}"
+        )
 
     try:
         if len(sample[f"das_name_{year}"]):
@@ -79,10 +74,9 @@ def get_sample_and_file(config_file, sample_name, year):
             sample["name"] = sample_name
             return sample
     except:
-        print(
+        raise RuntimeError(
             f"ERROR: DAS sample name not found (Sample: {sample_name} - Year: {year})."
         )
-        exit(-1)
 
 
 def check_voms():
@@ -140,8 +134,7 @@ def main():
     args = parse_arguments()
 
     if not (check_voms()):
-        print("ERROR: Could not find valid VOMS proxy.")
-        exit(-1)
+        raise RuntimeError("ERROR: Could not find valid VOMS proxy.")
 
     task_config = make_task_config(args.config, args.sample, args.year)
     if task_config:
@@ -151,8 +144,7 @@ def main():
         subprocess.run(shlex.split(f"{args.executable} --run-config {f.name}"))
         subprocess.run(shlex.split(f"rm -rf {f.name}"))
     else:
-        print("ERROR: Task configuration not built.")
-        exit(-1)
+        raise RuntimeError("ERROR: Task configuration not built.")
 
 
 if __name__ == "__main__":

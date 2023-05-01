@@ -34,9 +34,11 @@
 #include "ROOT/RDataFrame.hxx"
 #include "ROOT/RVec.hxx"
 #include "RtypesCore.h"
+#include "TCanvas.h"
 #include "TChain.h"
 #include "TFile.h"
 #include "TH1.h"
+#include "TLegend.h"
 #include "TTree.h"
 #include "TTreeReader.h"
 #include "TTreeReaderArray.h"
@@ -72,6 +74,9 @@
 #include "CorrectionSets.hpp"
 #include "JetCorrector.hpp"
 #include "PDFAlphaSWeights.hpp"
+
+// debug helpers
+#include "debug.hpp"
 
 using namespace std::chrono_literals;
 // using namespace ranges;

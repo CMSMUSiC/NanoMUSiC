@@ -1,10 +1,12 @@
 #include "EventAnalyzer.hpp"
+#include <optional>
 
 ////////////////////////////////////////////////////////////////////////////
 /// TODO: Filter events based on their Generator process. This is implemented in order to avoid overlap of
 /// phase-space between MC samples. Should come after all constant weights are available.
-auto EventAnalyzer::generator_filter(Outputs &outputs, const std::optional<std::string> &generator_filter_key)
-    -> EventAnalyzer &
+auto EventAnalyzer::generator_filter(Outputs &outputs,
+                                     const std::optional<std::string> &generator_filter_key,
+                                     debugger_t &h_debug) -> EventAnalyzer &
 {
     if (*this)
     {
@@ -14,7 +16,8 @@ auto EventAnalyzer::generator_filter(Outputs &outputs, const std::optional<std::
         {
             if (generator_filter_key)
             {
-                pass_gen_filter = GeneratorFilters::filters.at(*generator_filter_key)(lhe_particles, year);
+                pass_gen_filter =
+                    GeneratorFilters::filters.at(*generator_filter_key)(lhe_particles, gen_particles, year, h_debug);
             }
             else
             {
