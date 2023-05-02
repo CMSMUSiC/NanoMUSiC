@@ -12,8 +12,8 @@ class Debugger
     TH1F h_total;
     Debugger()
         : event_counter(0),
-          h_pass(TH1F("h_pass", "h_pass", 500, 0., 5000.)),
-          h_total(TH1F("h_total", "h_total", 500, 0., 5000.))
+          h_pass(TH1F("h_pass", "h_pass", 10, 0., 500.)),
+          h_total(TH1F("h_total", "h_total", 10, 0., 500.))
     {
     }
 };

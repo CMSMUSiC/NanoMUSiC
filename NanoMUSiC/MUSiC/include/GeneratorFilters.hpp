@@ -67,6 +67,7 @@ const std::map<std::string,
                                   Year &year,
                                   debugger_t &h_debug)>>
     filters = {
+        // TTBar Samples
         {"ttbar_mass_less_700"s,
          [](const NanoObjects::LHEParticles &lhe_particles,
             const NanoObjects::GenParticles &gen_particles,
@@ -75,6 +76,8 @@ const std::map<std::string,
          {
              return ttbar_filter(lhe_particles, 0., 700., h_debug);
          }},
+
+        // DY Jets - Low Mass sample
         {"dyjets_pt_less_50"s,
          [](const NanoObjects::LHEParticles &lhe_particles,
             const NanoObjects::GenParticles &gen_particles,
@@ -83,6 +86,8 @@ const std::map<std::string,
          {
              return dy_filter(lhe_particles, 0., MAX_FLOAT, 0., 50., h_debug);
          }},
+
+        //  DY Jets - pT binned
         {"dyjets_mass_less_120"s,
          [](const NanoObjects::LHEParticles &lhe_particles,
             const NanoObjects::GenParticles &gen_particles,
@@ -91,6 +96,8 @@ const std::map<std::string,
          {
              return dy_filter(lhe_particles, 0., 120., 0., MAX_FLOAT, h_debug);
          }},
+
+        // DY Jets - Inclusive
         {"dyjets_pt_less_50_mass_less_120"s,
          [](const NanoObjects::LHEParticles &lhe_particles,
             const NanoObjects::GenParticles &gen_particles,
@@ -99,6 +106,8 @@ const std::map<std::string,
          {
              return dy_filter(lhe_particles, 0., 120., 0., 50, h_debug);
          }},
+
+        // WW full-leptonic sample
         {"ww_mLL_less_1800"s,
          [](const NanoObjects::LHEParticles &lhe_particles,
             const NanoObjects::GenParticles &gen_particles,
@@ -107,6 +116,8 @@ const std::map<std::string,
          {
              return ww_2l2v_filter(lhe_particles, 1800., h_debug);
          }},
+
+        // W Gamma
         {"pt_gamma_less_130"s,
          [](const NanoObjects::LHEParticles &lhe_particles,
             const NanoObjects::GenParticles &gen_particles,
@@ -131,6 +142,8 @@ const std::map<std::string,
          {
              return wg_filter(lhe_particles, 500., h_debug);
          }},
+
+        //  QCD gamma cleanner
         {"gamma_plus_jets_cleanner"s,
          [](const NanoObjects::LHEParticles &lhe_particles,
             const NanoObjects::GenParticles &gen_particles,
@@ -139,6 +152,8 @@ const std::map<std::string,
          {
              return gamma_jet_cleanner_filter(lhe_particles, 0.4, h_debug);
          }},
+
+        //  W Jets - Inclusive
         {"w_plus_jets_pt_less_100_mass_less_200"s,
          [](const NanoObjects::LHEParticles &lhe_particles,
             const NanoObjects::GenParticles &gen_particles,
@@ -147,6 +162,8 @@ const std::map<std::string,
          {
              return wlnujets_filter(lhe_particles, 0., 200., 0., 100., h_debug);
          }},
+
+        //  W Jets - pT binned
         {"w_plus_jets_mass_less_200"s,
          [](const NanoObjects::LHEParticles &lhe_particles,
             const NanoObjects::GenParticles &gen_particles,
@@ -155,13 +172,18 @@ const std::map<std::string,
          {
              return wlnujets_filter(lhe_particles, 0., 200., 0., MAX_FLOAT, h_debug);
          }},
-        // Mass binned samples
+
+        // WJets - Mass binned samples
         {"wjets_mass_less_500"s,
          [](const NanoObjects::LHEParticles &lhe_particles,
             const NanoObjects::GenParticles &gen_particles,
             Year &year,
             debugger_t &h_debug) -> bool
          {
+             if (year == Year::Run2016 or year == Year::Run2016APV)
+             {
+                 return true;
+             }
              return wlnujets_mass_binned_filter(lhe_particles, gen_particles, year, 0., 500., h_debug);
          }},
         {"wjets_mass_less_1000"s,

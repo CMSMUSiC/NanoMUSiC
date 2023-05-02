@@ -358,6 +358,7 @@ auto main(int argc, char *argv[]) -> int
 
     //////// DEBUG /////////////////
     debugger_t h_debug = configuration.is_crab_job ? std::nullopt : make_debugger();
+    h_debug = std::nullopt;
     ////////////////////////////////
 
     for (auto &&evt : tree_reader)
