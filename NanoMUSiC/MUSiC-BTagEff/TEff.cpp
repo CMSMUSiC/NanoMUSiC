@@ -13,7 +13,7 @@
 #include<TChain.h>
 
 
-auto BTagEff(std::string file_path, std::string sample_name) -> void {
+auto BTagEff(std::string file_path, std::string sample_name , std::string sample_year) -> void {
   //Opens the ROOT file
   TFile* file = new TFile(file_path.c_str(), "READ");
   
@@ -30,26 +30,28 @@ auto BTagEff(std::string file_path, std::string sample_name) -> void {
   TH1F* ltag_matched_hist = (TH1F*)file->Get("ltag_matched_hist");
   TH1F* ltag_all_hist = (TH1F*)file->Get("ltag_all_hist");
 
+  string sample_id = sample_name + "_" + sample_year;
+
   // Make TEfficiency histograms
   TEfficiency *pEff_b = new TEfficiency(*btag_matched_hist,*btag_all_hist);
   pEff_b->SetTitle("B Tag Efficiency;pT;Eta");
   TCanvas *c1 = new TCanvas("c1");
   pEff_b->Draw("colz text");
-  c1->Print("Outputs/PNG/Btag_TEff.png");
-  c1->Print("Outputs/PDF/Btag_TEff.pdf");
-  c1->Print("Outputs/C/Btag_TEff.C");
+  c1->Print(("Outputs/PNG/BTagEff_"+sample_id+".png").c_str());
+  c1->Print(("Outputs/PDF/BTagEff_"+sample_id+".pdf").c_str());
+  c1->Print(("Outputs/C/BTagEff_"+sample_id+".C").c_str());
   
   
   TEfficiency *pEff_l = new TEfficiency(*ltag_matched_hist,*ltag_all_hist);
   pEff_l->SetTitle("L Tag Efficiency;pT;Eta");
   TCanvas *c2 = new TCanvas("c2");
   pEff_l->Draw("colz text");
-  c2->Print("Outputs/PNG/ltag_TEff.png");
-  c2->Print("Outputs/PDF/ltag_TEff.pdf");
-  c2->Print("Outputs/C/ltag_TEff.C");
+  c2->Print(("Outputs/PNG/ltag_Eff_"+sample_id+".png").c_str());
+  c2->Print(("Outputs/PDF/ltag_Eff_"+sample_id+".pdf").c_str());
+  c2->Print(("Outputs/C/ltag_Eff_"+sample_id+".C").c_str());
   file->Close();
   
-  string rootFileName = "Outputs/RootFiles/"+sample_name+"_Teff.root";
+  string rootFileName = "Outputs/RootFiles/" + sample_name + "_" + sample_year + "_Teff.root";
   
 
   TFile* tfile = new TFile(rootFileName.c_str(),"RECREATE");
@@ -57,10 +59,11 @@ auto BTagEff(std::string file_path, std::string sample_name) -> void {
   TEff_b->SetName("TEff_bjets");
   TEff_b->Write();
   TH2* TEff_l = pEff_l->CreateHistogram();
+  TEff_l->SetName("TEff_ljets");
   TEff_l->Write();
   tfile->Close();
-}
-
+  
+    }
 
 void TEff(){}
   
