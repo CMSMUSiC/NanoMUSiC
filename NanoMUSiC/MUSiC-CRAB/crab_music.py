@@ -4,19 +4,18 @@ from datetime import datetime
 import subprocess
 import os
 import argparse
+import shlex
 
 from CRABClient.UserUtilities import config
 from CRABAPI.RawCommand import crabCommand
 
 from sample_list import make_sample_list
 
-from pathlib import Path
-import tomli
 from helpers import *
 
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
-from pygments.formatters import Terminal256Formatter, HtmlFormatter
+from pygments.formatters import Terminal256Formatter
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -32,29 +31,31 @@ parser.add_argument(
 args = parser.parse_args()
 
 
-def make_task_config_file(process_name, das_name, year, era, is_data):
-    # copy config TOML to current directory
-    # True for Data, False for MC
-    config_toml_file = {
-        True: "../../configs/task_configs/template_Data.toml",  # Data
-        False: "../../configs/task_configs/template_MC.toml",  # MC
+def make_task_config_file(
+    process_name, das_name, year, era, is_data, generator_filter_key
+):
+    task_config = {
+        "output": "",
+        "is_data": False,
+        "year": "",
+        "era": "",
+        "process": "",
+        # "generator_filter_key": "",  # only if defined
+        "dataset": "",
+        "is_crab_job": False,
+        "input_files": [],  # dummy, for now. Inside the job, it will be modified.
     }
 
-    crab_music_base = os.getenv("CRAB_MUSIC_BASE")
-    config = tomli.loads(
-        Path(
-            f"{crab_music_base}/../../configs/task_configs/CRAB_template.toml"
-        ).read_text(encoding="utf-8")
-    )
-    config["era"] = era
-    config["is_crab_job"] = True
-    config["output"] = "outputs"
-    config["process"] = process_name
-    config["dataset"] = das_name
-    config["year"] = year
-    config["is_data"] = is_data
+    task_config["output"] = "outputs"
+    task_config["is_data"] = is_data
+    task_config["year"] = year
+    task_config["era"] = era
+    task_config["process"] = process_name
+    if "generator_filter_key" != "":
+        task_config["generator_filter_key"] = generator_filter_key
+    task_config["dataset"] = das_name
 
-    new_config = to_toml_dumps(config)
+    new_config = to_toml_dumps(task_config)
     print("\n*************** Modified task config file: ******************\n")
     print(
         highlight(
@@ -78,8 +79,7 @@ def get_username():
     if "Username is:" in res:
         return res.replace("Username is: ", "").replace("\n", "")
     else:
-        print("[ERROR] Could not get username.")
-        exit()
+        raise RuntimeError("[ERROR] Could not get username.")
 
 
 def build_crab_config(process_name, das_name, year, is_data):
@@ -97,7 +97,9 @@ def build_crab_config(process_name, das_name, year, is_data):
     this_config.JobType.pluginName = "Analysis"
     this_config.JobType.psetName = f"{os.getenv('CRAB_MUSIC_BASE')}/crab_music_pset.py"
     if args.btageff:
-        this_config.JobType.psetName = f"{os.getenv('CRAB_MUSIC_BASE')}/crab_music_btageff_pset.py"
+        this_config.JobType.psetName = (
+            f"{os.getenv('CRAB_MUSIC_BASE')}/crab_music_btageff_pset.py"
+        )
     this_config.JobType.scriptExe = f"{os.getenv('CRAB_MUSIC_BASE')}/run_nano_music.sh"
     if args.btageff:
         print("Will submit BTag Efficiency code ...")
@@ -123,20 +125,20 @@ def build_crab_config(process_name, das_name, year, is_data):
         this_config.JobType.outputFiles = [r"efficiency_hist.root"]
     this_config.User.voGroup = "dcms"
     this_config.Site.storageSite = "T2_DE_RWTH"
+    this_config.Site.blacklist = ["T2_BR_SPRACE"]
 
     return this_config
 
 
 def submit(sample):
-    process_name, das_name, year, era, is_data = sample
-    make_task_config_file(process_name, das_name, year, era, is_data)
+    process_name, das_name, year, era, is_data, generator_filter_key = sample
+    make_task_config_file(
+        process_name, das_name, year, era, is_data, generator_filter_key
+    )
     sub_res = crabCommand(
         "submit", config=build_crab_config(process_name, das_name, year, is_data)
     )
     print(sub_res)
-
-
-# {'requestname': 'crab_DYJetsToLL_M-50_13TeV_AM_2016APV', 'uniquerequestname': '230407_093207:ftorresd_crab_DYJetsToLL_M-50_13TeV_AM_2016APV'}
 
 
 def build_task_tarball():
@@ -148,7 +150,22 @@ def build_task_tarball():
     print("")
 
 
+def check_voms():
+    ret_code = subprocess.run(
+        shlex.split("voms-proxy-info"), capture_output=True
+    ).returncode
+
+    if ret_code == 0:
+        return True
+    return False
+
+
 def main():
+    # cehck for VOMS proxy
+    if not (check_voms()):
+        raise RuntimeError("ERROR: Could not find valid VOMS proxy.")
+
+    # create the task tarball and submit the jobs
     build_task_tarball()
     for sample in make_sample_list(args.xsection_file_path):
         submit(sample)

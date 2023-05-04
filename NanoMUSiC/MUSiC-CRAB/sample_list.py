@@ -2,25 +2,77 @@ from pathlib import Path
 import tomli
 
 
+def get_era(process_name, is_data):
+    if not is_data:
+        return "DUMMY"
+
+    return (
+        process_name.replace("-HIPM", "")
+        .replace("_HIPM", "")
+        .replace("-ver1", "")
+        .replace("-ver2", "")
+        .split("_")[-1]
+    )
+
+
 def make_sample_list(xSection_file_path):
     input_file = ""
     input_file = xSection_file_path
 
     xsections = tomli.loads(Path(input_file).read_text(encoding="utf-8"))
     sample_list = []
-    for mName in xsections:
-        if "das_name_2016APV" in xsections[mName]:
-            for das_name in xsections[mName]["das_name_2016APV"]:
-                sample_list.append((mName, das_name, "2016APV", "_", False))
-        if "das_name_2016" in xsections[mName]:
-            for das_name in xsections[mName]["das_name_2016"]:
-                sample_list.append((mName, das_name, "2016", "_", False))
-        if "das_name_2017" in xsections[mName]:
-            for das_name in xsections[mName]["das_name_2017"]:
-                sample_list.append((mName, das_name, "2017", "_", False))
-        if "das_name_2018" in xsections[mName]:
-            for das_name in xsections[mName]["das_name_2018"]:
-                sample_list.append((mName, das_name, "2018", "_", False))
+    for process_name in xsections:
+        generator_filter_key = ""
+        if "generator_filter_key" in xsections[process_name].keys():
+            generator_filter_key = xsections[process_name]["generator_filter_key"]
+        if "das_name_2016APV" in xsections[process_name]:
+            for das_name in xsections[process_name]["das_name_2016APV"]:
+                sample_list.append(
+                    (
+                        process_name,
+                        das_name,
+                        "2016APV",
+                        get_era(process_name, xsections[process_name]["is_data"]),
+                        xsections[process_name]["is_data"],
+                        generator_filter_key,
+                    )
+                )
+        if "das_name_2016" in xsections[process_name]:
+            for das_name in xsections[process_name]["das_name_2016"]:
+                sample_list.append(
+                    (
+                        process_name,
+                        das_name,
+                        "2016",
+                        get_era(process_name, xsections[process_name]["is_data"]),
+                        xsections[process_name]["is_data"],
+                        generator_filter_key,
+                    )
+                )
+        if "das_name_2017" in xsections[process_name]:
+            for das_name in xsections[process_name]["das_name_2017"]:
+                sample_list.append(
+                    (
+                        process_name,
+                        das_name,
+                        "2017",
+                        get_era(process_name, xsections[process_name]["is_data"]),
+                        xsections[process_name]["is_data"],
+                        generator_filter_key,
+                    )
+                )
+        if "das_name_2018" in xsections[process_name]:
+            for das_name in xsections[process_name]["das_name_2018"]:
+                sample_list.append(
+                    (
+                        process_name,
+                        das_name,
+                        "2018",
+                        get_era(process_name, xsections[process_name]["is_data"]),
+                        xsections[process_name]["is_data"],
+                        generator_filter_key,
+                    )
+                )
         else:
             continue
 

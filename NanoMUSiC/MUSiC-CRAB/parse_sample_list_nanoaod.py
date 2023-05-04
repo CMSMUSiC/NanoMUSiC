@@ -45,7 +45,7 @@ class Sample:
             # get year
             if re.search("Run2016.*UL2016", ds_pt2):
                 self.year = "2016"
-            if re.search("Run2016.*-HIPM.*UL2016", ds_pt2):
+            if re.search("Run2016.*HIPM.*UL2016", ds_pt2):
                 self.year = "2016APV"
             if re.search("Run2017.*UL2017", ds_pt2):
                 self.year = "2017"
