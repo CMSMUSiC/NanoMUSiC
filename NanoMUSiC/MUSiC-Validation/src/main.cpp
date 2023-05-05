@@ -13,6 +13,7 @@
 #include <memory>
 #include <optional>
 #include <stdexcept>
+#include <string>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -24,27 +25,27 @@ auto main(int argc, char *argv[]) -> int
     // command line options
     argh::parser cmdl(argc, argv, argh::parser::PREFER_PARAM_FOR_UNREG_OPTION);
     const bool show_help = cmdl[{"-h", "--help"}];
-    const std::string config_file = cmdl({"-c", "--config"}).str();
+    const std::string process = cmdl({"-p", "--process"}).str();
+    const std::string year = cmdl({"-y", "--year"}).str();
+    const bool is_data = cmdl[{"-d", "--is_data"}];
     const std::string output_path = cmdl({"-o", "--output"}).str();
-    const double effective_x_section = std::stod(cmdl({"-x", "--xsec"}).str());
+    const std::string effective_x_section_str = cmdl({"-x", "--xsection"}).str();
     const std::string input_file = cmdl({"-i", "--input"}).str();
 
-    if (show_help or config_file == "" or output_path == "" or input_file == "")
+    if (show_help or process == "" or year == "" or output_path == "" or input_file == "" or
+        effective_x_section_str == "")
     {
-        fmt::print("Usage: validation [-h|--help] --config <config_file>\n");
+        fmt::print("Usage: validation [OPTIONS]\n");
         fmt::print("          -h|--help: Shows this message.\n");
-        fmt::print("          -c|--config: Task config file.\n");
+        fmt::print("          -p|--process: Process (aka sample).\n");
+        fmt::print("          -y|--year: Year.\n");
+        fmt::print("          -d|--is_data: Is data ?\n");
         fmt::print("          -o|--output: Output path.\n");
-        fmt::print("          -i|--input: Input file..\n");
-        return (config_file == "" ? -1 : 0);
+        fmt::print("          -x|--xsection: Effective cross-section (xsection * lumi).\n");
+        fmt::print("          -i|--input: Input file.\n");
+        exit(-1);
     }
-
-    // task configuration
-    const auto task_config = TOMLConfig::make_toml_config(config_file);
-    const auto is_data = task_config.get<bool>("is_data");
-    const auto x_section_file(MUSiCTools::parse_and_expand_music_base(task_config.get<std::string>("x_section_file")));
-    const auto process = task_config.get<std::string>("process");
-    const auto year = task_config.get<std::string>("year");
+    const double effective_x_section = std::stod(effective_x_section_str);
 
     // create tree reader and add values and arrays
     auto this_file = std::unique_ptr<TFile>(TFile::Open(input_file.c_str()));
@@ -77,11 +78,13 @@ auto main(int argc, char *argv[]) -> int
     ADD_ARRAY_READER(BJet_pt, float);
     ADD_ARRAY_READER(BJet_eta, float);
     ADD_ARRAY_READER(BJet_phi, float);
+    ADD_ARRAY_READER(BJet_mass, float);
 
     ADD_VALUE_READER(nJet, unsigned int);
     ADD_ARRAY_READER(Jet_pt, float);
     ADD_ARRAY_READER(Jet_eta, float);
     ADD_ARRAY_READER(Jet_phi, float);
+    ADD_ARRAY_READER(Jet_mass, float);
 
     ADD_VALUE_READER(nMET, unsigned int);
     ADD_ARRAY_READER(MET_pt, float);
@@ -106,11 +109,12 @@ auto main(int argc, char *argv[]) -> int
 
     const auto cutflow_file = std::unique_ptr<TFile>(TFile::Open(fmt::format("{}/cutflow.root", output_path).c_str()));
     const auto cutflow_histo = cutflow_file->Get<TH1F>("cutflow");
-    const auto total_generator_weight = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("GeneratorWeight") + 1);
+    // const auto total_generator_weight = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("GeneratorWeight") + 1);
     const auto no_cuts = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("NoCuts") + 1);
     const auto generator_filter = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("GeneratorFilter") + 1);
 
     // fmt::print("\n[MUSiC Validation] Creating set of processed events ...\n");
+    // MAP[run_number : SET[event_number]]
     std::unordered_map<unsigned int, std::unordered_set<unsigned long>> processed_data_events;
 
     // launch event loop for Data or MC
@@ -142,7 +146,7 @@ auto main(int argc, char *argv[]) -> int
                 }
                 else
                 {
-                    processed_data_events.insert({this_run, std::unordered_set<unsigned long>()});
+                    processed_data_events.insert({this_run, std::unordered_set<unsigned long>({this_event_number})});
                 }
             }
 
@@ -153,17 +157,18 @@ auto main(int argc, char *argv[]) -> int
                 if (not(is_data))
                 {
                     weight =
-                        Outputs::get_event_weight(unwrap(weights_nominal), unwrap(weights_up), unwrap(weights_down)) /
-                        generator_filter * effective_x_section;
+                        Outputs::get_event_weight(unwrap(weights_nominal), unwrap(weights_up), unwrap(weights_down)) *
+                        generator_filter / no_cuts / generator_filter * effective_x_section;
 
-                    fmt::print("------------------\n");
-                    fmt::print(
-                        "event weight: {}\n",
-                        Outputs::get_event_weight(unwrap(weights_nominal), unwrap(weights_up), unwrap(weights_down)));
-                    fmt::print("weights_nominal: {}\n", weights_nominal);
-                    fmt::print("Eff xSec: {}\n", effective_x_section);
-                    fmt::print("Weight: {}\n", weight);
-                    fmt::print("total gen weight: {}\n", generator_filter);
+                    // fmt::print("------------------\n");
+                    // fmt::print(
+                    //     "event weight: {}\n",
+                    //     Outputs::get_event_weight(unwrap(weights_nominal), unwrap(weights_up),
+                    //     unwrap(weights_down)));
+                    // fmt::print("weights_nominal: {}\n", weights_nominal);
+                    // fmt::print("Eff xSec: {}\n", effective_x_section);
+                    // fmt::print("Weight: {}\n", weight);
+                    // fmt::print("total gen weight: {}\n", generator_filter);
                 }
 
                 // reorder objects

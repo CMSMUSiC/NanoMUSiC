@@ -90,7 +90,6 @@ auto EventAnalyzer::met_filter(Outputs &outputs) -> EventAnalyzer &
 
         if (pass_MET_filters)
         {
-            // // fmt::print("\nDEBUG - met_filter");
             outputs.fill_cutflow_histo("METFilters", outputs.get_event_weight());
             return *this;
         }
