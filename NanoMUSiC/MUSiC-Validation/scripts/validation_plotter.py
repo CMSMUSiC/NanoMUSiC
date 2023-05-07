@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 import os
 import uproot
-import hist
 import numpy as np
 import matplotlib as mpl
+import argparse
 
 mpl.use("Agg")
 import matplotlib.pyplot as plt
@@ -334,6 +334,20 @@ def leplep_plots(latex_name, name, input_mc, input_data):
         no_rebinning,
         True,
     )
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-c",
+        "--config",
+        required=True,
+        help='Task configuration (TOML) file, produced by "analysis_config_builder.py"',
+    )
+
+    args = parser.parse_args()
+
+    return args
 
 
 def main():

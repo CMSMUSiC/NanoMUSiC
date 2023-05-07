@@ -2,6 +2,7 @@
 #define VALIDATION
 
 #include <optional>
+#include <stdexcept>
 #include <sys/time.h>
 
 #include "argh.h"
@@ -68,6 +69,26 @@ inline auto getCpuTime() -> double
     struct timeval tv;
     gettimeofday(&tv, nullptr);
     return ((double)tv.tv_sec + (double)tv.tv_usec / 1000000.0);
+}
+
+inline auto load_input_files(const std::string &filename) -> std::vector<std::string>
+{
+    std::vector<std::string> input_files;
+    std::ifstream file(filename);
+
+    if (!file.is_open())
+    {
+        throw std::runtime_error(fmt::format("ERROR: Could not open file: {}", filename));
+    }
+
+    std::string line;
+    while (std::getline(file, line))
+    {
+        input_files.push_back(line);
+    }
+    file.close();
+
+    return input_files;
 }
 
 #endif // VALIDATION
