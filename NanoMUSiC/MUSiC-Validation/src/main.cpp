@@ -31,9 +31,10 @@ auto main(int argc, char *argv[]) -> int
     const std::string output_path = cmdl({"-o", "--output"}).str();
     const std::string effective_x_section_str = cmdl({"-x", "--xsection"}).str();
     const std::string input_file = cmdl({"-i", "--input"}).str();
+    const std::string processed_data_events_file_path = cmdl({"-pe", "--processed-events"}).str();
 
     if (show_help or process == "" or year == "" or output_path == "" or input_file == "" or
-        effective_x_section_str == "")
+        effective_x_section_str == "" or (is_data and processed_data_events_file_path == ""))
     {
         fmt::print("Usage: validation [OPTIONS]\n");
         fmt::print("          -h|--help: Shows this message.\n");
@@ -43,6 +44,9 @@ auto main(int argc, char *argv[]) -> int
         fmt::print("          -o|--output: Output path.\n");
         fmt::print("          -x|--xsection: Effective cross-section (xsection * lumi).\n");
         fmt::print("          -i|--input: Input file.\n");
+        fmt::print(
+            "          -pe|--processed-events: Path (or pattern) to binary file with processed events. Those listed "
+            "will be skipped. Required when processing Data events.\n");
         exit(-1);
     }
     const double effective_x_section = std::stod(effective_x_section_str);
@@ -113,10 +117,14 @@ auto main(int argc, char *argv[]) -> int
     const auto no_cuts = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("NoCuts") + 1);
     const auto generator_filter = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("GeneratorFilter") + 1);
 
+    // load processprocessed events
     // fmt::print("\n[MUSiC Validation] Creating set of processed events ...\n");
     // MAP[run_number : SET[event_number]]
     std::unordered_map<unsigned int, std::unordered_set<unsigned long>> processed_data_events;
-
+    if (is_data)
+    {
+        processed_data_events = ProcessedDataEvents::load_and_merge(processed_data_events_file_path);
+    }
     // launch event loop for Data or MC
     // const auto total_number_of_events = tree_reader.GetEntries();
 
@@ -276,25 +284,21 @@ auto main(int argc, char *argv[]) -> int
             }
         }
     }
-    else
-    {
-        //
-        throw std::runtime_error(fmt::format("EMPTY: {}", process));
-    }
-    // fmt::print("\n[MUSiC Validation] Saving outputs ...\n");
+
+    fmt::print("\n[MUSiC Validation] Saving outputs ...\n");
     z_to_mu_mu_x.dump_outputs();
     z_to_ele_ele_x.dump_outputs();
     z_to_mu_mu_x_Z_mass.dump_outputs();
     z_to_ele_ele_x_Z_mass.dump_outputs();
 
-    // fmt::print("\n[MUSiC Validation] Done ...\n");
-    // PrintProcessInfo();
-
-    // fmt::print("({}) Not enough muons: {} / {} = {}\n",
-    //            process,
-    //            _debug_enough_muons,
-    //            total_number_of_events,
-    //            static_cast<double>(_debug_enough_muons) / static_cast<double>(total_number_of_events));
+    // save processed events
+    if (is_data)
+    {
+        ProcessedDataEvents::dump(
+            processed_data_events, output_path, std::to_string(std::hash<std::string>{}(input_file)));
+    }
+    fmt::print("\n[MUSiC Validation] Done ...\n");
+    PrintProcessInfo();
 
     return EXIT_SUCCESS;
 }

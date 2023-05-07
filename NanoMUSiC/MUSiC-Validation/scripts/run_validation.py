@@ -22,16 +22,39 @@ def parse_args():
         required=True,
         help='Task configuration (TOML) file, produced by "analysis_config_builder.py"',
     )
-    parser.add_argument("-s", "--sample", help="Sample to be processed.", required=True)
-    parser.add_argument("-y", "--year", help="Year to be processed.", required=True)
+    parser.add_argument("-s", "--sample", help="Sample to be processed.")
+    parser.add_argument("-y", "--year", help="Year to be processed.")
+    parser.add_argument(
+        "--all_data",
+        help='Starts validation for all Data samples. Incompatible with "--sample" and "--all_mc".',
+        action="store_true",
+    )
+    parser.add_argument(
+        "--all_mc",
+        help='Starts validation for all MC samples. Incompatible with "--sample" and "--all-data".',
+        action="store_true",
+    )
     parser.add_argument("-j", "--jobs", help="Pool size.", type=int, default=100)
-    # parser.add_argument("--veto", help="path to run_number/event_number veto maps")
-    # parser.add_argument(
-    #     "--merge", help="will merge validation results", action="store_true"
-    # )
+    parser.add_argument(
+        "-e", "--executable", help="Validation excutable.", default="validation"
+    )
     parser.add_argument("--debug", help="print debugging info", action="store_true")
 
-    return parser.parse_args()
+    args = parser.parse_args()
+
+    # quality control
+    if (args.all_data and (args.sample or args.all_mc)) or (
+        args.all_mc and (args.sample or args.all_data)
+    ):
+        raise RuntimeError(
+            'ERROR: Could not satrt validation. "--all_data" is incompatible with "--all_mc" and "--sample".'
+        )
+
+    if args.sample and not (args.year):
+        raise RuntimeError(
+            'ERROR: Could not start validation. When "--sample" is set, "--year" is required.'
+        )
+    return args
 
 
 def merge_cutflow_histograms(output_path, input_files, debug: bool = False):
@@ -52,13 +75,21 @@ def run_validation(
     is_data: bool,
     output_path: str,
     effective_x_section: float,
+    executable: str,
+    processed_events_file: str,
     input_file: str,
     debug: bool = False,
 ) -> bool:
+    # default is MC
+    cmd_str: str = f"{executable} --process {process_name} --year {year} --output {output_path} --xsection {str(effective_x_section)} --input {input_file}"
+    if is_data:
+        cmd_str: str = f"{executable} --process {process_name} --year {year} --is_data --processed-events {processed_events_file} --output {output_path} --xsection {str(effective_x_section)} --input {input_file}"
+
+    if debug:
+        print(f"Executing: {cmd_str}")
+
     validation_result = subprocess.run(
-        shlex.split(
-            f"validation --process {process_name} --year {year} {(lambda is_data: '--is_data' if is_data else '')(is_data)} --output {output_path} --xsection {str(effective_x_section)} --input {input_file}"
-        ),
+        shlex.split(cmd_str),
         capture_output=True,
     )
     if debug:
@@ -66,42 +97,40 @@ def run_validation(
 
     if validation_result.returncode != 0:
         error = validation_result.stderr.decode("utf-8")
-        raise RuntimeError(f"ERROR: could process validation.\n{error}\n{input_file}")
+        output = validation_result.stdout.decode("utf-8")
+        raise RuntimeError(
+            f"ERROR: could process validation.\n{error}\n{output}\n{input_file}"
+        )
     return True
 
 
-def main():
-    print("\n\n📶 [ MUSiC Validation ] 📶\n")
+def make_processed_events():
+    with open("dummy_processed_events.bin", mode="wb") as f:
+        pass
+    return "dummy_processed_events.bin"
 
-    # parse arguments
-    args = parse_args()
 
-    # parse config file
-    task_config_file: str = args.config
-    task_config: dict[str, Any] = toml.load(task_config_file)
-    year: str = args.year
-    luminosity: float = task_config["Lumi"][year]
-
-    task_config: dict[str, Any] = task_config[args.sample]
-    is_data: bool = task_config["is_data"]
-    process: str = args.sample
-    input_files: list[str] = list(
-        filter(lambda file: f"{year}_date" in file, task_config["output_files"])
-    )
+def validation(
+    process,
+    year,
+    luminosity,
+    is_data,
+    xsection,
+    filter_eff,
+    k_factor,
+    input_files,
+    jobs,
+    executable,
+):
+    # make a new processed events
+    processed_events_file = make_processed_events()
 
     output_path: str = f"validation_outputs/{year}/{process}"
-
-    print(f"[ MUSiC Validation ] Process: {process} - Year: {year}\n")
 
     print("[ MUSiC Validation ] Loading samples ...\n")
     effective_x_section: float = 1.0
     if not is_data:
-        effective_x_section = (
-            task_config["XSec"]
-            * task_config["FilterEff"]
-            * task_config["kFactor"]
-            * luminosity
-        )
+        effective_x_section = xsection * filter_eff * k_factor * luminosity
 
     print("[ MUSiC Validation ] Preparing output directory ...\n")
     shutil.rmtree(output_path, ignore_errors=True)
@@ -112,7 +141,7 @@ def main():
     merge_cutflow_histograms(output_path, input_files)
 
     print("[ MUSiC Validation ] Launching processes ...\n\n")
-    with Pool(min(args.jobs, len(input_files))) as pool:
+    with Pool(min(jobs, len(input_files))) as pool:
         list(
             tqdm(
                 pool.imap_unordered(
@@ -123,6 +152,8 @@ def main():
                         is_data,
                         output_path,
                         effective_x_section,
+                        executable,
+                        processed_events_file,
                     ),
                     input_files,
                 ),
@@ -160,6 +191,58 @@ def main():
         if cleanning_result.returncode != 0:
             error = cleanning_result.stderr.decode("utf-8")
             raise RuntimeError(f"ERROR: could not clear output path.\n{error}")
+
+
+years = ["2016APV", "2016", "2017", "2018"]
+
+
+def main():
+    print("\n\n📶 [ MUSiC Validation ] 📶\n")
+
+    # parse arguments
+    args = parse_args()
+
+    # data workflow
+    if args.all_data:
+        # validation(args)
+        exit(0)
+
+    if args.all_mc:
+        task_config_file: str = args.config
+        task_config: dict[str, Any] = toml.load(task_config_file)
+        for idx_sample, sample in enumerate(task_config):
+            if (
+                sample != "Lumi"
+                and sample != "Global"
+                and not (task_config[sample]["is_data"])
+            ):
+                print(
+                    f"[ MUSiC Validation ] Starting validation of {sample} ... [{idx_sample+1}/{len(task_config)-2}]"
+                )
+                for year in years:
+                    if f"das_name_{year}" in task_config[sample].keys():
+                        print(f"[ MUSiC Validation - {sample} ] Year: {year}")
+
+                        validation(
+                            process=sample,
+                            year=year,
+                            luminosity=task_config["Lumi"][year],
+                            is_data=task_config[sample]["is_data"],
+                            xsection=task_config[sample]["XSec"],
+                            filter_eff=task_config[sample]["FilterEff"],
+                            k_factor=task_config[sample]["kFactor"],
+                            input_files=list(
+                                filter(
+                                    lambda file: f"{year}_date" in file,
+                                    task_config[sample]["output_files"],
+                                )
+                            ),
+                            jobs=args.jobs,
+                            executable=args.executable,
+                        )
+        exit(0)
+
+    # validation(args)
 
 
 if __name__ == "__main__":

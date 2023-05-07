@@ -26,6 +26,7 @@
 #include "TOMLConfig.hpp"
 #include "ZToLepLepX.hpp"
 #include "emoji.hpp"
+#include "processed_data_events.hpp"
 
 using namespace ROOT;
 using namespace ROOT::Math;
