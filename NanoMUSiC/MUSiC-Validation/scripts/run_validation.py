@@ -151,7 +151,7 @@ def validation(args):
         effective_x_section = xsection * filter_eff * k_factor * luminosity
 
     # print("[ MUSiC Validation ] Preparing output directory ...\n")
-    os.system(f"rm -rf validation_outputs/{year}/*{process}*.root")
+    os.system(f"rm -rf validation_outputs/{year}/*{process}_{year}.root")
 
     # print("[ MUSiC Validation ] Merging cutflow histograms ...\n")
     merge_cutflow_histograms(process, year, output_path, input_files)
@@ -227,7 +227,7 @@ def main():
                 tqdm(
                     pool.imap_unordered(validation, validation_arguments),
                     total=len(validation_arguments),
-                    unit="sample",
+                    unit=" sample",
                 )
             )
 
