@@ -224,9 +224,9 @@ auto main(int argc, char *argv[]) -> int
 
     // GenParticles
     // Ok, ok ... This is the uglyest code ever written, but I currently don't see any other way around.
-    // The WJets-Mass-Binned samples are binned from Threshold to Infinity and were genrated with Pythia8.
+    // The WJets-Mass-Binned samples are binned from Threshold to Infinity and were generated with Pythia8.
     // Clear out these samples demands to use GenPart information, wich is A LOT OF DATA!!!
-    // At least with method bellow, this info is only loaded for the needed samples.
+    // At least with the method bellow, this info is only loaded for the needed samples.
     std::optional<TTreeReaderArray<float>> GenPart_eta = std::nullopt;
     std::optional<TTreeReaderArray<float>> GenPart_mass = std::nullopt;
     std::optional<TTreeReaderArray<float>> GenPart_phi = std::nullopt;

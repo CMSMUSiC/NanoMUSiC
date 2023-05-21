@@ -21,7 +21,7 @@ auto EventAnalyzer::get_high_pt_muons_selection_mask() -> RVec<int>
            && (VecOps::abs(muons.eta) <= ObjConfig::Muons[year].MaxAbsEta) //
            && (muons.highPtId >= 2)                                        //
            //    && (muons.pfRelIso04_all < ObjConfig::Muons[year].PFRelIso_WP);
-           && (muons.tkRelIso < ObjConfig::Muons[year].TkRelIso_WP); // only RelTkIso is available as SFs
+           && (muons.tkRelIso < ObjConfig::Muons[year].TkRelIso_WP); // only RelTkIso is available for SF calculation
 }
 
 // Low pT Electrons
@@ -111,6 +111,7 @@ auto EventAnalyzer::object_selection() -> EventAnalyzer &
             {
                 dX[i] = (muons.tunepRelPt[i] * muons.pt[i] - muons.pt[i]) * std::cos(muons.phi[i]);
                 dY[i] = (muons.tunepRelPt[i] * muons.pt[i] - muons.pt[i]) * std::sin(muons.phi[i]);
+
                 // for some resong, the the Relative pT Tune can yield very low corrected pT. For this reason, they will
                 // be caped to ObjConfig::Muons[year].MinLowPt , in order to not break the JSON SFs bound checks.
                 // https://cms-nanoaod-integration.web.cern.ch/commonJSONSFs/summaries/MUO_2016postVFP_UL_muon_Z.html
@@ -129,7 +130,7 @@ auto EventAnalyzer::object_selection() -> EventAnalyzer &
 
         // set global muon mask ("cocktail")
         muons.good_muons_mask["nominal"] =
-            muons.good_low_pt_muons_mask["nominal"] | muons.good_high_pt_muons_mask["nominal"];
+            muons.good_low_pt_muons_mask["nominal"] || muons.good_high_pt_muons_mask["nominal"];
         // muons.good_low_pt_muons_mask["nominal"] || muons.good_high_pt_muons_mask["nominal"]; // I am really not sure
         // what is the proper one. Most probably, it doesn't matter ...
 
@@ -225,14 +226,13 @@ auto EventAnalyzer::has_selected_objects_filter(Outputs &outputs) -> EventAnalyz
     if (*this)
     {
         if (                                                               //
-            (VecOps::Sum(muons.good_muons_mask["nominal"]) > 0) ||         //
-            (VecOps::Sum(electrons.good_electrons_mask["nominal"]) > 0) || //
-            (VecOps::Sum(photons.good_photons_mask["nominal"]) > 0) ||     //
-            (VecOps::Sum(taus.good_taus_mask["nominal"]) > 0) ||           //
-            (VecOps::Sum(bjets.good_jets_mask["nominal"]) > 0) ||          //
-            (VecOps::Sum(jets.good_jets_mask["nominal"]) > 0) ||           //
+            (VecOps::Sum(muons.good_muons_mask["nominal"]) > 0) or         //
+            (VecOps::Sum(electrons.good_electrons_mask["nominal"]) > 0) or //
+            (VecOps::Sum(photons.good_photons_mask["nominal"]) > 0) or     //
+            (VecOps::Sum(taus.good_taus_mask["nominal"]) > 0) or           //
+            (VecOps::Sum(bjets.good_jets_mask["nominal"]) > 0) or          //
+            (VecOps::Sum(jets.good_jets_mask["nominal"]) > 0) or           //
             (VecOps::Sum(met.good_met_mask["nominal"]) > 0)                //
-            // (VecOps::Sum(muons.good_muons_mask["nominal"]) > 1)//
         )
         {
             outputs.fill_cutflow_histo("AtLeastOneSelectedObject", outputs.get_event_weight());

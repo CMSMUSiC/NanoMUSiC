@@ -464,21 +464,18 @@ class TrgObjMatcher
                 auto _matched_nano_object_pt = sorted_pt.at(0);
                 auto _matched_nano_object_eta = sorted_eta.at(0);
 
-                trigger_sf_nominal = //
-                    trigger_sf_correctors({CorrectionHelpers::get_year_for_muon_sf(year),
-                                           fabs(_matched_nano_object_eta),
-                                           _matched_nano_object_pt,
-                                           "sf"});
-                trigger_sf_up = //
-                    trigger_sf_correctors({CorrectionHelpers::get_year_for_muon_sf(year),
-                                           fabs(_matched_nano_object_eta),
-                                           _matched_nano_object_pt,
-                                           "systup"});
-                trigger_sf_down = //
-                    trigger_sf_correctors({CorrectionHelpers::get_year_for_muon_sf(year),
-                                           fabs(_matched_nano_object_eta),
-                                           _matched_nano_object_pt,
-                                           "systdown"});
+                trigger_sf_nominal = trigger_sf_correctors({CorrectionHelpers::get_year_for_muon_sf(year),
+                                                            std::fabs(_matched_nano_object_eta),
+                                                            _matched_nano_object_pt,
+                                                            "sf"});
+                trigger_sf_up = trigger_sf_correctors({CorrectionHelpers::get_year_for_muon_sf(year),
+                                                       std::fabs(_matched_nano_object_eta),
+                                                       _matched_nano_object_pt,
+                                                       "systup"});
+                trigger_sf_down = trigger_sf_correctors({CorrectionHelpers::get_year_for_muon_sf(year),
+                                                         std::fabs(_matched_nano_object_eta),
+                                                         _matched_nano_object_pt,
+                                                         "systdown"});
             }
             // SingleElectron Paths
             else if (id == PDG::Electron::Id and min_number_of_matches == 1)
@@ -552,6 +549,7 @@ inline auto make_trgobj_matcher(Year year, bool is_data) -> std::map<std::string
         double _pt_min = std::numeric_limits<double>::max();
         unsigned int _id = std::numeric_limits<int>::max();
 
+        // Muon Triggers
         if (hlt_path.find("Muon") != std::string::npos)
         {
             switch (year)
@@ -605,6 +603,7 @@ inline auto make_trgobj_matcher(Year year, bool is_data) -> std::map<std::string
             _max_delta_r = 0.1;
             _min_number_of_matches = 1;
         }
+        // Electron Triggers
         else if (hlt_path.find("Electron") != std::string::npos)
         {
             switch (year)
