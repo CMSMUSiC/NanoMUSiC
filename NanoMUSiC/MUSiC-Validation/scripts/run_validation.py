@@ -12,6 +12,8 @@ import tempfile
 from collections import defaultdict
 from pprint import pprint
 
+from sample_helpers import get_year_era
+
 years = ["2016APV", "2016", "2017", "2018"]
 
 
@@ -151,7 +153,7 @@ def validation(args):
         effective_x_section = xsection * filter_eff * k_factor * luminosity
 
     # print("[ MUSiC Validation ] Preparing output directory ...\n")
-    os.system(f"rm -rf validation_outputs/{year}/*{process}_{year}.root")
+    os.system(f"rm -rf validation_outputs/{year}/*_{process}_{year}.root")
 
     # print("[ MUSiC Validation ] Merging cutflow histograms ...\n")
     merge_cutflow_histograms(process, year, output_path, input_files)
@@ -168,17 +170,6 @@ def validation(args):
         inputs,
     )
     os.system(f"rm -rf {inputs} > /dev/null")
-
-
-def get_year_era(process_name):
-    process_name_components = (
-        process_name.replace("-HIPM", "")
-        .replace("_HIPM", "")
-        .replace("-ver1", "")
-        .replace("-ver2", "")
-        .split("_")
-    )
-    return process_name_components[-2], process_name_components[-1]
 
 
 def main():

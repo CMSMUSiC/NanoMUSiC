@@ -43,6 +43,7 @@ auto main(int argc, char *argv[]) -> int
         fmt::print("          -o|--output: Output path.\n");
         fmt::print("          -x|--xsection: Effective cross-section (xsection * lumi).\n");
         fmt::print("          -i|--input: Path to a txt withg input files (one per line).\n");
+
         exit(-1);
     }
     const double effective_x_section = std::stod(effective_x_section_str);
@@ -270,7 +271,7 @@ auto main(int argc, char *argv[]) -> int
         }
     }
 
-    fmt::print("\n[MUSiC Validation] Saving outputs ...\n");
+    fmt::print("\n[MUSiC Validation] Saving outputs ({} - {} - {}) ...\n", output_path, process, year);
     z_to_mu_mu_x.dump_outputs();
     z_to_ele_ele_x.dump_outputs();
     z_to_mu_mu_x_Z_mass.dump_outputs();
