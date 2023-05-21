@@ -21,22 +21,22 @@ using namespace std::literals;
 namespace Trigger
 {
 constexpr auto HLTPath = Enumerate::make_enumerate("SingleMuonLowPt"sv,      //
-                                        "SingleMuonHighPt"sv,     //
-                                        "SingleElectronLowPt"sv,  //
-                                        "SingleElectronHighPt"sv, //
-                                        "DoubleMuon"sv,           //
-                                        "DoubleElectron"sv,       //
-                                        "Photon"sv,               //
-                                        "Tau"sv,                  //
-                                        "BJet"sv,                 //
-                                        "Jet"sv,                  //
-                                        "MET"sv);
+                                                   "SingleMuonHighPt"sv,     //
+                                                   "SingleElectronLowPt"sv,  //
+                                                   "SingleElectronHighPt"sv, //
+                                                   "DoubleMuon"sv,           //
+                                                   "DoubleElectron"sv,       //
+                                                   "Photon"sv,               //
+                                                   "Tau"sv,                  //
+                                                   "BJet"sv,                 //
+                                                   "Jet"sv,                  //
+                                                   "MET"sv);
 constexpr auto kTotalPaths = HLTPath.size();
 
 constexpr auto ActivatedHLTPath = Enumerate::make_enumerate("SingleMuonLowPt"sv,     //
-                                                 "SingleMuonHighPt"sv,    //
-                                                 "SingleElectronLowPt"sv, //
-                                                 "SingleElectronHighPt"sv);
+                                                            "SingleMuonHighPt"sv,    //
+                                                            "SingleElectronLowPt"sv, //
+                                                            "SingleElectronHighPt"sv);
 
 // constexpr auto kTotalActivatedPaths = ActivatedHLTPath && (nano_objects.pt <= pt_min).size();
 
@@ -60,7 +60,7 @@ std::pair<RVec<float>, RVec<float>> get_matches(const T1 &trigger_objects_pt,  /
 
         // Relative pT diff
         matches_relative_pT.at(idx) =
-            VecOps::Min(VecOps::abs(nano_objects_pt[idx] - trigger_objects_phi) / (nano_objects_pt[idx]));
+            VecOps::Min(VecOps::abs(nano_objects_pt[idx] - trigger_objects_pt) / (nano_objects_pt[idx]));
     }
 
     return std::make_pair(matches_distances, matches_relative_pT);
@@ -371,7 +371,7 @@ inline auto get_delta_eta_sc(const std::variant<NanoObjects::Muons, NanoObjects:
             },
             [](auto nano_obj) -> RVec<float>
             {
-                return RVec<float>(0., nano_obj.size);
+                return RVec<float>(nano_obj.size, 0.f);
             },
         },
         var_);
@@ -384,6 +384,7 @@ class TrgObjMatcher
     const int id;
     const double max_deltar_r;
     const double pt_min;
+    const unsigned int min_number_of_matches;
     const Year year;
     const bool is_data;
     const Corrector trigger_sf_correctors;
@@ -391,6 +392,7 @@ class TrgObjMatcher
     TrgObjMatcher(const std::string_view &_hlt_path,
                   double _max_deltar_r,
                   double _pt_min,
+                  unsigned int _min_number_of_matches,
                   int _id,
                   Year _year,
                   bool _is_data)
@@ -398,6 +400,7 @@ class TrgObjMatcher
           id(_id),
           max_deltar_r(_max_deltar_r),
           pt_min(_pt_min),
+          min_number_of_matches(_min_number_of_matches),
           year(_year),
           is_data(_is_data),
           trigger_sf_correctors(Corrector(hlt_path, year, is_data))
@@ -427,21 +430,87 @@ class TrgObjMatcher
         double trigger_sf_up = 1.;
         double trigger_sf_down = 1.;
 
-        RVec<int> trgobj_mask = (                                            //
-            (trgobjs.id == id) &&                                            //
-            (Trigger::check_trigger_bit(trgobjs.filterBits, hlt_path, year)) //
-            && (trgobjs.pt >= pt_min)                                        //
-        );
+        // is it need, if we don't match? Nope ...
+        // RVec<int> trgobj_mask = (                                            //
+        //     (trgobjs.id == id) &&                                            //
+        //     (Trigger::check_trigger_bit(trgobjs.filterBits, hlt_path, year)) //
+        //     && (trgobjs.pt >= pt_min)                                        //
+        // );
 
-        auto nano_objects_pt_mask = get_pt(nano_objects) >= pt_min;
+        // filter out bad NanoObjects
+        auto raw_pt = get_pt(nano_objects)[nano_objs_mask];
+        auto raw_eta = get_eta(nano_objects)[nano_objs_mask];
+        // auto raw_phi = get_phi(nano_objects)[nano_objs_mask];
+        auto raw_delta_eta_sc = get_delta_eta_sc(nano_objects)[nano_objs_mask];
+
+        // will run if a trigger is found and matched
+        auto nano_objects_pt_mask = raw_pt >= pt_min;
+        bool has_trigger_match = static_cast<unsigned int>(VecOps::Sum(nano_objects_pt_mask)) >= min_number_of_matches;
+        if (has_trigger_match)
+        {
+            // reverse ArgSort on pT
+            auto sort_pt_indices = Argsort(raw_pt[nano_objects_pt_mask],
+                                           [](double x, double y) -> bool
+                                           {
+                                               return x > y;
+                                           });
+            auto sorted_pt = Take(raw_pt[nano_objects_pt_mask], sort_pt_indices);
+            auto sorted_eta = Take(raw_eta[nano_objects_pt_mask], sort_pt_indices);
+            auto sorted_delta_eta_sc = Take(raw_delta_eta_sc[nano_objects_pt_mask], sort_pt_indices);
+
+            // SingleMuon Paths
+            if (id == PDG::Muon::Id and min_number_of_matches == 1)
+            {
+                auto _matched_nano_object_pt = sorted_pt.at(0);
+                auto _matched_nano_object_eta = sorted_eta.at(0);
+
+                trigger_sf_nominal = //
+                    trigger_sf_correctors({CorrectionHelpers::get_year_for_muon_sf(year),
+                                           fabs(_matched_nano_object_eta),
+                                           _matched_nano_object_pt,
+                                           "sf"});
+                trigger_sf_up = //
+                    trigger_sf_correctors({CorrectionHelpers::get_year_for_muon_sf(year),
+                                           fabs(_matched_nano_object_eta),
+                                           _matched_nano_object_pt,
+                                           "systup"});
+                trigger_sf_down = //
+                    trigger_sf_correctors({CorrectionHelpers::get_year_for_muon_sf(year),
+                                           fabs(_matched_nano_object_eta),
+                                           _matched_nano_object_pt,
+                                           "systdown"});
+            }
+            // SingleElectron Paths
+            else if (id == PDG::Electron::Id and min_number_of_matches == 1)
+            {
+                auto _matched_nano_object_pt = sorted_pt.at(0);
+                auto _matched_nano_object_eta_sc = sorted_eta.at(0) + sorted_delta_eta_sc.at(0);
+
+                trigger_sf_nominal = //
+                    trigger_sf_correctors(_matched_nano_object_eta_sc, _matched_nano_object_pt, "nominal");
+                trigger_sf_up = //
+                    trigger_sf_correctors(_matched_nano_object_eta_sc, _matched_nano_object_pt, "up");
+                trigger_sf_down = //
+                    trigger_sf_correctors(_matched_nano_object_eta_sc, _matched_nano_object_pt, "down");
+            }
+            else
+            {
+                throw std::runtime_error(
+                    fmt::format("ERROR: Could not define Trigger SF. There is no trigger scale factor corrector "
+                                "defined for path: {}\n",
+                                hlt_path));
+            }
+
+            // fmt::print("SF: {} - {} - {}\n", trigger_sf_nominal, trigger_sf_up, trigger_sf_down);
+        }
 
         // if (hlt_path == "SingleElectronLowPt")
         // {
         //     fmt::print("----------------------------- DEBUG ----------------------\n");
         //     fmt::print("HLT Path: {}\n", hlt_path);
-        //     fmt::print("check_trigger_bit: {}\n", Trigger::check_trigger_bit(trgobjs.filterBits, hlt_path, year));
-        //     fmt::print("trgobj_mask: {}\n", trgobj_mask);
-
+        //     fmt::print("check_trigger_bit: {}\n", Trigger::check_trigger_bit(trgobjs.filterBits, hlt_path,
+        //     year)); fmt::print("trgobj_mask: {}\n", trgobj_mask);
+        //
         //     fmt::print("Id: {}\n", trgobjs.id);
         //     fmt::print("Id mask: {}\n", (trgobjs.id == id));
         //     fmt::print("Bit : {}\n", trgobjs.filterBits);
@@ -460,64 +529,15 @@ class TrgObjMatcher
         //     fmt::print("RAW Obj Phi: {}\n", nano_objects.phi);
         // }
 
-        const auto [has_trigger_match, matched_index] =
-            Trigger::trigger_matcher(trgobjs.pt[trgobj_mask],                                       //
-                                     trgobjs.eta[trgobj_mask],                                      //
-                                     trgobjs.phi[trgobj_mask],                                      //
-                                     get_pt(nano_objects)[nano_objs_mask && nano_objects_pt_mask],  //
-                                     get_eta(nano_objects)[nano_objs_mask && nano_objects_pt_mask], //
-                                     get_phi(nano_objects)[nano_objs_mask && nano_objects_pt_mask], //
-                                     max_deltar_r);
+        // const auto [has_trigger_match, matched_index] =
+        //     Trigger::trigger_matcher(trgobjs.pt[trgobj_mask],                                       //
+        //                              trgobjs.eta[trgobj_mask],                                      //
+        //                              trgobjs.phi[trgobj_mask],                                      //
+        //                              get_pt(nano_objects)[nano_objs_mask && nano_objects_pt_mask],  //
+        //                              get_eta(nano_objects)[nano_objs_mask && nano_objects_pt_mask], //
+        //                              get_phi(nano_objects)[nano_objs_mask && nano_objects_pt_mask], //
+        //                              max_deltar_r);
 
-        // will run if a trigger is found and matched
-        if (has_trigger_match)
-        {
-            if (id == PDG::Muon::Id)
-            {
-                auto _matched_nano_object_pt =
-                    (get_pt(nano_objects)[nano_objs_mask && nano_objects_pt_mask]).at(matched_index);
-                auto _matched_nano_object_eta =
-                    (get_eta(nano_objects)[nano_objs_mask && nano_objects_pt_mask]).at(matched_index);
-
-                trigger_sf_nominal = //
-                    trigger_sf_correctors({CorrectionHelpers::get_year_for_muon_sf(year),
-                                           fabs(_matched_nano_object_eta),
-                                           _matched_nano_object_pt,
-                                           "sf"});
-                trigger_sf_up = //
-                    trigger_sf_correctors({CorrectionHelpers::get_year_for_muon_sf(year),
-                                           fabs(_matched_nano_object_eta),
-                                           _matched_nano_object_pt,
-                                           "systup"});
-                trigger_sf_down = //
-                    trigger_sf_correctors({CorrectionHelpers::get_year_for_muon_sf(year),
-                                           fabs(_matched_nano_object_eta),
-                                           _matched_nano_object_pt,
-                                           "systdown"});
-            }
-            else if (id == PDG::Electron::Id)
-            {
-                auto _matched_nano_object_pt =
-                    (get_pt(nano_objects)[nano_objs_mask && nano_objects_pt_mask]).at(matched_index);
-                auto _matched_nano_object_eta_sc =
-                    (get_eta(nano_objects)[nano_objs_mask && nano_objects_pt_mask]).at(matched_index) +
-                    (get_delta_eta_sc(nano_objects)[nano_objs_mask && nano_objects_pt_mask]).at(matched_index);
-
-                trigger_sf_nominal = //
-                    trigger_sf_correctors(_matched_nano_object_eta_sc, _matched_nano_object_pt, "nominal");
-                trigger_sf_up = //
-                    trigger_sf_correctors(_matched_nano_object_eta_sc, _matched_nano_object_pt, "up");
-                trigger_sf_down = //
-                    trigger_sf_correctors(_matched_nano_object_eta_sc, _matched_nano_object_pt, "down");
-            }
-            else
-            {
-                throw std::runtime_error(
-                    fmt::format("ERROR: There is no trigger scale factor corrector defined for path: {}\n", hlt_path));
-            }
-
-            // fmt::print("SF: {} - {} - {}\n", trigger_sf_nominal, trigger_sf_up, trigger_sf_down);
-        }
         return std::make_tuple(has_trigger_match, trigger_sf_nominal, trigger_sf_up, trigger_sf_down);
     }
 };
@@ -525,16 +545,15 @@ class TrgObjMatcher
 inline auto make_trgobj_matcher(Year year, bool is_data) -> std::map<std::string_view, TrgObjMatcher>
 {
     std::map<std::string_view, TrgObjMatcher> matchers;
-    // for (auto &&hlt_path : Trigger::HLTPath)
     for (auto &&hlt_path : Trigger::ActivatedHLTPath)
     {
         double _max_delta_r = 0.;
+        unsigned int _min_number_of_matches = std::numeric_limits<unsigned int>::max();
         double _pt_min = std::numeric_limits<double>::max();
         unsigned int _id = std::numeric_limits<int>::max();
 
         if (hlt_path.find("Muon") != std::string::npos)
         {
-            _max_delta_r = 0.1;
             switch (year)
             {
             case Year::Run2016APV:
@@ -578,14 +597,16 @@ inline auto make_trgobj_matcher(Year year, bool is_data) -> std::map<std::string
                 }
                 break;
             default:
-                throw std::runtime_error("Year (" + std::to_string(year) +
-                                         ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
+                throw std::runtime_error(
+                    fmt::format("Year ({}) not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).",
+                                std::to_string(year)));
             }
             _id = PDG::Muon::Id;
+            _max_delta_r = 0.1;
+            _min_number_of_matches = 1;
         }
         else if (hlt_path.find("Electron") != std::string::npos)
         {
-            _max_delta_r = 0.3;
             switch (year)
             {
             case Year::Run2016APV:
@@ -629,15 +650,19 @@ inline auto make_trgobj_matcher(Year year, bool is_data) -> std::map<std::string
                 }
                 break;
             default:
-                throw std::runtime_error("Year (" + std::to_string(year) +
-                                         ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
+                throw std::runtime_error(
+                    fmt::format("Year ({}) not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).",
+                                std::to_string(year)));
             }
             _id = PDG::Electron::Id;
+            _max_delta_r = 0.3;
+            _min_number_of_matches = 1;
         }
 
         matchers.emplace(std::string_view(hlt_path),
-                         TrgObjMatcher(hlt_path, _max_delta_r, _pt_min, _id, year, is_data));
+                         TrgObjMatcher(hlt_path, _max_delta_r, _pt_min, _min_number_of_matches, _id, year, is_data));
     }
+
     return matchers;
 }
 

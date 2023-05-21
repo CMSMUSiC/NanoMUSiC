@@ -164,7 +164,8 @@ auto EventAnalyzer::trigger_match_filter(Outputs &outputs, const std::map<std::s
                     const auto [has_trigger_match, _trigger_sf_nominal, _trigger_sf_up, _trigger_sf_down] =
                         matchers.at(hlt_path)(trgobjs, electrons, electrons.good_low_pt_electrons_mask["nominal"]);
                     if (has_trigger_match)
-                    { // set scale factors
+                    {
+                        // set scale factors
                         trigger_sf_nominal = _trigger_sf_nominal;
                         trigger_sf_up = _trigger_sf_up;
                         trigger_sf_down = _trigger_sf_down;

@@ -43,7 +43,6 @@ auto main(int argc, char *argv[]) -> int
     // print pretty stuff
     if (!batch_mode)
     {
-        system("clear");
         std::cout << " " << std::endl;
         std::cout << " " << std::endl;
         std::cout << " " << std::endl;

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import sys
 
 import tomli
 from helpers import *
@@ -8,9 +7,6 @@ import argparse
 import os
 import re
 from collections import OrderedDict
-import json
-import subprocess
-import shlex
 from tqdm import tqdm
 from pathlib import Path
 
