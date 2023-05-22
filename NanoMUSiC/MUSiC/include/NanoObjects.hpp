@@ -71,6 +71,11 @@ struct EventInfo
     bool HLT_Photon200;
     bool HLT_Photon175;
     bool HLT_Ele115_CaloIdVT_GsfTrkIdT;
+    bool HLT_PFHT800;
+    bool HLT_PFHT900;
+    bool HLT_PFJet450;
+    bool HLT_PFHT1050;
+    bool HLT_PFJet500;
 
     EventInfo(const UInt_t &_run = 0,
               const UInt_t &_lumi = 0,
@@ -103,7 +108,12 @@ struct EventInfo
               const bool &_HLT_Ele32_WPTight_Gsf = false,
               const bool &_HLT_Photon200 = false,
               const bool &_HLT_Photon175 = false,
-              const bool &_HLT_Ele115_CaloIdVT_GsfTrkIdT = false);
+              const bool &_HLT_Ele115_CaloIdVT_GsfTrkIdT = false,
+              const bool &_HLT_PFHT800 = false,
+              const bool &_HLT_PFHT900 = false,
+              const bool &_HLT_PFJet450 = false,
+              const bool &_HLT_PFHT1050 = false,
+              const bool &_HLT_PFJet500 = false);
 };
 
 struct GeneratorInfo

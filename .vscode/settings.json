@@ -90,7 +90,13 @@
     "cfenv": "cpp",
     "cinttypes": "cpp",
     "typeindex": "cpp",
-    "hashtable": "cpp"
+    "hashtable": "cpp",
+    "dymass.C": "cpp",
+    "Jet_comparison.C": "cpp",
+    "trigger_comparison.C": "cpp",
+    "trigger_comparison copy.C": "cpp",
+    "argument_test.C": "cpp",
+    "minv_2jet.C": "cpp"
   },
   // "C_Cpp.loggingLevel": "Debug",
   // "clang-format.executable": "/.automount/home/home__home1/institut_3a/silva/.local/bin/clang-format",

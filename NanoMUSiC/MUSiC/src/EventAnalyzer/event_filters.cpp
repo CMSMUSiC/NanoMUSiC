@@ -9,13 +9,12 @@ auto EventAnalyzer::run_lumi_filter(Outputs &outputs, const RunLumiFilter &_run_
     {
         if (_run_lumi_filter(event_info.run, event_info.lumi, is_data))
         {
-            // // fmt::print("\nDEBUG - run_lumi_filter");
+            // fmt::print("\nDEBUG - run_lumi_filter");
             outputs.fill_cutflow_histo("RunLumi", outputs.get_event_weight());
             return *this;
         }
         set_null();
-        // fmt::print("\nDEBUG - DID NOT PASS RUN_LUMI FILTER: {} - {}", event_info.run,
-        // event_info.lumi);
+        // fmt::print("\nDEBUG - DID NOT PASS RUN_LUMI FILTER: {} - {}", event_info.run, event_info.lumi);
         return *this;
     }
     return *this;

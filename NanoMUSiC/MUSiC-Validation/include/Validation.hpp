@@ -23,6 +23,7 @@
 #include "TTreeReaderArray.h"
 #include "TTreeReaderValue.h"
 
+#include "JetVal.hpp"
 #include "MUSiCTools.hpp"
 #include "TOMLConfig.hpp"
 #include "ZToLepLepX.hpp"

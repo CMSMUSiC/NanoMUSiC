@@ -83,7 +83,13 @@ EventInfo::EventInfo(const UInt_t &_run,
                      const bool &_HLT_Ele32_WPTight_Gsf,
                      const bool &_HLT_Photon200,
                      const bool &_HLT_Photon175,
-                     const bool &_HLT_Ele115_CaloIdVT_GsfTrkIdT)
+                     const bool &_HLT_Ele115_CaloIdVT_GsfTrkIdT,
+                     const bool &_HLT_PFHT800,
+                     const bool &_HLT_PFHT900,
+                     const bool &_HLT_PFJet450,
+                     const bool &_HLT_PFHT1050,
+                     const bool &_HLT_PFJet500)
+
     : run(_run),
       lumi(_lumi),
       event(_event),
@@ -115,7 +121,13 @@ EventInfo::EventInfo(const UInt_t &_run,
       HLT_Ele32_WPTight_Gsf(_HLT_Ele32_WPTight_Gsf),
       HLT_Photon200(_HLT_Photon200),
       HLT_Photon175(_HLT_Photon175),
-      HLT_Ele115_CaloIdVT_GsfTrkIdT(_HLT_Ele115_CaloIdVT_GsfTrkIdT)
+      HLT_Ele115_CaloIdVT_GsfTrkIdT(_HLT_Ele115_CaloIdVT_GsfTrkIdT),
+      HLT_PFHT800(_HLT_PFHT800),
+      HLT_PFHT900(_HLT_PFHT900),
+      HLT_PFJet450(_HLT_PFJet450),
+      HLT_PFHT1050(_HLT_PFHT1050),
+      HLT_PFJet500(_HLT_PFJet500)
+
 {
 }
 

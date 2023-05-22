@@ -211,6 +211,11 @@ auto main(int argc, char *argv[]) -> int
     ADD_VALUE_READER(HLT_Photon200, bool);
     ADD_VALUE_READER(HLT_Photon175, bool);
     ADD_VALUE_READER(HLT_Ele115_CaloIdVT_GsfTrkIdT, bool);
+    ADD_VALUE_READER(HLT_PFHT800, bool);
+    ADD_VALUE_READER(HLT_PFHT900, bool);
+    ADD_VALUE_READER(HLT_PFJet450, bool);
+    ADD_VALUE_READER(HLT_PFHT1050, bool);
+    ADD_VALUE_READER(HLT_PFJet500, bool);
 
     // Generator info
     ADD_VALUE_READER(Generator_binvar, float);
@@ -404,20 +409,26 @@ auto main(int argc, char *argv[]) -> int
                                                        unwrap(Flag_BadPFMuonDzFilter),                  //
                                                        unwrap(Flag_eeBadScFilter),                      //
                                                        unwrap(Flag_ecalBadCalibFilter),
-                                                       unwrap(fixedGridRhoFastjetAll), //
-                                                       unwrap(HLT_IsoMu27),            //
-                                                       unwrap(HLT_IsoMu24),            //
-                                                       unwrap(HLT_IsoTkMu24),          //
-                                                       unwrap(HLT_Mu50),               //
-                                                       unwrap(HLT_TkMu50),             //
-                                                       unwrap(HLT_TkMu100),            //
-                                                       unwrap(HLT_OldMu100),           //
-                                                       unwrap(HLT_Ele27_WPTight_Gsf),  //
-                                                       unwrap(HLT_Ele35_WPTight_Gsf),  //
-                                                       unwrap(HLT_Ele32_WPTight_Gsf),  //
-                                                       unwrap(HLT_Photon200),          //
-                                                       unwrap(HLT_Photon175),          //
-                                                       unwrap(HLT_Ele115_CaloIdVT_GsfTrkIdT)))
+                                                       unwrap(fixedGridRhoFastjetAll),                  //
+                                                       unwrap(HLT_IsoMu27),                             //
+                                                       unwrap(HLT_IsoMu24),                             //
+                                                       unwrap(HLT_IsoTkMu24),                           //
+                                                       unwrap(HLT_Mu50),                                //
+                                                       unwrap(HLT_TkMu50),                              //
+                                                       unwrap(HLT_TkMu100),                             //
+                                                       unwrap(HLT_OldMu100),                            //
+                                                       unwrap(HLT_Ele27_WPTight_Gsf),                   //
+                                                       unwrap(HLT_Ele35_WPTight_Gsf),                   //
+                                                       unwrap(HLT_Ele32_WPTight_Gsf),                   //
+                                                       unwrap(HLT_Photon200),                           //
+                                                       unwrap(HLT_Photon175),                           //
+                                                       unwrap(HLT_Ele115_CaloIdVT_GsfTrkIdT),
+                                                       unwrap(HLT_PFHT800),
+                                                       unwrap(HLT_PFHT900),
+                                                       unwrap(HLT_PFJet450),
+                                                       unwrap(HLT_PFHT1050),
+                                                       unwrap(HLT_PFJet500)))
+
                 // generator info
                 .set_generator_info(NanoObjects::GeneratorInfo(unwrap(Generator_binvar),     //
                                                                unwrap(Generator_scalePDF),   //
@@ -492,8 +503,8 @@ auto main(int argc, char *argv[]) -> int
                                             unwrap(Tau_eta), //
                                             unwrap(Tau_phi)))
                 // bjets
-                .set_bjets(NanoObjects::BJets(unwrap(Jet_pt),  //
-                                              unwrap(Jet_eta), //
+                .set_bjets(NanoObjects::BJets(unwrap(Jet_pt),            //
+                                              unwrap(Jet_eta),           //
                                               unwrap(Jet_phi),
                                               unwrap(Jet_mass),          //
                                               unwrap(Jet_jetId),         //
@@ -503,8 +514,8 @@ auto main(int argc, char *argv[]) -> int
                                               unwrap(Jet_rawFactor),
                                               unwrap(Jet_area)))
                 // jets
-                .set_jets(NanoObjects::Jets(unwrap(Jet_pt),  //
-                                            unwrap(Jet_eta), //
+                .set_jets(NanoObjects::Jets(unwrap(Jet_pt),            //
+                                            unwrap(Jet_eta),           //
                                             unwrap(Jet_phi),
                                             unwrap(Jet_mass),          //
                                             unwrap(Jet_jetId),         //
@@ -541,7 +552,7 @@ auto main(int argc, char *argv[]) -> int
                              .transform_met("nominal")
                              .object_selection()
                              .has_selected_objects_filter(outputs)
-                             .trigger_match_filter(outputs, matchers)
+                             //.trigger_match_filter(outputs, matchers)
                              .set_l1_pre_firing_SFs(outputs)
                              .set_muon_SFs(outputs,
                                            muon_sf_reco,

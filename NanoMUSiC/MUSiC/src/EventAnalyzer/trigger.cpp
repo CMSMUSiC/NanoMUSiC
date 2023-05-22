@@ -14,55 +14,58 @@ auto EventAnalyzer::set_trigger_bits() -> EventAnalyzer &
         switch (year)
         {
         case Year::Run2016APV:
-            trigger_bits.set("SingleMuonLowPt", event_info.HLT_IsoMu24 || event_info.HLT_IsoTkMu24)
-                .set("SingleMuonHighPt", event_info.HLT_Mu50 || event_info.HLT_TkMu50)
-                .set("SingleElectronLowPt", event_info.HLT_Ele27_WPTight_Gsf || event_info.HLT_Photon175)
-                .set("SingleElectronHighPt",
-                     event_info.HLT_Ele27_WPTight_Gsf || event_info.HLT_Photon175 ||
-                         event_info.HLT_Ele115_CaloIdVT_GsfTrkIdT)
+            trigger_bits
+                .set("SingleMuonLowPt", false)      // event_info.HLT_IsoMu24 || event_info.HLT_IsoTkMu24)
+                .set("SingleMuonHighPt", false)     // event_info.HLT_Mu50 || event_info.HLT_TkMu50)
+                .set("SingleElectronLowPt", false)  // event_info.HLT_Ele27_WPTight_Gsf || event_info.HLT_Photon175)
+                .set("SingleElectronHighPt", false) // event_info.HLT_Ele27_WPTight_Gsf || event_info.HLT_Photon175 ||
+                                                    // event_info.HLT_Ele115_CaloIdVT_GsfTrkIdT)
                 .set("DoubleMuon", false)
                 .set("DoubleElectron", false)
                 // .set("Photon", event_info.HLT_Photon200)
                 .set("Photon", false)
                 .set("Tau", false)
                 .set("BJet", false)
-                .set("Jet", false)
+                .set("Jet", event_info.HLT_PFHT800 || event_info.HLT_PFHT900 || event_info.HLT_PFJet450) // false)
                 .set("MET", false);
             break;
         case Year::Run2016:
-            trigger_bits.set("SingleMuonLowPt", event_info.HLT_IsoMu24 || event_info.HLT_IsoTkMu24)
-                .set("SingleMuonHighPt", event_info.HLT_Mu50 || event_info.HLT_TkMu50)
-                .set("SingleElectronLowPt", event_info.HLT_Ele27_WPTight_Gsf || event_info.HLT_Photon175)
-                .set("SingleElectronHighPt",
-                     event_info.HLT_Ele27_WPTight_Gsf || event_info.HLT_Photon175 ||
-                         event_info.HLT_Ele115_CaloIdVT_GsfTrkIdT)
+            trigger_bits
+                .set("SingleMuonLowPt", false)      // event_info.HLT_IsoMu24 || event_info.HLT_IsoTkMu24)
+                .set("SingleMuonHighPt", false)     // event_info.HLT_Mu50 || event_info.HLT_TkMu50)
+                .set("SingleElectronLowPt", false)  // event_info.HLT_Ele27_WPTight_Gsf || event_info.HLT_Photon175)
+                .set("SingleElectronHighPt", false) // event_info.HLT_Ele27_WPTight_Gsf || event_info.HLT_Photon175 ||
+                                                    // event_info.HLT_Ele115_CaloIdVT_GsfTrkIdT)
                 .set("DoubleMuon", false)
                 .set("DoubleElectron", false)
                 // .set("Photon", event_info.HLT_Photon200)
                 .set("Photon", false)
                 .set("Tau", false)
                 .set("BJet", false)
-                .set("Jet", false)
+                .set("Jet", event_info.HLT_PFHT800 || event_info.HLT_PFHT900 || event_info.HLT_PFJet450) // false)
                 .set("MET", false);
             break;
         case Year::Run2017:
-            trigger_bits.set("SingleMuonLowPt", event_info.HLT_IsoMu27)
-                .set("SingleMuonHighPt", event_info.HLT_Mu50 || event_info.HLT_TkMu100 || event_info.HLT_OldMu100)
-                .set("SingleElectronLowPt", event_info.HLT_Ele35_WPTight_Gsf || event_info.HLT_Photon200)
-                .set("SingleElectronHighPt",
-                     event_info.HLT_Ele35_WPTight_Gsf || event_info.HLT_Photon200 ||
-                         event_info.HLT_Ele115_CaloIdVT_GsfTrkIdT)
+            trigger_bits
+                .set("SingleMuonLowPt", false) // event_info.HLT_IsoMu27)
+                .set("SingleMuonHighPt",
+                     false) // event_info.HLT_Mu50 || event_info.HLT_TkMu100 || event_info.HLT_OldMu100)
+                .set("SingleElectronLowPt", false)  // event_info.HLT_Ele35_WPTight_Gsf || event_info.HLT_Photon200)
+                .set("SingleElectronHighPt", false) // event_info.HLT_Ele35_WPTight_Gsf || event_info.HLT_Photon200 ||
+                                                    // event_info.HLT_Ele115_CaloIdVT_GsfTrkIdT)
                 .set("DoubleMuon", false)
                 .set("DoubleElectron", false)
                 // .set("Photon", event_info.HLT_Photon200)
                 .set("Photon", false)
                 .set("Tau", false)
                 .set("BJet", false)
-                .set("Jet", false)
+                .set("Jet", event_info.HLT_PFHT1050 || event_info.HLT_PFJet500) // false)
                 .set("MET", false);
             break;
         case Year::Run2018:
-            trigger_bits.set("SingleMuonLowPt", event_info.HLT_IsoMu24)
+            trigger_bits
+                /* E-MU-PH TRIGGER (AS BEFORE)
+                .set("SingleMuonLowPt", event_info.HLT_IsoMu24)
                 .set("SingleMuonHighPt", event_info.HLT_Mu50 || event_info.HLT_TkMu100 || event_info.HLT_OldMu100)
                 .set("SingleElectronLowPt", event_info.HLT_Ele32_WPTight_Gsf || event_info.HLT_Photon200)
                 .set("SingleElectronHighPt",
@@ -76,6 +79,22 @@ auto EventAnalyzer::set_trigger_bits() -> EventAnalyzer &
                 .set("BJet", false)
                 .set("Jet", false)
                 .set("MET", false);
+            */
+                ///* JET TRIGGER (NEW)
+                .set("SingleMuonLowPt", false)
+                .set("SingleMuonHighPt", false)
+                .set("SingleElectronLowPt", false)
+                .set("SingleElectronHighPt", false)
+                .set("DoubleMuon", false)
+                .set("DoubleElectron", false)
+                // .set("Photon", event_info.HLT_Photon200)
+                .set("Photon", false)
+                .set("Tau", false)
+                .set("BJet", false)
+                .set("Jet", event_info.HLT_PFHT1050 || event_info.HLT_PFJet500)
+                .set("MET", false);
+            //*/
+
             break;
         default:
             throw std::runtime_error("Year (" + std::to_string(year) +

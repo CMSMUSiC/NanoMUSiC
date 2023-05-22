@@ -29,6 +29,6 @@ add_link_options(
     -lstdc++fs
 )
 
-add_executable(validation src/main.cpp ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/TOMLConfig.cpp     src/ZToLepLepX.cpp)
+add_executable(validation src/main.cpp ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/TOMLConfig.cpp     src/ZToLepLepX.cpp  src/JetVal.cpp)
 target_link_libraries(validation LINK_PUBLIC)
 install(TARGETS validation DESTINATION ${CMAKE_SOURCE_DIR}/bin)

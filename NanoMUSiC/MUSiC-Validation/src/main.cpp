@@ -56,6 +56,8 @@ auto main(int argc, char *argv[]) -> int
     }
     auto tree_reader = TTreeReader(&input_chain);
 
+    //------------------------ value readers
+
     ADD_VALUE_READER(run, unsigned int);
     ADD_VALUE_READER(event_number, unsigned long);
 
@@ -94,6 +96,9 @@ auto main(int argc, char *argv[]) -> int
     ADD_VALUE_READER(nMET, unsigned int);
     ADD_ARRAY_READER(MET_pt, float);
 
+    //------------------------ create instances
+
+    /* // #### OLD LEPTON/GAMMA VALIDATION ####
     auto z_to_mu_mu_x = ZToLepLepX(fmt::format("{}/z_to_mu_mu_x_{}_{}.root", output_path, process, year));
 
     auto z_to_ele_ele_x = ZToLepLepX(fmt::format("{}/z_to_ele_ele_x_{}_{}.root", output_path, process, year));
@@ -103,6 +108,12 @@ auto main(int argc, char *argv[]) -> int
 
     auto z_to_ele_ele_x_Z_mass =
         ZToLepLepX(fmt::format("{}/z_to_ele_ele_x_Z_mass_{}_{}.root", output_path, process, year), true);
+    */
+
+    // #### NEW JET VALIDATION ####
+    auto jet_val = JetVal(fmt::format("{}/jet_val_{}_{}.root", output_path, process, year));
+
+    //------------------------import data
 
     const auto cutflow_file =
         std::unique_ptr<TFile>(TFile::Open(fmt::format("{}/cutflow_{}_{}.root", output_path, process, year).c_str()));
@@ -144,6 +155,8 @@ auto main(int argc, char *argv[]) -> int
                 processed_data_events.insert({this_run, std::unordered_set<unsigned long>({this_event_number})});
             }
         }
+
+        //------------------------ data conditioning, sorting objects after highest pt
 
         if (not(already_processed))
         {
@@ -189,16 +202,19 @@ auto main(int argc, char *argv[]) -> int
             const auto bjet_pt = VecOps::Take(unwrap(BJet_pt), bjet_reordering_mask);
             const auto bjet_eta = VecOps::Take(unwrap(BJet_eta), bjet_reordering_mask);
             const auto bjet_phi = VecOps::Take(unwrap(BJet_phi), bjet_reordering_mask);
+            const auto bjet_mass = VecOps::Take(unwrap(BJet_mass), bjet_reordering_mask);
 
             // jets
             const auto jet_reordering_mask = VecOps::Argsort(unwrap(Jet_pt));
             const auto jet_pt = VecOps::Take(unwrap(Jet_pt), jet_reordering_mask);
             const auto jet_eta = VecOps::Take(unwrap(Jet_eta), jet_reordering_mask);
             const auto jet_phi = VecOps::Take(unwrap(Jet_phi), jet_reordering_mask);
+            const auto jet_mass = VecOps::Take(unwrap(Jet_mass), jet_reordering_mask);
 
             // MET
             auto met_pt = unwrap(MET_pt);
 
+            /*
             auto get_leading = [](RVec<float> pt,
                                   RVec<float> eta,
                                   RVec<float> phi) -> std::pair<unsigned int, std::optional<Math::PtEtaPhiMVector>>
@@ -209,6 +225,7 @@ auto main(int argc, char *argv[]) -> int
                 }
                 return std::make_pair(pt.size(), Math::PtEtaPhiMVector(pt[0], eta[0], phi[0], 1E-9));
             };
+            */
 
             auto get_met = [](RVec<float> met_pt) -> std::optional<float>
             {
@@ -219,62 +236,107 @@ auto main(int argc, char *argv[]) -> int
                 return met_pt[0];
             };
 
-            auto [nBJet, bjet] = get_leading(bjet_pt, bjet_eta, bjet_phi);
-            auto [nJet, jet] = get_leading(jet_pt, jet_eta, jet_phi);
+            unsigned int nJet = jet_pt.size();
+            unsigned int nBJet = bjet_pt.size();
+
             auto met = get_met(met_pt);
 
-            // MuMu + X
-            if (muon_pt.size() >= 2)
+            //------------------------ validation code, calculate and fill histograms
+
+            /* // #### OLD LEPTON/GAMMA VALIDATION ####
+                // MuMu + X
+                if (muon_pt.size() >= 2)
+                {
+                    auto muon_1 = Math::PtEtaPhiMVector(muon_pt[0], muon_eta[0], muon_phi[0], PDG::Muon::Mass);
+                    auto muon_2 = Math::PtEtaPhiMVector(muon_pt[1], muon_eta[1], muon_phi[1], PDG::Muon::Mass);
+
+                    // wide mass range
+                    z_to_mu_mu_x.fill(muon_1, muon_2, nBJet, bjet, nJet, jet, met, weight);
+
+                    // Z mass range
+                    if ((muon_1 + muon_2).mass() > PDG::Z::Mass - 20. and (muon_1 + muon_2).mass() < PDG::Z::Mass + 20.)
+                    {
+                        z_to_mu_mu_x_Z_mass.fill(muon_1, muon_2, nBJet, bjet, nJet, jet, met, weight);
+                    }
+                }
+
+                // EleEle + X
+                if (electron_pt.size() >= 2)
+                {
+                    auto electron_1 =
+                        Math::PtEtaPhiMVector(electron_pt[0], electron_eta[0], electron_phi[0], PDG::Electron::Mass);
+                    auto electron_2 =
+                        Math::PtEtaPhiMVector(electron_pt[1], electron_eta[1], electron_phi[1], PDG::Electron::Mass);
+
+                    // wide mass range
+                    z_to_ele_ele_x.fill(electron_1, electron_2, nBJet, bjet, nJet, jet, met, weight);
+
+                    // Z mass range
+                    if ((electron_1 + electron_2).mass() > PDG::Z::Mass - 20. and
+                        (electron_1 + electron_2).mass() < PDG::Z::Mass + 20.)
+                    {
+                        z_to_ele_ele_x_Z_mass.fill(electron_1, electron_2, nBJet, bjet, nJet, jet, met, weight);
+                    }
+                }
+                */
+
+            // #### NEW JET VALIDATION ####
+            // ---- 0Jet + X
+            // fill0(nBJet, nJet, met, weight)
+            jet_val.fill0(nBJet, nJet, met, weight);
+
+            // ---- 1Jet + X
+            // fill1(jet_1, weight)
+            if (jet_pt.size() >= 1)
             {
-                auto muon_1 = Math::PtEtaPhiMVector(muon_pt[0], muon_eta[0], muon_phi[0], PDG::Muon::Mass);
-                auto muon_2 = Math::PtEtaPhiMVector(muon_pt[1], muon_eta[1], muon_phi[1], PDG::Muon::Mass);
+                // create 4-vectors for the leading jet
+                auto jet_1 = Math::PtEtaPhiMVector(jet_pt[0], jet_eta[0], jet_phi[0], jet_mass[0]);
+                jet_val.fill1(jet_1, weight);
+            }
+
+            // ---- 2Jet + X
+            // fill2(jet_1, jet_2, weight)
+            if (jet_pt.size() >= 2)
+            {
+                // create 4-vectors for the two leading jets
+                auto jet_1 = Math::PtEtaPhiMVector(jet_pt[0], jet_eta[0], jet_phi[0], jet_mass[0]);
+                auto jet_2 = Math::PtEtaPhiMVector(jet_pt[1], jet_eta[1], jet_phi[1], jet_mass[1]);
 
                 // wide mass range
-                z_to_mu_mu_x.fill(muon_1, muon_2, nBJet, bjet, nJet, jet, met, weight);
+                jet_val.fill2(jet_1, jet_2, weight);
 
                 // Z mass range
-                if ((muon_1 + muon_2).mass() > PDG::Z::Mass - 20. and (muon_1 + muon_2).mass() < PDG::Z::Mass + 20.)
+                if ((jet_1 + jet_2).mass() > PDG::Z::Mass - 20. and (jet_1 + jet_2).mass() < PDG::Z::Mass + 20.)
                 {
-                    z_to_mu_mu_x_Z_mass.fill(muon_1, muon_2, nBJet, bjet, nJet, jet, met, weight);
+                    jet_val.fill2z(jet_1, jet_2, weight);
                 }
             }
 
-            // EleEle + X
-            if (electron_pt.size() >= 2)
+            // process monitoring
+            if (event < 10 || (event < 100 && event % 10 == 0) || (event < 1000 && event % 100 == 0) ||
+                (event < 10000 && event % 1000 == 0) || (event < 100000 && event % 10000 == 0) ||
+                (event < 1000000 && event % 100000 == 0) || (event < 10000000 && event % 1000000 == 0) ||
+                (event >= 10000000 && event % 10000000 == 0))
             {
-                auto electron_1 =
-                    Math::PtEtaPhiMVector(electron_pt[0], electron_eta[0], electron_phi[0], PDG::Electron::Mass);
-                auto electron_2 =
-                    Math::PtEtaPhiMVector(electron_pt[1], electron_eta[1], electron_phi[1], PDG::Electron::Mass);
-
-                // wide mass range
-                z_to_ele_ele_x.fill(electron_1, electron_2, nBJet, bjet, nJet, jet, met, weight);
-
-                // Z mass range
-                if ((electron_1 + electron_2).mass() > PDG::Z::Mass - 20. and
-                    (electron_1 + electron_2).mass() < PDG::Z::Mass + 20.)
-                {
-                    z_to_ele_ele_x_Z_mass.fill(electron_1, electron_2, nBJet, bjet, nJet, jet, met, weight);
-                }
+                fmt::print("\n\n[MUSiC Validation] Processed {} events.\n", event);
+                PrintProcessInfo();
             }
-
-            // // process monitoring
-            // if (event < 10 || (event < 100 && event % 10 == 0) || (event < 1000 && event % 100 == 0) ||
-            //     (event < 10000 && event % 1000 == 0) || (event < 100000 && event % 10000 == 0) ||
-            //     (event < 1000000 && event % 100000 == 0) || (event < 10000000 && event % 1000000 == 0) ||
-            //     (event >= 10000000 && event % 10000000 == 0))
-            // {
-            //     fmt::print("\n\n[MUSiC Validation] Processed {} events.\n", event);
-            //     PrintProcessInfo();
-            // }
         }
     }
 
+    //------------------------ save output
+
     fmt::print("\n[MUSiC Validation] Saving outputs ...\n");
+
+    /* // #### OLD LEPTON/GAMMA VALIDATION ####
     z_to_mu_mu_x.dump_outputs();
     z_to_ele_ele_x.dump_outputs();
     z_to_mu_mu_x_Z_mass.dump_outputs();
     z_to_ele_ele_x_Z_mass.dump_outputs();
+    */
+
+    // #### NEW JET VALIDATION ####
+    jet_val.dump_outputs();
 
     fmt::print("\n[MUSiC Validation] Done ...\n");
     PrintProcessInfo();

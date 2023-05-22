@@ -21,22 +21,22 @@ using namespace std::literals;
 namespace Trigger
 {
 constexpr auto HLTPath = Enumerate::make_enumerate("SingleMuonLowPt"sv,      //
-                                        "SingleMuonHighPt"sv,     //
-                                        "SingleElectronLowPt"sv,  //
-                                        "SingleElectronHighPt"sv, //
-                                        "DoubleMuon"sv,           //
-                                        "DoubleElectron"sv,       //
-                                        "Photon"sv,               //
-                                        "Tau"sv,                  //
-                                        "BJet"sv,                 //
-                                        "Jet"sv,                  //
-                                        "MET"sv);
+                                                   "SingleMuonHighPt"sv,     //
+                                                   "SingleElectronLowPt"sv,  //
+                                                   "SingleElectronHighPt"sv, //
+                                                   "DoubleMuon"sv,           //
+                                                   "DoubleElectron"sv,       //
+                                                   "Photon"sv,               //
+                                                   "Tau"sv,                  //
+                                                   "BJet"sv,                 //
+                                                   "Jet"sv,                  //
+                                                   "MET"sv);
 constexpr auto kTotalPaths = HLTPath.size();
 
 constexpr auto ActivatedHLTPath = Enumerate::make_enumerate("SingleMuonLowPt"sv,     //
-                                                 "SingleMuonHighPt"sv,    //
-                                                 "SingleElectronLowPt"sv, //
-                                                 "SingleElectronHighPt"sv);
+                                                            "SingleMuonHighPt"sv,    //
+                                                            "SingleElectronLowPt"sv, //
+                                                            "SingleElectronHighPt"sv); //////////////////////////
 
 // constexpr auto kTotalActivatedPaths = ActivatedHLTPath && (nano_objects.pt <= pt_min).size();
 
@@ -60,7 +60,7 @@ std::pair<RVec<float>, RVec<float>> get_matches(const T1 &trigger_objects_pt,  /
 
         // Relative pT diff
         matches_relative_pT.at(idx) =
-            VecOps::Min(VecOps::abs(nano_objects_pt[idx] - trigger_objects_phi) / (nano_objects_pt[idx]));
+            VecOps::Min(VecOps::abs(nano_objects_pt[idx] - trigger_objects_pt) / (nano_objects_pt[idx]));
     }
 
     return std::make_pair(matches_distances, matches_relative_pT);
@@ -505,9 +505,9 @@ class TrgObjMatcher
 
                 trigger_sf_nominal = //
                     trigger_sf_correctors(_matched_nano_object_eta_sc, _matched_nano_object_pt, "nominal");
-                trigger_sf_up = //
+                trigger_sf_up =      //
                     trigger_sf_correctors(_matched_nano_object_eta_sc, _matched_nano_object_pt, "up");
-                trigger_sf_down = //
+                trigger_sf_down =    //
                     trigger_sf_correctors(_matched_nano_object_eta_sc, _matched_nano_object_pt, "down");
             }
             else
