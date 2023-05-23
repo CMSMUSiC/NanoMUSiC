@@ -15,7 +15,9 @@ class ParticleVector
     ParticleVector()
     {
     }
-    ParticleVector(const std::string &name, const std::vector<pxl::Particle *> &vec) : name(name), particles(vec)
+    ParticleVector(const std::string &name, const std::vector<pxl::Particle *> &vec)
+        : name(name),
+          particles(vec)
     {
     }
     std::string getParticleName() const

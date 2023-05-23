@@ -1165,7 +1165,8 @@ void EventClassFactory::FillEventClass(TEventClass *EventClassToFill,
         }
     }
     else if (!systName.empty())
-    { // Fill differential systematic
+    {
+        // Fill differential systematic
         // the eventclass may not be filled yet.make sure the xs uncert is added
         // even though syst weight are not filled for differential systematics
         std::string xsUncertName = "xs" + m_lastprocessGroup + m_lastprocessOrder;

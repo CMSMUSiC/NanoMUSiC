@@ -1,13 +1,27 @@
 #ifndef HISTOGRAMS
 #define HISTOGRAMS
 
+#include "BinLimits.hpp"
 #include <TH1F.h>
 #include <cmath>
 #include <math.h>
 #include <vector>
 
+// create a new histogram with fixed bin size
 #define ADD_TH1F(HISTO, N_BINS, LOWER_BOUND, UPPER_BOUND)                                                              \
     TH1F HISTO = TH1F(#HISTO, #HISTO, N_BINS, LOWER_BOUND, UPPER_BOUND)
+
+// define a new histogram, with variable bin size
+inline auto redefine_histogram(TH1F &hist, const std::map<std::string, int> &countMap) -> TH1F
+{
+    constexpr double fudge = 1.;
+    constexpr double bin_size_min = 1.;
+    constexpr double center_of_mass_energy = 13.;
+
+    auto limits = BinLimits::get_bin_limits("validation_plot", countMap, 0, center_of_mass_energy, bin_size_min, fudge);
+
+    return TH1F(hist.GetName(), hist.GetTitle(), limits.size(), limits.data());
+}
 
 constexpr int n_energy_bins = 1300;
 constexpr float min_energy = 0;

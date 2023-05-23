@@ -62,8 +62,10 @@ ClassImp(TEventClass)
 {
     // this is hardcoded for now but only at this point
     m_histnamePDFup = "pdfuponly";
+
     // pdfs are a special case and not entered rom outside
     m_systNames.insert(m_histnamePDFup);
+
     // create dummy histos for each distribution
     for (auto &binInfo : m_distTypeBinInfo)
     {

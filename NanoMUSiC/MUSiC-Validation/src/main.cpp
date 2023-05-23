@@ -95,15 +95,41 @@ auto main(int argc, char *argv[]) -> int
     ADD_VALUE_READER(nMET, unsigned int);
     ADD_ARRAY_READER(MET_pt, float);
 
-    auto z_to_mu_mu_x = ZToLepLepX(fmt::format("{}/z_to_mu_mu_x_{}_{}.root", output_path, process, year));
+    const std::map<std::string, int> z_to_mu_mu_x_count_map = {{"Ele", 0},
+                                                               {"EleEE", 0},
+                                                               {"EleEB", 0},
+                                                               {"Muon", 2},
+                                                               {"Gamma", 0},
+                                                               {"GammaEB", 0},
+                                                               {"GammaEE", 0},
+                                                               {"Tau", 0},
+                                                               {"Jet", 0},
+                                                               {"bJet", 0},
+                                                               {"MET", 0}};
 
-    auto z_to_ele_ele_x = ZToLepLepX(fmt::format("{}/z_to_ele_ele_x_{}_{}.root", output_path, process, year));
+    const std::map<std::string, int> z_to_ele_ele_x_count_map = {{"Ele", 2},
+                                                                 {"EleEE", 0},
+                                                                 {"EleEB", 0},
+                                                                 {"Muon", 0},
+                                                                 {"Gamma", 0},
+                                                                 {"GammaEB", 0},
+                                                                 {"GammaEE", 0},
+                                                                 {"Tau", 0},
+                                                                 {"Jet", 0},
+                                                                 {"bJet", 0},
+                                                                 {"MET", 0}};
 
-    auto z_to_mu_mu_x_Z_mass =
-        ZToLepLepX(fmt::format("{}/z_to_mu_mu_x_Z_mass_{}_{}.root", output_path, process, year), true);
+    auto z_to_mu_mu_x =
+        ZToLepLepX(fmt::format("{}/z_to_mu_mu_x_{}_{}.root", output_path, process, year), z_to_mu_mu_x_count_map);
 
-    auto z_to_ele_ele_x_Z_mass =
-        ZToLepLepX(fmt::format("{}/z_to_ele_ele_x_Z_mass_{}_{}.root", output_path, process, year), true);
+    auto z_to_ele_ele_x =
+        ZToLepLepX(fmt::format("{}/z_to_ele_ele_x_{}_{}.root", output_path, process, year), z_to_ele_ele_x_count_map);
+
+    auto z_to_mu_mu_x_Z_mass = ZToLepLepX(
+        fmt::format("{}/z_to_mu_mu_x_Z_mass_{}_{}.root", output_path, process, year), z_to_mu_mu_x_count_map, true);
+
+    auto z_to_ele_ele_x_Z_mass = ZToLepLepX(
+        fmt::format("{}/z_to_ele_ele_x_Z_mass_{}_{}.root", output_path, process, year), z_to_ele_ele_x_count_map, true);
 
     const auto cutflow_file =
         std::unique_ptr<TFile>(TFile::Open(fmt::format("{}/cutflow_{}_{}.root", output_path, process, year).c_str()));

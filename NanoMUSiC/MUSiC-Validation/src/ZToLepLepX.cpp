@@ -7,9 +7,26 @@
 #include <fmt/format.h>
 #include <string_view>
 
-ZToLepLepX::ZToLepLepX(const std::string &output_path, bool is_Z_mass_validation)
+ZToLepLepX::ZToLepLepX(const std::string &output_path,
+                       const std::map<std::string, int> &countMap,
+                       bool is_Z_mass_validation)
     : output_file(std::unique_ptr<TFile>(TFile::Open(output_path.c_str(), "RECREATE")))
 {
+
+    h_invariant_mass = redefine_histogram(h_invariant_mass, countMap);
+    h_sum_pt = redefine_histogram(h_sum_pt, countMap);
+    h_met = redefine_histogram(h_met, countMap);
+    h_lepton_1_pt = redefine_histogram(h_lepton_1_pt, countMap);
+    h_lepton_2_pt = redefine_histogram(h_lepton_2_pt, countMap);
+    h_lepton_1_eta = redefine_histogram(h_lepton_1_eta, countMap);
+    h_lepton_2_eta = redefine_histogram(h_lepton_2_eta, countMap);
+    h_lepton_1_phi = redefine_histogram(h_lepton_1_phi, countMap);
+    h_lepton_2_phi = redefine_histogram(h_lepton_2_phi, countMap);
+    h_lepton_1_jet_1_dPhi = redefine_histogram(h_lepton_1_jet_1_dPhi, countMap);
+    h_lepton_1_jet_1_dR = redefine_histogram(h_lepton_1_jet_1_dR, countMap);
+    h_jet_multiplicity = redefine_histogram(h_jet_multiplicity, countMap);
+    h_bjet_multiplicity = redefine_histogram(h_bjet_multiplicity, countMap);
+
     if (is_Z_mass_validation)
     {
         h_invariant_mass = TH1F("h_invariant_mass", " h_invariant_mass", 1000, PDG::Z::Mass - 20., PDG::Z::Mass + 20.);
