@@ -12,6 +12,8 @@ import tempfile
 from collections import defaultdict
 from pprint import pprint
 
+from sample_helpers import get_year_era
+
 years = ["2016APV", "2016", "2017", "2018"]
 
 
@@ -48,7 +50,7 @@ def parse_args():
         args.all_mc and (args.sample or args.all_data)
     ):
         raise RuntimeError(
-            'ERROR: Could not start validation. "--all_data" is incompatible with "--all_mc" and "--sample".'
+            'ERROR: Could not satrt validation. "--all_data" is incompatible with "--all_mc" and "--sample".'
         )
 
     if args.sample and not (args.year):
@@ -151,7 +153,7 @@ def validation(args):
         effective_x_section = xsection * filter_eff * k_factor * luminosity
 
     # print("[ MUSiC Validation ] Preparing output directory ...\n")
-    os.system(f"rm -rf validation_outputs/{year}/*{process}_{year}.root")
+    os.system(f"rm -rf validation_outputs/{year}/*_{process}_{year}.root")
 
     # print("[ MUSiC Validation ] Merging cutflow histograms ...\n")
     merge_cutflow_histograms(process, year, output_path, input_files)
@@ -170,17 +172,6 @@ def validation(args):
     os.system(f"rm -rf {inputs} > /dev/null")
 
 
-def get_year_era(process_name):
-    process_name_components = (
-        process_name.replace("-HIPM", "")
-        .replace("_HIPM", "")
-        .replace("-ver1", "")
-        .replace("-ver2", "")
-        .split("_")
-    )
-    return process_name_components[-2], process_name_components[-1]
-
-
 def main():
     print("\n\n📶 [ MUSiC Validation ] 📶\n")
 
@@ -191,8 +182,6 @@ def main():
     task_config: dict[str, Any] = toml.load(task_config_file)
 
     # data workflow
-
-    # run all data
     if args.all_data:
         validation_arguments = {}
         for sample in task_config:
@@ -224,6 +213,7 @@ def main():
 
         validation_arguments = list(validation_arguments.values())
         with Pool(min(args.jobs, len(validation_arguments))) as pool:
+            # with Pool(1) as pool:
             list(
                 tqdm(
                     pool.imap_unordered(validation, validation_arguments),
@@ -231,9 +221,9 @@ def main():
                     unit=" sample",
                 )
             )
+
         exit(0)
 
-    # run all mc
     if args.all_mc:
         validation_arguments = []
         for sample in task_config:
@@ -273,97 +263,8 @@ def main():
                     unit="sample",
                 )
             )
+
         exit(0)
-
-    # run one sample
-    if args.sample and args.year:
-        ismcsample = False
-        validation_arguments = []
-        for sample in task_config:  # see if the sample is an mc sample
-            if (
-                sample != "Lumi"
-                and sample != "Global"
-                and not (task_config[sample]["is_data"])
-                and sample == args.sample
-            ):
-                for year in years:
-                    if year == args.year:
-                        if f"das_name_{year}" in task_config[sample].keys():
-                            validation_arguments.append(
-                                {
-                                    "process": sample,
-                                    "year": year,
-                                    "luminosity": task_config["Lumi"][year],
-                                    "is_data": task_config[sample]["is_data"],
-                                    "xsection": task_config[sample]["XSec"],
-                                    "filter_eff": task_config[sample]["FilterEff"],
-                                    "k_factor": task_config[sample]["kFactor"],
-                                    "input_files": list(
-                                        filter(
-                                            lambda file: f"{year}_date" in file,
-                                            task_config[sample]["output_files"],
-                                        )
-                                    ),
-                                    "executable": args.executable,
-                                }
-                            )
-                            ismcsample = True
-                        if not (os.path.isdir(f"validation_outputs/{year}")):
-                            os.system(f"mkdir -p validation_outputs/{year}")
-        if ismcsample == True:  # if it is an mc sample, run the mc workflow
-            print("this sample is mc")
-            with Pool(min(args.jobs, len(validation_arguments))) as pool:
-                list(
-                    tqdm(
-                        pool.imap_unordered(validation, validation_arguments),
-                        total=len(validation_arguments),
-                        unit="sample",
-                    )
-                )
-            exit(0)
-        else:  # if the sample is not an mc sample, it has to be a data sample, run the data workflow
-            print("this sample is data")
-            validation_arguments = {}
-            for sample in task_config:
-                if (
-                    sample != "Lumi"
-                    and sample != "Global"
-                    and task_config[sample]["is_data"]
-                    and sample == args.sample
-                ):
-                    year, era = get_year_era(sample)
-                    if f"Data_{year}_{era}" in validation_arguments:
-                        validation_arguments[f"Data_{year}_{era}"][
-                            "input_files"
-                        ].extend(task_config[sample]["output_files"])
-                    else:
-                        validation_arguments[f"Data_{year}_{era}"] = {
-                            "process": f"Data_{year}_{era}",
-                            "year": year,
-                            "luminosity": 1,
-                            "is_data": True,
-                            "xsection": 1,
-                            "filter_eff": 1,
-                            "k_factor": 1,
-                            "input_files": task_config[sample]["output_files"],
-                            "executable": args.executable,
-                        }
-
-                    if not (os.path.isdir(f"validation_outputs/{year}")):
-                        os.system(f"mkdir -p validation_outputs/{year}")
-
-            validation_arguments = list(validation_arguments.values())
-            with Pool(min(args.jobs, len(validation_arguments))) as pool:
-                list(
-                    tqdm(
-                        pool.imap_unordered(validation, validation_arguments),
-                        total=len(validation_arguments),
-                        unit=" sample",
-                    )
-                )
-            exit(0)
-
-    # validation(args)
 
 
 if __name__ == "__main__":

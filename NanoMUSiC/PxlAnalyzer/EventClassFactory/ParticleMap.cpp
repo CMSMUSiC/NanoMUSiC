@@ -282,27 +282,29 @@ std::vector<double> ParticleMap::getBinLimits(std::string distribution,
         throw std::range_error("step_size must be > 0!");
 
     std::vector<double> bins;
+
     // first bin is always the minimal value
     bins.push_back(min);
 
     double last_value = min;
     double next_value = min + step_size;
 
-    std::function<double(std::map<std::string, int>, double, double const)> resfunc;
+    std::function<double(std::map<std::string, int>, double, const double)> resfunc;
     if (distribution == "MET")
     {
-        resfunc = [this](std::map<std::string, int> countMap, double sumpt, double const fudge)
+        resfunc = [this](std::map<std::string, int> countMap, double sumpt, double const fudge) -> double
         {
             return getApproximateResolutionMET(countMap, sumpt, fudge);
         };
     }
     else
     {
-        resfunc = [this](std::map<std::string, int> countMap, double sumpt, double const fudge)
+        resfunc = [this](std::map<std::string, int> countMap, double sumpt, double const fudge) -> double
         {
             return getApproximateResolution(countMap, sumpt, fudge);
         };
     }
+
     // work as long we are before the end
     while (next_value < max)
     {

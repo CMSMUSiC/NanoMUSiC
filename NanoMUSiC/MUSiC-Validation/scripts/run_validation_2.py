@@ -24,7 +24,8 @@ def parse_args():
         help='Task configuration (TOML) file, produced by "analysis_config_builder.py"',
     )
     parser.add_argument("-s", "--sample", help="Sample to be processed.")
-    parser.add_argument("-y", "--year", help="Year to be processed.")
+    parser.add_argument("-y", "--year", help="Year to be processed.", required=True)
+    parser.add_argument("-m", "--mode", required=True, help="Validation mode (Jet/J, Lepton/L).")
     parser.add_argument(
         "--all_data",
         help='Starts validation for all Data samples. Incompatible with "--sample" and "--all_mc".',
@@ -40,6 +41,7 @@ def parse_args():
         "-e", "--executable", help="Validation excutable.", default="validation"
     )
     parser.add_argument("--debug", help="print debugging info", action="store_true")
+    parser.add_argument("-p","--savepath",help="Save path (to save the output files in the /validation_outputs/[year]/ directory). Creates directory if not existing. If this argument is left out, save in [xear] directory.")
 
     args = parser.parse_args()
 
@@ -55,9 +57,7 @@ def parse_args():
         raise RuntimeError(
             'ERROR: Could not start validation. Giving a "--year" is always required.'
         )
-
-    if not (args.year in years):
-        raise RuntimeError("ERROR: Could not start validation. Give a valid year.")
+    
     return args
 
 
@@ -90,13 +90,14 @@ def run_validation(
     effective_x_section: float,
     executable: str,
     input_file: str,
+    mode: str,
 ) -> bool:
     debug: bool = False
 
     # default is MC
-    cmd_str: str = f"{executable} --process {process_name} --year {year} --output {output_path} --xsection {str(effective_x_section)} --input {input_file}"
+    cmd_str: str = f"{executable} --process {process_name} --year {year} --output {output_path} --xsection {str(effective_x_section)} --input {input_file} --mode {mode}"
     if is_data:
-        cmd_str: str = f"{executable} --process {process_name} --year {year} --is_data --output {output_path} --xsection {str(effective_x_section)} --input {input_file}"
+        cmd_str: str = f"{executable} --process {process_name} --year {year} --is_data --output {output_path} --xsection {str(effective_x_section)} --input {input_file} --mode {mode}"
 
     if debug:
         print(f"Executing: {cmd_str}")
@@ -146,9 +147,13 @@ def validation(args):
         k_factor,
         input_files,
         executable,
+        mode,
+        savepath,
     ) = list(args.values())
 
-    output_path: str = f"validation_outputs/{year}"
+    output_path: str = f"validation_outputs/{year}/"
+    if savepath != "":
+        output_path = f"validation_outputs/{year}/{savepath}/" # option: save inside another directory of the output path
 
     # print("[ MUSiC Validation ] Loading samples ...\n")
     effective_x_section: float = 1.0
@@ -172,6 +177,7 @@ def validation(args):
         effective_x_section,
         executable,
         inputs,
+        mode,
     )
     os.system(f"rm -rf {inputs} > /dev/null")
 
@@ -187,7 +193,7 @@ def get_year_era(process_name):
     return process_name_components[-2], process_name_components[-1]
 
 
-def create_arguments(configuration, year, lumi, ismc, executable):
+def create_arguments(configuration, year, lumi, ismc, executable, mode, savepath):
     validation_arguments = []
     print(f"Generating validation arguments...")
     for sample in configuration:
@@ -209,6 +215,8 @@ def create_arguments(configuration, year, lumi, ismc, executable):
                             )
                         ),
                         "executable": executable,
+                        "mode": mode,
+                        "savepath": savepath,
                     }
                 )
         else:  # generate data argument
@@ -223,16 +231,23 @@ def create_arguments(configuration, year, lumi, ismc, executable):
                     "k_factor": 1,
                     "input_files": configuration[sample]["output_files"],
                     "executable": executable,
+                    "mode": mode,
+                    "savepath": savepath,
                 }
             )
     return validation_arguments
 
 
 def main():
-    print("\n\n📶 [ MUSiC Validation 2 ] 📶\n")
+    print("\n\n📶 [ MUSiC Validation (Nils' version) ] 📶\n")
 
     # parse arguments
     args = parse_args()
+
+    # option: save inoutput directory "savepath" inside of year directory
+    savepath = ""
+    if args.savepath:
+        savepath = args.savepath
 
     # import task config file that includes references to all files that should be validated
     print(f"Importing task config...")
@@ -267,12 +282,12 @@ def main():
     validation_arguments = {}
     if args.all_mc and args.year:
         validation_arguments = create_arguments(
-            mcconfig, args.year, lumi, True, args.executable
+            mcconfig, args.year, lumi, True, args.executable, args.mode, savepath
         )
     # run all data files in task config
     elif args.all_data and args.year:
         validation_arguments = create_arguments(
-            dataconfig, args.year, lumi, False, args.executable
+            dataconfig, args.year, lumi, False, args.executable, args.mode, savepath
         )
     # run one sample from task config
     elif args.sample and args.year:
@@ -285,12 +300,17 @@ def main():
             lumi,
             ismcsample,
             args.executable,
+            args.mode,
+            savepath
         )
 
     # create output directory if not existing
     print(f"Checking output directory...")
     if not (os.path.isdir(f"validation_outputs/{args.year}")):
         os.system(f"mkdir -p validation_outputs/{args.year}")
+    if savepath != "":
+        if not (os.path.isdir(f"validation_outputs/{args.year}/{savepath}")):
+            os.system(f"mkdir -p validation_outputs/{args.year}/{savepath}")
 
     # run validation jobs with the generated arguments
     print(f"Starting {len(validation_arguments)} validation jobs...")

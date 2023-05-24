@@ -32,7 +32,9 @@ class ZToLepLepX
     ADD_TH1F(h_jet_multiplicity, n_multiplicity_bins, min_multiplicity, max_multiplicity);
     ADD_TH1F(h_bjet_multiplicity, n_multiplicity_bins, min_multiplicity, max_multiplicity);
 
-    ZToLepLepX(const std::string &output_path, bool is_Z_mass_validation = false);
+    ZToLepLepX(const std::string &output_path,
+               const std::map<std::string, int> &countMap,
+               bool is_Z_mass_validation = false);
 
     auto fill(Math::PtEtaPhiMVector lepton_1,
               Math::PtEtaPhiMVector lepton_2,

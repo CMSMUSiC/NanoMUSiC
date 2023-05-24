@@ -1377,14 +1377,14 @@ FilterEff = 0.00029203
 kFactor = 1.162
 XSecOrder = "NNLO"
 ProcessGroup = "WW"
-generator_filter_key = "ww_mLL_less_1800"
+# generator_filter_key = "ww_mLL_less_1800"
 
-[WWTo2L2Nu_MLL_1800ToInf_13TeV_PH]
-XSec = 11.09
-FilterEff = 1.0
-kFactor = 1.0
-XSecOrder = "NNLO"
-ProcessGroup = "WW"
+# [WWTo2L2Nu_MLL_1800ToInf_13TeV_PH]
+# XSec = 11.09 # this xSec is completely off !!!
+# FilterEff = 1.0
+# kFactor = 1.0
+# XSecOrder = "NNLO"
+# ProcessGroup = "WW"
 
 [WWTo2L2Nu_MLL_200To600_13TeV_PH]
 XSec = 10.4814
@@ -1414,26 +1414,6 @@ kFactor = 1.162
 XSecOrder = "NNLO"
 ProcessGroup = "WW"
 
-[WWTo2L2Nu_Mll_200To600_13TeV_PH]
-XSec = 10.4814
-FilterEff = 0.113773
-kFactor = 1.162
-XSecOrder = "NNLO"
-ProcessGroup = "WW"
-
-[WWTo2L2Nu_Mll_2500ToInf_13TeV_PH]
-XSec = 10.4814
-FilterEff = 4.431e-06
-kFactor = 1.162
-XSecOrder = "NNLO"
-ProcessGroup = "WW"
-
-[WWTo2L2Nu_Mll_600To1200_13TeV_PH]
-XSec = 10.4814
-FilterEff = 0.0046514
-kFactor = 1.162
-XSecOrder = "NNLO"
-ProcessGroup = "WW"
 
 [WWTo4Q_4f_13TeV_AM]
 XSec = 45.31

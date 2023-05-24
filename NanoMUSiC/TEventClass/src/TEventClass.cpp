@@ -16,21 +16,49 @@ ClassImp(TEventClass)
 
     //-------------Constructor-------------------------------------------------------------
 
-    TEventClass::TEventClass(const std::string &EventType, const std::string &EventClassType, const std::string runhash,
-                             bool const data, double const cme, std::map<std::string, int> countmap, const bool analyzedBjets,
-                             std::map<std::string, std::vector<double>> distTypeBins, const bool analyzedCharge,
-                             const int numCharge, const bool isInclusive, std::map<std::string, double> distTypMins,
-                             unsigned int m_numPDFvariations, std::map<std::string, double> distTypeMinsRequire,
-                             const double lumi, std::set<std::string> systNames,
-                             std::map<std::string, std::string> ECItemShortlist, double const bin_size_min)
-    : TNamed(EventType + EventClassType, EventType + EventClassType), m_eventClassType(EventClassType), m_eventType(EventType),
-      m_runHash(runhash), m_isInclusive(isInclusive), m_data(data), m_cme(cme), m_lumi(lumi), m_countmap(countmap),
-      m_distTypeMins(distTypMins), m_distTypeMinsRequire(distTypeMinsRequire), m_analyzedCharge(analyzedCharge),
-      m_numCharge(numCharge), m_analyzedBjets(analyzedBjets), m_distTypeBinInfo(distTypeBins), m_systNames(systNames),
-      m_numPDFvariations(m_numPDFvariations), m_bin_size_min(bin_size_min), m_distTypeBinsHisto({}),
+    TEventClass::TEventClass(const std::string &EventType,
+                             const std::string &EventClassType,
+                             const std::string runhash,
+                             bool const data,
+                             double const cme,
+                             std::map<std::string, int> countmap,
+                             const bool analyzedBjets,
+                             std::map<std::string, std::vector<double>> distTypeBins,
+                             const bool analyzedCharge,
+                             const int numCharge,
+                             const bool isInclusive,
+                             std::map<std::string, double> distTypMins,
+                             unsigned int m_numPDFvariations,
+                             std::map<std::string, double> distTypeMinsRequire,
+                             const double lumi,
+                             std::set<std::string> systNames,
+                             std::map<std::string, std::string> ECItemShortlist,
+                             double const bin_size_min)
+    : TNamed(EventType + EventClassType, EventType + EventClassType),
+      m_eventClassType(EventClassType),
+      m_eventType(EventType),
+      m_runHash(runhash),
+      m_isInclusive(isInclusive),
+      m_data(data),
+      m_cme(cme),
+      m_lumi(lumi),
+      m_countmap(countmap),
+      m_distTypeMins(distTypMins),
+      m_distTypeMinsRequire(distTypeMinsRequire),
+      m_analyzedCharge(analyzedCharge),
+      m_numCharge(numCharge),
+      m_analyzedBjets(analyzedBjets),
+      m_distTypeBinInfo(distTypeBins),
+      m_systNames(systNames),
+      m_numPDFvariations(m_numPDFvariations),
+      m_bin_size_min(bin_size_min),
+      m_distTypeBinsHisto({}),
       m_resolutionsMap(std::map<std::string, std::map<std::string, TH2F *>>()),
-      processGroupMap(std::map<std::string, std::string>()), m_ECItemShortlist(ECItemShortlist), m_isEmpty(false),
-      m_is_filled(false), m_scaledToXSec(false)
+      processGroupMap(std::map<std::string, std::string>()),
+      m_ECItemShortlist(ECItemShortlist),
+      m_isEmpty(false),
+      m_is_filled(false),
+      m_scaledToXSec(false)
 {
     // this is hardcoded for now but only at this point
     m_histnamePDFup = "pdfuponly";
@@ -40,7 +68,8 @@ ClassImp(TEventClass)
     for (auto &binInfo : m_distTypeBinInfo)
     {
         std::string histname = "dummy_" + binInfo.first;
-        TH1F *temp_Histo = new TH1F(histname.c_str(), histname.c_str(), (binInfo.second).size() - 1, &(binInfo.second)[0]);
+        TH1F *temp_Histo =
+            new TH1F(histname.c_str(), histname.c_str(), (binInfo.second).size() - 1, &(binInfo.second)[0]);
         m_distTypeBinsHisto[binInfo.first] = temp_Histo;
     }
 }
@@ -98,12 +127,14 @@ TEventClass::~TEventClass()
 // ECMerger2 needs to create empty classes with basically all information but
 // the actual histogram entries.
 
-TEventClass::TEventClass(const TEventClass &orig, bool empty) : TNamed(orig.GetName(), orig.GetTitle())
+TEventClass::TEventClass(const TEventClass &orig, bool empty)
+    : TNamed(orig.GetName(), orig.GetTitle())
 {
     copyValues(orig, empty);
 }
 
-TEventClass::TEventClass(const TEventClass &orig) : TNamed(orig.GetName(), orig.GetTitle())
+TEventClass::TEventClass(const TEventClass &orig)
+    : TNamed(orig.GetName(), orig.GetTitle())
 {
     copyValues(orig, orig.isEmpty());
 }
@@ -258,12 +289,13 @@ void TEventClass::InitializeHistos(std::string const &process)
     {
         std::string distType = distmap.first;
         histoName = histoNameBase + "_" + distType;
-        TH1F *temp_Histo = new TH1F(histoName.c_str(), histoName.c_str(), (distmap.second).size() - 1, &(distmap.second)[0]);
+        TH1F *temp_Histo =
+            new TH1F(histoName.c_str(), histoName.c_str(), (distmap.second).size() - 1, &(distmap.second)[0]);
         temp_Histo->Sumw2();
         histos[distType] = temp_Histo;
         std::string histoNameUnweight = histoName + "Unweighted";
-        temp_Histo =
-            new TH1F(histoNameUnweight.c_str(), histoNameUnweight.c_str(), (distmap.second).size() - 1, &(distmap.second)[0]);
+        temp_Histo = new TH1F(
+            histoNameUnweight.c_str(), histoNameUnweight.c_str(), (distmap.second).size() - 1, &(distmap.second)[0]);
         temp_Histo->Sumw2();
         histosUnweighted[distType] = temp_Histo;
         // Systematics are only computed for MC.
@@ -274,9 +306,11 @@ void TEventClass::InitializeHistos(std::string const &process)
             {
                 std::string systHistoName = histoName + "_" + systName;
                 // std::cout << "systHistoName " <<  systHistoName <<std::endl;
-                systHistos[distType].insert(
-                    std::pair<std::string, TH1F *>(systName, new TH1F(systHistoName.c_str(), systHistoName.c_str(),
-                                                                      (distmap.second).size() - 1, &(distmap.second)[0])));
+                systHistos[distType].insert(std::pair<std::string, TH1F *>(systName,
+                                                                           new TH1F(systHistoName.c_str(),
+                                                                                    systHistoName.c_str(),
+                                                                                    (distmap.second).size() - 1,
+                                                                                    &(distmap.second)[0])));
             }
         }
         //~ std::cout << "init hists end" << std::endl;
@@ -299,9 +333,9 @@ void TEventClass::InitializePDFHistos(const string &process, const vector<float>
             std::string distType = distmap.first;
             histoName = histoNameBase + "_" + distType + "_PDFvariation_" + std::to_string(i);
             //~ std::cout << histoName << std::endl;
-            PDFhistos[distType].insert(
-                std::pair<std::string, TH1F *>(std::to_string(i), new TH1F(histoName.c_str(), histoName.c_str(),
-                                                                           (distmap.second).size() - 1, &(distmap.second)[0])));
+            PDFhistos[distType].insert(std::pair<std::string, TH1F *>(
+                std::to_string(i),
+                new TH1F(histoName.c_str(), histoName.c_str(), (distmap.second).size() - 1, &(distmap.second)[0])));
         }
     }
 }
@@ -325,15 +359,24 @@ void TEventClass::InitializeResolutions(std::string const &process)
     {
         std::string distType = binInfo.first;
         std::string histoName = histoNameBase + "_" + distType + "_Resolution";
-        resolutions.emplace(distType, new TH2F(TString(histoName), ("Distribution of the resolution of " + distType).c_str(),
-                                               Nbins, 0, Emax, Nbins, 0, Emax));
+        resolutions.emplace(distType,
+                            new TH2F(TString(histoName),
+                                     ("Distribution of the resolution of " + distType).c_str(),
+                                     Nbins,
+                                     0,
+                                     Emax,
+                                     Nbins,
+                                     0,
+                                     Emax));
     }
 }
 
 void TEventClass::Fill(std::string const &process,
                        std::map<std::string, double> values, // values for each distType that should be filled
-                       std::map<std::string, std::pair<double, double>> resolution_value, double const weight,
-                       std::map<std::string, double> systWeights, std::vector<float> const &PDFweights)
+                       std::map<std::string, std::pair<double, double>> resolution_value,
+                       double const weight,
+                       std::map<std::string, double> systWeights,
+                       std::vector<float> const &PDFweights)
 {
 
     std::string histoNameBase = process + m_eventType + m_eventClassType;
@@ -423,8 +466,11 @@ void TEventClass::Fill(std::string const &process,
         m_is_filled = true;
 }
 // Fill for differential systematics
-void TEventClass::FillDifferentialSystematic(std::string const &process, std::map<std::string, double> values,
-                                             double const weight, std::vector<float> const &PDFweights, std::string systName)
+void TEventClass::FillDifferentialSystematic(std::string const &process,
+                                             std::map<std::string, double> values,
+                                             double const weight,
+                                             std::vector<float> const &PDFweights,
+                                             std::string systName)
 {
     //~ std::cout << "in fill" <<std::endl;
     //~ auto& systhistos = SystematicsProcHistoMap.find( process );
@@ -558,7 +604,8 @@ std::map<std::string, std::map<std::string, TH1F *>> TEventClass::getPDFWeightsM
 
 //---------------Set the PDF histos for a certain process (needed for merging)------------
 
-void TEventClass::setPDFWeights(const string &process, const std::map<std::string, std::map<std::string, TH1F *>> &pdfDistMap)
+void TEventClass::setPDFWeights(const string &process,
+                                const std::map<std::string, std::map<std::string, TH1F *>> &pdfDistMap)
 {
     std::map<std::string, TH1F *> newHistos = {};
     for (auto &pdfIter : pdfDistMap)
@@ -749,12 +796,16 @@ TH1F *TEventClass::getHistoPointerUnweighted(const std::string &process, const s
     return getHistoPointer(process, distType, allProcHistoMapUnweighted);
 }
 
-TH1F *TEventClass::getPDFHistoPointer(const std::string &process, const std::string distType, const std::string histname)
+TH1F *TEventClass::getPDFHistoPointer(const std::string &process,
+                                      const std::string distType,
+                                      const std::string histname)
 {
     return getHistoPointer(process, distType, histname, PDFvariedallProcHistoMap);
 }
 
-TH1F *TEventClass::getSystHistoPointer(const std::string &process, const std::string distType, const std::string systName)
+TH1F *TEventClass::getSystHistoPointer(const std::string &process,
+                                       const std::string distType,
+                                       const std::string systName)
 {
     return getHistoPointer(process, distType, systName, SystematicsProcHistoMap);
 }
@@ -779,7 +830,8 @@ std::set<std::string> TEventClass::getSystematicNames()
 //----- Get Number of histograms per distType--------------------------------------------------
 
 unsigned int TEventClass::getNumOfDistributions(
-    const string process, std::map<std::string, std::map<std::string, std::map<std::string, TH1F *>>> &procMap)
+    const string process,
+    std::map<std::string, std::map<std::string, std::map<std::string, TH1F *>>> &procMap)
 {
     auto iter = procMap.find(process);
     if (iter == procMap.end())
@@ -992,7 +1044,8 @@ void TEventClass::Browse(TBrowser *browser)
 }
 
 //------------------------------------------------------------------------------------------
-std::string TEventClass::calculateEventClass(const std::map<std::string, int> countmap, const std::map<std::string, int> shortmap,
+std::string TEventClass::calculateEventClass(const std::map<std::string, int> countmap,
+                                             const std::map<std::string, int> shortmap,
                                              std::function<bool(std::string, std::string)> orderFunction)
 {
 
@@ -1086,7 +1139,8 @@ void TEventClass::mergeExistingProcess(std::string process, TEventClass *ECtoBeA
     // set from outside (i.e. in ECMerger2).
     //
     //~ std::cout << "addExistingEC " << process << std::endl;
-    double totalEventsUnweightedNew = getTotalEventsUnweighted(process) + ECtoBeAdded->getTotalEventsUnweighted(process);
+    double totalEventsUnweightedNew =
+        getTotalEventsUnweighted(process) + ECtoBeAdded->getTotalEventsUnweighted(process);
     double eventCountNew = getEventCount(process) + ECtoBeAdded->getEventCount(process);
 
     double scaleFactor = getScaleFactor(process);
@@ -1200,7 +1254,8 @@ void TEventClass::mergeExistingProcess(std::string process, TEventClass *ECtoBeA
             // only JES entries and nothing else.
             //
             std::map<std::string, std::map<std::string, TH1F *>> basePDFWeights = getPDFWeightsMap(process);
-            std::map<std::string, std::map<std::string, TH1F *>> mergePDFWeights = ECtoBeAdded->getPDFWeightsMap(process);
+            std::map<std::string, std::map<std::string, TH1F *>> mergePDFWeights =
+                ECtoBeAdded->getPDFWeightsMap(process);
 
             // If there are no PDF histograms in both classes: Nothin' to do here!
             //

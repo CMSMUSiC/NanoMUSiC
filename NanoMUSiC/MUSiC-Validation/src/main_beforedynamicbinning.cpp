@@ -31,10 +31,9 @@ auto main(int argc, char *argv[]) -> int
     const std::string output_path = cmdl({"-o", "--output"}).str();
     const std::string effective_x_section_str = cmdl({"-x", "--xsection"}).str();
     const std::string input_file = cmdl({"-i", "--input"}).str();
-    const std::string mode = cmdl({"-m", "--mode"}).str();
 
     if (show_help or process == "" or year == "" or output_path == "" or input_file == "" or
-        effective_x_section_str == "" or mode == "")
+        effective_x_section_str == "")
     {
         fmt::print("Usage: validation [OPTIONS]\n");
         fmt::print("          -h|--help: Shows this message.\n");
@@ -44,7 +43,6 @@ auto main(int argc, char *argv[]) -> int
         fmt::print("          -o|--output: Output path.\n");
         fmt::print("          -x|--xsection: Effective cross-section (xsection * lumi).\n");
         fmt::print("          -i|--input: Path to a txt withg input files (one per line).\n");
-        fmt::print("          -m|--mode: Validation mode ('Jet'/'J' or 'Lepton'/'L').\n");
 
         exit(-1);
     }
@@ -58,6 +56,8 @@ auto main(int argc, char *argv[]) -> int
         input_chain.Add(file.c_str());
     }
     auto tree_reader = TTreeReader(&input_chain);
+
+    //------------------------ value readers
 
     ADD_VALUE_READER(run, unsigned int);
     ADD_VALUE_READER(event_number, unsigned long);
@@ -97,49 +97,25 @@ auto main(int argc, char *argv[]) -> int
     ADD_VALUE_READER(nMET, unsigned int);
     ADD_ARRAY_READER(MET_pt, float);
 
-    const std::map<std::string, int> z_to_mu_mu_x_count_map = {{"Ele", 0},
-                                                               {"EleEE", 0},
-                                                               {"EleEB", 0},
-                                                               {"Muon", 2},
-                                                               {"Gamma", 0},
-                                                               {"GammaEB", 0},
-                                                               {"GammaEE", 0},
-                                                               {"Tau", 0},
-                                                               {"Jet", 0},
-                                                               {"bJet", 0},
-                                                               {"MET", 0}};
+    //------------------------ create instances
 
-    const std::map<std::string, int> z_to_ele_ele_x_count_map = {{"Ele", 2},
-                                                                 {"EleEE", 0},
-                                                                 {"EleEB", 0},
-                                                                 {"Muon", 0},
-                                                                 {"Gamma", 0},
-                                                                 {"GammaEB", 0},
-                                                                 {"GammaEE", 0},
-                                                                 {"Tau", 0},
-                                                                 {"Jet", 0},
-                                                                 {"bJet", 0},
-                                                                 {"MET", 0}};
+    /* // #### OLD LEPTON/GAMMA VALIDATION ####
+    auto z_to_mu_mu_x = ZToLepLepX(fmt::format("{}/z_to_mu_mu_x_{}_{}.root", output_path, process, year));
 
-    const std::map<int, std::map<std::string, int>> jet_count_map =
-        {
-            {0, {{"Ele", 0}, {"EleEE", 0}, {"EleEB", 0}, {"Muon", 0}, {"Gamma", 0}, {"GammaEB", 0}, {"GammaEE", 0}, {"Tau", 0}, {"Jet", 0}, {"bJet", 0}, {"MET", 0}}},
-            {1, {{"Ele", 0}, {"EleEE", 0}, {"EleEB", 0}, {"Muon", 0}, {"Gamma", 0}, {"GammaEB", 0}, {"GammaEE", 0}, {"Tau", 0}, {"Jet", 1}, {"bJet", 0}, {"MET", 0}}},
-            {2, {{"Ele", 0}, {"EleEE", 0}, {"EleEB", 0}, {"Muon", 0}, {"Gamma", 0}, {"GammaEB", 0}, {"GammaEE", 0}, {"Tau", 0}, {"Jet", 2}, {"bJet", 0}, {"MET", 0}}}
-        };
+    auto z_to_ele_ele_x = ZToLepLepX(fmt::format("{}/z_to_ele_ele_x_{}_{}.root", output_path, process, year));
 
-    ///////////////////////////////// create instances /////////////////////////////////
-    auto z_to_mu_mu_x = ZToLepLepX(fmt::format("{}/z_to_mu_mu_x_{}_{}.root", output_path, process, year), z_to_mu_mu_x_count_map);
+    auto z_to_mu_mu_x_Z_mass =
+        ZToLepLepX(fmt::format("{}/z_to_mu_mu_x_Z_mass_{}_{}.root", output_path, process, year), true);
 
-    auto z_to_ele_ele_x = ZToLepLepX(fmt::format("{}/z_to_ele_ele_x_{}_{}.root", output_path, process, year), z_to_ele_ele_x_count_map);
+    auto z_to_ele_ele_x_Z_mass =
+        ZToLepLepX(fmt::format("{}/z_to_ele_ele_x_Z_mass_{}_{}.root", output_path, process, year), true);
+    */
 
-    auto z_to_mu_mu_x_Z_mass = ZToLepLepX(fmt::format("{}/z_to_mu_mu_x_Z_mass_{}_{}.root", output_path, process, year), z_to_mu_mu_x_count_map, true);
+    // #### NEW JET VALIDATION ####
+    auto jet_val = JetVal(fmt::format("{}/jet_val_{}_{}.root", output_path, process, year));
 
-    auto z_to_ele_ele_x_Z_mass = ZToLepLepX(fmt::format("{}/z_to_ele_ele_x_Z_mass_{}_{}.root", output_path, process, year), z_to_ele_ele_x_count_map, true);
-    
-    auto jet_val = JetVal(fmt::format("{}/jet_val_{}_{}.root", output_path, process, year), jet_count_map);
+    //------------------------import data
 
-    ///////////////////////////////// import skimmed files /////////////////////////////////
     const auto cutflow_file =
         std::unique_ptr<TFile>(TFile::Open(fmt::format("{}/cutflow_{}_{}.root", output_path, process, year).c_str()));
     const auto cutflow_histo = cutflow_file->Get<TH1F>("cutflow");
@@ -154,7 +130,6 @@ auto main(int argc, char *argv[]) -> int
     // launch event loop for Data or MC
     // const auto total_number_of_events = tree_reader.GetEntries();
 
-    ///////////////////////////////// process all events in a loop /////////////////////////////////
     for (auto &&event : tree_reader)
     {
         (void)event; // remove the unused warning during compilation
@@ -182,6 +157,8 @@ auto main(int argc, char *argv[]) -> int
             }
         }
 
+        //------------------------ data conditioning, sorting objects after highest pt
+
         if (not(already_processed))
         {
             // get effective event weight
@@ -189,7 +166,7 @@ auto main(int argc, char *argv[]) -> int
             if (not(is_data))
             {
                 weight = Outputs::get_event_weight(unwrap(weights_nominal), unwrap(weights_up), unwrap(weights_down)) *
-                        generator_filter / no_cuts / generator_filter * effective_x_section;
+                         generator_filter / no_cuts / generator_filter * effective_x_section;
 
                 // fmt::print("------------------\n");
                 // fmt::print(
@@ -202,58 +179,34 @@ auto main(int argc, char *argv[]) -> int
                 // fmt::print("total gen weight: {}\n", generator_filter);
             }
 
-            ///////////////////////////////// order objects after highest pt /////////////////////////////////
             // reorder objects
             // muons
-            const auto muon_reordering_mask = VecOps::Argsort(unwrap(Muon_pt),
-                                                            [](double x, double y) -> bool
-                                                            {
-                                                                return x > y;
-                                                            });
-
+            const auto muon_reordering_mask = VecOps::Argsort(unwrap(Muon_pt));
             const auto muon_pt = VecOps::Take(unwrap(Muon_pt), muon_reordering_mask);
             const auto muon_eta = VecOps::Take(unwrap(Muon_eta), muon_reordering_mask);
             const auto muon_phi = VecOps::Take(unwrap(Muon_phi), muon_reordering_mask);
-            const auto nmuons = unwrap(nMuon);
 
             // electrons
-            const auto electron_reordering_mask = VecOps::Argsort(unwrap(Electron_pt),
-                                                                [](double x, double y) -> bool
-                                                                {
-                                                                    return x > y;
-                                                                });
+            const auto electron_reordering_mask = VecOps::Argsort(unwrap(Electron_pt));
             const auto electron_pt = VecOps::Take(unwrap(Electron_pt), electron_reordering_mask);
             const auto electron_eta = VecOps::Take(unwrap(Electron_eta), electron_reordering_mask);
             const auto electron_phi = VecOps::Take(unwrap(Electron_phi), electron_reordering_mask);
-            const auto nelectrons = unwrap(nElectron);
 
             // // photons
-            // const  auto photon_reordering_mask = VecOps::Argsort(unwrap(Photon_pt),
-            //   [](double x, double y) -> bool
-            //   {
-            //       return x > y;
-            //   });
+            // const  auto photon_reordering_mask = VecOps::Argsort(unwrap(Photon_pt));
             // const auto photon_pt = VecOps::Take(unwrap(Photon_pt),photon_reordering_mask);
             // const auto photon_eta = VecOps::Take(unwrap(Photon_eta),photon_reordering_mask);
             // const auto photon_phi = VecOps::Take(unwrap(Photon_phi),photon_reordering_mask);
 
             // bjets
-            const auto bjet_reordering_mask = VecOps::Argsort(unwrap(BJet_pt),
-                                                            [](double x, double y) -> bool
-                                                            {
-                                                                return x > y;
-                                                            });
+            const auto bjet_reordering_mask = VecOps::Argsort(unwrap(BJet_pt));
             const auto bjet_pt = VecOps::Take(unwrap(BJet_pt), bjet_reordering_mask);
             const auto bjet_eta = VecOps::Take(unwrap(BJet_eta), bjet_reordering_mask);
             const auto bjet_phi = VecOps::Take(unwrap(BJet_phi), bjet_reordering_mask);
             const auto bjet_mass = VecOps::Take(unwrap(BJet_mass), bjet_reordering_mask);
 
             // jets
-            const auto jet_reordering_mask = VecOps::Argsort(unwrap(Jet_pt),
-                                                            [](double x, double y) -> bool
-                                                            {
-                                                                return x > y;
-                                                            });
+            const auto jet_reordering_mask = VecOps::Argsort(unwrap(Jet_pt));
             const auto jet_pt = VecOps::Take(unwrap(Jet_pt), jet_reordering_mask);
             const auto jet_eta = VecOps::Take(unwrap(Jet_eta), jet_reordering_mask);
             const auto jet_phi = VecOps::Take(unwrap(Jet_phi), jet_reordering_mask);
@@ -262,9 +215,10 @@ auto main(int argc, char *argv[]) -> int
             // MET
             auto met_pt = unwrap(MET_pt);
 
+            /*
             auto get_leading = [](RVec<float> pt,
-                                RVec<float> eta,
-                                RVec<float> phi) -> std::pair<unsigned int, std::optional<Math::PtEtaPhiMVector>>
+                                  RVec<float> eta,
+                                  RVec<float> phi) -> std::pair<unsigned int, std::optional<Math::PtEtaPhiMVector>>
             {
                 if (pt.size() == 0)
                 {
@@ -272,6 +226,7 @@ auto main(int argc, char *argv[]) -> int
                 }
                 return std::make_pair(pt.size(), Math::PtEtaPhiMVector(pt[0], eta[0], phi[0], 1E-9));
             };
+            */
 
             auto get_met = [](RVec<float> met_pt) -> std::optional<float>
             {
@@ -282,14 +237,15 @@ auto main(int argc, char *argv[]) -> int
                 return met_pt[0];
             };
 
-            auto [nBJet, bjet] = get_leading(bjet_pt, bjet_eta, bjet_phi);
-            auto [nJet, jet] = get_leading(jet_pt, jet_eta, jet_phi);
+            unsigned int nJet = jet_pt.size();
+            unsigned int nBJet = bjet_pt.size();
+
             auto met = get_met(met_pt);
 
-            ///////////////////////////////// calculate and fill histograms of validation files /////////////////////////////////
-            if(mode == "Lepton" or mode == "L") // fill lepton validation files (legacy code)
-            {
-                // ---- MuMu + X
+            //------------------------ validation code, calculate and fill histograms
+
+            /* // #### OLD LEPTON/GAMMA VALIDATION ####
+                // MuMu + X
                 if (muon_pt.size() >= 2)
                 {
                     auto muon_1 = Math::PtEtaPhiMVector(muon_pt[0], muon_eta[0], muon_phi[0], PDG::Muon::Mass);
@@ -305,7 +261,7 @@ auto main(int argc, char *argv[]) -> int
                     }
                 }
 
-                // ---- EleEle + X
+                // EleEle + X
                 if (electron_pt.size() >= 2)
                 {
                     auto electron_1 =
@@ -323,72 +279,65 @@ auto main(int argc, char *argv[]) -> int
                         z_to_ele_ele_x_Z_mass.fill(electron_1, electron_2, nBJet, bjet, nJet, jet, met, weight);
                     }
                 }
-            }
-            else if(mode == "Jet" or mode == "J") // fill jet validation files
+                */
+
+            // #### NEW JET VALIDATION ####
+            // ---- 0Jet + X
+            // fill0(nBJet, nJet, met, weight)
+            jet_val.fill0(nBJet, nJet, met, weight);
+
+            // ---- 1Jet + X
+            // fill1(jet_1, weight)
+            if (jet_pt.size() >= 1)
             {
-                // ---- 0Jet + X
-                // fill0(nBJet, nJet, nElectron, nMuon, met, weight)
-                jet_val.fill0(nBJet, nJet, nelectrons, nmuons, met, weight);
+                // create 4-vectors for the leading jet
+                auto jet_1 = Math::PtEtaPhiMVector(jet_pt[0], jet_eta[0], jet_phi[0], jet_mass[0]);
+                jet_val.fill1(jet_1, weight);
+            }
 
-                // ---- 1Jet + X
-                // fill1(jet_1, nElectron, nMuon, met, weight)
-                if (jet_pt.size() >= 1)
+            // ---- 2Jet + X
+            // fill2(jet_1, jet_2, weight)
+            if (jet_pt.size() >= 2)
+            {
+                // create 4-vectors for the two leading jets
+                auto jet_1 = Math::PtEtaPhiMVector(jet_pt[0], jet_eta[0], jet_phi[0], jet_mass[0]);
+                auto jet_2 = Math::PtEtaPhiMVector(jet_pt[1], jet_eta[1], jet_phi[1], jet_mass[1]);
+
+                // wide mass range
+                jet_val.fill2(jet_1, jet_2, weight);
+
+                // Z mass range
+                if ((jet_1 + jet_2).mass() > PDG::Z::Mass - 20. and (jet_1 + jet_2).mass() < PDG::Z::Mass + 20.)
                 {
-                    // create 4-vectors for the leading jet
-                    auto jet_1 = Math::PtEtaPhiMVector(jet_pt[0], jet_eta[0], jet_phi[0], jet_mass[0]);
-                    jet_val.fill1(jet_1, nelectrons, nmuons, met, weight);
-                }
-
-                // ---- 2Jet + X
-                // fill2(jet_1, jet_2, nElectron, nMuon, met, weight)
-                if (jet_pt.size() >= 2)
-                {
-                    // create 4-vectors for the two leading jets
-                    auto jet_1 = Math::PtEtaPhiMVector(jet_pt[0], jet_eta[0], jet_phi[0], jet_mass[0]);
-                    auto jet_2 = Math::PtEtaPhiMVector(jet_pt[1], jet_eta[1], jet_phi[1], jet_mass[1]);
-
-                    // wide mass range
-                    jet_val.fill2(jet_1, jet_2, nelectrons, nmuons, met, weight);
-
-                    // Z mass range
-                    if ((jet_1 + jet_2).mass() > PDG::Z::Mass - 20. and (jet_1 + jet_2).mass() < PDG::Z::Mass + 20.)
-                    {
-                        jet_val.fill2z(jet_1, jet_2, weight);
-                    }
+                    jet_val.fill2z(jet_1, jet_2, weight);
                 }
             }
 
-            // // process monitoring
-            // if (event < 10 || (event < 100 && event % 10 == 0) || (event < 1000 && event % 100 == 0) ||
-            //     (event < 10000 && event % 1000 == 0) || (event < 100000 && event % 10000 == 0) ||
-            //     (event < 1000000 && event % 100000 == 0) || (event < 10000000 && event % 1000000 == 0) ||
-            //     (event >= 10000000 && event % 10000000 == 0))
-            // {
-            //     fmt::print("\n\n[MUSiC Validation] Processed {} events.\n", event);
-            //     PrintProcessInfo();
-            // }
+            // process monitoring
+            if (event < 10 || (event < 100 && event % 10 == 0) || (event < 1000 && event % 100 == 0) ||
+                (event < 10000 && event % 1000 == 0) || (event < 100000 && event % 10000 == 0) ||
+                (event < 1000000 && event % 100000 == 0) || (event < 10000000 && event % 1000000 == 0) ||
+                (event >= 10000000 && event % 10000000 == 0))
+            {
+                fmt::print("\n\n[MUSiC Validation] Processed {} events.\n", event);
+                PrintProcessInfo();
+            }
         }
     }
 
-    //////////////////// SAVE OUTPUTS ////////////////////
-    // remove the files that were not filled but created since the constructor of all validation classes were called, not nice but easy fix :D
-    fmt::print("\n[MUSiC Validation] Saving outputs ({} - {} - {}) ...\n", output_path, process, year);
-    if(mode == "Lepton" or mode == "L")
-    {
-        z_to_mu_mu_x.dump_outputs();
-        z_to_ele_ele_x.dump_outputs();
-        z_to_mu_mu_x_Z_mass.dump_outputs();
-        z_to_ele_ele_x_Z_mass.dump_outputs();
-        std::system(fmt::format("rm -rf {}/jet_val_{}_{}.root", output_path, process, year).c_str());
-    }
-    else if(mode == "Jet" or mode == "J")
-    {
-        jet_val.dump_outputs();
-        std::system(fmt::format("rm -rf {}/z_to_mu_mu_x_{}_{}.root", output_path, process, year).c_str());
-        std::system(fmt::format("rm -rf {}/z_to_ele_ele_x_{}_{}.root", output_path, process, year).c_str());
-        std::system(fmt::format("rm -rf {}/z_to_mu_mu_x_Z_mass_{}_{}.root", output_path, process, year).c_str());
-        std::system(fmt::format("rm -rf {}/z_to_ele_ele_x_Z_mass_{}_{}.root", output_path, process, year).c_str());
-    }
+    //------------------------ save output
+
+    fmt::print("\n[MUSiC Validation] Saving outputs ...\n");
+
+    /* // #### OLD LEPTON/GAMMA VALIDATION ####
+    z_to_mu_mu_x.dump_outputs();
+    z_to_ele_ele_x.dump_outputs();
+    z_to_mu_mu_x_Z_mass.dump_outputs();
+    z_to_ele_ele_x_Z_mass.dump_outputs();
+    */
+
+    // #### NEW JET VALIDATION ####
+    jet_val.dump_outputs();
 
     fmt::print("\n[MUSiC Validation] Done ...\n");
     PrintProcessInfo();

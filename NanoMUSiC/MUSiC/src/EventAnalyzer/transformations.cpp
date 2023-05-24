@@ -43,6 +43,7 @@ auto EventAnalyzer::transform_muons(const std::string_view &variation) -> EventA
 ///////////////////////////////////////////////////////////////
 /// References:
 /// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaMiniAODV2#Applying_the_Energy_Scale_and_sm
+///
 auto EventAnalyzer::transform_electrons(const std::string_view &variation) -> EventAnalyzer &
 {
     if (*this)

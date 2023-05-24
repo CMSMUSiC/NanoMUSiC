@@ -11,7 +11,7 @@ auto EventAnalyzer::set_trigger_bits() -> EventAnalyzer &
 {
     if (*this)
     {
-        switch (year)
+        switch (year) // implemented jet trigger instead of lepton/photon trigger, currently only for 2018
         {
         case Year::Run2016APV:
             trigger_bits
@@ -26,7 +26,8 @@ auto EventAnalyzer::set_trigger_bits() -> EventAnalyzer &
                 .set("Photon", false)
                 .set("Tau", false)
                 .set("BJet", false)
-                .set("Jet", event_info.HLT_PFHT800 || event_info.HLT_PFHT900 || event_info.HLT_PFJet450) // false)
+                .set("JetHT", false) // event_info.HLT_PFHT800 || event_info.HLT_PFHT900 || event_info.HLT_PFJet450)
+                .set("JetPT", false)
                 .set("MET", false);
             break;
         case Year::Run2016:
@@ -42,7 +43,8 @@ auto EventAnalyzer::set_trigger_bits() -> EventAnalyzer &
                 .set("Photon", false)
                 .set("Tau", false)
                 .set("BJet", false)
-                .set("Jet", event_info.HLT_PFHT800 || event_info.HLT_PFHT900 || event_info.HLT_PFJet450) // false)
+                .set("JetHT", false) // event_info.HLT_PFHT800 || event_info.HLT_PFHT900 || event_info.HLT_PFJet450)
+                .set("JetPT", false)
                 .set("MET", false);
             break;
         case Year::Run2017:
@@ -59,39 +61,26 @@ auto EventAnalyzer::set_trigger_bits() -> EventAnalyzer &
                 .set("Photon", false)
                 .set("Tau", false)
                 .set("BJet", false)
-                .set("Jet", event_info.HLT_PFHT1050 || event_info.HLT_PFJet500) // false)
+                .set("JetHT", false) // event_info.HLT_PFHT1050 || event_info.HLT_PFJet500)
+                .set("JetPT", false)
                 .set("MET", false);
             break;
         case Year::Run2018:
             trigger_bits
-                /* E-MU-PH TRIGGER (AS BEFORE)
-                .set("SingleMuonLowPt", event_info.HLT_IsoMu24)
-                .set("SingleMuonHighPt", event_info.HLT_Mu50 || event_info.HLT_TkMu100 || event_info.HLT_OldMu100)
-                .set("SingleElectronLowPt", event_info.HLT_Ele32_WPTight_Gsf || event_info.HLT_Photon200)
-                .set("SingleElectronHighPt",
-                     event_info.HLT_Ele32_WPTight_Gsf || event_info.HLT_Photon200 ||
-                         event_info.HLT_Ele115_CaloIdVT_GsfTrkIdT)
+                .set("SingleMuonLowPt", false) // event_info.HLT_IsoMu24)
+                .set("SingleMuonHighPt",
+                     false) // event_info.HLT_Mu50 || event_info.HLT_TkMu100 || event_info.HLT_OldMu100)
+                .set("SingleElectronLowPt", false)  // event_info.HLT_Ele32_WPTight_Gsf || event_info.HLT_Photon200)
+                .set("SingleElectronHighPt", false) // event_info.HLT_Ele32_WPTight_Gsf || event_info.HLT_Photon200 ||
+                                                    // event_info.HLT_Ele115_CaloIdVT_GsfTrkIdT)
                 .set("DoubleMuon", false)
                 .set("DoubleElectron", false)
                 // .set("Photon", event_info.HLT_Photon200)
                 .set("Photon", false)
                 .set("Tau", false)
                 .set("BJet", false)
-                .set("Jet", false)
-                .set("MET", false);
-            */
-                ///* JET TRIGGER (NEW)
-                .set("SingleMuonLowPt", false)
-                .set("SingleMuonHighPt", false)
-                .set("SingleElectronLowPt", false)
-                .set("SingleElectronHighPt", false)
-                .set("DoubleMuon", false)
-                .set("DoubleElectron", false)
-                // .set("Photon", event_info.HLT_Photon200)
-                .set("Photon", false)
-                .set("Tau", false)
-                .set("BJet", false)
-                .set("Jet", event_info.HLT_PFHT1050 || event_info.HLT_PFJet500)
+                .set("JetHT", event_info.HLT_PFHT1050) // differentiate HT and normal PT trigger
+                .set("JetPT", event_info.HLT_PFJet500) // currently only implemented for 2018
                 .set("MET", false);
             //*/
 
@@ -183,7 +172,8 @@ auto EventAnalyzer::trigger_match_filter(Outputs &outputs, const std::map<std::s
                     const auto [has_trigger_match, _trigger_sf_nominal, _trigger_sf_up, _trigger_sf_down] =
                         matchers.at(hlt_path)(trgobjs, electrons, electrons.good_low_pt_electrons_mask["nominal"]);
                     if (has_trigger_match)
-                    { // set scale factors
+                    {
+                        // set scale factors
                         trigger_sf_nominal = _trigger_sf_nominal;
                         trigger_sf_up = _trigger_sf_up;
                         trigger_sf_down = _trigger_sf_down;
@@ -195,6 +185,34 @@ auto EventAnalyzer::trigger_match_filter(Outputs &outputs, const std::map<std::s
                 {
                     const auto [has_trigger_match, _trigger_sf_nominal, _trigger_sf_up, _trigger_sf_down] =
                         matchers.at(hlt_path)(trgobjs, electrons, electrons.good_high_pt_electrons_mask["nominal"]);
+                    if (has_trigger_match)
+                    {
+                        // set scale factors
+                        trigger_sf_nominal = _trigger_sf_nominal;
+                        trigger_sf_up = _trigger_sf_up;
+                        trigger_sf_down = _trigger_sf_down;
+                        outputs.fill_cutflow_histo("TriggerMatch", outputs.get_event_weight());
+                        return *this;
+                    }
+                }
+                if (hlt_path.find("JetPT") != std::string_view::npos)
+                {
+                    const auto [has_trigger_match, _trigger_sf_nominal, _trigger_sf_up, _trigger_sf_down] =
+                        matchers.at(hlt_path)(trgobjs, jets, jets.good_jets_mask["nominal"]);
+                    if (has_trigger_match)
+                    {
+                        // set scale factors
+                        trigger_sf_nominal = _trigger_sf_nominal;
+                        trigger_sf_up = _trigger_sf_up;
+                        trigger_sf_down = _trigger_sf_down;
+                        outputs.fill_cutflow_histo("TriggerMatch", outputs.get_event_weight());
+                        return *this;
+                    }
+                }
+                if (hlt_path.find("JetHT") != std::string_view::npos)
+                {
+                    const auto [has_trigger_match, _trigger_sf_nominal, _trigger_sf_up, _trigger_sf_down] =
+                        matchers.at(hlt_path)(trgobjs, jets, jets.good_jets_mask["nominal"]);
                     if (has_trigger_match)
                     {
                         // set scale factors

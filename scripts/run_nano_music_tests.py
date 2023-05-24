@@ -140,9 +140,14 @@ def main():
     if task_config:
         with tempfile.NamedTemporaryFile(mode="w", delete=False) as f:
             f.write(task_config)
+        str_command = f"{args.executable} --run-config {f.name}"
+        print(f"Will exectute: {str_command}")
+        music_process = subprocess.run(shlex.split(str_command))
+        if music_process.returncode == 0:
+            subprocess.run(shlex.split(f"rm -rf {f.name}"))
+        else:
+            print(f"Command: {str_command}")
 
-        subprocess.run(shlex.split(f"{args.executable} --run-config {f.name}"))
-        subprocess.run(shlex.split(f"rm -rf {f.name}"))
     else:
         raise RuntimeError("ERROR: Task configuration not built.")
 

@@ -360,6 +360,20 @@ Corrector::Corrector(const std::string_view &_correction_type, const Year _year,
     {
         correction_ref = ElectronTriggerSF(ElectronTriggerSF::PtRegime::HighPt, year);
     }
+    else if (_correction_type == "JetHT")
+    {
+        correction_ref = ElectronTriggerSF(ElectronTriggerSF::PtRegime::LowPt, year); // sorry this is not nice
+        // "dummy object", we do not use any corrector but to prevent problems
+        // we create a corrector instance (electon type) but do not call it during the jet correction
+        // but simply set all correction factors to 1
+    }
+    else if (_correction_type == "JetPT")
+    {
+        correction_ref = ElectronTriggerSF(ElectronTriggerSF::PtRegime::LowPt, year); // sorry this is not nice
+        // "dummy object", we do not use any corrector but to prevent problems
+        // we create a corrector instance (electon type) but do not call it during the jet correction
+        // but simply set all correction factors to 1
+    }
 
     // default case is any correction that uses the correctionlib
     else
