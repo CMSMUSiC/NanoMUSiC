@@ -1,3 +1,5 @@
+#include "Validation.hpp"
+
 #include "Configs.hpp"
 #include "Math/Vector4Dfwd.h"
 #include "Outputs.hpp"
@@ -6,7 +8,6 @@
 #include "TH1.h"
 #include "TTreeReader.h"
 #include "TTreeReaderValue.h"
-#include "Validation.hpp"
 #include "fmt/core.h"
 #include <cstdlib>
 #include <filesystem>

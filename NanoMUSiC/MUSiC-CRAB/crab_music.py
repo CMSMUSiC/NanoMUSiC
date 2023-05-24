@@ -161,7 +161,7 @@ def check_voms():
 
 
 def main():
-    # cehck for VOMS proxy
+    # check for VOMS proxy
     if not (check_voms()):
         raise RuntimeError("ERROR: Could not find valid VOMS proxy.")
 

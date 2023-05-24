@@ -5,10 +5,6 @@
 #include <stdexcept>
 #include <sys/time.h>
 
-#include "argh.h"
-
-#include "fmt/format.h"
-
 // ROOT Stuff
 #include "Math/Vector4D.h"
 #include "Math/VectorUtil.h"
@@ -26,7 +22,10 @@
 #include "MUSiCTools.hpp"
 #include "TOMLConfig.hpp"
 #include "ZToLepLepX.hpp"
+
+#include "argh.h"
 #include "emoji.hpp"
+#include "fmt/format.h"
 #include "processed_data_events.hpp"
 
 using namespace ROOT;
