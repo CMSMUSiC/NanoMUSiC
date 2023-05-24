@@ -19,7 +19,8 @@
 // // {
 // //     using namespace ranges;
 // //     return views::ints(from, to) | views::transform([](auto i) { return
-// static_cast<T>(std::make_unsigned_t<int>(i)); });
+// static_cast<T>(std::make_unsigned_t<int>(i));
+// });
 // // }
 
 // // template <typename T = UInt_t>
@@ -33,12 +34,22 @@
 // {
 
 // // variations, shifts, weights and cuts
-// constexpr auto Cuts =
-//     Enumerate::make_enumerate("NoCuts", "GeneratorWeight", "RunLumi", "nPV", "METFilters", "TriggerCut", "TriggerMatch",
-//     "AtLeastOneClass");
+// constexpr auto Cuts = Enumerate::make_enumerate("NoCuts",
+//                                                 "GeneratorWeight",
+//                                                 "RunLumi",
+//                                                 "nPV",
+//                                                 "METFilters",
+//                                                 "TriggerCut",
+//                                                 "TriggerMatch",
+//                                                 "AtLeastOneClass");
 // constexpr auto Weights = Enumerate::make_enumerate("Generator", "PDF", "Alpha_S", "PileUp", "Lumi", "Trigger");
-// constexpr auto Variations =
-//     Enumerate::make_enumerate("Default", "JEC", "JER", "MuonScale", "MuonResolution", "ElectronScale", "ElectronResolution");
+// constexpr auto Variations = Enumerate::make_enumerate("Default",
+//                                                       "JEC",
+//                                                       "JER",
+//                                                       "MuonScale",
+//                                                       "MuonResolution",
+//                                                       "ElectronScale",
+//                                                       "ElectronResolution");
 // constexpr auto Shifts = Enumerate::make_enumerate("Nominal", "Up", "Down");
 
 // constexpr auto kTotalCuts = Outputs::Cuts.size();
@@ -73,18 +84,21 @@
 // }
 
 // auto VariationsAndShiftsRange = views::cartesian_product(Outputs::Variations, Outputs::Shifts) |
-//                                        views::remove_if([](auto variation_and_shift) {
-//                                            const auto [variation, shift] = variation_and_shift;
-//                                            return (variation == "Default" && (shift == "Up" || shift == "Down"));
-//                                        }) |
-//                                        views::remove_if([](auto variation_and_shift) {
-//                                            const auto [variation, shift] = variation_and_shift;
-//                                            return (variation != "Default" && shift == "Nominal");
-//                                        });
+//                                 views::remove_if(
+//                                     [](auto variation_and_shift)
+//                                     {
+//                                         const auto [variation, shift] = variation_and_shift;
+//                                         return (variation == "Default" && (shift == "Up" || shift == "Down"));
+//                                     }) |
+//                                 views::remove_if(
+//                                     [](auto variation_and_shift)
+//                                     {
+//                                         const auto [variation, shift] = variation_and_shift;
+//                                         return (variation != "Default" && shift == "Nominal");
+//                                     });
 
 // constexpr unsigned int kTotalVariationsAndShifts = (Outputs::kTotalVariations - 1) * 2 + 1;
-// const auto VariationsAndShiftsIndexRange = RangesHelpers::index_range<unsigned
-// long>(kTotalVariationsAndShifts);
+// const auto VariationsAndShiftsIndexRange = RangesHelpers::index_range<unsigned long>(kTotalVariationsAndShifts);
 
 // } // namespace Variations
 

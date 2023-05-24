@@ -278,13 +278,18 @@ auto main(int argc, char *argv[]) -> int
                 auto muon_1 = Math::PtEtaPhiMVector(muon_pt[0], muon_eta[0], muon_phi[0], PDG::Muon::Mass);
                 auto muon_2 = Math::PtEtaPhiMVector(muon_pt[1], muon_eta[1], muon_phi[1], PDG::Muon::Mass);
 
-                // wide mass range
-                z_to_mu_mu_x.fill(muon_1, muon_2, nBJet, bjet, nJet, jet, met, weight);
-
-                // Z mass range
-                if ((muon_1 + muon_2).mass() > PDG::Z::Mass - 20. and (muon_1 + muon_2).mass() < PDG::Z::Mass + 20.)
+                // exclude low mass resonances
+                if ((muon_1 + muon_2).mass() > 15.)
                 {
-                    z_to_mu_mu_x_Z_mass.fill(muon_1, muon_2, nBJet, bjet, nJet, jet, met, weight);
+
+                    // wide mass range
+                    z_to_mu_mu_x.fill(muon_1, muon_2, nBJet, bjet, nJet, jet, met, weight);
+
+                    // Z mass range
+                    if ((muon_1 + muon_2).mass() > PDG::Z::Mass - 20. and (muon_1 + muon_2).mass() < PDG::Z::Mass + 20.)
+                    {
+                        z_to_mu_mu_x_Z_mass.fill(muon_1, muon_2, nBJet, bjet, nJet, jet, met, weight);
+                    }
                 }
             }
 
@@ -296,14 +301,19 @@ auto main(int argc, char *argv[]) -> int
                 auto electron_2 =
                     Math::PtEtaPhiMVector(electron_pt[1], electron_eta[1], electron_phi[1], PDG::Electron::Mass);
 
-                // wide mass range
-                z_to_ele_ele_x.fill(electron_1, electron_2, nBJet, bjet, nJet, jet, met, weight);
-
-                // Z mass range
-                if ((electron_1 + electron_2).mass() > PDG::Z::Mass - 20. and
-                    (electron_1 + electron_2).mass() < PDG::Z::Mass + 20.)
+                // exclude low mass resonances
+                if ((electron_1 + electron_2).mass() > 15.)
                 {
-                    z_to_ele_ele_x_Z_mass.fill(electron_1, electron_2, nBJet, bjet, nJet, jet, met, weight);
+
+                    // wide mass range
+                    z_to_ele_ele_x.fill(electron_1, electron_2, nBJet, bjet, nJet, jet, met, weight);
+
+                    // Z mass range
+                    if ((electron_1 + electron_2).mass() > PDG::Z::Mass - 20. and
+                        (electron_1 + electron_2).mass() < PDG::Z::Mass + 20.)
+                    {
+                        z_to_ele_ele_x_Z_mass.fill(electron_1, electron_2, nBJet, bjet, nJet, jet, met, weight);
+                    }
                 }
             }
 

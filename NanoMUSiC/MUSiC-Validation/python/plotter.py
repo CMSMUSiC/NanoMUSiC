@@ -48,7 +48,7 @@ class Plotter:
             for idx, f in enumerate(self.input_mc_files[sample]):
                 if idx != 0:
                     _histo = uproot.open(f"{f}:{histogram_name}").to_hist()
-                    print(f"_histo {f}: \n{_histo}")
+                    # print(f"_histo {f}: \n{_histo}")
                     histos_mc[sample] += _histo
 
         # get Data histogram
