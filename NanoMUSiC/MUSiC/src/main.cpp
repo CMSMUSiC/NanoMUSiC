@@ -1,4 +1,5 @@
 #include "NanoMUSiC.hpp"
+#include <cmath>
 #include <fmt/core.h>
 #include <optional>
 #include <stdexcept>
@@ -612,6 +613,13 @@ auto main(int argc, char *argv[]) -> int
 
     // show final performance report
     print_report(dTime1, event_counter, outputs.cutflow_histo, true);
+
+    // quality control on the cutflow histogram
+    if (std::isnan(outputs.cutflow_histo.Integral()))
+    {
+        throw std::runtime_error(
+            fmt::format("ERROR: Could not validate the event processing. The cutflow integral is nan."));
+    }
 
     // writes data to disk
     std::cout << colors.yellow << "[ Finalizing ] Output file, cutflow histograms and event data trees ..."
