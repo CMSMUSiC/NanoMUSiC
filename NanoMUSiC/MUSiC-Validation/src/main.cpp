@@ -194,31 +194,52 @@ auto main(int argc, char *argv[]) -> int
 
             // reorder objects
             // muons
-            const auto muon_reordering_mask = VecOps::Argsort(unwrap(Muon_pt));
+            const auto muon_reordering_mask = VecOps::Argsort(unwrap(Muon_pt),
+                                                              [](double x, double y) -> bool
+                                                              {
+                                                                  return x > y;
+                                                              });
+
             const auto muon_pt = VecOps::Take(unwrap(Muon_pt), muon_reordering_mask);
             const auto muon_eta = VecOps::Take(unwrap(Muon_eta), muon_reordering_mask);
             const auto muon_phi = VecOps::Take(unwrap(Muon_phi), muon_reordering_mask);
 
             // electrons
-            const auto electron_reordering_mask = VecOps::Argsort(unwrap(Electron_pt));
+            const auto electron_reordering_mask = VecOps::Argsort(unwrap(Electron_pt),
+                                                                  [](double x, double y) -> bool
+                                                                  {
+                                                                      return x > y;
+                                                                  });
             const auto electron_pt = VecOps::Take(unwrap(Electron_pt), electron_reordering_mask);
             const auto electron_eta = VecOps::Take(unwrap(Electron_eta), electron_reordering_mask);
             const auto electron_phi = VecOps::Take(unwrap(Electron_phi), electron_reordering_mask);
 
             // // photons
-            // const  auto photon_reordering_mask = VecOps::Argsort(unwrap(Photon_pt));
+            // const  auto photon_reordering_mask = VecOps::Argsort(unwrap(Photon_pt),
+            //   [](double x, double y) -> bool
+            //   {
+            //       return x > y;
+            //   });
             // const auto photon_pt = VecOps::Take(unwrap(Photon_pt),photon_reordering_mask);
             // const auto photon_eta = VecOps::Take(unwrap(Photon_eta),photon_reordering_mask);
             // const auto photon_phi = VecOps::Take(unwrap(Photon_phi),photon_reordering_mask);
 
             // bjets
-            const auto bjet_reordering_mask = VecOps::Argsort(unwrap(BJet_pt));
+            const auto bjet_reordering_mask = VecOps::Argsort(unwrap(BJet_pt),
+                                                              [](double x, double y) -> bool
+                                                              {
+                                                                  return x > y;
+                                                              });
             const auto bjet_pt = VecOps::Take(unwrap(BJet_pt), bjet_reordering_mask);
             const auto bjet_eta = VecOps::Take(unwrap(BJet_eta), bjet_reordering_mask);
             const auto bjet_phi = VecOps::Take(unwrap(BJet_phi), bjet_reordering_mask);
 
             // jets
-            const auto jet_reordering_mask = VecOps::Argsort(unwrap(Jet_pt));
+            const auto jet_reordering_mask = VecOps::Argsort(unwrap(Jet_pt),
+                                                             [](double x, double y) -> bool
+                                                             {
+                                                                 return x > y;
+                                                             });
             const auto jet_pt = VecOps::Take(unwrap(Jet_pt), jet_reordering_mask);
             const auto jet_eta = VecOps::Take(unwrap(Jet_eta), jet_reordering_mask);
             const auto jet_phi = VecOps::Take(unwrap(Jet_phi), jet_reordering_mask);

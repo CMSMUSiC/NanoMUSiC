@@ -47,7 +47,9 @@ class Plotter:
             ).to_hist()
             for idx, f in enumerate(self.input_mc_files[sample]):
                 if idx != 0:
-                    histos_mc[sample] += uproot.open(f"{f}:{histogram_name}").to_hist()
+                    _histo = uproot.open(f"{f}:{histogram_name}").to_hist()
+                    print(f"_histo {f}: \n{_histo}")
+                    histos_mc[sample] += _histo
 
         # get Data histogram
         histo_data = uproot.open(
@@ -71,10 +73,12 @@ class Plotter:
 
         total_mc_histo = histos_mc[(list(histos_mc.keys()))[0]].copy(deep=True)
         for sample in histos_mc:
+            # print(f"Adding histograms: {sample} - \n{total_mc_histo}")
             if sample != list(histos_mc.keys())[0]:
                 total_mc_histo += histos_mc[sample]
 
         # plot ratio
+        # print(f"{histo_data} - {total_mc_histo}")
         histo_data.plot_ratio(total_mc_histo, ax_dict={"main_ax": ax1, "ratio_ax": ax2})
 
         # the top histogram has to be cleared, in order to print per sample plot

@@ -266,8 +266,6 @@ def main():
 
         exit(0)
 
-    # validation(args)
-
 
 if __name__ == "__main__":
     main()

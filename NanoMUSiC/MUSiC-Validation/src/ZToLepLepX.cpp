@@ -12,25 +12,25 @@ ZToLepLepX::ZToLepLepX(const std::string &output_path,
                        bool is_Z_mass_validation)
     : output_file(std::unique_ptr<TFile>(TFile::Open(output_path.c_str(), "RECREATE")))
 {
+    h_invariant_mass = rebin_histogram(h_invariant_mass, countMap, is_Z_mass_validation);
+    h_sum_pt = rebin_histogram(h_sum_pt, countMap);
+    h_met = rebin_histogram(h_met, countMap, false, "MET");
+    h_lepton_1_pt = rebin_histogram(h_lepton_1_pt, countMap);
+    h_lepton_2_pt = rebin_histogram(h_lepton_2_pt, countMap);
 
-    h_invariant_mass = redefine_histogram(h_invariant_mass, countMap);
-    h_sum_pt = redefine_histogram(h_sum_pt, countMap);
-    h_met = redefine_histogram(h_met, countMap);
-    h_lepton_1_pt = redefine_histogram(h_lepton_1_pt, countMap);
-    h_lepton_2_pt = redefine_histogram(h_lepton_2_pt, countMap);
-    h_lepton_1_eta = redefine_histogram(h_lepton_1_eta, countMap);
-    h_lepton_2_eta = redefine_histogram(h_lepton_2_eta, countMap);
-    h_lepton_1_phi = redefine_histogram(h_lepton_1_phi, countMap);
-    h_lepton_2_phi = redefine_histogram(h_lepton_2_phi, countMap);
-    h_lepton_1_jet_1_dPhi = redefine_histogram(h_lepton_1_jet_1_dPhi, countMap);
-    h_lepton_1_jet_1_dR = redefine_histogram(h_lepton_1_jet_1_dR, countMap);
-    h_jet_multiplicity = redefine_histogram(h_jet_multiplicity, countMap);
-    h_bjet_multiplicity = redefine_histogram(h_bjet_multiplicity, countMap);
-
-    if (is_Z_mass_validation)
-    {
-        h_invariant_mass = TH1F("h_invariant_mass", " h_invariant_mass", 1000, PDG::Z::Mass - 20., PDG::Z::Mass + 20.);
-    }
+    h_invariant_mass.Sumw2();
+    h_sum_pt.Sumw2();
+    h_met.Sumw2();
+    h_lepton_1_pt.Sumw2();
+    h_lepton_2_pt.Sumw2();
+    h_lepton_1_eta.Sumw2();
+    h_lepton_2_eta.Sumw2();
+    h_lepton_1_phi.Sumw2();
+    h_lepton_2_phi.Sumw2();
+    h_lepton_1_jet_1_dPhi.Sumw2();
+    h_lepton_1_jet_1_dR.Sumw2();
+    h_jet_multiplicity.Sumw2();
+    h_bjet_multiplicity.Sumw2();
 }
 
 auto ZToLepLepX::fill(Math::PtEtaPhiMVector lepton_1,

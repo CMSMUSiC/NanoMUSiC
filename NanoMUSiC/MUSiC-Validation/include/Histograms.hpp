@@ -2,25 +2,41 @@
 #define HISTOGRAMS
 
 #include "BinLimits.hpp"
+#include "Configs.hpp"
 #include <TH1F.h>
 #include <cmath>
 #include <math.h>
 #include <vector>
+
+#include "fmt/format.h"
 
 // create a new histogram with fixed bin size
 #define ADD_TH1F(HISTO, N_BINS, LOWER_BOUND, UPPER_BOUND)                                                              \
     TH1F HISTO = TH1F(#HISTO, #HISTO, N_BINS, LOWER_BOUND, UPPER_BOUND)
 
 // define a new histogram, with variable bin size
-inline auto redefine_histogram(TH1F &hist, const std::map<std::string, int> &countMap) -> TH1F
+inline auto rebin_histogram(TH1F &hist,
+                            const std::map<std::string, int> &countMap,
+                            bool is_Z_mass_validation = false,
+                            const std::string &distribution = "validation_plot") -> TH1F
 {
-    constexpr double fudge = 1.;
-    constexpr double bin_size_min = 1.;
-    constexpr double center_of_mass_energy = 13.;
+    double fudge = 1.;
+    double min_bin_size = 10.;
+    double min = 0.;
+    double max = 13000.; // CM Energy
 
-    auto limits = BinLimits::get_bin_limits("validation_plot", countMap, 0, center_of_mass_energy, bin_size_min, fudge);
+    if (is_Z_mass_validation)
+    {
+        min = PDG::Z::Mass - 20.;
+        max = PDG::Z::Mass + 20.;
+        min_bin_size = 1.;
+    }
 
-    return TH1F(hist.GetName(), hist.GetTitle(), limits.size(), limits.data());
+    auto limits = BinLimits::get_bin_limits(distribution, countMap, min, max, min_bin_size, fudge);
+
+    // fmt::print("Limits: {}\n", limits);
+
+    return TH1F(hist.GetName(), hist.GetTitle(), limits.size() - 1, limits.data());
 }
 
 constexpr int n_energy_bins = 1300;
