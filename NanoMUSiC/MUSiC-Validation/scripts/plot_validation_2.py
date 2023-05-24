@@ -25,7 +25,7 @@ def parse_args():
     )
     parser.add_argument("-y", "--year", required=True, help="Year to be processed.")
     parser.add_argument(
-        "-n", "--histname", required=True, help="Name of the histogram."
+        "-n", "--histname", required=True, help="To plot only one histogram, specify the name. Useful when using custom display settings (e.g. -xl, -yl) or to only produce one plot.\nTo plot all histograms (with the same settings/default settings) use '-n ALL'."
     )
     parser.add_argument(
         "-p",
@@ -36,13 +36,11 @@ def parse_args():
     parser.add_argument(
         "-xl",
         "--xlim",
-        required=False,
         help="Optional argument: Set x axis limits, specify limits as 'a,b', where one number can be left out to only set one boundary. When a boundary is not specified, it is set automatically.",
     )
     parser.add_argument(
         "-yl",
         "--ylim",
-        required=False,
         help="Optional argument: Set y axis limits, specify limits as 'a,b', where one number can be left out to only set one boundary. When a boundary is not specified, it is set automatically.",
     )
     parser.add_argument(
@@ -57,6 +55,7 @@ def parse_args():
     )
 
     args = parser.parse_args()
+
     return args
 
 
@@ -237,8 +236,42 @@ color_dict = {
     "proc9": '#9f1213',
 }
 
+# names of all histograms in the validation files (that are plotted when using the option --all)
+histnames = {
+            "h_2jet_invariant_mass",
+            "h_2jet_sum_pt",
+            "h_met",
+            "h_1jet_met",
+            "h_2jet_met",
+            "h_1jet_pt",
+            "h_1jet_eta",
+            "h_1jet_phi",
+            "h_2jet_1_pt",
+            "h_2jet_2_pt",
+            "h_2jet_1_eta",
+            "h_2jet_2_eta",
+            "h_2jet_1_phi",
+            "h_2jet_2_phi",
+            "h_njet",
+            "h_nbjet",
+            "h_nelectron",
+            "h_nmuon",
+            "h_nfermion",
+            "h_1jet_nelectron",
+            "h_1jet_nmuon",
+            "h_1jet_nfermion",
+            "h_2jet_nelectron",
+            "h_2jet_nmuon",
+            "h_2jet_nfermion",
+            "h_2jet_Z_invariant_mass",
+            }
+
 def getkeyfromvalue(dict,value):
     return [k for k, v in dict.items() if v == value][0]
+
+def printdebug(toprint):
+    if debug:
+        print(toprint)
 
 # general information:
 # the files are imported according to the config file and the user input
@@ -251,56 +284,24 @@ def getkeyfromvalue(dict,value):
 # plot limits and style is set
 # the plot is exported
 
-
-def main():
-    print("\n\n📶 [ MUSiC Validation Plotter (Nils' version) ] 📶\n")
-
-    # parse arguments
-    args = parse_args()
-
-    # check for sub-directory
-    savepath = ""
-    if args.savepath:
-        savepath = args.savepath
-
-    # import task config file that includes references to all files that should be validated
-    print(f"Importing task config...")
-    task_config_file: str = args.config
-    task_config: dict[str, Any] = toml.load(task_config_file)
-
-    # extract data and mc samples given in task config file
-    mcconfig, dataconfig = extract_config(task_config)
-    datasamples = [sample for sample in dataconfig]
-    mcsamples = [sample for sample in mcconfig]
-
-    # sort mc samples in their groups
-    mcgroups = set([mcconfig[i]["ProcessGroup"] for i in mcconfig.keys()]) # get set of mc groups
-    mcsorted = {}
-    for mcgroup in mcgroups: # iterate over all groups
-        tempset = set()
-        for sample in mcsamples: # check whether sample belongs to group
-            if mcconfig[sample]["ProcessGroup"] == mcgroup:
-                tempset.add(sample)
-        mcsorted.update({mcgroup : tempset}) # dictionary: {group: {samples in this group}}
-    print("Found", len(mcgroups), "mc groups in the selected task config.")
-
+def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname):
     # import mc histograms
-    print("Importing", len(mcsamples), "mc histograms...")
+    printdebug(f"Importing {len(mcsamples)} mc histograms...")
     mccounts, mcedges, mcerrors = {}, {}, {}
     for sample in mcsamples:
         samplecounts, sampleedges, sampleerrors = import_hist(
-            args.year, sample, args.fileprefix, args.histname, savepath
+            args.year, sample, args.fileprefix, histname, savepath
         )
         mccounts.update({sample: samplecounts})
         mcedges.update({sample: sampleedges})
         mcerrors.update({sample: sampleerrors})
 
     # import data histograms
-    print("Importing", len(datasamples), "data histograms...")
+    printdebug(f"Importing {len(datasamples)} data histograms...")
     datacounts, dataedges, dataerrors = {}, {}, {}
     for sample in datasamples:
         samplecounts, sampleedges, sampleerrors = import_hist(
-            args.year, sample, args.fileprefix, args.histname, savepath
+            args.year, sample, args.fileprefix, histname, savepath
         )
         datacounts.update({sample: samplecounts})
         dataedges.update({sample: sampleedges})
@@ -322,12 +323,12 @@ def main():
             if dataedges[sample][i] != validation_edges[i]:
                 binerror()
         nbins = len(dataedges[sample]) - 1 # no. of bins is (no. of edges) - 1
-    print("All histogram edges are matching, therefore the validation can continue.")
+    printdebug("All histogram edges are matching, therefore the validation can continue.")
 
     # calculate bins and bin width (only once since they are the same for every sample)
     edges = validation_edges
     bins, barwidth = calculatebins(edges)
-    print("Calculated bins from histogram edges.")
+    printdebug("Calculated bins from histogram edges.")
 
     # re-sort mc groups into mc categories with aggregation dictionary
     categories_samples = {}
@@ -335,7 +336,7 @@ def main():
     notfound = set()
     for category in set(aggregation_dict.values()):
         categories_samples.update({category: set()}) # dictionary: {category: {samples in category}}
-    for group in mcgroups:
+    for group in mcsorted.keys():
         for sample in mcsorted[group]:
             if(group in aggregation_dict.keys()):
                 categories_samples[aggregation_dict[group]].add(sample)
@@ -363,8 +364,8 @@ def main():
             notfound.add(group)
     if notfoundflag:
         raise RuntimeError(f"The mc categories {notfound} are not listed in the dictionary.")
-    print("Sorted", len(mcgroups), "mc groups into", len(categories_samples.keys()), "mc categories given by the aggregation dictionary and matched category colors.")
-    print("   The mc categories", nomembers, "have no member mc groups for the given task config.")
+    printdebug(f"Sorted {len(mcsorted.keys())} mc groups into {len(categories_samples.keys())} mc categories given by the aggregation dictionary and matched category colors.")
+    printdebug(f"   The mc categories {nomembers} have no member mc groups for the given task config.")
 
     # stack all samples for each category and calculate errors for each category
     categories_counts, categories_errors = {}, {}
@@ -376,7 +377,7 @@ def main():
             sqerr_categorysum += (np.array(mcerrors[sample]))**2
         categories_counts.update({category: categorysum}) # dictionary: {category: counts for stacked bins for all samples of this category}
         categories_errors.update({category: np.sqrt(sqerr_categorysum)}) # dictionary: {category: combined error after stacking for all samples of this category}
-    print("Stacked the samples in each mc category.")
+    printdebug("Stacked the samples in each mc category.")
 
     # sort categories after their contribution, smallest contribution first
     #categories_samples = {category: samples for category, samples in sorted(categories_samples.items())} # to sort categories alphabetically
@@ -389,17 +390,17 @@ def main():
         category = getkeyfromvalue(categories_max, max)
         sorted_categories_samples.update({category: categories_samples[category]}) # dictionary: {category: {samples in category}}
             # with categories ordered after the contribution, smallest contribution first
-    print("Sorted mc categories by their maximum contribution.")
+    printdebug("Sorted mc categories by their maximum contribution.")
     
     # prepare plot
     fig, ax = plt.subplots(1, 1)
 
     # stack mc categories, calculate errors and plot mc
-    print("Start mc plotting.")
+    printdebug("Start mc plotting.")
     mcsum = np.zeros(nbins)
     sqmcerrsum = np.zeros(nbins)
     for category in sorted_categories_samples.keys():
-        print("   Plotting mc category {}...".format(category))
+        printdebug("   Plotting mc category {}...".format(category))
         ax.bar(bins, categories_counts[category], width=barwidth, bottom=mcsum, label=category, color=categories_colors[category])
         mcsum += categories_counts[category]
         sqmcerrsum += (np.array(categories_errors[category]))**2 # add errors together
@@ -407,12 +408,10 @@ def main():
     ax.bar(bins, 2*mcerr, width=barwidth, bottom=(mcsum-mcerr), label="MC uncertainty", fill=False, hatch="xxxxxxxx", linewidth=0, edgecolor="tab:gray")
 
     # stack data, calculate errors and plot data
-    print("Start data stacking and plotting.")
+    printdebug("Start data stacking and plotting.")
     datasum = np.zeros(nbins)
     sqdataerrsum = np.zeros(nbins)
     for sample in datasamples:
-        if debug:
-            print("   {}...".format(sample))
         counts = np.array(datacounts[sample])
         datasum += counts # stack data samples
         sqdataerrsum += (np.array(dataerrors[sample]))**2 # calculate square sum of errors, assuming uncorrelated samples
@@ -420,7 +419,7 @@ def main():
     ax.errorbar(bins, datasum, yerr=error_data, color="black", marker=".", linestyle="", elinewidth=0.8, capsize=1, markersize=3, label="Data")  
 
     # axis limits
-    print("Setting axis limits...")
+    printdebug("Setting axis limits...")
     i = 0
     while (mcsum[i] == 0 and datasum[i] == 0):
         i += 1
@@ -460,19 +459,69 @@ def main():
         ax.set_ylim(autoylim)
     
     # plot cosmetics
-    print("Exporting plot...")
+    printdebug("Exporting plot...")
     ax.legend(loc="upper right", prop={'size': 8}, frameon=False)
-    ax.set_title(args.histname)
+    ax.set_title(histname)
     fig.tight_layout()
 
     # export plot
-    figname = args.histname
+    figname = histname
     if args.title: # optional custom title
         figname = args.title
     outputpath = validation_path + "/" + str(args.year) + "/" + figname + ".png"
     if savepath != "":
         outputpath = validation_path + "/" + str(args.year) + "/" + savepath + "/" + figname + ".png"
     fig.savefig(outputpath, dpi=500)
+
+
+def main():
+    print("\n\n📶 [ MUSiC Validation Plotter (Nils' version) ] 📶\n")
+
+    # parse arguments
+    args = parse_args()
+
+    # check for sub-directory
+    savepath = ""
+    if args.savepath:
+        savepath = args.savepath
+
+    # import task config file that includes references to all files that should be validated
+    print(f"Importing task config...")
+    task_config_file: str = args.config
+    task_config: dict[str, Any] = toml.load(task_config_file)
+
+    # extract data and mc samples given in task config file
+    mcconfig, dataconfig = extract_config(task_config)
+    datasamples = [sample for sample in dataconfig]
+    mcsamples = [sample for sample in mcconfig]
+
+    # sort mc samples in their groups
+    mcgroups = set([mcconfig[i]["ProcessGroup"] for i in mcconfig.keys()]) # get set of mc groups
+    mcsorted = {}
+    for mcgroup in mcgroups: # iterate over all groups
+        tempset = set()
+        for sample in mcsamples: # check whether sample belongs to group
+            if mcconfig[sample]["ProcessGroup"] == mcgroup:
+                tempset.add(sample)
+        mcsorted.update({mcgroup : tempset}) # dictionary: {group: {samples in this group}}
+    print("Found", len(mcgroups), "mc groups in the selected task config.")
+
+    # run plotting task, depending on user input
+    if args.histname != "ALL": # plot single histogram
+        histname = args.histname
+        print(f"Starting plotting job for histogram {histname}.")
+        plotter(args, savepath, datasamples, mcsamples, mcsorted, histname)
+    else: # plot all validation histograms
+        print(f"Starting plotting job for all histograms.")
+        print("")
+        n = 0
+        for histname in histnames:
+            n += 1
+            print("\033[A                                                                           \033[A") # clear last line in console to avoid spam
+            print(f"Plotting {histname} ({n}/{len(histnames)})...")
+            printdebug(f"\nStarting plotting job for histogram {histname}.")
+            plotter(args, savepath, datasamples, mcsamples, mcsorted, histname)
+            printdebug(f"Finished plotting job for histogram {histname}.")
 
     print("Finished plot validation job.\n")
     exit(0)
