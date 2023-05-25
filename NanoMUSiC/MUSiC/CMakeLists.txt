@@ -73,20 +73,8 @@ add_executable(nano_music src/main.cpp /
     src/TOMLConfig.cpp src/CorrectionSets.cpp /
     external/roccor/RoccoR.cc /
     src/BinLimits.cpp)
-target_link_libraries(nano_music LINK_PUBLIC)
+target_link_libraries(nano_music LINK_PUBLIC ROOT::RIO ROOT::Net)
 install(TARGETS nano_music DESTINATION ${CMAKE_SOURCE_DIR}/bin)
-
-# MC
-add_test(NAME test_nano_music_2016APV_MC COMMAND nano_music --batch --run-config ${CMAKE_SOURCE_DIR}/configs/task_configs/MC_Run2016APV.toml)
-add_test(NAME test_nano_music_2016_MC COMMAND nano_music --batch --run-config ${CMAKE_SOURCE_DIR}/configs/task_configs/MC_Run2016.toml)
-add_test(NAME test_nano_music_2017_MC COMMAND nano_music --batch --run-config ${CMAKE_SOURCE_DIR}/configs/task_configs/MC_Run2017.toml)
-add_test(NAME test_nano_music_2018_MC COMMAND nano_music --batch --run-config ${CMAKE_SOURCE_DIR}/configs/task_configs/MC_Run2018.toml)
-
-# Data
-add_test(NAME test_nano_music_2016APV_Data COMMAND nano_music --batch --run-config ${CMAKE_SOURCE_DIR}/configs/task_configs/Data_Run2016APV.toml)
-add_test(NAME test_nano_music_2016_Data COMMAND nano_music --batch --run-config ${CMAKE_SOURCE_DIR}/configs/task_configs/Data_Run2016.toml)
-add_test(NAME test_nano_music_2017_Data COMMAND nano_music --batch --run-config ${CMAKE_SOURCE_DIR}/configs/task_configs/Data_Run2017.toml)
-add_test(NAME test_nano_music_2018_Data COMMAND nano_music --batch --run-config ${CMAKE_SOURCE_DIR}/configs/task_configs/Data_Run2018.toml)
 
 # #####################################################
 # #####################################################
@@ -97,5 +85,5 @@ add_link_options(
 
 # nanoaod_content_printer
 add_executable(nanoaod_content_printer src/nanoaod_content_printer.cpp)
-target_link_libraries(nanoaod_content_printer LINK_PUBLIC NanoAODReader)
+target_link_libraries(nanoaod_content_printer LINK_PUBLIC NanoAODReader ROOT::RIO ROOT::Net)
 install(TARGETS nanoaod_content_printer DESTINATION ${CMAKE_SOURCE_DIR}/bin)

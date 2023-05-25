@@ -1,5 +1,5 @@
-#ifndef MUSIC_TOOLS
-#define MUSIC_TOOLS
+#ifndef PXL_TOOLS
+#define PXL_TOOLS
 
 #include <cstdlib>
 #include <exception>
@@ -194,4 +194,4 @@ inline std::string AbsolutePath(Path const &path)
 }
 } // namespace Tools
 
-#endif /*MUSIC_TOOLS*/
+#endif /*PXL_TOOLS*/

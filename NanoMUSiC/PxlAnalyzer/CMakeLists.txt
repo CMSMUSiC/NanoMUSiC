@@ -7,7 +7,8 @@ add_library(PxlAnalyzer
     Pxl/Pxl/src/ObjectManager.cpp
     Pxl/Pxl/src/Object.cpp
     Pxl/Pxl/src/Event.cpp
-    Pxl/Pxl/src/ConfigLoader.cpp
+
+    # Pxl/Pxl/src/ConfigLoader.cpp
     Pxl/Pxl/src/InputHandler.cpp
     Pxl/Pxl/src/Variant.cpp
     Pxl/Pxl/src/AnalysisProcess.cpp
@@ -51,7 +52,8 @@ add_library(PxlAnalyzer
     Pxl/Pxl/src/logging.cpp
     Main/JetResolution.cpp
     Main/EventAdaptor.cpp
-    #Main/NanoAODReader.cpp
+
+    # Main/NanoAODReader.cpp
     Main/SkipEvents.cpp
     Main/GammaSelector.cpp
     Main/PDFTool.cpp
@@ -84,7 +86,8 @@ add_library(PxlAnalyzer
     Tools/SignalHandler.cpp
     Tools/AnyOption.cpp
     Tools/Tools.cpp
-    Main/TOMLConfig.cpp
+
+    # Main/TOMLConfig.cpp
 )
 target_include_directories(PxlAnalyzer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_options(PxlAnalyzer PUBLIC -g -c -Wno-narrowing)

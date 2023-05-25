@@ -29,7 +29,7 @@ void splitGammaRegions(std::map<std::string, std::vector<pxl::Particle *>> &map)
 {
     return Splitting::split(
         map,
-        [](pxl::Particle *particle)
+        [](pxl::Particle *particle) -> Variant
         {
             return particle->getUserRecord("isEndcap");
         },
@@ -42,7 +42,7 @@ void splitEleRegions(std::map<std::string, std::vector<pxl::Particle *>> &map)
 {
     return Splitting::split(
         map,
-        [](pxl::Particle *particle)
+        [](pxl::Particle *particle) -> Variant
         {
             return particle->getUserRecord("isEndcap");
         },

@@ -31,9 +31,14 @@ add_link_options(
     -lstdc++fs
 )
 
-add_executable(validation src/main.cpp //
+add_executable(classification src/main.cpp //
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/TOMLConfig.cpp //
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/BinLimits.cpp //
-    src/ZToLepLepX.cpp)
-target_link_libraries(validation LINK_PUBLIC ROOT::RIO ROOT::Net)
-install(TARGETS validation DESTINATION ${CMAKE_SOURCE_DIR}/bin)
+    ${CMAKE_SOURCE_DIR}/NanoMUSiC/TEventClass/src/TEventClass.cpp)
+
+target_include_directories(classification PUBLIC ${CMAKE_SOURCE_DIR}/NanoMUSiC/TEventClass/include)
+
+# message(STATUS "[MUSiC-Classification] Generating TEventClass dictionaries ...")
+# ROOT_GENERATE_DICTIONARY(ClassificationTEventClassDict ${CMAKE_SOURCE_DIR}/NanoMUSiC/TEventClass/include/TEventClass.hpp MODULE classification LINKDEF ${CMAKE_SOURCE_DIR}/NanoMUSiC/TEventClass/include/TEventClassLinkDef.h)
+# message(STATUS "[MUSiC-Classification] ... done.")
+target_link_libraries(classification PUBLIC TEventClassDict ROOT::RIO ROOT::Net)
+install(TARGETS classification DESTINATION ${CMAKE_SOURCE_DIR}/bin)
