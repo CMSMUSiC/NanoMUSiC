@@ -239,7 +239,7 @@ def create_arguments(configuration, year, lumi, ismc, executable, mode, savepath
 
 
 def main():
-    print("\n\n📶 [ MUSiC Validation (Nils' version) ] 📶\n")
+    print("\n\n📶 [ MUSiC Validation 2 ] 📶\n")
 
     # parse arguments
     args = parse_args()

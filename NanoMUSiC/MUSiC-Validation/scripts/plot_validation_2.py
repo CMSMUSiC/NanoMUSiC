@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+from __future__ import annotations
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
@@ -9,12 +11,35 @@ import argparse
 from typing import Any
 from pprint import pprint
 from collections import defaultdict
+from tqdm import tqdm
+import matplotlib.gridspec as gridspec
+from typing import Any
+import numpy as np
+import mplhep as hep
+try:
+    from scipy import stats
+except ModuleNotFoundError:
+    from sys import stderr
 
+    print(  # noqa: T201
+        "hist.intervals requires scipy. Please install hist[plot] or manually install scipy.",
+        file=stderr,
+    )
+    raise
+__all__ = ("poisson_interval", "clopper_pearson_interval", "ratio_uncertainty")
+
+
+def __dir__() -> tuple[str, ...]:
+    return __all__
+
+
+# path of the validation files
 validation_path = "./validation_outputs"
 
 # debug flag, if true more detailed console output is active
 debug = False
 
+# parses arguments
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -59,6 +84,7 @@ def parse_args():
     return args
 
 
+# extracts task config
 def extract_config(task_config):
     mcconfig, dataconfig = {}, {}
     print(f"Extracting samples from task config...")
@@ -113,10 +139,12 @@ def import_hist(year, sample, file_prefix, hist_name, savepath):
     return counts, edges, errcounts
 
 
+# raises bin error
 def binerror():
     raise RuntimeError("The edges of the histograms have to be the same for all files.")
 
 
+# calculates bins from edges
 def calculatebins(edges):
     bins = []
     barwidth = []
@@ -132,6 +160,7 @@ def calculatebins(edges):
 
 
 # aggregation dictionary for the plot
+# (taken from the file aggregation_groups.py)
 aggregation_dict =  {"TTW": "TTbar",
                     "TTZ": "TTbar",
                     "TTbar_13TeV_P8": "TTbar",
@@ -183,6 +212,7 @@ aggregation_dict =  {"TTW": "TTbar",
                     }
 
 # color dictionary
+# (taken from the file colors.py)
 color_dict = {
     "QCD": '#4daf4a',
     "Gamma": '#337a33',
@@ -237,6 +267,7 @@ color_dict = {
 }
 
 # names of all histograms in the validation files (that are plotted when using the option --all)
+# (names taken out of the validation root files)
 histnames = {
             "h_2jet_invariant_mass",
             "h_2jet_sum_pt",
@@ -269,21 +300,143 @@ histnames = {
 def getkeyfromvalue(dict,value):
     return [k for k, v in dict.items() if v == value][0]
 
+
 def printdebug(toprint):
     if debug:
         print(toprint)
 
-# general information:
-# the files are imported according to the config file and the user input
-# first all mc samples are read in and sorted by their 'group' which is given in the config file
-# then all data files are read in
-# the mc groups are again grouped together to 'categories' defined by the aggregation dictionary
-# colors for the categories are loaded from the color dictionary
-# mc data is stacked in the given color
-# then data is stacked and plotted
-# plot limits and style is set
-# the plot is exported
+# ratio uncertainty treatment and corresponding functions: taken from https://github.com/scikit-hep/hist/blob/main/src/hist/intervals.py
+def poisson_interval(
+    values: np.typing.NDArray[Any],
+    variances: np.typing.NDArray[Any] | None = None,
+    coverage: float | None = None,
+) -> np.typing.NDArray[Any]:
+    r"""
+    The Frequentist coverage interval for Poisson-distributed observations.
 
+    What is calculated is the "Garwood" interval, c.f.
+    `V. Patil, H. Kulkarni (Revstat, 2012) <https://www.ine.pt/revstat/pdf/rs120203.pdf>`_
+    or http://ms.mcmaster.ca/peter/s743/poissonalpha.html.
+    If ``variances`` is supplied, the data is assumed to be weighted, and the
+    unweighted count is approximated by ``values**2/variances``, which effectively
+    scales the unweighted Poisson interval by the average weight.
+    This may not be the optimal solution: see
+    `10.1016/j.nima.2014.02.021 <https://doi.org/10.1016/j.nima.2014.02.021>`_
+    (`arXiv:1309.1287 <https://arxiv.org/abs/1309.1287>`_) for a proper treatment.
+
+    In cases where the value is zero, an upper limit is well-defined only in the case of
+    unweighted data, so if ``variances`` is supplied, the upper limit for a zero value
+    will be set to ``NaN``.
+
+    Args:
+        values: Sum of weights.
+        variances: Sum of weights squared.
+        coverage: Central coverage interval.
+          Default is one standard deviation, which is roughly ``0.68``.
+
+    Returns:
+        The Poisson central coverage interval.
+    """
+    if coverage is None:
+        coverage = stats.norm.cdf(1) - stats.norm.cdf(-1)
+    if variances is None:
+        interval_min = stats.chi2.ppf((1 - coverage) / 2, 2 * values) / 2.0
+        interval_min[values == 0.0] = 0.0  # chi2.ppf produces NaN for values=0
+        interval_max = stats.chi2.ppf((1 + coverage) / 2, 2 * (values + 1)) / 2.0
+    else:
+        scale = np.ones_like(values)
+        mask = np.isfinite(values) & (values != 0)
+        np.divide(variances, values, out=scale, where=mask)
+        counts: np.typing.NDArray[Any] = values / scale
+        interval_min = scale * stats.chi2.ppf((1 - coverage) / 2, 2 * counts) / 2.0
+        interval_min[values == 0.0] = 0.0  # chi2.ppf produces NaN for values=0
+        interval_max = (
+            scale * stats.chi2.ppf((1 + coverage) / 2, 2 * (counts + 1)) / 2.0
+        )
+        interval_max[values == 0.0] = np.nan
+    return np.stack((interval_min, interval_max))
+def clopper_pearson_interval(
+    num: np.typing.NDArray[Any],
+    denom: np.typing.NDArray[Any],
+    coverage: float | None = None,
+) -> np.typing.NDArray[Any]:
+    r"""
+    Compute the Clopper-Pearson coverage interval for a binomial distribution.
+    c.f. http://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval
+
+    Args:
+        num: Numerator or number of successes.
+        denom: Denominator or number of trials.
+        coverage: Central coverage interval.
+          Default is one standard deviation, which is roughly ``0.68``.
+
+    Returns:
+        The Clopper-Pearson central coverage interval.
+    """
+    if coverage is None:
+        coverage = stats.norm.cdf(1) - stats.norm.cdf(-1)
+    if np.any(num > denom):
+        raise ValueError(
+            "Found numerator larger than denominator while calculating binomial uncertainty"
+        )
+    interval_min = stats.beta.ppf((1 - coverage) / 2, num, denom - num + 1)
+    interval_max = stats.beta.ppf((1 + coverage) / 2, num + 1, denom - num)
+    interval = np.stack((interval_min, interval_max))
+    interval[0, num == 0.0] = 0.0
+    interval[1, num == denom] = 1.0
+def ratio_uncertainty(
+    num: np.typing.NDArray[Any],
+    denom: np.typing.NDArray[Any],
+    uncertainty_type = "poisson",
+) -> Any:
+    r"""
+    Calculate the uncertainties for the values of the ratio ``num/denom`` using
+    the specified coverage interval approach.
+
+    Args:
+        num: Numerator or number of successes.
+        denom: Denominator or number of trials.
+        uncertainty_type: Coverage interval type to use in the calculation of
+         the uncertainties.
+
+         * ``"poisson"`` (default) implements the Garwood confidence interval for
+           a Poisson-distributed numerator scaled by the denominator.
+           See :func:`hist.intervals.poisson_interval` for further details.
+         * ``"poisson-ratio"`` implements a confidence interval for the ratio ``num / denom``
+           assuming it is an estimator of the ratio of the expected rates from
+           two independent Poisson distributions.
+           It over-covers to a similar degree as the Clopper-Pearson interval
+           does for the Binomial efficiency parameter estimate.
+         * ``"efficiency"`` implements the Clopper-Pearson confidence interval
+           for the ratio ``num / denom`` assuming it is an estimator of a Binomial
+           efficiency parameter.
+           This is only valid if the entries contributing to ``num`` are a strict
+           subset of those contributing to ``denom``.
+
+    Returns:
+        The uncertainties for the ratio.
+    """
+    with np.errstate(divide="ignore", invalid="ignore"):
+        ratio = num / denom
+    if uncertainty_type == "poisson":
+        with np.errstate(divide="ignore", invalid="ignore"):
+            ratio_variance = num * np.power(denom, -2.0)
+        ratio_uncert = np.abs(poisson_interval(ratio, ratio_variance) - ratio)
+    elif uncertainty_type == "poisson-ratio":
+        p_lim = clopper_pearson_interval(num, num + denom)
+        with np.errstate(divide="ignore", invalid="ignore"):
+            r_lim: np.typing.NDArray[Any] = p_lim / (1 - p_lim)
+            ratio_uncert = np.abs(r_lim - ratio)
+    elif uncertainty_type == "efficiency":
+        ratio_uncert = np.abs(clopper_pearson_interval(num, denom) - ratio)
+    else:
+        raise TypeError(
+            f"'{uncertainty_type}' is an invalid option for uncertainty_type."
+        )
+    return ratio_uncert
+
+
+# performs a plotting job
 def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname):
     # import mc histograms
     printdebug(f"Importing {len(mcsamples)} mc histograms...")
@@ -393,19 +546,46 @@ def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname):
     printdebug("Sorted mc categories by their maximum contribution.")
     
     # prepare plot
-    fig, ax = plt.subplots(1, 1)
+    hep.style.use(hep.style.ROOT)
+    fig, ax = plt.subplots(2, 1, gridspec_kw={'height_ratios': [5, 1], 'wspace': 0, 'hspace': 0.05}, sharex=True)
+    ax[0].set_yscale("log")
+    plt.axis('on')
+    fig.subplots_adjust(hspace=0, wspace=0)
+    fig.subplots_adjust(left=0.08,right=0.98,bottom=0.05,top=0.95)
+
 
     # stack mc categories, calculate errors and plot mc
+    """
+    # old version with bottom option, creates white lines in .pdf export
     printdebug("Start mc plotting.")
     mcsum = np.zeros(nbins)
     sqmcerrsum = np.zeros(nbins)
     for category in sorted_categories_samples.keys():
         printdebug("   Plotting mc category {}...".format(category))
-        ax.bar(bins, categories_counts[category], width=barwidth, bottom=mcsum, label=category, color=categories_colors[category])
+        # ax[0].bar(bins, categories_counts[category], width=barwidth, bottom=mcsum, label=category, color=categories_colors[category]) # working alternative
+        ax[0].hist(bins, edges, weights=categories_counts[category], label=category, color=categories_colors[category], bottom=mcsum)
         mcsum += categories_counts[category]
         sqmcerrsum += (np.array(categories_errors[category]))**2 # add errors together
     mcerr = np.sqrt(sqmcerrsum) # plot combined mc error
-    ax.bar(bins, 2*mcerr, width=barwidth, bottom=(mcsum-mcerr), label="MC uncertainty", fill=False, hatch="xxxxxxxx", linewidth=0, edgecolor="tab:gray")
+    ax[0].bar(bins, 2*mcerr, width=barwidth, bottom=(mcsum-mcerr), label="MC uncertainty", fill=False, hatch="xxxxxxxx", linewidth=0, edgecolor="tab:gray")
+    """
+    # new version with stacked hist, minimizes white lines in .pdf export
+    printdebug("Start mc plotting.")
+    mcsum = np.zeros(nbins)
+    sqmcerrsum = np.zeros(nbins)
+    categories_stacked = sorted_categories_samples.keys()
+    counts_stacked = []
+    colors_stacked = []
+    for category in categories_stacked:
+        counts_stacked += [categories_counts[category]]
+        colors_stacked += [categories_colors[category]]
+        mcsum += categories_counts[category]
+        sqmcerrsum += (np.array(categories_errors[category]))**2 # add errors together
+    mcerr = np.sqrt(sqmcerrsum) # plot combined mc error
+    ax[0].hist([bins for category in categories_stacked], edges,
+            weights=[categories_counts[category] for category in categories_stacked], label=[category for category in categories_stacked],
+            color=[categories_colors[category] for category in categories_stacked], histtype="stepfilled", stacked=True)
+    ax[0].bar(bins, 2*mcerr, width=barwidth, bottom=(mcsum-mcerr), label="MC uncertainty", fill=False, hatch="xxxxxxxx", linewidth=0, edgecolor="tab:gray")
 
     # stack data, calculate errors and plot data
     printdebug("Start data stacking and plotting.")
@@ -416,66 +596,111 @@ def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname):
         datasum += counts # stack data samples
         sqdataerrsum += (np.array(dataerrors[sample]))**2 # calculate square sum of errors, assuming uncorrelated samples
     error_data = np.sqrt(sqdataerrsum) # calculate final error value (square root of square sum)
-    ax.errorbar(bins, datasum, yerr=error_data, color="black", marker=".", linestyle="", elinewidth=0.8, capsize=1, markersize=3, label="Data")  
+    ax[0].errorbar(bins, datasum, yerr=error_data, xerr=barwidth/2, color="black", marker=".", linestyle="", elinewidth=0.8, capsize=1, markersize=3, label="Data")  
+    
+    # create data/mc subplot
+    printdebug("Create Data/MC subplot...")
+    divisionidx = []
+    for i in range(len(mcsum)):
+        if mcsum[i] > 0 and datasum[i] > 0:
+            divisionidx += [i]
+    data_overmc = np.array([datasum[i]/mcsum[i] for i in divisionidx])
+    bins_overmc = np.array([bins[i] for i in divisionidx])
+    mcerr_overmc = ratio_uncertainty(np.array([datasum[i] for i in divisionidx]),np.array([mcsum[i] for i in divisionidx]),"poisson")
+        # asymmetric error interval (contains 2d array with [[-err],[+err]])
+    dataerr_overmc = np.array([error_data[i]/mcsum[i] for i in divisionidx])
+    barwidth_overmc = np.array([barwidth[i] for i in divisionidx])
+    ax[1].errorbar(bins_overmc, data_overmc, yerr=dataerr_overmc, xerr=barwidth_overmc/2, color="black", marker=".", linestyle="", elinewidth=0.8, capsize=1, markersize=3)
+    ax[1].bar(bins_overmc, mcerr_overmc[1,:]+mcerr_overmc[0,:], width=barwidth_overmc, bottom=1-mcerr_overmc[0,:], fill=False, hatch="xxxxxxxx", linewidth=0, edgecolor="tab:gray")
+    ax[1].axhline(1, linewidth=0.4, color="black")
 
-    # axis limits
+    # set all axis limits (this is a bit ugly but it works..)
     printdebug("Setting axis limits...")
-    i = 0
-    while (mcsum[i] == 0 and datasum[i] == 0):
-        i += 1
-    j = nbins - 1
-    while (mcsum[j] == 0 and datasum[j] == 0):
-        j -= 1
-    autoxlim = (edges[i], edges[j])
-    if args.xlim: # x limits
+    # auto find x limits where data + mc > 0
+    leftidx = 0
+    rightidx = nbins - 1
+    while(mcsum[leftidx] + datasum[leftidx] <= 0):
+        leftidx += 1
+    while(mcsum[rightidx] + datasum[rightidx] <= 0):
+        rightidx -= 1
+    if rightidx < nbins - 1:
+        rightidx += 1
+    whitespace = 30
+    xlim = (edges[leftidx]-whitespace, edges[rightidx]+whitespace)
+    # read custom x limits
+    if args.xlim:
         try:
             xlim_string = args.xlim.split(",")
             if xlim_string[0] != "" and xlim_string[1] != "":
-                ax.set_xlim(float(xlim_string[0]),float(xlim_string[1]))
+                xlim = (float(xlim_string[0]),float(xlim_string[1]))
             elif xlim_string[0] != "" and xlim_string[1] == "":
-                ax.set_xlim(float(xlim_string[0]),autoxlim[1])
+                xlim = (float(xlim_string[0]),xlim[1])
             elif xlim_string[0] == "" and xlim_string[1] != "":
-                ax.set_xlim(autoxlim[0],float(xlim_string[1]))
+                xlim = (xlim[0],float(xlim_string[1]))
         except:
             raise RuntimeError("Invalid x limit given.")
             exit(0)
-    else:
-        ax.set_xlim(autoxlim)
-    ax.set_yscale("log")
-    autoylim = (1e-2, np.amax([np.amax(mcsum),np.amax(datasum)])*3)
-    if args.ylim: # y limits
+    ax[0].set_xlim(xlim)
+    # identify indices of data points inside of determined xlim
+    leftidx = 0
+    rightidx = nbins - 1
+    while(bins[leftidx] <= xlim[0]):
+        leftidx += 1
+    while(bins[rightidx] >= xlim[1]):
+        rightidx -= 1
+    indices = range(leftidx, min([rightidx+1,nbins]))
+    # auto find y limits in this index set
+    ylim = (1e-4, np.amax([np.amax([mcsum[k] for k in indices]),np.amax([datasum[k] for k in indices])])*3)
+    # read custom y limits
+    if args.ylim:
         try:
             ylim_string = args.ylim.split(",")
             if ylim_string[0] != "" and ylim_string[1] != "":
-                ax.set_ylim(float(ylim_string[0]),float(ylim_string[1]))
+                ylim = (float(ylim_string[0]),float(ylim_string[1]))
             elif ylim_string[0] != "" and ylim_string[1] == "":
-                ax.set_ylim(float(ylim_string[0]),autoylim[1])
+                ylim = (float(ylim_string[0]),ylim[1])
             elif ylim_string[0] == "" and ylim_string[1] != "":
-                ax.set_ylim(autoylim[0],float(ylim_string[1]))
+                ylim = (ylim[0],float(ylim_string[1]))
         except:
             raise RuntimeError("Invalid y limit given.")
             exit(0)
-    else:
-        ax.set_ylim(autoylim)
-    
-    # plot cosmetics
+    ax[0].set_ylim(ylim)
+    # find y limits for data/mc plot
+    leftidx = 0
+    rightidx = len(divisionidx) - 1
+    while(bins_overmc[leftidx] <= xlim[0]):
+        leftidx += 1
+    while(bins_overmc[rightidx] >= xlim[1]):
+        rightidx -= 1
+    indices = range(leftidx, min([rightidx+1,len(divisionidx)]))
+    whitespace2 = 0.1
+    ylim2 = (np.amax([np.amin([np.amin([data_overmc[i]-dataerr_overmc[i]-whitespace2 for i in indices]), np.amin([1-mcerr_overmc[0,i]-whitespace2 for i in indices])]), 0]),
+             np.amax([np.amax([data_overmc[i]+dataerr_overmc[i]+whitespace2 for i in indices]), np.amax([1+mcerr_overmc[1,i]+whitespace2 for i in indices])]))
+    ax[1].set_ylim(ylim2)
+
+    """
+    # add grid into plot
+    ax[0].grid(which='both', linewidth=0.4, alpha=0.7)
+    """
+
+    # plot cosmetics and legend
     printdebug("Exporting plot...")
-    ax.legend(loc="upper right", prop={'size': 8}, frameon=False)
-    ax.set_title(histname)
-    fig.tight_layout()
+    ax[0].legend(loc="center", prop={'size': 12}, bbox_to_anchor=(0.9,0.82), frameon=True)
+    ax[0].set_title(histname)
 
     # export plot
     figname = histname
     if args.title: # optional custom title
         figname = args.title
-    outputpath = validation_path + "/" + str(args.year) + "/" + figname + ".png"
+    outputpath = validation_path + "/" + str(args.year) + "/" + figname + ".pdf"
     if savepath != "":
-        outputpath = validation_path + "/" + str(args.year) + "/" + savepath + "/" + figname + ".png"
+        outputpath = validation_path + "/" + str(args.year) + "/" + savepath + "/" + figname + ".pdf"
     fig.savefig(outputpath, dpi=500)
+    plt.close(fig=fig)
 
 
 def main():
-    print("\n\n📶 [ MUSiC Validation Plotter (Nils' version) ] 📶\n")
+    print("\n\n📶 [ MUSiC Validation Plotter 2 ] 📶\n")
 
     # parse arguments
     args = parse_args()
@@ -512,13 +737,9 @@ def main():
         print(f"Starting plotting job for histogram {histname}.")
         plotter(args, savepath, datasamples, mcsamples, mcsorted, histname)
     else: # plot all validation histograms
-        print(f"Starting plotting job for all histograms.")
-        print("")
+        print(f"Starting plotting job for all {len(histnames)} histograms.")
         n = 0
-        for histname in histnames:
-            n += 1
-            print("\033[A                                                                           \033[A") # clear last line in console to avoid spam
-            print(f"Plotting {histname} ({n}/{len(histnames)})...")
+        for histname in tqdm(histnames):
             printdebug(f"\nStarting plotting job for histogram {histname}.")
             plotter(args, savepath, datasamples, mcsamples, mcsorted, histname)
             printdebug(f"Finished plotting job for histogram {histname}.")
