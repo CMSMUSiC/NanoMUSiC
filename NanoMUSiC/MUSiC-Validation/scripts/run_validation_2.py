@@ -42,6 +42,7 @@ def parse_args():
     )
     parser.add_argument("--debug", help="print debugging info", action="store_true")
     parser.add_argument("-p","--savepath",help="Save path (to save the output files in the /validation_outputs/[year]/ directory). Creates directory if not existing. If this argument is left out, save in [xear] directory.")
+    parser.add_argument("-pt", "--minpt", help="Only available in 'Jet' mode. Min pt of the jets to be included in the validation.")
 
     args = parser.parse_args()
 
@@ -91,13 +92,14 @@ def run_validation(
     executable: str,
     input_file: str,
     mode: str,
+    minpt: str,
 ) -> bool:
     debug: bool = False
 
     # default is MC
-    cmd_str: str = f"{executable} --process {process_name} --year {year} --output {output_path} --xsection {str(effective_x_section)} --input {input_file} --mode {mode}"
+    cmd_str: str = f"{executable} --process {process_name} --year {year} --output {output_path} --xsection {str(effective_x_section)} --input {input_file} --mode {mode} --minpt {minpt}"
     if is_data:
-        cmd_str: str = f"{executable} --process {process_name} --year {year} --is_data --output {output_path} --xsection {str(effective_x_section)} --input {input_file} --mode {mode}"
+        cmd_str: str = f"{executable} --process {process_name} --year {year} --is_data --output {output_path} --xsection {str(effective_x_section)} --input {input_file} --mode {mode} --minpt {minpt}"
 
     if debug:
         print(f"Executing: {cmd_str}")
@@ -149,6 +151,7 @@ def validation(args):
         executable,
         mode,
         savepath,
+        minpt,
     ) = list(args.values())
 
     output_path: str = f"validation_outputs/{year}/"
@@ -178,6 +181,7 @@ def validation(args):
         executable,
         inputs,
         mode,
+        minpt,
     )
     os.system(f"rm -rf {inputs} > /dev/null")
 
@@ -193,7 +197,7 @@ def get_year_era(process_name):
     return process_name_components[-2], process_name_components[-1]
 
 
-def create_arguments(configuration, year, lumi, ismc, executable, mode, savepath):
+def create_arguments(configuration, year, lumi, ismc, executable, mode, savepath, minpt):
     validation_arguments = []
     print(f"Generating validation arguments...")
     for sample in configuration:
@@ -217,6 +221,7 @@ def create_arguments(configuration, year, lumi, ismc, executable, mode, savepath
                         "executable": executable,
                         "mode": mode,
                         "savepath": savepath,
+                        "minpt": minpt,
                     }
                 )
         else:  # generate data argument
@@ -233,6 +238,7 @@ def create_arguments(configuration, year, lumi, ismc, executable, mode, savepath
                     "executable": executable,
                     "mode": mode,
                     "savepath": savepath,
+                    "minpt": minpt,
                 }
             )
     return validation_arguments
@@ -244,10 +250,15 @@ def main():
     # parse arguments
     args = parse_args()
 
-    # option: save inoutput directory "savepath" inside of year directory
+    # option: save in output directory "savepath" inside of year directory
     savepath = ""
     if args.savepath:
         savepath = args.savepath
+
+    # option: specify min (sum) pt of jets to be included in the validation (only available in jet mode)
+    minpt = "0" # default 0 (no pt restriction)
+    if args.minpt:
+        minpt = args.minpt
 
     # import task config file that includes references to all files that should be validated
     print(f"Importing task config...")
@@ -282,12 +293,12 @@ def main():
     validation_arguments = {}
     if args.all_mc and args.year:
         validation_arguments = create_arguments(
-            mcconfig, args.year, lumi, True, args.executable, args.mode, savepath
+            mcconfig, args.year, lumi, True, args.executable, args.mode, savepath, minpt
         )
     # run all data files in task config
     elif args.all_data and args.year:
         validation_arguments = create_arguments(
-            dataconfig, args.year, lumi, False, args.executable, args.mode, savepath
+            dataconfig, args.year, lumi, False, args.executable, args.mode, savepath, minpt
         )
     # run one sample from task config
     elif args.sample and args.year:
@@ -301,7 +312,8 @@ def main():
             ismcsample,
             args.executable,
             args.mode,
-            savepath
+            savepath,
+            minpt
         )
 
     # create output directory if not existing

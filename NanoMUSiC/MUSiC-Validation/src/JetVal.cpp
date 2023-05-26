@@ -72,13 +72,9 @@ auto JetVal::fill1(Math::PtEtaPhiMVector jet_1, unsigned int nElectron, unsigned
     {
         h_1jet_met.Fill(met.value(), weight);
     }
-    auto pt = jet_1.pt();
-    if(pt > min_pt_1jet)
-    {
-        h_1jet_pt.Fill(pt, weight);
-        h_1jet_eta.Fill(jet_1.eta(), weight);
-        h_1jet_phi.Fill(jet_1.phi(), weight);
-    }
+    h_1jet_pt.Fill(jet_1.pt(), weight);
+    h_1jet_eta.Fill(jet_1.eta(), weight);
+    h_1jet_phi.Fill(jet_1.phi(), weight);
     h_1jet_nelectron.Fill(nElectron, weight);
     h_1jet_nmuon.Fill(nMuon, weight);
     h_1jet_nfermion.Fill(nElectron + nMuon, weight);
@@ -92,18 +88,14 @@ auto JetVal::fill2(Math::PtEtaPhiMVector jet_1, Math::PtEtaPhiMVector jet_2, uns
     {
         h_2jet_met.Fill(met.value(), weight);
     }
-    auto minv = (jet_1 + jet_2).mass();
-    if(minv > min_minv_2jet)
-    {
-        h_2jet_invariant_mass.Fill(minv, weight);
-        h_2jet_sum_pt.Fill(jet_1.pt() + jet_2.pt(), weight);
-        h_2jet_1_pt.Fill(jet_1.pt(), weight);
-        h_2jet_1_eta.Fill(jet_1.eta(), weight);
-        h_2jet_1_phi.Fill(jet_1.phi(), weight);
-        h_2jet_2_pt.Fill(jet_2.pt(), weight);
-        h_2jet_2_eta.Fill(jet_2.eta(), weight);
-        h_2jet_2_phi.Fill(jet_2.phi(), weight);
-    }
+    h_2jet_invariant_mass.Fill((jet_1 + jet_2).mass(), weight);
+    h_2jet_sum_pt.Fill(jet_1.pt() + jet_2.pt(), weight);
+    h_2jet_1_pt.Fill(jet_1.pt(), weight);
+    h_2jet_1_eta.Fill(jet_1.eta(), weight);
+    h_2jet_1_phi.Fill(jet_1.phi(), weight);
+    h_2jet_2_pt.Fill(jet_2.pt(), weight);
+    h_2jet_2_eta.Fill(jet_2.eta(), weight);
+    h_2jet_2_phi.Fill(jet_2.phi(), weight);
     h_2jet_nelectron.Fill(nElectron, weight);
     h_2jet_nmuon.Fill(nMuon, weight);
     h_2jet_nfermion.Fill(nElectron + nMuon, weight);

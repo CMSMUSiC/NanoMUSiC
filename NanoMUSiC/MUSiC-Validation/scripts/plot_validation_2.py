@@ -623,9 +623,12 @@ def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname):
         leftidx += 1
     while(mcsum[rightidx] + datasum[rightidx] <= 0):
         rightidx -= 1
+        if rightidx <= 0:
+            rightidx = 0
+            break
     if rightidx < nbins - 1:
         rightidx += 1
-    whitespace = 30
+    whitespace = 0
     xlim = (edges[leftidx]-whitespace, edges[rightidx]+whitespace)
     # read custom x limits
     if args.xlim:
@@ -648,6 +651,9 @@ def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname):
         leftidx += 1
     while(bins[rightidx] >= xlim[1]):
         rightidx -= 1
+        if rightidx <= 0:
+            rightidx = 0
+            break
     indices = range(leftidx, min([rightidx+1,nbins]))
     # auto find y limits in this index set
     ylim = (1e-4, np.amax([np.amax([mcsum[k] for k in indices]),np.amax([datasum[k] for k in indices])])*3)
@@ -667,12 +673,15 @@ def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname):
     ax[0].set_ylim(ylim)
     # find y limits for data/mc plot
     leftidx = 0
-    rightidx = len(divisionidx) - 1
+    rightidx = len(bins_overmc) - 1
     while(bins_overmc[leftidx] <= xlim[0]):
         leftidx += 1
     while(bins_overmc[rightidx] >= xlim[1]):
         rightidx -= 1
-    indices = range(leftidx, min([rightidx+1,len(divisionidx)]))
+        if rightidx <= 0:
+            rightidx = 0
+            break
+    indices = range(leftidx, min([rightidx+1,len(bins_overmc)]))
     whitespace2 = 0.1
     ylim2 = (np.amax([np.amin([np.amin([data_overmc[i]-dataerr_overmc[i]-whitespace2 for i in indices]), np.amin([1-mcerr_overmc[0,i]-whitespace2 for i in indices])]), 0]),
              np.amax([np.amax([data_overmc[i]+dataerr_overmc[i]+whitespace2 for i in indices]), np.amax([1+mcerr_overmc[1,i]+whitespace2 for i in indices])]))

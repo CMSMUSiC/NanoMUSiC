@@ -32,6 +32,7 @@ auto main(int argc, char *argv[]) -> int
     const std::string effective_x_section_str = cmdl({"-x", "--xsection"}).str();
     const std::string input_file = cmdl({"-i", "--input"}).str();
     const std::string mode = cmdl({"-m", "--mode"}).str();
+    const std::string minpt_argument = cmdl({"-pt", "--minpt"}).str();
 
     if (show_help or process == "" or year == "" or output_path == "" or input_file == "" or
         effective_x_section_str == "" or mode == "")
@@ -45,8 +46,13 @@ auto main(int argc, char *argv[]) -> int
         fmt::print("          -x|--xsection: Effective cross-section (xsection * lumi).\n");
         fmt::print("          -i|--input: Path to a txt withg input files (one per line).\n");
         fmt::print("          -m|--mode: Validation mode ('Jet'/'J' or 'Lepton'/'L').\n");
+        fmt::print("          -pt|--minpt: Minimum pt for jet validation mode.\n");
 
         exit(-1);
+    }
+    if (minpt_argument == "" and (mode == "J" or mode == "Jet"))
+    {
+        throw std::runtime_error("In jet mode, the minimum pt has to specified (with '-pt'/'--minpt').");
     }
     const double effective_x_section = std::stod(effective_x_section_str);
 
@@ -326,6 +332,8 @@ auto main(int argc, char *argv[]) -> int
             }
             else if(mode == "Jet" or mode == "J") // fill jet validation files
             {
+                const float min_pt = std::stof(minpt_argument); // minimum pt [GeV] for jets to be included in validation
+
                 // ---- 0Jet + X
                 // fill0(nBJet, nJet, nElectron, nMuon, met, weight)
                 jet_val.fill0(nBJet, nJet, nelectrons, nmuons, met, weight);
@@ -336,7 +344,10 @@ auto main(int argc, char *argv[]) -> int
                 {
                     // create 4-vectors for the leading jet
                     auto jet_1 = Math::PtEtaPhiMVector(jet_pt[0], jet_eta[0], jet_phi[0], jet_mass[0]);
-                    jet_val.fill1(jet_1, nelectrons, nmuons, met, weight);
+                    if(jet_1.pt() >= min_pt)
+                    {
+                        jet_val.fill1(jet_1, nelectrons, nmuons, met, weight);
+                    }
                 }
 
                 // ---- 2Jet + X
@@ -347,13 +358,15 @@ auto main(int argc, char *argv[]) -> int
                     auto jet_1 = Math::PtEtaPhiMVector(jet_pt[0], jet_eta[0], jet_phi[0], jet_mass[0]);
                     auto jet_2 = Math::PtEtaPhiMVector(jet_pt[1], jet_eta[1], jet_phi[1], jet_mass[1]);
 
-                    // wide mass range
-                    jet_val.fill2(jet_1, jet_2, nelectrons, nmuons, met, weight);
-
-                    // Z mass range
-                    if ((jet_1 + jet_2).mass() > PDG::Z::Mass - 20. and (jet_1 + jet_2).mass() < PDG::Z::Mass + 20.)
+                    if(jet_1.pt() >= min_pt and jet_2.pt() >= min_pt)
                     {
-                        jet_val.fill2z(jet_1, jet_2, weight);
+                        // wide mass range
+                        jet_val.fill2(jet_1, jet_2, nelectrons, nmuons, met, weight);
+                        // Z mass range
+                        if ((jet_1 + jet_2).mass() > PDG::Z::Mass - 20. and (jet_1 + jet_2).mass() < PDG::Z::Mass + 20.)
+                        {
+                            jet_val.fill2z(jet_1, jet_2, weight);
+                        }
                     }
                 }
             }

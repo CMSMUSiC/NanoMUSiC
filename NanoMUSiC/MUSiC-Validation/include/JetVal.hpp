@@ -47,10 +47,6 @@ class JetVal
     ADD_TH1F(h_2jet_nfermion, n_multiplicity_bins, min_multiplicity, max_multiplicity);
     ADD_TH1F(h_2jet_Z_invariant_mass, n_energy_bins, min_energy, max_energy);
 
-    // predefined constants
-    const float min_pt_1jet = 200;
-    const float min_minv_2jet = 80;
-
     // constructor
     JetVal(const std::string &output_path, const std::map<int, std::map<std::string, int>> &countMap);
 
