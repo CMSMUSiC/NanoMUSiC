@@ -59,6 +59,16 @@ def parse_args():
         help="Prefix of the root files containing the histograms (including the last '_').",
     )
     parser.add_argument(
+        "-xl",
+        "--xlim",
+        help="Optional argument: Set x axis limits, specify limits as 'a,b', where one number can be left out to only set one boundary. When a boundary is not specified, it is set automatically.",
+    )
+    parser.add_argument(
+        "-yl",
+        "--ylim",
+        help="Optional argument: Set y axis limits, specify limits as 'a,b', where one number can be left out to only set one boundary. When a boundary is not specified, it is set automatically.",
+    )
+    parser.add_argument(
         "-s",
         "--savepath",
         help="Directory of the files inside of /validation_outputs/[year]/ (if they are in a sub-directory). Search for files in the [year] directory if left blank.",
@@ -66,13 +76,7 @@ def parse_args():
     parser.add_argument(
         "-t",
         "--title",
-        help="File name of the exported plot, default is name of the histogram.",
-    )
-    parser.add_argument(
-        "-pc",
-        "--plotconfig",
-        help="Plot configuration (TOML) file.",
-        required=True
+        help="Title of the exported plot, default is name of the histogram.",
     )
 
     args = parser.parse_args()
@@ -193,6 +197,7 @@ aggregation_dict =  {"TTW": "TTbar",
                     "TTGG": "TTbar",
                     "TTWW": "TTbar",
                     "TG": "Top",
+                    "tG": "Top",
                     "tG": "Top",
                     "TZQ": "Top",
                     "tZQ": "Top",
@@ -432,7 +437,7 @@ def ratio_uncertainty(
 
 
 # performs a plotting job
-def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_dict, aggregation_dict, histproperties):
+def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname):
     # import mc histograms
     printdebug(f"Importing {len(mcsamples)} mc histograms...")
     mccounts, mcedges, mcerrors = {}, {}, {}
@@ -542,28 +547,11 @@ def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_di
     
     # prepare plot
     hep.style.use(hep.style.ROOT)
-    wspace = 0
-    if histproperties["wspace"] != "":
-        wspace = float(histproperties["wspace"])
-    hspace = 0.05
-    if histproperties["hspace"] != "":
-        hspace = float(histproperties["hspace"])
-    fig, ax = plt.subplots(2, 1, gridspec_kw={'height_ratios': [5, 1], 'wspace': wspace, 'hspace': hspace}, sharex=True)
+    fig, ax = plt.subplots(2, 1, gridspec_kw={'height_ratios': [5, 1], 'wspace': 0, 'hspace': 0.05}, sharex=True)
     ax[0].set_yscale("log")
-    #plt.axis('on')
-    left = 0.11
-    if histproperties["left"] != "":
-        left = float(histproperties["left"])
-    right = 0.98
-    if histproperties["right"] != "":
-        right = float(histproperties["right"])
-    top = 0.95
-    if histproperties["top"] != "":
-        top = float(histproperties["top"])
-    bottom = 0.08
-    if histproperties["bottom"] != "":
-        bottom = float(histproperties["bottom"])
-    fig.subplots_adjust(left=left,right=right,bottom=bottom,top=top)
+    plt.axis('on')
+    fig.subplots_adjust(hspace=0, wspace=0)
+    fig.subplots_adjust(left=0.08,right=0.98,bottom=0.05,top=0.95)
 
 
     # stack mc categories, calculate errors and plot mc
@@ -643,9 +631,9 @@ def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_di
     whitespace = 0
     xlim = (edges[leftidx]-whitespace, edges[rightidx]+whitespace)
     # read custom x limits
-    if histproperties["xlim"] != "":
+    if args.xlim:
         try:
-            xlim_string = histproperties["xlim"](",")
+            xlim_string = args.xlim.split(",")
             if xlim_string[0] != "" and xlim_string[1] != "":
                 xlim = (float(xlim_string[0]),float(xlim_string[1]))
             elif xlim_string[0] != "" and xlim_string[1] == "":
@@ -670,9 +658,9 @@ def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_di
     # auto find y limits in this index set
     ylim = (1e-4, np.amax([np.amax([mcsum[k] for k in indices]),np.amax([datasum[k] for k in indices])])*3)
     # read custom y limits
-    if histproperties["ylim"] != "":
+    if args.ylim:
         try:
-            ylim_string = histproperties["ylim"].split(",")
+            ylim_string = args.ylim.split(",")
             if ylim_string[0] != "" and ylim_string[1] != "":
                 ylim = (float(ylim_string[0]),float(ylim_string[1]))
             elif ylim_string[0] != "" and ylim_string[1] == "":
@@ -707,27 +695,11 @@ def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_di
     # plot cosmetics and legend
     printdebug("Exporting plot...")
     ax[0].legend(loc="center", prop={'size': 12}, bbox_to_anchor=(0.9,0.82), frameon=True)
-
-    # set plot title
-    plottitle = histname
-    if histproperties["title"] != "":
-        plottitle = histproperties["title"]
-    ax[0].set_title(plottitle, fontsize=25)
-
-    # set plot axis labels
-    xlabel = ""
-    if histproperties["xlabel"] != "":
-        xlabel = histproperties["xlabel"]
-    ax[1].set_xlabel(xlabel, fontsize=20)
-    ylabel = ""
-    if histproperties["ylabel"] != "":
-        ylabel = histproperties["ylabel"]
-    ax[0].set_ylabel(ylabel, fontsize=20)
-    ax[1].set_ylabel("Data/MC", fontsize=20)
+    ax[0].set_title(histname)
 
     # export plot
     figname = histname
-    if args.title: # optional custom file title
+    if args.title: # optional custom title
         figname = args.title
     outputpath = validation_path + "/" + str(args.year) + "/" + figname + ".pdf"
     if savepath != "":
@@ -768,29 +740,17 @@ def main():
         mcsorted.update({mcgroup : tempset}) # dictionary: {group: {samples in this group}}
     print("Found", len(mcgroups), "mc groups in the selected task config.")
 
-    # import plot config file that includes information on the plots to be produced
-    print(f"Importing plot config...")
-    plot_config_file: str = args.plotconfig
-    plot_config: dict[str, Any] = toml.load(plot_config_file)
-    if not (("color_dict" in plot_config) or ("aggregation_dict" in plot_config)):
-        raise RuntimeError("A color and an aggregation dictionary has to be included in the plot config file.")
-    color_dict = plot_config["color_dict"]
-    aggregation_dict = plot_config["aggregation_dict"]
-    histograms = plot_config
-    histograms.pop("color_dict")
-    histograms.pop("aggregation_dict") # histograms is a dict {histname: {properties: values}}
-
     # run plotting task, depending on user input
     if args.histname != "ALL": # plot single histogram
         histname = args.histname
         print(f"Starting plotting job for histogram {histname}.")
-        plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_dict, aggregation_dict, histograms[histname])
+        plotter(args, savepath, datasamples, mcsamples, mcsorted, histname)
     else: # plot all validation histograms
         print(f"Starting plotting job for all {len(histnames)} histograms.")
         n = 0
-        for histname in tqdm(histograms.keys()):
+        for histname in tqdm(histnames):
             printdebug(f"\nStarting plotting job for histogram {histname}.")
-            plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_dict, aggregation_dict, histograms[histname])
+            plotter(args, savepath, datasamples, mcsamples, mcsorted, histname)
             printdebug(f"Finished plotting job for histogram {histname}.")
 
     print("Finished plot validation job.\n")
