@@ -231,7 +231,6 @@ auto JetCorrector::get_scale_correction(float pt,
 
         if (variation == "Nominal"s)
         {
-
             return correction_factor;
         }
         if (variation == "Up"s)

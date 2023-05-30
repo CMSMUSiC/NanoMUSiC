@@ -42,8 +42,8 @@ source set_env.sh
 cd $SCRIPTDIR/NanoMUSiC/PxlAnalyzer/
 source set_env.sh
 
-cd $SCRIPTDIR/NanoMUSiC/PlotLib/
-source set_env.sh
+# cd $SCRIPTDIR/NanoMUSiC/PlotLib/
+# source set_env.sh
 
 cd $SCRIPTDIR/NanoMUSiC/PxlAnalyzer/EventClassFactory/
 source set_env.sh
@@ -65,6 +65,9 @@ export PATH=$PATH:$SCRIPTDIR/scripts;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-Validation/scripts;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-BTagEff;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-CRAB;
+export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/special_studies/jet_sf;
+
+
 
 # rust config
 export RUSTFLAGS="-C linker=$CC"
