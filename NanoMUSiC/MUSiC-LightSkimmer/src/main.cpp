@@ -144,10 +144,67 @@ auto main(int argc, char *argv[]) -> int
 
     auto skimmed_dataframe =
         dataframe
-            .Define("gen_weight",
-                    [&configuration]() -> std::string_view
+            // Define if does not exists
+            .Define("_LHEPdfWeight",
+                    [&configuration, &dataframe]() -> std::string_view
                     {
-                        return configuration.is_data ? "1.f"sv : "LHEWeight_originalXWGTUP"sv;
+                        if (not(configuration.is_data) and dataframe.HasColumn("LHEPdfWeight"))
+                        {
+                            return "LHEPdfWeight"sv;
+                        }
+                        return "ROOT::RVec<float>{}"sv;
+                    }())
+            .Define("_LHEScaleWeight",
+                    [&configuration, &dataframe]() -> std::string_view
+                    {
+                        if (not(configuration.is_data) and dataframe.HasColumn("LHEScaleWeight"))
+                        {
+                            return "LHEScaleWeight"sv;
+                        }
+                        return "ROOT::RVec<float>(9,-1.)"sv;
+                    }())
+            .Define("_LHEWeight_originalXWGTUP",
+                    [&configuration, &dataframe]() -> std::string_view
+                    {
+                        if (not(configuration.is_data) and dataframe.HasColumn("LHEWeight_originalXWGTUP"))
+                        {
+                            return "LHEWeight_originalXWGTUP"sv;
+                        }
+                        return "-1."sv;
+                    }())
+            .Define("_LHE_HT",
+                    [&configuration, &dataframe]() -> std::string_view
+                    {
+                        if (not(configuration.is_data) and dataframe.HasColumn("LHE_HT"))
+                        {
+                            return "LHE_HT"sv;
+                        }
+                        return "-1."sv;
+                    }())
+            .Define("_LHE_HTIncoming",
+                    [&configuration, &dataframe]() -> std::string_view
+                    {
+                        if (not(configuration.is_data) and dataframe.HasColumn("LHE_HTIncoming"))
+                        {
+                            return "LHE_HTIncoming"sv;
+                        }
+                        return "-1."sv;
+                    }())
+            .Define("gen_weight",
+                    [&configuration, &dataframe]() -> std::string_view
+                    {
+                        if (not(configuration.is_data))
+                        {
+                            if (dataframe.HasColumn("LHEWeight_originalXWGTUP"))
+                            {
+                                return "LHEWeight_originalXWGTUP"sv;
+                            }
+                            else
+                            {
+                                return "genWeight"sv;
+                            }
+                        }
+                        return "1.f"sv;
                     }())
             // Dummy filter- Used only for setting total event counts
             .Filter(
@@ -159,39 +216,53 @@ auto main(int argc, char *argv[]) -> int
                 },
                 {"gen_weight"})
             .Define("_LHEPart_pt",
-                    [&configuration]() -> std::string_view
+                    [&configuration, &dataframe]() -> std::string_view
                     {
-                        return configuration.is_data ? "ROOT::RVec<float>{}"sv : "LHEPart_pt"sv;
+                        return (not(configuration.is_data) and dataframe.HasColumn("LHEPart_pt"))
+                                   ? "LHEPart_pt"sv
+                                   : "ROOT::RVec<float>{}"sv;
                     }())
             .Define("_LHEPart_eta",
-                    [&configuration]() -> std::string_view
+                    [&configuration, &dataframe]() -> std::string_view
                     {
-                        return configuration.is_data ? "ROOT::RVec<float>{}"sv : "LHEPart_eta"sv;
+                        return (not(configuration.is_data) and dataframe.HasColumn("LHEPart_eta"))
+                                   ? "LHEPart_eta"sv
+                                   : "ROOT::RVec<float>{}"sv;
                     }())
             .Define("_LHEPart_phi",
-                    [&configuration]() -> std::string_view
+                    [&configuration, &dataframe]() -> std::string_view
                     {
-                        return configuration.is_data ? "ROOT::RVec<float>{}"sv : "LHEPart_phi"sv;
+                        return (not(configuration.is_data) and dataframe.HasColumn("LHEPart_phi"))
+                                   ? "LHEPart_phi"sv
+                                   : "ROOT::RVec<float>{}"sv;
                     }())
             .Define("_LHEPart_mass",
-                    [&configuration]() -> std::string_view
+                    [&configuration, &dataframe]() -> std::string_view
                     {
-                        return configuration.is_data ? "ROOT::RVec<float>{}"sv : "LHEPart_mass"sv;
+                        return (not(configuration.is_data) and dataframe.HasColumn("LHEPart_mass"))
+                                   ? "LHEPart_mass"sv
+                                   : "ROOT::RVec<float>{}"sv;
                     }())
             .Define("_LHEPart_incomingpz",
-                    [&configuration]() -> std::string_view
+                    [&configuration, &dataframe]() -> std::string_view
                     {
-                        return configuration.is_data ? "ROOT::RVec<float>{}"sv : "LHEPart_incomingpz"sv;
+                        return (not(configuration.is_data) and dataframe.HasColumn("LHEPart_incomingpz"))
+                                   ? "LHEPart_incomingpz"sv
+                                   : "ROOT::RVec<float>{}"sv;
                     }())
             .Define("_LHEPart_pdgId",
-                    [&configuration]() -> std::string_view
+                    [&configuration, &dataframe]() -> std::string_view
                     {
-                        return configuration.is_data ? "ROOT::RVec<Int_t>{}"sv : "LHEPart_pdgId"sv;
+                        return (not(configuration.is_data) and dataframe.HasColumn("LHEPart_pdgId"))
+                                   ? "LHEPart_pdgId"sv
+                                   : "ROOT::RVec<Int_t>{}"sv;
                     }())
             .Define("_LHEPart_status",
-                    [&configuration]() -> std::string_view
+                    [&configuration, &dataframe]() -> std::string_view
                     {
-                        return configuration.is_data ? "ROOT::RVec<Int_t>{}"sv : "LHEPart_status"sv;
+                        return (not(configuration.is_data) and dataframe.HasColumn("LHEPart_status"))
+                                   ? "LHEPart_status"sv
+                                   : "ROOT::RVec<Int_t>{}"sv;
                     }())
             .Define("_GenPart_pt",
                     [&configuration]() -> std::string_view

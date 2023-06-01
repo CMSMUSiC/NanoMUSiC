@@ -1,9 +1,9 @@
 output = "outputs"
-is_data = true
+is_data = false
 year = "2018"
-era = "D"
-process = "EGamma_13TeV_2018_D"
-dataset = "/EGamma/Run2018D-UL2018_MiniAODv2_NanoAODv9-v3/NANOAOD"
+era = "DUMMY"
+process = "QCD_HT100to200_PSWeights_13TeV_MG"
+dataset = "/QCD_HT100to200_TuneCP5_PSWeights_13TeV-madgraph-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM"
 is_crab_job = false
 input_files = []
-generator_filter_key = ""
+generator_filter_key = "gamma_plus_jets_cleanner"
