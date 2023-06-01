@@ -2,6 +2,7 @@
 enable_testing()
 
 add_subdirectory(MUSiC)
+add_subdirectory(MUSiC-LightSkimmer)
 add_subdirectory(MUSiC-Classification)
 add_subdirectory(MUSiC-Validation)
 
