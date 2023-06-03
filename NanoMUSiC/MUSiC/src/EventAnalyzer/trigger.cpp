@@ -79,8 +79,8 @@ auto EventAnalyzer::set_trigger_bits() -> EventAnalyzer &
                 .set("Photon", false)
                 .set("Tau", false)
                 .set("BJet", false)
+                .set("JetPT", event_info.HLT_PFJet500) // jet triggers, currently only implemented for 2018
                 .set("JetHT", event_info.HLT_PFHT1050) // differentiate HT and normal PT trigger
-                .set("JetPT", event_info.HLT_PFJet500) // currently only implemented for 2018
                 .set("MET", false);
             //*/
 

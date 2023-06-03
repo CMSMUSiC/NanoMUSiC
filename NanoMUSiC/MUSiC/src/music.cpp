@@ -85,8 +85,6 @@ int main(int argc, char *argv[])
     std::cout << " " << std::endl;
 
     std::cout << " " << std::endl;
-    std::cout << "(Nils' version)" << std::endl;
-    std::cout << " " << std::endl;
     std::cout << yellow << "Checking configuration [" << run_config_file << "] ..." << def << std::endl;
     std::cout << " " << std::endl;
 

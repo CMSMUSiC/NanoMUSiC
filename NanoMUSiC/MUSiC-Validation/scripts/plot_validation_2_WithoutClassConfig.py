@@ -16,7 +16,6 @@ import matplotlib.gridspec as gridspec
 from typing import Any
 import numpy as np
 import mplhep as hep
-import os
 try:
     from scipy import stats
 except ModuleNotFoundError:
@@ -79,7 +78,7 @@ def parse_args():
     parser.add_argument(
         "-jc",
         "--jetclass",
-        help="Enables plot validation in 'JetClass' mode. Give the names of the class to be plotted separated by comma or the class configuration (TOML) file that includes all classes to be plotted.",
+        help="Enables plot validation in 'JetClass' mode. Give the names of the class to be plotted (only one class each time).",
     )
     args = parser.parse_args()
     if (args.fileprefix and args.jetclass) or (not args.fileprefix and not args.jetclass):
@@ -313,9 +312,8 @@ def ratio_uncertainty(
 
 
 # performs a plotting job
-def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_dict, aggregation_dict, histproperties, years, fileprefix, classname):
+def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_dict, aggregation_dict, histproperties, years, fileprefix):
     mccounts, mcedges, mcerrors = {}, {}, {}
-    datacounts, dataedges, dataerrors = {}, {}, {}
     for year in years:
         # import mc histograms
         printdebug(f"Importing {len(mcsamples)} mc histograms for year {year}...")
@@ -329,6 +327,7 @@ def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_di
 
         # import data histograms
         printdebug(f"Importing {len(datasamples)} data histograms for year {year}...")
+        datacounts, dataedges, dataerrors = {}, {}, {}
         for sample in datasamples:
             samplecounts, sampleedges, sampleerrors = import_hist(
                 year, sample, fileprefix, histname, savepath
@@ -427,7 +426,7 @@ def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_di
     wspace = 0
     if histproperties["wspace"] != "":
         wspace = float(histproperties["wspace"])
-    hspace = 0
+    hspace = 0.05
     if histproperties["hspace"] != "":
         hspace = float(histproperties["hspace"])
     fig, ax = plt.subplots(2, 1, gridspec_kw={'height_ratios': [5, 1], 'wspace': wspace, 'hspace': hspace}, sharex=True)
@@ -476,11 +475,10 @@ def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_di
         mcsum += categories_counts[category]
         sqmcerrsum += (np.array(categories_errors[category]))**2 # add errors together
     mcerr = np.sqrt(sqmcerrsum) # plot combined mc error
-    ax[0].hist([bins for category in categories_stacked], edges, label=[category for category in categories_stacked],
-            weights=[categories_counts[category] for category in categories_stacked],
+    ax[0].hist([bins for category in categories_stacked], edges,
+            weights=[categories_counts[category] for category in categories_stacked], label=[category for category in categories_stacked],
             color=[categories_colors[category] for category in categories_stacked], histtype="stepfilled", stacked=True)
-    ax[0].bar(bins, 2*mcerr, width=barwidth, bottom=(mcsum-mcerr), fill=False, hatch="xxxxxxxx",
-              linewidth=0, edgecolor="tab:gray", label="MC uncertainty")
+    ax[0].bar(bins, 2*mcerr, width=barwidth, bottom=(mcsum-mcerr), label="MC uncertainty", fill=False, hatch="xxxxxxxx", linewidth=0, edgecolor="tab:gray")
 
     # stack data, calculate errors and plot data
     printdebug("Start data stacking and plotting.")
@@ -491,7 +489,7 @@ def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_di
         datasum += counts # stack data samples
         sqdataerrsum += (np.array(dataerrors[sample]))**2 # calculate square sum of errors, assuming uncorrelated samples
     error_data = np.sqrt(sqdataerrsum) # calculate final error value (square root of square sum)
-    dataplot = ax[0].errorbar(bins, datasum, yerr=error_data, xerr=barwidth/2, color="black", marker=".", linestyle="", elinewidth=0.8, capsize=1, markersize=3)  
+    ax[0].errorbar(bins, datasum, yerr=error_data, xerr=barwidth/2, color="black", marker=".", linestyle="", elinewidth=0.8, capsize=1, markersize=3, label="Data")  
     
     # create data/mc subplot
     printdebug("Create Data/MC subplot...")
@@ -527,7 +525,7 @@ def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_di
             if rightidx <= 0:
                 rightidx = 0
                 break
-        if rightidx < nbins:
+        if rightidx < nbins - 1:
             rightidx += 1
         whitespace = 0
         xlim = (edges[leftidx]-whitespace, edges[rightidx]+whitespace)
@@ -556,17 +554,8 @@ def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_di
                 rightidx = 0
                 break
         indices = range(leftidx, min([rightidx+1,nbins]))
-        # set y ticks
-        ymax = np.amax([np.amax([mcsum[k] for k in indices]),np.amax([datasum[k] for k in indices])])*3
         # auto find y limits in this index set
-        ylim = (1e-4, ymax)
-        nmax = 0
-        while(10**nmax < ymax):
-            nmax += 1
-        majoryticks = [10**n for n in range(-4,nmax)]
-        ax[0].set_yticks(majoryticks, minor=False)
-        minoryticks = [i*n for n in range(0,11) for i in majoryticks]
-        ax[0].set_yticks(minoryticks, minor=True)
+        ylim = (1e-4, np.amax([np.amax([mcsum[k] for k in indices]),np.amax([datasum[k] for k in indices])])*3)
         # read custom y limits
         if histproperties["ylim"] != "":
             try:
@@ -604,11 +593,12 @@ def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_di
 
         # plot cosmetics and legend
         printdebug("Exporting plot...")
-        ax[0].legend(loc="center", prop={'size': 12}, bbox_to_anchor=(0.9,0.84), frameon=True)
+        ax[0].legend(loc="center", prop={'size': 12}, bbox_to_anchor=(0.9,0.82), frameon=True)
 
         # add text in plot with class name
-        if classname != "":
-            fig.suptitle("class: " + classname, ha="left", size=20, x=0.09, y=0.98)
+        if args.jetclass:
+            if args.jetclass != "COUNT":
+                fig.suptitle("class: " + args.jetclass, ha="left", size=20, x=0.07, y=0.98)
 
         # set plot title
         plottitle = histname
@@ -624,26 +614,22 @@ def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_di
         ylabel = ""
         if histproperties["ylabel"] != "":
             ylabel = histproperties["ylabel"]
-        ax[0].set_ylabel(ylabel, fontsize=20, loc="top")
-        ax[1].set_ylabel("Data/MC", fontsize=20, loc="bottom")
+        ax[0].set_ylabel(ylabel, fontsize=20)
+        ax[1].set_ylabel("Data/MC", fontsize=20)
 
         # export plot
         figname = histname
         if args.jetclass:
-            figname = classname + "_" + histname
+            figname = args.jetclass + "_" + histname
         if args.title: # optional custom file title
             figname = args.title
         outputpath = validation_path + "/" + str(args.year) + "/" + figname + ".pdf"
         if savepath != "":
-            outputpath = validation_path + "/" + str(args.year) + "/" + savepath + "/plots/" + figname + ".pdf"
+            outputpath = validation_path + "/" + str(args.year) + "/" + savepath + "/" + figname + ".pdf"
         fig.savefig(outputpath, dpi=500)
     plt.close(fig=fig)
 
-###################################################################################################
 
-# note that data sets with no data points at all are not plotted, then the plots are simply skipped
-
-##### MAIN FUNCTION #####
 def main():
     print("\n\n📶 [ MUSiC Validation Plotter 2 ] 📶\n")
 
@@ -659,6 +645,15 @@ def main():
     print(f"Importing task config...")
     task_config_file: str = args.config
     task_config: dict[str, Any] = toml.load(task_config_file)
+
+    # set fileprefix
+    fileprefix = ""
+    if args.fileprefix:
+        fileprefix = args.fileprefix
+        print(f"Normal plotting with fileprefix {fileprefix}.")
+    if args.jetclass:
+        fileprefix = args.jetclass + "_"
+        print(f"Jet class plotting for the validation class {args.jetclass}.")
 
     # parse years
     years = set()
@@ -697,70 +692,21 @@ def main():
     color_dict = plot_config["color_dict"]
     aggregation_dict = plot_config["aggregation_dict"]
     histograms = plot_config
-    histograms.pop("color_dict") # rmemove unwanted options from dict
-    histograms.pop("aggregation_dict")
-    if "COUNTS" in histograms.keys():
-        histograms.pop("COUNTS")
-    # histograms is a dict {histname: {properties: values}}
-
-    # option: jetclass, read in jetclass names to plot
-    classnames = set() # set or array that includes the names of the classes to be validated
-    if args.jetclass:
-        if ".toml" in args.jetclass: # class config is given
-            print(f"Importing class config...")
-            class_config_file: str = args.jetclass
-            class_config: dict[str, Any] = toml.load(class_config_file)
-            for classname in class_config["to_validate"]:
-                classnames.add(classname)
-            classnames.discard("COUNTS")
-            print(f"Found {len(classnames)} in the selected class config.")
-        else: # manual list of classes is given
-            for classname in (args.jetclass).split(","):
-                classnames.add(classname)
-            classnames.discard("COUNTS")
-            print(f"Found {len(classnames)} in the given class argument.")
-
-    # create list of fileprefixes for the files to be validated
-    fileprefixes = set()
-    if args.fileprefix:
-        fileprefixes.add(args.fileprefix)
-        print(f"Normal plotting with fileprefix {fileprefixes}.")
-    if len(classnames) >= 1:
-        for classname in classnames:
-            fileprefixes.add(classname + "_")
-        print(f"Jet class plotting with for the given classes.")
-
-    # check output path
-    outputpath = validation_path + "/" + str(args.year) + "/"
-    if savepath != "":
-        outputpath = validation_path + "/" + str(args.year) + "/" + savepath + "/plots/"
-    if not (os.path.isdir(f"{outputpath}")):
-        os.system(f"mkdir -p {outputpath}")
+    histograms.pop("color_dict")
+    histograms.pop("aggregation_dict") # histograms is a dict {histname: {properties: values}}
 
     # run plotting task, depending on user input
-    nfile = 0
-    print(f"Starting plotting job for the {len(fileprefixes)} files {fileprefixes}.")
-    for fileprefix in tqdm(fileprefixes): # run plotter for each file set
-        nfile += 1
-        # show class name if this is a plotting task of a class
-        classname = ""
-        if args.jetclass:
-            classname = fileprefix[:-1]
-            printdebug(f"Starting plotting job for class {classname} ({nfile}/{len(fileprefixes)}).")
-        else:
-            printdebug(f"Starting plotting job for the given file prefix {fileprefix} ({nfile}/{len(fileprefixes)}).")
-        # plotting tasks
-        if args.histname != "ALL": # plot single histogram
-            histname = args.histname
-            printdebug(f"    Starting plotting job for histogram {histname}.")
-            plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_dict, aggregation_dict, histograms[histname], years, fileprefix, classname)
-        else: # plot all validation histograms
-            printdebug(f"    Starting plotting job for all {len(histograms.keys())} histograms for the category.")
-            n = 0
-            for histname in histograms.keys():
-                printdebug(f"\nStarting plotting job for histogram {histname}.")
-                plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_dict, aggregation_dict, histograms[histname], years, fileprefix, classname)
-                printdebug(f"Finished plotting job for histogram {histname} for the category.")
+    if args.histname != "ALL": # plot single histogram
+        histname = args.histname
+        print(f"Starting plotting job for histogram {histname}.")
+        plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_dict, aggregation_dict, histograms[histname], years, fileprefix)
+    else: # plot all validation histograms
+        print(f"Starting plotting job for all {len(histograms.keys())} histograms.")
+        n = 0
+        for histname in tqdm(histograms.keys()):
+            printdebug(f"\nStarting plotting job for histogram {histname}.")
+            plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_dict, aggregation_dict, histograms[histname], years, fileprefix)
+            printdebug(f"Finished plotting job for histogram {histname}.")
 
     print("Finished plot validation job.\n")
     exit(0)

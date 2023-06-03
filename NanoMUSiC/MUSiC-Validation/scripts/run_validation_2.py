@@ -25,7 +25,7 @@ def parse_args():
     )
     parser.add_argument("-s", "--sample", help="Sample to be processed.")
     parser.add_argument("-y", "--year", help="Year to be processed.", required=True)
-    parser.add_argument("-m", "--mode", required=True, help="Validation mode (Jet/J, Lepton/L).")
+    parser.add_argument("-m", "--mode", required=True, help="Validation mode (Jet/J, Lepton/L, JetClass/JC).")
     parser.add_argument(
         "--all_data",
         help='Starts validation for all Data samples. Incompatible with "--sample" and "--all_mc".',
@@ -36,27 +36,40 @@ def parse_args():
         help='Starts validation for all MC samples. Incompatible with "--sample" and "--all-data".',
         action="store_true",
     )
+    parser.add_argument(
+        "--all",
+        help='Starts validation for all MC and data samples.',
+        action="store_true",
+    )
     parser.add_argument("-j", "--jobs", help="Pool size.", type=int, default=100)
     parser.add_argument(
         "-e", "--executable", help="Validation excutable.", default="validation"
     )
     parser.add_argument("--debug", help="print debugging info", action="store_true")
     parser.add_argument("-p","--savepath",help="Save path (to save the output files in the /validation_outputs/[year]/ directory). Creates directory if not existing. If this argument is left out, save in [xear] directory.")
-    parser.add_argument("-pt", "--minpt", help="Only available in 'Jet' mode. Min pt of the jets to be included in the validation.")
+    parser.add_argument("-pt", "--minpt", help="Only available in 'Jet' mode. Min pt of the jets to be included in the validation. If left blank, the pt limit is 0.")
+    parser.add_argument("-tv", "--tovalidate", help="Only available in 'JetClass' mode. This argument specifies the classes for which validation plots are created. The argument should have the form classname1,classname2... with classnames of the form 'xJ+yBJ'/'xJ+yBJ+nJ'/''xJ+yBJ+X' for exclusice/jet-inclusive/inclusive classes. Include class name 'COUNTS' in the enumeration to also calculate the event counts (class inhabitation) for each class. Instead of giving the class names manually one can also run a class config with '--classconfig'.")
+    parser.add_argument("-cc", "--classconfig", help="Only available in 'JetClass' mode. Class configuration (TOML) file containing the names of the classes to be validated.")
 
     args = parser.parse_args()
 
     # quality control
-    if (args.all_data and (args.sample or args.all_mc)) or (
-        args.all_mc and (args.sample or args.all_data)
-    ):
+    argcount = 0
+    if args.all_data:
+        argcount += 1
+    if args.all_mc:
+        argcount += 1
+    if args.all:
+        argcount += 1
+    if args.sample:
+        argcount += 1
+    if (argcount != 1):
         raise RuntimeError(
-            'ERROR: Could not start validation. "--all_data" is incompatible with "--all_mc" and "--sample".'
+            'ERROR: Could not start validation. "--all_data" is incompatible with "--all_mc" and "--sample" and "--all".'
         )
-
-    if (args.sample or args.all_data or args.all_mc) and not (args.year):
+    if ((args.mode == "JC" or args.mode == "JetClass") and ((args.tovalidate and args.classconfig) or (not args.tovalidate and not args.classconfig))):
         raise RuntimeError(
-            'ERROR: Could not start validation. Giving a "--year" is always required.'
+            'ERROR: In "JetClass" mode, one has to provide either "--classconfig" or "--tovalidate" to specify the classes that should be validated. Only one of those arguments is allowed and necessary.'
         )
     
     return args
@@ -93,13 +106,14 @@ def run_validation(
     input_file: str,
     mode: str,
     minpt: str,
+    tvarg: str,
 ) -> bool:
     debug: bool = False
 
     # default is MC
-    cmd_str: str = f"{executable} --process {process_name} --year {year} --output {output_path} --xsection {str(effective_x_section)} --input {input_file} --mode {mode} --minpt {minpt}"
+    cmd_str: str = f"{executable} --process {process_name} --year {year} --output {output_path} --xsection {str(effective_x_section)} --input {input_file} --mode {mode} --minpt {minpt} --tovalidate {tvarg}"
     if is_data:
-        cmd_str: str = f"{executable} --process {process_name} --year {year} --is_data --output {output_path} --xsection {str(effective_x_section)} --input {input_file} --mode {mode} --minpt {minpt}"
+        cmd_str: str = f"{executable} --process {process_name} --year {year} --is_data --output {output_path} --xsection {str(effective_x_section)} --input {input_file} --mode {mode} --minpt {minpt} --tovalidate {tvarg}"
 
     if debug:
         print(f"Executing: {cmd_str}")
@@ -152,6 +166,7 @@ def validation(args):
         mode,
         savepath,
         minpt,
+        tvarg,
     ) = list(args.values())
 
     output_path: str = f"validation_outputs/{year}/"
@@ -182,6 +197,7 @@ def validation(args):
         inputs,
         mode,
         minpt,
+        tvarg,
     )
     os.system(f"rm -rf {inputs} > /dev/null")
 
@@ -197,9 +213,7 @@ def get_year_era(process_name):
     return process_name_components[-2], process_name_components[-1]
 
 
-def create_arguments(configuration, year, lumi, ismc, executable, mode, savepath, minpt):
-    validation_arguments = []
-    print(f"Generating validation arguments...")
+def create_arguments(configuration, year, lumi, ismc, executable, mode, savepath, minpt, tvarg, validation_arguments):
     for sample in configuration:
         if ismc:  # generate mc argument
             if f"das_name_{year}" in configuration[sample].keys():
@@ -222,6 +236,7 @@ def create_arguments(configuration, year, lumi, ismc, executable, mode, savepath
                         "mode": mode,
                         "savepath": savepath,
                         "minpt": minpt,
+                        "tovalidate": tvarg,
                     }
                 )
         else:  # generate data argument
@@ -239,6 +254,7 @@ def create_arguments(configuration, year, lumi, ismc, executable, mode, savepath
                     "mode": mode,
                     "savepath": savepath,
                     "minpt": minpt,
+                    "tovalidate": tvarg,
                 }
             )
     return validation_arguments
@@ -259,6 +275,7 @@ def main():
     minpt = "0" # default 0 (no pt restriction)
     if args.minpt:
         minpt = args.minpt
+
 
     # import task config file that includes references to all files that should be validated
     print(f"Importing task config...")
@@ -289,16 +306,33 @@ def main():
     mcsamples = [i for i in mcconfig]
     datasamples = [i for i in dataconfig]
 
+    # specify classes to be plotted in JetClass mode
+    tvarg = "" # default: no plots only count class inhabitation
+    if args.tovalidate: # manual specification of the classes that should be validated
+        tvarg = args.tovalidate
+    if args.classconfig: # import class config to parse classes that should be validated
+        print(f"Importing class config...")
+        class_config_file: str = args.classconfig
+        class_config: dict[str, Any] = toml.load(class_config_file)
+        to_validate = class_config["to_validate"]
+        for i in range(len(to_validate)): # create tovalidate argument from class config
+            if i < len(to_validate) - 1:
+                tvarg += to_validate[i] + ","
+            if i == len(to_validate) - 1:
+                tvarg += to_validate[i]
+
+    # generate validation arguments for the different cases
+    validation_arguments = []
+    print(f"Generating validation arguments...")
     # run all mc files in task config
-    validation_arguments = {}
     if args.all_mc and args.year:
         validation_arguments = create_arguments(
-            mcconfig, args.year, lumi, True, args.executable, args.mode, savepath, minpt
+            mcconfig, args.year, lumi, True, args.executable, args.mode, savepath, minpt, tvarg, validation_arguments
         )
     # run all data files in task config
     elif args.all_data and args.year:
         validation_arguments = create_arguments(
-            dataconfig, args.year, lumi, False, args.executable, args.mode, savepath, minpt
+            dataconfig, args.year, lumi, False, args.executable, args.mode, savepath, minpt, tvarg, validation_arguments
         )
     # run one sample from task config
     elif args.sample and args.year:
@@ -313,7 +347,17 @@ def main():
             args.executable,
             args.mode,
             savepath,
-            minpt
+            minpt,
+            tvarg, 
+            validation_arguments
+        )
+    # run all samples in the config
+    elif args.all:
+        validation_arguments = create_arguments(
+            mcconfig, args.year, lumi, True, args.executable, args.mode, savepath, minpt, tvarg, validation_arguments
+        )
+        validation_arguments = create_arguments(
+            dataconfig, args.year, lumi, False, args.executable, args.mode, savepath, minpt, tvarg, validation_arguments
         )
 
     # create output directory if not existing

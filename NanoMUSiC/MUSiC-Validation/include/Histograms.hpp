@@ -39,6 +39,14 @@ inline auto rebin_histogram(TH1F &hist,
     return TH1F(hist.GetName(), hist.GetTitle(), limits.size() - 1, limits.data());
 }
 
+// returns jet countmap
+// countmap(nJet, nBJet)
+inline auto return_jet_countmap(int nJet, int nBJet)
+{
+    std::map<std::string, int> countmap = {{"Ele", 0}, {"EleEE", 0}, {"EleEB", 0}, {"Muon", 0}, {"Gamma", 0}, {"GammaEB", 0}, {"GammaEE", 0}, {"Tau", 0}, {"Jet", nJet}, {"bJet", nBJet}, {"MET", 0}};
+    return countmap;
+}
+
 constexpr int n_energy_bins = 1300;
 constexpr float min_energy = 0;
 constexpr float max_energy = 13000;

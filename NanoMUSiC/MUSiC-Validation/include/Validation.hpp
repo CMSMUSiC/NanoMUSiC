@@ -24,6 +24,7 @@
 #include "TTreeReaderValue.h"
 
 #include "JetVal.hpp"
+#include "JetClass.hpp"
 #include "MUSiCTools.hpp"
 #include "TOMLConfig.hpp"
 #include "ZToLepLepX.hpp"

@@ -38,7 +38,7 @@ constexpr auto ActivatedHLTPath = Enumerate::make_enumerate("SingleMuonLowPt"sv,
                                                             "SingleMuonHighPt"sv,    //
                                                             "SingleElectronLowPt"sv, //
                                                             "SingleElectronHighPt"sv,
-                                                            "JetHT"sv,
+                                                            "JetHT", //sv); //,
                                                             "JetPT"sv);
 
 // constexpr auto kTotalActivatedPaths = ActivatedHLTPath && (nano_objects.pt <= pt_min).size();
@@ -457,6 +457,11 @@ class TrgObjMatcher
 
         bool has_trigger_match = false; // flag that indicates a trigger match, default false
 
+        // Mode flag:
+        //  1 = normal pt mode (use pt and min number of matches): pt_min stores minimum pt
+        //  2 = sum pt mode (only use sum pt, dont care about number of matches): pt_min is used as sum_pt_min in this
+        //  case
+
         if (mode == 1) // PT MODE (default mode, in the legacy code only this mode was implemented)
         {
             if(debugObjMatcher)
@@ -576,15 +581,20 @@ class TrgObjMatcher
         }
         else if (mode == 2) // HT or SUM PT MODE
         {
-            auto sum_pt = Sum(raw_pt); // calculate sum pt
+            // only include jets with pt > 30 in the sumpt calculation (previously it was just Sum(raw_pt))
+            // (turns out this is not necessary because the skimmer has a pt 50 limit set somewhere else)
+            float sum_pt = 0;
+            for (size_t i = 0; i < raw_pt.size(); i++)
+            {
+                if(raw_pt[i] > 30)
+                {
+                    sum_pt += raw_pt[i];
+                }
+            }
             if(debugObjMatcher)
             {
                 std::cout << "HT MODE:" << std::endl;
-                for (size_t i = 0; i < raw_pt.size(); i++)
-                {
-                    std::cout << raw_pt[i] << ", ";
-                }
-                std::cout << std::endl;
+                std::cout << raw_pt << std::endl;
                 std::cout << sum_pt << std::endl;
             }
             has_trigger_match = false;
@@ -636,7 +646,6 @@ inline auto make_trgobj_matcher(Year year, bool is_data) -> std::map<std::string
     std::map<std::string_view, TrgObjMatcher> matchers;
     for (auto &&hlt_path : Trigger::ActivatedHLTPath)
     {
-        std::cout << "MARKER-1" << std::endl;
         unsigned int _min_number_of_matches = std::numeric_limits<unsigned int>::max();
         double _max_delta_r = std::numeric_limits<double>::max();
         double _pt_min = std::numeric_limits<double>::max();
@@ -650,7 +659,6 @@ inline auto make_trgobj_matcher(Year year, bool is_data) -> std::map<std::string
         // Muon Triggers
         if (hlt_path.find("Muon") != std::string::npos)
         {
-            std::cout << "  MUON" << std::endl;
             switch (year)
             {
             case Year::Run2016APV:
@@ -705,7 +713,6 @@ inline auto make_trgobj_matcher(Year year, bool is_data) -> std::map<std::string
         // Electron Triggers
         else if (hlt_path.find("Electron") != std::string::npos)
         {
-            std::cout << "  ELECTRON" << std::endl;
             switch (year)
             {
             case Year::Run2016APV:
@@ -760,17 +767,16 @@ inline auto make_trgobj_matcher(Year year, bool is_data) -> std::map<std::string
         // Jet Triggers
         else if (hlt_path.find("Jet") != std::string::npos)
         {
-            std::cout << "  JET" << std::endl;
             switch (year) // currently only for 2018
             {
             case Year::Run2018:
                 if (hlt_path.find("PT") != std::string::npos)
                 {
-                    _pt_min = 505.;
+                    _pt_min = 600.;
                 }
                 else if (hlt_path.find("HT") != std::string::npos)
                 {
-                    _pt_min = 1055.; // here this value is the _sum_pt_min because of mode = 2
+                    _pt_min = 1600.; // here this value is the _sum_pt_min because of mode = 2
                                      // (see TrgObjMatcher::operator() in Trigger.hpp)
                     _mode = 2;
                 }
@@ -790,7 +796,6 @@ inline auto make_trgobj_matcher(Year year, bool is_data) -> std::map<std::string
         matchers.emplace(
             std::string_view(hlt_path),
             TrgObjMatcher(hlt_path, _max_delta_r, _pt_min, _min_number_of_matches, _id, year, is_data, _mode));
-        std::cout << "MARKER-2" << std::endl;
     }
 
     return matchers;
