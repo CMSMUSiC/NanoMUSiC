@@ -1,4 +1,4 @@
-#include "jet_sf.hpp"
+#include "muon_selection.hpp"
 #include "RunLumiFilter.hpp"
 
 #include <cstdlib>
@@ -7,7 +7,7 @@
 #include <mutex>
 #include <thread>
 
-auto jet_sf() -> int
+auto muon_selection() -> int
 {
 
     const int number_of_files = 10;

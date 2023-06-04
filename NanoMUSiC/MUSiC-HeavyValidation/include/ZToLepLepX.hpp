@@ -6,6 +6,7 @@
 #include "TEfficiency.h"
 #include <TFile.h>
 #include <TH1F.h>
+#include <TH2F.h>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -19,7 +20,9 @@ class ZToLepLepX
     std::unique_ptr<TFile> output_file;
 
     // histograms
-    ADD_TH1F(h_invariant_mass, n_energy_bins, min_energy, max_energy);
+    // ADD_TH1F(h_invariant_mass, n_energy_bins, min_energy, max_energy);
+    ADD_TH1F(h_invariant_mass, 100, 0., 1000.);
+
     ADD_TH1F(h_sum_pt, n_energy_bins, min_energy, max_energy);
     ADD_TH1F(h_met, n_energy_bins, min_energy, max_energy);
     ADD_TH1F(h_lepton_1_pt, n_energy_bins, min_energy, max_energy);
@@ -33,12 +36,17 @@ class ZToLepLepX
     ADD_TH1F(h_jet_multiplicity, n_multiplicity_bins, min_multiplicity, max_multiplicity);
     ADD_TH1F(h_bjet_multiplicity, n_multiplicity_bins, min_multiplicity, max_multiplicity);
 
+    TH2F h_lepton_1_pt_eta =
+        TH2F("h_lepton_1_pt_eta", "h_lepton_1_pt_eta", 130, min_energy, 900, n_eta_bins, min_eta, max_eta);
+    TH2F h_lepton_1_pt_phi =
+        TH2F("h_lepton_1_pt_eta", "h_lepton_1_pt_eta", 130, min_energy, 900, n_phi_bins, min_phi, max_phi);
+
     ZToLepLepX(const std::string &output_path,
                const std::map<std::string, int> &countMap,
                bool is_Z_mass_validation = false);
 
-    auto fill(Math::PtEtaPhiMVector lepton_1,
-              Math::PtEtaPhiMVector lepton_2,
+    auto fill(const Math::PtEtaPhiMVector &lepton_1,
+              const Math::PtEtaPhiMVector &lepton_2,
               unsigned int nBJet,
               std::optional<Math::PtEtaPhiMVector> bjet,
               unsigned int nJet,
@@ -47,6 +55,7 @@ class ZToLepLepX
               float weight = 1.) -> void;
 
     auto save_histo(TH1F &histo) -> void;
+    auto save_histo(TH2F &histo) -> void;
 
     auto dump_outputs() -> void;
     auto dump_outputs(TEfficiency &efficiency) -> void;

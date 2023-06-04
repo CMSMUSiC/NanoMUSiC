@@ -26,11 +26,17 @@ raw_config.toml
 *~
 *.pcm
 NanoMUSiC/MUSiC-CRAB/Outputs
+NanoMUSiC/special_studies/muon_selection/*.png
+NanoMUSiC/special_studies/muon_selection/*.pdf
+
+
+
 ##### PYTHON #####
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+
 
 # C extensions
 *.so

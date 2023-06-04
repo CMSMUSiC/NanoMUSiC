@@ -32,6 +32,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-LightSkimmer/include/
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-Classification/include/
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-Validation/include/
+    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-HeavyValidation/include/
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Pxl/Pxl/src

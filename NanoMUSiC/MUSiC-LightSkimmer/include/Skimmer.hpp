@@ -297,6 +297,12 @@ inline auto print_report(const double &dTime1,
 inline auto get_output_branches(const TaskConfiguration &configuration) -> std::vector<std::string>
 {
     std::vector<std::string> output_branches = {
+        "pass_low_pt_muon_trigger",
+        "pass_high_pt_muon_trigger",
+        "pass_low_pt_electron_trigger",
+        "pass_high_pt_electron_trigger",
+        "pass_jet_ht_trigger",
+        "pass_jet_pt_trigger",
         "run",
         "luminosityBlock",
         "event",
