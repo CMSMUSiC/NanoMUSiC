@@ -118,6 +118,7 @@ def extract_config(task_config, years):
 
 # import one histogram from given root file
 def import_hist(year, sample, file_prefix, hist_name, savepath):
+    savepath += "/files/"
     file_path = (
             validation_path
             + "/"

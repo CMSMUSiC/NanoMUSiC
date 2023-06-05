@@ -59,7 +59,7 @@ def parse_args():
     parser.add_argument(
         "-s",
         "--savepath",
-        help="Directory of the files inside of /validation_outputs/[year]/ (if they are in a sub-directory). Search for files in the [year] directory if left blank.",
+        help="Searching for files at /validation_outputs/[year]/[savepath]/files/. Exporting plots to /validation_outputs/[year]/[savepath]/plots/",
     )
     parser.add_argument(
         "-t",
@@ -113,6 +113,7 @@ def extract_config(task_config, years):
 
 # import one histogram from given root file
 def import_counts(year, sample, savepath):
+    savepath += "/files/"
     file_prefix = "classes_"
     file_path = (
             validation_path
@@ -734,7 +735,9 @@ def main():
     # run plotting task
     print(f"Start {len(classsuffixes)} class event count validation jobs.")
     for classsuffix in classsuffixes:
-        countplotter(args, savepath, datasamples, mcsamples, mcsorted, color_dict, aggregation_dict, years, histograms["COUNTS"], classsuffix)
+        countplotter(args, savepath, datasamples, mcsamples, mcsorted,
+                     color_dict, aggregation_dict, years, histograms["COUNTS"],
+                     classsuffix)
     
     print("Finished plot validation job.\n")
     exit(0)

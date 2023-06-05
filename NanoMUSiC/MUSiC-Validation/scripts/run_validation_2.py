@@ -11,6 +11,7 @@ import shlex
 import tempfile
 from collections import defaultdict
 from pprint import pprint
+import time
 
 years = ["2016APV", "2016", "2017", "2018"]
 
@@ -46,7 +47,7 @@ def parse_args():
         "-e", "--executable", help="Validation excutable.", default="validation"
     )
     parser.add_argument("--debug", help="print debugging info", action="store_true")
-    parser.add_argument("-p","--savepath",help="Save path (to save the output files in the /validation_outputs/[year]/ directory). Creates directory if not existing. If this argument is left out, save in [xear] directory.")
+    parser.add_argument("-p","--savepath",help="Specify sub-directory of savepath. Saving files at /validation_outputs/[year]/[savepath]/files/.")
     parser.add_argument("-pt", "--minpt", help="Only available in 'Jet' mode. Min pt of the jets to be included in the validation. If left blank, the pt limit is 0.")
     parser.add_argument("-tv", "--tovalidate", help="Only available in 'JetClass' mode. This argument specifies the classes for which validation plots are created. The argument should have the form classname1,classname2... with classnames of the form 'xJ+yBJ'/'xJ+yBJ+nJ'/''xJ+yBJ+X' for exclusice/jet-inclusive/inclusive classes. Include class name 'COUNTS' in the enumeration to also calculate the event counts (class inhabitation) for each class. Instead of giving the class names manually one can also run a class config with '--classconfig'.")
     parser.add_argument("-cc", "--classconfig", help="Only available in 'JetClass' mode. Class configuration (TOML) file containing the names of the classes to be validated.")
@@ -169,9 +170,9 @@ def validation(args):
         tvarg,
     ) = list(args.values())
 
-    output_path: str = f"validation_outputs/{year}/"
+    output_path = f"validation_outputs/{year}/files"
     if savepath != "":
-        output_path = f"validation_outputs/{year}/{savepath}/" # option: save inside another directory of the output path
+        output_path = f"validation_outputs/{year}/{savepath}/files" # option: save inside another directory of the output path
 
     # print("[ MUSiC Validation ] Loading samples ...\n")
     effective_x_section: float = 1.0
@@ -179,7 +180,10 @@ def validation(args):
         effective_x_section = xsection * filter_eff * k_factor * luminosity
 
     # print("[ MUSiC Validation ] Preparing output directory ...\n")
-    os.system(f"rm -rf validation_outputs/{year}/*{process}_{year}.root")
+    if savepath != "":
+        os.system(f"rm -rf validation_outputs/{year}/{savepath}/files/*_{process}_{year}.root")
+    else:
+        os.system(f"rm -rf validation_outputs/{year}/files/*_{process}_{year}.root")
 
     # print("[ MUSiC Validation ] Merging cutflow histograms ...\n")
     merge_cutflow_histograms(process, year, output_path, input_files)
@@ -352,7 +356,7 @@ def main():
             validation_arguments
         )
     # run all samples in the config
-    elif args.all:
+    elif args.all and args.year:
         validation_arguments = create_arguments(
             mcconfig, args.year, lumi, True, args.executable, args.mode, savepath, minpt, tvarg, validation_arguments
         )
@@ -362,11 +366,12 @@ def main():
 
     # create output directory if not existing
     print(f"Checking output directory...")
-    if not (os.path.isdir(f"validation_outputs/{args.year}")):
-        os.system(f"mkdir -p validation_outputs/{args.year}")
+    if not args.savepath:
+        if not (os.path.isdir(f"validation_outputs/{args.year}/files")):
+            os.system(f"mkdir -p validation_outputs/{args.year}/files")
     if savepath != "":
-        if not (os.path.isdir(f"validation_outputs/{args.year}/{savepath}")):
-            os.system(f"mkdir -p validation_outputs/{args.year}/{savepath}")
+        if not (os.path.isdir(f"validation_outputs/{args.year}/{savepath}/files")):
+            os.system(f"mkdir -p validation_outputs/{args.year}/{savepath}/files")
 
     # run validation jobs with the generated arguments
     print(f"Starting {len(validation_arguments)} validation jobs...")

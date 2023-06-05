@@ -73,7 +73,7 @@ def main():
     for sample in xsection_list:
         xsection_list[sample]["crab_task_name"] = []
         for filename in directory_list:
-            if re.search(sample, filename):
+            if re.search("crab_nano_music_" + sample, filename): # this might fix the problem of substrings
                 xsection_list[sample]["crab_task_name"].append(filename)
 
     # remove unwanted entries
