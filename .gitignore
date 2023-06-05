@@ -238,3 +238,4 @@ foo
 .gitignore
 gdb.txt
 NanoMUSiC/MUSiC-CRAB/task.tar.gz
+NanoMUSiC/MUSiC-CRAB/xSections_list_Jets_2018_only.toml

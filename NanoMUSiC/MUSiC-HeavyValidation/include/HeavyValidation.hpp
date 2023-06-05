@@ -1,6 +1,10 @@
 #ifndef VALIDATION
 #define VALIDATION
 
+// analysis classes
+#include "Dijets.hpp"
+#include "ZToLepLepX.hpp"
+
 #include <optional>
 #include <stdexcept>
 #include <sys/time.h>
@@ -22,9 +26,10 @@
 #include "TTreeReaderArray.h"
 #include "TTreeReaderValue.h"
 
+#include "Configs.hpp"
+#include "JetCorrector.hpp"
 #include "MUSiCTools.hpp"
 #include "TOMLConfig.hpp"
-#include "ZToLepLepX.hpp"
 
 #include "PDFAlphaSWeights.hpp"
 
@@ -37,20 +42,60 @@ using namespace ROOT;
 using namespace ROOT::Math;
 using namespace ROOT::VecOps;
 
-// helper macros
-#define ADD_VALUE_READER(VAR, TYPE) auto VAR = TTreeReaderValue<TYPE>(tree_reader, #VAR)
-#define ADD_ARRAY_READER(VAR, TYPE) auto VAR = TTreeReaderArray<TYPE>(tree_reader, #VAR)
-
 template <typename T>
-auto unwrap(TTreeReaderValue<T> &value) -> T
+auto make_value_reader(TTreeReader &tree_reader, const std::string &leaf) -> std::optional<TTreeReaderValue<T>>
 {
-    return *value;
+    if (tree_reader.GetTree()->GetLeaf(leaf.c_str()) != nullptr)
+    {
+        return std::make_optional<TTreeReaderValue<T>>(tree_reader, leaf.c_str());
+    }
+    return std::nullopt;
 }
 
 template <typename T>
-auto unwrap(TTreeReaderArray<T> &array) -> RVec<T>
+auto make_array_reader(TTreeReader &tree_reader, const std::string &leaf) -> std::optional<TTreeReaderArray<T>>
 {
-    return RVec<T>(static_cast<T *>(array.GetAddress()), array.GetSize());
+    if (tree_reader.GetTree()->GetLeaf(leaf.c_str()) != nullptr)
+    {
+        return std::make_optional<TTreeReaderArray<T>>(tree_reader, leaf.c_str());
+    }
+    return std::nullopt;
+}
+
+// helper macros
+#define ADD_VALUE_READER(VAR, TYPE) auto VAR = make_value_reader<TYPE>(tree_reader, #VAR)
+#define ADD_ARRAY_READER(VAR, TYPE) auto VAR = make_array_reader<TYPE>(tree_reader, #VAR)
+
+template <typename T>
+auto unwrap(std::optional<TTreeReaderValue<T>> &value) -> T
+{
+    if (value)
+    {
+        return **value;
+    }
+    return T();
+}
+
+template <typename T, typename Q>
+auto unwrap(std::optional<TTreeReaderValue<T>> &value, Q &&default_value = Q()) -> T
+{
+    static_assert(std::is_arithmetic<T>::value, "The default type must be numeric.");
+
+    if (value)
+    {
+        return **value;
+    }
+    return static_cast<T>(default_value);
+}
+
+template <typename T>
+auto unwrap(std::optional<TTreeReaderArray<T>> &array) -> RVec<T>
+{
+    if (array)
+    {
+        return RVec<T>(static_cast<T *>((*array).GetAddress()), (*array).GetSize());
+    }
+    return RVec<T>();
 }
 
 inline auto PrintProcessInfo() -> void
@@ -102,19 +147,12 @@ inline auto make_muons(const RVec<float> &Muon_pt,             //
                        const RVec<UChar_t> &Muon_highPtId,     //
                        const RVec<float> &Muon_pfRelIso04_all, //
                        const RVec<float> &Muon_tkRelIso,       //
-                       const RVec<float> &Muon_tunepRelPt,
-                       bool pass_low_pt_muon_trigger,
-                       bool pass_high_pt_muon_trigger) -> RVec<Math::PtEtaPhiMVector>
+                       const RVec<float> &Muon_tunepRelPt) -> RVec<Math::PtEtaPhiMVector>
 {
     auto muons = RVec<Math::PtEtaPhiMVector>{};
 
     for (std::size_t i = 0; i < Muon_pt.size(); i++)
     {
-        if (i == 2)
-        {
-            break;
-        }
-
         bool is_good_low_pt_muon = (Muon_pt.at(i) >= 25.)                //
                                    && (Muon_pt.at(i) < 200.)             //
                                    && (std::fabs(Muon_eta.at(i)) <= 2.4) //
@@ -138,27 +176,89 @@ inline auto make_muons(const RVec<float> &Muon_pt,             //
             pt_correction_factor = Muon_tunepRelPt.at(i);
         }
 
-        // if ((is_good_low_pt_muon) and not(is_good_high_pt_muon))
-        // if (is_good_low_pt_muon)
-        if ((pass_low_pt_muon_trigger and is_good_low_pt_muon) or (pass_high_pt_muon_trigger and is_good_high_pt_muon))
+        if (is_good_low_pt_muon or is_good_high_pt_muon)
         {
             muons.push_back(ROOT::Math::PtEtaPhiMVector(
                 std::max(Muon_pt[i] * pt_correction_factor, 25.), Muon_eta[i], Muon_phi[i], PDG::Muon::Mass));
             // muons.push_back(ROOT::Math::PtEtaPhiMVector(
             //     Muon_pt[i] * pt_correction_factor, Muon_eta[i], Muon_phi[i], PDG::Muon::Mass));
-            // muons.push_back(ROOT::Math::PtEtaPhiMVector(Muon_pt[i], Muon_eta[i], Muon_phi[i], PDG::Muon::Mass));
+            // muons.push_back(ROOT::Math::PtEtaPhiMVector(Muon_pt[i], Muon_eta[i], Muon_phi[i], PDG::Muon::Mass));}
+        }
+    }
+    const auto muon_reordering_mask = VecOps::Argsort(muons,
+                                                      [](auto muon_1, auto muon_2) -> bool
+                                                      {
+                                                          return muon_1.pt() > muon_2.pt();
+                                                      });
+
+    return VecOps::Take(muons, muon_reordering_mask);
+
+    return muons;
+}
+
+inline auto make_jets(const RVec<float> &Jet_pt,            //
+                      const RVec<float> &Jet_eta,           //
+                      const RVec<float> &Jet_phi,           //
+                      const RVec<float> &Jet_mass,          //
+                      const RVec<Int_t> &Jet_jetId,         //
+                      const RVec<float> &Jet_btagDeepFlavB, //
+                      const RVec<float> &Jet_rawFactor,     //
+                      const RVec<float> &Jet_area,          //
+                      const RVec<Int_t> &Jet_genJetIdx,     //
+                      float fixedGridRhoFastjetAll,         //
+                      JetCorrector &jet_corrections,        //
+                      const NanoObjects::GenJets &gen_jets, //
+                      std::string _year) -> RVec<Math::PtEtaPhiMVector>
+{
+    auto year = get_runyear(_year);
+    auto jets = RVec<Math::PtEtaPhiMVector>{};
+
+    for (std::size_t i = 0; i < Jet_pt.size(); i++)
+    {
+        auto is_good_jet = (Jet_pt.at(i) >= ObjConfig::Jets[year].MinPt)                    //
+                           && (std::fabs(Jet_eta.at(i)) <= ObjConfig::Jets[year].MaxAbsEta) //
+                           && (Jet_jetId.at(i) >= ObjConfig::Jets[year].MinJetID)           //
+            //    && (Jet_btagDeepFlavB.at(i) < ObjConfig::Jets[year].MaxBTagWPTight)
+            ;
+
+        // JES: Nominal - JER: Nominal
+        float scale_correction_nominal = jet_corrections.get_scale_correction(Jet_pt[i],              //
+                                                                              Jet_eta[i],             //
+                                                                              Jet_phi[i],             //
+                                                                              Jet_rawFactor[i],       //
+                                                                              fixedGridRhoFastjetAll, //
+                                                                              Jet_area[i],            //
+                                                                              "Nominal"s);
+
+        float new_pt_nominal = Jet_pt[i] * scale_correction_nominal;
+
+        float resolution_correction_nominal = jet_corrections.get_resolution_correction(new_pt_nominal,
+                                                                                        Jet_eta[i],             //
+                                                                                        Jet_phi[i],             //
+                                                                                        fixedGridRhoFastjetAll, //
+                                                                                        Jet_genJetIdx[i],       //
+                                                                                        gen_jets,               //
+                                                                                        "Nominal"s);
+        if (is_good_jet)
+        {
+            jets.push_back(ROOT::Math::PtEtaPhiMVector(                                    //
+                Jet_pt.at(i) * scale_correction_nominal * resolution_correction_nominal,   //
+                Jet_eta.at(i),                                                             //
+                Jet_phi.at(i),                                                             //
+                Jet_mass.at(i) * scale_correction_nominal * resolution_correction_nominal) //
+            );
         }
     }
 
-    // const auto muon_reordering_mask = VecOps::Argsort(muons,
-    //                                                   [](auto muon_1, auto muon_2) -> bool
-    //                                                   {
-    //                                                       return muon_1.pt() > muon_2.pt();
-    //                                                   });
+    const auto jets_reordering_mask = VecOps::Argsort(jets,
+                                                      [](auto jet_1, auto jet_2) -> bool
+                                                      {
+                                                          return jet_1.pt() > jet_2.pt();
+                                                      });
 
-    // return VecOps::Take(muons, muon_reordering_mask);
+    return VecOps::Take(jets, jets_reordering_mask);
 
-    return muons;
+    return jets;
 }
 
 template <typename T>
@@ -176,6 +276,19 @@ inline auto save_as(T &histo, std::string &&filename) -> void
 
     c.SaveAs((filename + ".png").c_str());
     c.SaveAs((filename + ".pdf").c_str());
+}
+
+inline auto get_era_from_process_name(const std::string &process, bool is_data) -> std::string
+{
+    if (is_data)
+    {
+        if (not(process.empty()))
+        {
+            return process.substr(process.length() - 1);
+        }
+        throw std::runtime_error(fmt::format("ERROR: Could not get era from process name ({}).\n", process));
+    }
+    return "_";
 }
 
 #endif // VALIDATION

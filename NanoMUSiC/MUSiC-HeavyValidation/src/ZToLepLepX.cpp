@@ -11,10 +11,10 @@
 ZToLepLepX::ZToLepLepX(const std::string &output_path,
                        const std::map<std::string, int> &countMap,
                        bool is_Z_mass_validation)
-    : output_file(std::unique_ptr<TFile>(TFile::Open(output_path.c_str(), "RECREATE")))
+    : output_file(std::unique_ptr<TFile>(TFile::Open(output_path.c_str(), "RECREATE"))),
+      min_bin_width(is_Z_mass_validation ? 1. : 10.)
 {
-    // h_invariant_mass = rebin_histogram(h_invariant_mass, countMap, is_Z_mass_validation, "validation_plot", 0.,
-    // 1000.);
+    h_invariant_mass = rebin_histogram(h_invariant_mass, countMap, is_Z_mass_validation);
     h_sum_pt = rebin_histogram(h_sum_pt, countMap);
     h_met = rebin_histogram(h_met, countMap, false, "MET");
     h_lepton_1_pt = rebin_histogram(h_lepton_1_pt, countMap);
@@ -47,9 +47,9 @@ auto ZToLepLepX::fill(const Math::PtEtaPhiMVector &lepton_1,
                       std::optional<float> met,
                       float weight) -> void
 {
-    fmt::print("lepton_1: {}\n", lepton_1);
-    fmt::print("lepton_2: {}\n", lepton_2);
-    fmt::print("h_invariant_mass V2: {}\n", (lepton_1 + lepton_2).mass());
+    // fmt::print("lepton_1: {}\n", lepton_1);
+    // fmt::print("lepton_2: {}\n", lepton_2);
+    // fmt::print("h_invariant_mass V2: {}\n", (lepton_1 + lepton_2).mass());
 
     h_invariant_mass.Fill((lepton_1 + lepton_2).mass(), weight);
     h_sum_pt.Fill(lepton_1.pt() + lepton_2.pt(), weight);
@@ -93,12 +93,14 @@ auto ZToLepLepX::fill(const Math::PtEtaPhiMVector &lepton_1,
 
 auto ZToLepLepX::save_histo(TH1F &histo) -> void
 {
+    histo.Scale(10, "width");
     histo.SetDirectory(output_file.get());
     histo.Write();
 }
 
 auto ZToLepLepX::save_histo(TH2F &histo) -> void
 {
+    histo.Scale(min_bin_width, "width");
     histo.SetDirectory(output_file.get());
     histo.Write();
 }
@@ -122,32 +124,6 @@ auto ZToLepLepX::dump_outputs() -> void
     save_histo(h_bjet_multiplicity);
     save_histo(h_lepton_1_pt_eta);
     save_histo(h_lepton_1_pt_phi);
-
-    output_file->Close();
-}
-
-auto ZToLepLepX::dump_outputs(TEfficiency &efficiency) -> void
-{
-    // fmt::print("Saving outputs to: {}\n", output_file->GetPath());
-    output_file->cd();
-    save_histo(h_invariant_mass);
-    save_histo(h_sum_pt);
-    save_histo(h_met);
-    save_histo(h_lepton_1_pt);
-    save_histo(h_lepton_2_pt);
-    save_histo(h_lepton_1_eta);
-    save_histo(h_lepton_2_eta);
-    save_histo(h_lepton_1_phi);
-    save_histo(h_lepton_2_phi);
-    save_histo(h_lepton_1_jet_1_dPhi);
-    save_histo(h_lepton_1_jet_1_dR);
-    save_histo(h_jet_multiplicity);
-    save_histo(h_bjet_multiplicity);
-    save_histo(h_lepton_1_pt_eta);
-    save_histo(h_lepton_1_pt_phi);
-
-    efficiency.SetDirectory(output_file.get());
-    efficiency.Write();
 
     output_file->Close();
 }

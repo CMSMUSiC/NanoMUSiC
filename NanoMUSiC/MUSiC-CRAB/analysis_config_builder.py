@@ -66,6 +66,7 @@ def collect_output_files(collector_inputs: CollectorInputs):
 
 
 def main():
+    print("[ Collecting results ... ]")
     directory_list = make_outputfile_list()
     xsection_list = tomli.loads(
         Path(args.xsection_file_path).read_text(encoding="utf-8")
@@ -133,6 +134,8 @@ ScalefactorError = 0.026
     with open("analysis_config.toml", "w") as new_jobList_file:
         new_jobList_file.write(crab_job_list)
 
+    print(f"Output saved to: analysis_config.toml")
+    print("[ Done ]")
 
 if __name__ == "__main__":
     main()

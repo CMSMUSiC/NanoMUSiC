@@ -661,6 +661,111 @@ XSecOrder = "LO"
 ProcessGroup = "QCD"
 generator_filter_key = "gamma_plus_jets_cleanner"
 
+[QCD_Pt_15to30_13TeV_P8]
+XSec = 1837410000
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "QCD"
+
+[QCD_Pt_30to50_13TeV_P8]
+XSec = 140932000
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "QCD"
+
+[QCD_Pt_50to80_13TeV_P8]
+XSec = 19204300
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "QCD"
+
+[QCD_Pt_80to120_13TeV_P8]
+XSec = 2762530
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "QCD"
+
+[QCD_Pt_120to170_13TeV_P8]
+XSec = 471100
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "QCD"
+
+[QCD_Pt_170to300_13TeV_P8]
+XSec = 103300
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "QCD"
+
+[QCD_Pt_300to470_13TeV_P8]
+XSec = 7823
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "QCD"
+
+[QCD_Pt_470to600_13TeV_P8]
+XSec = 648.2
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "QCD"
+
+[QCD_Pt_600to800_13TeV_P8]
+XSec = 186.9
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "QCD"
+
+[QCD_Pt_800to1000_13TeV_P8]
+XSec = 32.293
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "QCD"
+
+[QCD_Pt_1000to1400_13TeV_P8]
+XSec = 9.4183
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "QCD"
+
+[QCD_Pt_1400to1800_13TeV_P8]
+XSec = 0.84265
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "QCD"
+
+[QCD_Pt_1800to2400_13TeV_P8]
+XSec = 0.114943
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "QCD"
+
+[QCD_Pt_2400to3200_13TeV_P8]
+XSec = 0.00682981
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "QCD"
+
+[QCD_Pt_3200toInf_13TeV_P8]
+XSec = 0.000165445
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "QCD"
+
 [ST_s-channel_4f_leptonDecays_13TeV_AM]
 XSec = 3.36
 FilterEff = 1.0

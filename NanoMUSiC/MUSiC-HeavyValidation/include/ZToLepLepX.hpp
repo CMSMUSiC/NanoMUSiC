@@ -20,9 +20,7 @@ class ZToLepLepX
     std::unique_ptr<TFile> output_file;
 
     // histograms
-    // ADD_TH1F(h_invariant_mass, n_energy_bins, min_energy, max_energy);
-    ADD_TH1F(h_invariant_mass, 100, 0., 1000.);
-
+    ADD_TH1F(h_invariant_mass, n_energy_bins, min_energy, max_energy);
     ADD_TH1F(h_sum_pt, n_energy_bins, min_energy, max_energy);
     ADD_TH1F(h_met, n_energy_bins, min_energy, max_energy);
     ADD_TH1F(h_lepton_1_pt, n_energy_bins, min_energy, max_energy);
@@ -41,6 +39,8 @@ class ZToLepLepX
     TH2F h_lepton_1_pt_phi =
         TH2F("h_lepton_1_pt_eta", "h_lepton_1_pt_eta", 130, min_energy, 900, n_phi_bins, min_phi, max_phi);
 
+    double min_bin_width = 10;
+
     ZToLepLepX(const std::string &output_path,
                const std::map<std::string, int> &countMap,
                bool is_Z_mass_validation = false);
@@ -58,7 +58,6 @@ class ZToLepLepX
     auto save_histo(TH2F &histo) -> void;
 
     auto dump_outputs() -> void;
-    auto dump_outputs(TEfficiency &efficiency) -> void;
 };
 
 #endif // !ZTOLEPLEPX

@@ -1,3 +1,7 @@
+# correctionlib compilation and linking flags
+execute_process(COMMAND correction config --cflags --ldflags --rpath OUTPUT_VARIABLE CORRECTIONLIB_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+separate_arguments(CORRECTIONLIB_FLAGS)
+
 # compilation options
 execute_process(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
 separate_arguments(ROOT_CFLAGS)
@@ -9,7 +13,7 @@ else()
     add_compile_options(-I/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/include)
 endif()
 
-add_compile_options(${ROOT_CFLAGS} -fdiagnostics-color=always -MD -MP -O3 -Wall -march=native -pthread -m64 -ffloat-store)
+add_compile_options(${ROOT_CFLAGS} ${CORRECTIONLIB_FLAGS} -fdiagnostics-color=always -MD -MP -O3 -Wall -march=native -pthread -m64 -ffloat-store)
 
 # root linker options
 execute_process(COMMAND root-config --ldflags OUTPUT_VARIABLE ROOT_LDFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -25,15 +29,22 @@ add_link_options(
     ${ROOT_LIBS}
     -L${LCG_BASE}/lib
     -L${LCG_BASE}/lib64
+    ${CORRECTIONLIB_FLAGS}
     -lLHAPDF
     -lfmt
     -lz
     -lstdc++fs
 )
 
-add_executable(heavy_validation src/main.cpp //
+add_executable(
+    heavy_validation //
+    src/main.cpp //
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/TOMLConfig.cpp //
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/BinLimits.cpp //
-    src/ZToLepLepX.cpp)
+    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/NanoObjects.cpp /
+    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/JetCorrector.cpp /
+    src/ZToLepLepX.cpp //
+    src/Dijets.cpp //
+)
 target_link_libraries(heavy_validation LINK_PUBLIC ROOT::RIO ROOT::Net)
 install(TARGETS heavy_validation DESTINATION ${CMAKE_SOURCE_DIR}/bin)

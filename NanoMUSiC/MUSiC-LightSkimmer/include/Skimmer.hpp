@@ -386,10 +386,10 @@ inline auto get_output_branches(const TaskConfiguration &configuration) -> std::
         // "LHEPart_incomingpz",
         // "LHEPart_pdgId",
         // "LHEPart_status",
-        "GenJet_eta",
-        "GenJet_mass",
-        "GenJet_phi",
         "GenJet_pt",
+        "GenJet_eta",
+        "GenJet_phi",
+        "GenJet_mass",
     };
 
     if (!configuration.is_data)
