@@ -28,6 +28,9 @@ Dijets::Dijets(const std::string &output_path, const std::map<std::string, int> 
     h_jet_2_eta.Sumw2();
     h_jet_1_phi.Sumw2();
     h_jet_2_phi.Sumw2();
+
+    h_dr_jet_1_jet_2.Sumw2();
+    h_jet_1_jet_2_dPhi.Sumw2();
     // h_jet_1_jet_1_dPhi.Sumw2();
     // h_jet_1_jet_1_dR.Sumw2();
     // h_jet_multiplicity.Sumw2();
@@ -59,6 +62,14 @@ auto Dijets::fill(const Math::PtEtaPhiMVector &jet_1,
     h_jet_1_phi.Fill(jet_1.phi(), weight);
     h_jet_2_phi.Fill(jet_2.phi(), weight);
 
+    h_dr_jet_1_jet_2.Fill(std::fabs(Math::VectorUtil::DeltaR(jet_1, jet_2)), weight);
+    h_jet_1_jet_2_dPhi.Fill(std::fabs(Math::VectorUtil::DeltaPhi(jet_1, jet_2)), weight);
+
+    h_dr_mass.Fill(std::fabs(Math::VectorUtil::DeltaR(jet_1, jet_2)), (jet_1 + jet_2).mass(), weight);
+    h_dr_sum_pt.Fill(std::fabs(Math::VectorUtil::DeltaR(jet_1, jet_2)), jet_1.pt() + jet_2.pt(), weight);
+
+    h_dr_pt1.Fill(std::fabs(Math::VectorUtil::DeltaR(jet_1, jet_2)), jet_1.pt(), weight);
+    h_eta1_mass.Fill(std::fabs(jet_1.eta()), (jet_1 + jet_2).mass(), weight);
     // if (jet or bjet)
     // {
     //     Math::PtEtaPhiMVector leading_jet = [&]() -> Math::PtEtaPhiMVector
@@ -96,7 +107,7 @@ auto Dijets::save_histo(TH1F &histo) -> void
 
 auto Dijets::save_histo(TH2F &histo) -> void
 {
-    histo.Scale(min_bin_width, "width");
+    // histo.Scale(min_bin_width, "width");
     histo.SetDirectory(output_file.get());
     histo.Write();
 }
@@ -114,6 +125,14 @@ auto Dijets::dump_outputs() -> void
     save_histo(h_jet_2_eta);
     save_histo(h_jet_1_phi);
     save_histo(h_jet_2_phi);
+    save_histo(h_dr_jet_1_jet_2);
+    save_histo(h_jet_1_jet_2_dPhi);
+
+    save_histo(h_dr_mass);
+    save_histo(h_dr_sum_pt);
+    save_histo(h_dr_pt1);
+    save_histo(h_eta1_mass);
+
     // save_histo(h_jet_1_jet_1_dPhi);
     // save_histo(h_jet_1_jet_1_dR);
     // save_histo(h_jet_multiplicity);

@@ -69,6 +69,9 @@ auto main(int argc, char *argv[]) -> int
     ADD_VALUE_READER(pass_jet_ht_trigger, bool);
     ADD_VALUE_READER(pass_jet_pt_trigger, bool);
 
+    ADD_VALUE_READER(gen_weight, float);
+    ADD_VALUE_READER(Pileup_nTrueInt, float);
+
     ADD_ARRAY_READER(Muon_pt, float);
     ADD_ARRAY_READER(Muon_eta, float);
     ADD_ARRAY_READER(Muon_phi, float);
@@ -140,6 +143,11 @@ auto main(int argc, char *argv[]) -> int
     auto dijets = Dijets(fmt::format("{}/dijets_{}_{}.root", output_path, process, year), dijets_count_map);
     auto jet_corrections = JetCorrector(get_runyear(year), get_era_from_process_name(process, is_data), is_data);
 
+    auto pu_corrector =
+        correction::CorrectionSet::from_file(
+            "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2018_UL/puWeights.json.gz")
+            ->at("Collisions18_UltraLegacy_goldenJSON");
+
     const auto cutflow_file =
         std::unique_ptr<TFile>(TFile::Open(fmt::format("{}/cutflow_{}_{}.root", output_path, process, year).c_str()));
     const auto cutflow_histo = cutflow_file->Get<TH1F>("cutflow");
@@ -152,13 +160,21 @@ auto main(int argc, char *argv[]) -> int
     {
         (void)event; // remove the "unused variable" warning during compilation
 
+        // if (event > 1000000)
+        // {
+        //     break;
+        // }
+
         // get effective event weight
         auto weight = 1.f;
-        auto const_weights = 1.f;
+        auto pu_weight = 1.f;
 
         if (not(is_data))
         {
-            weight = const_weights * generator_filter / no_cuts / generator_filter * effective_x_section;
+            pu_weight = pu_corrector->evaluate({unwrap(Pileup_nTrueInt), "nominal"});
+
+            weight =
+                unwrap(gen_weight) * pu_weight * generator_filter / no_cuts / generator_filter * effective_x_section;
         }
 
         // trigger
@@ -170,8 +186,8 @@ auto main(int argc, char *argv[]) -> int
         // Jets
         // bool is_good_trigger = unwrap(pass_jet_ht_trigger) or unwrap(pass_jet_pt_trigger);
 
-        bool is_good_trigger = unwrap(pass_jet_ht_trigger);
-        // bool is_good_trigger = unwrap(pass_jet_pt_trigger);
+        // bool is_good_trigger = unwrap(pass_jet_ht_trigger);
+        bool is_good_trigger = unwrap(pass_jet_pt_trigger);
         if (not(is_good_trigger))
         {
             continue;
@@ -222,13 +238,16 @@ auto main(int argc, char *argv[]) -> int
                               gen_jets,                       //
                               year);
 
-        if (jets.size() >= 2)
+        // if (jets.size() >= 2)
+        if (jets.size() == 2)
         {
             auto jet_1 = jets.at(0);
             auto jet_2 = jets.at(1);
 
-            // wide mass range
-            dijets.fill(jet_1, jet_2, std::nullopt, weight);
+            if ((jet_1.pt() > 600.) and std::fabs(jet_1.eta() - jet_2.eta()) < 1.1)
+            {
+                dijets.fill(jet_1, jet_2, std::nullopt, weight);
+            }
         }
     }
 

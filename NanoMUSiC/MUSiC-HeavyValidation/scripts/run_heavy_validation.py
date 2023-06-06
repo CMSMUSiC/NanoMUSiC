@@ -94,7 +94,7 @@ def run_validation(
     executable: str,
     input_file: str,
 ) -> bool:
-    debug: bool = True
+    debug: bool = False
 
     # default is MC
     cmd_str: str = f"{executable} --process {process_name} --year {year} --output {output_path} --xsection {str(effective_x_section)} --input {input_file}"
@@ -370,6 +370,7 @@ def main():
                     unit="sample",
                 )
             )
+        exit(0)
 
     print("ERROR: Could not start validation with the provided argumenrs.")
     exit(-1)

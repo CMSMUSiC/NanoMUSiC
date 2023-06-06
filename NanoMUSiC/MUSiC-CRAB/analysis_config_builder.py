@@ -74,7 +74,7 @@ def main():
     for sample in xsection_list:
         xsection_list[sample]["crab_task_name"] = []
         for filename in directory_list:
-            if re.search(sample, filename):
+            if re.search(f"crab_nano_music_{sample}", filename):
                 xsection_list[sample]["crab_task_name"].append(filename)
 
     # remove unwanted entries
@@ -136,6 +136,7 @@ ScalefactorError = 0.026
 
     print(f"Output saved to: analysis_config.toml")
     print("[ Done ]")
+
 
 if __name__ == "__main__":
     main()
