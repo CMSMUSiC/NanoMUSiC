@@ -14,8 +14,6 @@ from pprint import pprint
 
 from sample_helpers import get_year_era
 
-# globals ....
-# I am sorry, me from the future ...
 years = ["2016APV", "2016", "2017", "2018"]
 
 
@@ -46,13 +44,13 @@ def parse_args():
     )
     parser.add_argument("-j", "--jobs", help="Pool size.", type=int, default=100)
     parser.add_argument(
-        "-e", "--executable", help="classification excutable.", default="classification"
+        "-e", "--executable", help="Classification excutable.", default="classification"
     )
     parser.add_argument("--debug", help="print debugging info", action="store_true")
 
     args = parser.parse_args()
 
-    # argments quality control
+    # quality control
     if (args.all_data and (args.sample or args.all_mc)) or (
         args.all_mc and (args.sample or args.all_data)
     ):
@@ -148,14 +146,18 @@ def classification(args):
 
     output_path: str = f"classification_outputs/{year}"
 
+    # print("[ MUSiC Classification ] Loading samples ...\n")
     effective_x_section: float = 1.0
     if not is_data:
         effective_x_section = xsection * filter_eff * k_factor * luminosity
 
+    # print("[ MUSiC Classification ] Preparing output directory ...\n")
     os.system(f"rm -rf classification_outputs/{year}/*_{process}_{year}.root")
 
+    # print("[ MUSiC Classification ] Merging cutflow histograms ...\n")
     merge_cutflow_histograms(process, year, output_path, input_files)
 
+    # print("[ MUSiC Classification ] Starting classification ...\n")
     inputs = dump_list_to_temp_file(input_files)
     run_classification(
         process,
@@ -177,6 +179,40 @@ def main():
 
     task_config_file: str = args.config
     task_config: dict[str, Any] = toml.load(task_config_file)
+
+    # single sample
+    if args.sample and args.year:
+        sample = args.sample
+        year = args.year
+        classification_arguments = {}
+        if f"das_name_{year}" in task_config[sample].keys():
+            classification_arguments = {
+                "process": sample,
+                "year": year,
+                "luminosity": task_config["Lumi"][year],
+                "is_data": task_config[sample]["is_data"],
+                "xsection": 1.0,
+                "filter_eff": 1.0,
+                "k_factor": 1.0,
+                "input_files": list(
+                    filter(
+                        lambda file: f"{year}_date" in file,
+                        task_config[sample]["output_files"],
+                    )
+                ),
+                "executable": args.executable,
+            }
+            if not (task_config[sample]["is_data"]):
+                classification_arguments["xsection"] = 1.0
+                classification_arguments["filter_eff"] = 1.0
+                classification_arguments["k_factor"] = 1.0
+
+        if not (os.path.isdir(f"classification_outputs/{year}")):
+            os.system(f"mkdir -p classification_outputs/{year}")
+
+        classification(classification_arguments)
+
+        exit(0)
 
     # data workflow
     if args.all_data:
@@ -221,7 +257,6 @@ def main():
 
         exit(0)
 
-    # MC workflow
     if args.all_mc:
         classification_arguments = []
         for sample in task_config:
@@ -264,7 +299,7 @@ def main():
 
         exit(0)
 
-    # MC and Data workflow
+    # data workflow
     if args.all:
         classification_arguments = {}
         for sample in task_config:
@@ -335,6 +370,10 @@ def main():
                     unit="sample",
                 )
             )
+        exit(0)
+
+    print("ERROR: Could not start classification with the provided argumenrs.")
+    exit(-1)
 
 
 if __name__ == "__main__":
