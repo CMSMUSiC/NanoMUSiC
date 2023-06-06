@@ -129,7 +129,7 @@ def run_validation(
     trigger: str,
     tvarg: str,
 ) -> bool:
-    debug: bool = True
+    debug: bool = False
 
     # default is MC
     cmd_str: str = f"{executable} --process {process_name} --year {year} --output {output_path} --xsection {str(effective_x_section)} --input {input_file} --trigger {trigger} --tovalidate {tvarg}"

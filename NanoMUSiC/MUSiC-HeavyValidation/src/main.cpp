@@ -25,10 +25,9 @@
 #include <unordered_set>
 
 // macro to update class map
-auto update_class_map(std::map<std::string, unsigned int> &classes, const std::string c_name, const float weight)
-    -> void
+auto update_class_map(std::map<std::string, float> &classes, const std::string c_name, const float weight) -> void
 {
-    std::map<std::string, unsigned int>::iterator it = classes.find(c_name);
+    std::map<std::string, float>::iterator it = classes.find(c_name);
     if (it != classes.end()) // if in map, update count
     {
         it->second += weight;
@@ -207,7 +206,7 @@ auto main(int argc, char *argv[]) -> int
     */
 
     // event classes map: {classname: counts}
-    std::map<std::string, unsigned int> classes;
+    std::map<std::string, float> classes;
 
     /*
     // build lepton analysis
@@ -282,6 +281,10 @@ auto main(int argc, char *argv[]) -> int
     // const auto total_generator_weight = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("GeneratorWeight") + 1);
     const auto no_cuts = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("NoCuts") + 1);
     const auto generator_filter = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("GeneratorFilter") + 1);
+    auto pu_corrector =
+        correction::CorrectionSet::from_file(
+            "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2018_UL/puWeights.json.gz")
+            ->at("Collisions18_UltraLegacy_goldenJSON");
 
     // fmt::print("\n[MUSiC Validation] Creating set of processed events ...\n");
     // MAP[run_number : SET[event_number]]
@@ -290,27 +293,29 @@ auto main(int argc, char *argv[]) -> int
     // file where the class counts are stored
     std::ofstream classfile;
 
-    std::cout << "Start event loop." << std::endl;
+    // std::cout << "Start event loop." << std::endl;
     //  launch event loop for Data or MC
     for (auto &&event : tree_reader)
     {
         (void)event; // remove the "unused variable" warning during compilation
 
-        ///* EVENT BREAK IF NECESSARY
+        /* EVENT BREAK IF NECESSARY
         if (event > 10000)
         {
             break;
         }
-        //*/
-        std::cout << "****************\nEvent No. " << event << std::endl;
+        */
+        // std::cout << "****************\nEvent No. " << event << std::endl;
 
         // get effective event weight
         auto weight = 1.f;
         auto const_weights = 1.f;
+        auto pu_weight = 1.f;
 
         if (not(is_data))
         {
-            weight = const_weights * unwrap(gen_weight) * generator_filter / no_cuts / generator_filter *
+            pu_weight = pu_corrector->evaluate({unwrap(Pileup_nTrueInt), "nominal"});
+            weight = const_weights * unwrap(gen_weight) * pu_weight * generator_filter / no_cuts / generator_filter *
                      effective_x_section;
         }
 
@@ -334,7 +339,7 @@ auto main(int argc, char *argv[]) -> int
         {
             continue; // skip if no trigger fired
         }
-        std::cout << "Passed trigger fire check." << std::endl;
+        // std::cout << "Passed trigger fire check." << std::endl;
 
         /*
         // muons
@@ -419,7 +424,15 @@ auto main(int argc, char *argv[]) -> int
         };
         auto met = get_met(met_pt);
 
-        std::cout << "Generated objects." << std::endl;
+        // std::cout << "Generated objects." << std::endl;
+
+        /* LEPTON VETO
+        if (not(nelectron == 0 and nmuon == 0))
+        {
+            continue; // veto any e,mu final states
+        }
+        // std::cout << "Passed e/mu veto." << std::endl;
+        */
 
         // CHECK TRIGGER THRESHOLDS
         if (trigger_flags.at(0))                     // PT trigger
@@ -455,73 +468,79 @@ auto main(int argc, char *argv[]) -> int
                 continue; // skip this event
             }
         }
-        std::cout << "Passed trigger threshold checks." << std::endl;
+        // std::cout << "Passed trigger threshold checks." << std::endl;
 
         // JET CLASS VALIDATION
-        if (nelectron == 0 and nmuon == 0) // veto any e,mu final states
+        std::set<std::string> eventclass =
+            {}; // set that includes all classes the current sample is a member of (for plotting)
+        // find all classes for the event
+        // event class inhabitation is counted in the map classes {classname: counts}
+        // all event classes for current event are stored in the set eventclass {classnames}
+        // std::cout << "Start event class loop." << std::endl;
+        for (int c_njet = (int)njet; c_njet >= 0; c_njet--)
         {
-            std::set<std::string> eventclass =
-                {}; // set that includes all classes the current sample is a member of (for plotting)
-            // find all classes for the event
-            // event class inhabitation is counted in the map classes {classname: counts}
-            // all event classes for current event are stored in the set eventclass {classnames}
-            for (unsigned int c_njet = njet; c_njet >= 0; c_njet--)
+            for (int c_nbjet = (int)nbjet; c_nbjet >= 0; c_nbjet--)
             {
-                for (unsigned int c_nbjet = nbjet; c_nbjet >= 0; c_nbjet--)
+                if ((c_njet == 0 and c_nbjet == 0) == false) // skip 0 jet class
                 {
-                    if ((c_njet == 0 and c_nbjet == 0) == false) // skip 0 jet class
+                    // std::cout << "Next loop iteration." << std::endl;
+                    if (c_njet == (int)njet and c_nbjet == (int)nbjet) // exclusive class
                     {
-                        if (c_njet == njet and c_nbjet == nbjet) // exclusive class
+                        // std::cout << "excl" << std::endl;
+                        std::string c_name = fmt::format("{}J+{}BJ", c_njet, c_nbjet);
+                        eventclass.insert(c_name); // log class name for this event (for plotting)
+                        if (countclasses)          // update class count map if classes should be counted
                         {
-                            std::string c_name = fmt::format("{}J+{}BJ", c_njet, c_nbjet);
-                            eventclass.insert(c_name); // log class name for this event (for plotting)
-                            if (countclasses)          // update class count map if classes should be counted
-                            {
-                                update_class_map(classes, c_name, weight);
-                            }
-                        }
-                        if (c_njet <= njet and c_nbjet == nbjet) // jet-inclusive (nJet) class
-                        {
-                            std::string c_name = fmt::format("{}J+{}BJ+nJ", c_njet, c_nbjet);
-                            eventclass.insert(c_name); // log class name for this event (for plotting)
-                            if (countclasses)          // update class count map if classes should be counted
-                            {
-                                update_class_map(classes, c_name, weight);
-                            }
-                        }
-                        if (c_njet <= njet and
-                            c_nbjet <= nbjet) // all-inclusive (+X) class, the jet-inclusive case is included here
-                        {
-                            std::string c_name = fmt::format("{}J+{}BJ+X", c_njet, c_nbjet);
-                            eventclass.insert(c_name); // log class name for this event (for plotting)
-                            if (countclasses)          // update class count map if classes should be counted
-                            {
-                                update_class_map(classes, c_name, weight);
-                            }
-                        }
-                        // note: inclusive classes can be X = 0 or nJet = 0, so the exclusive classes are
-                        // included in the inclusive classes
-                    }
-                }
-            }
-            // fill histograms for all event classes that should be validated and that the current event is
-            // a member of
-            if (plotclasses)
-            {
-                for (const auto &c_name : eventclass)
-                {
-                    for (const auto &c_name_toval : to_validate)
-                    {
-                        if (c_name == c_name_toval)
-                        {
-                            // fill the event in the class
-                            validation_classes[c_name]->fill(jets, bjets, nelectron, nmuon, met, weight);
+                            update_class_map(classes, c_name, weight);
                         }
                     }
+                    if (c_njet <= (int)njet and c_nbjet == (int)nbjet) // jet-inclusive (nJet) class
+                    {
+                        // std::cout << "jet-incl" << std::endl;
+                        std::string c_name = fmt::format("{}J+{}BJ+nJ", c_njet, c_nbjet);
+                        eventclass.insert(c_name); // log class name for this event (for plotting)
+                        if (countclasses)          // update class count map if classes should be counted
+                        {
+                            update_class_map(classes, c_name, weight);
+                        }
+                    }
+                    if (c_njet <= (int)njet and
+                        c_nbjet <= (int)nbjet) // all-inclusive (+X) class, the jet-inclusive case is included here
+                    {
+                        // std::cout << "all-incl" << std::endl;
+                        std::string c_name = fmt::format("{}J+{}BJ+X", c_njet, c_nbjet);
+                        eventclass.insert(c_name); // log class name for this event (for plotting)
+                        if (countclasses)          // update class count map if classes should be counted
+                        {
+                            update_class_map(classes, c_name, weight);
+                        }
+                    }
+                    // note: inclusive classes can be X = 0 or nJet = 0, so the exclusive classes are
+                    // included in the inclusive classes
                 }
             }
-            std::cout << "Finished event classification." << std::endl;
         }
+        // validate plotting with >= 2jet
+        if (njet + nbjet >= 2)
+        {
+        }
+        // fill histograms for all event classes that should be validated and that the current event is
+        // a member of
+        if (plotclasses)
+        {
+            for (const auto &c_name : eventclass)
+            {
+                for (const auto &c_name_toval : to_validate)
+                {
+                    if (c_name == c_name_toval)
+                    {
+                        // fill the event in the class
+                        validation_classes[c_name]->fill(jets, bjets, nelectron, nmuon, met, weight);
+                    }
+                }
+            }
+        }
+        // std::cout << "Finished event classification." << std::endl;
     }
 
     fmt::print("\n[MUSiC Validation] Saving outputs ({} - {} - {}) ...\n", output_path, process, year);
@@ -536,8 +555,12 @@ auto main(int argc, char *argv[]) -> int
     {
         classfile.open(fmt::format("{}/classes_{}_{}.toml", output_path, process, year).c_str());
         classfile << "[counts]\n";
-        for (const auto &[c_name, c_count] : classes)
+        for (auto &[c_name, c_count] : classes)
         {
+            if (c_count < 0) // if negative weights dominate, set count to 0
+            {
+                c_count = 0;
+            }
             classfile << "\"" << c_name << "\" = " << c_count << "\n";
         }
         classfile.close();

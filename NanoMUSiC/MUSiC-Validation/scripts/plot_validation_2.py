@@ -352,6 +352,8 @@ def plotter(
 ):
     mccounts, mcedges, mcerrors = {}, {}, {}
     datacounts, dataedges, dataerrors = {}, {}, {}
+    validation_edges = []
+    nbins = 0
     for year in years:
         # import mc histograms
         printdebug(f"Importing {len(mcsamples)} mc histograms for year {year}...")
@@ -435,7 +437,7 @@ def plotter(
             )  # dictionary: {category: color}
         else:
             notfoundflag = True
-            notfound.add(group)
+            notfound.add(category)
     if notfoundflag:
         raise RuntimeError(
             f"The mc categories {notfound} are not listed in the color dictionary."
