@@ -37,6 +37,11 @@ def parse_args():
         help='Starts validation for all MC samples. Incompatible with "--sample" and "--all-data".',
         action="store_true",
     )
+    parser.add_argument(
+        "--all",
+        help='Starts validation for all MC and Data samples. Incompatible with "--sample", "--all-data" and  "--all-mc".',
+        action="store_true",
+    )
     parser.add_argument("-j", "--jobs", help="Pool size.", type=int, default=100)
     parser.add_argument(
         "-e", "--executable", help="Validation excutable.", default="validation"
@@ -265,6 +270,78 @@ def main():
             )
 
         exit(0)
+
+    # data workflow
+    if args.all:
+        validation_arguments = {}
+        for sample in task_config:
+            if (
+                sample != "Lumi"
+                and sample != "Global"
+                and task_config[sample]["is_data"]
+            ):
+                year, era = get_year_era(sample)
+                if f"Data_{year}_{era}" in validation_arguments:
+                    validation_arguments[f"Data_{year}_{era}"]["input_files"].extend(
+                        task_config[sample]["output_files"]
+                    )
+                else:
+                    validation_arguments[f"Data_{year}_{era}"] = {
+                        "process": f"Data_{year}_{era}",
+                        "year": year,
+                        "luminosity": 1,
+                        "is_data": True,
+                        "xsection": 1,
+                        "filter_eff": 1,
+                        "k_factor": 1,
+                        "input_files": task_config[sample]["output_files"],
+                        "executable": args.executable,
+                    }
+
+                if not (os.path.isdir(f"validation_outputs/{year}")):
+                    os.system(f"mkdir -p validation_outputs/{year}")
+
+        validation_arguments_data = list(validation_arguments.values())
+
+        validation_arguments = []
+        for sample in task_config:
+            if (
+                sample != "Lumi"
+                and sample != "Global"
+                and not (task_config[sample]["is_data"])
+            ):
+                for year in years:
+                    if f"das_name_{year}" in task_config[sample].keys():
+                        validation_arguments.append(
+                            {
+                                "process": sample,
+                                "year": year,
+                                "luminosity": task_config["Lumi"][year],
+                                "is_data": task_config[sample]["is_data"],
+                                "xsection": task_config[sample]["XSec"],
+                                "filter_eff": task_config[sample]["FilterEff"],
+                                "k_factor": task_config[sample]["kFactor"],
+                                "input_files": list(
+                                    filter(
+                                        lambda file: f"{year}_date" in file,
+                                        task_config[sample]["output_files"],
+                                    )
+                                ),
+                                "executable": args.executable,
+                            }
+                        )
+                    if not (os.path.isdir(f"validation_outputs/{year}")):
+                        os.system(f"mkdir -p validation_outputs/{year}")
+
+        validation_arguments += validation_arguments_data
+        with Pool(min(args.jobs, len(validation_arguments))) as pool:
+            list(
+                tqdm(
+                    pool.imap_unordered(validation, validation_arguments),
+                    total=len(validation_arguments),
+                    unit="sample",
+                )
+            )
 
 
 if __name__ == "__main__":

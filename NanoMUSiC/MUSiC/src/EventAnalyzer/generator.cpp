@@ -2,7 +2,7 @@
 #include <optional>
 
 ////////////////////////////////////////////////////////////////////////////
-/// TODO: Filter events based on their Generator process. This is implemented in order to avoid overlap of
+/// Filter events based on their Generator process. This is implemented in order to avoid overlap of
 /// phase-space between MC samples. Should come after all constant weights are available.
 auto EventAnalyzer::generator_filter(Outputs &outputs,
                                      const std::optional<std::string> &generator_filter_key,

@@ -15,16 +15,17 @@
     TH1F HISTO = TH1F(#HISTO, #HISTO, N_BINS, LOWER_BOUND, UPPER_BOUND)
 
 // define a new histogram, with variable bin size
-inline auto rebin_histogram(TH1F &hist,
-                            const std::map<std::string, int> &countMap,
-                            bool is_Z_mass_validation = false,
-                            const std::string &distribution = "validation_plot") -> TH1F
+inline auto rebin_histogram(                             //
+    TH1F &hist,                                          //
+    const std::map<std::string, int> &countMap,          //
+    bool is_Z_mass_validation = false,                   //
+    const std::string &distribution = "validation_plot", //
+    double min = 0.,                                     //
+    double max = 13000.,                                 //
+    double fudge = 1.,                                   //
+    double min_bin_size = 10.                            //
+    ) -> TH1F
 {
-    double fudge = 1.;
-    double min_bin_size = 10.;
-    double min = 0.;
-    double max = 13000.; // CM Energy
-
     if (is_Z_mass_validation)
     {
         min = PDG::Z::Mass - 20.;
@@ -43,7 +44,17 @@ inline auto rebin_histogram(TH1F &hist,
 // countmap(nJet, nBJet)
 inline auto return_jet_countmap(int nJet, int nBJet)
 {
-    std::map<std::string, int> countmap = {{"Ele", 0}, {"EleEE", 0}, {"EleEB", 0}, {"Muon", 0}, {"Gamma", 0}, {"GammaEB", 0}, {"GammaEE", 0}, {"Tau", 0}, {"Jet", nJet}, {"bJet", nBJet}, {"MET", 0}};
+    std::map<std::string, int> countmap = {{"Ele", 0},
+                                           {"EleEE", 0},
+                                           {"EleEB", 0},
+                                           {"Muon", 0},
+                                           {"Gamma", 0},
+                                           {"GammaEB", 0},
+                                           {"GammaEE", 0},
+                                           {"Tau", 0},
+                                           {"Jet", nJet},
+                                           {"bJet", nBJet},
+                                           {"MET", 0}};
     return countmap;
 }
 

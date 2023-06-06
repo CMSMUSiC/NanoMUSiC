@@ -1,5 +1,5 @@
-#ifndef TEventClass_hh
-#define TEventClass_hh
+#ifndef TEventClass_h
+#define TEventClass_h
 /*
 
 TEventClass Class:
@@ -40,17 +40,26 @@ class TEventClass : public TNamed
     };
 
     // default constructor needed for ROOT
-    TEventClass(){};
-    TEventClass(const std::string &EventType, const std::string &EventClassType, const std::string runhash,
-                bool const data, double const cme, std::map<std::string, int> countmap, const bool analyzedBjets,
-                std::map<std::string, std::vector<double>> distTypeBins, const bool analyzedCharge, const int numCharge,
+    TEventClass();
+    TEventClass(const std::string &EventType,
+                const std::string &EventClassType,
+                const std::string runhash,
+                bool const data,
+                double const cme,
+                std::map<std::string, int> countmap,
+                const bool analyzedBjets,
+                std::map<std::string, std::vector<double>> distTypeBins,
+                const bool analyzedCharge,
+                const int numCharge,
                 const bool isInclusive,
                 // Minimum value for each distType from event topology [distType][minValue]
-                std::map<std::string, double> distTypMins, unsigned int m_numPDFvariations,
+                std::map<std::string, double> distTypMins,
+                unsigned int m_numPDFvariations,
                 // Minimum value for each distType from config files [distType][minValue]
                 std::map<std::string, double> distTypeMinsRequire,
                 // list of ystematics names that will be filled
-                double lumi, std::set<std::string> systNames = std::set<std::string>(),
+                double lumi,
+                std::set<std::string> systNames = std::set<std::string>(),
                 std::map<std::string, std::string> ECItemShortlist = std::map<std::string, std::string>(),
                 double const bin_size_min = 10.0);
     // Copy Constructor
@@ -67,13 +76,16 @@ class TEventClass : public TNamed
     void InitializeResolutions(std::string const &process);
 
     // Fill the actual histograms.
-    void Fill(std::string const &process, std::map<std::string, double> values,
-              std::map<std::string, std::pair<double, double>> resolution_value, double weight = 1.,
+    void Fill(std::string const &process,
+              std::map<std::string, double> values,
+              std::map<std::string, std::pair<double, double>> resolution_value,
+              double weight = 1.,
               std::map<std::string, double> systWeights = std::map<std::string, double>(),
               std::vector<float> const &PDFweights = std::vector<float>());
 
     // Fill function for differential systematics
-    void FillDifferentialSystematic(std::string const &process, std::map<std::string, double> values,
+    void FillDifferentialSystematic(std::string const &process,
+                                    std::map<std::string, double> values,
                                     double const weight,
                                     std::vector<float> const &PDFweights, // just used to initialize class if necessary
                                     std::string systName);
@@ -197,7 +209,9 @@ class TEventClass : public TNamed
     TH1F *getSystHistoPointer(const std::string &process, const std::string distType, const std::string systName);
     TH2F *getResolutionsHistoPointer(std::string const &process, std::string distType);
 
-    void addHisto(const std::string &process, std::string distType, TH1F *histo,
+    void addHisto(const std::string &process,
+                  std::string distType,
+                  TH1F *histo,
                   std::map<std::string, std::map<std::string, TH1F *>> &histoMap)
     {
         histoMap[process].emplace(distType, histo);
@@ -336,7 +350,9 @@ class TEventClass : public TNamed
     static std::string calculateEventClass(
         const std::map<std::string, int> countmap,
         const std::map<std::string, int> shortmap = std::map<std::string, int>(),
-        std::function<bool(std::string, std::string)> orderFunction = [](std::string a, std::string b) {
+        std::function<bool(std::string, std::string)> orderFunction =
+            [](std::string a, std::string b)
+        {
             return (a <= b);
         });
 
@@ -470,8 +486,14 @@ class TEventClass : public TNamed
     }
 
     // Add the results for a (pseudo experiment) MUSiC scan
-    void addScanResult(std::string distribution, double nData, double nMC, double totalUncert, double lowerEdge,
-                       double width, double compareScore, bool pseudoScan,
+    void addScanResult(std::string distribution,
+                       double nData,
+                       double nMC,
+                       double totalUncert,
+                       double lowerEdge,
+                       double width,
+                       double compareScore,
+                       bool pseudoScan,
                        const std::vector<double> &dicedData = std::vector<double>())
     {
 
@@ -763,7 +785,9 @@ class TEventClass : public TNamed
     // safety so hists are not saled twice
     bool m_scaledToXSec;
     // Generic implementations of getHistoPointer for different map types
-    TH1F *getHistoPointer(const std::string &process, const std::string distType, const std::string histname,
+    TH1F *getHistoPointer(const std::string &process,
+                          const std::string distType,
+                          const std::string histname,
                           std::map<std::string, std::map<std::string, std::map<std::string, TH1F *>>> &procMap)
     {
         if (procMap.find(process) == procMap.end())
@@ -775,7 +799,8 @@ class TEventClass : public TNamed
         return procMap[process][distType][histname];
     }
 
-    TH1F *getHistoPointer(const std::string &process, const std::string distType,
+    TH1F *getHistoPointer(const std::string &process,
+                          const std::string distType,
                           std::map<std::string, std::map<std::string, TH1F *>> &procMap)
     {
         if (procMap.find(process) == procMap.end())
@@ -892,4 +917,4 @@ class TEventClass : public TNamed
     ClassDef(TEventClass, 10);
 };
 
-#endif // EventClassBase_hh
+#endif // TEventClass_h

@@ -1,3 +1,5 @@
+#include "Validation.hpp"
+
 #include "Configs.hpp"
 #include "Math/Vector4Dfwd.h"
 #include "Outputs.hpp"
@@ -6,36 +8,35 @@
 #include "TH1.h"
 #include "TTreeReader.h"
 #include "TTreeReaderValue.h"
-#include "Validation.hpp"
 #include "fmt/core.h"
+#include <array>
 #include <cstdlib>
 #include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <map>
 #include <memory>
 #include <optional>
+#include <set>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
-#include <iostream>
-#include <fstream>
-#include <map>
-#include <set>
-#include <array>
 
 // macro to update class map
-auto update_class_map(std::map<std::string, unsigned int> classes, const std::string c_name) -> std::map<std::string, unsigned int>
+auto update_class_map(std::map<std::string, unsigned int> &classes, const std::string c_name, const float weight)
+    -> void
 {
     // new version
-    std::map<std::string, unsigned int>::iterator it = classes.find(c_name); 
+    std::map<std::string, unsigned int>::iterator it = classes.find(c_name);
     if (it != classes.end())
     {
-        it->second += 1;
+        it->second += weight;
     }
     else
     {
-        classes.insert({c_name, 1});
+        classes.insert({c_name, weight});
     }
-   return classes;
 }
 
 // main function
@@ -68,13 +69,19 @@ auto main(int argc, char *argv[]) -> int
         fmt::print("          -o|--output: Output path.\n");
         fmt::print("          -x|--xsection: Effective cross-section (xsection * lumi).\n");
         fmt::print("          -i|--input: Path to a txt withg input files (one per line).\n");
-        fmt::print("          -m|--mode: Validation mode ('Jet'/'J' [Old jet validation] or 'JetClass'/'JC' [New Jet classification validation] or 'Lepton'/'L' [Legacy lepton validation]).\n");
+        fmt::print(
+            "          -m|--mode: Validation mode ('Jet'/'J' [Old jet validation] or 'JetClass'/'JC' [New Jet "
+            "classification validation] or 'Lepton'/'L' [Legacy lepton validation]).\n");
         fmt::print("         -pt|--minpt: In 'Jet' mode: Minimum pt for jets to validate.\n");
-        fmt::print("         -tv|--tovalidate: In 'JetClass' mode: Names of the classes that should be plotted. Seperate Classnames by comma without spaces. Class name format is 'xJ+yBJ'/'xJ+yBJ+nJ'/'xJ+yBJ+X' for exclusive/jet-inclusive/all-inclusive class. Use class name 'COUNTS' to also create class inhabitation file (event counts per class).\n");
+        fmt::print(
+            "         -tv|--tovalidate: In 'JetClass' mode: Names of the classes that should be plotted. Seperate "
+            "Classnames by comma without spaces. Class name format is 'xJ+yBJ'/'xJ+yBJ+nJ'/'xJ+yBJ+X' for "
+            "exclusive/jet-inclusive/all-inclusive class. Use class name 'COUNTS' to also create class inhabitation "
+            "file (event counts per class).\n");
 
         exit(-1);
     }
-    if(mode != "J" and mode != "Jet" and mode != "JC" and mode != "JetClass" and mode != "L" and mode != "Lepton")
+    if (mode != "J" and mode != "Jet" and mode != "JC" and mode != "JetClass" and mode != "L" and mode != "Lepton")
     {
         throw std::runtime_error("Valid arguments for -m/--mode are only J,JC,L (Jet, JetClass, Lepton).");
     }
@@ -84,7 +91,8 @@ auto main(int argc, char *argv[]) -> int
     }
     if (tv_argument == "" and (mode == "JC" or mode == "JetClass"))
     {
-        throw std::runtime_error("In jet classification mode, the classes to plot have to be specified (with '-tv'/'--tovalidate').");
+        throw std::runtime_error(
+            "In jet classification mode, the classes to plot have to be specified (with '-tv'/'--tovalidate').");
     }
     const double effective_x_section = std::stod(effective_x_section_str);
 
@@ -117,10 +125,10 @@ auto main(int argc, char *argv[]) -> int
     ADD_ARRAY_READER(Electron_eta, float);
     ADD_ARRAY_READER(Electron_phi, float);
 
-    //ADD_VALUE_READER(nPhoton, unsigned int);
-    //ADD_ARRAY_READER(Photon_pt, float);
-    //ADD_ARRAY_READER(Photon_eta, float);
-    //ADD_ARRAY_READER(Photon_phi, float);
+    // ADD_VALUE_READER(nPhoton, unsigned int);
+    // ADD_ARRAY_READER(Photon_pt, float);
+    // ADD_ARRAY_READER(Photon_eta, float);
+    // ADD_ARRAY_READER(Photon_phi, float);
 
     ADD_VALUE_READER(nBJet, unsigned int);
     ADD_ARRAY_READER(BJet_pt, float);
@@ -160,32 +168,67 @@ auto main(int argc, char *argv[]) -> int
                                                                  {"Jet", 0},
                                                                  {"bJet", 0},
                                                                  {"MET", 0}};
-    const std::map<int, std::map<std::string, int>> jet_count_map =
-        {
-            {0, {{"Ele", 0}, {"EleEE", 0}, {"EleEB", 0}, {"Muon", 0}, {"Gamma", 0}, {"GammaEB", 0}, {"GammaEE", 0}, {"Tau", 0}, {"Jet", 0}, {"bJet", 0}, {"MET", 0}}},
-            {1, {{"Ele", 0}, {"EleEE", 0}, {"EleEB", 0}, {"Muon", 0}, {"Gamma", 0}, {"GammaEB", 0}, {"GammaEE", 0}, {"Tau", 0}, {"Jet", 1}, {"bJet", 0}, {"MET", 0}}},
-            {2, {{"Ele", 0}, {"EleEE", 0}, {"EleEB", 0}, {"Muon", 0}, {"Gamma", 0}, {"GammaEB", 0}, {"GammaEE", 0}, {"Tau", 0}, {"Jet", 2}, {"bJet", 0}, {"MET", 0}}}
-        };
+    const std::map<int, std::map<std::string, int>> jet_count_map = {{0,
+                                                                      {{"Ele", 0},
+                                                                       {"EleEE", 0},
+                                                                       {"EleEB", 0},
+                                                                       {"Muon", 0},
+                                                                       {"Gamma", 0},
+                                                                       {"GammaEB", 0},
+                                                                       {"GammaEE", 0},
+                                                                       {"Tau", 0},
+                                                                       {"Jet", 0},
+                                                                       {"bJet", 0},
+                                                                       {"MET", 0}}},
+                                                                     {1,
+                                                                      {{"Ele", 0},
+                                                                       {"EleEE", 0},
+                                                                       {"EleEB", 0},
+                                                                       {"Muon", 0},
+                                                                       {"Gamma", 0},
+                                                                       {"GammaEB", 0},
+                                                                       {"GammaEE", 0},
+                                                                       {"Tau", 0},
+                                                                       {"Jet", 1},
+                                                                       {"bJet", 0},
+                                                                       {"MET", 0}}},
+                                                                     {2,
+                                                                      {{"Ele", 0},
+                                                                       {"EleEE", 0},
+                                                                       {"EleEB", 0},
+                                                                       {"Muon", 0},
+                                                                       {"Gamma", 0},
+                                                                       {"GammaEB", 0},
+                                                                       {"GammaEE", 0},
+                                                                       {"Tau", 0},
+                                                                       {"Jet", 2},
+                                                                       {"bJet", 0},
+                                                                       {"MET", 0}}}};
 
     // event classes map: {classname: counts}
-    std::map<std::string, unsigned int> classes; 
+    std::map<std::string, unsigned int> classes;
 
     ///////////////////////////////// create instances /////////////////////////////////
-    auto z_to_mu_mu_x = ZToLepLepX(fmt::format("{}/z_to_mu_mu_x_{}_{}.root", output_path, process, year), z_to_mu_mu_x_count_map);
+    auto z_to_mu_mu_x =
+        ZToLepLepX(fmt::format("{}/z_to_mu_mu_x_{}_{}.root", output_path, process, year), z_to_mu_mu_x_count_map);
 
-    auto z_to_ele_ele_x = ZToLepLepX(fmt::format("{}/z_to_ele_ele_x_{}_{}.root", output_path, process, year), z_to_ele_ele_x_count_map);
+    auto z_to_ele_ele_x =
+        ZToLepLepX(fmt::format("{}/z_to_ele_ele_x_{}_{}.root", output_path, process, year), z_to_ele_ele_x_count_map);
 
-    auto z_to_mu_mu_x_Z_mass = ZToLepLepX(fmt::format("{}/z_to_mu_mu_x_Z_mass_{}_{}.root", output_path, process, year), z_to_mu_mu_x_count_map, true);
+    auto z_to_mu_mu_x_Z_mass = ZToLepLepX(
+        fmt::format("{}/z_to_mu_mu_x_Z_mass_{}_{}.root", output_path, process, year), z_to_mu_mu_x_count_map, true);
 
-    auto z_to_ele_ele_x_Z_mass = ZToLepLepX(fmt::format("{}/z_to_ele_ele_x_Z_mass_{}_{}.root", output_path, process, year), z_to_ele_ele_x_count_map, true);
-    
+    auto z_to_ele_ele_x_Z_mass = ZToLepLepX(
+        fmt::format("{}/z_to_ele_ele_x_Z_mass_{}_{}.root", output_path, process, year), z_to_ele_ele_x_count_map, true);
+
     auto jet_val = JetVal(fmt::format("{}/jet_val_{}_{}.root", output_path, process, year), jet_count_map);
-    
+
     // jet classification instances: saved in a map {classname: pointer to jet class validation instance}
-    std::map<std::string, JetClass*> validation_classes;
+    std::map<std::string, JetClass *> validation_classes;
 
     /////////////// CHOOSE CLASSES TO VALIDATE ///////////////
-    // format: "xJ+yBJ"/"xJ+yBJ+X"/"xJ+yBJ+nJ" for exclusive/all-inclusive/jet-inclusive class containing x jets and y bjets
+    // format: "xJ+yBJ"/"xJ+yBJ+X"/"xJ+yBJ+nJ" for exclusive/all-inclusive/jet-inclusive class containing x jets and y
+    // bjets
     std::set<std::string> to_validate;
     // is currently extracted from the -tv argument:
     // -tv argument string: "classname1,classname2..." has to be separated
@@ -203,27 +246,28 @@ auto main(int argc, char *argv[]) -> int
             startIndex = endIndex + 1;
         }
     }
-    bool plotclasses = false; // at least one class validation should be executed
-    bool countclasses = false; // the class counts should be calculated
-    if(to_validate.find("COUNTS") != to_validate.end()) // check whether class counts should be calculated
+    bool plotclasses = false;                            // at least one class validation should be executed
+    bool countclasses = false;                           // the class counts should be calculated
+    if (to_validate.find("COUNTS") != to_validate.end()) // check whether class counts should be calculated
     {
         countclasses = true;
         to_validate.erase("COUNTS"); // erase element because it is not a class name
     }
-    if(to_validate.size() >= 1) // check whether a class validation should be executed
+    if (to_validate.size() >= 1)     // check whether a class validation should be executed
     {
         plotclasses = true;
     }
-    // ot the classes to validate can be hardcoded:
+    // or the classes to validate can be hardcoded:
     // to_validate = {"1J+0BJ", "2J+0BJ"};
     //////////////////////////////////////////////////////////
 
     // create the classification instances
-    if(plotclasses) // only if classes should be plotted
+    if (plotclasses) // only if classes should be plotted
     {
-        for(const auto &c_name : to_validate)
+        for (const auto &c_name : to_validate)
         {
-            validation_classes.insert(std::make_pair(c_name, new JetClass(fmt::format("{}/{}_{}_{}.root", output_path, c_name, process, year), c_name)));
+            validation_classes.insert(std::make_pair(
+                c_name, new JetClass(fmt::format("{}/{}_{}_{}.root", output_path, c_name, process, year), c_name)));
             // file format: classname_process/sample_year.root
         }
     }
@@ -245,7 +289,7 @@ auto main(int argc, char *argv[]) -> int
 
     // launch event loop for Data or MC
     // const auto total_number_of_events = tree_reader.GetEntries();
-    if(tree_reader.GetEntries(true) >= 1) // check that tree is not empty
+    if (tree_reader.GetEntries(true) >= 1) // check that tree is not empty
     {
         ///////////////////////////////// process all events in a loop /////////////////////////////////
         for (auto &&event : tree_reader)
@@ -281,8 +325,9 @@ auto main(int argc, char *argv[]) -> int
                 auto weight = 1.f;
                 if (not(is_data))
                 {
-                    weight = Outputs::get_event_weight(unwrap(weights_nominal), unwrap(weights_up), unwrap(weights_down)) *
-                            generator_filter / no_cuts / generator_filter * effective_x_section;
+                    weight =
+                        Outputs::get_event_weight(unwrap(weights_nominal), unwrap(weights_up), unwrap(weights_down)) *
+                        generator_filter / no_cuts / generator_filter * effective_x_section;
 
                     // fmt::print("------------------\n");
                     // fmt::print(
@@ -299,10 +344,10 @@ auto main(int argc, char *argv[]) -> int
                 // reorder objects
                 // muons
                 const auto muon_reordering_mask = VecOps::Argsort(unwrap(Muon_pt),
-                                                                [](double x, double y) -> bool
-                                                                {
-                                                                    return x > y;
-                                                                });
+                                                                  [](double x, double y) -> bool
+                                                                  {
+                                                                      return x > y;
+                                                                  });
 
                 const auto muon_pt = VecOps::Take(unwrap(Muon_pt), muon_reordering_mask);
                 const auto muon_eta = VecOps::Take(unwrap(Muon_eta), muon_reordering_mask);
@@ -311,10 +356,10 @@ auto main(int argc, char *argv[]) -> int
 
                 // electrons
                 const auto electron_reordering_mask = VecOps::Argsort(unwrap(Electron_pt),
-                                                                    [](double x, double y) -> bool
-                                                                    {
-                                                                        return x > y;
-                                                                    });
+                                                                      [](double x, double y) -> bool
+                                                                      {
+                                                                          return x > y;
+                                                                      });
                 const auto electron_pt = VecOps::Take(unwrap(Electron_pt), electron_reordering_mask);
                 const auto electron_eta = VecOps::Take(unwrap(Electron_eta), electron_reordering_mask);
                 const auto electron_phi = VecOps::Take(unwrap(Electron_phi), electron_reordering_mask);
@@ -332,10 +377,10 @@ auto main(int argc, char *argv[]) -> int
 
                 // bjets
                 const auto bjet_reordering_mask = VecOps::Argsort(unwrap(BJet_pt),
-                                                                [](double x, double y) -> bool
-                                                                {
-                                                                    return x > y;
-                                                                });
+                                                                  [](double x, double y) -> bool
+                                                                  {
+                                                                      return x > y;
+                                                                  });
                 const auto bjet_pt = VecOps::Take(unwrap(BJet_pt), bjet_reordering_mask);
                 const auto bjet_eta = VecOps::Take(unwrap(BJet_eta), bjet_reordering_mask);
                 const auto bjet_phi = VecOps::Take(unwrap(BJet_phi), bjet_reordering_mask);
@@ -343,10 +388,10 @@ auto main(int argc, char *argv[]) -> int
 
                 // jets
                 const auto jet_reordering_mask = VecOps::Argsort(unwrap(Jet_pt),
-                                                                [](double x, double y) -> bool
-                                                                {
-                                                                    return x > y;
-                                                                });
+                                                                 [](double x, double y) -> bool
+                                                                 {
+                                                                     return x > y;
+                                                                 });
                 const auto jet_pt = VecOps::Take(unwrap(Jet_pt), jet_reordering_mask);
                 const auto jet_eta = VecOps::Take(unwrap(Jet_eta), jet_reordering_mask);
                 const auto jet_phi = VecOps::Take(unwrap(Jet_phi), jet_reordering_mask);
@@ -355,8 +400,8 @@ auto main(int argc, char *argv[]) -> int
                 // MET
                 auto met_pt = unwrap(MET_pt);
                 auto get_leading = [](RVec<float> pt,
-                                    RVec<float> eta,
-                                    RVec<float> phi) -> std::pair<unsigned int, std::optional<Math::PtEtaPhiMVector>>
+                                      RVec<float> eta,
+                                      RVec<float> phi) -> std::pair<unsigned int, std::optional<Math::PtEtaPhiMVector>>
                 {
                     if (pt.size() == 0)
                     {
@@ -378,8 +423,9 @@ auto main(int argc, char *argv[]) -> int
                 int njet = (int)nJet;
                 int nbjet = (int)nBJet;
 
-                ///////////////////////////////// calculate and fill histograms of validation files /////////////////////////////////
-                if(mode == "Lepton" or mode == "L") // fill lepton validation files (legacy code)
+                ///////////////////////////////// calculate and fill histograms of validation files
+                ////////////////////////////////////
+                if (mode == "Lepton" or mode == "L") // fill lepton validation files (legacy code)
                 {
                     // ---- MuMu + X
                     if (muon_pt.size() >= 2)
@@ -391,7 +437,8 @@ auto main(int argc, char *argv[]) -> int
                         z_to_mu_mu_x.fill(muon_1, muon_2, nBJet, bjet, nJet, jet, met, weight);
 
                         // Z mass range
-                        if ((muon_1 + muon_2).mass() > PDG::Z::Mass - 20. and (muon_1 + muon_2).mass() < PDG::Z::Mass + 20.)
+                        if ((muon_1 + muon_2).mass() > PDG::Z::Mass - 20. and
+                            (muon_1 + muon_2).mass() < PDG::Z::Mass + 20.)
                         {
                             z_to_mu_mu_x_Z_mass.fill(muon_1, muon_2, nBJet, bjet, nJet, jet, met, weight);
                         }
@@ -400,10 +447,10 @@ auto main(int argc, char *argv[]) -> int
                     // ---- EleEle + X
                     if (electron_pt.size() >= 2)
                     {
-                        auto electron_1 =
-                            Math::PtEtaPhiMVector(electron_pt[0], electron_eta[0], electron_phi[0], PDG::Electron::Mass);
-                        auto electron_2 =
-                            Math::PtEtaPhiMVector(electron_pt[1], electron_eta[1], electron_phi[1], PDG::Electron::Mass);
+                        auto electron_1 = Math::PtEtaPhiMVector(
+                            electron_pt[0], electron_eta[0], electron_phi[0], PDG::Electron::Mass);
+                        auto electron_2 = Math::PtEtaPhiMVector(
+                            electron_pt[1], electron_eta[1], electron_phi[1], PDG::Electron::Mass);
 
                         // wide mass range
                         z_to_ele_ele_x.fill(electron_1, electron_2, nBJet, bjet, nJet, jet, met, weight);
@@ -417,11 +464,12 @@ auto main(int argc, char *argv[]) -> int
                     }
                 }
                 // /*
-                else if(mode == "JetClass" or mode == "JC") // fill jet classification validation files
+                else if (mode == "JetClass" or mode == "JC") // fill jet classification validation files
                 {
-                    if(nelectrons == 0 and nmuons == 0) // veto any e,mu final states
+                    if (nelectrons == 0 and nmuons == 0)     // veto any e,mu final states
                     {
-                        std::set<std::string> eventclass = {}; // set that includes all classes the current sample is a member of (for plotting)
+                        std::set<std::string> eventclass =
+                            {}; // set that includes all classes the current sample is a member of (for plotting)
                         // find all classes for the event
                         // event class inhabitation is counted in the map classes {classname: counts}
                         // all event classes for current event are stored in the set eventclass {classnames}
@@ -431,58 +479,80 @@ auto main(int argc, char *argv[]) -> int
                             {
                                 if ((c_njet == 0 and c_nbjet == 0) == false) // skip 0 jet class
                                 {
-                                    if(c_njet == njet and c_nbjet == nbjet) // exclusive class
+                                    if (c_njet == njet and c_nbjet == nbjet) // exclusive class
                                     {
                                         std::string c_name = fmt::format("{}J+{}BJ", c_njet, c_nbjet);
                                         eventclass.insert(c_name); // log class name for this event (for plotting)
-                                        if(countclasses) // update class count map if classes should be counted
+                                        if (countclasses) // update class count map if classes should be counted
                                         {
-                                            classes = update_class_map(classes, c_name);
+                                            update_class_map(classes, c_name, weight);
                                         }
                                     }
-                                    if(c_njet <= njet and c_nbjet == nbjet) // jet-inclusive (nJet) class
+                                    if (c_njet <= njet and c_nbjet == nbjet) // jet-inclusive (nJet) class
                                     {
                                         std::string c_name = fmt::format("{}J+{}BJ+nJ", c_njet, c_nbjet);
                                         eventclass.insert(c_name); // log class name for this event (for plotting)
-                                        if(countclasses) // update class count map if classes should be counted
+                                        if (countclasses) // update class count map if classes should be counted
                                         {
-                                            classes = update_class_map(classes, c_name);
+                                            update_class_map(classes, c_name, weight);
                                         }
                                     }
-                                    if(c_njet <= njet and c_nbjet <= nbjet) // all-inclusive (+X) class, the jet-inclusive case is included here
+                                    if (c_njet <= njet and
+                                        c_nbjet <=
+                                            nbjet) // all-inclusive (+X) class, the jet-inclusive case is included here
                                     {
                                         std::string c_name = fmt::format("{}J+{}BJ+X", c_njet, c_nbjet);
                                         eventclass.insert(c_name); // log class name for this event (for plotting)
-                                        if(countclasses) // update class count map if classes should be counted
+                                        if (countclasses) // update class count map if classes should be counted
                                         {
-                                            classes = update_class_map(classes, c_name);
+                                            update_class_map(classes, c_name, weight);
                                         }
                                     }
-                                    // note: inclusive classes can be X = 0 or nJet = 0, so the exclusive classes are included in the inclusive classes
+                                    // note: inclusive classes can be X = 0 or nJet = 0, so the exclusive classes are
+                                    // included in the inclusive classes
                                 }
                             }
                         }
                         // validation for nJet/nBJet, probably not necessary
-                        if(jet_pt.size() < nJet)
+                        if (jet_pt.size() < nJet)
                         {
-                            throw std::runtime_error(fmt::format("ERROR: Jet vector (size {}) set can not be smaller as nJet (value {}).",jet_pt.size(),nJet).c_str());
+                            throw std::runtime_error(
+                                fmt::format("ERROR: Jet vector (size {}) set can not be smaller as nJet (value {}).",
+                                            jet_pt.size(),
+                                            nJet)
+                                    .c_str());
                         }
-                        if(bjet_pt.size() < nBJet)
+                        if (bjet_pt.size() < nBJet)
                         {
-                            throw std::runtime_error(fmt::format("ERROR: Bjet vector (size {}) set can not be smaller as nBJet (value {}).",bjet_pt.size(),nBJet).c_str());
+                            throw std::runtime_error(
+                                fmt::format("ERROR: Bjet vector (size {}) set can not be smaller as nBJet (value {}).",
+                                            bjet_pt.size(),
+                                            nBJet)
+                                    .c_str());
                         }
-                        // fill histograms for all event classes that should be validated and that the current event is a member of
-                        if(plotclasses)
+                        // fill histograms for all event classes that should be validated and that the current event is
+                        // a member of
+                        if (plotclasses)
                         {
-                            for(const auto &c_name : eventclass)
+                            for (const auto &c_name : eventclass)
                             {
-                                for(const auto &c_name_toval : to_validate)
+                                for (const auto &c_name_toval : to_validate)
                                 {
-                                    if(c_name == c_name_toval)
+                                    if (c_name == c_name_toval)
                                     {
                                         // fill the event in the class
-                                        validation_classes[c_name]->fill(jet_pt, jet_eta, jet_phi, jet_mass, bjet_pt, bjet_eta, bjet_phi, bjet_mass,
-                                                                            nelectrons, nmuons, met, weight);
+                                        validation_classes[c_name]->fill(jet_pt,
+                                                                         jet_eta,
+                                                                         jet_phi,
+                                                                         jet_mass,
+                                                                         bjet_pt,
+                                                                         bjet_eta,
+                                                                         bjet_phi,
+                                                                         bjet_mass,
+                                                                         nelectrons,
+                                                                         nmuons,
+                                                                         met,
+                                                                         weight);
                                     }
                                 }
                             }
@@ -491,12 +561,13 @@ auto main(int argc, char *argv[]) -> int
                 }
                 //*/
 
-                // /* BEFORE CLASS VALIDATION, simple other 
-                else if(mode == "Jet" or mode == "J") // fill jet validation files
+                // /* BEFORE CLASS VALIDATION, simple other
+                else if (mode == "Jet" or mode == "J")   // fill jet validation files
                 {
-                    if(nelectrons == 0 and nmuons == 0) // veto any e,mu final states
+                    if (nelectrons == 0 and nmuons == 0) // veto any e,mu final states
                     {
-                        const float min_pt = std::stof(minpt_argument); // minimum pt [GeV] for jets to be included in validation
+                        const float min_pt =
+                            std::stof(minpt_argument); // minimum pt [GeV] for jets to be included in validation
                         // ---- 0Jet + X
                         // fill0(nBJet, nJet, nElectron, nMuon, met, weight)
                         jet_val.fill0(nBJet, nJet, nelectrons, nmuons, met, weight);
@@ -506,7 +577,7 @@ auto main(int argc, char *argv[]) -> int
                         {
                             // create 4-vectors for the leading jet
                             auto jet_1 = Math::PtEtaPhiMVector(jet_pt[0], jet_eta[0], jet_phi[0], jet_mass[0]);
-                            if(jet_1.pt() >= min_pt)
+                            if (jet_1.pt() >= min_pt)
                             {
                                 jet_val.fill1(jet_1, nelectrons, nmuons, met, weight);
                             }
@@ -519,12 +590,13 @@ auto main(int argc, char *argv[]) -> int
                             auto jet_1 = Math::PtEtaPhiMVector(jet_pt[0], jet_eta[0], jet_phi[0], jet_mass[0]);
                             auto jet_2 = Math::PtEtaPhiMVector(jet_pt[1], jet_eta[1], jet_phi[1], jet_mass[1]);
 
-                            if(jet_1.pt() >= min_pt and jet_2.pt() >= min_pt)
+                            if (jet_1.pt() >= min_pt and jet_2.pt() >= min_pt)
                             {
                                 // wide mass range
                                 jet_val.fill2(jet_1, jet_2, nelectrons, nmuons, met, weight);
                                 // Z mass range
-                                if ((jet_1 + jet_2).mass() > PDG::Z::Mass - 20. and (jet_1 + jet_2).mass() < PDG::Z::Mass + 20.)
+                                if ((jet_1 + jet_2).mass() > PDG::Z::Mass - 20. and
+                                    (jet_1 + jet_2).mass() < PDG::Z::Mass + 20.)
                                 {
                                     jet_val.fill2z(jet_1, jet_2, weight);
                                 }
@@ -552,39 +624,40 @@ auto main(int argc, char *argv[]) -> int
     }
 
     //////////////////// SAVE OUTPUTS ////////////////////
-    // remove the files that were not filled but created since the constructor of all validation classes were called, not nice but easy fix :D
+    // remove the files that were not filled but created since the constructor of all validation classes were called,
+    // not nice but easy fix :D
     fmt::print("\n[MUSiC Validation] Saving outputs ({} - {} - {}) ...\n", output_path, process, year);
-    if(mode == "Lepton" or mode == "L")
+    if (mode == "Lepton" or mode == "L")
     {
         z_to_mu_mu_x.dump_outputs();
         z_to_ele_ele_x.dump_outputs();
         z_to_mu_mu_x_Z_mass.dump_outputs();
         z_to_ele_ele_x_Z_mass.dump_outputs();
         std::system(fmt::format("rm -rf {}/jet_val_{}_{}.root", output_path, process, year).c_str());
-        if(plotclasses)
+        if (plotclasses)
         {
-            for(const auto &c_name : to_validate)
+            for (const auto &c_name : to_validate)
             {
                 std::system(fmt::format("rm -rf {}/{}_{}_{}.root", output_path, c_name, process, year).c_str());
             }
         }
     }
-    else if(mode == "Jet" or mode == "J")
+    else if (mode == "Jet" or mode == "J")
     {
         jet_val.dump_outputs();
         std::system(fmt::format("rm -rf {}/z_to_mu_mu_x_{}_{}.root", output_path, process, year).c_str());
         std::system(fmt::format("rm -rf {}/z_to_ele_ele_x_{}_{}.root", output_path, process, year).c_str());
         std::system(fmt::format("rm -rf {}/z_to_mu_mu_x_Z_mass_{}_{}.root", output_path, process, year).c_str());
         std::system(fmt::format("rm -rf {}/z_to_ele_ele_x_Z_mass_{}_{}.root", output_path, process, year).c_str());
-        if(plotclasses)
+        if (plotclasses)
         {
-            for(const auto &c_name : to_validate)
+            for (const auto &c_name : to_validate)
             {
                 std::system(fmt::format("rm -rf {}/{}_{}_{}.root", output_path, c_name, process, year).c_str());
             }
         }
     }
-    else if(mode == "JetClass" or mode == "JC")
+    else if (mode == "JetClass" or mode == "JC")
     {
         std::system(fmt::format("rm -rf {}/z_to_mu_mu_x_{}_{}.root", output_path, process, year).c_str());
         std::system(fmt::format("rm -rf {}/z_to_ele_ele_x_{}_{}.root", output_path, process, year).c_str());
@@ -592,7 +665,7 @@ auto main(int argc, char *argv[]) -> int
         std::system(fmt::format("rm -rf {}/z_to_ele_ele_x_Z_mass_{}_{}.root", output_path, process, year).c_str());
         std::system(fmt::format("rm -rf {}/jet_val_{}_{}.root", output_path, process, year).c_str());
         // save classes and counts in toml file
-        if(countclasses)
+        if (countclasses)
         {
             classfile.open(fmt::format("{}/classes_{}_{}.toml", output_path, process, year).c_str());
             classfile << "[counts]\n";
@@ -603,9 +676,9 @@ auto main(int argc, char *argv[]) -> int
             classfile.close();
         }
         // save the validation example classes
-        if(plotclasses)
+        if (plotclasses)
         {
-            for(const auto &c_name : to_validate)
+            for (const auto &c_name : to_validate)
             {
                 validation_classes[c_name]->dump_outputs();
             }

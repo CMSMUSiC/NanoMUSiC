@@ -3,6 +3,7 @@
 #include "Histograms.hpp"
 #include "Math/GenVector/VectorUtil.h"
 #include "Math/VectorUtil.h"
+#include "TEfficiency.h"
 #include <filesystem>
 #include <fmt/format.h>
 #include <string_view>
@@ -102,5 +103,30 @@ auto ZToLepLepX::dump_outputs() -> void
     save_histo(h_lepton_1_jet_1_dR);
     save_histo(h_jet_multiplicity);
     save_histo(h_bjet_multiplicity);
+
+    output_file->Close();
+}
+
+auto ZToLepLepX::dump_outputs(TEfficiency &efficiency) -> void
+{
+    // fmt::print("Saving outputs to: {}\n", output_file->GetPath());
+    output_file->cd();
+    save_histo(h_invariant_mass);
+    save_histo(h_sum_pt);
+    save_histo(h_met);
+    save_histo(h_lepton_1_pt);
+    save_histo(h_lepton_2_pt);
+    save_histo(h_lepton_1_eta);
+    save_histo(h_lepton_2_eta);
+    save_histo(h_lepton_1_phi);
+    save_histo(h_lepton_2_phi);
+    save_histo(h_lepton_1_jet_1_dPhi);
+    save_histo(h_lepton_1_jet_1_dR);
+    save_histo(h_jet_multiplicity);
+    save_histo(h_bjet_multiplicity);
+
+    efficiency.SetDirectory(output_file.get());
+    efficiency.Write();
+
     output_file->Close();
 }

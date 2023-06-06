@@ -13,7 +13,6 @@ find_package(ROOT REQUIRED COMPONENTS RIO)
 message(STATUS "ROOT ${ROOT_VERSION} found at ${ROOT_BINDIR}")
 
 # LCG base dir
-
 if($ENV{MUSIC_ALMALINUX9})
     set(LCG_BASE /cvmfs/sft.cern.ch/lcg/views/LCG_103/x86_64-centos9-gcc12-opt)
 else()
@@ -30,7 +29,10 @@ include_directories(
     ${LCG_BASE}/include/rapidjson
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/external/
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/include/
+    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-LightSkimmer/include/
+    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-Classification/include/
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-Validation/include/
+    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-HeavyValidation/include/
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Pxl/Pxl/src
@@ -42,7 +44,6 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Main
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-Utils/include
 )
-
 
 # base library
 add_subdirectory(NanoMUSiC)

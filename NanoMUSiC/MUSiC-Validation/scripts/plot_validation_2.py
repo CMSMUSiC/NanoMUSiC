@@ -17,6 +17,7 @@ from typing import Any
 import numpy as np
 import mplhep as hep
 import os
+
 try:
     from scipy import stats
 except ModuleNotFoundError:
@@ -32,6 +33,7 @@ __all__ = ("poisson_interval", "clopper_pearson_interval", "ratio_uncertainty")
 
 def __dir__() -> tuple[str, ...]:
     return __all__
+
 
 # valid years to enter as an argument
 valid_years = {"2016APV", "2016", "2017", "2018"}
@@ -51,9 +53,17 @@ def parse_args():
         required=True,
         help='Task configuration (TOML) file, produced by "analysis_config_builder.py"',
     )
-    parser.add_argument("-y", "--year", required=True, help="Year to be processed. ALL for stacking all years.")
     parser.add_argument(
-        "-n", "--histname", required=True, help="To plot only one histogram, specify the name. Useful when using custom display settings (e.g. -xl, -yl) or to only produce one plot.\nTo plot all histograms (with the same settings/default settings) use '-n ALL'."
+        "-y",
+        "--year",
+        required=True,
+        help="Year to be processed. ALL for stacking all years.",
+    )
+    parser.add_argument(
+        "-n",
+        "--histname",
+        required=True,
+        help="To plot only one histogram, specify the name. Useful when using custom display settings (e.g. -xl, -yl) or to only produce one plot.\nTo plot all histograms (with the same settings/default settings) use '-n ALL'.",
     )
     parser.add_argument(
         "-p",
@@ -71,10 +81,7 @@ def parse_args():
         help="File name of the exported plot, default is name of the histogram.",
     )
     parser.add_argument(
-        "-pc",
-        "--plotconfig",
-        help="Plot configuration (TOML) file.",
-        required=True
+        "-pc", "--plotconfig", help="Plot configuration (TOML) file.", required=True
     )
     parser.add_argument(
         "-jc",
@@ -82,8 +89,12 @@ def parse_args():
         help="Enables plot validation in 'JetClass' mode. Give the names of the class to be plotted separated by comma or the class configuration (TOML) file that includes all classes to be plotted.",
     )
     args = parser.parse_args()
-    if (args.fileprefix and args.jetclass) or (not args.fileprefix and not args.jetclass):
-        raise RuntimeError("Either give --fileprefix in normal plotting mode or --jetclass in jetclass mode. Only one of the arguments is required and allowed.")
+    if (args.fileprefix and args.jetclass) or (
+        not args.fileprefix and not args.jetclass
+    ):
+        raise RuntimeError(
+            "Either give --fileprefix in normal plotting mode or --jetclass in jetclass mode. Only one of the arguments is required and allowed."
+        )
     return args
 
 
@@ -95,13 +106,18 @@ def extract_config(task_config, years):
         for sample in task_config:
             if sample != "Lumi" and sample != "Global":
                 if year == "2016":
-                    if f"das_name_{year}" in task_config[sample].keys() and "APV" not in task_config[sample].keys(): # only import samples of the right year
+                    if (
+                        f"das_name_{year}" in task_config[sample].keys()
+                        and "APV" not in task_config[sample].keys()
+                    ):  # only import samples of the right year
                         if not task_config[sample]["is_data"]:  # mc case
                             mcconfig.update({sample: task_config[sample]})
                         else:  # data case
                             dataconfig.update({sample: task_config[sample]})
                 else:
-                    if f"das_name_{year}" in task_config[sample].keys(): # only import samples of the right year
+                    if (
+                        f"das_name_{year}" in task_config[sample].keys()
+                    ):  # only import samples of the right year
                         if not task_config[sample]["is_data"]:  # mc case
                             mcconfig.update({sample: task_config[sample]})
                         else:  # data case
@@ -118,18 +134,17 @@ def extract_config(task_config, years):
 
 # import one histogram from given root file
 def import_hist(year, sample, file_prefix, hist_name, savepath):
-    savepath += "/files/"
     file_path = (
-            validation_path
-            + "/"
-            + str(year)
-            + "/"
-            + file_prefix
-            + sample
-            + "_"
-            + str(year)
-            + ".root"
-        )
+        validation_path
+        + "/"
+        + str(year)
+        + "/files/"
+        + file_prefix
+        + sample
+        + "_"
+        + str(year)
+        + ".root"
+    )
     if savepath != "":
         file_path = (
             validation_path
@@ -137,7 +152,7 @@ def import_hist(year, sample, file_prefix, hist_name, savepath):
             + str(year)
             + "/"
             + savepath
-            + "/"
+            + "/files/"
             + file_prefix
             + sample
             + "_"
@@ -163,8 +178,8 @@ def calculatebins(edges):
     barwidth = []
     currentx = edges[0]
     for i in range(len(edges) - 1):
-        currentwidth = (edges[i + 1] - edges[i])
-        bins += [currentx + currentwidth/2]
+        currentwidth = edges[i + 1] - edges[i]
+        bins += [currentx + currentwidth / 2]
         barwidth += [currentwidth]
         currentx += currentwidth
     # bins = np.array([(edges[i + 1] + edges[i]) / 2 for i in range(len(edges) - 1)])
@@ -172,13 +187,14 @@ def calculatebins(edges):
     return np.array(bins), np.array(barwidth)
 
 
-def getkeyfromvalue(dict,value):
+def getkeyfromvalue(dict, value):
     return [k for k, v in dict.items() if v == value][0]
 
 
 def printdebug(toprint):
     if debug:
         print(toprint)
+
 
 # ----------------------------------------
 # ratio uncertainty treatment and corresponding functions: taken from https://github.com/scikit-hep/hist/blob/main/src/hist/intervals.py
@@ -231,6 +247,8 @@ def poisson_interval(
         )
         interval_max[values == 0.0] = np.nan
     return np.stack((interval_min, interval_max))
+
+
 def clopper_pearson_interval(
     num: np.typing.NDArray[Any],
     denom: np.typing.NDArray[Any],
@@ -260,10 +278,12 @@ def clopper_pearson_interval(
     interval = np.stack((interval_min, interval_max))
     interval[0, num == 0.0] = 0.0
     interval[1, num == denom] = 1.0
+
+
 def ratio_uncertainty(
     num: np.typing.NDArray[Any],
     denom: np.typing.NDArray[Any],
-    uncertainty_type = "poisson",
+    uncertainty_type="poisson",
 ) -> Any:
     r"""
     Calculate the uncertainties for the values of the ratio ``num/denom`` using
@@ -310,11 +330,26 @@ def ratio_uncertainty(
             f"'{uncertainty_type}' is an invalid option for uncertainty_type."
         )
     return ratio_uncert
+
+
 # ----------------------------------------
 
 
 # performs a plotting job
-def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_dict, aggregation_dict, histproperties, years, fileprefix, classname):
+def plotter(
+    args,
+    savepath,
+    datasamples,
+    mcsamples,
+    mcsorted,
+    histname,
+    color_dict,
+    aggregation_dict,
+    histproperties,
+    years,
+    fileprefix,
+    classname,
+):
     mccounts, mcedges, mcerrors = {}, {}, {}
     datacounts, dataedges, dataerrors = {}, {}, {}
     for year in years:
@@ -353,8 +388,10 @@ def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_di
             for i in range(validation_len_edges):
                 if dataedges[sample][i] != validation_edges[i]:
                     binerror()
-            nbins = len(dataedges[sample]) - 1 # no. of bins is (no. of edges) - 1
-        printdebug("All histogram edges are matching, therefore the validation can continue.")
+            nbins = len(dataedges[sample]) - 1  # no. of bins is (no. of edges) - 1
+        printdebug(
+            "All histogram edges are matching, therefore the validation can continue."
+        )
 
     # calculate bins and bin width (only once since they are the same for every sample)
     edges = validation_edges
@@ -366,63 +403,85 @@ def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_di
     notfoundflag = False
     notfound = set()
     for category in set(aggregation_dict.values()):
-        categories_samples.update({category: set()}) # dictionary: {category: {samples in category}}
+        categories_samples.update(
+            {category: set()}
+        )  # dictionary: {category: {samples in category}}
     for group in mcsorted.keys():
         for sample in mcsorted[group]:
-            if(group in aggregation_dict.keys()):
+            if group in aggregation_dict.keys():
                 categories_samples[aggregation_dict[group]].add(sample)
             else:
                 notfoundflag = True
                 notfound.add(group)
     if notfoundflag:
-        raise RuntimeError(f"The mc groups {notfound} are not listed in the aggregation dictionary.")
+        raise RuntimeError(
+            f"The mc groups {notfound} are not listed in the aggregation dictionary."
+        )
     # exclude categries without any members
     nomembers = set()
     for category in categories_samples.keys():
         if categories_samples[category] == set():
             nomembers.add(category)
     for category in nomembers:
-            categories_samples.pop(category)
+        categories_samples.pop(category)
     # create color dictionary for the mc categories
     categories_colors = {}
     notfoundflag = False
     notfound = set()
     for category in categories_samples.keys():
-        if(category in color_dict.keys()):
-            categories_colors.update({category: color_dict[category]}) # dictionary: {category: color}
+        if category in color_dict.keys():
+            categories_colors.update(
+                {category: color_dict[category]}
+            )  # dictionary: {category: color}
         else:
             notfoundflag = True
             notfound.add(group)
     if notfoundflag:
-        raise RuntimeError(f"The mc categories {notfound} are not listed in the color dictionary.")
-    printdebug(f"Sorted {len(mcsorted.keys())} mc groups into {len(categories_samples.keys())} mc categories given by the aggregation dictionary and matched category colors.")
-    printdebug(f"   The mc categories {nomembers} have no member mc groups for the given task config.")
+        raise RuntimeError(
+            f"The mc categories {notfound} are not listed in the color dictionary."
+        )
+    printdebug(
+        f"Sorted {len(mcsorted.keys())} mc groups into {len(categories_samples.keys())} mc categories given by the aggregation dictionary and matched category colors."
+    )
+    printdebug(
+        f"   The mc categories {nomembers} have no member mc groups for the given task config."
+    )
 
     # stack all samples for each category and calculate errors for each category
     categories_counts, categories_errors = {}, {}
     for category in categories_samples.keys():
         categorysum = np.zeros(nbins)
-        sqerr_categorysum  = np.zeros(nbins)
+        sqerr_categorysum = np.zeros(nbins)
         for sample in categories_samples[category]:
             categorysum += mccounts[sample]
-            sqerr_categorysum += (np.array(mcerrors[sample]))**2
-        categories_counts.update({category: categorysum}) # dictionary: {category: counts for stacked bins for all samples of this category}
-        categories_errors.update({category: np.sqrt(sqerr_categorysum)}) # dictionary: {category: combined error after stacking for all samples of this category}
+            sqerr_categorysum += (np.array(mcerrors[sample])) ** 2
+        categories_counts.update(
+            {category: categorysum}
+        )  # dictionary: {category: counts for stacked bins for all samples of this category}
+        categories_errors.update(
+            {category: np.sqrt(sqerr_categorysum)}
+        )  # dictionary: {category: combined error after stacking for all samples of this category}
     printdebug("Stacked the samples in each mc category.")
 
     # sort categories after their comulated contribution (sum of all bins), smallest contribution first
-    #categories_samples = {category: samples for category, samples in sorted(categories_samples.items())} # to sort categories alphabetically
+    # categories_samples = {category: samples for category, samples in sorted(categories_samples.items())} # to sort categories alphabetically
     categories_max = {}
     for category in categories_samples.keys():
-        categories_max.update({category: np.sum(categories_counts[category])}) # create dictionary with total contribution for each category (bin sum)
-    categories_max = {k: v for k, v in sorted(categories_max.items(), key=lambda item: item[1])} # reorder after minimum value
+        categories_max.update(
+            {category: np.sum(categories_counts[category])}
+        )  # create dictionary with total contribution for each category (bin sum)
+    categories_max = {
+        k: v for k, v in sorted(categories_max.items(), key=lambda item: item[1])
+    }  # reorder after minimum value
     sorted_categories_samples = {}
     for max in categories_max.values():
         category = getkeyfromvalue(categories_max, max)
-        sorted_categories_samples.update({category: categories_samples[category]}) # dictionary: {category: {samples in category}}
-            # with categories ordered after their cumulated contribution (sum of all bins), smallest contribution first
+        sorted_categories_samples.update(
+            {category: categories_samples[category]}
+        )  # dictionary: {category: {samples in category}}
+        # with categories ordered after their cumulated contribution (sum of all bins), smallest contribution first
     printdebug("Sorted mc categories by their maximum contribution.")
-    
+
     # prepare plot
     hep.style.use(hep.style.ROOT)
     wspace = 0
@@ -431,9 +490,14 @@ def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_di
     hspace = 0
     if histproperties["hspace"] != "":
         hspace = float(histproperties["hspace"])
-    fig, ax = plt.subplots(2, 1, gridspec_kw={'height_ratios': [5, 1], 'wspace': wspace, 'hspace': hspace}, sharex=True)
+    fig, ax = plt.subplots(
+        2,
+        1,
+        gridspec_kw={"height_ratios": [5, 1], "wspace": wspace, "hspace": hspace},
+        sharex=True,
+    )
     ax[0].set_yscale("log")
-    #plt.axis('on')
+    # plt.axis('on')
     left = 0.11
     if histproperties["left"] != "":
         left = float(histproperties["left"])
@@ -446,8 +510,7 @@ def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_di
     bottom = 0.08
     if histproperties["bottom"] != "":
         bottom = float(histproperties["bottom"])
-    fig.subplots_adjust(left=left,right=right,bottom=bottom,top=top)
-
+    fig.subplots_adjust(left=left, right=right, bottom=bottom, top=top)
 
     # stack mc categories, calculate errors and plot mc
     """
@@ -475,13 +538,30 @@ def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_di
         counts_stacked += [categories_counts[category]]
         colors_stacked += [categories_colors[category]]
         mcsum += categories_counts[category]
-        sqmcerrsum += (np.array(categories_errors[category]))**2 # add errors together
-    mcerr = np.sqrt(sqmcerrsum) # plot combined mc error
-    ax[0].hist([bins for category in categories_stacked], edges, label=[category for category in categories_stacked],
-            weights=[categories_counts[category] for category in categories_stacked],
-            color=[categories_colors[category] for category in categories_stacked], histtype="stepfilled", stacked=True)
-    ax[0].bar(bins, 2*mcerr, width=barwidth, bottom=(mcsum-mcerr), fill=False, hatch="xxxxxxxx",
-              linewidth=0, edgecolor="tab:gray", label="MC uncertainty")
+        sqmcerrsum += (
+            np.array(categories_errors[category])
+        ) ** 2  # add errors together
+    mcerr = np.sqrt(sqmcerrsum)  # plot combined mc error
+    ax[0].hist(
+        [bins for category in categories_stacked],
+        edges,
+        label=[category for category in categories_stacked],
+        weights=[categories_counts[category] for category in categories_stacked],
+        color=[categories_colors[category] for category in categories_stacked],
+        histtype="stepfilled",
+        stacked=True,
+    )
+    ax[0].bar(
+        bins,
+        2 * mcerr,
+        width=barwidth,
+        bottom=(mcsum - mcerr),
+        fill=False,
+        hatch="xxxxxxxx",
+        linewidth=0,
+        edgecolor="tab:gray",
+        label="MC uncertainty",
+    )
 
     # stack data, calculate errors and plot data
     printdebug("Start data stacking and plotting.")
@@ -489,25 +569,64 @@ def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_di
     sqdataerrsum = np.zeros(nbins)
     for sample in datasamples:
         counts = np.array(datacounts[sample])
-        datasum += counts # stack data samples
-        sqdataerrsum += (np.array(dataerrors[sample]))**2 # calculate square sum of errors, assuming uncorrelated samples
-    error_data = np.sqrt(sqdataerrsum) # calculate final error value (square root of square sum)
-    dataplot = ax[0].errorbar(bins, datasum, yerr=error_data, xerr=barwidth/2, color="black", marker=".", linestyle="", elinewidth=0.8, capsize=1, markersize=3)  
-    
+        datasum += counts  # stack data samples
+        sqdataerrsum += (
+            np.array(dataerrors[sample])
+        ) ** 2  # calculate square sum of errors, assuming uncorrelated samples
+    error_data = np.sqrt(
+        sqdataerrsum
+    )  # calculate final error value (square root of square sum)
+    dataplot = ax[0].errorbar(
+        bins,
+        datasum,
+        yerr=error_data,
+        xerr=barwidth / 2,
+        color="black",
+        marker=".",
+        linestyle="",
+        elinewidth=0.8,
+        capsize=1,
+        markersize=3,
+    )
+
     # create data/mc subplot
     printdebug("Create Data/MC subplot...")
     divisionidx = []
     for i in range(len(mcsum)):
         if mcsum[i] > 0 and datasum[i] > 0:
             divisionidx += [i]
-    data_overmc = np.array([datasum[i]/mcsum[i] for i in divisionidx])
+    data_overmc = np.array([datasum[i] / mcsum[i] for i in divisionidx])
     bins_overmc = np.array([bins[i] for i in divisionidx])
-    mcerr_overmc = ratio_uncertainty(np.array([datasum[i] for i in divisionidx]),np.array([mcsum[i] for i in divisionidx]),"poisson")
-        # asymmetric error interval (contains 2d array with [[-err],[+err]])
-    dataerr_overmc = np.array([error_data[i]/mcsum[i] for i in divisionidx])
+    mcerr_overmc = ratio_uncertainty(
+        np.array([datasum[i] for i in divisionidx]),
+        np.array([mcsum[i] for i in divisionidx]),
+        "poisson",
+    )
+    # asymmetric error interval (contains 2d array with [[-err],[+err]])
+    dataerr_overmc = np.array([error_data[i] / mcsum[i] for i in divisionidx])
     barwidth_overmc = np.array([barwidth[i] for i in divisionidx])
-    ax[1].errorbar(bins_overmc, data_overmc, yerr=dataerr_overmc, xerr=barwidth_overmc/2, color="black", marker=".", linestyle="", elinewidth=0.8, capsize=1, markersize=3)
-    ax[1].bar(bins_overmc, mcerr_overmc[1,:]+mcerr_overmc[0,:], width=barwidth_overmc, bottom=1-mcerr_overmc[0,:], fill=False, hatch="xxxxxxxx", linewidth=0, edgecolor="tab:gray")
+    ax[1].errorbar(
+        bins_overmc,
+        data_overmc,
+        yerr=dataerr_overmc,
+        xerr=barwidth_overmc / 2,
+        color="black",
+        marker=".",
+        linestyle="",
+        elinewidth=0.8,
+        capsize=1,
+        markersize=3,
+    )
+    ax[1].bar(
+        bins_overmc,
+        mcerr_overmc[1, :] + mcerr_overmc[0, :],
+        width=barwidth_overmc,
+        bottom=1 - mcerr_overmc[0, :],
+        fill=False,
+        hatch="xxxxxxxx",
+        linewidth=0,
+        edgecolor="tab:gray",
+    )
     ax[1].axhline(1, linewidth=0.4, color="black")
 
     # only plot when there is data
@@ -521,9 +640,9 @@ def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_di
         # auto find x limits where data > 0
         leftidx = 0
         rightidx = nbins - 1
-        while(datasum[leftidx] <= 0):
+        while datasum[leftidx] <= 0:
             leftidx += 1
-        while(datasum[rightidx] <= 0):
+        while datasum[rightidx] <= 0:
             rightidx -= 1
             if rightidx <= 0:
                 rightidx = 0
@@ -531,17 +650,17 @@ def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_di
         if rightidx < nbins:
             rightidx += 1
         whitespace = 0
-        xlim = (edges[leftidx]-whitespace, edges[rightidx]+whitespace)
+        xlim = (edges[leftidx] - whitespace, edges[rightidx] + whitespace)
         # read custom x limits
         if histproperties["xlim"] != "":
             try:
                 xlim_string = histproperties["xlim"].split(",")
                 if xlim_string[0] != "" and xlim_string[1] != "":
-                    xlim = (float(xlim_string[0]),float(xlim_string[1]))
+                    xlim = (float(xlim_string[0]), float(xlim_string[1]))
                 elif xlim_string[0] != "" and xlim_string[1] == "":
-                    xlim = (float(xlim_string[0]),xlim[1])
+                    xlim = (float(xlim_string[0]), xlim[1])
                 elif xlim_string[0] == "" and xlim_string[1] != "":
-                    xlim = (xlim[0],float(xlim_string[1]))
+                    xlim = (xlim[0], float(xlim_string[1]))
             except:
                 raise RuntimeError("Invalid x limit given.")
                 exit(0)
@@ -549,35 +668,43 @@ def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_di
         # identify indices of data points inside of determined xlim
         leftidx = 0
         rightidx = nbins - 1
-        while(bins[leftidx] <= xlim[0]):
+        while bins[leftidx] <= xlim[0]:
             leftidx += 1
-        while(bins[rightidx] >= xlim[1]):
+        while bins[rightidx] >= xlim[1]:
             rightidx -= 1
             if rightidx <= 0:
                 rightidx = 0
                 break
-        indices = range(leftidx, min([rightidx+1,nbins]))
+        indices = range(leftidx, min([rightidx + 1, nbins]))
         # set y ticks
-        ymax = np.amax([np.amax([mcsum[k] for k in indices]),np.amax([datasum[k] for k in indices])])*3
+        ymax = (
+            np.amax(
+                [
+                    np.amax([mcsum[k] for k in indices]),
+                    np.amax([datasum[k] for k in indices]),
+                ]
+            )
+            * 3
+        )
         # auto find y limits in this index set
         ylim = (1e-4, ymax)
         nmax = 0
-        while(10**nmax < ymax):
+        while 10**nmax < ymax:
             nmax += 1
-        majoryticks = [10**n for n in range(-4,nmax)]
+        majoryticks = [10**n for n in range(-4, nmax)]
         ax[0].set_yticks(majoryticks, minor=False)
-        minoryticks = [i*n for n in range(0,11) for i in majoryticks]
+        minoryticks = [i * n for n in range(0, 11) for i in majoryticks]
         ax[0].set_yticks(minoryticks, minor=True)
         # read custom y limits
         if histproperties["ylim"] != "":
             try:
                 ylim_string = histproperties["ylim"].split(",")
                 if ylim_string[0] != "" and ylim_string[1] != "":
-                    ylim = (float(ylim_string[0]),float(ylim_string[1]))
+                    ylim = (float(ylim_string[0]), float(ylim_string[1]))
                 elif ylim_string[0] != "" and ylim_string[1] == "":
-                    ylim = (float(ylim_string[0]),ylim[1])
+                    ylim = (float(ylim_string[0]), ylim[1])
                 elif ylim_string[0] == "" and ylim_string[1] != "":
-                    ylim = (ylim[0],float(ylim_string[1]))
+                    ylim = (ylim[0], float(ylim_string[1]))
             except:
                 raise RuntimeError("Invalid y limit given.")
                 exit(0)
@@ -585,17 +712,46 @@ def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_di
         # find y limits for data/mc plot
         leftidx = 0
         rightidx = len(bins_overmc) - 1
-        while(bins_overmc[leftidx] <= xlim[0]):
+        while bins_overmc[leftidx] <= xlim[0]:
             leftidx += 1
-        while(bins_overmc[rightidx] >= xlim[1]):
+        while bins_overmc[rightidx] >= xlim[1]:
             rightidx -= 1
             if rightidx <= 0:
                 rightidx = 0
                 break
-        indices = range(leftidx, min([rightidx+1,len(bins_overmc)]))
+        indices = range(leftidx, min([rightidx + 1, len(bins_overmc)]))
         whitespace2 = 0.1
-        ylim2 = (np.amax([np.amin([np.amin([data_overmc[i]-dataerr_overmc[i]-whitespace2 for i in indices]), np.amin([1-mcerr_overmc[0,i]-whitespace2 for i in indices])]), 0]),
-                np.amax([np.amax([data_overmc[i]+dataerr_overmc[i]+whitespace2 for i in indices]), np.amax([1+mcerr_overmc[1,i]+whitespace2 for i in indices])]))
+        ylim2 = (
+            np.amax(
+                [
+                    np.amin(
+                        [
+                            np.amin(
+                                [
+                                    data_overmc[i] - dataerr_overmc[i] - whitespace2
+                                    for i in indices
+                                ]
+                            ),
+                            np.amin(
+                                [1 - mcerr_overmc[0, i] - whitespace2 for i in indices]
+                            ),
+                        ]
+                    ),
+                    0,
+                ]
+            ),
+            np.amax(
+                [
+                    np.amax(
+                        [
+                            data_overmc[i] + dataerr_overmc[i] + whitespace2
+                            for i in indices
+                        ]
+                    ),
+                    np.amax([1 + mcerr_overmc[1, i] + whitespace2 for i in indices]),
+                ]
+            ),
+        )
         ax[1].set_ylim(ylim2)
 
         """
@@ -605,7 +761,9 @@ def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_di
 
         # plot cosmetics and legend
         printdebug("Exporting plot...")
-        ax[0].legend(loc="center", prop={'size': 12}, bbox_to_anchor=(0.9,0.84), frameon=True)
+        ax[0].legend(
+            loc="center", prop={"size": 12}, bbox_to_anchor=(0.9, 0.84), frameon=True
+        )
 
         # add text in plot with class name
         if classname != "":
@@ -632,13 +790,25 @@ def plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_di
         figname = histname
         if args.jetclass:
             figname = classname + "_" + histname
-        if args.title: # optional custom file title
+        if args.title:  # optional custom file title
             figname = args.title
-        outputpath = validation_path + "/" + str(args.year) + "/" + figname + ".pdf"
+        outputpath = (
+            validation_path + "/" + str(args.year) + "/plots/" + figname + ".pdf"
+        )
         if savepath != "":
-            outputpath = validation_path + "/" + str(args.year) + "/" + savepath + "/plots/" + figname + ".pdf"
+            outputpath = (
+                validation_path
+                + "/"
+                + str(args.year)
+                + "/"
+                + savepath
+                + "/plots/"
+                + figname
+                + ".pdf"
+            )
         fig.savefig(outputpath, dpi=500)
     plt.close(fig=fig)
+
 
 ###################################################################################################
 
@@ -664,13 +834,17 @@ def main():
     # parse years
     years = set()
     for year_string in (args.year).split(","):
-        if year_string == "ALL": # put all years in
+        if year_string == "ALL":  # put all years in
             for valid_year in valid_years:
                 years.add(valid_year)
         elif year_string in valid_years:
-            years.add(year_string) # years: set with all years as float
+            years.add(year_string)  # years: set with all years as float
         else:
-            raise RuntimeError(str(f"The years that were put in are not valid. Valid are only {valid_years}. Separate the years by comma wihout any space. If you want to run all years, type 'ALL'."))
+            raise RuntimeError(
+                str(
+                    f"The years that were put in are not valid. Valid are only {valid_years}. Separate the years by comma wihout any space. If you want to run all years, type 'ALL'."
+                )
+            )
     print(f"Plotting job extends over the years {years}.")
 
     # extract data and mc samples given in task config file
@@ -679,14 +853,18 @@ def main():
     mcsamples = [sample for sample in mcconfig]
 
     # sort mc samples in their groups
-    mcgroups = set([mcconfig[i]["ProcessGroup"] for i in mcconfig.keys()]) # get set of mc groups
+    mcgroups = set(
+        [mcconfig[i]["ProcessGroup"] for i in mcconfig.keys()]
+    )  # get set of mc groups
     mcsorted = {}
-    for mcgroup in mcgroups: # iterate over all groups
+    for mcgroup in mcgroups:  # iterate over all groups
         tempset = set()
-        for sample in mcsamples: # check whether sample belongs to group
+        for sample in mcsamples:  # check whether sample belongs to group
             if mcconfig[sample]["ProcessGroup"] == mcgroup:
                 tempset.add(sample)
-        mcsorted.update({mcgroup : tempset}) # dictionary: {group: {samples in this group}}
+        mcsorted.update(
+            {mcgroup: tempset}
+        )  # dictionary: {group: {samples in this group}}
     print("Found", len(mcgroups), "mc groups in the selected task config.")
 
     # import plot config file that includes information on the plots to be produced
@@ -694,20 +872,24 @@ def main():
     plot_config_file: str = args.plotconfig
     plot_config: dict[str, Any] = toml.load(plot_config_file)
     if not (("color_dict" in plot_config) or ("aggregation_dict" in plot_config)):
-        raise RuntimeError("A color and an aggregation dictionary has to be included in the plot config file.")
+        raise RuntimeError(
+            "A color and an aggregation dictionary has to be included in the plot config file."
+        )
     color_dict = plot_config["color_dict"]
     aggregation_dict = plot_config["aggregation_dict"]
     histograms = plot_config
-    histograms.pop("color_dict") # rmemove unwanted options from dict
+    histograms.pop("color_dict")  # rmemove unwanted options from dict
     histograms.pop("aggregation_dict")
     if "COUNTS" in histograms.keys():
         histograms.pop("COUNTS")
     # histograms is a dict {histname: {properties: values}}
 
     # option: jetclass, read in jetclass names to plot
-    classnames = set() # set or array that includes the names of the classes to be validated
+    classnames = (
+        set()
+    )  # set or array that includes the names of the classes to be validated
     if args.jetclass:
-        if ".toml" in args.jetclass: # class config is given
+        if ".toml" in args.jetclass:  # class config is given
             print(f"Importing class config...")
             class_config_file: str = args.jetclass
             class_config: dict[str, Any] = toml.load(class_config_file)
@@ -715,7 +897,7 @@ def main():
                 classnames.add(classname)
             classnames.discard("COUNTS")
             print(f"Found {len(classnames)} in the selected class config.")
-        else: # manual list of classes is given
+        else:  # manual list of classes is given
             for classname in (args.jetclass).split(","):
                 classnames.add(classname)
             classnames.discard("COUNTS")
@@ -732,7 +914,7 @@ def main():
         print(f"Jet class plotting with for the given classes.")
 
     # check output path
-    outputpath = validation_path + "/" + str(args.year) + "/"
+    outputpath = validation_path + "/" + str(args.year) + "/plots/"
     if savepath != "":
         outputpath = validation_path + "/" + str(args.year) + "/" + savepath + "/plots/"
     if not (os.path.isdir(f"{outputpath}")):
@@ -741,27 +923,61 @@ def main():
     # run plotting task, depending on user input
     nfile = 0
     print(f"Starting plotting job for the {len(fileprefixes)} files {fileprefixes}.")
-    for fileprefix in tqdm(fileprefixes): # run plotter for each file set
+    for fileprefix in tqdm(fileprefixes):  # run plotter for each file set
         nfile += 1
         # show class name if this is a plotting task of a class
         classname = ""
         if args.jetclass:
             classname = fileprefix[:-1]
-            printdebug(f"Starting plotting job for class {classname} ({nfile}/{len(fileprefixes)}).")
+            printdebug(
+                f"Starting plotting job for class {classname} ({nfile}/{len(fileprefixes)})."
+            )
         else:
-            printdebug(f"Starting plotting job for the given file prefix {fileprefix} ({nfile}/{len(fileprefixes)}).")
+            printdebug(
+                f"Starting plotting job for the given file prefix {fileprefix} ({nfile}/{len(fileprefixes)})."
+            )
         # plotting tasks
-        if args.histname != "ALL": # plot single histogram
+        if args.histname != "ALL":  # plot single histogram
             histname = args.histname
             printdebug(f"    Starting plotting job for histogram {histname}.")
-            plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_dict, aggregation_dict, histograms[histname], years, fileprefix, classname)
-        else: # plot all validation histograms
-            printdebug(f"    Starting plotting job for all {len(histograms.keys())} histograms for the category.")
+            plotter(
+                args,
+                savepath,
+                datasamples,
+                mcsamples,
+                mcsorted,
+                histname,
+                color_dict,
+                aggregation_dict,
+                histograms[histname],
+                years,
+                fileprefix,
+                classname,
+            )
+        else:  # plot all validation histograms
+            printdebug(
+                f"    Starting plotting job for all {len(histograms.keys())} histograms for the category."
+            )
             n = 0
             for histname in histograms.keys():
                 printdebug(f"\nStarting plotting job for histogram {histname}.")
-                plotter(args, savepath, datasamples, mcsamples, mcsorted, histname, color_dict, aggregation_dict, histograms[histname], years, fileprefix, classname)
-                printdebug(f"Finished plotting job for histogram {histname} for the category.")
+                plotter(
+                    args,
+                    savepath,
+                    datasamples,
+                    mcsamples,
+                    mcsorted,
+                    histname,
+                    color_dict,
+                    aggregation_dict,
+                    histograms[histname],
+                    years,
+                    fileprefix,
+                    classname,
+                )
+                printdebug(
+                    f"Finished plotting job for histogram {histname} for the category."
+                )
 
     print("Finished plot validation job.\n")
     exit(0)

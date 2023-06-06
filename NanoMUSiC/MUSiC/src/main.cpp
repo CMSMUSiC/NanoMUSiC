@@ -1,4 +1,5 @@
 #include "NanoMUSiC.hpp"
+#include <cmath>
 #include <fmt/core.h>
 #include <optional>
 #include <stdexcept>

@@ -12,28 +12,32 @@
 
 using namespace std;
 
-ClassImp(TEventClass)
+ClassImp(TEventClass);
 
-    //-------------Constructor-------------------------------------------------------------
+TEventClass::TEventClass()
+{
+}
 
-    TEventClass::TEventClass(const std::string &EventType,
-                             const std::string &EventClassType,
-                             const std::string runhash,
-                             bool const data,
-                             double const cme,
-                             std::map<std::string, int> countmap,
-                             const bool analyzedBjets,
-                             std::map<std::string, std::vector<double>> distTypeBins,
-                             const bool analyzedCharge,
-                             const int numCharge,
-                             const bool isInclusive,
-                             std::map<std::string, double> distTypMins,
-                             unsigned int m_numPDFvariations,
-                             std::map<std::string, double> distTypeMinsRequire,
-                             const double lumi,
-                             std::set<std::string> systNames,
-                             std::map<std::string, std::string> ECItemShortlist,
-                             double const bin_size_min)
+//-------------Constructor-------------------------------------------------------------
+
+TEventClass::TEventClass(const std::string &EventType,
+                         const std::string &EventClassType,
+                         const std::string runhash,
+                         bool const data,
+                         double const cme,
+                         std::map<std::string, int> countmap,
+                         const bool analyzedBjets,
+                         std::map<std::string, std::vector<double>> distTypeBins,
+                         const bool analyzedCharge,
+                         const int numCharge,
+                         const bool isInclusive,
+                         std::map<std::string, double> distTypMins,
+                         unsigned int m_numPDFvariations,
+                         std::map<std::string, double> distTypeMinsRequire,
+                         const double lumi,
+                         std::set<std::string> systNames,
+                         std::map<std::string, std::string> ECItemShortlist,
+                         double const bin_size_min)
     : TNamed(EventType + EventClassType, EventType + EventClassType),
       m_eventClassType(EventClassType),
       m_eventType(EventType),

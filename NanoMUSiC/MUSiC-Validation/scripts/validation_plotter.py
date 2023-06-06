@@ -21,7 +21,7 @@ def rebin_energy_like(histo_data, histos_mc, change_last_bin=False):
     Will rebin energy-like histograms. Last bin is reduced to encopass data and a coarser binning is applied.
     """
 
-    # base_binning = histo_data.axes.edges
+    base_binning = histo_data.axes.edges
     new_binning = base_binning
     if change_last_bin:
         last_data_point = -1
@@ -51,6 +51,7 @@ def leplep_plots(
     input_mc: dict[str, str],
     input_data: list[str],
 ):
+    # rebin_callable = rebin_energy_like
     rebin_callable = no_rebinning
     # if outputs_reference.endswith("Z_mass"):
     #     rebin_callable = no_rebinning
@@ -265,22 +266,20 @@ def main():
         )
     )
 
-    # print(f"Plotting z_to_mu_mu_x_Z_mass ...")
-    # leplep_plots(
-    #     **make_plotter_args(
-    #         analysis_config,
-    #         latex_name="\mu",
-    #         analysis_name="z_to_mu_mu_x_Z_mass",
-    #     )
-    # )
+    print(f"Plotting z_to_mu_mu_x_Z_mass ...")
+    leplep_plots(
+        **make_plotter_args(
+            analysis_config, latex_name="\mu", analysis_name="z_to_mu_mu_x"
+        )
+    )
 
-    # print(f"Plotting z_to_ele_ele_x ...")
-    # analysis_config: dict = toml.load(args.config)
-    # leplep_plots(
-    #     **make_plotter_args(
-    #         analysis_config, latex_name="\mu", analysis_name="z_to_ele_ele_x"
-    #     )
-    # )
+    print(f"Plotting z_to_ele_ele_x ...")
+    analysis_config: dict = toml.load(args.config)
+    leplep_plots(
+        **make_plotter_args(
+            analysis_config, latex_name="\mu", analysis_name="z_to_ele_ele_x"
+        )
+    )
 
     # print(f"Plotting z_to_ele_ele_x_Z_mass ...")
     # leplep_plots(

@@ -118,7 +118,7 @@ class Outputs
     unsigned long trigger_bits;
     unsigned int lha_id;
 
-    // ROOT won't let us write a const to a TTree 🤔🤬 ...
+    // ROOT won't let us write a const to a TTree 🤬🤬🤬 ...
     int kTotalWeights_non_const = kTotalWeights;
     std::array<float, kTotalWeights> weights_nominal;
     std::array<float, kTotalWeights> weights_up;

@@ -3,6 +3,7 @@
 
 #include "Histograms.hpp"
 #include "Math/Vector4D.h"
+#include "TEfficiency.h"
 #include <TFile.h>
 #include <TH1F.h>
 #include <memory>
@@ -48,6 +49,7 @@ class ZToLepLepX
     auto save_histo(TH1F &histo) -> void;
 
     auto dump_outputs() -> void;
+    auto dump_outputs(TEfficiency &efficiency) -> void;
 };
 
 #endif // !ZTOLEPLEPX

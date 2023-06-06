@@ -22,6 +22,8 @@ target_compile_options(TEventClass PUBLIC
         -ffloat-store
 )
 
+target_include_directories(TEventClass PUBLIC ${CMAKE_SOURCE_DIR}/NanoMUSiC/TEventClass/include)
+
 target_link_options(TEventClass PRIVATE -lz -fno-associative-math)
 
 message(STATUS "Generating TEventClass dictionaries ...")
