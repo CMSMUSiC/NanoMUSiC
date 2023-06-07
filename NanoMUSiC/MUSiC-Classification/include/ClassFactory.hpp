@@ -6,6 +6,8 @@
 #include "CrossSectionOrderErrorMap.hpp"
 #include "TEventClass.hpp"
 
+#include "Tools.hpp"
+
 class ClassFactory
 {
   public:
@@ -32,9 +34,41 @@ class ClassFactory
         bool has_scale_variation;
     };
 
-    ClassFactory(const std::string outfilename = "", const std::string hash = "dummyhash", const bool debug = 1);
-    auto analyse_event() -> void;
-    auto end_job() -> void;
+    ClassFactory(const bool is_data,
+                 const double cross_section,
+                 const double filter_efficiency,
+                 const double k_factor,
+                 const std::string &process,
+                 const std::string &processOrder,
+                 const std::string &processGroup,
+                 const std::string outfilename = "",
+                 const std::string hash = "dummyhash",
+                 const bool debug = 1);
+
+    void analyseEvent();
+    void endJob();
+    std::string getQCDSystWeightName(std::string shift_type) const;
+    void FinishEventClasses(std::map<std::string, TEventClass *> &EvtClasses,
+                            std::set<std::string> &ProcessList,
+                            const std::string &Label);
+    void prepareProcessName(std::string &proc);
+    void WriteEventListToFile(std::string const &ECname);
+    void WriteAnalysisInfoToFile(std::set<std::string> const &processList);
+    // void CheckForCrossSection();
+    void fillFilterCutFlow(const double weight);
+    void fillCutFlow(const bool pass_veto,
+                     const bool pass_trigger_accept,
+                     const bool pass_filter_accept,
+                     const bool pass_generator_accept,
+                     const bool pass_topo_accept,
+                     const double weight);
+    void fillCutFlow(const double sumPt,
+                     const double invMass,
+                     const double met,
+                     const int numPart,
+                     const std::map<std::string, int> &countMap,
+                     const double weight);
+    std::vector<ClassFactory::EventInfo> GetListedEvents(std::string const &ECname);
 
   private:
     std::string m_outfilename;
@@ -97,6 +131,14 @@ class ClassFactory
     double const m_ec_sumpt_min;
     double const m_ec_minv_min;
     double const m_ec_met_min;
+
+    double const xsec;
+    double const fEff;
+    double const kFac;
+
+    std::string const m_process;
+    std::string const m_processOrder;
+    std::string const m_processGroup;
 
     // Store the maximum number of events per EventClass to store in the event
     // lists.

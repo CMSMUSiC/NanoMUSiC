@@ -47,8 +47,9 @@ add_executable(
     src/ParticleMap.cpp //
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/TOMLConfig.cpp //
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/BinLimits.cpp //
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/NanoObjects.cpp /
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/JetCorrector.cpp /
+    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/NanoObjects.cpp //
+    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/JetCorrector.cpp //
+    ${CMAKE_SOURCE_DIR}/NanoMUSiC/TEventClass/src/TEventClass.cpp //
 )
-target_link_libraries(classification LINK_PUBLIC ROOT::RIO ROOT::Net)
+target_link_libraries(classification LINK_PUBLIC ROOT::RIO ROOT::Net TEventClass)
 install(TARGETS classification DESTINATION ${CMAKE_SOURCE_DIR}/bin)

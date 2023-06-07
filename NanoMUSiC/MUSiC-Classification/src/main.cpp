@@ -118,7 +118,7 @@ auto main(int argc, char *argv[]) -> int
     const auto no_cuts = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("NoCuts") + 1);
     const auto generator_filter = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("GeneratorFilter") + 1);
 
-    auto class_factory = ClassFactory();
+    // auto class_factory = ClassFactory();
 
     //  launch event loop for Data or MC
     for (auto &&event : tree_reader)
@@ -176,11 +176,11 @@ auto main(int argc, char *argv[]) -> int
                               gen_jets,                       //
                               year);
 
-        class_factory.analyse_event();
+        // class_factory.analyse_event();
     }
 
     fmt::print("\n[MUSiC Classification] Saving outputs ({} - {} - {}) ...\n", output_path, process, year);
-    class_factory.end_job();
+    // class_factory.end_job();
     fmt::print("\n[MUSiC Classification] Done ...\n");
     PrintProcessInfo();
 
