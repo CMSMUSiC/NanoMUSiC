@@ -40,6 +40,7 @@ add_executable(
     classification //
     src/main.cpp //
     src/ClassFactory.cpp //
+    src/ParticleMap.cpp //
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/TOMLConfig.cpp //
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/BinLimits.cpp //
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/NanoObjects.cpp /

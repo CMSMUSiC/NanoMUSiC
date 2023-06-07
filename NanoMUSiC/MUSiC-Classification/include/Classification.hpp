@@ -34,6 +34,8 @@
 #include "fmt/format.h"
 
 #include "ClassFactory.hpp"
+#include "CrossSectionOrderErrorMap.hpp"
+#include "ParticleMap.hpp"
 
 using namespace ROOT;
 using namespace ROOT::Math;
