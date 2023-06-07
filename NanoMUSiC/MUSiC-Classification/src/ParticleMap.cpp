@@ -1,5 +1,4 @@
 #include "ParticleMap.hpp"
-#include "ParticleVector.hpp"
 #include "Resolutions.hpp"
 
 #include <iostream>
@@ -7,9 +6,14 @@
 #include <sstream>
 #include <stdexcept>
 
-ParticleMap::ParticleMap(const std::map<std::string, std::vector<pxl::Particle *>> &particleMap)
-    : m_map(),
-      m_countMap(std::map<std::string, int>()),
+ParticleMap::ParticleMap(
+    const std::unordered_map<std::string, RVec<Math::PtEtaPhiMVector>> &particleMap,
+    const std::unordered_map<std::string, std::unordered_map<std::string, RVec<double>>> &ScaleFactorMap,
+    const std::unordered_map<std::string, RVec<bool>> &matchMap)
+    : m_map(particleMap),
+      m_scale_factor_map(ScaleFactorMap),
+      m_match_map(matchMap),
+      m_countMap(std::unordered_map<std::string, int>()),
       m_resolutionFuncMap({{"Ele", Resolutions::electron},
                            {"EleEE", Resolutions::electron},
                            {"EleEB", Resolutions::electron},
@@ -21,251 +25,291 @@ ParticleMap::ParticleMap(const std::map<std::string, std::vector<pxl::Particle *
                            {"Jet", Resolutions::jet},
                            {"bJet", Resolutions::jet},
                            {"MET", Resolutions::met}}),
-      m_funcMap({{"pt", std::bind(&pxl::Particle::getPt, std::placeholders::_1)},
-                 {"et", std::bind(&pxl::Particle::getEt, std::placeholders::_1)},
-                 {"px", std::bind(&pxl::Particle::getPx, std::placeholders::_1)},
-                 {"py", std::bind(&pxl::Particle::getPy, std::placeholders::_1)}})
+      m_funcMap({{"pt",
+                  [](const Math::PtEtaPhiMVector &particle) -> double
+                  {
+                      return particle.pt();
+                  }},
+                 {"et",
+                  [](const Math::PtEtaPhiMVector &particle) -> double
+                  {
+                      return particle.Et();
+                  }},
+                 {"px",
+                  [](const Math::PtEtaPhiMVector &particle) -> double
+                  {
+                      return particle.px();
+                  }},
+                 {"py",
+                  [](const Math::PtEtaPhiMVector &particle) -> double
+                  {
+                      return particle.py();
+                  }}})
 {
-    for (auto &partVec : particleMap)
+    for (auto &&[part_type, part_vector] : particleMap)
     {
-        m_map.emplace(partVec.first, ParticleVector(partVec.first, partVec.second));
-        m_countMap.emplace(partVec.first, m_map[partVec.first].getCount());
+        m_countMap.emplace(part_type, part_vector.size());
     }
 }
 
+// not needed (?)
 // split one particle in two new particles according to splittingFunc
-void ParticleMap::split(std::vector<pxl::Particle *> particles,
-                        std::function<bool(pxl::Particle *)> splittingFunc,
-                        const std::string name1,
-                        const std::string name2)
-{
-    std::vector<pxl::Particle *> first = std::vector<pxl::Particle *>();
-    std::vector<pxl::Particle *> second = std::vector<pxl::Particle *>();
-    for (auto particle : particles)
-    {
-        if (splittingFunc(particle))
-            first.push_back(particle);
-        else
-            second.push_back(particle);
-    }
-    m_map.emplace(name1, ParticleVector(name1, first));
-    m_map.emplace(name2, ParticleVector(name1, second));
-}
+// void ParticleMap::split(std::vector<pxl::Particle *> particles,
+//                         std::function<bool(pxl::Particle *)> splittingFunc,
+//                         const std::string name1,
+//                         const std::string name2)
+// {
+//     std::vector<pxl::Particle *> first = std::vector<pxl::Particle *>();
+//     std::vector<pxl::Particle *> second = std::vector<pxl::Particle *>();
+//     for (auto particle : particles)
+//     {
+//         if (splittingFunc(particle))
+//             first.push_back(particle);
+//         else
+//             second.push_back(particle);
+//     }
+//     m_map.emplace(name1, ParticleVector(name1, first));
+//     m_map.emplace(name2, ParticleVector(name1, second));
+// }
 
-const ParticleVector &ParticleMap::getParticleVector(std::string &name) const
+const RVec<Math::PtEtaPhiMVector> &ParticleMap::getParticleVector(std::string &name) const
 {
     return m_map.at(name);
 }
 
-int ParticleMap::getLeptonCharge(const std::map<std::string, int> &countMap) const
-{
-    int totalCharge = 0;
-    std::list<std::string> leptons;
-    leptons.push_back("Ele");
-    leptons.push_back("Muon");
-    leptons.push_back("Tau");
-    for (auto &lepton : leptons)
-    {
-        auto iterator = m_map.find(lepton);
-        if (iterator != m_map.end())
-        {
-            int counter = 0;
-            for (auto &particle : iterator->second.getParticles())
-            {
-                counter++;
-                if (counter > countMap.at(lepton))
-                    break;
-                totalCharge += (int)particle->getCharge();
-            }
-        }
-    }
-    return totalCharge;
-}
+// int ParticleMap::getLeptonCharge(const std::unordered_map<std::string, int> &countMap) const
+// {
+//     int totalCharge = 0;
+//     std::list<std::string> leptons;
+//     leptons.push_back("Ele");
+//     leptons.push_back("Muon");
+//     leptons.push_back("Tau");
+//     for (auto &lepton : leptons)
+//     {
+//         auto iterator = m_map.find(lepton);
+//         if (iterator != m_map.end())
+//         {
+//             int counter = 0;
+//             for (auto &particle : iterator->second.getParticles())
+//             {
+//                 counter++;
+//                 if (counter > countMap.at(lepton))
+//                     break;
+//                 totalCharge += (int)particle->getCharge();
+//             }
+//         }
+//     }
+//     return totalCharge;
+// }
 
-std::map<std::string, int> ParticleMap::getCountMap() const
+std::unordered_map<std::string, int> ParticleMap::getCountMap() const
 {
     return m_countMap;
 }
 
-double ParticleMap::getKinematicVariable(const std::string var, const std::map<std::string, int> &countMap) const
+double ParticleMap::getKinematicVariable(const std::string var,
+                                         const std::unordered_map<std::string, int> &countMap) const
 {
-    double sum = 0;
-    for (auto &partVec : m_map)
+    double sum = 0.;
+    for (auto &&[part_type, part_vector] : m_map)
     {
         int counter = 0;
-        for (auto &part : partVec.second.getParticles())
+        for (auto &part : part_vector)
         {
             counter++;
-            if (counter > countMap.at(partVec.first))
+            if (counter > countMap.at(part_type))
+            {
                 break;
+            }
             sum += m_funcMap.at(var)(part);
         }
     }
     return sum;
 }
 
-double ParticleMap::getSumPt(const std::map<std::string, int> &countMap) const
+double ParticleMap::getSumPt(const std::unordered_map<std::string, int> &countMap) const
 {
     return getKinematicVariable("pt", countMap);
 }
 
-double ParticleMap::getSumEt(const std::map<std::string, int> &countMap) const
+double ParticleMap::getSumEt(const std::unordered_map<std::string, int> &countMap) const
 {
     return getKinematicVariable("et", countMap);
 }
 
-double ParticleMap::getSumPx(const std::map<std::string, int> &countMap) const
+double ParticleMap::getSumPx(const std::unordered_map<std::string, int> &countMap) const
 {
     return getKinematicVariable("px", countMap);
 }
 
-double ParticleMap::getSumPy(const std::map<std::string, int> &countMap) const
+double ParticleMap::getSumPy(const std::unordered_map<std::string, int> &countMap) const
 {
     return getKinematicVariable("py", countMap);
 }
 
-double ParticleMap::getMass(const std::map<std::string, int> &countMap) const
+double ParticleMap::getMass(const std::unordered_map<std::string, int> &countMap) const
 {
     if (countMap.at("MET"))
+    {
         return getTransverseMass(countMap);
+    }
     else
+    {
         return getInvMass(countMap);
+    }
 }
 
-double ParticleMap::getInvMass(const std::map<std::string, int> &countMap) const
+double ParticleMap::getInvMass(const std::unordered_map<std::string, int> &countMap) const
 {
-    pxl::Particle vec_sum = pxl::Particle();
-    for (auto &partVec : m_map)
+    auto vec_sum = Math::PtEtaPhiMVector();
+
+    for (auto &&[part_type, part_vector] : m_map)
     {
         int counter = 0;
-        for (auto &part : partVec.second.getParticles())
+        for (auto &part : part_vector)
         {
             counter++;
-            if (counter > countMap.at(partVec.first))
+            if (counter > countMap.at(part_type))
+            {
                 break;
-            vec_sum += *part;
+            }
+            vec_sum += part;
         }
     }
-    return vec_sum.getMass();
+    return vec_sum.mass();
 }
 
-double ParticleMap::getTransverseMass(const std::map<std::string, int> &count_map) const
+double ParticleMap::getTransverseMass(const std::unordered_map<std::string, int> &count_map) const
 {
     double sumEt = 0;
     double sumPx = 0;
     double sumPy = 0;
-    for (auto &part_vec : m_map)
+
+    for (auto &&[part_type, part_vector] : m_map)
     {
-        if (count_map.find(part_vec.first) == count_map.end())
+        if (count_map.find(part_type) == count_map.end())
             continue;
         int counter = 0;
-        for (auto &part : part_vec.second.getParticles())
+        for (auto &part : part_vector)
         {
             counter++;
-            if (counter > count_map.at(part_vec.first))
+            if (counter > count_map.at(part_type))
+            {
                 break;
-            sumEt += part->getEt();
-            sumPx += part->getPx();
-            sumPy += part->getPy();
+            }
+            sumEt += part.Et();
+            sumPx += part.px();
+            sumPy += part.py();
         }
     }
 
     return std::sqrt(sumEt * sumEt - sumPx * sumPx - sumPy * sumPy);
 }
 
-double ParticleMap::getMET(const std::map<std::string, int> &countMap) const
+double ParticleMap::getMET(const std::unordered_map<std::string, int> &countMap) const
 {
     if (countMap.at("MET") != 0)
-        return m_map.at("MET").at(0)->getPt();
-    else
-        return 0;
+    {
+        return m_map.at("MET").at(0).pt();
+    }
+
+    return 0;
 }
 
-double ParticleMap::getScaleFactor(const std::map<std::string, int> &countMap) const
+double ParticleMap::getScaleFactor(const std::unordered_map<std::string, int> &countMap) const
 {
     double scale_factor = 1;
-    for (auto &partVec : m_map)
+    for (auto &[part_type, part_scale_factor] : m_scale_factor_map)
     {
         int counter = 0;
-        for (auto &part : partVec.second.getParticles())
+        for (auto &sf : part_scale_factor.at("scale_factor"))
         {
             counter++;
-            if (counter > countMap.at(partVec.first))
+            if (counter > countMap.at(part_type))
+            {
                 break;
-            scale_factor *= part->getUserRecord("scale_factor").toDouble();
+            }
+            scale_factor *= sf;
         }
     }
     return scale_factor;
 }
 
-double ParticleMap::getScaleFactorError(const std::string error_type, const std::map<std::string, int> &countMap) const
+double ParticleMap::getScaleFactorError(const std::string error_type,
+                                        const std::unordered_map<std::string, int> &countMap) const
 {
     double scale_factor_error = 0;
-    for (auto &partVec : m_map)
+    for (auto &[part_type, part_scale_factor] : m_scale_factor_map)
     {
         int counter = 0;
-        for (auto &part : partVec.second.getParticles())
+        if (part_scale_factor.find(error_type) != part_scale_factor.end())
         {
-            counter++;
-            if (counter > countMap.at(partVec.first))
-                break;
-            if (part->hasUserRecord(error_type))
+            for (auto &sf : part_scale_factor.at(error_type))
             {
-                scale_factor_error += std::pow(part->getUserRecord(error_type).toDouble(), 2);
+                counter++;
+                if (counter > countMap.at(part_type))
+                {
+                    break;
+                }
+                scale_factor_error += std::pow(sf, 2);
             }
         }
     }
     return std::sqrt(scale_factor_error);
 }
 
-double ParticleMap::getScaleFactorStatError(const std::map<std::string, int> &countMap) const
+double ParticleMap::getScaleFactorStatError(const std::unordered_map<std::string, int> &countMap) const
 {
     return getScaleFactorError("scale_factor_error", countMap);
 }
 
-double ParticleMap::getScaleFactorSystError(const std::map<std::string, int> &countMap) const
+double ParticleMap::getScaleFactorSystError(const std::unordered_map<std::string, int> &countMap) const
 {
     return getScaleFactorError("scale_factor_error_syst", countMap);
 }
 
-std::map<std::string, int> ParticleMap::getFakeMap(const std::map<std::string, int> &countMap) const
+std::unordered_map<std::string, int> ParticleMap::getFakeMap(const std::unordered_map<std::string, int> &countMap) const
 {
-    std::map<std::string, int> fakeMap = std::map<std::string, int>();
-    for (auto &partVec : m_map)
+    std::unordered_map<std::string, int> fakeMap = std::unordered_map<std::string, int>();
+
+    for (auto &[part_type, part_matches] : m_match_map)
     {
         int counter = 0;
-        for (auto &part : partVec.second.getParticles())
+        for (auto &has_match : part_matches)
         {
             counter++;
-            if (counter > countMap.at(partVec.first))
+            if (counter > countMap.at(part_type))
+            {
                 break;
-            if (part->hasUserRecord("Match") and part->getUserRecord("Match").toInt32() == -1)
-                fakeMap[partVec.first]++;
+            }
+            if (not(has_match))
+                fakeMap[part_type]++;
         }
     }
     return fakeMap;
 }
 
-std::map<std::string, int> ParticleMap::getChargeFakeMap(const std::map<std::string, int> &countMap) const
-{
-    std::map<std::string, int> fakeMap = std::map<std::string, int>();
-    for (auto &partVec : m_map)
-    {
-        int counter = 0;
-        for (auto &part : partVec.second.getParticles())
-        {
-            counter++;
-            if (counter > countMap.at(partVec.first))
-                break;
-            if (part->hasUserRecord("ChargeMatch") and part->getUserRecord("ChargeMatch").toInt32() == -1)
-                fakeMap[partVec.first]++;
-        }
-    }
-    return fakeMap;
-}
+// std::unordered_map<std::string, int> ParticleMap::getChargeFakeMap(
+//     const std::unordered_map<std::string, int> &countMap) const
+// {
+//     std::unordered_map<std::string, int> fakeMap = std::unordered_map<std::string, int>();
+//     for (auto &partVec : m_map)
+//     {
+//         int counter = 0;
+//         for (auto &part : partVec.second.getParticles())
+//         {
+//             counter++;
+//             if (counter > countMap.at(partVec.first))
+//                 break;
+//             if (part->hasUserRecord("ChargeMatch") and part->getUserRecord("ChargeMatch").toInt32() == -1)
+//                 fakeMap[partVec.first]++;
+//         }
+//     }
+//     return fakeMap;
+// }
 
 std::vector<double> ParticleMap::getBinLimits(std::string distribution,
-                                              std::map<std::string, int> &countMap,
+                                              std::unordered_map<std::string, int> &countMap,
                                               double min,
                                               double max,
                                               double step_size,
@@ -289,17 +333,17 @@ std::vector<double> ParticleMap::getBinLimits(std::string distribution,
     double last_value = min;
     double next_value = min + step_size;
 
-    std::function<double(std::map<std::string, int>, double, const double)> resfunc;
+    std::function<double(std::unordered_map<std::string, int>, double, const double)> resfunc;
     if (distribution == "MET")
     {
-        resfunc = [this](std::map<std::string, int> countMap, double sumpt, double const fudge) -> double
+        resfunc = [this](std::unordered_map<std::string, int> countMap, double sumpt, double const fudge) -> double
         {
             return getApproximateResolutionMET(countMap, sumpt, fudge);
         };
     }
     else
     {
-        resfunc = [this](std::map<std::string, int> countMap, double sumpt, double const fudge) -> double
+        resfunc = [this](std::unordered_map<std::string, int> countMap, double sumpt, double const fudge) -> double
         {
             return getApproximateResolution(countMap, sumpt, fudge);
         };
@@ -358,25 +402,28 @@ double ParticleMap::callResolutionFunction(const std::string &name, const double
     return res;
 }
 
-double ParticleMap::getRealResolution(const std::map<std::string, int> &countMap) const
+double ParticleMap::getRealResolution(const std::unordered_map<std::string, int> &countMap) const
 {
     double res = 0;
-    for (auto &partVec : m_map)
+    // for (auto &partVec : m_map)
+    for (auto &[part_type, part_vector] : m_map)
     {
         // MET will be done later (depending on sumpt and not met itself)
-        if (partVec.first == "MET")
+        if (part_type == "MET")
         {
             continue;
         }
+
         int counter = 0;
-        for (auto &part : partVec.second.getParticles())
+        for (auto &part : part_vector)
         {
             counter++;
-            if (counter > countMap.at(partVec.first))
+            if (counter > countMap.at(part_type))
                 break;
-            res += std::pow(callResolutionFunction(partVec.first, part->getPt()), 2);
+            res += std::pow(callResolutionFunction(part_type, part.pt()), 2);
         }
     }
+
     if (countMap.at("MET") != 0)
     {
         double sumpt = getSumPt(countMap);
@@ -385,13 +432,14 @@ double ParticleMap::getRealResolution(const std::map<std::string, int> &countMap
     return std::sqrt(res);
 }
 
-double ParticleMap::getApproximateResolution(const std::map<std::string, int> &countMap, double const fudge) const
+double ParticleMap::getApproximateResolution(const std::unordered_map<std::string, int> &countMap,
+                                             double const fudge) const
 {
     double sumpt = getSumPt(countMap);
     return getApproximateResolution(countMap, sumpt, fudge);
 }
 
-double ParticleMap::getApproximateResolution(const std::map<std::string, int> &countMap,
+double ParticleMap::getApproximateResolution(const std::unordered_map<std::string, int> &countMap,
                                              double sumpt,
                                              double const fudge) const
 {
@@ -415,7 +463,7 @@ double ParticleMap::getApproximateResolution(const std::map<std::string, int> &c
     return fudge * std::sqrt(res);
 }
 
-double ParticleMap::getApproximateResolutionMET(const std::map<std::string, int> &countMap,
+double ParticleMap::getApproximateResolutionMET(const std::unordered_map<std::string, int> &countMap,
                                                 double sumpt,
                                                 double const fudge) const
 {
