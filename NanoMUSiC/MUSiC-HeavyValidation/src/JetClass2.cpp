@@ -9,9 +9,12 @@
 
 // Jet classification validation
 
+// histo.Scale(min_bin_width, "width");
+
 // constructor
 JetClass2::JetClass2(const std::string &output_path, const std::string c_name)
-    : output_file(std::unique_ptr<TFile>(TFile::Open(output_path.c_str(), "RECREATE"))), c_name(c_name)
+    : output_file(std::unique_ptr<TFile>(TFile::Open(output_path.c_str(), "RECREATE"))),
+      c_name(c_name)
 {
     // extract nJet and nBJet from classname
     c_nJet = std::stoi(c_name.substr(0, c_name.find("J")));
@@ -25,7 +28,7 @@ JetClass2::JetClass2(const std::string &output_path, const std::string c_name)
     h_pt_1st_bjet = rebin_histogram(h_pt_1st_bjet, return_jet_countmap(0, 1));
     h_pt_2nd_bjet = rebin_histogram(h_pt_2nd_bjet, return_jet_countmap(0, 1));
     h_met = rebin_histogram(h_met, return_jet_countmap(c_nJet, c_nBJet), false, "MET");
-    
+
     // Sumw2
     h_m_inv.Sumw2();
     h_sum_pt.Sumw2();
@@ -50,23 +53,36 @@ JetClass2::JetClass2(const std::string &output_path, const std::string c_name)
     h_deltar_jetjet.Sumw2();
     h_deltar_jetbjet.Sumw2();
     h_deltar_bjetbjet.Sumw2();
-    
 }
 
 // fill histogram for an event in the class
 // fill(jets, bjets, nElectron, nMuon, met, weight)
 // jets is a RVec of 4-vectors including all jets in the event sorted (highest pt first)
-auto JetClass2::fill(RVec<Math::PtEtaPhiMVector> jets, RVec<Math::PtEtaPhiMVector> bjets,
-                    unsigned int nElectron, unsigned int nMuon, std::optional<float> met, float weight) -> void
+auto JetClass2::fill(RVec<Math::PtEtaPhiMVector> jets,
+                     RVec<Math::PtEtaPhiMVector> bjets,
+                     unsigned int nElectron,
+                     unsigned int nMuon,
+                     std::optional<float> met,
+                     float weight) -> void
 {
     // validate nJet/nBJet with class name
-    if(c_nJet > jets.size())
+    if (c_nJet > jets.size())
     {
-        throw std::runtime_error(fmt::format("ERROR: JetClass {}: jet vector (size {}) set can not be smaller as nJet taken from the class name (value {}).",c_name,jets.size(),c_nJet).c_str());
+        throw std::runtime_error(fmt::format("ERROR: JetClass {}: jet vector (size {}) set can not be smaller as nJet "
+                                             "taken from the class name (value {}).",
+                                             c_name,
+                                             jets.size(),
+                                             c_nJet)
+                                     .c_str());
     }
-    if(c_nBJet > bjets.size())
+    if (c_nBJet > bjets.size())
     {
-        throw std::runtime_error(fmt::format("ERROR: JetClass {}: bjet vector (size {}) set can not be smaller as nBJet taken from the class name (value {}).",c_name,bjets.size(),c_nBJet).c_str());
+        throw std::runtime_error(fmt::format("ERROR: JetClass {}: bjet vector (size {}) set can not be smaller as "
+                                             "nBJet taken from the class name (value {}).",
+                                             c_name,
+                                             bjets.size(),
+                                             c_nBJet)
+                                     .c_str());
     }
     // met
     if (met)
@@ -76,59 +92,59 @@ auto JetClass2::fill(RVec<Math::PtEtaPhiMVector> jets, RVec<Math::PtEtaPhiMVecto
     // sum_pt and m_inv
     auto jetsum = Math::PtEtaPhiMVector(0, 0, 0, 0);
     float sumpt = 0;
-    for(unsigned int i = 0; i < c_nJet; i++)
+    for (unsigned int i = 0; i < c_nJet; i++)
     {
         sumpt += jets.at(i).pt();
         jetsum += jets.at(i);
     }
-    for(unsigned int i = 0; i < c_nBJet; i++)
+    for (unsigned int i = 0; i < c_nBJet; i++)
     {
         sumpt += bjets.at(i).pt();
         jetsum += bjets.at(i);
     }
-    if(c_nJet >= 1 or c_nBJet >= 1)
+    if (c_nJet >= 1 or c_nBJet >= 1)
     {
         h_m_inv.Fill(jetsum.mass(), weight);
         h_sum_pt.Fill(sumpt, weight);
     }
     // leading jet
-    if(c_nJet >= 1)
+    if (c_nJet >= 1)
     {
         h_pt_1st_jet.Fill(jets.at(0).pt(), weight);
         h_eta_1st_jet.Fill(jets.at(0).eta(), weight);
         h_phi_1st_jet.Fill(jets.at(0).phi(), weight);
     }
     // 2nd leading jet
-    if(c_nJet >= 2)
+    if (c_nJet >= 2)
     {
         h_pt_2nd_jet.Fill(jets.at(1).pt(), weight);
         h_eta_2nd_jet.Fill(jets.at(1).eta(), weight);
         h_phi_2nd_jet.Fill(jets.at(1).phi(), weight);
     }
     // leading bjet
-    if(c_nBJet >= 1)
+    if (c_nBJet >= 1)
     {
         h_pt_1st_bjet.Fill(bjets.at(0).pt(), weight);
         h_eta_1st_bjet.Fill(bjets.at(0).eta(), weight);
         h_phi_1st_bjet.Fill(bjets.at(0).phi(), weight);
     }
     // 2nd leading bjet
-    if(c_nBJet >= 2)
+    if (c_nBJet >= 2)
     {
         h_pt_2nd_bjet.Fill(bjets.at(1).pt(), weight);
         h_eta_2nd_bjet.Fill(bjets.at(1).eta(), weight);
         h_phi_2nd_bjet.Fill(bjets.at(1).phi(), weight);
     }
     // deltar
-    if(c_nJet >= 2)
+    if (c_nJet >= 2)
     {
         h_deltar_jetjet.Fill(Math::VectorUtil::DeltaR(jets.at(0), jets.at(1)), weight);
     }
-    if(c_nBJet >= 2)
+    if (c_nBJet >= 2)
     {
         h_deltar_bjetbjet.Fill(Math::VectorUtil::DeltaR(bjets.at(0), bjets.at(1)), weight);
     }
-    if(c_nJet >= 1 and c_nBJet >= 1)
+    if (c_nJet >= 1 and c_nBJet >= 1)
     {
         h_deltar_jetbjet.Fill(Math::VectorUtil::DeltaR(jets.at(0), bjets.at(0)), weight);
     }

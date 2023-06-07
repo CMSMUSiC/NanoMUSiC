@@ -1,0 +1,7 @@
+module "TEventClass" {
+  requires cplusplus
+  module "include/TEventClass.hpp" { header "include/TEventClass.hpp" export * }
+  link "libTEventClass.so"
+  export *
+}
+

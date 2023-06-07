@@ -373,6 +373,7 @@ def main():
                     unit="sample",
                 )
             )
+        exit(0)
 
         exit(0)
 

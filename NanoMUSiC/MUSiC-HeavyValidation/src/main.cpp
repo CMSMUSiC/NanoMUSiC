@@ -140,6 +140,8 @@ auto main(int argc, char *argv[]) -> int
     ADD_VALUE_READER(pass_jet_pt_trigger, bool);
 
     ADD_VALUE_READER(nMuon, unsigned int);
+    ADD_VALUE_READER(Pileup_nTrueInt, float);
+
     ADD_ARRAY_READER(Muon_pt, float);
     ADD_ARRAY_READER(Muon_eta, float);
     ADD_ARRAY_READER(Muon_phi, float);
@@ -275,16 +277,17 @@ auto main(int argc, char *argv[]) -> int
     // build jet corrections
     auto jet_corrections = JetCorrector(get_runyear(year), get_era_from_process_name(process, is_data), is_data);
 
+    auto pu_corrector =
+        correction::CorrectionSet::from_file(
+            "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2018_UL/puWeights.json.gz")
+            ->at("Collisions18_UltraLegacy_goldenJSON");
+
     const auto cutflow_file =
         std::unique_ptr<TFile>(TFile::Open(fmt::format("{}/cutflow_{}_{}.root", output_path, process, year).c_str()));
     const auto cutflow_histo = cutflow_file->Get<TH1F>("cutflow");
     // const auto total_generator_weight = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("GeneratorWeight") + 1);
     const auto no_cuts = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("NoCuts") + 1);
     const auto generator_filter = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("GeneratorFilter") + 1);
-    auto pu_corrector =
-        correction::CorrectionSet::from_file(
-            "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2018_UL/puWeights.json.gz")
-            ->at("Collisions18_UltraLegacy_goldenJSON");
 
     // fmt::print("\n[MUSiC Validation] Creating set of processed events ...\n");
     // MAP[run_number : SET[event_number]]

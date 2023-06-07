@@ -1,0 +1,4 @@
+[ libTEventClass.so ]
+# List of selected classes
+class TEventClass
+header TEventClass.hpp

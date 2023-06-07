@@ -29,14 +29,19 @@ class Dijets
     ADD_TH1F(h_jet_2_eta, n_eta_bins, min_eta, max_eta);
     ADD_TH1F(h_jet_1_phi, n_phi_bins, min_phi, max_phi);
     ADD_TH1F(h_jet_2_phi, n_phi_bins, min_phi, max_phi);
+
+    ADD_TH1F(h_dr_jet_1_jet_2, n_dR_bins, min_dR, max_dR);
+    ADD_TH1F(h_jet_1_jet_2_dPhi, n_dR_bins, min_dR, max_dR);
+
     // ADD_TH1F(h_jet_1_jet_1_dPhi, n_phi_bins, min_phi, max_phi);
     // ADD_TH1F(h_jet_1_jet_1_dR, n_dR_bins, min_dR, max_dR);
     // ADD_TH1F(h_jet_multiplicity, n_multiplicity_bins, min_multiplicity, max_multiplicity);
     // ADD_TH1F(h_bjet_multiplicity, n_multiplicity_bins, min_multiplicity, max_multiplicity);
 
-    // TH2F h_jet_1_pt_eta = TH2F("h_jet_1_pt_eta", "h_jet_1_pt_eta", 130, min_energy, 900, n_eta_bins, min_eta,
-    // max_eta); TH2F h_jet_1_pt_phi = TH2F("h_jet_1_pt_eta", "h_jet_1_pt_eta", 130, min_energy, 900, n_phi_bins,
-    // min_phi, max_phi);
+    TH2F h_dr_mass = TH2F("h_dr_mass", "h_dr_mass", n_dR_bins, min_dR, max_dR, 100, 0, 8000);
+    TH2F h_dr_sum_pt = TH2F("h_dr_sum_pt", "h_dr_sum_pt", n_dR_bins, min_dR, max_dR, 100, 0, 6000);
+    TH2F h_dr_pt1 = TH2F("h_dr_pt1", "h_dr_pt1", n_dR_bins, min_dR, max_dR, 80, 0, 3000);
+    TH2F h_eta1_mass = TH2F("h_eta1_mass", "h_eta1_mass", n_eta_bins, min_eta, max_eta, 80, 0, 3000);
 
     double min_bin_width = 10;
 
