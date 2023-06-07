@@ -1,20 +1,20 @@
 #ifndef CROSSSECTIONORDERERRORMAP_HPP
 #define CROSSSECTIONORDERERRORMAP_HPP
 
-#include "Tools/Tools.hpp"
+// #include "Tools/Tools.hpp"
 
-class CROSSSECTIONORDERERRORMAP_HPP
+#include <string>
+#include <unordered_map>
+#include <vector>
+
+class CrossSectionOrderErrorMap
 {
   public:
-    std::vector<std::string> const availableOrders;
-    std::map<std::string, double> weightMap;
-    CROSSSECTIONORDERERRORMAP_HPP(Tools::MConfig const &cfg)
-        : availableOrders(Tools::splitString<std::string>(cfg.GetItem<std::string>("General.Syst.Orders"), true))
+    std::vector<std::string> const availableOrders = {"LO", "NLO", "NNLO", "NNNLO", "NLO_W", "N3LO"};
+    std::unordered_map<std::string, double> weightMap =
+        {{"LO", 0.5}, {"NLO", 0.0}, {"NNLO", 0.0}, {"NNNLO", 0.0}, {"NLO_W", 0.1}, {"N3LO", 0.0}};
+    CrossSectionOrderErrorMap()
     {
-        for (auto &order : availableOrders)
-        {
-            weightMap.emplace(order, cfg.GetItem<double>("General.Syst." + order));
-        }
     }
     // implement some map like functions
     double at(std::string key)
@@ -30,11 +30,11 @@ class CROSSSECTIONORDERERRORMAP_HPP
     {
         weightMap.emplace(key, value);
     };
-    std::map<std::string, double>::iterator end()
+    std::unordered_map<std::string, double>::iterator end()
     {
         return weightMap.end();
     }
-    std::map<std::string, double>::iterator find(std::string key)
+    std::unordered_map<std::string, double>::iterator find(std::string key)
     {
         return weightMap.find(key);
     }

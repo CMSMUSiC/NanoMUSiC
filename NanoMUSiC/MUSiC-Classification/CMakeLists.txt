@@ -36,6 +36,10 @@ add_link_options(
     -lstdc++fs
 )
 
+include_directories(
+    ${CMAKE_SOURCE_DIR}/NanoMUSiC/TEventClass/include/
+)
+
 add_executable(
     classification //
     src/main.cpp //

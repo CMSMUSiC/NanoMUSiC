@@ -27,6 +27,7 @@ include_directories(
     ${ROOT_INCLUDE_DIR}
     ${LCG_BASE}/include
     ${LCG_BASE}/include/rapidjson
+    ${CMAKE_SOURCE_DIR}/NanoMUSiC/TEventClass/include/
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/external/
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/include/
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-LightSkimmer/include/
