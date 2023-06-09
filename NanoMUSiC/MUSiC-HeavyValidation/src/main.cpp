@@ -429,13 +429,13 @@ auto main(int argc, char *argv[]) -> int
 
         // std::cout << "Generated objects." << std::endl;
 
-        /* LEPTON VETO
+        ///* LEPTON VETO
         if (not(nelectron == 0 and nmuon == 0))
         {
             continue; // veto any e,mu final states
         }
         // std::cout << "Passed e/mu veto." << std::endl;
-        */
+        //*/
 
         // CHECK TRIGGER THRESHOLDS
         if (trigger_flags.at(0))                     // PT trigger

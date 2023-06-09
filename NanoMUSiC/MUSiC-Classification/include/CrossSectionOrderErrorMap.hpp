@@ -3,8 +3,8 @@
 
 #include "Tools/Tools.hpp"
 
-class CROSSSECTIONORDERERRORMAP_HPP
-{
+class CrossSectionOrderErrorMap
+{/*
   public:
     std::vector<std::string> const availableOrders;
     std::map<std::string, double> weightMap;
@@ -37,7 +37,7 @@ class CROSSSECTIONORDERERRORMAP_HPP
     std::map<std::string, double>::iterator find(std::string key)
     {
         return weightMap.find(key);
-    }
+    }*/
 };
 
 #endif /*CROSSSECTIONORDERERRORMAP_HPP*/
