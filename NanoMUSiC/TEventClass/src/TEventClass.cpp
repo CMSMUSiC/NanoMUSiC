@@ -25,7 +25,7 @@ TEventClass::TEventClass(const std::string &EventType,
                          const std::string runhash,
                          bool const data,
                          double const cme,
-                         std::map<std::string, int> countmap,
+                         std::unordered_map<std::string, int> countmap,
                          const bool analyzedBjets,
                          std::map<std::string, std::vector<double>> distTypeBins,
                          const bool analyzedCharge,
@@ -1048,8 +1048,8 @@ void TEventClass::Browse(TBrowser *browser)
 }
 
 //------------------------------------------------------------------------------------------
-std::string TEventClass::calculateEventClass(const std::map<std::string, int> countmap,
-                                             const std::map<std::string, int> shortmap,
+std::string TEventClass::calculateEventClass(const std::unordered_map<std::string, int> countmap,
+                                             const std::unordered_map<std::string, int> shortmap,
                                              std::function<bool(std::string, std::string)> orderFunction)
 {
 

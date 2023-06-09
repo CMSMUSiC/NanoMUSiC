@@ -9,12 +9,13 @@ target_compile_options(TEventClass PUBLIC
         -O3
         -Wall
         -fPIC
-        -fsignaling-nans
-        -funsafe-math-optimizations
-        -fno-rounding-math
-        -fno-signaling-nans
-        -fcx-limited-range
-        -fno-associative-math
+
+        # -fsignaling-nans
+        # -funsafe-math-optimizations
+        # -fno-rounding-math
+        # -fno-signaling-nans
+        # -fcx-limited-range
+        # -fno-associative-math
         -pthread
         -std=c++17
         -m64

@@ -12,10 +12,83 @@
 
 using namespace std::string_literals;
 
+// will ready the eventview and build the ParticleMap lists (fourvectors (particles), scale_factors and matches )
+auto getParticleLists(EventView &event_view)
+    -> std::tuple<ParticleMap::ParticleMap_t, ParticleMap::ScaleFactorMap_t, ParticleMap::MatchMap_t>
+{
+
+    auto [particles_map, scalefactors_map, matches_map] = ParticleMap::make_empty_particle_maps();
+
+    particles_map.at("Ele") = event_view.get_electrons();
+    particles_map.at("Muon") = event_view.get_muons();
+    particles_map.at("GammaEB") = event_view.get_photons();
+    particles_map.at("Jet") = event_view.get_jets();
+    particles_map.at("bJet") = event_view.get_jets();
+    particles_map.at("MET") = event_view.get_met();
+
+    scalefactors_map.at("Ele") = event_view.get_electrons_scalefactors();
+    scalefactors_map.at("Muon") = event_view.get_muons_scalefactors();
+    scalefactors_map.at("GammaEB") = event_view.get_photons_scalefactors();
+    scalefactors_map.at("Jet") = event_view.get_jets_scalefactors();
+    scalefactors_map.at("bJet") = event_view.get_jets_scalefactors();
+    scalefactors_map.at("MET") = event_view.get_met_scalefactors();
+
+    matches_map.at("Ele") = event_view.get_electrons_matches();
+    matches_map.at("Muon") = event_view.get_muons_matches();
+    matches_map.at("GammaEB") = event_view.get_photons_matches();
+    matches_map.at("Jet") = event_view.get_jets_matches();
+    matches_map.at("bJet") = event_view.get_jets_matches();
+    matches_map.at("MET") = event_view.get_met_matches();
+
+    return std::tuple<ParticleMap::ParticleMap_t, ParticleMap::ScaleFactorMap_t, ParticleMap::MatchMap_t>(
+        particles_map, scalefactors_map, matches_map);
+}
+
+// Function to order physics object names
+bool orderParticleTypes(std::string first, std::string second)
+{
+
+    std::map<std::string, int> orderMap;
+    orderMap.emplace("Ele", 0);
+    orderMap.emplace("EleEB", 1);
+    orderMap.emplace("EleEE", 2);
+    orderMap.emplace("Muon", 3);
+    orderMap.emplace("Tau", 4);
+    orderMap.emplace("Gamma", 6);
+    orderMap.emplace("GammaEB", 7);
+    orderMap.emplace("GammaEE", 8);
+    orderMap.emplace("bJet", 9);
+    orderMap.emplace("Jet", 10);
+    orderMap.emplace("MET", 11);
+
+    int first_pos = 99;
+    if (orderMap.find(first) != orderMap.end())
+    {
+        first_pos = orderMap[first];
+    }
+
+    int second_pos = 99;
+    if (orderMap.find(second) != orderMap.end())
+    {
+        second_pos = orderMap[second];
+    }
+
+    if (first_pos == second_pos)
+    {
+        return true;
+    }
+    else
+    {
+        return first_pos < second_pos;
+    }
+}
+
 ClassFactory::ClassFactory(const bool is_data,
                            const double cross_section,
                            const double filter_efficiency,
                            const double k_factor,
+                           const double lumi,
+                           unsigned int const numPDFs,
                            const std::string &process,
                            const std::string &processOrder,
                            const std::string &processGroup,
@@ -31,6 +104,8 @@ ClassFactory::ClassFactory(const bool is_data,
       xsec(cross_section),
       fEff(filter_efficiency),
       kFac(k_factor),
+      m_lumi(lumi),
+      m_numPDFs(numPDFs),
 
       m_lastprocess(process),
       m_lastprocessOrder(processOrder),
@@ -80,7 +155,10 @@ ClassFactory::ClassFactory(const bool is_data,
 
       m_xsOrderErrorMap(CrossSectionOrderErrorMap()),
 
-      m_data(is_data)
+      m_data(is_data),
+
+      m_differentialSystematics({}),
+      m_constantSystematics({})
 {
     m_fakeErrorMap = {
         {"Tau", 0.5},   //
@@ -527,7 +605,7 @@ void ClassFactory::fillCutFlow(const double sumPt,
                                const double invMass,
                                const double met,
                                const int numPart,
-                               const std::map<std::string, int> &countMap,
+                               const std::unordered_map<std::string, int> &countMap,
                                const double weight)
 {
     if (sumPt < m_ec_sumpt_min)
@@ -580,6 +658,9 @@ void ClassFactory::analyseEvent(Event &event)
             event_info.has_scale_variation = true;
             event_info.qcd_scale = event.get_view("nominal").get_scale_variation();
         }
+        event_info.pdf_weights = event.get_view("nominal").get_pdf_weights();
+        event_info.as_weights = event.get_view("nominal").get_as_weights();
+        event_info.Global_ScalefactorError = event.get_view("nominal").get_Global_ScalefactorError();
     }
     else
     {
@@ -589,6 +670,9 @@ void ClassFactory::analyseEvent(Event &event)
         event_info.pileup = 1.;
         event_info.pileup_up = 1.;
         event_info.pileup_down = 1.;
+        event_info.pdf_weights = {};
+        event_info.as_weights = {};
+        event_info.Global_ScalefactorError = 1;
     }
 
     // by default, the event weight is 1
@@ -629,7 +713,7 @@ void ClassFactory::analyseEvent(Event &event)
         {
             if (view != "nominal")
             {
-                // Fill(eventview, total_event_weight, event_info, view);
+                Fill(eventview, total_event_weight, event_info, std::string(view));
             }
         }
     }
@@ -651,53 +735,671 @@ void ClassFactory::analyseEvent(Event &event)
     fillFilterCutFlow(total_event_weight);
 
     // fill this event
-    // Fill(event.get_view("nominal"), total_event_weight, event_info);
+    Fill(event.get_view("nominal"), total_event_weight, event_info);
 }
 
-/* USAGE OF THE NEW EVENT / EVENTVIEW CLASSES
-int main()
+void ClassFactory::FillInclusiveRecursive(std::map<std::string, TEventClass *> &inclEventClasses,
+                                          std::vector<std::string> partNameVector,
+                                          std::string Type,
+                                          std::string Process,
+                                          double const weight,
+                                          EventInfo &event_info,
+                                          int iterator,
+                                          std::unordered_map<std::string, int> recCountMap,
+                                          std::unordered_map<std::string, int> refCountMap,
+                                          ParticleMap &particleMap,
+                                          std::string systName,
+                                          std::string nameSuffix)
 {
-    auto event = Event(EventView(0., std::vector<float>{5.f, 6.f}))
-                     .set_view("v1", EventView(1., std::vector<float>{5.f, 6.f}))
-                     .set_view("v2", EventView(4., std::vector<float>{5.f, 6.f}));
 
-    event.get_view("v1").print();
-    event.get_view("v2").print();
-
-    fmt::print("-------------------------------------------\n");
-
-    for (auto &&[v, ev] : event)
+    std::string EventClassName;
+    std::string partName = partNameVector.at(iterator);
+    bool printIt = false;
+    //~ for(auto countMap : refCountMap ) if( countMap.second > 1 ) printIt = true;
+    for (int partCount = recCountMap[partName]; partCount <= refCountMap[partName]; partCount++)
     {
-        // std::cout << v << std::endl;
-        // ev.print();
-        ev.set_weight(ev.get_weight() * 2.);
+        recCountMap[partName] = partCount;
+        if (printIt)
+        {
+            std::cout << std::endl << partName << " " << refCountMap[partName] << " " << recCountMap[partName];
+            std::cout << std::endl << "refMap ";
+            for (auto countMap : refCountMap)
+                std::cout << countMap.second << countMap.first << " ";
+            std::cout << std::endl << "recMap ";
+            for (auto countMap : recCountMap)
+                std::cout << countMap.second << countMap.first << " ";
+        }
+        if (partName == partNameVector.back())
+        {
+            bool allEmpty = true;
+            // check if recCountMap is empty
+            for (auto count : recCountMap)
+            {
+                if (count.second > 0)
+                    allEmpty = false;
+            }
+            if (allEmpty)
+                continue;
+            // calculate and use charge only if asked to
+            int iCharge = 0;
+            // if (m_ec_charge_use)
+            // {
+            //     iCharge = abs(particleMap.getLeptonCharge(recCountMap));
+            // }
+
+            EventClassName = TEventClass::calculateEventClass(
+                                 recCountMap, std::unordered_map<std::string, int>(), orderParticleTypes) +
+                             nameSuffix;
+
+            // Get the histo from the map per inclusive rec-Eventclass
+            if (!hasTooManyJets(recCountMap))
+            {
+                TEventClass *InclEventClasstoFill = inclEventClasses[EventClassName];
+                if (InclEventClasstoFill == 0 && !hasTooManyJets(recCountMap))
+                {
+                    InclEventClasstoFill = InitTEventClass(Type,
+                                                           EventClassName,
+                                                           particleMap,
+                                                           recCountMap,
+                                                           iCharge, //   !!!
+                                                           true);
+                    inclEventClasses[EventClassName] = InclEventClasstoFill;
+                }
+                if (m_data)
+                {
+                    // data mode, so there are no weights at all
+                    FillEventClass(InclEventClasstoFill, event_info, Process, particleMap, recCountMap);
+                }
+                else
+                {
+                    FillEventClass(
+                        InclEventClasstoFill, event_info, Process, particleMap, recCountMap, weight, systName);
+                }
+            }
+        }
+        else
+        { // we are not at the deepest level yet
+            FillInclusiveRecursive(inclEventClasses,
+                                   partNameVector,
+                                   Type,
+                                   Process,
+                                   weight,
+                                   event_info,
+                                   iterator + 1,
+                                   recCountMap,
+                                   refCountMap,
+                                   particleMap,
+                                   systName,
+                                   nameSuffix);
+        }
+    }
+}
+
+// Create TEventClass pointer with all needed input. The deletion takes place in
+// the destructor of EventClassFactory.
+// Only some of the variables (type, name, number of particles, etc.) change
+// from class to class. Some other variables are computed from these variables
+// (bin edges, etc.). This wrapper function does this calculation, because they
+// are always the same for all kinds of EventClasses (exclusive, inclusive,
+// empty).
+TEventClass *ClassFactory::InitTEventClass(std::string const &Type,
+                                           std::string const &ECName,
+                                           ParticleMap &particleMap,
+                                           std::unordered_map<std::string, int> countMap,
+                                           int const absCharge,
+                                           bool const inclusiveEC) const
+{
+    // Calculate bin edges, depending on resolution.
+    std::vector<double> const sumptBins =
+        particleMap.getBinLimits("SumPt", countMap, 0, m_cme, m_bin_size_min, m_fudge_sumpt);
+
+    std::vector<double> const minvBins =
+        particleMap.getBinLimits("InvMass", countMap, 0, m_cme, m_bin_size_min, m_fudge_sumpt);
+
+    std::vector<double> const metBins =
+        particleMap.getBinLimits("MET", countMap, 0, m_cme, m_bin_size_min, m_fudge_sumpt);
+
+    // Compute the minimal possible SumPt and MET from the set of particles in
+    // this EventClass.
+    // This is needed for the fill-up in MISv2.
+    double sumPtMin = 0.0;
+    double metMin = 0.0;
+    double invMassMin = 0.0;
+
+    // Fill all bin borders in map entries decide which histograms are
+    // booked during init
+    std::map<std::string, std::vector<double>> distTypeBins;
+    distTypeBins.emplace("SumPt", sumptBins);
+    distTypeBins.emplace("InvMass", minvBins);
+    if (countMap["MET"] > 0 and ECName.find("Empty") == std::string::npos)
+        distTypeBins.emplace("MET", metBins);
+    // Fill topo and config requirements for all distTypes in to maps
+    std::map<std::string, double> distTypMins;
+    distTypMins.emplace("SumPt", sumPtMin);
+    distTypMins.emplace("InvMass", invMassMin);
+    distTypMins.emplace("MET", metMin);
+    std::map<std::string, double> distTypeMinsRequire;
+    distTypeMinsRequire.emplace("SumPt", m_ec_sumpt_min);
+    distTypeMinsRequire.emplace("InvMass", m_ec_minv_min);
+    distTypeMinsRequire.emplace("MET", m_ec_met_min);
+
+    //~ std::cout << "init class "  << ECName << std::endl;
+    // Tell EventClassFactory what systematics should be expected
+    std::set<std::string> systNames;
+    for (auto &&syst_name : m_differentialSystematics)
+    {
+        systNames.emplace(syst_name);
+    }
+    for (auto &&syst_name : m_constantSystematics)
+    {
+        systNames.emplace(syst_name);
     }
 
-    fmt::print("-------------------------------------------\n");
-
-    event.get_view("v1").print();
-    event.get_view("v2").print();
-
-    fmt::print("-------------------------------------------\n");
-
-    event.add_view("v3", event.get_view("v2").clone());
-    event.get_view("v3").set_shared_weight(23.);
-
-    event.get_view("v2").print();
-    event.get_view("v3").print();
-
-    fmt::print("-------------------------------------------\n");
-
-    event.add_view("v4", event.get_view("v2").clone());
-    event.get_view("v4").set_weight(42.);
-
-    event.get_view("v2").print();
-    event.get_view("v4").print();
-
-    fmt::print("-------------------------------------------\n");
-
-    fmt::print("[{}]\n", fmt::join(event.get_views(), ", "));
-
-    return EXIT_SUCCESS;
+    std::cout << "Adding new class " << ECName << std::endl;
+    return new TEventClass(Type,
+                           ECName,
+                           m_runHash,
+                           m_data,
+                           m_cme,
+                           countMap,
+                           m_useBJets,
+                           distTypeBins,
+                           m_ec_charge_use,
+                           absCharge,
+                           inclusiveEC,
+                           distTypMins,
+                           m_numPDFs,
+                           distTypeMinsRequire,
+                           m_lumi,
+                           systNames);
 }
-*/
+
+void ClassFactory::FillEventClass(TEventClass *EventClassToFill,
+                                  EventInfo &event_info,
+                                  std::string const &process,
+                                  ParticleMap &particleMap,
+                                  std::unordered_map<std::string, int> &countMap,
+                                  double const eventWeight,
+                                  std::string systName)
+{
+    // What kind of EventClass are we dealing with?
+    std::string const ECtype(EventClassToFill->getType()); // Gen or Rec
+    std::string const ECname(EventClassToFill->GetName());
+    // special treatment for current way to handle b jets
+
+    bool minimalFill = false;
+    // check if we want to fill pdfs and constant systematics ( not data or differential systematic)
+    if (m_data or !systName.empty())
+        minimalFill = true;
+
+    unsigned int const numPart = EventClassToFill->getTotalNumECItems();
+
+    double sumPt = 0.0;
+    double MET = 0.0;
+    double scale_factor = 1.0;
+    double scale_factor_syst_error = 0.0;
+    double Minv = 0.0;
+
+    // Use pxl::Particle to add up all particle four-vectors.
+    // pxl::Particle vec_sum = pxl::Particle();
+    // auto vec_sum = Math::PtEtaPhiMVector();
+
+    // create empty maps
+    // for pxl particle vectors with reduced number of parts for inclusive classes
+    // std::map<std::string, std::vector<pxl::Particle *>> realParticleMap;
+    // for fake counting
+    std::unordered_map<std::string, int> fakeMap;
+    // std::unordered_map<std::string, int> chargeFakeMap;
+
+    // Fill all considered particle types to the event distributions (distTypes)
+    sumPt = particleMap.getSumPt(countMap);
+    MET = particleMap.getMET(countMap);
+    Minv = particleMap.getMass(countMap);
+    if (ECtype == "Rec" and not minimalFill)
+    {
+        fakeMap = particleMap.getFakeMap(countMap);
+        // chargeFakeMap = particleMap.getChargeFakeMap(countMap);
+    }
+
+    // Final event weight (always = 1 for data).
+    double weight = 1.0;
+
+    if (not m_data)
+    {
+        scale_factor = particleMap.getScaleFactor(countMap);
+        scale_factor_syst_error = particleMap.getScaleFactorSystError(countMap);
+        weight *= eventWeight;
+        weight *= scale_factor;
+    }
+
+    double weight_fake_error = 0.0;
+    if (not minimalFill)
+    {
+        for (auto errorPair : m_fakeErrorMap)
+        {
+            weight_fake_error += std::pow(errorPair.second * fakeMap[errorPair.first], 2);
+        }
+        weight_fake_error = sqrt(weight_fake_error);
+    }
+
+    // Compute weight for charge misassignment (MC only):
+    double weight_charge_error = 0.0;
+    // if (m_ec_charge_use and not minimalFill)
+    // {
+    //     for (auto errorPair : m_chargeErrorMap)
+    //     {
+    //         weight_charge_error += std::pow(errorPair.second * chargeFakeMap[errorPair.first], 2);
+    //     }
+    //     weight_charge_error = sqrt(weight_fake_error);
+    // }
+
+    // Check if the map of processes and process groups needs to be updated
+    EventClassToFill->addToProcessGroupMap(process, m_lastprocessGroup);
+
+    // Fill cut flow part 2
+    if (systName == "" and not EventClassToFill->isInclusive())
+    {
+        fillCutFlow(sumPt, Minv, MET, numPart, countMap, eventWeight);
+    }
+
+    // If any of the required cuts it not fulfilled, do not fill the event!
+    // Check Minv only if we have more that one particle (otherwise Minv is the
+    // particle mass).
+    // Check MET only if MET is present.
+    if (sumPt < m_ec_sumpt_min)
+        return;
+    if (numPart > 1 and Minv < m_ec_minv_min)
+        return;
+    if (countMap["MET"] > 0 and MET < m_ec_met_min)
+        return;
+
+    // Compute "real" resolution of this event:
+    double const sumptResReal = particleMap.getRealResolution(countMap);
+
+    double const minvResReal = sumptResReal;
+
+    // Compute "assumed" resolution of this event, i.e. with averaged pt:
+    double const sumptRes = particleMap.getApproximateResolution(countMap);
+
+    double const minvRes = sumptRes;
+
+    // Fill values into maps, this allows more general
+    // handling of both distributions and systematics
+    std::map<std::string, double> values;
+    values["SumPt"] = sumPt;
+    values["InvMass"] = Minv;
+    if (countMap["MET"] > 0)
+        values["MET"] = MET;
+    std::map<std::string, std::pair<double, double>> resolutionMap;
+    resolutionMap["SumPt"] = std::make_pair(sumptResReal, sumptRes);
+    resolutionMap["InvMass"] = std::make_pair(minvResReal, minvRes);
+    if (m_data)
+    {
+        // Data, so no weights.
+        EventClassToFill->Fill(process, values, resolutionMap);
+
+        // Check if we have an interesting event here, if so, save it.
+        if (numPart > 0 and CheckEventToList(sumPt, Minv, MET))
+        {
+            event_info.sumpt = sumPt;
+            event_info.minv = Minv;
+            event_info.met = MET;
+
+            FillEventList(ECname, event_info);
+        }
+    }
+    else if (!systName.empty())
+    {
+        // Fill differential systematic
+        // the eventclass may not be filled yet.make sure the xs uncert is added
+        // even though syst weight are not filled for differential systematics
+        std::string xsUncertName = "xs" + m_lastprocessGroup + m_lastprocessOrder;
+        if (!EventClassToFill->hasSystematic(xsUncertName))
+        {
+            EventClassToFill->addSystematic(xsUncertName);
+        }
+        EventClassToFill->FillDifferentialSystematic(process, values, weight, event_info.pdf_weights, systName);
+    }
+    else
+    {
+        // Fill standard MC and constant systematics
+        std::map<std::string, double> systWeights;
+        // fake
+        systWeights["fakeUp"] = 1. + weight_fake_error;
+        systWeights["fakeDown"] = 1. - weight_fake_error;
+        systWeights["charge"] = 1 + weight_charge_error;
+        systWeights["luminosity"] = 1 + event_info.Global_ScalefactorError;
+        systWeights["scale_factor_syst"] = 1 + scale_factor_syst_error;
+        std::pair<double, double> asUncerts = event_info.as_weights;
+
+        // alphas uncert weights use too smaller variations compared to PDF4LHC recommendations
+        // and should be scaled by a factor of 1.5, see slide 14 of
+        // https://indico.cern.ch/event/459797/contributions/1961581/attachments/1181555/1800214/mcaod-Feb15-2016.pdf
+        systWeights["alphasDown"] = 1 - 1.5 * (asUncerts.second - asUncerts.first) / 2;
+        systWeights["alphasUp"] = 1 + 1.5 * (asUncerts.second - asUncerts.first) / 2;
+        if (event_info.prefire_weight > 0)
+        {
+            systWeights["prefireUp"] = event_info.prefire_weight_up / event_info.prefire_weight;
+            systWeights["prefireDown"] = event_info.prefire_weight_down / event_info.prefire_weight;
+        }
+        else
+        {
+            systWeights["prefireUp"] = 1.;
+            systWeights["prefireDown"] = 1.;
+        }
+
+        systWeights["pileupDown"] = event_info.pileup_down / event_info.pileup;
+        systWeights["pileupUp"] = event_info.pileup_up / event_info.pileup;
+
+        // cross section uncertainty
+        std::string xsUncertName = "xs" + m_lastprocessGroup + m_lastprocessOrder;
+        systWeights[xsUncertName] = 1 + m_xsOrderErrorMap.at(m_lastprocessOrder);
+
+        /// renormalization and factorization scales
+        double QCDweightUp = 1;
+        double QCDweightDown = 1;
+
+        if (event_info.has_scale_variation)
+        {
+
+            std::string delimiter = ";";
+
+            // get PDF weights
+            std::vector<float> qcdScaleWeights;
+
+            unsigned int pos1 = 0;
+            unsigned int pos2 = 0;
+            // first: string ending with number, second: string ending with delimiter
+            while (pos2 != std::string::npos && pos1 != event_info.qcd_scale.length())
+            {
+                pos2 = event_info.qcd_scale.find(delimiter, pos1);
+                qcdScaleWeights.push_back(std::stof(event_info.qcd_scale.substr(pos1, pos2 - pos1)) /
+                                          event_info.central_weight);
+                pos1 = pos2 + 1; // + delimiter.length();
+            }
+
+            /// find part of the string that gives up down for muR=muF=0.5 and muR=muF=2.
+            QCDweightUp = qcdScaleWeights[4];
+            QCDweightDown = qcdScaleWeights[8];
+        }
+
+        if (QCDweightUp > QCDweightDown)
+        {
+            systWeights[getQCDSystWeightName("Up")] = QCDweightUp;
+            systWeights[getQCDSystWeightName("Down")] = QCDweightDown;
+        }
+        else
+        {
+            systWeights[getQCDSystWeightName("Up")] = QCDweightDown;
+            systWeights[getQCDSystWeightName("Down")] = QCDweightUp;
+        }
+
+        // add cross section error correlationGroup if not added yet
+        // this means no Event of this process / processGroup has been
+        // added
+        if (!EventClassToFill->hasSystematic(xsUncertName))
+        {
+            EventClassToFill->addSystematic(xsUncertName);
+        }
+        EventClassToFill->Fill(process, values, resolutionMap, weight, systWeights, event_info.pdf_weights);
+    }
+}
+
+bool ClassFactory::CheckEventToList(double const sumPt, double const Minv, double const MET) const
+{
+    // Simply accept all events with anything in them, atm.
+    if (sumPt > 0.0 or Minv > 0.0 or MET > 0.0)
+        return true;
+    return false;
+}
+
+void ClassFactory::FillEventList(std::string const &ECname, EventInfo const &event_info)
+{
+    // If the list is full, check for each list if the given event has a greater
+    // sumpt, minv, met than that last element in the map, i.e. the one with the
+    // lowest value of the kinematic variable.
+    // Don't write the event info more than once, so return if it has been stored.
+    std::map<double, EventInfo>::iterator last;
+
+    std::map<double, EventInfo> &eventsBySumpt = m_events_by_sumpt[ECname];
+    if (eventsBySumpt.size() < m_num_listed_events_max)
+    {
+        eventsBySumpt[event_info.sumpt] = event_info;
+    }
+    else
+    {
+        last = --eventsBySumpt.end();
+        if (event_info.sumpt > last->first)
+        {
+            eventsBySumpt.erase(last);
+            eventsBySumpt[event_info.sumpt] = event_info;
+        }
+    }
+
+    std::map<double, EventInfo> &eventsByMinv = m_events_by_minv[ECname];
+    if (eventsByMinv.size() < m_num_listed_events_max)
+    {
+        eventsByMinv[event_info.minv] = event_info;
+    }
+    else
+    {
+        last = --eventsByMinv.end();
+        if (event_info.minv > last->first)
+        {
+            eventsByMinv.erase(last);
+            eventsByMinv[event_info.minv] = event_info;
+        }
+    }
+
+    std::map<double, EventInfo> &eventsByMET = m_events_by_met[ECname];
+    if (eventsByMET.size() < m_num_listed_events_max)
+    {
+        eventsByMET[event_info.met] = event_info;
+    }
+    else
+    {
+        last = --eventsByMET.end();
+        if (event_info.met > last->first)
+        {
+            eventsByMET.erase(last);
+            eventsByMET[event_info.met] = event_info;
+        }
+    }
+}
+
+bool ClassFactory::hasTooManyJets(std::unordered_map<std::string, int> countMap)
+{
+    unsigned int njets = countMap["Jet"] + countMap["bJet"];
+    return njets > m_max_jet_ec;
+}
+
+void ClassFactory::Fill(EventView &event_view, const double weight, EventInfo &event_info, std::string systName)
+{
+    // MET filters
+    if (!event_view.get_filter_accept())
+    {
+        return;
+    }
+
+    // Cross cleaning of trigger streams
+    if (event_view.get_Veto())
+    {
+        return;
+    }
+
+    // Trigger string and offline cuts fullfiled for one trigger
+    if (!event_view.get_trigger_accept())
+    {
+        return;
+    }
+
+    // Generator cuts
+    if (!event_view.get_generator_accept())
+    {
+        return;
+    }
+
+    // // simple prefiring check
+    // if (m_use_prefire_check && !event_view.get_pass_prefiring_check())
+    // {
+    //     return;
+    // }
+
+    // std::string type = event_view.get_Type();
+    // if ((type == "Gen" and m_ec_recOnly) or (type == "Rec" and m_ec_genOnly))
+    // {
+    //     return;
+    // }
+
+    // event with accepted topology?
+    bool topo_accept = event_view.get_topo_accept();
+
+    // method which creates and fills the EventClasses
+    std::string processName = event_view.get_Process();
+
+    // Delete 'ext' from process name ( via reference )
+    prepareProcessName(processName);
+    // EventClass specific
+
+    auto [particleMapTmp, scaleFactorMapTmp, MatchesMapTmp] = ParticleMap::make_empty_particle_maps();
+
+    if (topo_accept)
+    {
+        // Count this event only if it is accepted.
+        if (systName.empty())
+        {
+            // if (type == "Gen")
+            // {
+            //     genTotalEventsWeighted[processName] += weight;
+            //     genTotalEventsUnweighted[processName]++;
+            // }
+            // else
+            // {
+            recTotalEventsWeighted[processName] += weight;
+            recTotalEventsUnweighted[processName]++;
+            // }
+        }
+
+        // get a map containing only selected particles
+        auto particle_lists = getParticleLists(event_view);
+        particleMapTmp = std::get<0>(particle_lists);
+        scaleFactorMapTmp = std::get<1>(particle_lists);
+        MatchesMapTmp = std::get<2>(particle_lists);
+
+        particleMapTmp.erase("GammaEE");
+        scaleFactorMapTmp.erase("GammaEE");
+        MatchesMapTmp.erase("GammaEE");
+    }
+
+    auto particleMap = ParticleMap(particleMapTmp, scaleFactorMapTmp, MatchesMapTmp);
+    auto countMap = particleMap.getCountMap();
+
+    // calculate the class name
+    std::string excl_EC_name;
+    std::string incl_empty_name;
+    int absCharge = 0;
+    // if (m_ec_charge_use)
+    // {
+    //     absCharge = abs(particleMap.getLeptonCharge(countMap));
+    // }
+
+    excl_EC_name =
+        TEventClass::calculateEventClass(countMap, std::unordered_map<std::string, int>(), orderParticleTypes);
+    incl_empty_name = TEventClass::calculateEventClass(std::unordered_map<std::string, int>()) + "+X";
+
+    // introduced only to avoid too many changes in the interface
+    std::string type = "Rec";
+
+    // get the event class maps
+    std::map<std::string, TEventClass *> &exclEventClasses = getReferenceExclusiveMap(type);
+    std::map<std::string, TEventClass *> &inclEventClasses = getReferenceInclusiveMap(type);
+    std::map<std::string, TEventClass *> &jetInclEventClasses = getReferenceJetInclusiveMap(type);
+
+    // all accepted events are put in the Empty+X class
+    TEventClass *incl_empty = inclEventClasses[incl_empty_name];
+    if (incl_empty == 0)
+    {
+        // EventClass not existing, create it
+        incl_empty =
+            InitTEventClass(type, incl_empty_name, particleMap, std::unordered_map<std::string, int>(), 0.0, true);
+
+        inclEventClasses[incl_empty_name] = incl_empty;
+    }
+    std::unordered_map<std::string, int> emptyMap = countMap;
+    for (auto &pair : emptyMap)
+    {
+        pair.second = 0;
+    }
+    if (m_data)
+    {
+        FillEventClass(incl_empty, event_info, processName, particleMap, emptyMap);
+    }
+    else
+    {
+        FillEventClass(incl_empty, event_info, processName, particleMap, emptyMap, weight, systName);
+    }
+    // get the exclusive class
+    if (!hasTooManyJets(countMap))
+    {
+        TEventClass *EventClasstoFill = exclEventClasses[excl_EC_name];
+        if (EventClasstoFill == 0)
+        {
+            // EventClass not existing, create it
+            EventClasstoFill = InitTEventClass(type, excl_EC_name, particleMap, countMap, absCharge, false);
+
+            exclEventClasses[excl_EC_name] = EventClasstoFill;
+        }
+        if (m_data)
+        {
+            // data mode, so there are no weights at all
+            FillEventClass(EventClasstoFill, event_info, processName, particleMap, countMap);
+        }
+        else
+        {
+            FillEventClass(EventClasstoFill, event_info, processName, particleMap, countMap, weight, systName);
+        }
+    }
+
+    // fill inclusive Event Classes
+    // create a list of particleNames in this countMap
+    std::vector<std::string> particleNames;
+    for (auto count : countMap)
+    {
+        particleNames.push_back(count.first);
+    }
+    // create empty referecne count map for recursion
+    std::unordered_map<std::string, int> recCountMap = std::unordered_map<std::string, int>(countMap);
+    for (auto &count : recCountMap)
+    {
+        count.second = 0;
+    }
+    std::string nameSuffixIncl = "+X";
+    FillInclusiveRecursive(inclEventClasses,
+                           particleNames,
+                           type,
+                           processName,
+                           weight,
+                           event_info,
+                           0,
+                           recCountMap,
+                           countMap,
+                           particleMap,
+                           systName,
+                           nameSuffixIncl);
+
+    std::unordered_map<std::string, int> jetRecCountMap = std::unordered_map<std::string, int>(countMap);
+    jetRecCountMap["Jet"] = 0;
+    std::string nameSuffixJetIncl = "+NJets";
+    FillInclusiveRecursive(jetInclEventClasses,
+                           particleNames,
+                           type,
+                           processName,
+                           weight,
+                           event_info,
+                           0,
+                           jetRecCountMap,
+                           countMap,
+                           particleMap,
+                           systName,
+                           nameSuffixJetIncl);
+}

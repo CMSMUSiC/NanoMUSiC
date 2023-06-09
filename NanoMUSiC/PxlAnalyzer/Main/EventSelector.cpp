@@ -21,18 +21,25 @@ EventSelector::EventSelector(const Tools::MConfig &cfg)
       oldNameMap(),
 
       // initalize object selectors
-      m_ele_selector(cfg, &oldNameMap), m_muo_selector(cfg, &oldNameMap), m_tau_selector(cfg, &oldNameMap),
-      m_gamma_selector(cfg, &oldNameMap), m_jet_selector(cfg, &oldNameMap), m_fatjet_selector(cfg, &oldNameMap),
-      m_met_selector(cfg, &oldNameMap), selector_map({{}}),
+      m_ele_selector(cfg, &oldNameMap),
+      m_muo_selector(cfg, &oldNameMap),
+      m_tau_selector(cfg, &oldNameMap),
+      m_gamma_selector(cfg, &oldNameMap),
+      m_jet_selector(cfg, &oldNameMap),
+      m_fatjet_selector(cfg, &oldNameMap),
+      m_met_selector(cfg, &oldNameMap),
+      selector_map({{}}),
 
-      m_data(cfg.GetItem<bool>("General.RunOnData")), m_ignoreOverlaps(cfg.GetItem<bool>("General.IgnoreOverlaps")),
+      m_data(cfg.GetItem<bool>("General.RunOnData")),
+      m_ignoreOverlaps(cfg.GetItem<bool>("General.IgnoreOverlaps")),
 
       // When running on data, FastSim is always false!
       m_runOnFastSim(not m_data and cfg.GetItem<bool>("General.FastSim")),
       m_useTrigger(cfg.GetItem<bool>("General.UseTriggers")),
 
       // Generator selection:
-      m_gen_use(cfg.GetItem<bool>("Generator.use")), m_gen_selector(cfg),
+      m_gen_use(cfg.GetItem<bool>("Generator.use")),
+      m_gen_selector(cfg),
 
       // Filters:
       m_filterSet_name(cfg.GetItem<string>("FilterSet.Name")),
@@ -45,18 +52,21 @@ EventSelector::EventSelector(const Tools::MConfig &cfg)
       m_rho_use(cfg.GetItem<string>("Rho.Label", cfg.GetItem<string>("Ele.Rho.Label"))),
 
       // Muons
-      m_muo_use(cfg.GetItem<bool>("Muon.use")), m_muo_idtag(cfg.GetItem<bool>("Muon.IDTag", false)),
+      m_muo_use(cfg.GetItem<bool>("Muon.use")),
+      m_muo_idtag(cfg.GetItem<bool>("Muon.IDTag", false)),
       m_muo_rho_label(cfg.GetItem<string>("Muon.Rho.Label")),
 
       // Electrons:
-      m_ele_use(cfg.GetItem<bool>("Ele.use")), m_ele_idtag(cfg.GetItem<bool>("Ele.IdTag", false)),
+      m_ele_use(cfg.GetItem<bool>("Ele.use")),
+      m_ele_idtag(cfg.GetItem<bool>("Ele.IdTag", false)),
       m_ele_rho_label(cfg.GetItem<string>("Ele.Rho.Label")),
 
       // Taus
       m_tau_use(cfg.GetItem<bool>("Tau.use")),
 
       // Photons:
-      m_gam_use(cfg.GetItem<bool>("Gamma.use")), m_gam_rho_label(cfg.GetItem<string>("Gamma.Rho.Label")),
+      m_gam_use(cfg.GetItem<bool>("Gamma.use")),
+      m_gam_rho_label(cfg.GetItem<string>("Gamma.Rho.Label")),
       // jet
       m_jet_ID_use(cfg.GetItem<bool>("Jet.ID.use")),
 
@@ -65,7 +75,9 @@ EventSelector::EventSelector(const Tools::MConfig &cfg)
 
       m_gen_rec_map(cfg),
 
-      m_eventCleaning(cfg), m_triggerSelector(cfg), m_typeWriter(cfg)
+      m_eventCleaning(cfg),
+      m_triggerSelector(cfg),
+      m_typeWriter(cfg)
 {
     selector_map.emplace("Ele", &m_ele_selector);
     selector_map.emplace("Muon", &m_muo_selector);
@@ -143,7 +155,8 @@ bool EventSelector::passFilterSelection(pxl::EventView *EvtView)
     return passFilters;
 }
 
-void EventSelector::applyKinematicCuts(std::vector<pxl::Particle *> &objects, const std::string &partName,
+void EventSelector::applyKinematicCuts(std::vector<pxl::Particle *> &objects,
+                                       const std::string &partName,
                                        const bool isSyst)
 {
     vector<pxl::Particle *> objectsAfterCut;
@@ -180,8 +193,11 @@ void EventSelector::applyKinematicCuts(std::vector<pxl::Particle *> &objects, co
 
 //--------------------Apply cuts on Particles-----------------------------------------------------------------
 // ATTENTION: particle-vector is changed if object.Id.Tag = 0
-void EventSelector::applyCutsOnObject(std::vector<pxl::Particle *> &objects, const std::string &partName,
-                                      double objectRho, const std::string &idType, const bool isSyst)
+void EventSelector::applyCutsOnObject(std::vector<pxl::Particle *> &objects,
+                                      const std::string &partName,
+                                      double objectRho,
+                                      const std::string &idType,
+                                      const bool isSyst)
 {
     vector<pxl::Particle *> objectsAfterCut;
     std::string systPrefix = "";
@@ -326,7 +342,8 @@ std::map<std::string, std::vector<pxl::Particle *>> EventSelector::getGenParticl
 
 // Sort the particles in an event in lists and return them
 std::map<std::string, std::vector<pxl::Particle *>> EventSelector::getParticleLists(
-    const pxl::EventView *EvtView, bool selectedOnly,
+    const pxl::EventView *EvtView,
+    bool selectedOnly,
     std::list<std::function<void(std::map<std::string, std::vector<pxl::Particle *>> &)>> functions) const
 {
     std::map<std::string, std::vector<pxl::Particle *>> particleMap;
@@ -346,7 +363,10 @@ std::map<std::string, std::vector<pxl::Particle *>> EventSelector::getParticleLi
         string name = (*part)->getName();
         // skip this particle if we want only selected particles and IDpassed is false
         if (selectedOnly && (*part)->hasUserRecord("IDpassed") && !(*part)->getUserRecord("IDpassed").toBool())
+        {
             continue;
+        }
+
         // Only fill the collection if we want to use the particle!
         // If the collections are not filled, the particles are also ignored in
         // the event cleaning.
@@ -451,8 +471,11 @@ void EventSelector::performOfflineTriggerSelection(pxl::EventView *RecEvtView, p
 }
 
 //--------------------This is the main method to perform the selection-----------------------------------------
-void EventSelector::performSelection(pxl::EventView *RecEvtView, pxl::EventView *GenEvtView,
-                                     pxl::EventView *TrigEvtView, pxl::EventView *FilterView, const bool useSystCuts)
+void EventSelector::performSelection(pxl::EventView *RecEvtView,
+                                     pxl::EventView *GenEvtView,
+                                     pxl::EventView *TrigEvtView,
+                                     pxl::EventView *FilterView,
+                                     const bool useSystCuts)
 { // used with either GenEvtView or RecEvtView
     string process = RecEvtView->getUserRecord("Process");
 
@@ -484,8 +507,11 @@ void EventSelector::performSelection(pxl::EventView *RecEvtView, pxl::EventView 
     for (auto &part_name_use : particleUseMap)
     {
         if (part_name_use.second)
-            applyCutsOnObject(particleMap[part_name_use.first], part_name_use.first, rhoMap[part_name_use.first],
-                              particleIDTypeMap[part_name_use.first], useSystCuts);
+            applyCutsOnObject(particleMap[part_name_use.first],
+                              part_name_use.first,
+                              rhoMap[part_name_use.first],
+                              particleIDTypeMap[part_name_use.first],
+                              useSystCuts);
         if (part_name_use.first.find("Jet") != std::string::npos)
             m_typeWriter.writeJetTypes(particleMap[part_name_use.first]);
     }

@@ -4,6 +4,7 @@
 #include <string>
 
 #include "CrossSectionOrderErrorMap.hpp"
+#include "ParticleMap.hpp"
 #include "TEventClass.hpp"
 
 #include "Event.hpp"
@@ -34,12 +35,17 @@ class ClassFactory
         std::string process;
         std::string qcd_scale;
         bool has_scale_variation;
+        std::vector<float> pdf_weights;
+        std::pair<double, double> as_weights;
+        double Global_ScalefactorError;
     };
 
     ClassFactory(const bool is_data,
                  const double cross_section,
                  const double filter_efficiency,
                  const double k_factor,
+                 const double lumi,
+                 unsigned int const numPDFs,
                  const std::string &process,
                  const std::string &processOrder,
                  const std::string &processGroup,
@@ -54,6 +60,43 @@ class ClassFactory
                             std::set<std::string> &ProcessList,
                             const std::string &Label);
     void prepareProcessName(std::string &proc);
+
+    std::map<std::string, TEventClass *> &getReferenceExclusiveMap(std::string type)
+    {
+        if (type == "Gen")
+            return _genEventClasses;
+        if (type == "Rec")
+            return _recEventClasses;
+        std::cout << "Exclusive Map " << type << " not found!!" << std::endl;
+        // return an empty dummy event-class-map. gcc complained, I dunno what would have happened
+        // if a non-existing event-class is a critical error, we should crash here!
+        return *(new std::map<std::string, TEventClass *>);
+    }
+
+    std::map<std::string, TEventClass *> &getReferenceInclusiveMap(std::string type)
+    {
+        if (type == "Gen")
+            return _genInclEventClasses;
+        if (type == "Rec")
+            return _recInclEventClasses;
+        std::cout << "Inclusive Map " << type << " not found!!" << std::endl;
+        // return an empty dummy event-class-map. gcc complained, I dunno what would have happened
+        // if a non-existing event-class is a critical error, we should crash here!
+        return *(new std::map<std::string, TEventClass *>);
+    }
+
+    std::map<std::string, TEventClass *> &getReferenceJetInclusiveMap(std::string type)
+    {
+        if (type == "Gen")
+            return _genJetInclEventClasses;
+        if (type == "Rec")
+            return _recJetInclEventClasses;
+        std::cout << "Inclusive Map " << type << " not found!!" << std::endl;
+        // return an empty dummy event-class-map. gcc complained, I dunno what would have happened
+        // if a non-existing event-class is a critical error, we should crash here!
+        return *(new std::map<std::string, TEventClass *>);
+    }
+
     void WriteEventListToFile(std::string const &ECname);
     void WriteAnalysisInfoToFile(std::set<std::string> const &processList);
     // void CheckForCrossSection();
@@ -63,9 +106,55 @@ class ClassFactory
                      const double invMass,
                      const double met,
                      const int numPart,
-                     const std::map<std::string, int> &countMap,
+                     const std::unordered_map<std::string, int> &countMap,
                      const double weight);
     std::vector<ClassFactory::EventInfo> GetListedEvents(std::string const &ECname);
+
+    TEventClass *InitTEventClass(std::string const &Type,
+                                 std::string const &ECName,
+                                 ParticleMap &particleMap,
+                                 std::unordered_map<std::string, int> countMap,
+                                 int const absCharge,
+                                 bool const inclusiveEC) const;
+
+    // Fill given TEventClass with given event (i.e. set of particles).
+    // Same function for data and MC, for data the weights are simply not used
+    // at all!
+    void FillEventClass(TEventClass *EventClassToFill,
+                        EventInfo &event_info,
+                        std::string const &process,
+                        ParticleMap &particleMap,
+                        std::unordered_map<std::string, int> &countMap,
+                        double const eventWeight = 1.0,
+                        std::string systName = "");
+
+    void FillInclusiveRecursive(std::map<std::string, TEventClass *> &inclEventClasses,
+                                std::vector<std::string> partNameVector,
+                                std::string Type,
+                                std::string Process,
+                                double const weight,
+                                EventInfo &event_info,
+                                int iterator,
+                                std::unordered_map<std::string, int> recCountMap,
+                                std::unordered_map<std::string, int> refCountMap,
+                                ParticleMap &particleMap,
+                                std::string systName,
+                                std::string nameSuffix);
+
+    // Differential syst are filled using the same functions but with   systName
+    void Fill(EventView &event_view, const double weight, EventInfo &event_info, std::string systName = "");
+
+    bool hasTooManyJets(std::unordered_map<std::string, int> countMap);
+
+    bool CheckEventToList(double const sumPt, double const Minv, double const MET) const;
+    void FillEventList(std::string const &ECname, EventInfo const &event_info);
+
+    inline bool ends_with(std::string const &value, std::string const &ending)
+    {
+        if (ending.size() > value.size())
+            return false;
+        return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
+    }
 
   private:
     std::string m_outfilename;
@@ -132,6 +221,8 @@ class ClassFactory
     double const xsec;
     double const fEff;
     double const kFac;
+    double const m_lumi;
+    unsigned int const m_numPDFs;
 
     std::string const m_process;
     std::string const m_processOrder;
@@ -165,6 +256,9 @@ class ClassFactory
     std::map<std::string, double> m_fakeErrorMap;
     std::map<std::string, double> m_chargeErrorMap;
     CrossSectionOrderErrorMap m_xsOrderErrorMap;
+
+    std::set<std::string> m_differentialSystematics;
+    std::set<std::string> m_constantSystematics;
 };
 
 #endif // !CLASS_FACTORY

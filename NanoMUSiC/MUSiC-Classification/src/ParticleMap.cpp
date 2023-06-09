@@ -6,14 +6,15 @@
 #include <sstream>
 #include <stdexcept>
 
-ParticleMap::ParticleMap(
-    const std::unordered_map<std::string, RVec<Math::PtEtaPhiMVector>> &particleMap,
-    const std::unordered_map<std::string, std::unordered_map<std::string, RVec<double>>> &ScaleFactorMap,
-    const std::unordered_map<std::string, RVec<bool>> &matchMap)
+#include "fmt/format.h"
+
+ParticleMap::ParticleMap(const ParticleMap_t &particleMap,
+                         const ScaleFactorMap_t &ScaleFactorMap,
+                         const MatchMap_t &matchMap)
     : m_map(particleMap),
       m_scale_factor_map(ScaleFactorMap),
       m_match_map(matchMap),
-      m_countMap(std::unordered_map<std::string, int>()),
+      m_countMap(CountMap_t()),
       m_resolutionFuncMap({{"Ele", Resolutions::electron},
                            {"EleEE", Resolutions::electron},
                            {"EleEB", Resolutions::electron},
@@ -50,6 +51,65 @@ ParticleMap::ParticleMap(
     {
         m_countMap.emplace(part_type, part_vector.size());
     }
+}
+
+auto ParticleMap::make_empty_particle_maps() -> std::tuple<ParticleMap_t, ScaleFactorMap_t, MatchMap_t>
+{
+
+    auto particles_map = ParticleMap::ParticleMap_t({{"Ele", {}},
+                                                     {"EleEE", {}},
+                                                     {"EleEB", {}},
+                                                     {"Muon", {}},
+                                                     {"Gamma", {}},
+                                                     {"GammaEB", {}},
+                                                     {"GammaEE", {}},
+                                                     {"Tau", {}},
+                                                     {"Jet", {}},
+                                                     {"bJet", {}},
+                                                     {"MET", {}}});
+    auto scalefactors_map = ParticleMap::ScaleFactorMap_t({{"Ele", {}},
+                                                           {"EleEE", {}},
+                                                           {"EleEB", {}},
+                                                           {"Muon", {}},
+                                                           {"Gamma", {}},
+                                                           {"GammaEB", {}},
+                                                           {"GammaEE", {}},
+                                                           {"Tau", {}},
+                                                           {"Jet", {}},
+                                                           {"bJet", {}},
+                                                           {"MET", {}}});
+    auto matches_map = ParticleMap::MatchMap_t({{"Ele", {}},
+                                                {"EleEE", {}},
+                                                {"EleEB", {}},
+                                                {"Muon", {}},
+                                                {"Gamma", {}},
+                                                {"GammaEB", {}},
+                                                {"GammaEE", {}},
+                                                {"Tau", {}},
+                                                {"Jet", {}},
+                                                {"bJet", {}},
+                                                {"MET", {}}});
+
+    return std::tuple<ParticleMap_t, ScaleFactorMap_t, MatchMap_t>(particles_map, scalefactors_map, matches_map);
+}
+
+auto ParticleMap::erase(const std::string &particle_type) -> void
+{
+    if (
+
+        m_map.count(particle_type) != 0 or m_scale_factor_map.count(particle_type) != 0 or
+        m_match_map.count(particle_type) != 0 or m_countMap.count(particle_type) != 0
+
+    )
+    {
+        m_map.erase(particle_type);
+        m_scale_factor_map.erase(particle_type);
+        m_match_map.erase(particle_type);
+        m_countMap.erase(particle_type);
+        return;
+    }
+    throw std::runtime_error(
+        fmt::format("ERROR: could not erase ParticleMap. Particle type {} not found.", particle_type));
 }
 
 // not needed (?)
@@ -95,14 +155,15 @@ const RVec<Math::PtEtaPhiMVector> &ParticleMap::getParticleVector(std::string &n
 //                 counter++;
 //                 if (counter > countMap.at(lepton))
 //                     break;
-//                 totalCharge += (int)particle->getCharge();
+//                 tota
+// lCharge += (int)particle->getCharge();
 //             }
 //         }
 //     }
 //     return totalCharge;
 // }
 
-std::unordered_map<std::string, int> ParticleMap::getCountMap() const
+ParticleMap::CountMap_t ParticleMap::getCountMap() const
 {
     return m_countMap;
 }
@@ -268,9 +329,9 @@ double ParticleMap::getScaleFactorSystError(const std::unordered_map<std::string
     return getScaleFactorError("scale_factor_error_syst", countMap);
 }
 
-std::unordered_map<std::string, int> ParticleMap::getFakeMap(const std::unordered_map<std::string, int> &countMap) const
+ParticleMap::CountMap_t ParticleMap::getFakeMap(const ParticleMap::CountMap_t &countMap) const
 {
-    std::unordered_map<std::string, int> fakeMap = std::unordered_map<std::string, int>();
+    auto fakeMap = ParticleMap::CountMap_t();
 
     for (auto &[part_type, part_matches] : m_match_map)
     {

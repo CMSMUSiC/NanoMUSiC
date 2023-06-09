@@ -26,6 +26,7 @@ all the TH1's
 #include <map>
 #include <set>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 class TEventClass : public TNamed
@@ -46,7 +47,7 @@ class TEventClass : public TNamed
                 const std::string runhash,
                 bool const data,
                 double const cme,
-                std::map<std::string, int> countmap,
+                std::unordered_map<std::string, int> countmap,
                 const bool analyzedBjets,
                 std::map<std::string, std::vector<double>> distTypeBins,
                 const bool analyzedCharge,
@@ -57,8 +58,8 @@ class TEventClass : public TNamed
                 unsigned int m_numPDFvariations,
                 // Minimum value for each distType from config files [distType][minValue]
                 std::map<std::string, double> distTypeMinsRequire,
-                // list of ystematics names that will be filled
                 double lumi,
+                // list of systematics names that will be filled
                 std::set<std::string> systNames = std::set<std::string>(),
                 std::map<std::string, std::string> ECItemShortlist = std::map<std::string, std::string>(),
                 double const bin_size_min = 10.0);
@@ -265,7 +266,7 @@ class TEventClass : public TNamed
         return m_cme;
     }
     // Get map with counts for all ECItem types in this class
-    inline std::map<std::string, int> getCountMap()
+    inline std::unordered_map<std::string, int> getCountMap()
     {
         return m_countmap;
     };
@@ -348,8 +349,8 @@ class TEventClass : public TNamed
     void Browse(TBrowser *b);
     // builds the event class name string dependend on the EventClass items
     static std::string calculateEventClass(
-        const std::map<std::string, int> countmap,
-        const std::map<std::string, int> shortmap = std::map<std::string, int>(),
+        const std::unordered_map<std::string, int> countmap,
+        const std::unordered_map<std::string, int> shortmap = std::unordered_map<std::string, int>(),
         std::function<bool(std::string, std::string)> orderFunction =
             [](std::string a, std::string b)
         {
@@ -703,7 +704,7 @@ class TEventClass : public TNamed
     // For better handling the EventClass does not only know its Type/Label as string
     // e.g. 1e_5jet_1met but also the number of particles as integer!
     //
-    std::map<std::string, int> m_countmap;
+    std::unordered_map<std::string, int> m_countmap;
 
     // Store the minimum possible Sumpt and MET (min. Minv is always 0) in this
     // EventClass, defined from trigger and selection pt cuts for all objects
