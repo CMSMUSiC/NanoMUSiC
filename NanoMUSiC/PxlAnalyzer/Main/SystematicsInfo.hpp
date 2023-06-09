@@ -10,7 +10,10 @@ class SystematicsInfo
 {
 
   public:
-    SystematicsInfo(std::string particleType, std::string sysType, std::string funcKey, bool isDifferential = true,
+    SystematicsInfo(std::string particleType,
+                    std::string sysType,
+                    std::string funcKey,
+                    bool isDifferential = true,
                     double constantShift = 1.); // shift value for non differential systs
     ~SystematicsInfo();
     //~ std::vector< std::string > eventViewIndices;

@@ -6,6 +6,8 @@
 #include "CrossSectionOrderErrorMap.hpp"
 #include "TEventClass.hpp"
 
+#include "Event.hpp"
+
 #include "Tools.hpp"
 
 class ClassFactory
@@ -45,7 +47,7 @@ class ClassFactory
                  const std::string hash = "dummyhash",
                  const bool debug = 1);
 
-    void analyseEvent();
+    void analyseEvent(const Event &event);
     void endJob();
     std::string getQCDSystWeightName(std::string shift_type) const;
     void FinishEventClasses(std::map<std::string, TEventClass *> &EvtClasses,

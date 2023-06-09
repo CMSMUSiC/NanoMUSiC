@@ -119,10 +119,6 @@ ClassFactory::ClassFactory(const bool is_data,
     m_cutFlowFilterUnweighted.SetCanExtend(TH1::kAllAxes);
 }
 
-auto ClassFactory::analyse_event() -> void
-{
-}
-
 // SYSTEMATICS ARE MISSING !!!
 
 std::string ClassFactory::getQCDSystWeightName(std::string shift_type) const
@@ -479,48 +475,34 @@ void ClassFactory::fillFilterCutFlow(const double weight)
     m_cutFlowFilterWeighted.Fill("All", weight);
 }
 
-void ClassFactory::fillCutFlow(const bool pass_veto,
-                               const bool pass_trigger_accept,
-                               const bool pass_filter_accept,
-                               const bool pass_generator_accept,
-                               const bool pass_topo_accept,
-                               const double weight)
+void EventClassFactory::fillCutFlow(const Event *event, const double weight)
 {
+    pxl::EventView *recEvtView = event->getObjectOwner().findObject<pxl::EventView>("Rec");
     m_cutFlowUnweighted.Fill("all", 1.);
     m_cutFlowWeighted.Fill("all", weight);
 
-    if (!pass_veto)
-    {
+    if (recEvtView->getUserRecord("Veto"))
         return;
-    }
     m_cutFlowUnweighted.Fill("Veto", 1.);
     m_cutFlowWeighted.Fill("Veto", weight);
 
-    if (!pass_trigger_accept)
-    {
+    if (!recEvtView->getUserRecord("trigger_accept"))
         return;
-    }
     m_cutFlowUnweighted.Fill("trigger_accept", 1.);
     m_cutFlowWeighted.Fill("trigger_accept", weight);
 
-    if (!pass_filter_accept)
-    {
+    if (!recEvtView->getUserRecord("filter_accept"))
         return;
-    }
     m_cutFlowUnweighted.Fill("filter_accept", 1.);
     m_cutFlowWeighted.Fill("filter_accept", weight);
 
-    if (!pass_generator_accept)
-    {
+    if (!recEvtView->getUserRecord("generator_accept"))
         return;
-    }
     m_cutFlowUnweighted.Fill("generator_accept", 1.);
     m_cutFlowWeighted.Fill("generator_accept", weight);
 
-    if (!pass_topo_accept)
-    {
+    if (!recEvtView->getUserRecord("topo_accept"))
         return;
-    }
     m_cutFlowUnweighted.Fill("topo_accept", 1.);
     m_cutFlowWeighted.Fill("topo_accept", weight);
 }
@@ -552,46 +534,34 @@ void ClassFactory::fillCutFlow(const double sumPt,
     m_cutFlowWeighted.Fill("met_cut", weight);
 }
 
-void ClassFactory::analyseEvent(const long Run,
-                                const long LumiSection,
-                                const long EventNum,
-                                const std::string &Dataset,
-                                const std::string &Filename,
-                                const long EventNumPxlio,
-                                const double genWeight,
-                                const double PUWeight,
-                                const double PUWeightUp,
-                                const double PUWeightDown,
-                                const std::string &scale_variation,
-                                const int scale_variation_n, )
+void ClassFactory::analyseEvent(const Event &event)
 {
 
     // store current event data
     // this struct is defined in TEventClass.hpp
     EventInfo event_info;
-    event_info.run = Run;
-    event_info.lumisection = LumiSection;
-    event_info.eventnum = EventNum;
-    event_info.dataset = Dataset;
-    event_info.filename = Filename;
-    event_info.eventnumpxlio = EventNumPxlio;
+    event_info.run = event.get_view("nominal").get_Run();
+    event_info.lumisection = event.get_view("nominal").get_LumiSection();
+    event_info.eventnum = event.get_view("nominal").get_EventNum();
+    event_info.dataset = event.get_view("nominal").get_Dataset();
+    event_info.filename = event.get_view("nominal").get_Filename();
+    event_info.eventnumpxlio = event.get_view("nominal").get_EventNumPxlio();
     event_info.prefire_weight = 1.;
     event_info.prefire_weight_up = 1.;
     event_info.prefire_weight_down = 1.;
     if (!m_data)
     {
-        pxl::EventView *GenEvtView = event->getObjectOwner().findObject<pxl::EventView>("Gen");
-        event_info.central_weight = genWeight;
-        event_info.pileup = PUWeight;
-        event_info.pileup_up = PUWeightUp;
-        event_info.pileup_down = PUWeightDown;
+        event_info.central_weight = event.get_view("nominal").get_genWeight();
+        event_info.pileup = event.get_view("nominal").get_PUWeight();
+        event_info.pileup_up = event.get_view("nominal").get_PUWeightUp();
+        event_info.pileup_down = event.get_view("nominal").get_PUWeightDown();
 
-        event_info.process = m_lastprocess;
+        event_info.process = event.get_view("nominal").get_Process();
         event_info.has_scale_variation = false;
-        if (scale_variation and int(scale_variation_n) != 0)
+        if (event.get_view("nominal").get_scale_variation() and int(event.get_view("nominal").get_scale_variation_n() != 0)
         {
             event_info.has_scale_variation = true;
-            event_info.qcd_scale = scale_variation;
+            event_info.qcd_scale = event.get_view("nominal").get_scale_variation();
         }
     }
     else
@@ -608,43 +578,40 @@ void ClassFactory::analyseEvent(const long Run,
     double event_weight = 1;
     double pileup_weight = 1;
 
-    std::string proc = m_lastprocess;
+    std::string proc = event.get_view("nominal").get_Process();
     prepareProcessName(proc);
     double total_event_weight = event_weight * pileup_weight * event_info.prefire_weight;
     if (!m_data)
     {
-        CheckForCrossSection(proc);
+        // CheckForCrossSection(proc);
         // we need to initialize some systematic info after the first event was loaded to determine, e.g.
         // the current process group
         if (!m_syst_initialized)
         {
-            addConstantSystematics();
+            // addConstantSystematics();
             m_syst_initialized = true;
         }
-        pxl::EventView *GenEvtView = event->getObjectOwner().findObject<pxl::EventView>("Gen");
 
-        m_pdfTool.setPDFWeights(GenEvtView);
+        // m_pdfTool.setPDFWeights(GenEvtView);
 
-        if (RecEvtView->hasUserRecord("prefiring_scale_factor"))
+        if (event.get_view("nominal").get_prefiring_scale_factor())
         {
-            event_info.prefire_weight = RecEvtView->getUserRecord("prefiring_scale_factor");
-            event_info.prefire_weight_up = RecEvtView->getUserRecord("prefiring_scale_factor_up");
-            event_info.prefire_weight_down = RecEvtView->getUserRecord("prefiring_scale_factor_down");
+            event_info.prefire_weight = event.get_view("nominal").get_prefiring_scale_factor();
+            event_info.prefire_weight_up = event.get_view("nominal").get_prefiring_scale_factor_up();
+            event_info.prefire_weight_down = event.get_view("nominal").get_prefiring_scale_factor_down();
         }
 
         // set the event weight to the actual value
-        event_weight = GenEvtView->getUserRecord("genWeight");
-        pileup_weight = GenEvtView->getUserRecord("PUWeight");
+        event_weight = event.get_view("nominal").get_genWeight();
+        pileup_weight = event.get_view("nominal").get_PUWeight();
         total_event_weight = event_weight * pileup_weight * event_info.prefire_weight;
 
-        // Fill differential systematics
-        for (auto &systInfo : systematics.m_activeSystematics)
+        // Fill systematics
+        for (auto &&[view, eventview] : event)
         {
-            // Fill all shifted views for systematic
-            for (auto &evtView : systInfo->eventViewPointers)
+            if (view != "nominal")
             {
-                // fill this event
-                Fill(evtView, total_event_weight, event_info, evtView->getName());
+                // Fill(eventview, total_event_weight, event_info, view);
             }
         }
     }
@@ -653,7 +620,7 @@ void ClassFactory::analyseEvent(const long Run,
     totalEvents[proc] += (total_event_weight);
     totalEventsUnweighted[proc] += event_weight;
 
-    bool filter_accept = RecEvtView->getUserRecord("filter_accept");
+    bool filter_accept = event.get_view("nominal").get_filter_accept();
     if (filter_accept)
     {
         numEventsFiltered[proc]++;
@@ -666,5 +633,53 @@ void ClassFactory::analyseEvent(const long Run,
     fillFilterCutFlow(total_event_weight);
 
     // fill this event
-    Fill(RecEvtView, total_event_weight, event_info);
+    // Fill(event.get_view("nominal"), total_event_weight, event_info);
 }
+
+/* USAGE OF THE NEW EVENT / EVENTVIEW CLASSES
+int main()
+{
+    auto event = Event(EventView(0., std::vector<float>{5.f, 6.f}))
+                     .set_view("v1", EventView(1., std::vector<float>{5.f, 6.f}))
+                     .set_view("v2", EventView(4., std::vector<float>{5.f, 6.f}));
+
+    event.get_view("v1").print();
+    event.get_view("v2").print();
+
+    fmt::print("-------------------------------------------\n");
+
+    for (auto &&[v, ev] : event)
+    {
+        // std::cout << v << std::endl;
+        // ev.print();
+        ev.set_weight(ev.get_weight() * 2.);
+    }
+
+    fmt::print("-------------------------------------------\n");
+
+    event.get_view("v1").print();
+    event.get_view("v2").print();
+
+    fmt::print("-------------------------------------------\n");
+
+    event.add_view("v3", event.get_view("v2").clone());
+    event.get_view("v3").set_shared_weight(23.);
+
+    event.get_view("v2").print();
+    event.get_view("v3").print();
+
+    fmt::print("-------------------------------------------\n");
+
+    event.add_view("v4", event.get_view("v2").clone());
+    event.get_view("v4").set_weight(42.);
+
+    event.get_view("v2").print();
+    event.get_view("v4").print();
+
+    fmt::print("-------------------------------------------\n");
+
+    fmt::print("[{}]\n", fmt::join(event.get_views(), ", "));
+
+    return EXIT_SUCCESS;
+}
+*/

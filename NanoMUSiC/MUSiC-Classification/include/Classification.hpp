@@ -37,6 +37,8 @@
 #include "CrossSectionOrderErrorMap.hpp"
 #include "ParticleMap.hpp"
 
+#include "Event.hpp"
+
 using namespace ROOT;
 using namespace ROOT::Math;
 using namespace ROOT::VecOps;
