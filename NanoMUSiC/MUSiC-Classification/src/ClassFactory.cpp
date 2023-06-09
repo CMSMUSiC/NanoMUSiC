@@ -475,34 +475,50 @@ void ClassFactory::fillFilterCutFlow(const double weight)
     m_cutFlowFilterWeighted.Fill("All", weight);
 }
 
-void EventClassFactory::fillCutFlow(const Event *event, const double weight)
+void ClassFactory::fillCutFlow(Event &event, const double weight)
 {
-    pxl::EventView *recEvtView = event->getObjectOwner().findObject<pxl::EventView>("Rec");
+    auto event_view = event.get_view("nominal");
+
     m_cutFlowUnweighted.Fill("all", 1.);
     m_cutFlowWeighted.Fill("all", weight);
 
-    if (recEvtView->getUserRecord("Veto"))
+    if (event_view.get_Veto())
+    {
         return;
+    }
+
     m_cutFlowUnweighted.Fill("Veto", 1.);
     m_cutFlowWeighted.Fill("Veto", weight);
 
-    if (!recEvtView->getUserRecord("trigger_accept"))
+    if (!event_view.get_trigger_accept())
+    {
         return;
+    }
+
     m_cutFlowUnweighted.Fill("trigger_accept", 1.);
     m_cutFlowWeighted.Fill("trigger_accept", weight);
 
-    if (!recEvtView->getUserRecord("filter_accept"))
+    if (!event_view.get_filter_accept())
+    {
         return;
+    }
+
     m_cutFlowUnweighted.Fill("filter_accept", 1.);
     m_cutFlowWeighted.Fill("filter_accept", weight);
 
-    if (!recEvtView->getUserRecord("generator_accept"))
+    if (!event_view.get_generator_accept())
+    {
         return;
+    }
+
     m_cutFlowUnweighted.Fill("generator_accept", 1.);
     m_cutFlowWeighted.Fill("generator_accept", weight);
 
-    if (!recEvtView->getUserRecord("topo_accept"))
+    if (!event_view.get_topo_accept())
+    {
         return;
+    }
+
     m_cutFlowUnweighted.Fill("topo_accept", 1.);
     m_cutFlowWeighted.Fill("topo_accept", weight);
 }
@@ -534,7 +550,7 @@ void ClassFactory::fillCutFlow(const double sumPt,
     m_cutFlowWeighted.Fill("met_cut", weight);
 }
 
-void ClassFactory::analyseEvent(const Event &event)
+void ClassFactory::analyseEvent(Event &event)
 {
 
     // store current event data
@@ -558,7 +574,8 @@ void ClassFactory::analyseEvent(const Event &event)
 
         event_info.process = event.get_view("nominal").get_Process();
         event_info.has_scale_variation = false;
-        if (event.get_view("nominal").get_scale_variation() and int(event.get_view("nominal").get_scale_variation_n() != 0)
+        if (not(event.get_view("nominal").get_scale_variation().empty()) and
+            int(event.get_view("nominal").get_scale_variation_n()) != 0)
         {
             event_info.has_scale_variation = true;
             event_info.qcd_scale = event.get_view("nominal").get_scale_variation();
@@ -592,6 +609,7 @@ void ClassFactory::analyseEvent(const Event &event)
             m_syst_initialized = true;
         }
 
+        // should be done during preprocessing ...
         // m_pdfTool.setPDFWeights(GenEvtView);
 
         if (event.get_view("nominal").get_prefiring_scale_factor())

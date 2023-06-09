@@ -93,7 +93,7 @@ class EventView
               double prefiring_scale_factor_up,
               double prefiring_scale_factor_down,
               bool filter_accept,
-              bool Veto
+              bool Veto,
               bool trigger_accept,
               bool generator_accept,
               bool topo_accept)
@@ -113,10 +113,10 @@ class EventView
           m_prefiring_scale_factor(std::make_shared<double>(prefiring_scale_factor)),
           m_prefiring_scale_factor_up(std::make_shared<double>(prefiring_scale_factor_up)),
           m_prefiring_scale_factor_down(std::make_shared<double>(prefiring_scale_factor_down)),
-          m_filter_accept(std::make_shared<bool>(filter_accept))
-          m_Veto(std::make_shared<bool>(Veto))
-          m_trigger_accept(std::make_shared<bool>(trigger_accept))
-          m_generator_accept(std::make_shared<bool>(generator_accept))
+          m_filter_accept(std::make_shared<bool>(filter_accept)),
+          m_Veto(std::make_shared<bool>(Veto)),
+          m_trigger_accept(std::make_shared<bool>(trigger_accept)),
+          m_generator_accept(std::make_shared<bool>(generator_accept)),
           m_topo_accept(std::make_shared<bool>(topo_accept))
 
     {

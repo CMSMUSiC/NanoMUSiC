@@ -47,7 +47,7 @@ class ClassFactory
                  const std::string hash = "dummyhash",
                  const bool debug = 1);
 
-    void analyseEvent(const Event &event);
+    void analyseEvent(Event &event);
     void endJob();
     std::string getQCDSystWeightName(std::string shift_type) const;
     void FinishEventClasses(std::map<std::string, TEventClass *> &EvtClasses,
@@ -58,12 +58,7 @@ class ClassFactory
     void WriteAnalysisInfoToFile(std::set<std::string> const &processList);
     // void CheckForCrossSection();
     void fillFilterCutFlow(const double weight);
-    void fillCutFlow(const bool pass_veto,
-                     const bool pass_trigger_accept,
-                     const bool pass_filter_accept,
-                     const bool pass_generator_accept,
-                     const bool pass_topo_accept,
-                     const double weight);
+    void fillCutFlow(Event &event, const double weight);
     void fillCutFlow(const double sumPt,
                      const double invMass,
                      const double met,
