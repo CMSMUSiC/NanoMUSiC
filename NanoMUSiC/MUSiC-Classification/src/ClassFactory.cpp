@@ -429,7 +429,7 @@ void ClassFactory::WriteAnalysisInfoToFile(std::set<std::string> const &processL
     // Create text file to store the info about the analyzed events.
     // In the main() function we cd into the output directory, so just store it
     // in "here".
-    std::string const outFilePath("Analyzed.txt");
+    std::string const outFilePath(m_outfilename + "_Analyzed.txt");
     std::ofstream outFile(outFilePath.c_str(), std::ofstream::out);
 
     outFile << "# Creation time: " << isoTime << std::endl;

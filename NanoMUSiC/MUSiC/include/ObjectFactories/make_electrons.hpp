@@ -47,7 +47,8 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
 
         if (is_good_low_pt_electron or is_good_high_pt_electron)
         {
-            electrons.emplace_back(Electron_pt[i], Electron_eta[i], Electron_phi[i], PDG::Electron::Mass);
+            electrons.push_back(
+                Math::PtEtaPhiMVector(Electron_pt[i], Electron_eta[i], Electron_phi[i], PDG::Electron::Mass));
         }
     }
     const auto electron_reordering_mask = VecOps::Argsort(electrons,
@@ -57,8 +58,6 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
                                                           });
 
     return VecOps::Take(electrons, electron_reordering_mask);
-
-    return electrons;
 }
 
 } // namespace ObjectFactories

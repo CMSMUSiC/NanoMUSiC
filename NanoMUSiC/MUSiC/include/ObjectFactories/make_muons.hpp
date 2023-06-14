@@ -23,22 +23,24 @@ inline auto make_muons(const RVec<float> &Muon_pt,             //
                        const RVec<UChar_t> &Muon_highPtId,     //
                        const RVec<float> &Muon_pfRelIso04_all, //
                        const RVec<float> &Muon_tkRelIso,       //
-                       const RVec<float> &Muon_tunepRelPt) -> RVec<Math::PtEtaPhiMVector>
+                       const RVec<float> &Muon_tunepRelPt,     //
+                       std::string _year) -> RVec<Math::PtEtaPhiMVector>
 {
+    auto year = get_runyear(_year);
     auto muons = RVec<Math::PtEtaPhiMVector>{};
 
     for (std::size_t i = 0; i < Muon_pt.size(); i++)
     {
-        bool is_good_low_pt_muon = (Muon_pt.at(i) >= 25.)                //
-                                   && (Muon_pt.at(i) < 200.)             //
-                                   && (std::fabs(Muon_eta.at(i)) <= 2.4) //
-                                   && (Muon_tightId.at(i))               //
-                                   && (Muon_pfRelIso04_all.at(i) < 0.15);
+        bool is_good_low_pt_muon = (Muon_pt.at(i) >= ObjConfig::Muons[year].MinLowPt)                 //
+                                   && (Muon_pt.at(i) < ObjConfig::Muons[year].MaxLowPt)               //
+                                   && (std::fabs(Muon_eta.at(i)) <= ObjConfig::Muons[year].MaxAbsEta) //
+                                   && (Muon_tightId.at(i))                                            //
+                                   && (Muon_pfRelIso04_all.at(i) < ObjConfig::Muons[year].PFRelIso_WP);
 
-        bool is_good_high_pt_muon = (Muon_pt.at(i) >= 200.)               //
-                                    && (std::fabs(Muon_eta.at(i)) <= 2.4) //
-                                    && (Muon_highPtId.at(i) >= 2)         //
-                                    && (Muon_tkRelIso.at(i) < 0.10);
+        bool is_good_high_pt_muon = (Muon_pt.at(i) >= ObjConfig::Muons[year].MaxLowPt)                 //
+                                    && (std::fabs(Muon_eta.at(i)) <= ObjConfig::Muons[year].MaxAbsEta) //
+                                    && (Muon_highPtId.at(i) >= 2)                                      //
+                                    && (Muon_tkRelIso.at(i) < ObjConfig::Muons[year].TkRelIso_WP);
 
         double pt_correction_factor = 1.;
         if (is_good_high_pt_muon)
@@ -52,8 +54,8 @@ inline auto make_muons(const RVec<float> &Muon_pt,             //
 
         if (is_good_low_pt_muon or is_good_high_pt_muon)
         {
-            muons.emplace_back(
-                std::max(Muon_pt[i] * pt_correction_factor, 25.), Muon_eta[i], Muon_phi[i], PDG::Muon::Mass);
+            muons.push_back(Math::PtEtaPhiMVector(
+                std::max(Muon_pt[i] * pt_correction_factor, 25.), Muon_eta[i], Muon_phi[i], PDG::Muon::Mass));
         }
     }
     const auto muon_reordering_mask = VecOps::Argsort(muons,
@@ -64,7 +66,6 @@ inline auto make_muons(const RVec<float> &Muon_pt,             //
 
     return VecOps::Take(muons, muon_reordering_mask);
 
-    return muons;
 }
 
 } // namespace ObjectFactories

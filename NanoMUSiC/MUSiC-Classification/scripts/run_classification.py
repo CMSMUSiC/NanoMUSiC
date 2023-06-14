@@ -90,16 +90,22 @@ def run_classification(
     year: str,
     is_data: bool,
     output_path: str,
-    effective_x_section: float,
+    xsection: float,
+    filter_eff: float,
+    k_factor: float,
+    luminosity: float,
+    processOrder: str,
+    processGroup: str,
     executable: str,
     input_file: str,
+    debug: bool = False,
 ) -> bool:
-    debug: bool = False
+    # debug: bool = False
 
     # default is MC
-    cmd_str: str = f"{executable} --process {process_name} --year {year} --output {output_path} --xsection {str(effective_x_section)} --input {input_file}"
+    cmd_str: str = f"{executable} --process {process_name} --year {year} --output {output_path} --xsection {str(xsection)} --filter_eff {str(filter_eff)} --k_factor {str(k_factor)} --luminosity {str(luminosity)} --process_order {processOrder} --process_group {processGroup} --input {input_file}"
     if is_data:
-        cmd_str: str = f"{executable} --process {process_name} --year {year} --is_data --output {output_path} --xsection {str(effective_x_section)} --input {input_file}"
+        cmd_str: str = f"{executable} --process {process_name} --year {year} --is_data --output {output_path} --xsection {str(xsection)} --filter_eff {str(filter_eff)} --k_factor {str(k_factor)} --luminosity {str(luminosity)} --process_order {processOrder} --process_group {processGroup} --input {input_file}"
 
     if debug:
         print(f"Executing: {cmd_str}")
@@ -140,19 +146,18 @@ def classification(args):
         xsection,
         filter_eff,
         k_factor,
+        processOrder,
+        processGroup,
         input_files,
         executable,
+        debug,
     ) = list(args.values())
 
-    output_path: str = f"classification_outputs/{year}"
+    output_path: str = f"classification_outputs/{year}/{process}"
 
     # print("[ MUSiC Classification ] Loading samples ...\n")
-    effective_x_section: float = 1.0
-    if not is_data:
-        effective_x_section = xsection * filter_eff * k_factor * luminosity
-
     # print("[ MUSiC Classification ] Preparing output directory ...\n")
-    os.system(f"rm -rf classification_outputs/{year}/*_{process}_{year}.root")
+    os.system(f"rm -rf classification_outputs/{year}/{process}/*_{process}_{year}.root")
 
     # print("[ MUSiC Classification ] Merging cutflow histograms ...\n")
     merge_cutflow_histograms(process, year, output_path, input_files)
@@ -164,9 +169,15 @@ def classification(args):
         year,
         is_data,
         output_path,
-        effective_x_section,
+        xsection,
+        filter_eff,
+        k_factor,
+        luminosity,
+        processOrder,
+        processGroup,
         executable,
         inputs,
+        debug,
     )
     os.system(f"rm -rf {inputs} > /dev/null")
 
@@ -176,6 +187,9 @@ def main():
 
     # parse arguments
     args = parse_args()
+
+    if args.debug:
+        print("Will run in DEBUG mode ...")
 
     task_config_file: str = args.config
     task_config: dict[str, Any] = toml.load(task_config_file)
@@ -194,6 +208,8 @@ def main():
                 "xsection": 1.0,
                 "filter_eff": 1.0,
                 "k_factor": 1.0,
+                "processOrder": "DUMMY",
+                "processGroup": "DUMMY",
                 "input_files": list(
                     filter(
                         lambda file: f"{year}_date" in file,
@@ -201,14 +217,23 @@ def main():
                     )
                 ),
                 "executable": args.executable,
+                "debug": args.debug,
             }
             if not (task_config[sample]["is_data"]):
-                classification_arguments["xsection"] = 1.0
-                classification_arguments["filter_eff"] = 1.0
-                classification_arguments["k_factor"] = 1.0
+                classification_arguments["xsection"] = task_config[sample]["XSec"]
+                classification_arguments["filter_eff"] = task_config[sample][
+                    "FilterEff"
+                ]
+                classification_arguments["k_factor"] = task_config[sample]["kFactor"]
+                classification_arguments["processOrder"] = task_config[sample][
+                    "XSecOrder"
+                ]
+                classification_arguments["processGroup"] = task_config[sample][
+                    "ProcessGroup"
+                ]
 
-        if not (os.path.isdir(f"classification_outputs/{year}")):
-            os.system(f"mkdir -p classification_outputs/{year}")
+        if not (os.path.isdir(f"classification_outputs/{year}/{sample}")):
+            os.system(f"mkdir -p classification_outputs/{year}/{sample}")
 
         classification(classification_arguments)
 
@@ -239,6 +264,7 @@ def main():
                         "k_factor": 1,
                         "input_files": task_config[sample]["output_files"],
                         "executable": args.executable,
+                        "debug": args.debug,
                     }
 
                 if not (os.path.isdir(f"classification_outputs/{year}")):
@@ -246,7 +272,6 @@ def main():
 
         classification_arguments = list(classification_arguments.values())
         with Pool(min(args.jobs, len(classification_arguments))) as pool:
-            # with Pool(1) as pool:
             list(
                 tqdm(
                     pool.imap_unordered(classification, classification_arguments),
@@ -283,6 +308,7 @@ def main():
                                     )
                                 ),
                                 "executable": args.executable,
+                                "debug": args.debug,
                             }
                         )
                     if not (os.path.isdir(f"classification_outputs/{year}")):
@@ -299,78 +325,78 @@ def main():
 
         exit(0)
 
-    # data workflow
-    if args.all:
-        classification_arguments = {}
-        for sample in task_config:
-            if (
-                sample != "Lumi"
-                and sample != "Global"
-                and task_config[sample]["is_data"]
-            ):
-                year, era = get_year_era(sample)
-                if f"Data_{year}_{era}" in classification_arguments:
-                    classification_arguments[f"Data_{year}_{era}"][
-                        "input_files"
-                    ].extend(task_config[sample]["output_files"])
-                else:
-                    classification_arguments[f"Data_{year}_{era}"] = {
-                        "process": f"Data_{year}_{era}",
-                        "year": year,
-                        "luminosity": 1,
-                        "is_data": True,
-                        "xsection": 1,
-                        "filter_eff": 1,
-                        "k_factor": 1,
-                        "input_files": task_config[sample]["output_files"],
-                        "executable": args.executable,
-                    }
+    # # data workflow
+    # if args.all:
+    #     classification_arguments = {}
+    #     for sample in task_config:
+    #         if (
+    #             sample != "Lumi"
+    #             and sample != "Global"
+    #             and task_config[sample]["is_data"]
+    #         ):
+    #             year, era = get_year_era(sample)
+    #             if f"Data_{year}_{era}" in classification_arguments:
+    #                 classification_arguments[f"Data_{year}_{era}"][
+    #                     "input_files"
+    #                 ].extend(task_config[sample]["output_files"])
+    #             else:
+    #                 classification_arguments[f"Data_{year}_{era}"] = {
+    #                     "process": f"Data_{year}_{era}",
+    #                     "year": year,
+    #                     "luminosity": 1,
+    #                     "is_data": True,
+    #                     "xsection": 1,
+    #                     "filter_eff": 1,
+    #                     "k_factor": 1,
+    #                     "input_files": task_config[sample]["output_files"],
+    #                     "executable": args.executable,
+    #                 }
 
-                if not (os.path.isdir(f"classification_outputs/{year}")):
-                    os.system(f"mkdir -p classification_outputs/{year}")
+    #             if not (os.path.isdir(f"classification_outputs/{year}")):
+    #                 os.system(f"mkdir -p classification_outputs/{year}")
 
-        classification_arguments_data = list(classification_arguments.values())
+    #     classification_arguments_data = list(classification_arguments.values())
 
-        classification_arguments = []
-        for sample in task_config:
-            if (
-                sample != "Lumi"
-                and sample != "Global"
-                and not (task_config[sample]["is_data"])
-            ):
-                for year in years:
-                    if f"das_name_{year}" in task_config[sample].keys():
-                        classification_arguments.append(
-                            {
-                                "process": sample,
-                                "year": year,
-                                "luminosity": task_config["Lumi"][year],
-                                "is_data": task_config[sample]["is_data"],
-                                "xsection": task_config[sample]["XSec"],
-                                "filter_eff": task_config[sample]["FilterEff"],
-                                "k_factor": task_config[sample]["kFactor"],
-                                "input_files": list(
-                                    filter(
-                                        lambda file: f"{year}_date" in file,
-                                        task_config[sample]["output_files"],
-                                    )
-                                ),
-                                "executable": args.executable,
-                            }
-                        )
-                    if not (os.path.isdir(f"classification_outputs/{year}")):
-                        os.system(f"mkdir -p classification_outputs/{year}")
+    #     classification_arguments = []
+    #     for sample in task_config:
+    #         if (
+    #             sample != "Lumi"
+    #             and sample != "Global"
+    #             and not (task_config[sample]["is_data"])
+    #         ):
+    #             for year in years:
+    #                 if f"das_name_{year}" in task_config[sample].keys():
+    #                     classification_arguments.append(
+    #                         {
+    #                             "process": sample,
+    #                             "year": year,
+    #                             "luminosity": task_config["Lumi"][year],
+    #                             "is_data": task_config[sample]["is_data"],
+    #                             "xsection": task_config[sample]["XSec"],
+    #                             "filter_eff": task_config[sample]["FilterEff"],
+    #                             "k_factor": task_config[sample]["kFactor"],
+    #                             "input_files": list(
+    #                                 filter(
+    #                                     lambda file: f"{year}_date" in file,
+    #                                     task_config[sample]["output_files"],
+    #                                 )
+    #                             ),
+    #                             "executable": args.executable,
+    #                         }
+    #                     )
+    #                 if not (os.path.isdir(f"classification_outputs/{year}")):
+    #                     os.system(f"mkdir -p classification_outputs/{year}")
 
-        classification_arguments += classification_arguments_data
-        with Pool(min(args.jobs, len(classification_arguments))) as pool:
-            list(
-                tqdm(
-                    pool.imap_unordered(classification, classification_arguments),
-                    total=len(classification_arguments),
-                    unit="sample",
-                )
-            )
-        exit(0)
+    #     classification_arguments += classification_arguments_data
+    #     with Pool(min(args.jobs, len(classification_arguments))) as pool:
+    #         list(
+    #             tqdm(
+    #                 pool.imap_unordered(classification, classification_arguments),
+    #                 total=len(classification_arguments),
+    #                 unit="sample",
+    #             )
+    #         )
+    #     exit(0)
 
     print("ERROR: Could not start classification with the provided argumenrs.")
     exit(-1)

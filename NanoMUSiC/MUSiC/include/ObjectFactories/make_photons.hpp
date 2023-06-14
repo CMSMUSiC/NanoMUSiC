@@ -39,7 +39,7 @@ inline auto make_photons(const RVec<float> &Photon_pt,  //
 
         if (is_good_photon)
         {
-            photons.emplace_back(Photon_pt[i], Photon_eta[i], Photon_phi[i], PDG::Photon::Mass);
+            photons.push_back(Math::PtEtaPhiMVector(Photon_pt[i], Photon_eta[i], Photon_phi[i], PDG::Photon::Mass));
         }
     }
     const auto photon_reordering_mask = VecOps::Argsort(photons,
@@ -49,8 +49,6 @@ inline auto make_photons(const RVec<float> &Photon_pt,  //
                                                         });
 
     return VecOps::Take(photons, photon_reordering_mask);
-
-    return photons;
 }
 
 } // namespace ObjectFactories

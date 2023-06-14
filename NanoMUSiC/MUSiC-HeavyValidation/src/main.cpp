@@ -201,7 +201,8 @@ auto main(int argc, char *argv[]) -> int
                                                  unwrap(Muon_highPtId),
                                                  unwrap(Muon_pfRelIso04_all),
                                                  unwrap(Muon_tkRelIso),
-                                                 unwrap(Muon_tunepRelPt));
+                                                 unwrap(Muon_tunepRelPt),
+                                                 year);
 
         // MuMu + X
         if (muons.size() >= 2)
@@ -224,19 +225,21 @@ auto main(int argc, char *argv[]) -> int
                                              unwrap(GenJet_eta), //
                                              unwrap(GenJet_phi));
 
-        auto jets = ObjectFactories::make_jets(unwrap(Jet_pt),                 //
-                                               unwrap(Jet_eta),                //
-                                               unwrap(Jet_phi),                //
-                                               unwrap(Jet_mass),               //
-                                               unwrap(Jet_jetId),              //
-                                               unwrap(Jet_btagDeepFlavB),      //
-                                               unwrap(Jet_rawFactor),          //
-                                               unwrap(Jet_area),               //
-                                               unwrap(Jet_genJetIdx),          //
-                                               unwrap(fixedGridRhoFastjetAll), //
-                                               jet_corrections,                //
-                                               gen_jets,                       //
-                                               year);
+        auto [jets, bjets] = ObjectFactories::make_jets(unwrap(Jet_pt),                           //
+                                                        unwrap(Jet_eta),                          //
+                                                        unwrap(Jet_phi),                          //
+                                                        unwrap(Jet_mass),                         //
+                                                        unwrap(Jet_jetId),                        //
+                                                        unwrap(Jet_btagDeepFlavB),                //
+                                                        unwrap(Jet_rawFactor),                    //
+                                                        unwrap(Jet_area),                         //
+                                                        unwrap(Jet_genJetIdx),                    //
+                                                        unwrap(fixedGridRhoFastjetAll),           //
+                                                        jet_corrections,                          //
+                                                        NanoObjects::GenJets(unwrap(GenJet_pt),   //
+                                                                             unwrap(GenJet_eta),  //
+                                                                             unwrap(GenJet_phi)), //
+                                                        year);
 
         // if (jets.size() >= 2)
         if (jets.size() == 2)

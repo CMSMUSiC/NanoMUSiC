@@ -31,7 +31,6 @@
 #include "emoji.hpp"
 #include "fmt/format.h"
 
-#include "ClassFactory.hpp"
 #include "CrossSectionOrderErrorMap.hpp"
 #include "ObjectFactories/make_electrons.hpp"
 #include "ObjectFactories/make_jets.hpp"
@@ -39,6 +38,8 @@
 #include "ObjectFactories/make_muons.hpp"
 #include "ObjectFactories/make_photons.hpp"
 #include "ParticleMap.hpp"
+
+#include "ClassFactory.hpp"
 
 #include "Event.hpp"
 
