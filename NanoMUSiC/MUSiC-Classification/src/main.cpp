@@ -84,6 +84,17 @@ auto main(int argc, char *argv[]) -> int
     ADD_ARRAY_READER(Electron_pt, float);
     ADD_ARRAY_READER(Electron_eta, float);
     ADD_ARRAY_READER(Electron_phi, float);
+    ADD_ARRAY_READER(Electron_deltaEtaSC, float);
+    ADD_ARRAY_READER(Electron_cutBased, Int_t);
+    ADD_ARRAY_READER(Electron_cutBased_HEEP, bool);
+
+    ADD_ARRAY_READER(Photon_pt, float);
+    ADD_ARRAY_READER(Photon_eta, float);
+    ADD_ARRAY_READER(Photon_phi, float);
+    ADD_ARRAY_READER(Photon_isScEtaEB, bool);
+    ADD_ARRAY_READER(Photon_isScEtaEE, bool);
+    ADD_ARRAY_READER(Photon_cutBased, Int_t);
+    ADD_ARRAY_READER(Photon_pixelSeed, bool);
 
     ADD_VALUE_READER(fixedGridRhoFastjetAll, float);
 
@@ -101,9 +112,10 @@ auto main(int argc, char *argv[]) -> int
     ADD_ARRAY_READER(Jet_area, float);
     ADD_ARRAY_READER(Jet_genJetIdx, Int_t);
 
-    ADD_ARRAY_READER(MET_pt, float);
-    ADD_ARRAY_READER(MET_phi, float);
+    ADD_VALUE_READER(MET_pt, float);
+    ADD_VALUE_READER(MET_phi, float);
 
+    // corrections
     auto jet_corrections = JetCorrector(get_runyear(year), get_era_from_process_name(process, is_data), is_data);
 
     auto pu_corrector =
@@ -142,45 +154,89 @@ auto main(int argc, char *argv[]) -> int
                 unwrap(gen_weight) * pu_weight * generator_filter / no_cuts / generator_filter * effective_x_section;
         }
 
-        // Jet Trigger
+        // Trigger
         // bool is_good_trigger = unwrap(pass_jet_ht_trigger) or unwrap(pass_jet_pt_trigger);
         // bool is_good_trigger = unwrap(pass_jet_ht_trigger);
-        bool is_good_trigger = unwrap(pass_jet_pt_trigger);
+        // pass_low_pt_muon_trigger
+        // pass_high_pt_muon_trigger
+        // pass_low_pt_electron_trigger
+        // pass_high_pt_electron_trigger
+        // pass_jet_ht_trigger
+        bool is_good_trigger = unwrap(pass_low_pt_muon_trigger) or unwrap(pass_high_pt_muon_trigger) or
+                               unwrap(pass_low_pt_electron_trigger) or unwrap(pass_high_pt_electron_trigger);
 
-        // muons
-        auto muons = make_muons(unwrap(Muon_pt),
-                                unwrap(Muon_eta),
-                                unwrap(Muon_phi),
-                                unwrap(Muon_tightId),
-                                unwrap(Muon_highPtId),
-                                unwrap(Muon_pfRelIso04_all),
-                                unwrap(Muon_tkRelIso),
-                                unwrap(Muon_tunepRelPt));
+        if (is_good_trigger)
+        {
+            // build good objects
+            auto muons = ObjectFactories::make_muons(unwrap(Muon_pt),             //
+                                                     unwrap(Muon_eta),            //
+                                                     unwrap(Muon_phi),            //
+                                                     unwrap(Muon_tightId),        //
+                                                     unwrap(Muon_highPtId),       //
+                                                     unwrap(Muon_pfRelIso04_all), //
+                                                     unwrap(Muon_tkRelIso),       //
+                                                     unwrap(Muon_tunepRelPt));
 
-        // Dijets
-        auto gen_jets = NanoObjects::GenJets(unwrap(GenJet_pt),  //
-                                             unwrap(GenJet_eta), //
-                                             unwrap(GenJet_phi));
+            auto electrons = ObjectFactories::make_electrons(unwrap(Electron_pt),  //
+                                                             unwrap(Electron_eta), //
+                                                             unwrap(Electron_phi), //
+                                                             unwrap(Electron_deltaEtaSC),
+                                                             unwrap(Electron_cutBased), //
+                                                             unwrap(Electron_cutBased_HEEP),
+                                                             year);
 
-        auto jets = make_jets(unwrap(Jet_pt),                 //
-                              unwrap(Jet_eta),                //
-                              unwrap(Jet_phi),                //
-                              unwrap(Jet_mass),               //
-                              unwrap(Jet_jetId),              //
-                              unwrap(Jet_btagDeepFlavB),      //
-                              unwrap(Jet_rawFactor),          //
-                              unwrap(Jet_area),               //
-                              unwrap(Jet_genJetIdx),          //
-                              unwrap(fixedGridRhoFastjetAll), //
-                              jet_corrections,                //
-                              gen_jets,                       //
-                              year);
+            auto photons = ObjectFactories::make_photons(unwrap(Photon_pt),        //
+                                                         unwrap(Photon_eta),       //
+                                                         unwrap(Photon_phi),       //
+                                                         unwrap(Photon_isScEtaEB), //
+                                                         unwrap(Photon_isScEtaEE), //
+                                                         unwrap(Photon_cutBased),  //
+                                                         unwrap(Photon_pixelSeed), //
+                                                         year);
 
-        // class_factory.analyse_event();
+            auto jets = ObjectFactories::make_jets(unwrap(Jet_pt),                           //
+                                                   unwrap(Jet_eta),                          //
+                                                   unwrap(Jet_phi),                          //
+                                                   unwrap(Jet_mass),                         //
+                                                   unwrap(Jet_jetId),                        //
+                                                   unwrap(Jet_btagDeepFlavB),                //
+                                                   unwrap(Jet_rawFactor),                    //
+                                                   unwrap(Jet_area),                         //
+                                                   unwrap(Jet_genJetIdx),                    //
+                                                   unwrap(fixedGridRhoFastjetAll),           //
+                                                   jet_corrections,                          //
+                                                   NanoObjects::GenJets(unwrap(GenJet_pt),   //
+                                                                        unwrap(GenJet_eta),  //
+                                                                        unwrap(GenJet_phi)), //
+                                                   year);
+
+            auto bjets = ObjectFactories::make_bjets(unwrap(Jet_pt),                           //
+                                                     unwrap(Jet_eta),                          //
+                                                     unwrap(Jet_phi),                          //
+                                                     unwrap(Jet_mass),                         //
+                                                     unwrap(Jet_jetId),                        //
+                                                     unwrap(Jet_btagDeepFlavB),                //
+                                                     unwrap(Jet_rawFactor),                    //
+                                                     unwrap(Jet_area),                         //
+                                                     unwrap(Jet_genJetIdx),                    //
+                                                     unwrap(fixedGridRhoFastjetAll),           //
+                                                     jet_corrections,                          //
+                                                     NanoObjects::GenJets(unwrap(GenJet_pt),   //
+                                                                          unwrap(GenJet_eta),  //
+                                                                          unwrap(GenJet_phi)), //
+                                                     year);
+
+            auto met = ObjectFactories::make_met(unwrap(MET_pt),  //
+                                                 unwrap(MET_phi), //
+                                                 year);
+
+            // class_factory.analyse_event();
+        }
     }
 
     fmt::print("\n[MUSiC Classification] Saving outputs ({} - {} - {}) ...\n", output_path, process, year);
     // class_factory.end_job();
+
     fmt::print("\n[MUSiC Classification] Done ...\n");
     PrintProcessInfo();
 

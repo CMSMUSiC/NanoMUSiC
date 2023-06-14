@@ -194,14 +194,14 @@ auto main(int argc, char *argv[]) -> int
         }
 
         // muons
-        auto muons = make_muons(unwrap(Muon_pt),
-                                unwrap(Muon_eta),
-                                unwrap(Muon_phi),
-                                unwrap(Muon_tightId),
-                                unwrap(Muon_highPtId),
-                                unwrap(Muon_pfRelIso04_all),
-                                unwrap(Muon_tkRelIso),
-                                unwrap(Muon_tunepRelPt));
+        auto muons = ObjectFactories::make_muons(unwrap(Muon_pt),
+                                                 unwrap(Muon_eta),
+                                                 unwrap(Muon_phi),
+                                                 unwrap(Muon_tightId),
+                                                 unwrap(Muon_highPtId),
+                                                 unwrap(Muon_pfRelIso04_all),
+                                                 unwrap(Muon_tkRelIso),
+                                                 unwrap(Muon_tunepRelPt));
 
         // MuMu + X
         if (muons.size() >= 2)
@@ -224,19 +224,19 @@ auto main(int argc, char *argv[]) -> int
                                              unwrap(GenJet_eta), //
                                              unwrap(GenJet_phi));
 
-        auto jets = make_jets(unwrap(Jet_pt),                 //
-                              unwrap(Jet_eta),                //
-                              unwrap(Jet_phi),                //
-                              unwrap(Jet_mass),               //
-                              unwrap(Jet_jetId),              //
-                              unwrap(Jet_btagDeepFlavB),      //
-                              unwrap(Jet_rawFactor),          //
-                              unwrap(Jet_area),               //
-                              unwrap(Jet_genJetIdx),          //
-                              unwrap(fixedGridRhoFastjetAll), //
-                              jet_corrections,                //
-                              gen_jets,                       //
-                              year);
+        auto jets = ObjectFactories::make_jets(unwrap(Jet_pt),                 //
+                                               unwrap(Jet_eta),                //
+                                               unwrap(Jet_phi),                //
+                                               unwrap(Jet_mass),               //
+                                               unwrap(Jet_jetId),              //
+                                               unwrap(Jet_btagDeepFlavB),      //
+                                               unwrap(Jet_rawFactor),          //
+                                               unwrap(Jet_area),               //
+                                               unwrap(Jet_genJetIdx),          //
+                                               unwrap(fixedGridRhoFastjetAll), //
+                                               jet_corrections,                //
+                                               gen_jets,                       //
+                                               year);
 
         // if (jets.size() >= 2)
         if (jets.size() == 2)
