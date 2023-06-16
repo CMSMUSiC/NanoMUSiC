@@ -1,3 +1,7 @@
+//////////////////////////////////////////////////////////////
+/////////// Z-TO-LEP-LEP AND DIJET VALIDATION CODE ///////////
+//////////////////////////////////////////////////////////////
+
 #include "HeavyValidation.hpp"
 
 #include "Configs.hpp"
@@ -229,6 +233,7 @@ auto main(int argc, char *argv[]) -> int
             }
         }
 
+        /*
         // Dijets
         auto gen_jets = NanoObjects::GenJets(unwrap(GenJet_pt),  //
                                              unwrap(GenJet_eta), //
@@ -253,26 +258,27 @@ auto main(int argc, char *argv[]) -> int
             auto jet_1 = jets.at(0);
             auto jet_2 = jets.at(1);
 
-            ///*
-            if (jet_1.pt() >= 600)
-            {
-                // wide mass range
-                dijets.fill(jet_1, jet_2, std::nullopt, weight);
-            }
-            //*/
 
-            /*
-             float sumpt = 0;
-             for (size_t i = 0; i < jets.size(); i++)
-             {
-                 sumpt += jets.at(i).pt();
-             }
-             if (sumpt >= 1600)
-             {
-                 dijets.fill(jet_1, jet_2, std::nullopt, weight);
-             }
-             */
-        }
+            // if (jet_1.pt() >= 600)
+            // {
+            //     // wide mass range
+            //     dijets.fill(jet_1, jet_2, std::nullopt, weight);
+            // }
+
+
+
+        // float sumpt = 0;
+        // for (size_t i = 0; i < jets.size(); i++)
+        // {
+        //     sumpt += jets.at(i).pt();
+        // }
+        // if (sumpt >= 1600)
+        // {
+        //     dijets.fill(jet_1, jet_2, std::nullopt, weight);
+        // }
+
+    }
+    */
     }
 
     fmt::print("\n[MUSiC Validation] Saving outputs ({} - {} - {}) ...\n", output_path, process, year);

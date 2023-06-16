@@ -128,13 +128,14 @@ def run_validation(
     input_file: str,
     trigger: str,
     tvarg: str,
+    order: str,
 ) -> bool:
     debug: bool = False
 
     # default is MC
-    cmd_str: str = f"{executable} --process {process_name} --year {year} --output {output_path} --xsection {str(effective_x_section)} --input {input_file} --trigger {trigger} --tovalidate {tvarg}"
+    cmd_str: str = f"{executable} --process {process_name} --year {year} --output {output_path} --xsection {str(effective_x_section)} --input {input_file} --trigger {trigger} --tovalidate {tvarg} --order {order}"
     if is_data:
-        cmd_str: str = f"{executable} --process {process_name} --year {year} --is_data --output {output_path} --xsection {str(effective_x_section)} --input {input_file} --trigger {trigger} --tovalidate {tvarg}"
+        cmd_str: str = f"{executable} --process {process_name} --year {year} --is_data --output {output_path} --xsection {str(effective_x_section)} --input {input_file} --trigger {trigger} --tovalidate {tvarg} --order {order}"
 
     if debug:
         print(f"Executing: {cmd_str}")
@@ -187,6 +188,7 @@ def validation(args):
         savepath,
         trigger,
         tvarg,
+        order,
     ) = list(args.values())
 
     output_path = f"validation_outputs/{year}/files"
@@ -222,6 +224,7 @@ def validation(args):
         inputs,
         trigger,
         tvarg,
+        order,
     )
     os.system(f"rm -rf {inputs} > /dev/null")
 
@@ -280,6 +283,7 @@ def create_arguments(
                         "savepath": savepath,
                         "trigger": trigger,
                         "tovalidate": tvarg,
+                        "order": configuration[sample]["XSecOrder"],
                     }
                 )
         else:  # generate data argument
@@ -297,6 +301,7 @@ def create_arguments(
                     "savepath": savepath,
                     "trigger": trigger,
                     "tovalidate": tvarg,
+                    "order": "_",
                 }
             )
     return validation_arguments

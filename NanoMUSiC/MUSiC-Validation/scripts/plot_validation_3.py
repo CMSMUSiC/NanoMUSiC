@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 ###########################################
-## PLOT VALIDATION 2 (no systematics)    ##
+## PLOT VALIDATION 3 (with systematics!) ##
 ###########################################
 
 from __future__ import annotations

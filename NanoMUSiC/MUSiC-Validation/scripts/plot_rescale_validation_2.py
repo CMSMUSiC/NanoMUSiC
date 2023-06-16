@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
 
-###########################################
-## PLOT VALIDATION 2 (no systematics)    ##
-###########################################
-
 from __future__ import annotations
 
 import numpy as np
@@ -67,7 +63,7 @@ def parse_args():
         "-n",
         "--histname",
         required=True,
-        help="To plot only one histogram, specify the name. Useful when using custom display settings (e.g. -xl, -yl) or to only produce one plot.\nTo plot all histograms (with the same settings/default settings) use '-n ALL'.",
+        help="Name of the output histogram of second dataset. To plot only one histogram, specify the name. Useful when using custom display settings (e.g. -xl, -yl) or to only produce one plot.\nTo plot all histograms (with the same settings/default settings) use '-n ALL'.",
     )
     parser.add_argument(
         "-p",
@@ -75,9 +71,16 @@ def parse_args():
         help="For normal plotting. Prefix of the root files containing the histograms (including the last '_').",
     )
     parser.add_argument(
-        "-s",
-        "--savepath",
-        help="Directory of the files inside of /validation_outputs/[year]/ (if they are in a sub-directory). Search for files in the [year] directory if left blank.",
+        "-s1",
+        "--savepath1",
+        help="Directory of the sample files inside of /validation_outputs/[year]/. From this first dataset the normalization is calculated.",
+        required=True,
+    )
+    parser.add_argument(
+        "-s2",
+        "--savepath2",
+        help="Directory of the sample files inside of /validation_outputs/[year]/. This second dataset is normalized with the normalization factor calculated from the first dataset.",
+        required=True,
     )
     parser.add_argument(
         "-t",
@@ -106,6 +109,12 @@ def parse_args():
         "-ylim",
         "--ylimit",
         help="Optional: Override ylim in plot config. Pass in the format 'min,max'.",
+    )
+    parser.add_argument(
+        "-nw",
+        "--normalizewith",
+        help="Name of the histogram in first dataset from which the normalization factor is calculated.",
+        required=True,
     )
     args = parser.parse_args()
     if (args.fileprefix and args.jetclass) or (
@@ -405,7 +414,7 @@ def stacker(
             for i in range(validation_len_edges):
                 if dataedges[sample][i] != validation_edges[i]:
                     binerror()
-            # nbins = len(dataedges[sample]) - 1  # no. of bins is (no. of edges) - 1
+            nbins = len(dataedges[sample]) - 1  # no. of bins is (no. of edges) - 1
         printdebug(
             "All histogram edges are matching, therefore the validation can continue."
         )
@@ -413,7 +422,6 @@ def stacker(
     # calculate bins and bin width (only once since they are the same for every sample)
     edges = validation_edges
     bins, barwidth = calculatebins(edges)
-    nbins = len(bins)
     printdebug("Calculated bins from histogram edges.")
 
     # re-sort mc groups into mc categories with aggregation dictionary
@@ -471,7 +479,7 @@ def stacker(
         categorysum = np.zeros(nbins)
         sqerr_categorysum = np.zeros(nbins)
         for sample in categories_samples[category]:
-            categorysum += np.array(mccounts[sample])
+            categorysum += mccounts[sample]
             sqerr_categorysum += (np.array(mcerrors[sample])) ** 2
         categories_counts.update(
             {category: categorysum}
@@ -547,14 +555,21 @@ def stacker(
 
 # ----------------------------------------
 
+# ugly global variables
+prev_classname = "Name"
+frst_norm = 1
+cannnotnormalize = False
+
 # performs a plotting job
 def plotter(
     args,
-    savepath,
+    savepath_frst,  # 1st (reference) data set: calculate normalization
+    savepath_scnd,  # 2nd data set: apply calculated normalization
     datasamples,
     mcsamples,
     mcsorted,
     histname,
+    normalizehistname,
     color_dict,
     aggregation_dict,
     histproperties,
@@ -564,20 +579,22 @@ def plotter(
     subfolder,
 ):
     # import, sort and stack data and mc
+
+    # second dataset
     (
-        bins,
-        edges,
-        barwidth,
-        nbins,
-        categories_stacked,
-        categories_counts,
-        categories_colors,
-        mcsum,
-        mcerr,
-        datasum,
-        error_data,
+        scnd_bins,
+        scnd_edges,
+        scnd_barwidth,
+        scnd_nbins,
+        scnd_categories_stacked,
+        scnd_categories_counts,
+        scnd_categories_colors,
+        scnd_mcsum,
+        scnd_mcerr,
+        scnd_datasum,
+        scnd_error_data,
     ) = stacker(
-        savepath,
+        savepath_scnd,
         datasamples,
         mcsamples,
         mcsorted,
@@ -587,6 +604,103 @@ def plotter(
         years,
         fileprefix,
     )
+
+    # normalization calculation only once for every class
+    global prev_classname
+    global frst_norm
+    global cannnotnormalize
+    if classname != prev_classname:
+        cannnotnormalize = False
+        prev_classname = classname
+        # reference dataset
+        (
+            frst_bins,
+            frst_edges,
+            frst_barwidth,
+            frst_nbins,
+            frst_categories_stacked,
+            frst_categories_counts,
+            frst_categories_colors,
+            frst_mcsum,
+            frst_mcerr,
+            frst_datasum,
+            frst_error_data,
+        ) = stacker(
+            savepath_frst,
+            datasamples,
+            mcsamples,
+            mcsorted,
+            normalizehistname,
+            color_dict,
+            aggregation_dict,
+            years,
+            fileprefix,
+        )
+        # calculate normalization of first data set
+        # cut the first dataset to the selected normalization x-interval
+        # left edge of bin should be > 1000 GeV
+        for i in range(len(frst_bins)):
+            leftedge = frst_edges[i]
+            if frst_edges[i] >= 1000:  # check left edge of any bin
+                break
+            frst_datasum[i] = 0
+            frst_mcsum[i] = 0
+        # last bin should still have corresponding data with > 10 counts
+        for i in range(len(frst_bins))[::-1]:  # go backwards from the right-most bin
+            rightedge = frst_edges[i]
+            if frst_datasum[i] >= 10:
+                break
+            frst_datasum[i] = 0
+            frst_mcsum[i] = 0
+        # global normalization with average
+        int_frst_datasum = np.sum(frst_datasum)
+        int_frst_mcsum = np.sum(frst_mcsum)
+        if int_frst_mcsum == 0:
+            print(
+                f"Cannot normalize: class {classname} from histogram {normalizehistname}"
+            )
+            cannnotnormalize = True
+            return
+        frst_norm = int_frst_datasum / int_frst_mcsum  # data/mc for first data set
+        print(
+            f"Normalized: class {classname} with histogram {normalizehistname}, interval [{leftedge}, {rightedge}] GeV, Data/MC = {frst_norm}"
+        )
+
+    if cannnotnormalize:  # skip if no MC event counts
+        return
+
+    # apply normalization to second data set
+    scnd_mcsum *= frst_norm
+    scnd_mcerr *= frst_norm
+    for category in scnd_categories_stacked:
+        scnd_categories_counts[category] = (
+            np.array(scnd_categories_counts[category]) * frst_norm
+        )
+
+    # plot the second, renormalized data set
+    (
+        bins,
+        edges,
+        barwidth,
+        nbins,
+        mcsum,
+        mcerr,
+        datasum,
+        error_data,
+        categories_stacked,
+    ) = (
+        scnd_bins,
+        scnd_edges,
+        scnd_barwidth,
+        scnd_nbins,
+        scnd_mcsum,
+        scnd_mcerr,
+        scnd_datasum,
+        scnd_error_data,
+        scnd_categories_stacked,
+    )
+    categories_counts = scnd_categories_counts.copy()
+    categories_colors = scnd_categories_colors.copy()
 
     # prepare plot
     hep.style.use(hep.style.ROOT)
@@ -867,11 +981,14 @@ def plotter(
             figname = classname + "_" + histname
         if args.title:  # optional custom file title
             figname = args.title
-        outputpath = validation_path + "/" + str(args.year) + "/plots/"
-        if savepath != "":
-            outputpath = (
-                validation_path + "/" + str(args.year) + "/" + savepath + "/plots/"
-            )
+        outputpath = (
+            validation_path
+            + "/"
+            + str(args.year)
+            + "/"
+            + savepath_scnd
+            + "/renorm_plots/"
+        )
         if subfolder != "":
             outputpath += subfolder + "/"
         outputpath += figname + ".pdf"
@@ -891,14 +1008,16 @@ def main():
     args = parse_args()
 
     # check for sub-directory
-    savepath = ""
-    if args.savepath:
-        savepath = args.savepath
+    savepath_frst = args.savepath1
+    savepath_scnd = args.savepath2
 
     # check for sub-sub-directory
     subfolder = ""
     if args.subfolder:
         subfolder = args.subfolder
+
+    # histogram to take the normalization from
+    normalizehistname = args.normalizewith
 
     # import task config file that includes references to all files that should be validated
     print(f"Importing task config...")
@@ -988,9 +1107,9 @@ def main():
         print(f"Jet class plotting with for the given classes.")
 
     # check output path
-    outputpath = validation_path + "/" + str(args.year) + "/plots/"
-    if savepath != "":
-        outputpath = validation_path + "/" + str(args.year) + "/" + savepath + "/plots/"
+    outputpath = (
+        validation_path + "/" + str(args.year) + "/" + args.savepath2 + "/renorm_plots/"
+    )
     if subfolder != "":
         outputpath += subfolder + "/"
     if not (os.path.isdir(f"{outputpath}")):
@@ -1018,11 +1137,13 @@ def main():
             printdebug(f"    Starting plotting job for histogram {histname}.")
             plotter(
                 args,
-                savepath,
+                savepath_frst,
+                savepath_scnd,
                 datasamples,
                 mcsamples,
                 mcsorted,
                 histname,
+                normalizehistname,
                 color_dict,
                 aggregation_dict,
                 histograms[histname],
@@ -1040,11 +1161,13 @@ def main():
                 printdebug(f"\nStarting plotting job for histogram {histname}.")
                 plotter(
                     args,
-                    savepath,
+                    savepath_frst,
+                    savepath_scnd,
                     datasamples,
                     mcsamples,
                     mcsorted,
                     histname,
+                    normalizehistname,
                     color_dict,
                     aggregation_dict,
                     histograms[histname],

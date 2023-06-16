@@ -30,7 +30,7 @@ class JetClass2
     // histograms
     ADD_TH1F(h_m_inv, n_energy_bins, min_energy, max_energy);
     ADD_TH1F(h_sum_pt, n_energy_bins, min_energy, max_energy);
-    ADD_TH1F(h_met, n_energy_bins, min_energy, max_energy);
+    ADD_TH1F(h_pt_met, n_energy_bins, min_energy, max_energy);
     ADD_TH1F(h_pt_1st_jet, n_energy_bins, min_energy, max_energy);
     ADD_TH1F(h_pt_2nd_jet, n_energy_bins, min_energy, max_energy);
     ADD_TH1F(h_eta_1st_jet, n_eta_bins, min_eta, max_eta);
@@ -43,6 +43,7 @@ class JetClass2
     ADD_TH1F(h_eta_2nd_bjet, n_eta_bins, min_eta, max_eta);
     ADD_TH1F(h_phi_1st_bjet, n_phi_bins, min_phi, max_phi);
     ADD_TH1F(h_phi_2nd_bjet, n_phi_bins, min_phi, max_phi);
+    ADD_TH1F(h_phi_met, n_phi_bins, min_phi, max_phi);
     ADD_TH1F(h_njet, n_multiplicity_bins, min_multiplicity, max_multiplicity);
     ADD_TH1F(h_nbjet, n_multiplicity_bins, min_multiplicity, max_multiplicity);
     ADD_TH1F(h_nelectron, n_multiplicity_bins, min_multiplicity, max_multiplicity);
@@ -57,7 +58,7 @@ class JetClass2
 
     // fill histograms
     auto fill(RVec<Math::PtEtaPhiMVector> jets, RVec<Math::PtEtaPhiMVector> bjets,
-              unsigned int nElectron, unsigned int nMuon, std::optional<float> met, float weight) -> void;
+              unsigned int nElectron, unsigned int nMuon, RVec<Math::PtEtaPhiMVector> met, float weight) -> void;
 
     // save histograms
     auto save_histo(TH1F &histo) -> void;

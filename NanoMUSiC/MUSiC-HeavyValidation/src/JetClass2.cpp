@@ -27,12 +27,13 @@ JetClass2::JetClass2(const std::string &output_path, const std::string c_name)
     h_pt_2nd_jet = rebin_histogram(h_pt_2nd_jet, return_jet_countmap(1, 0));
     h_pt_1st_bjet = rebin_histogram(h_pt_1st_bjet, return_jet_countmap(0, 1));
     h_pt_2nd_bjet = rebin_histogram(h_pt_2nd_bjet, return_jet_countmap(0, 1));
-    h_met = rebin_histogram(h_met, return_jet_countmap(c_nJet, c_nBJet), false, "MET");
+    h_pt_met = rebin_histogram(h_pt_met, return_jet_countmap(c_nJet, c_nBJet), false, "MET");
 
     // Sumw2
     h_m_inv.Sumw2();
     h_sum_pt.Sumw2();
-    h_met.Sumw2();
+    h_pt_met.Sumw2();
+    h_phi_met.Sumw2();
     h_pt_1st_jet.Sumw2();
     h_eta_1st_jet.Sumw2();
     h_phi_1st_jet.Sumw2();
@@ -62,7 +63,7 @@ auto JetClass2::fill(RVec<Math::PtEtaPhiMVector> jets,
                      RVec<Math::PtEtaPhiMVector> bjets,
                      unsigned int nElectron,
                      unsigned int nMuon,
-                     std::optional<float> met,
+                     RVec<Math::PtEtaPhiMVector> met,
                      float weight) -> void
 {
     // validate nJet/nBJet with class name
@@ -85,9 +86,10 @@ auto JetClass2::fill(RVec<Math::PtEtaPhiMVector> jets,
                                      .c_str());
     }
     // met
-    if (met)
+    if (met.size() >= 1)
     {
-        h_met.Fill(met.value(), weight);
+        h_pt_met.Fill(met.at(0).pt(), weight);
+        h_phi_met.Fill(met.at(0).phi(), weight);
     }
     // sum_pt and m_inv
     auto jetsum = Math::PtEtaPhiMVector(0, 0, 0, 0);
@@ -159,6 +161,7 @@ auto JetClass2::fill(RVec<Math::PtEtaPhiMVector> jets,
 // save histograms
 auto JetClass2::save_histo(TH1F &histo) -> void
 {
+    histo.Scale(10, "width"); // FIXES STEPS IN DISTRIBUTIONS
     histo.SetDirectory(output_file.get());
     histo.Write();
 }
@@ -170,7 +173,8 @@ auto JetClass2::dump_outputs() -> void
     output_file->cd();
     save_histo(h_m_inv);
     save_histo(h_sum_pt);
-    save_histo(h_met);
+    save_histo(h_pt_met);
+    save_histo(h_phi_met);
     save_histo(h_pt_1st_jet);
     save_histo(h_eta_1st_jet);
     save_histo(h_phi_1st_jet);

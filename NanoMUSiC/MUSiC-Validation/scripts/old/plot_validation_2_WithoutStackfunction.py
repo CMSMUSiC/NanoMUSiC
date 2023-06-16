@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
 
-###########################################
-## PLOT VALIDATION 2 (no systematics)    ##
-###########################################
-
 from __future__ import annotations
 
 import numpy as np
@@ -96,16 +92,6 @@ def parse_args():
         "-sf",
         "--subfolder",
         help="Save plot in [subfolder] of validation_outputs/[year]/[savepath]/plots/. If left out, saved in ../plots.",
-    )
-    parser.add_argument(
-        "-xlim",
-        "--xlimit",
-        help="Optional: Override ylim in plot config. Pass in the format 'min,max'.",
-    )
-    parser.add_argument(
-        "-ylim",
-        "--ylimit",
-        help="Optional: Override ylim in plot config. Pass in the format 'min,max'.",
     )
     args = parser.parse_args()
     if (args.fileprefix and args.jetclass) or (
@@ -353,8 +339,10 @@ def ratio_uncertainty(
 
 # ----------------------------------------
 
-# imports, sorts and stacks data and mc from input files
-def stacker(
+
+# performs a plotting job
+def plotter(
+    args,
     savepath,
     datasamples,
     mcsamples,
@@ -362,8 +350,11 @@ def stacker(
     histname,
     color_dict,
     aggregation_dict,
+    histproperties,
     years,
     fileprefix,
+    classname,
+    subfolder,
 ):
     mccounts, mcedges, mcerrors = {}, {}, {}
     datacounts, dataedges, dataerrors = {}, {}, {}
@@ -405,7 +396,7 @@ def stacker(
             for i in range(validation_len_edges):
                 if dataedges[sample][i] != validation_edges[i]:
                     binerror()
-            # nbins = len(dataedges[sample]) - 1  # no. of bins is (no. of edges) - 1
+            nbins = len(dataedges[sample]) - 1  # no. of bins is (no. of edges) - 1
         printdebug(
             "All histogram edges are matching, therefore the validation can continue."
         )
@@ -413,7 +404,6 @@ def stacker(
     # calculate bins and bin width (only once since they are the same for every sample)
     edges = validation_edges
     bins, barwidth = calculatebins(edges)
-    nbins = len(bins)
     printdebug("Calculated bins from histogram edges.")
 
     # re-sort mc groups into mc categories with aggregation dictionary
@@ -471,7 +461,7 @@ def stacker(
         categorysum = np.zeros(nbins)
         sqerr_categorysum = np.zeros(nbins)
         for sample in categories_samples[category]:
-            categorysum += np.array(mccounts[sample])
+            categorysum += mccounts[sample]
             sqerr_categorysum += (np.array(mcerrors[sample])) ** 2
         categories_counts.update(
             {category: categorysum}
@@ -499,94 +489,6 @@ def stacker(
         )  # dictionary: {category: {samples in category}}
         # with categories ordered after their cumulated contribution (sum of all bins), smallest contribution first
     printdebug("Sorted mc categories by their maximum contribution.")
-
-    # stack mc categories, calculate errors
-    mcsum = np.zeros(nbins)
-    sqmcerrsum = np.zeros(nbins)
-    categories_stacked = sorted_categories_samples.keys()
-    counts_stacked = []
-    colors_stacked = []
-    for category in categories_stacked:
-        counts_stacked += [categories_counts[category]]
-        colors_stacked += [categories_colors[category]]
-        mcsum += categories_counts[category]
-        sqmcerrsum += (
-            np.array(categories_errors[category])
-        ) ** 2  # add errors together
-    mcerr = np.sqrt(sqmcerrsum)  # plot combined mc error
-
-    # stack data, calculate errors
-    printdebug("Start data stacking and plotting.")
-    datasum = np.zeros(nbins)
-    sqdataerrsum = np.zeros(nbins)
-    for sample in datasamples:
-        counts = np.array(datacounts[sample])
-        datasum += counts  # stack data samples
-        sqdataerrsum += (
-            np.array(dataerrors[sample])
-        ) ** 2  # calculate square sum of errors, assuming uncorrelated samples
-    error_data = np.sqrt(
-        sqdataerrsum
-    )  # calculate final error value (square root of square sum)
-
-    # return stacked data and mc
-    return (
-        bins,
-        edges,
-        barwidth,
-        nbins,
-        categories_stacked,
-        categories_counts,
-        categories_colors,
-        mcsum,
-        mcerr,
-        datasum,
-        error_data,
-    )
-
-
-# ----------------------------------------
-
-# performs a plotting job
-def plotter(
-    args,
-    savepath,
-    datasamples,
-    mcsamples,
-    mcsorted,
-    histname,
-    color_dict,
-    aggregation_dict,
-    histproperties,
-    years,
-    fileprefix,
-    classname,
-    subfolder,
-):
-    # import, sort and stack data and mc
-    (
-        bins,
-        edges,
-        barwidth,
-        nbins,
-        categories_stacked,
-        categories_counts,
-        categories_colors,
-        mcsum,
-        mcerr,
-        datasum,
-        error_data,
-    ) = stacker(
-        savepath,
-        datasamples,
-        mcsamples,
-        mcsorted,
-        histname,
-        color_dict,
-        aggregation_dict,
-        years,
-        fileprefix,
-    )
 
     # prepare plot
     hep.style.use(hep.style.ROOT)
@@ -618,7 +520,36 @@ def plotter(
         bottom = float(histproperties["bottom"])
     fig.subplots_adjust(left=left, right=right, bottom=bottom, top=top)
 
-    # plot mc
+    # stack mc categories, calculate errors and plot mc
+    """
+    # old version with bottom option, creates white lines in .pdf export
+    printdebug("Start mc plotting.")
+    mcsum = np.zeros(nbins)
+    sqmcerrsum = np.zeros(nbins)
+    for category in sorted_categories_samples.keys():
+        printdebug("   Plotting mc category {}...".format(category))
+        # ax[0].bar(bins, categories_counts[category], width=barwidth, bottom=mcsum, label=category, color=categories_colors[category]) # working alternative
+        ax[0].hist(bins, edges, weights=categories_counts[category], label=category, color=categories_colors[category], bottom=mcsum)
+        mcsum += categories_counts[category]
+        sqmcerrsum += (np.array(categories_errors[category]))**2 # add errors together
+    mcerr = np.sqrt(sqmcerrsum) # plot combined mc error
+    ax[0].bar(bins, 2*mcerr, width=barwidth, bottom=(mcsum-mcerr), label="MC uncertainty", fill=False, hatch="xxxxxxxx", linewidth=0, edgecolor="tab:gray")
+    """
+    # new version with stacked hist, minimizes white lines in .pdf export
+    printdebug("Start mc plotting.")
+    mcsum = np.zeros(nbins)
+    sqmcerrsum = np.zeros(nbins)
+    categories_stacked = sorted_categories_samples.keys()
+    counts_stacked = []
+    colors_stacked = []
+    for category in categories_stacked:
+        counts_stacked += [categories_counts[category]]
+        colors_stacked += [categories_colors[category]]
+        mcsum += categories_counts[category]
+        sqmcerrsum += (
+            np.array(categories_errors[category])
+        ) ** 2  # add errors together
+    mcerr = np.sqrt(sqmcerrsum)  # plot combined mc error
     ax[0].hist(
         [bins for category in categories_stacked],
         edges,
@@ -640,7 +571,19 @@ def plotter(
         label="MC uncertainty",
     )
 
-    # plot data
+    # stack data, calculate errors and plot data
+    printdebug("Start data stacking and plotting.")
+    datasum = np.zeros(nbins)
+    sqdataerrsum = np.zeros(nbins)
+    for sample in datasamples:
+        counts = np.array(datacounts[sample])
+        datasum += counts  # stack data samples
+        sqdataerrsum += (
+            np.array(dataerrors[sample])
+        ) ** 2  # calculate square sum of errors, assuming uncorrelated samples
+    error_data = np.sqrt(
+        sqdataerrsum
+    )  # calculate final error value (square root of square sum)
     ax[0].errorbar(
         bins,
         datasum,
@@ -717,21 +660,18 @@ def plotter(
         whitespace = 0
         xlim = (edges[leftidx] - whitespace, edges[rightidx] + whitespace)
         # read custom x limits
-        xlim_string = ["", ""]
-        try:
-            if histproperties["xlim"] != "":
+        if histproperties["xlim"] != "":
+            try:
                 xlim_string = histproperties["xlim"].split(",")
-            if args.xlimit:  # for xlim argument override the limit in the file
-                xlim_string = args.xlimit.split(",")
-            if xlim_string[0] != "" and xlim_string[1] != "":
-                xlim = (float(xlim_string[0]), float(xlim_string[1]))
-            elif xlim_string[0] != "" and xlim_string[1] == "":
-                xlim = (float(xlim_string[0]), xlim[1])
-            elif xlim_string[0] == "" and xlim_string[1] != "":
-                xlim = (xlim[0], float(xlim_string[1]))
-        except:
-            raise RuntimeError("Invalid x limit given.")
-            exit(0)
+                if xlim_string[0] != "" and xlim_string[1] != "":
+                    xlim = (float(xlim_string[0]), float(xlim_string[1]))
+                elif xlim_string[0] != "" and xlim_string[1] == "":
+                    xlim = (float(xlim_string[0]), xlim[1])
+                elif xlim_string[0] == "" and xlim_string[1] != "":
+                    xlim = (xlim[0], float(xlim_string[1]))
+            except:
+                raise RuntimeError("Invalid x limit given.")
+                exit(0)
         ax[0].set_xlim(xlim)
         # identify indices of data points inside of determined xlim
         leftidx = 0
@@ -766,21 +706,18 @@ def plotter(
         minoryticks = [i * n for n in range(0, 11) for i in majoryticks]
         ax[0].set_yticks(minoryticks, minor=True)
         # read custom y limits
-        ylim_string = ["", ""]
-        try:
-            if histproperties["ylim"] != "":
+        if histproperties["ylim"] != "":
+            try:
                 ylim_string = histproperties["ylim"].split(",")
-            if args.ylimit:  # for ylim argument override the limit in the file
-                ylim_string = args.ylimit.split(",")
-            if ylim_string[0] != "" and ylim_string[1] != "":
-                ylim = (float(ylim_string[0]), float(ylim_string[1]))
-            elif ylim_string[0] != "" and ylim_string[1] == "":
-                ylim = (float(ylim_string[0]), ylim[1])
-            elif ylim_string[0] == "" and ylim_string[1] != "":
-                ylim = (ylim[0], float(ylim_string[1]))
-        except:
-            raise RuntimeError("Invalid y limit given.")
-            exit(0)
+                if ylim_string[0] != "" and ylim_string[1] != "":
+                    ylim = (float(ylim_string[0]), float(ylim_string[1]))
+                elif ylim_string[0] != "" and ylim_string[1] == "":
+                    ylim = (float(ylim_string[0]), ylim[1])
+                elif ylim_string[0] == "" and ylim_string[1] != "":
+                    ylim = (ylim[0], float(ylim_string[1]))
+            except:
+                raise RuntimeError("Invalid y limit given.")
+                exit(0)
         ax[0].set_ylim(ylim)
         # find y limits for data/mc plot
         if len(xlim) == 0 or len(bins_overmc) == 0:  # avoid bugs
