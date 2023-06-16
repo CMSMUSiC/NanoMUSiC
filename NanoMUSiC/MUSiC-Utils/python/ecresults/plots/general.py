@@ -11,6 +11,8 @@ import ROOT
 from ectools.register import ecroot
 import dbtools
 
+import ctypes
+
 from roothelpers import root_last_filled_bin, root_first_filled_bin, \
                         root_latex_convert, TextAlign, Font
 
@@ -567,20 +569,20 @@ class GeneralPlots( GeneralPlotsBase ):
         # create cumulative plot if option is used
         if self.config.cumulative:
             sum = 0
-            for ibin in reversed( xrange( self.data_hist.GetNbinsX() ) ):
+            for ibin in reversed( range( self.data_hist.GetNbinsX() ) ):
                 sum += self.data_hist.GetBinContent( ibin + 1 ) * self.data_hist.GetBinWidth( ibin + 1 ) / self.min_bin_width
                 self.data_hist.SetBinContent( ibin + 1, sum )
 
         # create cumulative plot if option is used
         if self.config.cumulative:
             sum = 0
-            for ibin in reversed( xrange( self.data_hist_unscaled.GetNbinsX() ) ):
+            for ibin in reversed( range( self.data_hist_unscaled.GetNbinsX() ) ):
                 sum += self.data_hist_unscaled.GetBinContent( ibin + 1 ) * self.data_hist_unscaled.GetBinWidth( ibin + 1 ) / self.min_bin_width
                 self.data_hist_unscaled.SetBinContent( ibin + 1, sum )
 
         self.data_hist.SetLineWidth( 1 )
         if self.config.blind != 13000.:
-            for ibin in xrange( 0, self.data_hist.GetNbinsX() ):
+            for ibin in range( 0, self.data_hist.GetNbinsX() ):
                 if self.data_hist.GetBinLowEdge( ibin + 1 ) > self.config.blind:
                     self.data_hist.SetBinContent( ibin + 1, 0 )
                     self.data_hist.SetBinError( ibin + 1, 0 )
@@ -658,7 +660,7 @@ class GeneralPlots( GeneralPlotsBase ):
             # create cumulative plot if option is used
             if self.config.cumulative:
                 sum = 0
-                for ibin in reversed( xrange( hist.GetNbinsX() ) ):
+                for ibin in reversed( range( hist.GetNbinsX() ) ):
                     sum += hist.GetBinContent( ibin + 1 ) * hist.GetBinWidth( ibin + 1 ) / self.min_bin_width
                     hist.SetBinContent( ibin + 1, sum )
 
@@ -683,7 +685,7 @@ class GeneralPlots( GeneralPlotsBase ):
         # create cumulative plot if option is used
         if self.config.cumulative:
             sum = 0
-            for ibin in reversed( xrange(  self.total_mc_hist_unscaled.GetNbinsX() ) ):
+            for ibin in reversed( range(  self.total_mc_hist_unscaled.GetNbinsX() ) ):
                 sum +=  self.total_mc_hist_unscaled.GetBinContent( ibin + 1 ) * self.total_mc_hist_unscaled.GetBinWidth( ibin + 1 ) / self.min_bin_width
                 self.total_mc_hist_unscaled.SetBinContent( ibin + 1, sum )
 
@@ -846,10 +848,10 @@ class GeneralPlots( GeneralPlotsBase ):
                     legend_ylows.append( self.ylow_legend )
 
         # Get y coordinates of canvas
-        xlow_canvas = ROOT.Double( 0. )
-        ylow_canvas = ROOT.Double( 0. )
-        xup_canvas = ROOT.Double( 0. )
-        yup_canvas = ROOT.Double( 0. )
+        xlow_canvas = ctypes.c_double(0) #ROOT.double( 0. )
+        ylow_canvas = ctypes.c_double(0) #ROOT.double( 0. )
+        xup_canvas = ctypes.c_double(0) #ROOT.double( 0. )
+        yup_canvas = ctypes.c_double(0) #ROOT.double( 0. )
         if hasattr( self, '_pad1a' ) and self._pad1a is not None:
             self.pad1a.Modified()
             self.pad1a.Update()

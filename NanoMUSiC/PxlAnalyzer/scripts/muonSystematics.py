@@ -29,8 +29,8 @@ def get_scale_hist():
         [0.063,  0.029,  0.023,  0.024,  0.035,  0.075]
     ]
 
-    for j in xrange(muo_scale.GetNbinsY()):
-        for i in xrange(muo_scale.GetNbinsX()):
+    for j in range(muo_scale.GetNbinsY()):
+        for i in range(muo_scale.GetNbinsX()):
             # bins start at 1, not 0
             muo_scale.SetBinContent(i + 1, j + 1, bin_content[j][i])
             muo_scale.SetBinError(i + 1, j + 1, bin_uncertainties[j][i])

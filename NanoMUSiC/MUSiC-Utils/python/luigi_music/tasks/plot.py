@@ -108,10 +108,10 @@ class ECBaseDistributionPlotTask(ECBasePlotTask, ScanDBMixin):
             data_ec = self.get_ec(data_root_file, ec_name)
             signal_ec = self.get_ec(signal_root_file, ec_name)
             self._make_plot(ec_name, mc_ec, data_ec, signal_ec, session)
-            if mc_ec:
-                mc_ec.Delete()
-            if data_ec:
-                data_ec.Delete()
+            # if mc_ec:
+            #     mc_ec.Delete()
+            # if data_ec:
+            #     data_ec.Delete()
         mc_root_file.Close()
         if data_root_file:
             data_root_file.Close()
@@ -178,10 +178,10 @@ class ECBaseDistributionPlotTask(ECBasePlotTask, ScanDBMixin):
                                                          distribution=distribution )
                 for plot_path in self.plot_class.get_output_files(conf, outname, sub_path):
                     plots.append(luigi.LocalTarget(path=plot_path))
-            if mc_ec:
-                mc_ec.Delete()
-            if data_ec:
-                data_ec.Delete()
+            # if mc_ec:
+            #     mc_ec.Delete()
+            # if data_ec:
+            #     data_ec.Delete()
 
     def output(self):
         plots = []

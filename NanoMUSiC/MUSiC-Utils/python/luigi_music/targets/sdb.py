@@ -95,7 +95,7 @@ class ScanResultTarget(ScanBaseTarget):
             if len(res) == round_end - round_start:
                 return []
             rounds = [r.round for r in res]
-        return sorted(set(xrange(round_start, round_end + 1)).difference(rounds))
+        return sorted(set(range(round_start, round_end + 1)).difference(rounds))
 
     def exists(self):
         if not os.path.exists(self.db_path):
@@ -154,4 +154,4 @@ class ScanCorrectedResultTarget(ScanBaseTarget):
             if len(res) == nrounds:
                 return []
             rounds = [r.round for r in res]
-        return sorted(set(xrange(0, self.nrounds + 1)).difference(rounds))
+        return sorted(set(range(0, self.nrounds + 1)).difference(rounds))

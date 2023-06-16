@@ -85,9 +85,9 @@ class Progress():
         # draw symbols
         filled = int(percentage * 50)
         empty = 50 - filled
-        for i in xrange(0, filled):
+        for i in range(0, filled):
             sys.stdout.write('-')
-        for i in xrange(0, empty):
+        for i in range(0, empty):
             sys.stdout.write(' ')
         sys.stdout.write(']')
 
@@ -323,7 +323,7 @@ def main():
     # filling bar
     prog = Progress(current=0, maximum=70, text='progresstest', mode='bar+percentage+absolute')
     import time
-    for i in xrange(0, 80, 10):
+    for i in range(0, 80, 10):
         prog.advance_to(i)
         time.sleep(0.5)
     prog.end()

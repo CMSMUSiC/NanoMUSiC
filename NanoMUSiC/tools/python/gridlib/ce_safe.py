@@ -227,7 +227,7 @@ class Job(TaskSettings):
 
         # ensure there is a proxy with sufficient time remaining
         gridlib.util.voms_proxy_ensure(time=3600)
-        for i in xrange(50):
+        for i in range(50):
             # build submission command
             command = ['condor_submit', self.jdlfilename]
             process = subprocess.Popen(command, stdout=subprocess.PIPE)
@@ -569,7 +569,7 @@ def parse_status_multiple_l1(stdout):
 # @param l List to divide
 # @param n Size of chunks
 def chunks(l, n):
-    for i in xrange(0, len(l), n):
+    for i in range(0, len(l), n):
         yield l[i:i+n]
 
 
@@ -703,7 +703,7 @@ class Task(TaskSettings):
 
         # number jobs and create jdl files
         log.debug('Create {0} jdl file'.format(len(self.jobs)))
-        for i in xrange(len(self.jobs)):
+        for i in range(len(self.jobs)):
             self.jobs[i].node_id = i
             # create job specific folder
             os.mkdir(os.path.join(self.directory, 'grid-' + str(i)))

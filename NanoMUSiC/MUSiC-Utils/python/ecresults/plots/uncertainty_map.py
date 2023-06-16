@@ -117,7 +117,7 @@ class UncertaintyMap( ECCollectorConsumerPlot ):
 
     def sort_syst_names(self, category_name):
         groups = ["Scale","Resolution",  "pdfup","pileup", "fake",]
-        print category_name
+        print (category_name)
         score = 0
         for i,obj in enumerate(ecroot.object_types()):
             if obj.name.replace("EB", "").replace("EE", "") in category_name:

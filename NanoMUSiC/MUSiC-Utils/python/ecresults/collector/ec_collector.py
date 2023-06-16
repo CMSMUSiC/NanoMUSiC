@@ -316,6 +316,6 @@ def collect_record(conf,
                 result_dict["p-tilde"] = float(query[0].score)
                 result_dict["nrounds"] = int(query[0].comp_count)
     # Finalize ecroot.ec_loop function
-    if conf.jobs > 1: mc_ec.Delete()
-    if data_ec and conf.jobs > 1: data_ec.Delete()
+    #if conf.jobs > 1: mc_ec.Delete()
+    #if data_ec and conf.jobs > 1: data_ec.Delete()
     return result_dict

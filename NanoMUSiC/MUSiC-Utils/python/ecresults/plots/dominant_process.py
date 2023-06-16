@@ -168,7 +168,7 @@ class ECDominantProcessPlot(ECCollectorConsumerPlot, ClassCountMixin):
                     max_frac = frac
                     max_proc = proc
             if search_dominant in max_proc:
-                print search_dominant, infodict['name']
+                print (search_dominant, infodict['name'])
         return total_frac_dict
 
     @classmethod
