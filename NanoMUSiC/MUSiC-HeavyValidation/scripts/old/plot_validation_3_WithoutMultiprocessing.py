@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 ###########################################
-## PLOT VALIDATION 2 (no systematics)    ##
+## PLOT VALIDATION 3 (with systematics!) ##
 ###########################################
 
 from __future__ import annotations
@@ -61,7 +61,7 @@ def parse_args():
         "-y",
         "--year",
         required=True,
-        help="Year to be processed. ALL for stacking all years.",
+        help="Year to be processed. Currently only plotting for one year is possible.",
     )
     parser.add_argument(
         "-n",
@@ -118,29 +118,28 @@ def parse_args():
 
 
 # extracts task config
-def extract_config(task_config, years):
+def extract_config(task_config, year):
     mcconfig, dataconfig = {}, {}
-    print(f"Extracting samples from task config for years {years}...")
-    for year in years:
-        for sample in task_config:
-            if sample != "Lumi" and sample != "Global":
-                if year == "2016":
-                    if (
-                        f"das_name_{year}" in task_config[sample].keys()
-                        and "APV" not in task_config[sample].keys()
-                    ):  # only import samples of the right year
-                        if not task_config[sample]["is_data"]:  # mc case
-                            mcconfig.update({sample: task_config[sample]})
-                        else:  # data case
-                            dataconfig.update({sample: task_config[sample]})
-                else:
-                    if (
-                        f"das_name_{year}" in task_config[sample].keys()
-                    ):  # only import samples of the right year
-                        if not task_config[sample]["is_data"]:  # mc case
-                            mcconfig.update({sample: task_config[sample]})
-                        else:  # data case
-                            dataconfig.update({sample: task_config[sample]})
+    print(f"Extracting samples from task config for year {year}...")
+    for sample in task_config:
+        if sample != "Lumi" and sample != "Global":
+            if year == "2016":
+                if (
+                    f"das_name_{year}" in task_config[sample].keys()
+                    and "APV" not in task_config[sample].keys()
+                ):  # only import samples of the right year
+                    if not task_config[sample]["is_data"]:  # mc case
+                        mcconfig.update({sample: task_config[sample]})
+                    else:  # data case
+                        dataconfig.update({sample: task_config[sample]})
+            else:
+                if (
+                    f"das_name_{year}" in task_config[sample].keys()
+                ):  # only import samples of the right year
+                    if not task_config[sample]["is_data"]:  # mc case
+                        mcconfig.update({sample: task_config[sample]})
+                    else:  # data case
+                        dataconfig.update({sample: task_config[sample]})
     print(
         "Found",
         len(mcconfig),
@@ -354,6 +353,7 @@ def ratio_uncertainty(
 # ----------------------------------------
 
 # imports, sorts and stacks data and mc from input files
+# and processes mc errors
 def stacker(
     savepath,
     datasamples,
@@ -362,59 +362,103 @@ def stacker(
     histname,
     color_dict,
     aggregation_dict,
-    years,
+    year,
     fileprefix,
 ):
-    mccounts, mcedges, mcerrors = {}, {}, {}
-    datacounts, dataedges, dataerrors = {}, {}, {}
+    # names of the systematics (mc error) data sets (same as in the heavy validation code named 'systematics')
+    systematics = {
+        "nominal",
+        "up_lumi",
+        "down_lumi",
+        "up_pu",
+        "down_pu",
+        "up_xsec",
+        "down_xsec",
+    }
+
+    mccounts, mcedges = {}, {}  # {systname: {sample: counts}}
+    datacounts, dataedges = {}, {}  # {systname: {sample: counts}}
     validation_edges = []
     nbins = 0
-    for year in years:
-        # import mc histograms
-        printdebug(f"Importing {len(mcsamples)} mc histograms for year {year}...")
-        for sample in mcsamples:
-            samplecounts, sampleedges, sampleerrors = import_hist(
-                year, sample, fileprefix, histname, savepath
-            )
-            mccounts.update({sample: samplecounts})
-            mcedges.update({sample: sampleedges})
-            mcerrors.update({sample: sampleerrors})
 
-        # import data histograms
-        printdebug(f"Importing {len(datasamples)} data histograms for year {year}...")
+    # import mc histograms for every systematic
+    printdebug(f"Importing {len(mcsamples)} mc histograms for year {year}...")
+    for syst in systematics:
+        for sample in mcsamples:
+            fileprefix_syst = fileprefix + syst + "_"  # add syst name to file prefix
+            samplecounts, sampleedges, sampleerrors = import_hist(
+                year, sample, fileprefix_syst, histname, savepath
+            )
+            if syst in mccounts.keys():
+                mccounts[syst].update({sample: samplecounts})
+                mcedges[syst].update({sample: sampleedges})
+            else:
+                mccounts[syst] = {sample: samplecounts}
+                mcedges[syst] = {sample: sampleedges}
+
+    # import data histograms for every systematic
+    printdebug(f"Importing {len(datasamples)} data histograms for year {year}...")
+    for syst in systematics:
         for sample in datasamples:
+            fileprefix_syst = fileprefix + syst + "_"  # add syst name to file prefix
             samplecounts, sampleedges, sampleerrors = import_hist(
-                year, sample, fileprefix, histname, savepath
+                year, sample, fileprefix_syst, histname, savepath
             )
-            datacounts.update({sample: samplecounts})
-            dataedges.update({sample: sampleedges})
-            dataerrors.update({sample: sampleerrors})
+            if syst in datacounts.keys():
+                datacounts[syst].update({sample: samplecounts})
+                dataedges[syst].update({sample: sampleedges})
+            else:
+                datacounts[syst] = {sample: samplecounts}
+                dataedges[syst] = {sample: sampleedges}
 
-        # validation, check whether all histograms have the same edges
-        validation_edges = mcedges[mcsamples[0]]
-        validation_len_edges = len(validation_edges)
+    # validation, check whether all histograms have the same edges
+    validation_edges = mcedges["nominal"][mcsamples[0]]
+    validation_len_edges = len(validation_edges)
+    for syst in systematics:
         for sample in mcsamples:
-            if len(mcedges[sample]) != validation_len_edges:
+            if len(mcedges[syst][sample]) != validation_len_edges:
                 binerror()
             for i in range(validation_len_edges):
-                if mcedges[sample][i] != validation_edges[i]:
+                if mcedges[syst][sample][i] != validation_edges[i]:
                     binerror()
+    for syst in systematics:
         for sample in datasamples:
-            if len(dataedges[sample]) != validation_len_edges:
+            if len(dataedges[syst][sample]) != validation_len_edges:
                 binerror()
             for i in range(validation_len_edges):
-                if dataedges[sample][i] != validation_edges[i]:
+                if dataedges[syst][sample][i] != validation_edges[i]:
                     binerror()
-            # nbins = len(dataedges[sample]) - 1  # no. of bins is (no. of edges) - 1
-        printdebug(
-            "All histogram edges are matching, therefore the validation can continue."
-        )
+    printdebug(
+        "All histogram edges are matching, therefore the validation can continue."
+    )
 
     # calculate bins and bin width (only once since they are the same for every sample)
     edges = validation_edges
     bins, barwidth = calculatebins(edges)
     nbins = len(bins)
     printdebug("Calculated bins from histogram edges.")
+
+    # remove 'nominal' from 'systematics' set
+    systematics.discard("nominal")
+    # store nominal value in mcnominal
+    mcnominal = {}  # {sample: nominal counts}
+    for sample in mcsamples:
+        mcnominal.update({sample: mccounts["nominal"][sample]})
+
+    # calculate errors as difference from systematics to nominal
+    mcsystematics = (
+        {}
+    )  # {systname: {sample: error (deviation for systematic from nominal value)}}
+    for syst in systematics:
+        for sample in mcsamples:
+            if syst in mcsystematics.keys():
+                mcsystematics[syst].update(
+                    {sample: np.abs(mcnominal[sample] - mccounts[syst][sample])}
+                )
+            else:
+                mcsystematics[syst] = {
+                    sample: np.abs(mcnominal[sample] - mccounts[syst][sample])
+                }
 
     # re-sort mc groups into mc categories with aggregation dictionary
     categories_samples = {}
@@ -465,20 +509,15 @@ def stacker(
         f"   The mc categories {nomembers} have no member mc groups for the given task config."
     )
 
-    # stack all samples for each category and calculate errors for each category
-    categories_counts, categories_errors = {}, {}
+    # stack all samples for each category for the nominal values
+    categories_counts = {}
     for category in categories_samples.keys():
         categorysum = np.zeros(nbins)
-        sqerr_categorysum = np.zeros(nbins)
         for sample in categories_samples[category]:
-            categorysum += np.array(mccounts[sample])
-            sqerr_categorysum += (np.array(mcerrors[sample])) ** 2
+            categorysum += np.array(mccounts["nominal"][sample])
         categories_counts.update(
             {category: categorysum}
         )  # dictionary: {category: counts for stacked bins for all samples of this category}
-        categories_errors.update(
-            {category: np.sqrt(sqerr_categorysum)}
-        )  # dictionary: {category: combined error after stacking for all samples of this category}
     printdebug("Stacked the samples in each mc category.")
 
     # sort categories after their comulated contribution (sum of all bins), smallest contribution first
@@ -500,9 +539,8 @@ def stacker(
         # with categories ordered after their cumulated contribution (sum of all bins), smallest contribution first
     printdebug("Sorted mc categories by their maximum contribution.")
 
-    # stack mc categories, calculate errors
+    # stack mc categories
     mcsum = np.zeros(nbins)
-    sqmcerrsum = np.zeros(nbins)
     categories_stacked = sorted_categories_samples.keys()
     counts_stacked = []
     colors_stacked = []
@@ -510,24 +548,82 @@ def stacker(
         counts_stacked += [categories_counts[category]]
         colors_stacked += [categories_colors[category]]
         mcsum += categories_counts[category]
-        sqmcerrsum += (
-            np.array(categories_errors[category])
-        ) ** 2  # add errors together
-    mcerr = np.sqrt(sqmcerrsum)  # plot combined mc error
 
-    # stack data, calculate errors
-    printdebug("Start data stacking and plotting.")
+    # calculate all mc errors and merge them
+    mc_errors = {}  # {systname: merged error for all samples}
+    # add statistical error to systematics set
+    systematics.add("up_stat")
+    mc_errors.update()
+    systematics.add("down_stat")
+    # calculate stacked error for all samples for each systematic separately
+    for syst in systematics:
+        s_error = np.zeros(nbins)  # squared error value
+        if (
+            syst == "up_stat" or syst == "down_stat"
+        ):  # stat error, sqrt(bincount), up/down
+            for sample in mcsamples:
+                s_error += np.array(
+                    mccounts["nominal"][sample]
+                )  # assumed uncorrelated for every sample
+            s_error = np.abs(
+                s_error
+            )  # if for some reason the total mc count is negative, calculate statistical error with the absolute value
+        elif syst == "up_pu" or syst == "down_pu":  # pileup error
+            for sample in mcsamples:
+                s_error += np.array(
+                    mcsystematics[syst][sample] ** 2
+                )  # assumed uncorrelated for every sample
+        elif syst == "up_lumi" or syst == "down_lumi":  # lumi error
+            for sample in mcsamples:
+                s_error += np.array(
+                    mcsystematics[syst][sample] ** 2
+                )  # assumed uncorrelated for every sample
+        elif syst == "up_xsec" or syst == "down_xsec":  # cross section (order) error
+            # error only for LO order, others have error 0 currently, therefore this code does not decide between different orders
+            for category in categories_samples.keys():
+                temp = np.zeros(nbins)
+                for sample in categories_samples[category]:
+                    temp += mcsystematics[syst][
+                        sample
+                    ]  # assumed correlated for samples of the same category
+                s_error += temp**2  # assumed uncorrelated for different categories
+        # calculate sqrt of squared error value for the systematic source
+        mc_errors.update({syst: np.sqrt(s_error)})
+
+    # add all errors together for plotting
+    temp = {
+        "down": np.zeros(nbins),
+        "up": np.zeros(nbins),
+    }  # holds squared combined errors
+    for syst in systematics:
+        if "down" in syst:
+            temp["down"] += mc_errors[syst] ** 2
+        if "up" in syst:
+            temp["up"] += mc_errors[syst] ** 2
+    total_mc_errors = np.array(
+        [np.sqrt(temp["down"]), np.sqrt(temp["up"])]
+    )  # combined errors [total_mc_down, total_mc_up]
+    printdebug("Calculated the mc errors.")
+
+    # stack data
     datasum = np.zeros(nbins)
-    sqdataerrsum = np.zeros(nbins)
     for sample in datasamples:
-        counts = np.array(datacounts[sample])
+        counts = np.array(datacounts["nominal"][sample])
         datasum += counts  # stack data samples
-        sqdataerrsum += (
-            np.array(dataerrors[sample])
-        ) ** 2  # calculate square sum of errors, assuming uncorrelated samples
-    error_data = np.sqrt(
-        sqdataerrsum
-    )  # calculate final error value (square root of square sum)
+    printdebug("Stacked data.")
+
+    # calculate data errors
+    # assume uncorrelated sqrt(bincounts) errors
+    total_data_errors = [np.zeros(nbins), np.zeros(nbins)]
+    for sample in datasamples:
+        total_data_errors[0] += (
+            np.sqrt(datacounts["nominal"][sample]) ** 2
+        )  # statistical error
+        total_data_errors[1] += np.sqrt(datacounts["nominal"][sample]) ** 2
+    (total_data_errors[0], total_data_errors[1]) = (
+        np.sqrt(total_data_errors[0]),
+        np.sqrt(total_data_errors[1]),
+    )  # combined errors [total_data_down, total_data_up]
 
     # return stacked data and mc
     return (
@@ -539,9 +635,9 @@ def stacker(
         categories_counts,
         categories_colors,
         mcsum,
-        mcerr,
+        total_mc_errors,
         datasum,
-        error_data,
+        total_data_errors,
     )
 
 
@@ -558,7 +654,7 @@ def plotter(
     color_dict,
     aggregation_dict,
     histproperties,
-    years,
+    year,
     fileprefix,
     classname,
     subfolder,
@@ -573,7 +669,7 @@ def plotter(
         categories_counts,
         categories_colors,
         mcsum,
-        mcerr,
+        error_mc,
         datasum,
         error_data,
     ) = stacker(
@@ -584,7 +680,7 @@ def plotter(
         histname,
         color_dict,
         aggregation_dict,
-        years,
+        year,
         fileprefix,
     )
 
@@ -628,19 +724,21 @@ def plotter(
         histtype="stepfilled",
         stacked=True,
     )
+    # plot mc error
+    # error_mc: [mcerr_down, mcerr_up] where mcerr_up/down includes the up/down errors for each bin
     ax[0].bar(
         bins,
-        2 * mcerr,
+        error_mc[0, :] + error_mc[1, :],
         width=barwidth,
-        bottom=(mcsum - mcerr),
+        bottom=(mcsum - error_mc[0, :]),
         fill=False,
-        hatch="xxxxxxxx",
+        hatch="xxxxx",
         linewidth=0,
         edgecolor="tab:gray",
         label="MC uncertainty",
     )
 
-    # plot data with errors
+    # plot data
     ax[0].errorbar(
         bins,
         datasum,
@@ -689,7 +787,7 @@ def plotter(
         width=barwidth_overmc,
         bottom=1 - mcerr_overmc[0, :],
         fill=False,
-        hatch="xxxxxxxx",
+        hatch="xxxxx",
         linewidth=0,
         edgecolor="tab:gray",
     )
@@ -886,7 +984,7 @@ def plotter(
 
 ##### MAIN FUNCTION #####
 def main():
-    print("\n\n📶 [ MUSiC Validation Plotter 2 ] 📶\n")
+    print("\n\n📶 [ MUSiC Validation Plotter 3 ] 📶\n")
 
     # parse arguments
     args = parse_args()
@@ -906,7 +1004,8 @@ def main():
     task_config_file: str = args.config
     task_config: dict[str, Any] = toml.load(task_config_file)
 
-    # parse years
+    # parse year(s)
+    """
     years = set()
     for year_string in (args.year).split(","):
         if year_string == "ALL":  # put all years in
@@ -920,10 +1019,11 @@ def main():
                     f"The years that were put in are not valid. Valid are only {valid_years}. Separate the years by comma wihout any space. If you want to run all years, type 'ALL'."
                 )
             )
-    print(f"Plotting job extends over the years {years}.")
+    """
+    year = args.year
 
     # extract data and mc samples given in task config file
-    mcconfig, dataconfig = extract_config(task_config, years)
+    mcconfig, dataconfig = extract_config(task_config, year)
     datasamples = [sample for sample in dataconfig]
     mcsamples = [sample for sample in mcconfig]
 
@@ -971,7 +1071,7 @@ def main():
             for classname in class_config["to_validate"]:
                 classnames.add(classname)
             classnames.discard("COUNTS")
-            print(f"Found {len(classnames)} in the selected class config.")
+            print(f"Found {len(classnames)} classes in the selected class config.")
         else:  # manual list of classes is given
             for classname in (args.jetclass).split(","):
                 classnames.add(classname)
@@ -998,20 +1098,18 @@ def main():
         os.system(f"mkdir -p {outputpath}")
 
     # run plotting task, depending on user input
-    nfile = 0
     print(f"Starting plotting job for the {len(fileprefixes)} files {fileprefixes}.")
     for fileprefix in tqdm(fileprefixes):  # run plotter for each file set
-        nfile += 1
         # show class name if this is a plotting task of a class
         classname = ""
         if args.jetclass:
             classname = fileprefix[:-1]
             printdebug(
-                f"Starting plotting job for class {classname} ({nfile}/{len(fileprefixes)})."
+                f"Starting plotting job for class {classname}."
             )
         else:
             printdebug(
-                f"Starting plotting job for the given file prefix {fileprefix} ({nfile}/{len(fileprefixes)})."
+                f"Starting plotting job for the given file prefix {fileprefix}."
             )
         # plotting tasks
         if args.histname != "ALL":  # plot single histogram
@@ -1027,7 +1125,7 @@ def main():
                 color_dict,
                 aggregation_dict,
                 histograms[histname],
-                years,
+                year,
                 fileprefix,
                 classname,
                 subfolder,
@@ -1049,7 +1147,7 @@ def main():
                     color_dict,
                     aggregation_dict,
                     histograms[histname],
-                    years,
+                    year,
                     fileprefix,
                     classname,
                     subfolder,
