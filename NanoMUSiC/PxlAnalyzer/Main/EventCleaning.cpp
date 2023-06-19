@@ -120,7 +120,8 @@ void EventCleaning::cleanEvent(std::map<std::string, std::vector<pxl::Particle *
 }
 
 std::vector<pxl::Particle *>::iterator EventCleaning::removeParticle(
-    std::vector<pxl::Particle *> &particles, std::vector<pxl::Particle *>::iterator &particle) const
+    std::vector<pxl::Particle *> &particles,
+    std::vector<pxl::Particle *>::iterator &particle) const
 {
     // Remove the particle from the EventView!
     (*particle)->owner()->remove(*particle);
@@ -228,7 +229,8 @@ void EventCleaning::cleanGams(std::vector<pxl::Particle *> &gams, bool const isR
     // Remove gammas in proximity to muons.
 }
 
-void EventCleaning::removeGammaEleOverlap(std::vector<pxl::Particle *> &gams, std::vector<pxl::Particle *> const &eles,
+void EventCleaning::removeGammaEleOverlap(std::vector<pxl::Particle *> &gams,
+                                          std::vector<pxl::Particle *> const &eles,
                                           bool const isRec) const
 {
     std::vector<pxl::Particle *>::iterator gam;
@@ -344,7 +346,8 @@ int EventCleaning::checkProbability(pxl::Particle const *p1, pxl::Particle const
     return prob_1 < prob_2 ? -1 : 1;
 }
 
-bool EventCleaning::checkParticleOverlap(pxl::Particle const *p1, pxl::Particle const *p2,
+bool EventCleaning::checkParticleOverlap(pxl::Particle const *p1,
+                                         pxl::Particle const *p2,
                                          double const DeltaR_max) const
 {
     pxl::LorentzVector const &vec1 = p1->getVector();

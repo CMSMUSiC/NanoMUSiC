@@ -10,6 +10,7 @@
 #include "TTreeReader.h"
 #include "TTreeReaderValue.h"
 #include "fmt/core.h"
+#include <correction.h>
 #include <cstdlib>
 #include <filesystem>
 #include <memory>
@@ -94,13 +95,20 @@ auto main(int argc, char *argv[]) -> int
     ADD_ARRAY_READER(Muon_pfRelIso04_all, float);
     ADD_ARRAY_READER(Muon_tkRelIso, float);
     ADD_ARRAY_READER(Muon_tunepRelPt, float);
+    ADD_ARRAY_READER(Muon_genPartIdx, int);
 
     ADD_ARRAY_READER(Electron_pt, float);
     ADD_ARRAY_READER(Electron_eta, float);
     ADD_ARRAY_READER(Electron_phi, float);
     ADD_ARRAY_READER(Electron_deltaEtaSC, float);
-    ADD_ARRAY_READER(Electron_cutBased, Int_t);
+    ADD_ARRAY_READER(Electron_cutBased, int);
     ADD_ARRAY_READER(Electron_cutBased_HEEP, bool);
+    ADD_ARRAY_READER(Electron_scEtOverPt, float);
+    ADD_ARRAY_READER(Electron_dEscaleUp, float);
+    ADD_ARRAY_READER(Electron_dEscaleDown, float);
+    ADD_ARRAY_READER(Electron_dEsigmaUp, float);
+    ADD_ARRAY_READER(Electron_dEsigmaDown, float);
+    ADD_ARRAY_READER(Electron_genPartIdx, int);
 
     ADD_ARRAY_READER(Photon_pt, float);
     ADD_ARRAY_READER(Photon_eta, float);
@@ -132,10 +140,26 @@ auto main(int argc, char *argv[]) -> int
     // corrections
     auto jet_corrections = JetCorrector(get_runyear(year), get_era_from_process_name(process, is_data), is_data);
 
-    auto pu_corrector =
-        correction::CorrectionSet::from_file(
-            "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2018_UL/puWeights.json.gz")
-            ->at("Collisions18_UltraLegacy_goldenJSON");
+    auto [pu_file, pu_key] = correction_keys.at({"PU", get_runyear(year)});
+    auto pu_corrector = correction::CorrectionSet::from_file(pu_file)->at(pu_key);
+
+    auto [muon_reco_file, muon_reco_key] = correction_keys.at({"MuonReco", get_runyear(year)});
+    auto muon_sf_reco = correction::CorrectionSet::from_file(muon_reco_file)->at(muon_reco_key);
+
+    auto [muon_id_low_pt_file, muon_id_low_pt_key] = correction_keys.at({"MuonIdLowPt", get_runyear(year)});
+    auto muon_sf_id_low_pt = correction::CorrectionSet::from_file(muon_id_low_pt_file)->at(muon_id_low_pt_key);
+
+    auto [muon_id_high_pt_file, muon_id_high_pt_key] = correction_keys.at({"MuonIdHighPt", get_runyear(year)});
+    auto muon_sf_id_high_pt = correction::CorrectionSet::from_file(muon_id_high_pt_file)->at(muon_id_high_pt_key);
+
+    auto [muon_iso_low_pt_file, muon_iso_low_pt_key] = correction_keys.at({"MuonIsoLowPt", get_runyear(year)});
+    auto muon_sf_iso_low_pt = correction::CorrectionSet::from_file(muon_iso_low_pt_file)->at(muon_iso_low_pt_key);
+
+    auto [muon_iso_high_pt_file, muon_iso_high_pt_key] = correction_keys.at({"MuonIsoHighPt", get_runyear(year)});
+    auto muon_sf_iso_high_pt = correction::CorrectionSet::from_file(muon_iso_high_pt_file)->at(muon_iso_high_pt_key);
+
+    auto [electron_sf_file, electron_sf_key] = correction_keys.at({" ElectronSF", get_runyear(year)});
+    auto electron_sf = correction::CorrectionSet::from_file(electron_sf_file)->at(electron_sf_key);
 
     const auto cutflow_file =
         std::unique_ptr<TFile>(TFile::Open(fmt::format("{}/cutflow_{}_{}.root", output_path, process, year).c_str()));
@@ -234,9 +258,6 @@ auto main(int argc, char *argv[]) -> int
 
         if (is_good_trigger)
         {
-            float met_px = unwrap(MET_pt) * std::cos(unwrap(MET_phi));
-            float met_py = unwrap(MET_pt) * std::sin(unwrap(MET_phi));
-
             // build good objects
             auto muons = ObjectFactories::make_muons(unwrap(Muon_pt),             //
                                                      unwrap(Muon_eta),            //
@@ -246,9 +267,15 @@ auto main(int argc, char *argv[]) -> int
                                                      unwrap(Muon_pfRelIso04_all), //
                                                      unwrap(Muon_tkRelIso),       //
                                                      unwrap(Muon_tunepRelPt),     //
-                                                     met_px,                      //
-                                                     met_py,                      //
-                                                     year);
+                                                     unwrap(Muon_genPartIdx),     //
+                                                     muon_sf_reco,                //
+                                                     muon_sf_id_low_pt,           //
+                                                     muon_sf_id_high_pt,          //
+                                                     muon_sf_iso_low_pt,          //
+                                                     muon_sf_iso_high_pt,         //
+                                                     is_data,
+                                                     year,
+                                                     "nominal");
 
             auto electrons = ObjectFactories::make_electrons(unwrap(Electron_pt),            //
                                                              unwrap(Electron_eta),           //
@@ -256,9 +283,16 @@ auto main(int argc, char *argv[]) -> int
                                                              unwrap(Electron_deltaEtaSC),    //
                                                              unwrap(Electron_cutBased),      //
                                                              unwrap(Electron_cutBased_HEEP), //
-                                                             met_px,                         //
-                                                             met_py,                         //
-                                                             year);
+                                                             unwrap(Electron_scEtOverPt),    //
+                                                             unwrap(Electron_dEscaleUp),     //
+                                                             unwrap(Electron_dEscaleDown),   //
+                                                             unwrap(Electron_dEsigmaUp),     //
+                                                             unwrap(Electron_dEsigmaDown),   //
+                                                             unwrap(Electron_genPartIdx),    //
+                                                             electron_sf,                    //
+                                                             is_data,                        //
+                                                             year,                           //
+                                                             "nominal");
 
             auto photons = ObjectFactories::make_photons(unwrap(Photon_pt),        //
                                                          unwrap(Photon_eta),       //

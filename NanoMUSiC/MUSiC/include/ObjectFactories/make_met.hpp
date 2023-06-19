@@ -8,6 +8,7 @@
 #include "ROOT/RVec.hxx"
 
 #include "Configs.hpp"
+#include "music_objects.hpp"
 
 using namespace ROOT;
 using namespace ROOT::Math;

@@ -291,23 +291,22 @@ class Corrector
 
                 RVec<float> sfs = RVec<float>(pt.size(), initial_value);
 
-                sfs = VecOps::Map(pt, eta, [&](const T &_pt, const T &_eta) {
-                    return (*this)({CorrectionHelpers::get_year_for_muon_sf(year), //
-                                    static_cast<double>(_eta),                     //
-                                    static_cast<double>(_pt),                      //
-                                    variation});
-                });
+                sfs = VecOps::Map(pt,
+                                  eta,
+                                  [&](const T &_pt, const T &_eta)
+                                  {
+                                      return (*this)({CorrectionHelpers::get_year_for_muon_sf(year), //
+                                                      static_cast<double>(_eta),                     //
+                                                      static_cast<double>(_pt),                      //
+                                                      variation});
+                                  });
 
                 return std::reduce(sfs.cbegin(), sfs.cend(), initial_value, Op);
-
-                // auto weight = std::reduce(sfs.cbegin(), sfs.cend(), initial_value, Op);
-                // fmt::print("Weight: {}\n", weight);
-                // return weight;
             }
 
             // default case
             throw std::runtime_error(
-                fmt::format("No matching was fouund for this correction type: {}.", correction_type));
+                fmt::format("No matching was found for this correction type: {}.", correction_type));
         }
         return 1.;
     }
@@ -385,12 +384,15 @@ class ElectronSFCorrector
             {
                 RVec<float> sfs = RVec<float>(pt.size(), initial_value);
 
-                sfs = VecOps::Map(pt, eta, [&](const T &_pt, const T &_eta) {
-                    return this->get_high_pt_sf(year,                     //
-                                                variation,                //
-                                                static_cast<double>(_pt), //
-                                                static_cast<double>(_eta));
-                });
+                sfs = VecOps::Map(pt,
+                                  eta,
+                                  [&](const T &_pt, const T &_eta)
+                                  {
+                                      return this->get_high_pt_sf(year,                     //
+                                                                  variation,                //
+                                                                  static_cast<double>(_pt), //
+                                                                  static_cast<double>(_eta));
+                                  });
 
                 return std::reduce(sfs.cbegin(), sfs.cend(), initial_value, Op);
 
@@ -405,13 +407,16 @@ class ElectronSFCorrector
             // if not HEEP ID, then it is Low Pt
             RVec<float> sfs = RVec<float>(pt.size(), initial_value);
 
-            sfs = VecOps::Map(pt, eta, [&](const T &_pt, const T &_eta) {
-                return this->get_low_pt_sf({year_str,                  //
-                                            variation,                 //
-                                            working_point,             //
-                                            static_cast<double>(_eta), //
-                                            static_cast<double>(_pt)});
-            });
+            sfs = VecOps::Map(pt,
+                              eta,
+                              [&](const T &_pt, const T &_eta)
+                              {
+                                  return this->get_low_pt_sf({year_str,                  //
+                                                              variation,                 //
+                                                              working_point,             //
+                                                              static_cast<double>(_eta), //
+                                                              static_cast<double>(_pt)});
+                              });
 
             return std::reduce(sfs.cbegin(), sfs.cend(), initial_value, Op);
 
@@ -468,13 +473,16 @@ class PhotonSFCorrector
             {
                 RVec<float> sfs = RVec<float>(pt.size(), initial_value);
 
-                sfs = VecOps::Map(pt, eta, [&](const T &_pt, const T &_eta) {
-                    return this->get_sf({year_str,                  //
-                                         variation,                 //
-                                         "Tight",                   //
-                                         static_cast<double>(_eta), //
-                                         static_cast<double>(_pt)});
-                });
+                sfs = VecOps::Map(pt,
+                                  eta,
+                                  [&](const T &_pt, const T &_eta)
+                                  {
+                                      return this->get_sf({year_str,                  //
+                                                           variation,                 //
+                                                           "Tight",                   //
+                                                           static_cast<double>(_eta), //
+                                                           static_cast<double>(_pt)});
+                                  });
 
                 return std::reduce(sfs.cbegin(), sfs.cend(), initial_value, Op);
 
@@ -489,12 +497,14 @@ class PhotonSFCorrector
             // if not PhotonID, then it is PixelSeed
             RVec<float> sfs = RVec<float>(pt.size(), initial_value);
 
-            sfs = VecOps::Map(pt, [&](const T &_pt) {
-                return this->get_sf({year_str,  //
-                                     variation, //
-                                     "Tight",   //
-                                     "EBInc"});
-            });
+            sfs = VecOps::Map(pt,
+                              [&](const T &_pt)
+                              {
+                                  return this->get_sf({year_str,  //
+                                                       variation, //
+                                                       "Tight",   //
+                                                       "EBInc"});
+                              });
 
             return std::reduce(sfs.cbegin(), sfs.cend(), initial_value, Op);
 

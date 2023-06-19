@@ -62,7 +62,7 @@ auto EventAnalyzer::set_electron_SFs(Outputs &outputs, const ElectronSFCorrector
         outputs.set_event_weight(
             "ElectronReco", "Up", electron_sf("sfup", "RecoAbove20", good_electrons_pt, good_electrons_eta_sc));
         outputs.set_event_weight(
-            "ElectronReco", "Down", electron_sf("sfup", "RecoAbove20", good_electrons_pt, good_electrons_eta_sc));
+            "ElectronReco", "Down", electron_sf("sfdown", "RecoAbove20", good_electrons_pt, good_electrons_eta_sc));
 
         // Electron ID
         outputs.set_event_weight(

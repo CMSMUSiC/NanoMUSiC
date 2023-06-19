@@ -8,6 +8,7 @@
 #include "ROOT/RVec.hxx"
 
 #include "Configs.hpp"
+#include "music_objects.hpp"
 
 using namespace ROOT;
 using namespace ROOT::Math;
@@ -16,6 +17,30 @@ using namespace ROOT::VecOps;
 namespace ObjectFactories
 {
 
+/////////////////////////////////////////////////////////////////////////////////////////
+/// Photons ID SFs, in the correctionlib JSONs, are implemented in: UL-Photon-ID-SF
+/// inputs: year (string), variation (string), WorkingPoint (string), eta_SC (real), pt (real)
+/// - year: 2016preVFP, 2016postVFP, 2017, 2018
+/// - variation: sf/sfup/sfdown (sfup = sf + syst, sfdown = sf - syst)
+/// - WorkingPoint: Loose, Medium, Tight, wp80, wp90
+/// - eta: [-inf, inf)
+/// - pt [20., inf)
+///
+/// Low pT
+/// RECO: From Twiki [0]: "The scale factor to reconstruct a supercluster with H/E<0.5 is assumed to be 100%."
+/// ID: Tight
+/// ISO: No recomendations (already incorporated).
+///
+/// [0] - https://twiki.cern.ch/twiki/bin/view/CMS/EgammaRunIIRecommendations#E_gamma_RECO
+///
+/// Photons PixelSeed SFs, in the correctionlib JSONs, are implemented in:  UL-Photon-PixVeto-SF
+/// These are the Photon Pixel Veto Scale Factors (nominal, up or down) for 2018 Ultra Legacy dataset.
+/// - year: 2016preVFP, 2016postVFP, 2017, 2018
+/// - variation: sf/sfup/sfdown (sfup = sf + syst, sfdown = sf - syst)
+/// - WorkingPoint (SFs available for the cut-based and MVA IDs): Loose, MVA, Medium, Tight
+/// - HasPixBin: For each working point of choice, they are dependent on the photon pseudorapidity and R9: Possible
+/// bin choices: ['EBInc','EBHighR9','EBLowR9','EEInc','EEHighR9','EELowR9']
+
 inline auto make_photons(const RVec<float> &Photon_pt,  //
                          const RVec<float> &Photon_eta, //
                          const RVec<float> &Photon_phi, //
@@ -23,8 +48,8 @@ inline auto make_photons(const RVec<float> &Photon_pt,  //
                          const RVec<bool> &Photon_isScEtaEE,
                          const RVec<Int_t> &Photon_cutBased, //
                          const RVec<bool> &Photon_pixelSeed, //
-                         float &met_px,                      //
-                         float &met_py,                      //
+                         float met_px,                       //
+                         float met_py,                       //
                          std::string _year) -> RVec<Math::PtEtaPhiMVector>
 {
     auto year = get_runyear(_year);

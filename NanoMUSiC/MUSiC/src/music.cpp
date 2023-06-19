@@ -464,7 +464,7 @@ int main(int argc, char *argv[])
                         // perform systematic pre. selection on all selected event views
                         //  with loosened kinematic cuts
                         selector.performSelection(RecEvtView, GenEvtView, TrigEvtView, FilterView, true);
-                        // use the    system(("rm -rf " + output_directory).c_str());config files to activate
+                        // use the system(("rm -rf " + output_directory).c_str());config files to activate
                         // systematics for some objects
                         syst_shifter.init(event_ptr.get());
                         // create new event views with systematic shifts
