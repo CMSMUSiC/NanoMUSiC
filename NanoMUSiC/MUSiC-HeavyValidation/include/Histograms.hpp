@@ -40,7 +40,7 @@ inline auto rebin_histogram(                             //
 
 // returns jet countmap
 // countmap(nJet, nBJet)
-inline auto return_jet_countmap(int nJet, int nBJet)
+inline auto return_jet_countmap(int nJet, int nBJet, int nMET)
 {
     std::map<std::string, int> countmap = {{"Ele", 0},
                                            {"EleEE", 0},
@@ -52,7 +52,7 @@ inline auto return_jet_countmap(int nJet, int nBJet)
                                            {"Tau", 0},
                                            {"Jet", nJet},
                                            {"bJet", nBJet},
-                                           {"MET", 0}};
+                                           {"MET", nMET}};
     return countmap;
 }
 

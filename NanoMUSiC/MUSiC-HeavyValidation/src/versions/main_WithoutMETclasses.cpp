@@ -30,9 +30,9 @@
 #include <unordered_set>
 
 // add zero counts for new classname
-inline auto zero_class_map(std::map<std::string, std::map<std::string, float>> &classes,
-                           const std::set<std::string> &systematics,
-                           const std::string c_name) -> void
+auto zero_class_map(std::map<std::string, std::map<std::string, float>> &classes,
+                    std::set<std::string> &systematics,
+                    const std::string c_name) -> void
 {
     std::map<std::string, std::map<std::string, float>>::iterator it = classes.find(c_name);
     if (it == classes.end()) // it not in map, create new entry with counts 0
@@ -43,24 +43,6 @@ inline auto zero_class_map(std::map<std::string, std::map<std::string, float>> &
             emptyweights.insert({_s_name, 0.f});
         }
         classes.insert({c_name, emptyweights});
-    }
-}
-
-inline auto update_class(std::set<std::string> &eventclass,
-                         std::map<std::string, std::map<std::string, float>> &classes,
-                         const std::string &c_name,
-                         const std::set<std::string> &systematics,
-                         const bool countclasses,
-                         std::map<std::string, float> &weight) -> void
-{
-    eventclass.insert(c_name); // log class name for this event (for plotting)
-    if (countclasses)          // update class count map if classes should be counted
-    {
-        zero_class_map(classes, systematics, c_name);
-        for (const auto &s_name : systematics)
-        {
-            classes[c_name][s_name] += weight[s_name];
-        }
     }
 }
 
@@ -143,9 +125,9 @@ auto main(int argc, char *argv[]) -> int
         fmt::print("        -trg|--trigger: Specify trigger and lower limits, e.g. HT1600/PT600.\n");
         fmt::print(
             "         -tv|--tovalidate: Names of the classes that should be plotted. Seperate "
-            "Classnames by comma without spaces. Class name format is 'xJ+yBJ+zMET[+XJ]' for "
-            "exclusive [_] / jet- and bjet-inclusive [+XJ] classes (with z = 0, 1). "
-            "Use class name 'COUNTS' to also create class inhabitation file (event counts per class).\n");
+            "Classnames by comma without spaces. Class name format is 'xJ+yBJ+zMET'/'xJ+yBJ+zMET+nJ'/'xJ+yBJ+zMET+X' "
+            "for exclusive/jet-inclusive/all-inclusive class. Use class name 'COUNTS' to also create class "
+            "inhabitation file (event counts per class).\n");
 
         exit(-1);
     }
@@ -517,7 +499,7 @@ auto main(int argc, char *argv[]) -> int
         unsigned int njet = jets.size();
         unsigned int nbjet = bjets.size();
         unsigned int nphoton = photons.size();
-        bool is_met = false; // set met flag
+        bool is_met = false;
         if (met.size() >= 1)
         {
             is_met = true;
@@ -533,9 +515,9 @@ auto main(int argc, char *argv[]) -> int
         // if (not(nelectron >= 1 or nmuon >= 1)) // at least one lepton
         // if (not(nelectron == 0 and nmuon == 0 and (not is_met) and nphoton == 0)) // veto all leptons, photons and
         // met
-        if (not(nelectron == 0 and nmuon == 0 and nphoton == 0)) // veto all leptons, photons
+        if (not(nelectron == 0 and nmuon == 0 and is_met and nphoton == 0)) // veto all leptons, photons but require met
         {
-            continue;                                            // veto is condition is not satisfied
+            continue;                                                       // veto is condition is not satisfied
         }
         if (debugprint)
         {
@@ -646,36 +628,53 @@ auto main(int argc, char *argv[]) -> int
                     // std::cout << "Next loop iteration." << std::endl;
                     if (c_njet == (int)njet and c_nbjet == (int)nbjet) // exclusive class
                     {
-                        // differentiate met in classname
-                        std::string c_name = fmt::format("{}J+{}BJ+0MET", c_njet, c_nbjet);
-                        if (is_met)
+                        // std::cout << "excl" << std::endl;
+                        std::string c_name = fmt::format("{}J+{}BJ", c_njet, c_nbjet);
+                        eventclass.insert(c_name); // log class name for this event (for plotting)
+                        if (countclasses)          // update class count map if classes should be counted
                         {
-                            c_name = fmt::format("{}J+{}BJ+1MET", c_njet, c_nbjet);
+                            std::cout << "Check for classname." << std::endl;
+                            zero_class_map(classes, systematics, c_name);
+                            std::cout << "Fill class counts." << std::endl;
+                            for (const auto &s_name : systematics)
+                            {
+                                std::cout << s_name << std::endl;
+                                std::cout << classes[c_name][s_name] << " + " << weight[s_name] << std::endl;
+                                classes[c_name][s_name] += weight[s_name];
+                                std::cout << "= " << classes[c_name][s_name] << std::endl;
+                            }
                         }
-                        update_class(eventclass,
-                                     classes,
-                                     c_name,
-                                     systematics,
-                                     countclasses,
-                                     weight); // log class name and update class count
+                    }
+                    if (c_njet <= (int)njet and c_nbjet == (int)nbjet) // jet-inclusive (nJet) class
+                    {
+                        // std::cout << "jet-incl" << std::endl;
+                        std::string c_name = fmt::format("{}J+{}BJ+nJ", c_njet, c_nbjet);
+                        eventclass.insert(c_name); // log class name for this event (for plotting)
+                        if (countclasses)          // update class count map if classes should be counted
+                        {
+                            zero_class_map(classes, systematics, c_name);
+                            for (const auto &s_name : systematics)
+                            {
+                                classes[c_name][s_name] += weight[s_name];
+                            }
+                        }
                     }
                     if (c_njet <= (int)njet and
-                        c_nbjet <= (int)nbjet) // jet- and bjet-inclusive class (+XJ)
+                        c_nbjet <= (int)nbjet) // all-inclusive (+X) class, the jet-inclusive case is included here
                     {
-                        // differentiate met in classname
-                        std::string c_name = fmt::format("{}J+{}BJ+0MET+XJ", c_njet, c_nbjet);
-                        if (is_met)
+                        // std::cout << "all-incl" << std::endl;
+                        std::string c_name = fmt::format("{}J+{}BJ+X", c_njet, c_nbjet);
+                        eventclass.insert(c_name); // log class name for this event (for plotting)
+                        if (countclasses)          // update class count map if classes should be counted
                         {
-                            c_name = fmt::format("{}J+{}BJ+1MET+XJ", c_njet, c_nbjet);
+                            zero_class_map(classes, systematics, c_name);
+                            for (const auto &s_name : systematics)
+                            {
+                                classes[c_name][s_name] += weight[s_name];
+                            }
                         }
-                        update_class(eventclass,
-                                     classes,
-                                     c_name,
-                                     systematics,
-                                     countclasses,
-                                     weight); // log class name and update class count
                     }
-                    // note: inclusive classes can be XJ = 0, so the exclusive classes are
+                    // note: inclusive classes can be X = 0 or nJet = 0, so the exclusive classes are
                     // included in the inclusive classes
                 }
             }

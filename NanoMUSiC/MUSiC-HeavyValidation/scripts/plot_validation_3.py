@@ -809,6 +809,10 @@ def plotter(args):
     for i in range(len(mcsum)):
         if mcsum[i] > 0 and datasum[i] > 0:
             divisionidx += [i]
+    divisionidx2 = []
+    for i in range(len(mcsum)):
+        if mcsum[i] > 0:
+            divisionidx2 += [i]
     data_overmc = np.array([datasum[i] / mcsum[i] for i in divisionidx])
     bins_overmc = np.array([bins[i] for i in divisionidx])
     """
@@ -903,6 +907,7 @@ def plotter(args):
                 break
         indices = range(leftidx, min([rightidx + 1, nbins]))
         if len(indices) == 0:  # avoid bugs
+            printdebug(f"{classname}, {histname}: Skip plotting... [len(indices) == 0]")
             return
         # set y ticks
         ymax = (
@@ -942,6 +947,9 @@ def plotter(args):
         ax[0].set_ylim(ylim)
         # find y limits for data/mc plot
         if len(xlim) == 0 or len(bins_overmc) == 0:  # avoid bugs
+            printdebug(
+                f"{classname}, {histname}: Skip plotting... [len(xlim) == 0 or len(bins_overmc) == 0]"
+            )
             return
         leftidx = 0
         rightidx = len(bins_overmc) - 1
@@ -1000,7 +1008,7 @@ def plotter(args):
 
         # add text in plot with class name
         if classname != "":
-            fig.suptitle("class: " + classname, ha="left", size=20, x=0.09, y=0.98)
+            fig.suptitle("class: " + classname, ha="left", size=18, x=0.04, y=0.985)
 
         # set plot title
         plottitle = histname
@@ -1032,6 +1040,8 @@ def plotter(args):
             outputpath += subfolder + "/"
         outputpath += figname + ".pdf"
         fig.savefig(outputpath, dpi=500)
+    else:
+        printdebug(f"{classname}, {histname}: Skip plotting... [No Data]")
     plt.close(fig=fig)
 
 

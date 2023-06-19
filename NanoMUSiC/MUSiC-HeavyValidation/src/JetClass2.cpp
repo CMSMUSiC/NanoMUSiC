@@ -19,18 +19,25 @@ JetClass2::JetClass2(const std::string &output_path, const std::string c_name)
     // extract nJet and nBJet from classname
     c_nJet = std::stoi(c_name.substr(0, c_name.find("J")));
     c_nBJet = std::stoi(c_name.substr(c_name.find("+") + 1, c_name.find("BJ")));
+    c_nMET = 0; // default (+0MET or +XMET): no MET considered in the distributions
+    if (c_name.find("+1MET") != std::string::npos)
+    {
+        c_nMET = 1; // consider MET
+    }
 
-    // hist rebinning with nJet, nBJet countmap
-    h_m_inv = rebin_histogram(h_m_inv, return_jet_countmap(c_nJet, c_nBJet));
-    h_sum_pt = rebin_histogram(h_sum_pt, return_jet_countmap(c_nJet, c_nBJet));
-    h_pt_1st_jet = rebin_histogram(h_pt_1st_jet, return_jet_countmap(1, 0));
-    h_pt_2nd_jet = rebin_histogram(h_pt_2nd_jet, return_jet_countmap(1, 0));
-    h_pt_1st_bjet = rebin_histogram(h_pt_1st_bjet, return_jet_countmap(0, 1));
-    h_pt_2nd_bjet = rebin_histogram(h_pt_2nd_bjet, return_jet_countmap(0, 1));
-    h_pt_met = rebin_histogram(h_pt_met, return_jet_countmap(c_nJet, c_nBJet), false, "MET");
+    // hist rebinning with countmap
+    h_m_inv = rebin_histogram(h_m_inv, return_jet_countmap(c_nJet, c_nBJet, c_nMET));
+    h_m_tr = rebin_histogram(h_m_tr, return_jet_countmap(c_nJet, c_nBJet, c_nMET));
+    h_sum_pt = rebin_histogram(h_sum_pt, return_jet_countmap(c_nJet, c_nBJet, c_nMET));
+    h_pt_1st_jet = rebin_histogram(h_pt_1st_jet, return_jet_countmap(1, 0, 0));
+    h_pt_2nd_jet = rebin_histogram(h_pt_2nd_jet, return_jet_countmap(1, 0, 0));
+    h_pt_1st_bjet = rebin_histogram(h_pt_1st_bjet, return_jet_countmap(0, 1, 0));
+    h_pt_2nd_bjet = rebin_histogram(h_pt_2nd_bjet, return_jet_countmap(0, 1, 0));
+    h_pt_met = rebin_histogram(h_pt_met, return_jet_countmap(0, 0, 1), false, "MET");
 
     // Sumw2
     h_m_inv.Sumw2();
+    h_m_tr.Sumw2();
     h_sum_pt.Sumw2();
     h_pt_met.Sumw2();
     h_phi_met.Sumw2();
@@ -66,7 +73,7 @@ auto JetClass2::fill(RVec<Math::PtEtaPhiMVector> jets,
                      RVec<Math::PtEtaPhiMVector> met,
                      float weight) -> void
 {
-    // validate nJet/nBJet with class name
+    // quality control
     if (c_nJet > jets.size())
     {
         throw std::runtime_error(fmt::format("ERROR: JetClass {}: jet vector (size {}) set can not be smaller as nJet "
@@ -85,29 +92,61 @@ auto JetClass2::fill(RVec<Math::PtEtaPhiMVector> jets,
                                              c_nBJet)
                                      .c_str());
     }
+    if (c_nMET == 0 and met.size() >= 1)
+    {
+        throw std::runtime_error(
+            fmt::format("ERROR: JetClass {}: found MET in the event although it was not required by the class name.",
+                        c_name)
+                .c_str());
+    }
+    if (c_nMET == 1 and met.size() < 1)
+    {
+        throw std::runtime_error(
+            fmt::format("ERROR: JetClass {}: found no MET in the event although it was required by the class name.",
+                        c_name)
+                .c_str());
+    }
     // met
-    if (met.size() >= 1)
+    if (c_nMET == 1)
     {
         h_pt_met.Fill(met.at(0).pt(), weight);
         h_phi_met.Fill(met.at(0).phi(), weight);
     }
-    // sum_pt and m_inv
-    auto jetsum = Math::PtEtaPhiMVector(0, 0, 0, 0);
+    // sum_pt
     float sumpt = 0;
     for (unsigned int i = 0; i < c_nJet; i++)
     {
         sumpt += jets.at(i).pt();
-        jetsum += jets.at(i);
     }
     for (unsigned int i = 0; i < c_nBJet; i++)
     {
         sumpt += bjets.at(i).pt();
-        jetsum += bjets.at(i);
     }
     if (c_nJet >= 1 or c_nBJet >= 1)
     {
-        h_m_inv.Fill(jetsum.mass(), weight);
         h_sum_pt.Fill(sumpt, weight);
+    }
+    // m_inv and m_t
+    auto vecsum = Math::PtEtaPhiMVector(0, 0, 0, 0);
+    for (unsigned int i = 0; i < c_nJet; i++)
+    {
+        vecsum += jets.at(i);
+    }
+    for (unsigned int i = 0; i < c_nBJet; i++)
+    {
+        vecsum += bjets.at(i);
+    }
+    if (c_nMET == 0) // calculate m_inv if no met
+    {
+        if (c_nJet >= 1 or c_nBJet >= 1)
+        {
+            h_m_inv.Fill(vecsum.mass(), weight);
+        }
+    }
+    else if (c_nMET == 1) // calculate m_t if met
+    {
+        vecsum += met.at(0);
+        h_m_tr.Fill(vecsum.Mt(), weight);
     }
     // leading jet
     if (c_nJet >= 1)
@@ -172,6 +211,7 @@ auto JetClass2::dump_outputs() -> void
     // fmt::print("Saving outputs to: {}\n", output_file->GetPath());
     output_file->cd();
     save_histo(h_m_inv);
+    save_histo(h_m_tr);
     save_histo(h_sum_pt);
     save_histo(h_pt_met);
     save_histo(h_phi_met);
