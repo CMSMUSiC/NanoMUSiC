@@ -150,8 +150,12 @@ auto main(int argc, char *argv[]) -> int
 
     const auto cutflow_file =
         std::unique_ptr<TFile>(TFile::Open(fmt::format("{}/cutflow_{}_{}.root", output_path, process, year).c_str()));
+    cutflow_file->Print("all");
+    cutflow_file->ls();
+
     const auto cutflow_histo = cutflow_file->Get<TH1F>("cutflow");
     // const auto total_generator_weight = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("GeneratorWeight") + 1);
+    cutflow_histo->Print("all");
     const auto no_cuts = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("NoCuts") + 1);
     const auto generator_filter = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("GeneratorFilter") + 1);
 
@@ -194,6 +198,8 @@ auto main(int argc, char *argv[]) -> int
         }
 
         // muons
+        float met_px = 0.;
+        float met_py = 0.;
         auto muons = ObjectFactories::make_muons(unwrap(Muon_pt),
                                                  unwrap(Muon_eta),
                                                  unwrap(Muon_phi),
@@ -202,6 +208,8 @@ auto main(int argc, char *argv[]) -> int
                                                  unwrap(Muon_pfRelIso04_all),
                                                  unwrap(Muon_tkRelIso),
                                                  unwrap(Muon_tunepRelPt),
+                                                 met_px,
+                                                 met_py,
                                                  year);
 
         // MuMu + X
@@ -239,6 +247,8 @@ auto main(int argc, char *argv[]) -> int
                                                         NanoObjects::GenJets(unwrap(GenJet_pt),   //
                                                                              unwrap(GenJet_eta),  //
                                                                              unwrap(GenJet_phi)), //
+                                                        met_px,
+                                                        met_py,
                                                         year);
 
         // if (jets.size() >= 2)

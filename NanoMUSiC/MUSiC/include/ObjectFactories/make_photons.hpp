@@ -23,6 +23,8 @@ inline auto make_photons(const RVec<float> &Photon_pt,  //
                          const RVec<bool> &Photon_isScEtaEE,
                          const RVec<Int_t> &Photon_cutBased, //
                          const RVec<bool> &Photon_pixelSeed, //
+                         float &met_px,                      //
+                         float &met_py,                      //
                          std::string _year) -> RVec<Math::PtEtaPhiMVector>
 {
     auto year = get_runyear(_year);
@@ -30,7 +32,6 @@ inline auto make_photons(const RVec<float> &Photon_pt,  //
 
     for (std::size_t i = 0; i < Photon_pt.size(); i++)
     {
-
         bool is_good_photon = (Photon_pt.at(i) >= ObjConfig::Photons[year].MinPt)               //
                               && (Photon_isScEtaEB.at(i))                                       //
                               && (not Photon_isScEtaEE.at(i))                                   // only EB photons

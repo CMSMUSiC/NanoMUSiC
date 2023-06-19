@@ -24,6 +24,8 @@ inline auto make_muons(const RVec<float> &Muon_pt,             //
                        const RVec<float> &Muon_pfRelIso04_all, //
                        const RVec<float> &Muon_tkRelIso,       //
                        const RVec<float> &Muon_tunepRelPt,     //
+                       float &met_px,                          //
+                       float &met_py,                          //
                        std::string _year) -> RVec<Math::PtEtaPhiMVector>
 {
     auto year = get_runyear(_year);
@@ -65,7 +67,6 @@ inline auto make_muons(const RVec<float> &Muon_pt,             //
                                                       });
 
     return VecOps::Take(muons, muon_reordering_mask);
-
 }
 
 } // namespace ObjectFactories

@@ -273,6 +273,9 @@ pxl::LorentzVector GenSelector::getGenCutObject(std::vector<pxl::Particle *> gen
     //~ std::cout << "size " << genParts.size() << std::endl;
     for (std::vector<pxl::Particle *>::const_iterator part = genParts.begin(); part != genParts.end(); ++part)
     {
+        // auto p = *part;
+        // auto m = p->getPt();
+        // m->ge
         pdgId = (*part)->getPdgNumber();
         //~ std::cout <<pdg_id_map[ abs( pdgId ) ] <<std::endl;
         if (use_single and

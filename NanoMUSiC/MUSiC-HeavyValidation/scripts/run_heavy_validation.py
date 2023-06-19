@@ -78,6 +78,7 @@ def merge_cutflow_histograms(
         ],
         capture_output=True,
     )
+
     if debug:
         print(merge_result.stdout.decode("utf-8"))
     if merge_result.returncode != 0:
@@ -94,7 +95,7 @@ def run_validation(
     executable: str,
     input_file: str,
 ) -> bool:
-    debug: bool = False
+    debug: bool = True
 
     # default is MC
     cmd_str: str = f"{executable} --process {process_name} --year {year} --output {output_path} --xsection {str(effective_x_section)} --input {input_file}"

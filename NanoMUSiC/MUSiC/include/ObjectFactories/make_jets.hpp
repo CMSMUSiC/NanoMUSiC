@@ -28,6 +28,8 @@ inline auto make_jets(const RVec<float> &Jet_pt,            //
                       float fixedGridRhoFastjetAll,         //
                       JetCorrector &jet_corrections,        //
                       const NanoObjects::GenJets &gen_jets, //
+                      float &met_px,                        //
+                      float &met_py,                        //
                       std::string _year) -> std::pair<RVec<Math::PtEtaPhiMVector>, RVec<Math::PtEtaPhiMVector>>
 {
     auto year = get_runyear(_year);

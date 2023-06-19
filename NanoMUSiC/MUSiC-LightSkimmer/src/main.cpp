@@ -439,60 +439,60 @@ auto main(int argc, char *argv[]) -> int
             .Define("pass_low_pt_muon_trigger",
                     [](bool HLT_IsoMu24) -> bool
                     {
-                        // if (HLT_IsoMu24)
-                        // {
-                        //     return true;
-                        // }
+                        if (HLT_IsoMu24)
+                        {
+                            return true;
+                        }
                         return false;
                     },
                     {"HLT_IsoMu24"})
             .Define("pass_high_pt_muon_trigger",
                     [](bool HLT_Mu50, bool HLT_TkMu100, bool HLT_OldMu100) -> bool
                     {
-                        // if (HLT_Mu50 or HLT_TkMu100 or HLT_OldMu100)
-                        // {
-                        //     return true;
-                        // }
+                        if (HLT_Mu50 or HLT_TkMu100 or HLT_OldMu100)
+                        {
+                            return true;
+                        }
                         return false;
                     },
                     {"HLT_Mu50", "HLT_TkMu100", "HLT_OldMu100"})
             .Define("pass_low_pt_electron_trigger",
                     [](bool HLT_Ele32_WPTight_Gsf, bool HLT_Photon200) -> bool
                     {
-                        // if (HLT_Ele32_WPTight_Gsf or HLT_Photon200)
-                        // {
-                        //     return true;
-                        // }
+                        if (HLT_Ele32_WPTight_Gsf or HLT_Photon200)
+                        {
+                            return true;
+                        }
                         return false;
                     },
                     {"HLT_Ele32_WPTight_Gsf", "HLT_Photon200"})
             .Define("pass_high_pt_electron_trigger",
                     [](bool HLT_Ele32_WPTight_Gsf, bool HLT_Photon200, bool HLT_Ele115_CaloIdVT_GsfTrkIdT) -> bool
                     {
-                        // if (HLT_Ele32_WPTight_Gsf or HLT_Photon200 or HLT_Ele115_CaloIdVT_GsfTrkIdT)
-                        // {
-                        //     return true;
-                        // }
+                        if (HLT_Ele32_WPTight_Gsf or HLT_Photon200 or HLT_Ele115_CaloIdVT_GsfTrkIdT)
+                        {
+                            return true;
+                        }
                         return false;
                     },
                     {"HLT_Ele32_WPTight_Gsf", "HLT_Photon200", "HLT_Ele115_CaloIdVT_GsfTrkIdT"})
             .Define("pass_jet_ht_trigger",
                     [](bool HLT_PFHT1050) -> bool
                     {
-                        if (HLT_PFHT1050)
-                        {
-                            return true;
-                        }
+                        // if (HLT_PFHT1050)
+                        // {
+                        //     return true;
+                        // }
                         return false;
                     },
                     {"HLT_PFHT1050"})
             .Define("pass_jet_pt_trigger",
                     [](bool HLT_PFJet500) -> bool
                     {
-                        if (HLT_PFJet500)
-                        {
-                            return true;
-                        }
+                        // if (HLT_PFJet500)
+                        // {
+                        //     return true;
+                        // }
                         return false;
                     },
                     {"HLT_PFJet500"})

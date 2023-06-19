@@ -236,6 +236,7 @@ auto main(int argc, char *argv[]) -> int
         {
             float met_px = unwrap(MET_pt) * std::cos(unwrap(MET_phi));
             float met_py = unwrap(MET_pt) * std::sin(unwrap(MET_phi));
+
             // build good objects
             auto muons = ObjectFactories::make_muons(unwrap(Muon_pt),             //
                                                      unwrap(Muon_eta),            //
@@ -244,15 +245,19 @@ auto main(int argc, char *argv[]) -> int
                                                      unwrap(Muon_highPtId),       //
                                                      unwrap(Muon_pfRelIso04_all), //
                                                      unwrap(Muon_tkRelIso),       //
-                                                     unwrap(Muon_tunepRelPt),
+                                                     unwrap(Muon_tunepRelPt),     //
+                                                     met_px,                      //
+                                                     met_py,                      //
                                                      year);
 
-            auto electrons = ObjectFactories::make_electrons(unwrap(Electron_pt),  //
-                                                             unwrap(Electron_eta), //
-                                                             unwrap(Electron_phi), //
-                                                             unwrap(Electron_deltaEtaSC),
-                                                             unwrap(Electron_cutBased), //
-                                                             unwrap(Electron_cutBased_HEEP),
+            auto electrons = ObjectFactories::make_electrons(unwrap(Electron_pt),            //
+                                                             unwrap(Electron_eta),           //
+                                                             unwrap(Electron_phi),           //
+                                                             unwrap(Electron_deltaEtaSC),    //
+                                                             unwrap(Electron_cutBased),      //
+                                                             unwrap(Electron_cutBased_HEEP), //
+                                                             met_px,                         //
+                                                             met_py,                         //
                                                              year);
 
             auto photons = ObjectFactories::make_photons(unwrap(Photon_pt),        //
@@ -262,6 +267,8 @@ auto main(int argc, char *argv[]) -> int
                                                          unwrap(Photon_isScEtaEE), //
                                                          unwrap(Photon_cutBased),  //
                                                          unwrap(Photon_pixelSeed), //
+                                                         met_px,                   //
+                                                         met_py,                   //
                                                          year);
 
             auto [jets, bjets] = ObjectFactories::make_jets(unwrap(Jet_pt),                           //
@@ -278,11 +285,15 @@ auto main(int argc, char *argv[]) -> int
                                                             NanoObjects::GenJets(unwrap(GenJet_pt),   //
                                                                                  unwrap(GenJet_eta),  //
                                                                                  unwrap(GenJet_phi)), //
+                                                            met_px,                                   //
+                                                            met_py,                                   //
                                                             year);
 
             auto met = ObjectFactories::make_met(met_px, met_py, year);
+
             // class_factory.analyseEvent();
         }
+
         // process monitoring
         if ((event < 10) or                           //
             (event < 100 && event % 10 == 0) or       //

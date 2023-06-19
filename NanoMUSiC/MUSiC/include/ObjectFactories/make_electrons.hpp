@@ -22,6 +22,8 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
                            const RVec<float> &Electron_deltaEtaSC,
                            const RVec<Int_t> &Electron_cutBased,     //
                            const RVec<bool> &Electron_cutBased_HEEP, //
+                           float &met_px,                            //
+                           float &met_py,                            //
                            std::string _year) -> RVec<Math::PtEtaPhiMVector>
 {
     auto year = get_runyear(_year);
