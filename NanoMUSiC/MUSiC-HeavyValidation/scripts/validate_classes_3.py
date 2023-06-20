@@ -354,107 +354,153 @@ def countplotter(
     # for mc
     mcclassdict = {}  # dictionary: {classname: {sample: {systname: counts}}}
     for sample in mcsamples:
-        for syst in systematics:
-            for classname in mcsamples_classes[sample][syst].keys():
-                if classname in mcclassdict.keys():
-                    mcclassdict[classname].update(
-                        {sample: {syst: mcsamples_classes[sample][syst][classname]}}
-                    )
-                else:
-                    mcclassdict.update(
-                        {
-                            classname: {
-                                sample: {
-                                    syst: mcsamples_classes[sample][syst][classname]
-                                }
-                            }
-                        }
-                    )
+        for classname in mcsamples_classes[sample]["nominal"].keys():
+            templist = {}
+            for syst in systematics:
+                templist.update({syst: mcsamples_classes[sample][syst][classname]})
+            if classname in mcclassdict.keys():
+                mcclassdict[classname].update({sample: templist.copy()})
+            else:
+                mcclassdict.update({classname: {sample: templist.copy()}})
+    
+    for classname in mcclassdict.keys():
+        print(len(mcclassdict[classname].keys()), len(mcsamples))
+
+    """
+    for classname in mcclassdict:
+        for sample in mcsamples:
+            if sample not in mcclassdict[classname].keys():
+                print("ERROR:", classname, sample)
+    """
+                
     # for data
     dataclassdict = {}  # dictionary: {classname: {sample: {systname: counts}}}
     for sample in datasamples:
-        for syst in systematics:
-            for classname in datasamples_classes[sample][syst].keys():
-                if classname in dataclassdict.keys():
-                    dataclassdict[classname].update(
-                        {sample: {syst: datasamples_classes[sample][syst][classname]}}
-                    )
-                else:
-                    dataclassdict.update(
-                        {
-                            classname: {
-                                sample: {
-                                    syst: datasamples_classes[sample][syst][classname]
-                                }
-                            }
-                        }
-                    )
+        for classname in datasamples_classes[sample]["nominal"].keys():
+            templist = {}
+            for syst in systematics:
+                templist.update({syst: datasamples_classes[sample][syst][classname]})
+            if classname in dataclassdict.keys():
+                dataclassdict[classname].update({sample: templist.copy()})
+            else:
+                dataclassdict.update({classname: {sample: templist.copy()}})
     print(
         f"There are {len(dataclassdict)} event classes for data and {len(mcclassdict)} event classes for mc in total (no differentiation between inclusive/exclusive)."
     )
 
-    # analyze only one category of {all-inclusive, jet-inclusive, exclusive} in the following steps
+    """ # quality control
+    for sample in mcsamples:
+        for classname in mcsamples_classes[sample]["nominal"].keys():
+            if not (sample in mcclassdict[classname].keys()):
+                print("ERROR:", sample)
+    """
+
+    # analyze only one category of {jet-/bjet-inclusive, exclusive} in the following steps
     # this is specified by the classsuffix
     # discard any classes that should not be analyzed
     dataclasstypedict = {
         "+XJ": {},
         "+0": {},
     }  # dictionary: {suffix: {classname: {sample: {systname: counts}}}} only for classes of the specified type
-    # suffixes are +XJ: all-jet-inclusive, +nJ: jet-inclusive, +0: exclusive
-    specifier = ""
-    if classsuffix in ["+XJ", "+nJ", "+0"]:
+    mcclasstypedict = {
+        "+XJ": {},
+        "+0": {},
+    }  # dictionary: {suffix: {classname: {sample: {systname: counts}}}} for all classes of the specified type that have data > 0
+    nclass = {
+        "MC": {"+XJ": 0, "+0": 0},
+        "data": {"+XJ": 0, "+0": 0},
+    }  # holds total number of classes
+    # suffixes are +XJ: all-jet-inclusive, +0: exclusive
+    toremove = set()
+    if classsuffix in ["+XJ", "+0"]:
         for classname in dataclassdict.keys():
             if "+XJ" in classname:  # all-jet-inclusive classes
-                if classname in dataclassdict.keys():
-                    dataclasstypedict["+XJ"][classname].update(dataclassdict[classname])
+                nclass["data"]["+XJ"] += 1
+                if classname in dataclasstypedict["+XJ"].keys():
+                    dataclasstypedict["+XJ"][classname].update(
+                        dataclassdict[classname].copy()
+                    )
                 else:
                     dataclasstypedict["+XJ"].update(
-                        {classname: dataclassdict[classname]}
+                        {classname: dataclassdict[classname].copy()}
                     )
-                dataclassdict.pop(classname)
+                toremove.add(classname)
+        for classname in toremove:
+            dataclassdict.pop(classname)
         # since all bjet-/jet-inclusive classes are removed, the remaining classes are the exclusive ones
-        dataclassdict["+0"] = dataclassdict.copy()
+        dataclasstypedict["+0"] = dataclassdict.copy()
+        nclass["data"]["+0"] = len(dataclasstypedict["+0"])
+        # fill mc classes with data > 0
 
-        ############################################# WORK IN PROGRESS
-
-        for classname in dataclassdict.keys():
-            if classsuffix in classname[len(classname) - len(classsuffix) :]:
-                tempdataclassdict.update({classname: dataclassdict[classname]})
+        zerocounts = {}
+        for sample in mcsamples:
+            for syst in systematics:
+                if sample in zerocounts.keys():
+                    zerocounts[sample].update({syst: 0})
+                else:
+                    zerocounts.update({sample: {syst: 0}})
+        toremove = set()
+        # inclusive
         for classname in mcclassdict.keys():
-            if classsuffix in classname[len(classname) - len(classsuffix) :]:
-                tempmcclassdict.update({classname: mcclassdict[classname]})
-        # remove unwanted classes
-        dataclassdict = tempdataclassdict.copy()
-        mcclassdict = (
-            tempmcclassdict.copy()
-        )  # dictionary: {classname: {sample: classcount}} for all classes that have data > 0
-        # print result
-        if classsuffix == "+X":
-            specifier = "all-jet-inclusive"
-        elif classsuffix == "+nJ":
-            specifier = "jet-inclusive"
-        elif classsuffix == "":
-            specifier = "exclusive"
+            if "+XJ" in classname:
+                nclass["MC"]["+XJ"] += 1
+                if classname in dataclasstypedict["+XJ"].keys():
+                    if classname in mcclasstypedict["+XJ"].keys():
+                        mcclasstypedict["+XJ"][classname].update(
+                            mcclassdict[classname].copy()
+                        )
+                    else:
+                        mcclasstypedict["+XJ"].update(
+                            {classname: mcclassdict[classname].copy()}
+                        )
+                    toremove.add(classname)
+        for classname in toremove:
+            mcclassdict.pop(classname)
+        # remaining classes are exclusive
+        for classname in mcclassdict.keys():
+            nclass["MC"]["+0"] += 1
+            if (
+                classname in dataclasstypedict["+0"].keys()
+            ):  # only take the classes with at least one data point
+                if (
+                    classname in mcclasstypedict["+0"].keys()
+                ):  # check if key already exists
+                    if (
+                        classname in mcclassdict.keys()
+                    ):  # check whether this class already exists in mc, else fill zeros
+                        mcclasstypedict["+0"][classname].update(
+                            mcclassdict[classname].copy()
+                        )
+                    else:  # if no mc for this class fill zeros
+                        mcclasstypedict["+0"].update({classname: zerocounts.copy()})
+                else:
+                    if (
+                        classname in mcclassdict.keys()
+                    ):  # check whether this class already exists in mc, else fill zeros
+                        mcclasstypedict["+0"].update(
+                            {classname: mcclassdict[classname].copy()}
+                        )
+                    else:  # if no mc for this class fill zeros
+                        mcclasstypedict["+0"].update({classname: zerocounts.copy()})
+
+    # print result
+    if classsuffix == "+XJ":
+        specifier = "jet-/bjet-inclusive"
+    elif classsuffix == "+0":
+        specifier = "exclusive"
     else:
         raise RuntimeError(f"No valid class type specified.")
-    print(f"ANAYLZE {specifier}CLASSES:")
+    print(f"-- ANAYLZE {specifier} CLASSES: --")
     print(
-        f"There are {len(dataclassdict)} {specifier} classes in data and {len(mcclassdict)} {specifier}{classsuffix} classes in mc."
+        f"There are {nclass['data'][classsuffix]} {specifier} classes in data and {nclass['MC'][classsuffix]} {specifier} classes in mc."
     )
+    print("Only the classes with data are now analyzed.")
 
-    # only analyze the classes that include data
-    tempdataclassdict, tempmcclassdict = {}, {}
-    for classname in dataclassdict.keys():  # only use data keys
-        if classname in mcclassdict.keys():
-            tempmcclassdict.update({classname: mcclassdict[classname]})
-        else:
-            tempmcclassdict.update(
-                {classname: {}}
-            )  # fill empty dict if the class is only present in data
-    if classsuffix == "BJ":
-        classsuffix = ""
-    mcclassdict = tempmcclassdict.copy()
-    print(f"Only the classes in data are now analyzed.")
+    # quality control
+    if (mcclasstypedict["+0"].keys() != dataclasstypedict["+0"].keys()) or (
+        mcclasstypedict["+XJ"].keys() != dataclasstypedict["+XJ"].keys()
+    ):
+        raise RuntimeError(f"Not the same keys!")
 
     # re-sort mc groups into mc categories with aggregation dictionary
     categories_samples = {}  # dictionary: {category: {samples in category}}
@@ -502,6 +548,34 @@ def countplotter(
     printdebug(
         f"   The mc categories {nomembers} have no member mc groups for the given task config."
     )
+
+    """
+    for classname in mcclasstypedict[classsuffix].keys():
+        for sample in mcsamples:
+            if not (sample in mcclasstypedict[classsuffix][classname].keys()):
+                print("ERROR:", classname, sample)
+    """
+
+    # stack all mc samples for each category for the nominal values
+    # mc/data classtypedict: {suffix: {classname: {sample: {systname: counts}}}}
+    categories_counts = {}
+    for classname in mcclasstypedict[classsuffix].keys():
+        for category in categories_samples.keys():
+            categorysum = 0
+            for sample in categories_samples[category]:
+                categorysum += np.array(
+                    mcclasstypedict[classsuffix][classname][sample]["nominal"]
+                )
+            categories_counts.update(
+                {category: categorysum}
+            )  # dictionary: {category: {nominal counts for stacked bins for all samples of this category}}
+    printdebug("Stacked the samples in each mc category.")
+
+    print(categories_counts)
+
+    ######## WORK IN PROGRESS ########
+    print("")
+    raise RuntimeError(f"SHOULD WORK UP TO HERE.")
 
     # stack all event counts for each category for mc
     classes_categories = {}  # dictionary: {classname: {category: count}} for mc
@@ -903,9 +977,7 @@ def countplotter(
     # export plot
     if classsuffix == "+X":
         specifier = "all_incl"
-    elif classsuffix == "+nJ":
-        specifier = "jet_incl"
-    elif classsuffix == "BJ" or classsuffix == "":
+    elif classsuffix == "+0":
         specifier = "excl"
     figname = specifier + "_counts"
     if args.title:  # optional custom file title
@@ -947,13 +1019,10 @@ def main():
     classsuffixes = set()
     if len(classtypes) == 1 and classtypes[0] == "ALL":
         classsuffixes.add("+XJ")
-        classsuffixes.add("+nJ")
         classsuffixes.add("+0")
     for classtype in classtypes:
-        if classtype == "+X" or classtype == "all-incl":
-            classsuffixes.add("+X")
-        elif classtype == "+nJ" or classtype == "jet-incl":
-            classsuffixes.add("+nJ")
+        if classtype == "+XJ" or classtype == "jet-/bjet-incl":
+            classsuffixes.add("+XJ")
         elif classtype == "+0" or classtype == "excl":
             classsuffixes.add("+0")
 

@@ -598,36 +598,79 @@ def stacker(
         colors_stacked += [categories_colors[category]]
         mcsum += categories_counts[category]
 
-    # calculate all mc errors and merge them
-    mc_errors = {}  # {systname: merged error for all samples}
     # add statistical error to systematics set
     systematics.add("up_stat")
-    mc_errors.update()
     systematics.add("down_stat")
+
+    # calculate statistical errors
+    for syst in ["up_stat", "down_stat"]:
+        for sample in mcsamples:
+            counts = mccounts["nominal"][sample]
+            for i in range(len(counts)):
+                if (
+                    counts[i] < 0
+                ):  # for now reject statistical errors for negative weights
+                    counts[i] = 0
+            stat_error = np.sqrt(counts)
+            # store stat error in mccounts dict
+            if syst in mcsystematics.keys():  # update mccounts
+                mcsystematics[syst].update({sample: stat_error})
+            else:
+                mcsystematics.update({syst: {sample: stat_error}})
+
+    # quality control
+    for syst in systematics:
+        for sample in mcsamples:
+            if sample not in mcsystematics[syst].keys():
+                print("ERROR:", sample, syst)
+
+    # symmetrize all mc up/down errors to a single error that is applied in both directions
+    # the systematics set content is changed to the symmetrized errors as well as the mc counts dict content
+    for syst in systematics.copy():
+        if "up_" in syst:  # only once for each systematic (choose up_), exclude nominal
+            for sample in mcsamples:
+                newname = syst.split("_")[1]  # new syst name without up/down prefix
+                systematics.discard("up_" + newname)
+                systematics.discard("down_" + newname)
+                systematics.add(newname)
+                newsyst = (
+                    np.abs(mcsystematics["up_" + newname][sample])
+                    + np.abs(mcsystematics["down_" + newname][sample])
+                ) / 2  # calculate mean error for each sample and bin
+                mcsystematics["up_" + newname].pop(sample)
+                mcsystematics["down_" + newname].pop(sample)
+                if newname in mcsystematics.keys():  # update mccounts
+                    mcsystematics[newname].update({sample: newsyst})
+                else:
+                    mcsystematics.update({newname: {sample: newsyst}})
+
+    # calculate all mc errors and merge them
+    mc_errors = {}  # {systname: merged error for all samples}
     # calculate stacked error for all samples for each systematic separately
+    # usually, for a given systematic the errors are treated fully correlated (linear addition) for all samples and process groups
+    # exceptions exist e.g. for the xsection errors where the errors of different groups are assumed to be uncorrelated
     for syst in systematics:
         s_error = np.zeros(nbins)  # squared error value
-        if (
-            syst == "up_stat" or syst == "down_stat"
-        ):  # stat error, sqrt(bincount), up/down
+        if syst == "stat":  #  # stat error, sqrt(bincount), up/down
+            for sample in mcsamples:
+                counts = mccounts["nominal"][sample]
+                for i in range(len(counts)):
+                    if (
+                        counts[i] < 0
+                    ):  # for now reject statistical errors for negative weights
+                        counts[i] = 0
+                s_error += np.sqrt(counts)  # assumed correlated for every sample
+        elif syst == "pu":  # pileup error
             for sample in mcsamples:
                 s_error += np.array(
-                    mccounts["nominal"][sample]
-                )  # assumed uncorrelated for every sample
-            s_error = np.abs(
-                s_error
-            )  # if for some reason the total mc count is negative, calculate statistical error with the absolute value
-        elif syst == "up_pu" or syst == "down_pu":  # pileup error
+                    mcsystematics[syst][sample]
+                )  # assumed correlated for every sample
+        elif syst == "lumi":  # lumi error
             for sample in mcsamples:
                 s_error += np.array(
-                    mcsystematics[syst][sample] ** 2
-                )  # assumed uncorrelated for every sample
-        elif syst == "up_lumi" or syst == "down_lumi":  # lumi error
-            for sample in mcsamples:
-                s_error += np.array(
-                    mcsystematics[syst][sample] ** 2
-                )  # assumed uncorrelated for every sample
-        elif syst == "up_xsec" or syst == "down_xsec":  # cross section (order) error
+                    mcsystematics[syst][sample]
+                )  # assumed correlated for every sample
+        elif syst == "xsec":  # cross section (order) error
             # error only for LO order, others have error 0 currently, therefore this code does not decide between different orders
             for category in categories_samples.keys():
                 temp = np.zeros(nbins)
@@ -636,22 +679,17 @@ def stacker(
                         sample
                     ]  # assumed correlated for samples of the same category
                 s_error += temp**2  # assumed uncorrelated for different categories
-        # calculate sqrt of squared error value for the systematic source
-        mc_errors.update({syst: np.sqrt(s_error)})
+            s_error = np.sqrt(s_error)
+        # save error value for systematic source
+        mc_errors.update({syst: s_error})
 
-    # add all errors together for plotting
-    temp = {
-        "down": np.zeros(nbins),
-        "up": np.zeros(nbins),
-    }  # holds squared combined errors
+    # combine all different systematic errors together for plotting
+    # assume the different systematic sources to be uncorrelated
+    temp = np.zeros(nbins)  # holds squared combined errors
     for syst in systematics:
-        if "down" in syst:
-            temp["down"] += mc_errors[syst] ** 2
-        if "up" in syst:
-            temp["up"] += mc_errors[syst] ** 2
-    total_mc_errors = np.array(
-        [np.sqrt(temp["down"]), np.sqrt(temp["up"])]
-    )  # combined errors [total_mc_down, total_mc_up]
+        if syst != "nominal":
+            temp += mc_errors[syst] ** 2
+    total_mc_errors = np.sqrt(temp)  # combined errors
     printdebug("Calculated the mc errors.")
 
     # stack data
@@ -663,14 +701,10 @@ def stacker(
 
     # calculate data errors
     # assume uncorrelated sqrt(bincounts) errors
-    total_data_errors = [np.zeros(nbins), np.zeros(nbins)]
-    for sample in datasamples:  # statistical error
-        total_data_errors[0] += np.sqrt(datacounts["nominal"][sample]) ** 2
-        total_data_errors[1] += np.sqrt(datacounts["nominal"][sample]) ** 2
-    (total_data_errors[0], total_data_errors[1]) = (
-        np.sqrt(total_data_errors[0]),
-        np.sqrt(total_data_errors[1]),
-    )  # combined errors [total_data_down, total_data_up]
+    total_data_errors = np.zeros(nbins)
+    for sample in datasamples:  # statistical error sqrt(counts)
+        total_data_errors += datacounts["nominal"][sample]
+    total_data_errors = np.sqrt(total_data_errors)  # combined errors
 
     # return stacked data and mc
     return (
@@ -779,9 +813,9 @@ def plotter(args):
     # error_mc: [mcerr_down, mcerr_up] where mcerr_up/down includes the up/down errors for each bin
     ax[0].bar(
         bins,
-        error_mc[0, :] + error_mc[1, :],
+        error_mc * 2,
         width=barwidth,
-        bottom=(mcsum - error_mc[0, :]),
+        bottom=(mcsum - error_mc),
         fill=False,
         hatch="xxxxx",
         linewidth=0,
@@ -804,6 +838,8 @@ def plotter(args):
     )
 
     # create data/mc subplot
+    # only rescaling the errors with the mcsum, no propagation of some sort, the legacy plotter also does not do that
+    # for the future: possibly merging bins together to get at least combined mc event count of 1?
     printdebug("Create Data/MC subplot...")
     divisionidx = []
     for i in range(len(mcsum)):
@@ -822,12 +858,7 @@ def plotter(args):
         "poisson",
     )
     """
-    mcerr_overmc = np.array(
-        [
-            np.array([error_mc[0][i] / mcsum[i] for i in divisionidx]),
-            np.array([error_mc[1][i] / mcsum[i] for i in divisionidx]),
-        ]
-    )
+    mcerr_overmc = np.array([error_mc[i] / mcsum[i] for i in divisionidx])
     dataerr_overmc = np.zeros(
         len(divisionidx)
     )  # np.array([error_data[i] / mcsum[i] for i in divisionidx])
@@ -846,9 +877,9 @@ def plotter(args):
     )
     ax[1].bar(
         bins_overmc,
-        mcerr_overmc[1, :] + mcerr_overmc[0, :],
+        mcerr_overmc * 2,
         width=barwidth_overmc,
-        bottom=1 - mcerr_overmc[0, :],
+        bottom=1 - mcerr_overmc,
         fill=False,
         hatch="xxxxx",
         linewidth=0,
