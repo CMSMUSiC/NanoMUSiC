@@ -260,7 +260,7 @@ class GeneralPlotsBase( PlotMarginHelper ):
         group = parser.add_argument_group( title="General plotting options" )
 
         group.add_argument( "--formats", nargs="+", help="Plotting format, each will be created in a separate subfolder.",
-            type=str, choices=( "pdf", "png", "root", "eps", "ps", "gif", "svg" ), default=( "pdf", "root" ) )
+            type=str, choices=( "pdf", "png", "root", "eps", "ps", "gif", "svg" , "C"), default=( "pdf", "root", "png" , "C") )
 
         group.add_argument( "--out", help="Directory to create plot files in.", type=str, default='./plotOut' )
         group.add_argument( "--cache-dir", help="Directory where cached results should be place", type=str )
