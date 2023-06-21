@@ -136,18 +136,16 @@ auto JetClass2::fill(RVec<Math::PtEtaPhiMVector> jets,
     {
         vecsum += bjets.at(i);
     }
-    if (c_nMET == 0) // calculate m_inv if no met
+    if (c_nMET == 0) // calculate m_inv if no met is present
     {
         if (c_nJet >= 1 or c_nBJet >= 1)
         {
             h_m_inv.Fill(vecsum.mass(), weight);
         }
     }
-    else if (c_nMET == 1) // calculate m_t if met
-    {
-        vecsum += met.at(0);
-        h_m_tr.Fill(vecsum.Mt(), weight);
-    }
+    // always fill m_t, no matter if met is present or not
+    vecsum += met.at(0);
+    h_m_tr.Fill(vecsum.Mt(), weight);
     // leading jet
     if (c_nJet >= 1)
     {

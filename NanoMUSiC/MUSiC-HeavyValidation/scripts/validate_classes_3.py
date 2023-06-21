@@ -165,143 +165,46 @@ def printdebug(toprint):
         print(toprint)
 
 
-# ----------------------------------------
-# ratio uncertainty treatment and corresponding functions: taken from https://github.com/scikit-hep/hist/blob/main/src/hist/intervals.py
-def poisson_interval(
-    values: np.typing.NDArray[Any],
-    variances: np.typing.NDArray[Any] | None = None,
-    coverage: float | None = None,
-) -> np.typing.NDArray[Any]:
-    r"""
-    The Frequentist coverage interval for Poisson-distributed observations.
-
-    What is calculated is the "Garwood" interval, c.f.
-    `V. Patil, H. Kulkarni (Revstat, 2012) <https://www.ine.pt/revstat/pdf/rs120203.pdf>`_
-    or http://ms.mcmaster.ca/peter/s743/poissonalpha.html.
-    If ``variances`` is supplied, the data is assumed to be weighted, and the
-    unweighted count is approximated by ``values**2/variances``, which effectively
-    scales the unweighted Poisson interval by the average weight.
-    This may not be the optimal solution: see
-    `10.1016/j.nima.2014.02.021 <https://doi.org/10.1016/j.nima.2014.02.021>`_
-    (`arXiv:1309.1287 <https://arxiv.org/abs/1309.1287>`_) for a proper treatment.
-
-    In cases where the value is zero, an upper limit is well-defined only in the case of
-    unweighted data, so if ``variances`` is supplied, the upper limit for a zero value
-    will be set to ``NaN``.
-
-    Args:
-        values: Sum of weights.
-        variances: Sum of weights squared.
-        coverage: Central coverage interval.
-          Default is one standard deviation, which is roughly ``0.68``.
-
-    Returns:
-        The Poisson central coverage interval.
-    """
-    if coverage is None:
-        coverage = stats.norm.cdf(1) - stats.norm.cdf(-1)
-    if variances is None:
-        interval_min = stats.chi2.ppf((1 - coverage) / 2, 2 * values) / 2.0
-        interval_min[values == 0.0] = 0.0  # chi2.ppf produces NaN for values=0
-        interval_max = stats.chi2.ppf((1 + coverage) / 2, 2 * (values + 1)) / 2.0
+def display_classname(classname):
+    # required order of the class name:
+    # nJ+nBJ+nMET+XJ
+    displayclassname = ""
+    splitname = classname.split("+")
+    alreadyone = False
+    # jets
+    n = int(splitname[0].split("J")[0])
+    if n > 0:
+        alreadyone = True
+        if n > 1:
+            displayclassname += str(n) + "jets"
+        else:
+            displayclassname += str(n) + "jet"
+    # bjets
+    n = int(splitname[1].split("BJ")[0])
+    if n > 0:
+        if alreadyone:
+            displayclassname += "+"
+        alreadyone = True
+        if n > 1:
+            displayclassname += str(n) + "bjets"
+        else:
+            displayclassname += str(n) + "bjet"
+    # met
+    n = int(splitname[2].split("MET")[0])
+    if n > 0:
+        if alreadyone:
+            displayclassname += "+"
+        alreadyone = True
+        displayclassname += "MET"
+    # jet-/bjet-inclusive/exclusive
+    if len(splitname) > 3:
+        if splitname[3] == "XJ":
+            displayclassname += " j-incl."
+        else:
+            raise RuntimeError(f"{classname} is no valid class name.")
     else:
-        scale = np.ones_like(values)
-        mask = np.isfinite(values) & (values != 0)
-        np.divide(variances, values, out=scale, where=mask)
-        counts: np.typing.NDArray[Any] = values / scale
-        interval_min = scale * stats.chi2.ppf((1 - coverage) / 2, 2 * counts) / 2.0
-        interval_min[values == 0.0] = 0.0  # chi2.ppf produces NaN for values=0
-        interval_max = (
-            scale * stats.chi2.ppf((1 + coverage) / 2, 2 * (counts + 1)) / 2.0
-        )
-        interval_max[values == 0.0] = np.nan
-    return np.stack((interval_min, interval_max))
-
-
-def clopper_pearson_interval(
-    num: np.typing.NDArray[Any],
-    denom: np.typing.NDArray[Any],
-    coverage: float | None = None,
-) -> np.typing.NDArray[Any]:
-    r"""
-    Compute the Clopper-Pearson coverage interval for a binomial distribution.
-    c.f. http://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval
-
-    Args:
-        num: Numerator or number of successes.
-        denom: Denominator or number of trials.
-        coverage: Central coverage interval.
-          Default is one standard deviation, which is roughly ``0.68``.
-
-    Returns:
-        The Clopper-Pearson central coverage interval.
-    """
-    if coverage is None:
-        coverage = stats.norm.cdf(1) - stats.norm.cdf(-1)
-    if np.any(num > denom):
-        raise ValueError(
-            "Found numerator larger than denominator while calculating binomial uncertainty"
-        )
-    interval_min = stats.beta.ppf((1 - coverage) / 2, num, denom - num + 1)
-    interval_max = stats.beta.ppf((1 + coverage) / 2, num + 1, denom - num)
-    interval = np.stack((interval_min, interval_max))
-    interval[0, num == 0.0] = 0.0
-    interval[1, num == denom] = 1.0
-
-
-def ratio_uncertainty(
-    num: np.typing.NDArray[Any],
-    denom: np.typing.NDArray[Any],
-    uncertainty_type="poisson",
-) -> Any:
-    r"""
-    Calculate the uncertainties for the values of the ratio ``num/denom`` using
-    the specified coverage interval approach.
-
-    Args:
-        num: Numerator or number of successes.
-        denom: Denominator or number of trials.
-        uncertainty_type: Coverage interval type to use in the calculation of
-         the uncertainties.
-
-         * ``"poisson"`` (default) implements the Garwood confidence interval for
-           a Poisson-distributed numerator scaled by the denominator.
-           See :func:`hist.intervals.poisson_interval` for further details.
-         * ``"poisson-ratio"`` implements a confidence interval for the ratio ``num / denom``
-           assuming it is an estimator of the ratio of the expected rates from
-           two independent Poisson distributions.
-           It over-covers to a similar degree as the Clopper-Pearson interval
-           does for the Binomial efficiency parameter estimate.
-         * ``"efficiency"`` implements the Clopper-Pearson confidence interval
-           for the ratio ``num / denom`` assuming it is an estimator of a Binomial
-           efficiency parameter.
-           This is only valid if the entries contributing to ``num`` are a strict
-           subset of those contributing to ``denom``.
-
-    Returns:
-        The uncertainties for the ratio.
-    """
-    with np.errstate(divide="ignore", invalid="ignore"):
-        ratio = num / denom
-    if uncertainty_type == "poisson":
-        with np.errstate(divide="ignore", invalid="ignore"):
-            ratio_variance = num * np.power(denom, -2.0)
-        ratio_uncert = np.abs(poisson_interval(ratio, ratio_variance) - ratio)
-    elif uncertainty_type == "poisson-ratio":
-        p_lim = clopper_pearson_interval(num, num + denom)
-        with np.errstate(divide="ignore", invalid="ignore"):
-            r_lim: np.typing.NDArray[Any] = p_lim / (1 - p_lim)
-            ratio_uncert = np.abs(r_lim - ratio)
-    elif uncertainty_type == "efficiency":
-        ratio_uncert = np.abs(clopper_pearson_interval(num, denom) - ratio)
-    else:
-        raise TypeError(
-            f"'{uncertainty_type}' is an invalid option for uncertainty_type."
-        )
-    return ratio_uncert
-
-
-# ----------------------------------------
+        displayclassname += ""
+    return displayclassname
 
 
 # performs a plotting job
@@ -353,47 +256,50 @@ def countplotter(
     # sort samples into class dictionary
     # for mc
     mcclassdict = {}  # dictionary: {classname: {sample: {systname: counts}}}
+    mcclassnames = set()  # set of all classnames with mc events
+    # fill classname set
     for sample in mcsamples:
         for classname in mcsamples_classes[sample]["nominal"].keys():
+            mcclassnames.add(classname)
+    # fill mcclassdict
+    for classname in mcclassnames:
+        for sample in mcsamples:
             templist = {}
             for syst in systematics:
-                templist.update({syst: mcsamples_classes[sample][syst][classname]})
+                if classname in mcsamples_classes[sample][syst].keys():
+                    templist.update({syst: mcsamples_classes[sample][syst][classname]})
+                else:
+                    templist.update({syst: 0})
             if classname in mcclassdict.keys():
                 mcclassdict[classname].update({sample: templist.copy()})
             else:
                 mcclassdict.update({classname: {sample: templist.copy()}})
-    
-    for classname in mcclassdict.keys():
-        print(len(mcclassdict[classname].keys()), len(mcsamples))
-
-    """
-    for classname in mcclassdict:
-        for sample in mcsamples:
-            if sample not in mcclassdict[classname].keys():
-                print("ERROR:", classname, sample)
-    """
-                
     # for data
     dataclassdict = {}  # dictionary: {classname: {sample: {systname: counts}}}
+    dataclassnames = set()  # set of all classnames with data events
+    # fill classname set
     for sample in datasamples:
         for classname in datasamples_classes[sample]["nominal"].keys():
+            dataclassnames.add(classname)
+    # fill dataclassdict
+    for classname in dataclassnames:
+        for sample in datasamples:
             templist = {}
             for syst in systematics:
-                templist.update({syst: datasamples_classes[sample][syst][classname]})
+                if classname in datasamples_classes[sample][syst].keys():
+                    templist.update(
+                        {syst: datasamples_classes[sample][syst][classname]}
+                    )
+                else:
+                    templist.update({syst: 0})
             if classname in dataclassdict.keys():
                 dataclassdict[classname].update({sample: templist.copy()})
             else:
                 dataclassdict.update({classname: {sample: templist.copy()}})
+    # print class counts
     print(
         f"There are {len(dataclassdict)} event classes for data and {len(mcclassdict)} event classes for mc in total (no differentiation between inclusive/exclusive)."
     )
-
-    """ # quality control
-    for sample in mcsamples:
-        for classname in mcsamples_classes[sample]["nominal"].keys():
-            if not (sample in mcclassdict[classname].keys()):
-                print("ERROR:", sample)
-    """
 
     # analyze only one category of {jet-/bjet-inclusive, exclusive} in the following steps
     # this is specified by the classsuffix
@@ -485,7 +391,7 @@ def countplotter(
 
     # print result
     if classsuffix == "+XJ":
-        specifier = "jet-/bjet-inclusive"
+        specifier = "(b)jet inclusive"
     elif classsuffix == "+0":
         specifier = "exclusive"
     else:
@@ -495,12 +401,6 @@ def countplotter(
         f"There are {nclass['data'][classsuffix]} {specifier} classes in data and {nclass['MC'][classsuffix]} {specifier} classes in mc."
     )
     print("Only the classes with data are now analyzed.")
-
-    # quality control
-    if (mcclasstypedict["+0"].keys() != dataclasstypedict["+0"].keys()) or (
-        mcclasstypedict["+XJ"].keys() != dataclasstypedict["+XJ"].keys()
-    ):
-        raise RuntimeError(f"Not the same keys!")
 
     # re-sort mc groups into mc categories with aggregation dictionary
     categories_samples = {}  # dictionary: {category: {samples in category}}
@@ -549,44 +449,19 @@ def countplotter(
         f"   The mc categories {nomembers} have no member mc groups for the given task config."
     )
 
-    """
-    for classname in mcclasstypedict[classsuffix].keys():
-        for sample in mcsamples:
-            if not (sample in mcclasstypedict[classsuffix][classname].keys()):
-                print("ERROR:", classname, sample)
-    """
+    # set of all classnames to be analyzed
+    classnames = set(dataclasstypedict[classsuffix].keys())
 
-    # stack all mc samples for each category for the nominal values
-    # mc/data classtypedict: {suffix: {classname: {sample: {systname: counts}}}}
-    categories_counts = {}
-    for classname in mcclasstypedict[classsuffix].keys():
-        for category in categories_samples.keys():
-            categorysum = 0
-            for sample in categories_samples[category]:
-                categorysum += np.array(
-                    mcclasstypedict[classsuffix][classname][sample]["nominal"]
-                )
-            categories_counts.update(
-                {category: categorysum}
-            )  # dictionary: {category: {nominal counts for stacked bins for all samples of this category}}
-    printdebug("Stacked the samples in each mc category.")
-
-    print(categories_counts)
-
-    ######## WORK IN PROGRESS ########
-    print("")
-    raise RuntimeError(f"SHOULD WORK UP TO HERE.")
-
-    # stack all event counts for each category for mc
-    classes_categories = {}  # dictionary: {classname: {category: count}} for mc
+    # stack all nominal event counts for each category for mc
+    classes_categories = {}  # dictionary: {classname: {category: nominal count}} for mc
     # fill count dict for every class
-    for classname in dataclassdict.keys():
+    for classname in classnames:
         for category in categories_samples.keys():
             # add counts for all samples in every category
             counts = 0
             for sample in categories_samples[category]:
-                if sample in mcclassdict[classname]:
-                    counts += mcclassdict[classname][sample]
+                if sample in mcclasstypedict[classsuffix][classname].keys():
+                    counts += mcclasstypedict[classsuffix][classname][sample]["nominal"]
             # save count sum per category in dict
             if classname in classes_categories.keys():
                 classes_categories[classname].update({category: counts})
@@ -595,7 +470,7 @@ def countplotter(
     printdebug("Stacked the event counts for each mc category.")
 
     # sort mc categories after their contribution for each class
-    for classname in classes_categories.keys():
+    for classname in classnames:
         classes_categories[classname] = {
             k: v
             for k, v in sorted(
@@ -605,14 +480,153 @@ def countplotter(
         # category with lowest event count first
     printdebug("Sorted mc categories by their maximum contribution.")
 
-    # stack all event counts for data
-    classes_data = {}  # dictionary: {classname: count} for data
-    for classname in dataclassdict.keys():
+    # calculate errors as difference from systematics to nominal
+    mcclasstypedict_syst = (
+        {}
+    )  # {suffix: {classname: {sample: {systname: error (deviation from nominal value)}}}}
+    for classname in classnames:
+        for sample in mcsamples:
+            for syst in systematics:
+                temp = np.abs(
+                    mcclasstypedict[classsuffix][classname][sample]["nominal"]
+                    - mcclasstypedict[classsuffix][classname][sample][syst]
+                )
+                if classname in mcclasstypedict_syst.keys():
+                    if sample in mcclasstypedict_syst[classname].keys():
+                        if syst in mcclasstypedict_syst[classname][sample].keys():
+                            mcclasstypedict_syst[classname][sample][syst] = temp
+                        else:
+                            mcclasstypedict_syst[classname][sample].update({syst: temp})
+                    else:
+                        mcclasstypedict_syst[classname].update({sample: {syst: temp}})
+                else:
+                    mcclasstypedict_syst.update({classname: {sample: {syst: temp}}})
+
+    # add statistical error to systematics set
+    systematics.add("up_stat")
+    systematics.add("down_stat")
+
+    # calculate statistical errors
+    for classname in classnames:
+        for syst in ["up_stat", "down_stat"]:
+            for sample in mcsamples:
+                counts = mcclasstypedict[classsuffix][classname][sample]["nominal"]
+                if counts < 0:  # for now reject statistical errors for negative weights
+                    counts = 0
+                stat_error = np.sqrt(counts)
+                # store stat error in mc systematics dict
+                mcclasstypedict_syst[classname][sample].update({syst: stat_error})
+
+    # symmetrize all mc up/down errors to a single error that is applied in both directions
+    # the systematics set content is changed to the symmetrized errors as well as the mc counts dict content
+    for syst in systematics.copy():
+        if "up_" in syst:  # only once for each systematic (choose up_), exclude nominal
+            for classname in classnames:
+                for sample in mcsamples:
+                    newname = syst.split("_")[1]  # new syst name without up/down prefix
+                    systematics.discard("up_" + newname)
+                    systematics.discard("down_" + newname)
+                    systematics.add(newname)
+                    newsyst = (
+                        np.abs(mcclasstypedict_syst[classname][sample]["up_" + newname])
+                        + np.abs(
+                            mcclasstypedict_syst[classname][sample]["down_" + newname]
+                        )
+                    ) / 2  # calculate mean error for each sample
+                    mcclasstypedict_syst[classname][sample].pop("up_" + newname)
+                    mcclasstypedict_syst[classname][sample].pop("down_" + newname)
+                    mcclasstypedict_syst[classname][sample].update(
+                        {newname: newsyst}
+                    )  # update mccounts
+
+    # calculate all mc errors and merge them
+    mc_errors = {}  # {classname: {systname: merged error for all samples}}
+    # calculate stacked error for all samples for each systematic separately
+    # usually, for a given systematic the errors are treated fully correlated (linear addition) for all samples and process groups
+    # exceptions exist e.g. for the xsection errors where the errors of different groups are assumed to be uncorrelated
+    for classname in classnames:
+        for syst in systematics:
+            s_error = 0
+            if syst == "stat":  #  # stat error, sqrt(bincount), up/down
+                for sample in mcsamples:
+                    s_error += mcclasstypedict_syst[classname][sample][
+                        syst
+                    ]  # assumed correlated for every sample
+            elif syst == "pu":  # pileup error
+                for sample in mcsamples:
+                    s_error += mcclasstypedict_syst[classname][sample][
+                        syst
+                    ]  # assumed correlated for every sample
+            elif syst == "lumi":  # lumi error
+                for sample in mcsamples:
+                    s_error += mcclasstypedict_syst[classname][sample][
+                        syst
+                    ]  # assumed correlated for every sample
+            elif syst == "xsec":  # cross section (order) error
+                # error only for LO order, others have error 0 currently, therefore this code does not decide between different orders
+                for category in categories_samples.keys():
+                    temp = 0
+                    for sample in categories_samples[category]:
+                        temp += mcclasstypedict_syst[classname][sample][
+                            syst
+                        ]  # assumed correlated for samples of the same category
+                    s_error += (
+                        temp**2
+                    )  # assumed uncorrelated for different categories
+                s_error = np.sqrt(s_error)
+            # save error value for systematic source
+            if classname in mc_errors.keys():
+                mc_errors[classname].update({syst: s_error})
+            else:
+                mc_errors.update({classname: {syst: s_error}})
+
+    # combine all different systematic errors together for plotting
+    # assume the different systematic sources to be uncorrelated
+    total_mc_errors = {}  # dict: {classname: total combined mc errors}
+    temp = 0  # holds squared combined errors
+    for classname in classnames:
+        temp = 0
+        for syst in systematics:
+            if syst != "nominal":
+                temp += mc_errors[classname][syst] ** 2
+        total_mc_errors.update({classname: np.sqrt(temp)})  # combined errors
+    printdebug("Calculated the mc errors.")
+
+    # calculate total mc counts for each class
+    total_mc = {}  # dict: {classname: total mc count}
+    for classname in classnames:
+        temp = 0
+        for category in categories_samples.keys():
+            temp += classes_categories[classname][category]
+        total_mc.update({classname: temp})
+
+    """ # check for large errors
+    for classname in classnames:
+        if total_mc_errors[classname] / total_mc[classname] >= 1:
+            print(
+                classname,
+                total_mc[classname],
+                total_mc_errors[classname],
+                total_mc_errors[classname] / total_mc[classname],
+            )
+    """
+
+    # stack all nominal event counts for data
+    classes_data = {}  # dictionary: {classname: nominal count} for data
+    for classname in classnames:
         counts = 0
-        for sample in dataclassdict[classname].keys():
-            counts += dataclassdict[classname][sample]
+        for sample in datasamples:
+            counts += dataclasstypedict[classsuffix][classname][sample]["nominal"]
         classes_data.update({classname: counts})
     printdebug("Stacked the event counts for data.")
+
+    # calculate data errors
+    # assume uncorrelated sqrt(bincounts) errors
+    total_data_errors = {}  # dict: {classname: total combined data errors}
+    for classname in classnames:
+        total_data_errors.update(
+            {classname: np.sqrt(classes_data[classname])}
+        )  # only statistical error sqrt(counts)
 
     # sort classes after the event counts in data (first the highest count)
     for classname in classes_data.keys():
@@ -707,7 +721,7 @@ def countplotter(
     top = 0.95
     if histproperties["top"] != "":
         top = float(histproperties["top"])
-    bottom = 0.13
+    bottom = 0.2  # 0.13
     if histproperties["bottom"] != "":
         bottom = float(histproperties["bottom"])
     fig.subplots_adjust(left=left, right=right, bottom=bottom, top=top)
@@ -718,6 +732,7 @@ def countplotter(
     x = xstart
     firstrun = True
     mcsum = []
+    mcerr = []
     barplot = []
     barlabel = []
     for classname in classes_data_toplot.keys():
@@ -742,11 +757,12 @@ def countplotter(
                     color=categories_colors[category],
                 )
             countsum += classes_categories_toplot[classname][category]
-            mcerr = np.sqrt(countsum)
         x += 1
         firstrun = False
         mcsum += [countsum]
-    mcerr = np.sqrt(np.array(mcsum))
+        mcerr += [total_mc_errors[classname]]
+    mcerr = np.array(mcerr)
+    mcsum = np.array(mcsum)
     mcerrorplot = ax[0].bar(
         [xstart + i for i in range(len(classes_data_toplot.keys()))],
         2 * mcerr,
@@ -762,14 +778,16 @@ def countplotter(
     printdebug("Start data plotting.")
     x = xstart
     datasum = []
+    dataerr = []
     firstrun = True
+    dataplot = 0
     for classname in classes_data_toplot.keys():
         datasum += [classes_data_toplot[classname]]
         if firstrun:
             dataplot = ax[0].errorbar(
                 x,
                 classes_data_toplot[classname],
-                yerr=np.sqrt(classes_data_toplot[classname]),
+                yerr=total_data_errors[classname],
                 xerr=1 / 2,
                 color="black",
                 marker=".",
@@ -778,11 +796,12 @@ def countplotter(
                 capsize=1,
                 markersize=3,
             )
+            dataerr += [total_data_errors[classname]]
         else:
             ax[0].errorbar(
                 x,
                 classes_data_toplot[classname],
-                yerr=np.sqrt(classes_data_toplot[classname]),
+                yerr=total_data_errors[classname],
                 xerr=1 / 2,
                 color="black",
                 marker=".",
@@ -791,9 +810,9 @@ def countplotter(
                 capsize=1,
                 markersize=3,
             )
+            dataerr += [total_data_errors[classname]]
         x += 1
         firstrun = False
-    dataerr = np.sqrt(np.array(datasum))
 
     # create data/mc subplot
     printdebug("Create Data/MC subplot...")
@@ -804,12 +823,7 @@ def countplotter(
             divisionidx += [i]
     data_overmc = np.array([datasum[i] / mcsum[i] for i in divisionidx])
     bins_overmc = np.array([bins[i] for i in divisionidx])
-    mcerr_overmc = ratio_uncertainty(
-        np.array([datasum[i] for i in divisionidx]),
-        np.array([mcsum[i] for i in divisionidx]),
-        "poisson",
-    )
-    # asymmetric error interval (contains 2d array with [[-err],[+err]])
+    mcerr_overmc = np.array([mcerr[i] / mcsum[i] for i in divisionidx])
     dataerr_overmc = np.array([dataerr[i] / mcsum[i] for i in divisionidx])
     barwidth_overmc = np.array([1 for i in divisionidx])
     ax[1].errorbar(
@@ -826,11 +840,11 @@ def countplotter(
     )
     ax[1].bar(
         bins_overmc,
-        mcerr_overmc[1, :] + mcerr_overmc[0, :],
+        mcerr_overmc * 2,
         width=barwidth_overmc,
-        bottom=1 - mcerr_overmc[0, :],
+        bottom=1 - mcerr_overmc,
         fill=False,
-        hatch="xxxxxxxx",
+        hatch="xxxxx",
         linewidth=0,
         edgecolor="tab:gray",
     )
@@ -867,8 +881,8 @@ def countplotter(
         direction="in",
     )
     ax[1].set_xticklabels(
-        [name + " " for name in list(classes_data_toplot.keys())],
-        fontsize="15",
+        [display_classname(name) + " " for name in list(classes_data_toplot.keys())],
+        fontsize="13",
         rotation="vertical",
         color="black",
         ha="center",
@@ -914,7 +928,7 @@ def countplotter(
                             ]
                         ),
                         np.amin(
-                            [1 - mcerr_overmc[0, i] - whitespace2 for i in divisionidx]
+                            [1 - mcerr_overmc[i] - whitespace2 for i in divisionidx]
                         ),
                     ]
                 ),
@@ -929,7 +943,7 @@ def countplotter(
                         for i in divisionidx
                     ]
                 ),
-                np.amax([1 + mcerr_overmc[1, i] + whitespace2 for i in divisionidx]),
+                np.amax([1 + mcerr_overmc[i] + whitespace2 for i in divisionidx]),
             ]
         ),
     )
@@ -942,26 +956,44 @@ def countplotter(
     ax[0].legend(
         plots,
         labels,
-        loc="center",
-        prop={"size": 12},
-        bbox_to_anchor=(0.9, 0.815),
+        loc="upper right",
+        prop={"size": 14},
+        bbox_to_anchor=(0.99, 0.985),
         frameon=True,
+        facecolor="white",
+        framealpha=0.5,
+        edgecolor="white",
+        fancybox=False,
+        ncol=2,
     )
 
-    # add text in plot with class category/type
-    if classsuffix == "+X":
-        specifier = "all-inclusive"
-    elif classsuffix == "+nJ":
-        specifier = "jet-inclusive"
-    elif classsuffix == "BJ":
-        specifier = "exclusive"
-    fig.suptitle(specifier + " classes", ha="left", size=20, x=0.09, y=0.98)
+    # add CMS text
+    plt.figtext(0.11, 0.958, "CMS", fontsize=19, ha="left", fontweight="bold")
+    plt.figtext(
+        0.174, 0.958, "Private work", fontsize=13, ha="left", fontstyle="italic"
+    )
 
+    # add text with class type (excl, j-incl)
+    plt.figtext(0.3, 0.958, specifier + " classes", fontsize=19, ha="left")
+
+    # add text with lumi info
+    int_lumi = 59.8  # hardcoded for 2018 for now
+    com_energy = 13
+    plt.figtext(
+        0.982,
+        0.958,
+        str(int_lumi) + " fb${}^{-1}$ (" + str(com_energy) + " TeV)",
+        fontsize=19,
+        ha="right",
+    )
+
+    """ # leave out title because there is no space
     # set plot title
     plottitle = "counts"
     if histproperties["title"] != "":
         plottitle = histproperties["title"]
-    ax[0].set_title(plottitle, fontsize=25)
+    ax[0].set_title(plottitle, fontsize=19)
+    """
 
     # set plot axis labels
     xlabel = ""
@@ -975,14 +1007,14 @@ def countplotter(
     ax[1].set_ylabel("Data/MC", fontsize=20)
 
     # export plot
-    if classsuffix == "+X":
-        specifier = "all_incl"
+    if classsuffix == "+XJ":
+        specifier = "j-incl"
     elif classsuffix == "+0":
         specifier = "excl"
     figname = specifier + "_counts"
     if args.title:  # optional custom file title
         figname = args.title
-    outputpath = validation_path + "/" + str(args.year) + "/" + figname + ".pdf"
+    outputpath = validation_path + "/" + str(args.year) + "/plots/" + figname + ".pdf"
     if savepath != "":
         outputpath = (
             validation_path
@@ -1004,7 +1036,7 @@ def countplotter(
 
 ##### MAIN FUNCTION #####
 def main():
-    print("\n\n📶 [ MUSiC Validation Plotter 2 ] 📶\n")
+    print("\n\n📶 [ MUSiC Validation Plotter 3 ] 📶\n")
 
     # parse arguments
     args = parse_args()

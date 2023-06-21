@@ -216,143 +216,47 @@ def printdebug(toprint):
         print(toprint)
 
 
-# ----------------------------------------
-# ratio uncertainty treatment and corresponding functions: taken from https://github.com/scikit-hep/hist/blob/main/src/hist/intervals.py
-def poisson_interval(
-    values: np.typing.NDArray[Any],
-    variances: np.typing.NDArray[Any] | None = None,
-    coverage: float | None = None,
-) -> np.typing.NDArray[Any]:
-    r"""
-    The Frequentist coverage interval for Poisson-distributed observations.
-
-    What is calculated is the "Garwood" interval, c.f.
-    `V. Patil, H. Kulkarni (Revstat, 2012) <https://www.ine.pt/revstat/pdf/rs120203.pdf>`_
-    or http://ms.mcmaster.ca/peter/s743/poissonalpha.html.
-    If ``variances`` is supplied, the data is assumed to be weighted, and the
-    unweighted count is approximated by ``values**2/variances``, which effectively
-    scales the unweighted Poisson interval by the average weight.
-    This may not be the optimal solution: see
-    `10.1016/j.nima.2014.02.021 <https://doi.org/10.1016/j.nima.2014.02.021>`_
-    (`arXiv:1309.1287 <https://arxiv.org/abs/1309.1287>`_) for a proper treatment.
-
-    In cases where the value is zero, an upper limit is well-defined only in the case of
-    unweighted data, so if ``variances`` is supplied, the upper limit for a zero value
-    will be set to ``NaN``.
-
-    Args:
-        values: Sum of weights.
-        variances: Sum of weights squared.
-        coverage: Central coverage interval.
-          Default is one standard deviation, which is roughly ``0.68``.
-
-    Returns:
-        The Poisson central coverage interval.
-    """
-    if coverage is None:
-        coverage = stats.norm.cdf(1) - stats.norm.cdf(-1)
-    if variances is None:
-        interval_min = stats.chi2.ppf((1 - coverage) / 2, 2 * values) / 2.0
-        interval_min[values == 0.0] = 0.0  # chi2.ppf produces NaN for values=0
-        interval_max = stats.chi2.ppf((1 + coverage) / 2, 2 * (values + 1)) / 2.0
+def display_classname(classname):
+    # required order of the class name:
+    # nJ+nBJ+nMET+XJ
+    displayclassname = ""
+    splitname = classname.split("+")
+    alreadyone = False
+    # jets
+    n = int(splitname[0].split("J")[0])
+    if n > 0:
+        alreadyone = True
+        if n > 1:
+            displayclassname += str(n) + "jets"
+        else:
+            displayclassname += str(n) + "jet"
+    # bjets
+    n = int(splitname[1].split("BJ")[0])
+    if n > 0:
+        if alreadyone:
+            displayclassname += "+"
+        alreadyone = True
+        if n > 1:
+            displayclassname += str(n) + "bjets"
+        else:
+            displayclassname += str(n) + "bjet"
+    # met
+    n = int(splitname[2].split("MET")[0])
+    if n > 0:
+        if alreadyone:
+            displayclassname += "+"
+        alreadyone = True
+        displayclassname += "MET"
+    # jet-/bjet-inclusive/exclusive
+    if len(splitname) > 3:
+        if splitname[3] == "XJ":
+            displayclassname += " j-incl."
+        else:
+            raise RuntimeError(f"{classname} is no valid class name.")
     else:
-        scale = np.ones_like(values)
-        mask = np.isfinite(values) & (values != 0)
-        np.divide(variances, values, out=scale, where=mask)
-        counts: np.typing.NDArray[Any] = values / scale
-        interval_min = scale * stats.chi2.ppf((1 - coverage) / 2, 2 * counts) / 2.0
-        interval_min[values == 0.0] = 0.0  # chi2.ppf produces NaN for values=0
-        interval_max = (
-            scale * stats.chi2.ppf((1 + coverage) / 2, 2 * (counts + 1)) / 2.0
-        )
-        interval_max[values == 0.0] = np.nan
-    return np.stack((interval_min, interval_max))
+        displayclassname += ""
+    return displayclassname
 
-
-def clopper_pearson_interval(
-    num: np.typing.NDArray[Any],
-    denom: np.typing.NDArray[Any],
-    coverage: float | None = None,
-) -> np.typing.NDArray[Any]:
-    r"""
-    Compute the Clopper-Pearson coverage interval for a binomial distribution.
-    c.f. http://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval
-
-    Args:
-        num: Numerator or number of successes.
-        denom: Denominator or number of trials.
-        coverage: Central coverage interval.
-          Default is one standard deviation, which is roughly ``0.68``.
-
-    Returns:
-        The Clopper-Pearson central coverage interval.
-    """
-    if coverage is None:
-        coverage = stats.norm.cdf(1) - stats.norm.cdf(-1)
-    if np.any(num > denom):
-        raise ValueError(
-            "Found numerator larger than denominator while calculating binomial uncertainty"
-        )
-    interval_min = stats.beta.ppf((1 - coverage) / 2, num, denom - num + 1)
-    interval_max = stats.beta.ppf((1 + coverage) / 2, num + 1, denom - num)
-    interval = np.stack((interval_min, interval_max))
-    interval[0, num == 0.0] = 0.0
-    interval[1, num == denom] = 1.0
-
-
-def ratio_uncertainty(
-    num: np.typing.NDArray[Any],
-    denom: np.typing.NDArray[Any],
-    uncertainty_type="poisson",
-) -> Any:
-    r"""
-    Calculate the uncertainties for the values of the ratio ``num/denom`` using
-    the specified coverage interval approach.
-
-    Args:
-        num: Numerator or number of successes.
-        denom: Denominator or number of trials.
-        uncertainty_type: Coverage interval type to use in the calculation of
-         the uncertainties.
-
-         * ``"poisson"`` (default) implements the Garwood confidence interval for
-           a Poisson-distributed numerator scaled by the denominator.
-           See :func:`hist.intervals.poisson_interval` for further details.
-         * ``"poisson-ratio"`` implements a confidence interval for the ratio ``num / denom``
-           assuming it is an estimator of the ratio of the expected rates from
-           two independent Poisson distributions.
-           It over-covers to a similar degree as the Clopper-Pearson interval
-           does for the Binomial efficiency parameter estimate.
-         * ``"efficiency"`` implements the Clopper-Pearson confidence interval
-           for the ratio ``num / denom`` assuming it is an estimator of a Binomial
-           efficiency parameter.
-           This is only valid if the entries contributing to ``num`` are a strict
-           subset of those contributing to ``denom``.
-
-    Returns:
-        The uncertainties for the ratio.
-    """
-    with np.errstate(divide="ignore", invalid="ignore"):
-        ratio = num / denom
-    if uncertainty_type == "poisson":
-        with np.errstate(divide="ignore", invalid="ignore"):
-            ratio_variance = num * np.power(denom, -2.0)
-        ratio_uncert = np.abs(poisson_interval(ratio, ratio_variance) - ratio)
-    elif uncertainty_type == "poisson-ratio":
-        p_lim = clopper_pearson_interval(num, num + denom)
-        with np.errstate(divide="ignore", invalid="ignore"):
-            r_lim: np.typing.NDArray[Any] = p_lim / (1 - p_lim)
-            ratio_uncert = np.abs(r_lim - ratio)
-    elif uncertainty_type == "efficiency":
-        ratio_uncert = np.abs(clopper_pearson_interval(num, denom) - ratio)
-    else:
-        raise TypeError(
-            f"'{uncertainty_type}' is an invalid option for uncertainty_type."
-        )
-    return ratio_uncert
-
-
-# ----------------------------------------
 
 # creates arguments for plotter() to be run with multiprocessing
 def create_arguments(
@@ -618,12 +522,6 @@ def stacker(
             else:
                 mcsystematics.update({syst: {sample: stat_error}})
 
-    # quality control
-    for syst in systematics:
-        for sample in mcsamples:
-            if sample not in mcsystematics[syst].keys():
-                print("ERROR:", sample, syst)
-
     # symmetrize all mc up/down errors to a single error that is applied in both directions
     # the systematics set content is changed to the symmetrized errors as well as the mc counts dict content
     for syst in systematics.copy():
@@ -650,16 +548,12 @@ def stacker(
     # usually, for a given systematic the errors are treated fully correlated (linear addition) for all samples and process groups
     # exceptions exist e.g. for the xsection errors where the errors of different groups are assumed to be uncorrelated
     for syst in systematics:
-        s_error = np.zeros(nbins)  # squared error value
+        s_error = np.zeros(nbins)
         if syst == "stat":  #  # stat error, sqrt(bincount), up/down
             for sample in mcsamples:
-                counts = mccounts["nominal"][sample]
-                for i in range(len(counts)):
-                    if (
-                        counts[i] < 0
-                    ):  # for now reject statistical errors for negative weights
-                        counts[i] = 0
-                s_error += np.sqrt(counts)  # assumed correlated for every sample
+                s_error += np.array(
+                    mcsystematics[syst][sample]
+                )  # assumed correlated for every sample
         elif syst == "pu":  # pileup error
             for sample in mcsamples:
                 s_error += np.array(
@@ -692,7 +586,7 @@ def stacker(
     total_mc_errors = np.sqrt(temp)  # combined errors
     printdebug("Calculated the mc errors.")
 
-    # stack data
+    # stack nominal data counts
     datasum = np.zeros(nbins)
     for sample in datasamples:
         counts = np.array(datacounts["nominal"][sample])
@@ -702,7 +596,7 @@ def stacker(
     # calculate data errors
     # assume uncorrelated sqrt(bincounts) errors
     total_data_errors = np.zeros(nbins)
-    for sample in datasamples:  # statistical error sqrt(counts)
+    for sample in datasamples:  # only statistical error sqrt(counts)
         total_data_errors += datacounts["nominal"][sample]
     total_data_errors = np.sqrt(total_data_errors)  # combined errors
 
@@ -744,7 +638,7 @@ def plotter(args):
         classname,
         subfolder,
     ) = list(args.values())
-    # import, sort and stack data and mc
+    # ----------------- import, sort and stack data and mc -----------------
     (
         bins,
         edges,
@@ -768,6 +662,8 @@ def plotter(args):
         year,
         fileprefix,
     )
+
+    # ----------------- plotting -----------------
 
     # prepare plot
     hep.style.use(hep.style.ROOT)
@@ -835,57 +731,8 @@ def plotter(args):
         elinewidth=0.8,
         capsize=1,
         markersize=3,
+        label="Data",
     )
-
-    # create data/mc subplot
-    # only rescaling the errors with the mcsum, no propagation of some sort, the legacy plotter also does not do that
-    # for the future: possibly merging bins together to get at least combined mc event count of 1?
-    printdebug("Create Data/MC subplot...")
-    divisionidx = []
-    for i in range(len(mcsum)):
-        if mcsum[i] > 0 and datasum[i] > 0:
-            divisionidx += [i]
-    divisionidx2 = []
-    for i in range(len(mcsum)):
-        if mcsum[i] > 0:
-            divisionidx2 += [i]
-    data_overmc = np.array([datasum[i] / mcsum[i] for i in divisionidx])
-    bins_overmc = np.array([bins[i] for i in divisionidx])
-    """
-    mcerr_overmc = ratio_uncertainty(
-        np.array([datasum[i] for i in divisionidx]),
-        np.array([mcsum[i] for i in divisionidx]),
-        "poisson",
-    )
-    """
-    mcerr_overmc = np.array([error_mc[i] / mcsum[i] for i in divisionidx])
-    dataerr_overmc = np.zeros(
-        len(divisionidx)
-    )  # np.array([error_data[i] / mcsum[i] for i in divisionidx])
-    barwidth_overmc = np.array([barwidth[i] for i in divisionidx])
-    ax[1].errorbar(
-        bins_overmc,
-        data_overmc,
-        yerr=dataerr_overmc,
-        xerr=barwidth_overmc / 2,
-        color="black",
-        marker=".",
-        linestyle="",
-        elinewidth=0.8,
-        capsize=1,
-        markersize=3,
-    )
-    ax[1].bar(
-        bins_overmc,
-        mcerr_overmc * 2,
-        width=barwidth_overmc,
-        bottom=1 - mcerr_overmc,
-        fill=False,
-        hatch="xxxxx",
-        linewidth=0,
-        edgecolor="tab:gray",
-    )
-    ax[1].axhline(1, linewidth=0.4, color="black")
 
     # only plot when there is data
     datapresent = False
@@ -893,6 +740,139 @@ def plotter(args):
         if sumpoint > 0:
             datapresent = True
     if datapresent:
+        # ----------------- create data/mc subplot -----------------
+        # only rescaling the errors with the mcsum, no propagation of some sort, the EC plotter also does not do that
+        printdebug("Create Data/MC subplot...")
+
+        # bin merging (somewhat like the EC plotter but a bit different)
+        mergebins = True  # enable/disable bin merging in data/mc subplot
+        mergethreshold = 0.5  # combine bins until the mc count for the merged bins exceeds this threshold
+        # define new bins, data, mc counts and errors
+        new_bins = []
+        new_mcsum = []
+        new_error_mc = []
+        new_datasum = []
+        new_error_data = []
+        new_barwidth = []
+        if (
+            mergebins and len(bins) > 1
+        ):  # do bin merge (only if merging is possible, therefore nbins > 1)
+            # first find the last bin that is plotted (the last one with data)
+            plotidx = len(bins) - 1
+            for i in range(len(bins))[
+                ::-1
+            ]:  # search for first datapoint from the right
+                if datasum[i] > 0:
+                    plotidx = i
+                    break
+            newbin = True
+            (
+                temp_left,
+                temp_mcsum,
+                temp_error_mc,
+                temp_datasum,
+                temp_error_data,
+                temp_nmerge,
+                temp_barwidth,
+            ) = (
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+            )
+            for i in range(np.amin([plotidx + 1, len(bins) + 1]))[
+                ::-1
+            ]:  # start at last bin (with data since the axis limits are set there)
+                if newbin == True:  # reset variables after every merge
+                    temp_nmerge = 1  # count merged bins in order to later calculate the correct bin coordinate
+                    temp_left = bins[i] - barwidth[i] / 2
+                    temp_mcsum = mcsum[i]
+                    temp_error_mc = error_mc[i]  # bin errors assumed correlated
+                    temp_datasum = datasum[i]
+                    temp_error_data = error_data[i]  # bin errors assumed correlated
+                    temp_barwidth = barwidth[i]
+                    newbin = False
+                else:
+                    temp_nmerge += 1
+                    temp_mcsum += mcsum[i]
+                    temp_error_mc += error_mc[i]  # bin errors assumed correlated
+                    temp_datasum += datasum[i]
+                    temp_error_data += error_data[i]  # bin errors assumed correlated
+                    temp_barwidth += barwidth[i]  # bin widths are adding up
+                if (i == 0) or (
+                    i > 0
+                    and (
+                        temp_mcsum >= mergethreshold
+                        and temp_datasum > 0
+                        and mcsum[i - 1] > 0
+                    )
+                ):  # perform merge when threshold is reached
+                    new_bins += [
+                        (temp_left + (bins[i] - barwidth[i] / 2)) / 2
+                    ]  # new bin is mean of all bin coordinates that are merged
+                    new_mcsum += [temp_mcsum]
+                    new_error_mc += [temp_error_mc]
+                    new_datasum += [temp_datasum]
+                    new_error_data += [temp_error_data]
+                    new_barwidth += [temp_barwidth]
+                    newbin = True
+        else:  # if no bin merge simply use the old bins
+            new_bins = np.copy(bins)
+            new_mcsum = np.copy(mcsum)
+            new_error_mc = np.copy(error_mc)
+            new_datasum = np.copy(datasum)
+            new_error_data = np.copy(error_data)
+            new_barwidth = np.copy(barwidth)
+        # make them as numpy arrays
+        new_bins = np.array(new_bins)
+        new_mcsum = np.array(new_mcsum)
+        new_error_mc = np.array(new_error_mc)
+        new_datasum = np.array(new_datasum)
+        new_error_data = np.array(new_error_data)
+        new_barwidth = np.array(new_barwidth)
+
+        # from now on use the (possibly merged) new bins
+        # calculate and create data/mc subplot
+        divisionidx = []
+        for i in range(len(new_mcsum)):
+            if new_mcsum[i] > 0:
+                divisionidx += [i]
+        data_overmc = np.array([new_datasum[i] / new_mcsum[i] for i in divisionidx])
+        bins_overmc = np.array([new_bins[i] for i in divisionidx])
+        mcerr_overmc = np.array([new_error_mc[i] / new_mcsum[i] for i in divisionidx])
+        dataerr_overmc = np.array(
+            [new_error_data[i] / new_mcsum[i] for i in divisionidx]
+        )
+        barwidth_overmc = np.array([new_barwidth[i] for i in divisionidx])
+        ax[1].errorbar(
+            bins_overmc,
+            data_overmc,
+            yerr=dataerr_overmc,
+            xerr=barwidth_overmc / 2,
+            color="black",
+            marker=".",
+            linestyle="",
+            elinewidth=0.8,
+            capsize=1,
+            markersize=3,
+        )
+        ax[1].bar(
+            bins_overmc,
+            mcerr_overmc * 2,
+            width=barwidth_overmc,
+            bottom=1 - mcerr_overmc,
+            fill=False,
+            hatch="xxxxx",
+            linewidth=0,
+            edgecolor="tab:gray",
+        )
+        ax[1].axhline(1, linewidth=0.4, color="black")
+
+        # ----------------- set axis limits and legends -----------------
+
         # set all axis limits (this is a bit ugly but it works..)
         printdebug("Setting axis limits...")
         # auto find x limits where data > 0
@@ -948,10 +928,10 @@ def plotter(args):
                     np.amax([datasum[k] for k in indices]),
                 ]
             )
-            * 2
+            * 3
         )
         # auto find y limits in this index set
-        ylim = (1e-4, ymax)
+        ylim = (2e-4, ymax)
         nmax = 0
         while 10**nmax < ymax:
             nmax += 1
@@ -976,21 +956,28 @@ def plotter(args):
             raise RuntimeError("Invalid y limit given.")
             exit(0)
         ax[0].set_ylim(ylim)
+
         # find y limits for data/mc plot
         if len(xlim) == 0 or len(bins_overmc) == 0:  # avoid bugs
             printdebug(
                 f"{classname}, {histname}: Skip plotting... [len(xlim) == 0 or len(bins_overmc) == 0]"
             )
             return
+
         leftidx = 0
         rightidx = len(bins_overmc) - 1
-        while bins_overmc[leftidx] <= xlim[0]:
-            leftidx += 1
-        while bins_overmc[rightidx] >= xlim[1]:
-            rightidx -= 1
-            if rightidx <= 0:
-                rightidx = 0
-                break
+        if len(bins_overmc) > 1:
+            while bins_overmc[leftidx] <= xlim[0]:
+                leftidx += 1
+                if leftidx >= len(bins_overmc):
+                    leftidx = 0
+                    print(f"Possible problem for {classname}, {histname}.")
+                    break
+            while bins_overmc[rightidx] >= xlim[1]:
+                rightidx -= 1
+                if rightidx <= 0:
+                    rightidx = 0
+                    break
         indices = range(leftidx, min([rightidx + 1, len(bins_overmc)]))
         whitespace2 = 0.1
         ylim2 = (
@@ -1020,7 +1007,8 @@ def plotter(args):
                             for i in indices
                         ]
                     ),
-                    # np.amax([1 + mcerr_overmc[1, i] + whitespace2 for i in indices]),
+                    1,
+                    # np.amax([1 + mcerr_overmc[i] + whitespace2 for i in indices]),
                 ]
             ),
         )
@@ -1034,18 +1022,48 @@ def plotter(args):
         # plot cosmetics and legend
         printdebug("Exporting plot...")
         ax[0].legend(
-            loc="center", prop={"size": 12}, bbox_to_anchor=(0.9, 0.84), frameon=True
+            loc="upper right",
+            prop={"size": 14},
+            bbox_to_anchor=(0.99, 0.98),
+            frameon=True,
+            facecolor="white",
+            framealpha=0.5,
+            edgecolor="white",
+            fancybox=False,
+        )
+
+        # ax[0].legend(loc="center", prop={"size": 12}, bbox_to_anchor=(0.9, 0.84), frameon=True)
+
+        # add CMS text
+        plt.figtext(0.11, 0.958, "CMS", fontsize=19, ha="left", fontweight="bold")
+        plt.figtext(
+            0.174, 0.958, "Private work", fontsize=13, ha="left", fontstyle="italic"
         )
 
         # add text in plot with class name
         if classname != "":
-            fig.suptitle("class: " + classname, ha="left", size=18, x=0.04, y=0.985)
+            plt.figtext(
+                0.3, 0.958, display_classname(classname), fontsize=19, ha="left"
+            )
 
+        # add text with lumi info
+        int_lumi = 59.8  # hardcoded for 2018 for now
+        com_energy = 13
+        plt.figtext(
+            0.982,
+            0.958,
+            str(int_lumi) + " fb${}^{-1}$ (" + str(com_energy) + " TeV)",
+            fontsize=19,
+            ha="right",
+        )
+
+        """ # leave out title because there is no space
         # set plot title
         plottitle = histname
         if histproperties["title"] != "":
             plottitle = histproperties["title"]
-        ax[0].set_title(plottitle, fontsize=25)
+        ax[0].set_title(plottitle, fontsize=19)
+        """
 
         # set plot axis labels
         xlabel = ""
