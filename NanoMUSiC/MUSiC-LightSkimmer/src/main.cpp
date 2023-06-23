@@ -437,15 +437,34 @@ auto main(int argc, char *argv[]) -> int
                  "gen_weight"})
             //  Define trigger columns
             .Define("pass_low_pt_muon_trigger",
-                    [](bool HLT_IsoMu24) -> bool
+                    // [](bool HLT_IsoMu24) -> bool
+                    // {
+                    // if (HLT_IsoMu24)
+                    // {
+                    //     return true;
+                    // }
+                    // return false;
+
+                    [&configuration]() -> std::string_view
                     {
-                        if (HLT_IsoMu24)
+                        if (configuration.year == Year::Run2016APV)
                         {
-                            return true;
+                            return "HLT_IsoMu24 or HLT_IsoTkMu24"sv;
                         }
-                        return false;
-                    },
-                    {"HLT_IsoMu24"})
+
+                        if (configuration.year == Year::Run2016)
+                        {
+                            return "HLT_IsoMu24 or HLT_IsoTkMu24"sv;
+                        }
+                        if (configuration.year == Year::Run2017)
+                        {
+                            return "HLT_IsoMu27"sv;
+                        }
+                        if (configuration.year == Year::Run2018)
+                        {
+                            return "HLT_IsoMu24"sv;
+                        }
+                    }())
             .Define("pass_high_pt_muon_trigger",
                     [](bool HLT_Mu50, bool HLT_TkMu100, bool HLT_OldMu100) -> bool
                     {

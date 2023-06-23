@@ -209,7 +209,7 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
                            const RVec<int> &Electron_genPartIdx,     //
                            const CorrectionlibRef_t &electron_sf,    //
                            bool is_data,                             //
-                           std::string _year,                        //
+                           const std::string &_year,                 //
                            const std::string &shift) -> MUSiCObjects
 {
     auto year = get_runyear(_year);
@@ -223,37 +223,51 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
 
     for (std::size_t i = 0; i < Electron_pt.size(); i++)
     {
-
         // Low pT Electrons
-        bool is_good_low_pt_electron = ((Electron_pt.at(i) >= ObjConfig::Electrons[year].MinLowPt) and
-                                        (Electron_pt.at(i) < ObjConfig::Electrons[year].MaxLowPt)) //
-                                       and ((std::fabs(Electron_eta.at(i) + Electron_deltaEtaSC.at(i)) <= 1.442) or
-                                            ((std::fabs(Electron_eta.at(i) + Electron_deltaEtaSC.at(i)) >= 1.566) and
-                                             (std::fabs(Electron_eta.at(i) + Electron_deltaEtaSC.at(i)) <= 2.5))) //
-                                       and (Electron_cutBased.at(i) >= ObjConfig::Electrons[year].cutBasedId);
+        bool is_good_low_pt_electron_pre_filter =
+            ((std::fabs(Electron_eta.at(i) + Electron_deltaEtaSC.at(i)) <= 1.442) or
+             ((std::fabs(Electron_eta.at(i) + Electron_deltaEtaSC.at(i)) >= 1.566) and
+              (std::fabs(Electron_eta.at(i) + Electron_deltaEtaSC.at(i)) <= 2.5))) //
+            and (Electron_cutBased.at(i) >= ObjConfig::Electrons[year].cutBasedId);
 
         // High pT Electrons
-        bool is_good_high_pt_electron = (Electron_pt.at(i) >= ObjConfig::Electrons[year].MaxLowPt) //
-                                        and ((std::fabs(Electron_eta.at(i) + Electron_deltaEtaSC.at(i)) <= 1.442) or
-                                             ((std::fabs(Electron_eta.at(i) + Electron_deltaEtaSC.at(i)) >= 1.566) and
-                                              (std::fabs(Electron_eta.at(i) + Electron_deltaEtaSC.at(i)) <= 2.5))) //
-                                        and (Electron_cutBased_HEEP.at(i));
+        bool is_good_high_pt_electron_pre_filter =
+            ((std::fabs(Electron_eta.at(i) + Electron_deltaEtaSC.at(i)) <= 1.442) or
+             ((std::fabs(Electron_eta.at(i) + Electron_deltaEtaSC.at(i)) >= 1.566) and
+              (std::fabs(Electron_eta.at(i) + Electron_deltaEtaSC.at(i)) <= 2.5))) //
+            and (Electron_cutBased_HEEP.at(i));
 
         float pt_correction_factor = 1.f;
         float eta_correction_factor = 0.f;
-        if (is_good_high_pt_electron)
+        if (Electron_pt.at(i) >= ObjConfig::Electrons[year].MaxLowPt)
         {
             pt_correction_factor = Electron_scEtOverPt[i] + 1.f;
             eta_correction_factor = Electron_deltaEtaSC[i];
         }
 
-        if (is_good_low_pt_electron or is_good_high_pt_electron)
+        if (is_good_low_pt_electron_pre_filter or is_good_high_pt_electron_pre_filter)
         {
             auto electron_p4 = Math::PtEtaPhiMVector(
                 std::max(Electron_pt[i] * pt_correction_factor, ObjConfig::Electrons[year].MinLowPt),
                 Electron_eta[i] + eta_correction_factor,
                 Electron_phi[i],
                 PDG::Electron::Mass);
+
+            electron_p4 = electron_p4 * get_electron_energy_corrections(shift,
+                                                                        Electron_dEscaleUp[i],
+                                                                        Electron_dEscaleDown[i],
+                                                                        Electron_dEsigmaUp[i],
+                                                                        Electron_dEsigmaDown[i],
+                                                                        electron_p4.energy());
+
+            // Low pT Electrons
+            bool is_good_low_pt_electron = ((electron_p4.pt() >= ObjConfig::Electrons[year].MinLowPt) and
+                                            (electron_p4.pt() < ObjConfig::Electrons[year].MaxLowPt)) and
+                                           is_good_low_pt_electron_pre_filter;
+
+            // High pT Electrons
+            bool is_good_high_pt_electron =
+                (electron_p4.pt() >= ObjConfig::Electrons[year].MaxLowPt) and is_good_low_pt_electron_pre_filter;
 
             // calculate scale factors per object (particle)
             // follow the previous MUSiC analysis, the SFs are set before the energy scale and resolution
@@ -311,23 +325,17 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
             if (is_good_high_pt_electron)
             {
                 scale_factors.push_back( //
-                    MUSiCObjects::get_scale_factor(electron_sf,
-                                                   is_data,
-                                                   {get_year_for_electron_sf(year),
-                                                    "sf",
-                                                    "RecoAbove20",
-                                                    Electron_eta.at(i) + Electron_deltaEtaSC.at(i),
-                                                    electron_p4.pt()}) *
+                    MUSiCObjects::get_scale_factor(
+                        electron_sf,
+                        is_data,
+                        {get_year_for_electron_sf(year), "sf", "RecoAbove20", Electron_eta.at(i), electron_p4.pt()}) *
                     get_high_pt_sf(is_data, year, "sf", electron_p4.pt(), electron_p4.eta()));
 
                 scale_factor_up.push_back( //
-                    MUSiCObjects::get_scale_factor(electron_sf,
-                                                   is_data,
-                                                   {get_year_for_electron_sf(year),
-                                                    "sfup",
-                                                    "RecoAbove20",
-                                                    Electron_eta.at(i) + Electron_deltaEtaSC.at(i),
-                                                    electron_p4.pt()}) *
+                    MUSiCObjects::get_scale_factor(
+                        electron_sf,
+                        is_data,
+                        {get_year_for_electron_sf(year), "sfup", "RecoAbove20", Electron_eta.at(i), electron_p4.pt()}) *
                     get_high_pt_sf(is_data, year, "sfup", electron_p4.pt(), electron_p4.eta()));
 
                 scale_factor_down.push_back( //
@@ -336,22 +344,19 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
                                                    {get_year_for_electron_sf(year),
                                                     "sfdown",
                                                     "RecoAbove20",
-                                                    Electron_eta.at(i) + Electron_deltaEtaSC.at(i),
+                                                    Electron_eta.at(i),
                                                     electron_p4.pt()}) *
                     get_high_pt_sf(is_data, year, "sfdown", electron_p4.pt(), electron_p4.eta()));
             }
+            if (is_good_low_pt_electron or is_good_high_pt_electron)
+            {
+                electrons_p4.push_back(electron_p4);
 
-            // apply energy corrections
-            electrons_p4.push_back(electron_p4 * get_electron_energy_corrections(shift,
-                                                                                 Electron_dEscaleUp[i],
-                                                                                 Electron_dEscaleDown[i],
-                                                                                 Electron_dEsigmaUp[i],
-                                                                                 Electron_dEsigmaDown[i],
-                                                                                 electron_p4.energy()));
+                delta_met_x += (electron_p4.pt() - Electron_pt[i]) * std::cos(Electron_phi[i]);
+                delta_met_y += (electron_p4.pt() - Electron_pt[i]) * std::sin(Electron_phi[i]);
 
-            delta_met_x += (electron_p4.pt() - Electron_pt[i]) * std::cos(Electron_phi[i]);
-            delta_met_y += (electron_p4.pt() - Electron_pt[i]) * std::sin(Electron_phi[i]);
-            is_fake.push_back(is_data ? false : Electron_genPartIdx[i] == -1);
+                is_fake.push_back(is_data ? false : Electron_genPartIdx[i] == -1);
+            }
         }
     }
 

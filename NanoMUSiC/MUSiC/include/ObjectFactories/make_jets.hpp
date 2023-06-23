@@ -8,15 +8,78 @@
 #include "ROOT/RVec.hxx"
 
 #include "Configs.hpp"
+#include "CorrectionSets.hpp"
 #include "JetCorrector.hpp"
 #include "music_objects.hpp"
 
 using namespace ROOT;
 using namespace ROOT::Math;
 using namespace ROOT::VecOps;
-
 namespace ObjectFactories
 {
+
+inline auto get_scale_resolution_shifts(const std::string &shift) -> std::pair<std::string, std::string>
+{
+    if (shift == "Jet_systScaleUp")
+    {
+        return std::make_pair<std::string, std::string>("Up", "Nominal");
+    }
+
+    if (shift == "Jet_systScaleDown")
+    {
+        return std::make_pair<std::string, std::string>("Down", "Nominal");
+    }
+
+    if (shift == "Jet_systResolutionUp")
+    {
+        return std::make_pair<std::string, std::string>("Nominal", "Up");
+    }
+
+    if (shift == "Jet_systResolutionDown")
+    {
+        return std::make_pair<std::string, std::string>("Nominal", "Down");
+    }
+
+    return std::make_pair<std::string, std::string>("Nominal", "Nominal");
+}
+
+inline auto get_jet_energy_corrections(const std::string &shift,
+                                       float Jet_pt,                 //
+                                       float Jet_eta,                //
+                                       float Jet_phi,                //
+                                       float Jet_rawFactor,          //
+                                       float Jet_area,               //
+                                       Int_t Jet_genJetIdx,          //
+                                       float fixedGridRhoFastjetAll, //
+                                       JetCorrector &jet_corrections,
+                                       const NanoObjects::GenJets &gen_jets) -> double
+{
+
+    auto [scale_shift, resolution_shift] = get_scale_resolution_shifts(shift);
+
+    // The JetCorrector already knows is_data (from the constructor)
+    // JES: Nominal - JER: Nominal
+    float scale_correction_nominal = jet_corrections.get_scale_correction(Jet_pt,                 //
+                                                                          Jet_eta,                //
+                                                                          Jet_phi,                //
+                                                                          Jet_rawFactor,          //
+                                                                          fixedGridRhoFastjetAll, //
+                                                                          Jet_area,               //
+                                                                          scale_shift);
+
+    float new_pt_nominal = Jet_pt * scale_correction_nominal;
+
+    float resolution_correction_nominal = jet_corrections.get_resolution_correction(new_pt_nominal,
+                                                                                    Jet_eta,                //
+                                                                                    Jet_phi,                //
+                                                                                    fixedGridRhoFastjetAll, //
+                                                                                    Jet_genJetIdx,          //
+                                                                                    gen_jets,               //
+                                                                                    resolution_shift);
+
+    return scale_correction_nominal * resolution_correction_nominal;
+}
+
 inline auto make_jets(const RVec<float> &Jet_pt,            //
                       const RVec<float> &Jet_eta,           //
                       const RVec<float> &Jet_phi,           //
@@ -28,78 +91,104 @@ inline auto make_jets(const RVec<float> &Jet_pt,            //
                       const RVec<Int_t> &Jet_genJetIdx,     //
                       float fixedGridRhoFastjetAll,         //
                       JetCorrector &jet_corrections,        //
+                      BTagSFCorrector &btag_sf_Corrector,   //
                       const NanoObjects::GenJets &gen_jets, //
-                      float met_px,                         //
-                      float met_py,                         //
-                      std::string _year) -> std::pair<RVec<Math::PtEtaPhiMVector>, RVec<Math::PtEtaPhiMVector>>
+                      bool is_data,                         //
+                      const std::string &_year,             //
+                      const std::string &shift) -> std::pair<MUSiCObjects, MUSiCObjects>
 {
     auto year = get_runyear(_year);
     auto jets = RVec<Math::PtEtaPhiMVector>{};
     auto bjets = RVec<Math::PtEtaPhiMVector>{};
+    auto jets_p4 = RVec<Math::PtEtaPhiMVector>{};
+    auto bjets_p4 = RVec<Math::PtEtaPhiMVector>{};
+    auto jets_scale_factors = RVec<double>{};
+    auto bjets_scale_factors = RVec<double>{};
+    auto jets_scale_factor_up = RVec<double>{};
+    auto bjets_scale_factor_up = RVec<double>{};
+    auto jets_scale_factor_down = RVec<double>{};
+    auto bjets_scale_factor_down = RVec<double>{};
+    auto jets_delta_met_x = 0.;
+    auto bjets_delta_met_x = 0.;
+    auto jets_delta_met_y = 0.;
+    auto bjets_delta_met_y = 0.;
+    auto jets_is_fake = RVec<bool>{};
+    auto bjets_is_fake = RVec<bool>{};
 
     for (std::size_t i = 0; i < Jet_pt.size(); i++)
     {
-        // JES: Nominal - JER: Nominal
-        float scale_correction_nominal = jet_corrections.get_scale_correction(Jet_pt[i],              //
-                                                                              Jet_eta[i],             //
-                                                                              Jet_phi[i],             //
-                                                                              Jet_rawFactor[i],       //
-                                                                              fixedGridRhoFastjetAll, //
-                                                                              Jet_area[i],            //
-                                                                              "Nominal"s);
 
-        float new_pt_nominal = Jet_pt[i] * scale_correction_nominal;
+        auto is_good_jet_pre_filter = (std::fabs(Jet_eta[i]) <= ObjConfig::Jets[year].MaxAbsEta) //
+                                      and (Jet_jetId[i] >= ObjConfig::Jets[year].MinJetID)       //
+                                      and (Jet_btagDeepFlavB[i] < ObjConfig::Jets[year].MaxBTagWPTight);
 
-        float resolution_correction_nominal = jet_corrections.get_resolution_correction(new_pt_nominal,
-                                                                                        Jet_eta[i],             //
-                                                                                        Jet_phi[i],             //
-                                                                                        fixedGridRhoFastjetAll, //
-                                                                                        Jet_genJetIdx[i],       //
-                                                                                        gen_jets,               //
-                                                                                        "Nominal"s);
+        auto is_good_bjet_pre_filter = (std::fabs(Jet_eta[i]) <= ObjConfig::Jets[year].MaxAbsEta) //
+                                       and (Jet_jetId[i] >= ObjConfig::Jets[year].MinJetID)       //
+                                       and (Jet_btagDeepFlavB[i] >= ObjConfig::Jets[year].MaxBTagWPTight);
 
-        auto jet_pt = Jet_pt.at(i) * scale_correction_nominal * resolution_correction_nominal;
-        auto jet_mass = Jet_mass.at(i) * scale_correction_nominal * resolution_correction_nominal;
-
-        auto is_good_jet = (jet_pt >= ObjConfig::Jets[year].MinPt)                          //
-                           && (std::fabs(Jet_eta.at(i)) <= ObjConfig::Jets[year].MaxAbsEta) //
-                           && (Jet_jetId.at(i) >= ObjConfig::Jets[year].MinJetID)           //
-                           && (Jet_btagDeepFlavB.at(i) < ObjConfig::Jets[year].MaxBTagWPTight);
-
-        auto is_good_bjet = (jet_pt >= ObjConfig::Jets[year].MinPt)                          //
-                            && (std::fabs(Jet_eta.at(i)) <= ObjConfig::Jets[year].MaxAbsEta) //
-                            && (Jet_jetId.at(i) >= ObjConfig::Jets[year].MinJetID)           //
-                            && (Jet_btagDeepFlavB.at(i) >= ObjConfig::Jets[year].MaxBTagWPTight);
-
-        if (is_good_jet)
+        if (is_good_jet_pre_filter or is_good_bjet_pre_filter)
         {
-            jets.push_back(Math::PtEtaPhiMVector(jet_pt,        //
-                                                 Jet_eta.at(i), //
-                                                 Jet_phi.at(i), //
-                                                 jet_mass));
+            auto jet_p4 = Math::PtEtaPhiMVector(Jet_pt[i], Jet_eta[i], Jet_phi[i], Jet_mass[i]);
+            jet_p4 = jet_p4 * get_jet_energy_corrections(shift,
+                                                         Jet_pt[i],
+                                                         Jet_eta[i],
+                                                         Jet_phi[i],
+                                                         Jet_rawFactor[i],
+                                                         Jet_area[i],
+                                                         Jet_genJetIdx[i],
+                                                         fixedGridRhoFastjetAll,
+                                                         jet_corrections,
+                                                         gen_jets);
+
+            auto is_good_jet = (jet_p4.pt() >= ObjConfig::Jets[year].MinPt) and is_good_jet_pre_filter;
+            auto is_good_bjet = (jet_p4.pt() >= ObjConfig::Jets[year].MinPt) and is_good_bjet_pre_filter;
+
+            if (is_good_jet)
+            {
+                jets_scale_factors.push_back(1.);
+                jets_scale_factor_up.push_back(1.);
+                jets_scale_factor_down.push_back(1.);
+
+                jets_p4.push_back(jet_p4);
+
+                jets_delta_met_x += (jet_p4.pt() - Jet_pt[i]) * std::cos(Jet_phi[i]);
+                jets_delta_met_y += (jet_p4.pt() - Jet_pt[i]) * std::sin(Jet_phi[i]);
+
+                jets_is_fake.push_back(is_data ? false : Jet_genJetIdx[i] == -1);
+            }
+
+            if (is_good_bjet)
+            {
+                // TODO: Implement those scale factors!
+                // Reference: BTagSFCorrector::BTagSFCorrector @ CorrectionSets.cpp
+                bjets_scale_factors.push_back(1.);
+                bjets_scale_factor_up.push_back(1.);
+                bjets_scale_factor_down.push_back(1.);
+
+                bjets_p4.push_back(jet_p4);
+
+                bjets_delta_met_x += (jet_p4.pt() - Jet_pt[i]) * std::cos(Jet_phi[i]);
+                bjets_delta_met_y += (jet_p4.pt() - Jet_pt[i]) * std::sin(Jet_phi[i]);
+
+                bjets_is_fake.push_back(is_data ? false : Jet_genJetIdx[i] == -1);
+            }
         }
-        if (is_good_bjet)
-        {
-            bjets.push_back(Math::PtEtaPhiMVector(jet_pt,        //
-                                                  Jet_eta.at(i), //
-                                                  Jet_phi.at(i), //
-                                                  jet_mass));
-        }
+
+        return std::make_pair(MUSiCObjects(jets_p4,
+                                           jets_scale_factors,
+                                           jets_scale_factor_up,
+                                           jets_scale_factor_down,
+                                           jets_delta_met_x,
+                                           jets_delta_met_y,
+                                           jets_is_fake),
+                              MUSiCObjects(bjets_p4,
+                                           bjets_scale_factors,
+                                           bjets_scale_factor_up,
+                                           bjets_scale_factor_down,
+                                           bjets_delta_met_x,
+                                           bjets_delta_met_y,
+                                           bjets_is_fake));
     }
-
-    const auto jets_reordering_mask = VecOps::Argsort(jets,
-                                                      [](auto jet_1, auto jet_2) -> bool
-                                                      {
-                                                          return jet_1.pt() > jet_2.pt();
-                                                      });
-
-    const auto bjets_reordering_mask = VecOps::Argsort(bjets,
-                                                       [](auto bjet_1, auto bjet_2) -> bool
-                                                       {
-                                                           return bjet_1.pt() > bjet_2.pt();
-                                                       });
-
-    return std::make_pair(VecOps::Take(jets, jets_reordering_mask), VecOps::Take(bjets, bjets_reordering_mask));
 }
 
 } // namespace ObjectFactories

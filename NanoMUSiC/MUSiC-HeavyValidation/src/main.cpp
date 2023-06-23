@@ -191,7 +191,19 @@ auto main(int argc, char *argv[]) -> int
         // bool is_good_trigger = unwrap(pass_jet_ht_trigger) or unwrap(pass_jet_pt_trigger);
 
         // bool is_good_trigger = unwrap(pass_jet_ht_trigger);
-        bool is_good_trigger = unwrap(pass_jet_pt_trigger);
+
+        // // Data
+        // // SingleMuon
+        // bool is_good_trigger = unwrap(pass_low_pt_muon_trigger) or unwrap(pass_high_pt_muon_trigger);
+
+        // // EGamma
+        // bool is_good_trigger = (unwrap(pass_low_pt_electron_trigger) or unwrap(pass_high_pt_electron_trigger)) and
+        //                        not(unwrap(pass_low_pt_muon_trigger) or unwrap(pass_high_pt_muon_trigger));
+
+        // // MC
+        // bool is_good_trigger = unwrap(pass_low_pt_electron_trigger) or unwrap(pass_high_pt_electron_trigger) or
+        //                        unwrap(pass_low_pt_muon_trigger) or unwrap(pass_high_pt_muon_trigger);
+
         if (not(is_good_trigger))
         {
             continue;
@@ -214,6 +226,22 @@ auto main(int argc, char *argv[]) -> int
 
         // MuMu + X
         if (muons.size() >= 2)
+        {
+            auto muon_1 = muons.at(0);
+            auto muon_2 = muons.at(1);
+
+            // wide mass range
+            z_to_mu_mu_x.fill(muon_1, muon_2, 0, std::nullopt, 0, std::nullopt, std::nullopt, weight);
+
+            // Z mass range
+            if (PDG::Z::Mass - 20. < (muon_1 + muon_2).mass() and (muon_1 + muon_2).mass() < PDG::Z::Mass + 20.)
+            {
+                z_to_mu_mu_x_Z_mass.fill(muon_1, muon_2, 0, std::nullopt, 0, std::nullopt, std::nullopt, weight);
+            }
+        }
+
+        // EleEle + X
+        if (electrons.size() >= 2)
         {
             auto muon_1 = muons.at(0);
             auto muon_2 = muons.at(1);
