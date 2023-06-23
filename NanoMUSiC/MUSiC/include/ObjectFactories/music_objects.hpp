@@ -55,8 +55,8 @@ class MUSiCObjects
           is_fake(_is_fake)
     {
 
-        if (not(p4.size() == scale_factor.size() == scale_factor_up.size() == scale_factor_down.size() ==
-                is_fake.size()))
+        if (not(p4.size() == scale_factor.size() and p4.size() == scale_factor_up.size() and
+                p4.size() == scale_factor_down.size() and p4.size() == is_fake.size()))
         {
             throw std::runtime_error(fmt::format(
                 "ERROR: Could not create MUSiCObjects. Input vector have different sizes. \n{} - {} - {} - {}",
@@ -98,6 +98,12 @@ class MUSiCObjects
             return CorrectionlibRef_t(correction_ref)->evaluate(std::forward<T>(values));
         }
         return 1.;
+    }
+
+    auto size() -> std::size_t
+    {
+
+        return p4.size();
     }
 };
 

@@ -91,7 +91,7 @@ inline auto make_jets(const RVec<float> &Jet_pt,            //
                       const RVec<Int_t> &Jet_genJetIdx,     //
                       float fixedGridRhoFastjetAll,         //
                       JetCorrector &jet_corrections,        //
-                      BTagSFCorrector &btag_sf_Corrector,   //
+                                                            //   BTagSFCorrector &btag_sf_Corrector,   //
                       const NanoObjects::GenJets &gen_jets, //
                       bool is_data,                         //
                       const std::string &_year,             //
@@ -173,22 +173,22 @@ inline auto make_jets(const RVec<float> &Jet_pt,            //
                 bjets_is_fake.push_back(is_data ? false : Jet_genJetIdx[i] == -1);
             }
         }
-
-        return std::make_pair(MUSiCObjects(jets_p4,
-                                           jets_scale_factors,
-                                           jets_scale_factor_up,
-                                           jets_scale_factor_down,
-                                           jets_delta_met_x,
-                                           jets_delta_met_y,
-                                           jets_is_fake),
-                              MUSiCObjects(bjets_p4,
-                                           bjets_scale_factors,
-                                           bjets_scale_factor_up,
-                                           bjets_scale_factor_down,
-                                           bjets_delta_met_x,
-                                           bjets_delta_met_y,
-                                           bjets_is_fake));
     }
+
+    return std::make_pair(MUSiCObjects(jets_p4,
+                                       jets_scale_factors,
+                                       jets_scale_factor_up,
+                                       jets_scale_factor_down,
+                                       jets_delta_met_x,
+                                       jets_delta_met_y,
+                                       jets_is_fake),
+                          MUSiCObjects(bjets_p4,
+                                       bjets_scale_factors,
+                                       bjets_scale_factor_up,
+                                       bjets_scale_factor_down,
+                                       bjets_delta_met_x,
+                                       bjets_delta_met_y,
+                                       bjets_is_fake));
 }
 
 } // namespace ObjectFactories

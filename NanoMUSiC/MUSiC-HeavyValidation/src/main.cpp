@@ -80,14 +80,33 @@ auto main(int argc, char *argv[]) -> int
     ADD_ARRAY_READER(Muon_pfRelIso04_all, float);
     ADD_ARRAY_READER(Muon_tkRelIso, float);
     ADD_ARRAY_READER(Muon_tunepRelPt, float);
+    ADD_ARRAY_READER(Muon_genPartIdx, int);
 
     ADD_ARRAY_READER(Electron_pt, float);
     ADD_ARRAY_READER(Electron_eta, float);
     ADD_ARRAY_READER(Electron_phi, float);
+    ADD_ARRAY_READER(Electron_deltaEtaSC, float);
+    ADD_ARRAY_READER(Electron_cutBased, int);
+    ADD_ARRAY_READER(Electron_cutBased_HEEP, bool);
+    ADD_ARRAY_READER(Electron_scEtOverPt, float);
+    ADD_ARRAY_READER(Electron_dEscaleUp, float);
+    ADD_ARRAY_READER(Electron_dEscaleDown, float);
+    ADD_ARRAY_READER(Electron_dEsigmaUp, float);
+    ADD_ARRAY_READER(Electron_dEsigmaDown, float);
+    ADD_ARRAY_READER(Electron_genPartIdx, int);
 
-    // ADD_ARRAY_READER(Photon_pt, float);
-    // ADD_ARRAY_READER(Photon_eta, float);
-    // ADD_ARRAY_READER(Photon_phi, float);
+    ADD_ARRAY_READER(Photon_pt, float);
+    ADD_ARRAY_READER(Photon_eta, float);
+    ADD_ARRAY_READER(Photon_phi, float);
+    ADD_ARRAY_READER(Photon_isScEtaEB, bool);
+    ADD_ARRAY_READER(Photon_isScEtaEE, bool);
+    ADD_ARRAY_READER(Photon_cutBased, Int_t);
+    ADD_ARRAY_READER(Photon_pixelSeed, bool);
+    ADD_ARRAY_READER(Photon_dEscaleUp, float);
+    ADD_ARRAY_READER(Photon_dEscaleDown, float);
+    ADD_ARRAY_READER(Photon_dEsigmaUp, float);
+    ADD_ARRAY_READER(Photon_dEsigmaDown, float);
+    ADD_ARRAY_READER(Photon_genPartIdx, int);
 
     ADD_VALUE_READER(fixedGridRhoFastjetAll, float);
 
@@ -105,8 +124,21 @@ auto main(int argc, char *argv[]) -> int
     ADD_ARRAY_READER(Jet_area, float);
     ADD_ARRAY_READER(Jet_genJetIdx, Int_t);
 
-    ADD_ARRAY_READER(MET_pt, float);
-    ADD_ARRAY_READER(MET_phi, float);
+    ADD_VALUE_READER(MET_pt, float);
+    ADD_VALUE_READER(MET_phi, float);
+
+    // corrections
+    auto correctionlib_utils = CorrectionLibUtils();
+    auto jet_corrections = JetCorrector(get_runyear(year), get_era_from_process_name(process, is_data), is_data);
+    auto pu_corrector = correctionlib_utils.make_correctionlib_ref("PU", year);
+    auto muon_sf_reco = correctionlib_utils.make_correctionlib_ref("MuonReco", year);
+    auto muon_sf_id_low_pt = correctionlib_utils.make_correctionlib_ref("MuonIdLowPt", year);
+    auto muon_sf_id_high_pt = correctionlib_utils.make_correctionlib_ref("MuonIdHighPt", year);
+    auto muon_sf_iso_low_pt = correctionlib_utils.make_correctionlib_ref("MuonIsoLowPt", year);
+    auto muon_sf_iso_high_pt = correctionlib_utils.make_correctionlib_ref("MuonIsoHighPt", year);
+    auto electron_sf = correctionlib_utils.make_correctionlib_ref("ElectronSF", year);
+    auto photon_sf = correctionlib_utils.make_correctionlib_ref("PhotonSF", year);
+    auto pixel_veto_sf = correctionlib_utils.make_correctionlib_ref("PixelVetoSF", year);
 
     const std::map<std::string, int> z_to_mu_mu_x_count_map = {{"Ele", 0},
                                                                {"EleEE", 0},
@@ -135,34 +167,63 @@ auto main(int argc, char *argv[]) -> int
     // build DY analysis
     auto z_to_mu_mu_x =
         ZToLepLepX(fmt::format("{}/z_to_mu_mu_x_{}_{}.root", output_path, process, year), z_to_mu_mu_x_count_map);
-
     auto z_to_mu_mu_x_Z_mass = ZToLepLepX(
         fmt::format("{}/z_to_mu_mu_x_Z_mass_{}_{}.root", output_path, process, year), z_to_mu_mu_x_count_map, true);
 
     // build DY analysis
     auto dijets = Dijets(fmt::format("{}/dijets_{}_{}.root", output_path, process, year), dijets_count_map);
-    auto jet_corrections = JetCorrector(get_runyear(year), get_era_from_process_name(process, is_data), is_data);
 
-    auto pu_corrector =
-        correction::CorrectionSet::from_file(
-            "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2018_UL/puWeights.json.gz")
-            ->at("Collisions18_UltraLegacy_goldenJSON");
+    auto trigger_filter = [&process, &is_data](bool pass_low_pt_muon_trigger,
+                                               bool pass_high_pt_muon_trigger,
+                                               bool pass_low_pt_electron_trigger,
+                                               bool pass_high_pt_electron_trigger) -> bool
+    {
+        if (is_data)
+        {
+            // Electron/Photon dataset
+            if (process.find("EGamma") != std::string::npos      //
+                or process.find("Electron") != std::string::npos //
+                or process.find("Photon") != std::string::npos)
+            {
+                return not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) and
+                       (pass_low_pt_electron_trigger or pass_high_pt_electron_trigger);
+            }
+
+            // Muon dataset
+            return (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) and
+                   not(pass_low_pt_electron_trigger or pass_high_pt_electron_trigger);
+        }
+
+        // MC
+        return (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger or pass_low_pt_electron_trigger or
+                pass_high_pt_electron_trigger);
+    };
 
     const auto cutflow_file =
         std::unique_ptr<TFile>(TFile::Open(fmt::format("{}/cutflow_{}_{}.root", output_path, process, year).c_str()));
-    cutflow_file->Print("all");
-    cutflow_file->ls();
-
     const auto cutflow_histo = cutflow_file->Get<TH1F>("cutflow");
     // const auto total_generator_weight = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("GeneratorWeight") + 1);
-    cutflow_histo->Print("all");
     const auto no_cuts = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("NoCuts") + 1);
     const auto generator_filter = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("GeneratorFilter") + 1);
 
     //  launch event loop for Data or MC
     for (auto &&event : tree_reader)
     {
-        (void)event; // remove the "unused variable" warning during compilation
+        // check for chain readout quaility
+        // REFERENCE: https://root.cern.ch/doc/v608/classTTreeReader.html#a568e43c7d7d8b1f511bbbeb92c9094a8
+        auto reader_status = tree_reader.GetEntryStatus();
+        if (reader_status == TTreeReader::EEntryStatus::kEntryChainFileError or
+            reader_status == TTreeReader::EEntryStatus::kEntryNotLoaded or
+            reader_status == TTreeReader::EEntryStatus::kEntryNoTree or
+            reader_status == TTreeReader::EEntryStatus::kEntryNotFound or
+            reader_status == TTreeReader::EEntryStatus::kEntryChainSetupError or
+            reader_status == TTreeReader::EEntryStatus::kEntryDictionaryError)
+        {
+            throw std::runtime_error(fmt::format("ERROR: Could not load TChain entry."));
+        }
+
+        // remove the "unused variable" warning during compilation
+        static_cast<void>(event);
 
         // if (event > 1000000)
         // {
@@ -181,28 +242,22 @@ auto main(int argc, char *argv[]) -> int
                 unwrap(gen_weight) * pu_weight * generator_filter / no_cuts / generator_filter * effective_x_section;
         }
 
-        // trigger
-        // Muons
-        // bool is_good_trigger = unwrap(pass_low_pt_muon_trigger) and (unwrap(pass_high_pt_muon_trigger)) and
-        //                        (unwrap(pass_low_pt_electron_trigger)) and (unwrap(pass_high_pt_electron_trigger));
-        // bool is_good_trigger = unwrap(pass_low_pt_muon_trigger) or unwrap(pass_high_pt_muon_trigger);
-
-        // Jets
-        // bool is_good_trigger = unwrap(pass_jet_ht_trigger) or unwrap(pass_jet_pt_trigger);
-
-        // bool is_good_trigger = unwrap(pass_jet_ht_trigger);
-
-        // // Data
-        // // SingleMuon
-        // bool is_good_trigger = unwrap(pass_low_pt_muon_trigger) or unwrap(pass_high_pt_muon_trigger);
-
-        // // EGamma
-        // bool is_good_trigger = (unwrap(pass_low_pt_electron_trigger) or unwrap(pass_high_pt_electron_trigger)) and
-        //                        not(unwrap(pass_low_pt_muon_trigger) or unwrap(pass_high_pt_muon_trigger));
-
-        // // MC
-        // bool is_good_trigger = unwrap(pass_low_pt_electron_trigger) or unwrap(pass_high_pt_electron_trigger) or
-        //                        unwrap(pass_low_pt_muon_trigger) or unwrap(pass_high_pt_muon_trigger);
+        // Trigger
+        // pass_low_pt_muon_trigger
+        // pass_high_pt_muon_trigger
+        // pass_low_pt_electron_trigger
+        // pass_high_pt_electron_trigger
+        // pass_jet_ht_trigger
+        // pass_jet_pt_trigger
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // ATTENTION:The lambda function "trigger_filter" should be modified for the JetHT data set!!!!!!
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        bool is_good_trigger = trigger_filter(unwrap(pass_low_pt_muon_trigger),
+                                              unwrap(pass_high_pt_muon_trigger),
+                                              unwrap(pass_low_pt_electron_trigger),
+                                              unwrap(pass_high_pt_electron_trigger));
 
         if (not(is_good_trigger))
         {
@@ -210,25 +265,99 @@ auto main(int argc, char *argv[]) -> int
         }
 
         // muons
-        float met_px = 0.;
-        float met_py = 0.;
-        auto muons = ObjectFactories::make_muons(unwrap(Muon_pt),
-                                                 unwrap(Muon_eta),
-                                                 unwrap(Muon_phi),
-                                                 unwrap(Muon_tightId),
-                                                 unwrap(Muon_highPtId),
-                                                 unwrap(Muon_pfRelIso04_all),
-                                                 unwrap(Muon_tkRelIso),
-                                                 unwrap(Muon_tunepRelPt),
-                                                 met_px,
-                                                 met_py,
-                                                 year);
+        // build good objects
+        auto muons = ObjectFactories::make_muons(unwrap(Muon_pt),             //
+                                                 unwrap(Muon_eta),            //
+                                                 unwrap(Muon_phi),            //
+                                                 unwrap(Muon_tightId),        //
+                                                 unwrap(Muon_highPtId),       //
+                                                 unwrap(Muon_pfRelIso04_all), //
+                                                 unwrap(Muon_tkRelIso),       //
+                                                 unwrap(Muon_tunepRelPt),     //
+                                                 unwrap(Muon_genPartIdx),     //
+                                                 muon_sf_reco,                //
+                                                 muon_sf_id_low_pt,           //
+                                                 muon_sf_id_high_pt,          //
+                                                 muon_sf_iso_low_pt,          //
+                                                 muon_sf_iso_high_pt,         //
+                                                 is_data,
+                                                 year,
+                                                 "nominal");
 
+        auto electrons = ObjectFactories::make_electrons(unwrap(Electron_pt),            //
+                                                         unwrap(Electron_eta),           //
+                                                         unwrap(Electron_phi),           //
+                                                         unwrap(Electron_deltaEtaSC),    //
+                                                         unwrap(Electron_cutBased),      //
+                                                         unwrap(Electron_cutBased_HEEP), //
+                                                         unwrap(Electron_scEtOverPt),    //
+                                                         unwrap(Electron_dEscaleUp),     //
+                                                         unwrap(Electron_dEscaleDown),   //
+                                                         unwrap(Electron_dEsigmaUp),     //
+                                                         unwrap(Electron_dEsigmaDown),   //
+                                                         unwrap(Electron_genPartIdx),    //
+                                                         electron_sf,                    //
+                                                         is_data,                        //
+                                                         year,                           //
+                                                         "nominal");
+
+        auto photons = ObjectFactories::make_photons(unwrap(Photon_pt),          //
+                                                     unwrap(Photon_eta),         //
+                                                     unwrap(Photon_phi),         //
+                                                     unwrap(Photon_isScEtaEB),   //
+                                                     unwrap(Photon_isScEtaEE),   //
+                                                     unwrap(Photon_cutBased),    //
+                                                     unwrap(Photon_pixelSeed),   //
+                                                     unwrap(Photon_dEscaleUp),   //
+                                                     unwrap(Photon_dEscaleDown), //
+                                                     unwrap(Photon_dEsigmaUp),   //
+                                                     unwrap(Photon_dEsigmaDown), //
+                                                     unwrap(Photon_genPartIdx),  //
+                                                     photon_sf,                  //
+                                                     pixel_veto_sf,              //
+                                                     is_data,                    //
+                                                     year,                       //
+                                                     "Nominal");
+
+        auto [jets, bjets] = ObjectFactories::make_jets(unwrap(Jet_pt),                 //
+                                                        unwrap(Jet_eta),                //
+                                                        unwrap(Jet_phi),                //
+                                                        unwrap(Jet_mass),               //
+                                                        unwrap(Jet_jetId),              //
+                                                        unwrap(Jet_btagDeepFlavB),      //
+                                                        unwrap(Jet_rawFactor),          //
+                                                        unwrap(Jet_area),               //
+                                                        unwrap(Jet_genJetIdx),          //
+                                                        unwrap(fixedGridRhoFastjetAll), //
+                                                        jet_corrections,                //
+                                                        // btag_sf_Corrector,                    //
+                                                        NanoObjects::GenJets(unwrap(GenJet_pt),   //
+                                                                             unwrap(GenJet_eta),  //
+                                                                             unwrap(GenJet_phi)), //
+                                                        is_data,                                  //
+                                                        year,                                     //
+                                                        "Nominal");
+
+        auto met = ObjectFactories::make_met(unwrap(MET_pt),        //
+                                             unwrap(MET_phi),       //
+                                             muons.delta_met_x,     //
+                                             muons.delta_met_y,     //
+                                             electrons.delta_met_x, //
+                                             electrons.delta_met_y, //
+                                             photons.delta_met_x,   //
+                                             photons.delta_met_y,   //
+                                             jets.delta_met_x,      //
+                                             jets.delta_met_y,      //
+                                             bjets.delta_met_x,     //
+                                             bjets.delta_met_y,     //
+                                             is_data,               //
+                                             year,                  //
+                                             "Nominal");
         // MuMu + X
         if (muons.size() >= 2)
         {
-            auto muon_1 = muons.at(0);
-            auto muon_2 = muons.at(1);
+            auto muon_1 = muons.p4.at(0);
+            auto muon_2 = muons.p4.at(1);
 
             // wide mass range
             z_to_mu_mu_x.fill(muon_1, muon_2, 0, std::nullopt, 0, std::nullopt, std::nullopt, weight);
@@ -243,8 +372,8 @@ auto main(int argc, char *argv[]) -> int
         // EleEle + X
         if (electrons.size() >= 2)
         {
-            auto muon_1 = muons.at(0);
-            auto muon_2 = muons.at(1);
+            auto muon_1 = muons.p4.at(0);
+            auto muon_2 = muons.p4.at(1);
 
             // wide mass range
             z_to_mu_mu_x.fill(muon_1, muon_2, 0, std::nullopt, 0, std::nullopt, std::nullopt, weight);
@@ -257,33 +386,11 @@ auto main(int argc, char *argv[]) -> int
         }
 
         // Dijets
-        auto gen_jets = NanoObjects::GenJets(unwrap(GenJet_pt),  //
-                                             unwrap(GenJet_eta), //
-                                             unwrap(GenJet_phi));
-
-        auto [jets, bjets] = ObjectFactories::make_jets(unwrap(Jet_pt),                           //
-                                                        unwrap(Jet_eta),                          //
-                                                        unwrap(Jet_phi),                          //
-                                                        unwrap(Jet_mass),                         //
-                                                        unwrap(Jet_jetId),                        //
-                                                        unwrap(Jet_btagDeepFlavB),                //
-                                                        unwrap(Jet_rawFactor),                    //
-                                                        unwrap(Jet_area),                         //
-                                                        unwrap(Jet_genJetIdx),                    //
-                                                        unwrap(fixedGridRhoFastjetAll),           //
-                                                        jet_corrections,                          //
-                                                        NanoObjects::GenJets(unwrap(GenJet_pt),   //
-                                                                             unwrap(GenJet_eta),  //
-                                                                             unwrap(GenJet_phi)), //
-                                                        met_px,
-                                                        met_py,
-                                                        year);
-
-        // if (jets.size() >= 2)
-        if (jets.size() == 2)
+        if (jets.size() >= 2)
+        // if (jets.size() == 2)
         {
-            auto jet_1 = jets.at(0);
-            auto jet_2 = jets.at(1);
+            auto jet_1 = jets.p4.at(0);
+            auto jet_2 = jets.p4.at(1);
 
             if ((jet_1.pt() > 600.) and std::fabs(jet_1.eta() - jet_2.eta()) < 1.1)
             {

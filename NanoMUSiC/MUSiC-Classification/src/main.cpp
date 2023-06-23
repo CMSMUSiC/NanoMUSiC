@@ -117,6 +117,11 @@ auto main(int argc, char *argv[]) -> int
     ADD_ARRAY_READER(Photon_isScEtaEE, bool);
     ADD_ARRAY_READER(Photon_cutBased, Int_t);
     ADD_ARRAY_READER(Photon_pixelSeed, bool);
+    ADD_ARRAY_READER(Photon_dEscaleUp, float);
+    ADD_ARRAY_READER(Photon_dEscaleDown, float);
+    ADD_ARRAY_READER(Photon_dEsigmaUp, float);
+    ADD_ARRAY_READER(Photon_dEsigmaDown, float);
+    ADD_ARRAY_READER(Photon_genPartIdx, int);
 
     ADD_VALUE_READER(fixedGridRhoFastjetAll, float);
 
@@ -138,28 +143,17 @@ auto main(int argc, char *argv[]) -> int
     ADD_VALUE_READER(MET_phi, float);
 
     // corrections
+    auto correctionlib_utils = CorrectionLibUtils();
     auto jet_corrections = JetCorrector(get_runyear(year), get_era_from_process_name(process, is_data), is_data);
-
-    auto [pu_file, pu_key] = correction_keys.at({"PU", get_runyear(year)});
-    auto pu_corrector = correction::CorrectionSet::from_file(pu_file)->at(pu_key);
-
-    auto [muon_reco_file, muon_reco_key] = correction_keys.at({"MuonReco", get_runyear(year)});
-    auto muon_sf_reco = correction::CorrectionSet::from_file(muon_reco_file)->at(muon_reco_key);
-
-    auto [muon_id_low_pt_file, muon_id_low_pt_key] = correction_keys.at({"MuonIdLowPt", get_runyear(year)});
-    auto muon_sf_id_low_pt = correction::CorrectionSet::from_file(muon_id_low_pt_file)->at(muon_id_low_pt_key);
-
-    auto [muon_id_high_pt_file, muon_id_high_pt_key] = correction_keys.at({"MuonIdHighPt", get_runyear(year)});
-    auto muon_sf_id_high_pt = correction::CorrectionSet::from_file(muon_id_high_pt_file)->at(muon_id_high_pt_key);
-
-    auto [muon_iso_low_pt_file, muon_iso_low_pt_key] = correction_keys.at({"MuonIsoLowPt", get_runyear(year)});
-    auto muon_sf_iso_low_pt = correction::CorrectionSet::from_file(muon_iso_low_pt_file)->at(muon_iso_low_pt_key);
-
-    auto [muon_iso_high_pt_file, muon_iso_high_pt_key] = correction_keys.at({"MuonIsoHighPt", get_runyear(year)});
-    auto muon_sf_iso_high_pt = correction::CorrectionSet::from_file(muon_iso_high_pt_file)->at(muon_iso_high_pt_key);
-
-    auto [electron_sf_file, electron_sf_key] = correction_keys.at({" ElectronSF", get_runyear(year)});
-    auto electron_sf = correction::CorrectionSet::from_file(electron_sf_file)->at(electron_sf_key);
+    auto pu_corrector = correctionlib_utils.make_correctionlib_ref("PU", year);
+    auto muon_sf_reco = correctionlib_utils.make_correctionlib_ref("MuonReco", year);
+    auto muon_sf_id_low_pt = correctionlib_utils.make_correctionlib_ref("MuonIdLowPt", year);
+    auto muon_sf_id_high_pt = correctionlib_utils.make_correctionlib_ref("MuonIdHighPt", year);
+    auto muon_sf_iso_low_pt = correctionlib_utils.make_correctionlib_ref("MuonIsoLowPt", year);
+    auto muon_sf_iso_high_pt = correctionlib_utils.make_correctionlib_ref("MuonIsoHighPt", year);
+    auto electron_sf = correctionlib_utils.make_correctionlib_ref("ElectronSF", year);
+    auto photon_sf = correctionlib_utils.make_correctionlib_ref("PhotonSF", year);
+    auto pixel_veto_sf = correctionlib_utils.make_correctionlib_ref("PixelVetoSF", year);
 
     const auto cutflow_file =
         std::unique_ptr<TFile>(TFile::Open(fmt::format("{}/cutflow_{}_{}.root", output_path, process, year).c_str()));
@@ -211,7 +205,6 @@ auto main(int argc, char *argv[]) -> int
     //  launch event loop for Data or MC
     for (auto &&event : tree_reader)
     {
-
         // check for chain readout quaility
         // REFERENCE: https://root.cern.ch/doc/v608/classTTreeReader.html#a568e43c7d7d8b1f511bbbeb92c9094a8
         auto reader_status = tree_reader.GetEntryStatus();
@@ -225,7 +218,8 @@ auto main(int argc, char *argv[]) -> int
             throw std::runtime_error(fmt::format("ERROR: Could not load TChain entry."));
         }
 
-        (void)event; // remove the "unused variable" warning during compilation
+        // remove the "unused variable" warning during compilation
+        static_cast<void>(event);
 
         // if (event > 10)
         // {
@@ -234,11 +228,13 @@ auto main(int argc, char *argv[]) -> int
 
         // get effective event weight
         auto weight = 1.f;
-        auto pu_weight = 1.f;
+
+        // TEMPORARY: remove the "unused variable" warning during compilation
+        static_cast<void>(weight);
 
         if (not(is_data))
         {
-            pu_weight = pu_corrector->evaluate({unwrap(Pileup_nTrueInt), "nominal"});
+            auto pu_weight = pu_corrector->evaluate({unwrap(Pileup_nTrueInt), "nominal"});
 
             weight = unwrap(gen_weight) * pu_weight * generator_filter / no_cuts / generator_filter * x_section *
                      filter_eff * k_factor * luminosity;
@@ -294,37 +290,58 @@ auto main(int argc, char *argv[]) -> int
                                                              year,                           //
                                                              "nominal");
 
-            auto photons = ObjectFactories::make_photons(unwrap(Photon_pt),        //
-                                                         unwrap(Photon_eta),       //
-                                                         unwrap(Photon_phi),       //
-                                                         unwrap(Photon_isScEtaEB), //
-                                                         unwrap(Photon_isScEtaEE), //
-                                                         unwrap(Photon_cutBased),  //
-                                                         unwrap(Photon_pixelSeed), //
-                                                         met_px,                   //
-                                                         met_py,                   //
-                                                         year);
+            auto photons = ObjectFactories::make_photons(unwrap(Photon_pt),          //
+                                                         unwrap(Photon_eta),         //
+                                                         unwrap(Photon_phi),         //
+                                                         unwrap(Photon_isScEtaEB),   //
+                                                         unwrap(Photon_isScEtaEE),   //
+                                                         unwrap(Photon_cutBased),    //
+                                                         unwrap(Photon_pixelSeed),   //
+                                                         unwrap(Photon_dEscaleUp),   //
+                                                         unwrap(Photon_dEscaleDown), //
+                                                         unwrap(Photon_dEsigmaUp),   //
+                                                         unwrap(Photon_dEsigmaDown), //
+                                                         unwrap(Photon_genPartIdx),  //
+                                                         photon_sf,                  //
+                                                         pixel_veto_sf,              //
+                                                         is_data,                    //
+                                                         year,                       //
+                                                         "Nominal");
 
-            auto [jets, bjets] = ObjectFactories::make_jets(unwrap(Jet_pt),                           //
-                                                            unwrap(Jet_eta),                          //
-                                                            unwrap(Jet_phi),                          //
-                                                            unwrap(Jet_mass),                         //
-                                                            unwrap(Jet_jetId),                        //
-                                                            unwrap(Jet_btagDeepFlavB),                //
-                                                            unwrap(Jet_rawFactor),                    //
-                                                            unwrap(Jet_area),                         //
-                                                            unwrap(Jet_genJetIdx),                    //
-                                                            unwrap(fixedGridRhoFastjetAll),           //
-                                                            jet_corrections,                          //
+            auto [jets, bjets] = ObjectFactories::make_jets(unwrap(Jet_pt),                 //
+                                                            unwrap(Jet_eta),                //
+                                                            unwrap(Jet_phi),                //
+                                                            unwrap(Jet_mass),               //
+                                                            unwrap(Jet_jetId),              //
+                                                            unwrap(Jet_btagDeepFlavB),      //
+                                                            unwrap(Jet_rawFactor),          //
+                                                            unwrap(Jet_area),               //
+                                                            unwrap(Jet_genJetIdx),          //
+                                                            unwrap(fixedGridRhoFastjetAll), //
+                                                            jet_corrections,                //
+                                                            // btag_sf_Corrector,                    //
                                                             NanoObjects::GenJets(unwrap(GenJet_pt),   //
                                                                                  unwrap(GenJet_eta),  //
                                                                                  unwrap(GenJet_phi)), //
-                                                            met_px,                                   //
-                                                            met_py,                                   //
-                                                            year);
+                                                            is_data,                                  //
+                                                            year,                                     //
+                                                            "Nominal");
 
-            auto met = ObjectFactories::make_met(met_px, met_py, year);
-
+            auto met = ObjectFactories::make_met(unwrap(MET_pt),        //
+                                                 unwrap(MET_phi),       //
+                                                 muons.delta_met_x,     //
+                                                 muons.delta_met_y,     //
+                                                 electrons.delta_met_x, //
+                                                 electrons.delta_met_y, //
+                                                 photons.delta_met_x,   //
+                                                 photons.delta_met_y,   //
+                                                 jets.delta_met_x,      //
+                                                 jets.delta_met_y,      //
+                                                 bjets.delta_met_x,     //
+                                                 bjets.delta_met_y,     //
+                                                 is_data,               //
+                                                 year,                  //
+                                                 "Nominal");
             // class_factory.analyseEvent();
         }
 

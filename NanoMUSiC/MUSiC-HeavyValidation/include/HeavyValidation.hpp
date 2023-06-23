@@ -40,8 +40,11 @@
 
 #include "ObjectFactories/make_electrons.hpp"
 #include "ObjectFactories/make_jets.hpp"
+#include "ObjectFactories/make_met.hpp"
 #include "ObjectFactories/make_muons.hpp"
 #include "ObjectFactories/make_photons.hpp"
+
+#include "CorrectionLibUtils.hpp"
 
 using namespace ROOT;
 using namespace ROOT::Math;
