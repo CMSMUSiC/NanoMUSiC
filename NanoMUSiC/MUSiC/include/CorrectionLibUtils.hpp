@@ -204,7 +204,6 @@ class CorrectionLibUtils
 
     auto make_correctionlib_ref(const std::string &key, const std::string &year) -> const CorrectionlibRef_t
     {
-
         if (correction_keys.count(std::make_pair<std::string_view, Year>(key, get_runyear(year))) == 0)
         {
             throw std::runtime_error(fmt::format("Could not find correction key: {}\n", key));

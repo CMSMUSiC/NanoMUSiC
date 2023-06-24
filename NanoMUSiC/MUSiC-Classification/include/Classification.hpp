@@ -53,6 +53,8 @@
 
 #include "Event.hpp"
 
+#include "Enumerate.hpp"
+
 using namespace ROOT;
 using namespace ROOT::Math;
 using namespace ROOT::VecOps;

@@ -2,7 +2,7 @@
 #define VALIDATION
 
 // analysis classes
-#include "Dijets.hpp"
+// #include "Dijets.hpp"
 #include "ZToLepLepX.hpp"
 
 #include <optional>
@@ -45,6 +45,8 @@
 #include "ObjectFactories/make_photons.hpp"
 
 #include "CorrectionLibUtils.hpp"
+
+#include "Shifts.hpp"
 
 using namespace ROOT;
 using namespace ROOT::Math;

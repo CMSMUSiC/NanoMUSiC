@@ -20,6 +20,34 @@
 #include <unordered_map>
 #include <unordered_set>
 
+inline auto trigger_filter(const std::string &process,
+                           bool is_data,
+                           bool pass_low_pt_muon_trigger,
+                           bool pass_high_pt_muon_trigger,
+                           bool pass_low_pt_electron_trigger,
+                           bool pass_high_pt_electron_trigger) -> bool
+{
+    if (is_data)
+    {
+        // Electron/Photon dataset
+        if (process.find("EGamma") != std::string::npos      //
+            or process.find("Electron") != std::string::npos //
+            or process.find("Photon") != std::string::npos)
+        {
+            return not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) and
+                   (pass_low_pt_electron_trigger or pass_high_pt_electron_trigger);
+        }
+
+        // Muon dataset
+        return (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) and
+               not(pass_low_pt_electron_trigger or pass_high_pt_electron_trigger);
+    }
+
+    // MC
+    return (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger or pass_low_pt_electron_trigger or
+            pass_high_pt_electron_trigger);
+};
+
 auto main(int argc, char *argv[]) -> int
 {
     // silence LHAPDF
@@ -176,31 +204,30 @@ auto main(int argc, char *argv[]) -> int
                                       "dummyhash",
                                       1);
 
-    auto trigger_filter = [&process, &is_data](bool pass_low_pt_muon_trigger,
-                                               bool pass_high_pt_muon_trigger,
-                                               bool pass_low_pt_electron_trigger,
-                                               bool pass_high_pt_electron_trigger) -> bool
+    // OK, OK... So the idea here is that constant shifts (PU, pdf_as, luminosity, pre-firing, scale factors ...)
+    // could be calculated in the Nominal  shift.
+    constexpr auto differential_shifts = Enumerate::make_enumerate("Nominal",                //
+                                                                   "MuonResolutionUp",       //
+                                                                   "MuonResolutionDown",     //
+                                                                   "MuonScaleUp",            //
+                                                                   "MuonScaleDown",          //
+                                                                   "ElectronResolutionUp",   //
+                                                                   "ElectronResolutionDown", //
+                                                                   "ElectronScaleUp",        //
+                                                                   "ElectronScaleDown",      //
+                                                                   "PhotonResolutionUp",     //
+                                                                   "PhotonResolutionDown",   //
+                                                                   "PhotonScaleUp",          //
+                                                                   "PhotonScaleDown",        //
+                                                                   "JetResolutionUp",        //
+                                                                   "JetResolutionDown",      //
+                                                                   "JetScaleUp",             //
+                                                                   "JetScaleDown");
+
+    for (auto &&shift : differential_shifts)
     {
-        if (is_data)
-        {
-            // Electron/Photon dataset
-            if (process.find("EGamma") != std::string::npos      //
-                or process.find("Electron") != std::string::npos //
-                or process.find("Photon") != std::string::npos)
-            {
-                return not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) and
-                       (pass_low_pt_electron_trigger or pass_high_pt_electron_trigger);
-            }
-
-            // Muon dataset
-            return (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) and
-                   not(pass_low_pt_electron_trigger or pass_high_pt_electron_trigger);
-        }
-
-        // MC
-        return (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger or pass_low_pt_electron_trigger or
-                pass_high_pt_electron_trigger);
-    };
+        fmt::print("Shift: {}\n", shift);
+    }
 
     //  launch event loop for Data or MC
     for (auto &&event : tree_reader)
@@ -247,7 +274,9 @@ auto main(int argc, char *argv[]) -> int
         // pass_high_pt_electron_trigger
         // pass_jet_ht_trigger
         // pass_jet_pt_trigger
-        bool is_good_trigger = trigger_filter(unwrap(pass_low_pt_muon_trigger),
+        bool is_good_trigger = trigger_filter(process,
+                                              is_data,
+                                              unwrap(pass_low_pt_muon_trigger),
                                               unwrap(pass_high_pt_muon_trigger),
                                               unwrap(pass_low_pt_electron_trigger),
                                               unwrap(pass_high_pt_electron_trigger));

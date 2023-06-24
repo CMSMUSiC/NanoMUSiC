@@ -39,6 +39,17 @@ class MUSiCObjects
     float delta_met_y;
     RVec<bool> is_fake;
 
+    MUSiCObjects()
+        : p4({}),
+          scale_factor({}),
+          scale_factor_up({}),
+          scale_factor_down({}),
+          delta_met_x(0.),
+          delta_met_y(0.),
+          is_fake({})
+    {
+    }
+
     MUSiCObjects(const RVec<Math::PtEtaPhiMVector> &_p4,
                  const RVec<double> &_scale_factor,
                  const RVec<double> &_scale_factor_up,
@@ -104,6 +115,11 @@ class MUSiCObjects
     {
 
         return p4.size();
+    }
+
+    static auto make_empty() -> MUSiCObjects
+    {
+        return MUSiCObjects({}, {}, {}, {}, 0., 0., {});
     }
 };
 
