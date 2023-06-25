@@ -46,6 +46,7 @@ add_executable(
     src/ZToLepLepX.cpp //
     src/Dijets.cpp //
     src/JetClass2.cpp //
+    src/JetClass2D.cpp //
 )
 target_link_libraries(heavy_validation LINK_PUBLIC ROOT::RIO ROOT::Net)
 install(TARGETS heavy_validation DESTINATION ${CMAKE_SOURCE_DIR}/bin)

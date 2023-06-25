@@ -53,6 +53,12 @@ class JetClass2
     ADD_TH1F(h_deltar_jetjet, n_dR_bins, min_dR, max_dR);
     ADD_TH1F(h_deltar_jetbjet, n_dR_bins, min_dR, max_dR);
     ADD_TH1F(h_deltar_bjetbjet, n_dR_bins, min_dR, max_dR);
+    ADD_TH1F(h_deltaphi_jetjet, n_phi_bins, min_phi, max_phi);
+    ADD_TH1F(h_deltaphi_jetbjet, n_phi_bins, min_phi, max_phi);
+    ADD_TH1F(h_deltaphi_bjetbjet, n_phi_bins, min_phi, max_phi);
+    ADD_TH1F(h_deltaeta_jetjet, n_eta_bins, min_eta, max_eta);
+    ADD_TH1F(h_deltaeta_jetbjet, n_eta_bins, min_eta, max_eta);
+    ADD_TH1F(h_deltaeta_bjetbjet, n_eta_bins, min_eta, max_eta);
 
     // constructor
     JetClass2(const std::string &output_path, const std::string c_name);

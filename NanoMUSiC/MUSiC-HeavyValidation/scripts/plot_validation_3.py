@@ -109,6 +109,12 @@ def parse_args():
         "--ylimit",
         help="Optional: Override ylim in plot config. Pass in the format 'min,max'.",
     )
+    parser.add_argument(
+        "-ns",
+        "--nosyst",
+        help="Optional: Don't use systematics for plotting.",
+        action="store_true",
+    )
     args = parser.parse_args()
     if (args.fileprefix and args.jetclass) or (
         not args.fileprefix and not args.jetclass
@@ -328,9 +334,12 @@ def stacker(
         "up_xsec",
         "down_xsec",
     }
+    if nosyst == True:
+        systematics = {"nominal"}
 
     mccounts, mcedges = {}, {}  # {systname: {sample: counts}}
     datacounts, dataedges = {}, {}  # {systname: {sample: counts}}
+    mcstaterrors, datastaterrors = {}, {}  # {sample: staterror}
     validation_edges = []
     nbins = 0
 
@@ -348,6 +357,8 @@ def stacker(
             else:
                 mccounts[syst] = {sample: samplecounts}
                 mcedges[syst] = {sample: sampleedges}
+            if syst == "nominal":  # fill statistical error
+                mcstaterrors.update({sample: sampleerrors})
 
     # import data histograms for every systematic
     printdebug(f"Importing {len(datasamples)} data histograms for year {year}...")
@@ -363,6 +374,8 @@ def stacker(
             else:
                 datacounts[syst] = {sample: samplecounts}
                 dataedges[syst] = {sample: sampleedges}
+            if syst == "nominal":  # fill statistical error
+                datastaterrors.update({sample: sampleerrors})
 
     # validation, check whether all histograms have the same edges
     validation_edges = mcedges["nominal"][mcsamples[0]]
@@ -502,26 +515,6 @@ def stacker(
         colors_stacked += [categories_colors[category]]
         mcsum += categories_counts[category]
 
-    # add statistical error to systematics set
-    systematics.add("up_stat")
-    systematics.add("down_stat")
-
-    # calculate statistical errors
-    for syst in ["up_stat", "down_stat"]:
-        for sample in mcsamples:
-            counts = mccounts["nominal"][sample]
-            for i in range(len(counts)):
-                if (
-                    counts[i] < 0
-                ):  # for now reject statistical errors for negative weights
-                    counts[i] = 0
-            stat_error = np.sqrt(counts)
-            # store stat error in mccounts dict
-            if syst in mcsystematics.keys():  # update mccounts
-                mcsystematics[syst].update({sample: stat_error})
-            else:
-                mcsystematics.update({syst: {sample: stat_error}})
-
     # symmetrize all mc up/down errors to a single error that is applied in both directions
     # the systematics set content is changed to the symmetrized errors as well as the mc counts dict content
     for syst in systematics.copy():
@@ -541,6 +534,14 @@ def stacker(
                     mcsystematics[newname].update({sample: newsyst})
                 else:
                     mcsystematics.update({newname: {sample: newsyst}})
+
+    # include statistical error for mc
+    systematics.add("stat")
+    for sample in mcsamples:
+        if "stat" in mcsystematics.keys():
+            mcsystematics["stat"].update({sample: mcstaterrors[sample]})
+        else:
+            mcsystematics.update({"stat": {sample: mcstaterrors[sample]}})
 
     # calculate all mc errors and merge them
     mc_errors = {}  # {systname: merged error for all samples}
@@ -593,12 +594,11 @@ def stacker(
         datasum += counts  # stack data samples
     printdebug("Stacked data.")
 
-    # calculate data errors
-    # assume uncorrelated sqrt(bincounts) errors
+    # calculate data errors, only stat error
     total_data_errors = np.zeros(nbins)
-    for sample in datasamples:  # only statistical error sqrt(counts)
-        total_data_errors += datacounts["nominal"][sample]
-    total_data_errors = np.sqrt(total_data_errors)  # combined errors
+    for sample in datasamples:  # stat error for every sample
+        total_data_errors += np.array(datastaterrors[sample])
+    total_data_errors = np.sqrt(total_data_errors)  # combined data errors
 
     # return stacked data and mc
     return (
@@ -684,7 +684,7 @@ def plotter(args):
     left = 0.11
     if histproperties["left"] != "":
         left = float(histproperties["left"])
-    right = 0.98
+    right = 0.95  # 0.98
     if histproperties["right"] != "":
         right = float(histproperties["right"])
     top = 0.95
@@ -746,7 +746,7 @@ def plotter(args):
 
         # bin merging (somewhat like the EC plotter but a bit different)
         mergebins = True  # enable/disable bin merging in data/mc subplot
-        mergethreshold = 0.5  # combine bins until the mc count for the merged bins exceeds this threshold
+        mergethreshold = 1  # combine bins until the mc count for the merged bins exceeds this threshold
         # define new bins, data, mc counts and errors
         new_bins = []
         new_mcsum = []
@@ -758,12 +758,16 @@ def plotter(args):
             mergebins and len(bins) > 1
         ):  # do bin merge (only if merging is possible, therefore nbins > 1)
             # first find the last bin that is plotted (the last one with data)
-            plotidx = len(bins) - 1
+            plotidx = [0, len(bins) - 1]
             for i in range(len(bins))[
                 ::-1
             ]:  # search for first datapoint from the right
                 if datasum[i] > 0:
-                    plotidx = i
+                    plotidx[1] = i
+                    break
+            for i in range(len(bins)):  # search for first datapoint from the left
+                if datasum[i] > 0:
+                    plotidx[0] = i
                     break
             newbin = True
             (
@@ -783,12 +787,12 @@ def plotter(args):
                 0,
                 0,
             )
-            for i in range(np.amin([plotidx + 1, len(bins) + 1]))[
+            for i in range(plotidx[0], np.amin([plotidx[1] + 1, len(bins) + 1]))[
                 ::-1
             ]:  # start at last bin (with data since the axis limits are set there)
                 if newbin == True:  # reset variables after every merge
                     temp_nmerge = 1  # count merged bins in order to later calculate the correct bin coordinate
-                    temp_left = bins[i] - barwidth[i] / 2
+                    temp_left = bins[i] + barwidth[i] / 2
                     temp_mcsum = mcsum[i]
                     temp_error_mc = error_mc[i]  # bin errors assumed correlated
                     temp_datasum = datasum[i]
@@ -802,7 +806,7 @@ def plotter(args):
                     temp_datasum += datasum[i]
                     temp_error_data += error_data[i]  # bin errors assumed correlated
                     temp_barwidth += barwidth[i]  # bin widths are adding up
-                if (i == 0) or (
+                if (i == plotidx[0]) or (
                     i > 0
                     and (
                         temp_mcsum >= mergethreshold
@@ -812,7 +816,7 @@ def plotter(args):
                 ):  # perform merge when threshold is reached
                     new_bins += [
                         (temp_left + (bins[i] - barwidth[i] / 2)) / 2
-                    ]  # new bin is mean of all bin coordinates that are merged
+                    ]  # new bin is calculated
                     new_mcsum += [temp_mcsum]
                     new_error_mc += [temp_error_mc]
                     new_datasum += [temp_datasum]
@@ -826,7 +830,7 @@ def plotter(args):
             new_datasum = np.copy(datasum)
             new_error_data = np.copy(error_data)
             new_barwidth = np.copy(barwidth)
-        # make them as numpy arrays
+        # create np arrays
         new_bins = np.array(new_bins)
         new_mcsum = np.array(new_mcsum)
         new_error_mc = np.array(new_error_mc)
@@ -971,7 +975,6 @@ def plotter(args):
                 leftidx += 1
                 if leftidx >= len(bins_overmc):
                     leftidx = 0
-                    print(f"Possible problem for {classname}, {histname}.")
                     break
             while bins_overmc[rightidx] >= xlim[1]:
                 rightidx -= 1
@@ -983,19 +986,19 @@ def plotter(args):
         ylim2 = (
             np.amax(
                 [
-                    np.amin(
-                        [
-                            np.amin(
-                                [
-                                    data_overmc[i] - dataerr_overmc[i] - whitespace2
-                                    for i in indices
-                                ]
-                            ),
-                            # np.amin(
-                            #    [1 - mcerr_overmc[0, i] - whitespace2 for i in indices]
-                            # ),
-                        ]
-                    ),
+                    # np.amin(
+                    #    [
+                    #        np.amin(
+                    #            [
+                    #                data_overmc[i] - dataerr_overmc[i] - whitespace2
+                    #                for i in indices
+                    #            ]
+                    #        ),
+                    #        # np.amin(
+                    #        #    [1 - mcerr_overmc[0, i] - whitespace2 for i in indices]
+                    #        # ),
+                    #    ]
+                    # ),
                     0,
                 ]
             ),
@@ -1007,7 +1010,7 @@ def plotter(args):
                             for i in indices
                         ]
                     ),
-                    1,
+                    1 + whitespace2,
                     # np.amax([1 + mcerr_overmc[i] + whitespace2 for i in indices]),
                 ]
             ),
@@ -1050,7 +1053,7 @@ def plotter(args):
         int_lumi = 59.8  # hardcoded for 2018 for now
         com_energy = 13
         plt.figtext(
-            0.982,
+            0.952,
             0.958,
             str(int_lumi) + " fb${}^{-1}$ (" + str(com_energy) + " TeV)",
             fontsize=19,
@@ -1114,6 +1117,12 @@ def main():
     subfolder = ""
     if args.subfolder:
         subfolder = args.subfolder
+
+    # nosyst flag
+    global nosyst
+    nosyst = False
+    if args.nosyst:
+        nosyst = True
 
     # import task config file that includes references to all files that should be validated
     print(f"Importing task config...")

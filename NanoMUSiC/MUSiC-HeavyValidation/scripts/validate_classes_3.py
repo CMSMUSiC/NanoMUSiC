@@ -86,6 +86,12 @@ def parse_args():
         help="Specify class types to be validated: Either 'all-incl'/'+X', 'jet-incl'/'+nJ', 'excl'/'+0'. Separate multiple entries by comma. If all three categories should be validated use 'ALL'.",
         required=True,
     )
+    parser.add_argument(
+        "-ns",
+        "--nosyst",
+        help="Optional: Don't use systematics for plotting.",
+        action="store_true",
+    )
     args = parser.parse_args()
     return args
 
@@ -125,7 +131,7 @@ def extract_config(task_config, year):
 
 # import one histogram from given root file
 def import_counts(year, sample, savepath):
-    savepath += "/files/"
+    savepath += "/files"
     file_prefix = "classes_"
     file_path = (
         validation_path
@@ -229,7 +235,10 @@ def countplotter(
         "down_pu",
         "up_xsec",
         "down_xsec",
+        "stat",
     }
+    if nosyst == True:
+        systematics = {"nominal", "stat"}
 
     mcsamples_classes = {}
     datasamples_classes = {}
@@ -487,10 +496,16 @@ def countplotter(
     for classname in classnames:
         for sample in mcsamples:
             for syst in systematics:
-                temp = np.abs(
-                    mcclasstypedict[classsuffix][classname][sample]["nominal"]
-                    - mcclasstypedict[classsuffix][classname][sample][syst]
-                )
+                temp = mcclasstypedict[classsuffix][classname][sample][
+                    syst
+                ]  # for 'stat' simply take error
+                if (
+                    syst != "stat"
+                ):  # calculate absolute deviation (for 'stat' this is already done)
+                    temp = np.abs(
+                        mcclasstypedict[classsuffix][classname][sample]["nominal"]
+                        - mcclasstypedict[classsuffix][classname][sample][syst]
+                    )
                 if classname in mcclasstypedict_syst.keys():
                     if sample in mcclasstypedict_syst[classname].keys():
                         if syst in mcclasstypedict_syst[classname][sample].keys():
@@ -502,25 +517,14 @@ def countplotter(
                 else:
                     mcclasstypedict_syst.update({classname: {sample: {syst: temp}}})
 
-    # add statistical error to systematics set
-    systematics.add("up_stat")
-    systematics.add("down_stat")
-
-    # calculate statistical errors
-    for classname in classnames:
-        for syst in ["up_stat", "down_stat"]:
-            for sample in mcsamples:
-                counts = mcclasstypedict[classsuffix][classname][sample]["nominal"]
-                if counts < 0:  # for now reject statistical errors for negative weights
-                    counts = 0
-                stat_error = np.sqrt(counts)
-                # store stat error in mc systematics dict
-                mcclasstypedict_syst[classname][sample].update({syst: stat_error})
+    # stat errors are already read in as a systematic
 
     # symmetrize all mc up/down errors to a single error that is applied in both directions
     # the systematics set content is changed to the symmetrized errors as well as the mc counts dict content
     for syst in systematics.copy():
-        if "up_" in syst:  # only once for each systematic (choose up_), exclude nominal
+        if (
+            "up_" in syst
+        ):  # only once for each systematic (choose up_), exclude nominal and stat
             for classname in classnames:
                 for sample in mcsamples:
                     newname = syst.split("_")[1]  # new syst name without up/down prefix
@@ -547,7 +551,7 @@ def countplotter(
     for classname in classnames:
         for syst in systematics:
             s_error = 0
-            if syst == "stat":  #  # stat error, sqrt(bincount), up/down
+            if syst == "stat":  # stat error, read in from file
                 for sample in mcsamples:
                     s_error += mcclasstypedict_syst[classname][sample][
                         syst
@@ -574,6 +578,13 @@ def countplotter(
                         temp**2
                     )  # assumed uncorrelated for different categories
                 s_error = np.sqrt(s_error)
+            elif syst == "nmc":  # simulated number of events systematic
+                temp = 0
+                for sample in mcsamples:
+                    temp += (
+                        mcclasstypedict_syst[classname][sample][syst] ** 2
+                    )  # assume uncorrelated for every sample (since they are all different simulation datasets)
+                s_error = np.sqrt(temp)
             # save error value for systematic source
             if classname in mc_errors.keys():
                 mc_errors[classname].update({syst: s_error})
@@ -600,17 +611,6 @@ def countplotter(
             temp += classes_categories[classname][category]
         total_mc.update({classname: temp})
 
-    """ # check for large errors
-    for classname in classnames:
-        if total_mc_errors[classname] / total_mc[classname] >= 1:
-            print(
-                classname,
-                total_mc[classname],
-                total_mc_errors[classname],
-                total_mc_errors[classname] / total_mc[classname],
-            )
-    """
-
     # stack all nominal event counts for data
     classes_data = {}  # dictionary: {classname: nominal count} for data
     for classname in classnames:
@@ -624,9 +624,10 @@ def countplotter(
     # assume uncorrelated sqrt(bincounts) errors
     total_data_errors = {}  # dict: {classname: total combined data errors}
     for classname in classnames:
-        total_data_errors.update(
-            {classname: np.sqrt(classes_data[classname])}
-        )  # only statistical error sqrt(counts)
+        temp = 0
+        for sample in datasamples:
+            temp += dataclasstypedict[classsuffix][classname][sample]["stat"]
+        total_data_errors.update({classname: temp})  # only statistical error
 
     # sort classes after the event counts in data (first the highest count)
     for classname in classes_data.keys():
@@ -769,7 +770,7 @@ def countplotter(
         width=1,
         bottom=(mcsum - mcerr),
         fill=False,
-        hatch="xxxxxxxx",
+        hatch="xxxxx",
         linewidth=0,
         edgecolor="tab:gray",
     )
@@ -882,7 +883,7 @@ def countplotter(
     )
     ax[1].set_xticklabels(
         [display_classname(name) + " " for name in list(classes_data_toplot.keys())],
-        fontsize="13",
+        fontsize="12.5",
         rotation="vertical",
         color="black",
         ha="center",
@@ -919,19 +920,19 @@ def countplotter(
     ylim2 = (
         np.amax(
             [
-                np.amin(
-                    [
-                        np.amin(
-                            [
-                                data_overmc[i] - dataerr_overmc[i] - whitespace2
-                                for i in divisionidx
-                            ]
-                        ),
-                        np.amin(
-                            [1 - mcerr_overmc[i] - whitespace2 for i in divisionidx]
-                        ),
-                    ]
-                ),
+                # np.amin(
+                #    [
+                #        np.amin(
+                #            [
+                #                data_overmc[i] - dataerr_overmc[i] - whitespace2
+                #                for i in divisionidx
+                #            ]
+                #        ),
+                #        np.amin(
+                #            [1 - mcerr_overmc[i] - whitespace2 for i in divisionidx]
+                #        ),
+                #    ]
+                # ),
                 0,
             ]
         ),
@@ -1045,6 +1046,12 @@ def main():
     savepath = ""
     if args.savepath:
         savepath = args.savepath
+
+    # nosyst flag
+    global nosyst
+    nosyst = False
+    if args.nosyst:
+        nosyst = True
 
     # import class type(s)
     classtypes = args.classtype.split(",")

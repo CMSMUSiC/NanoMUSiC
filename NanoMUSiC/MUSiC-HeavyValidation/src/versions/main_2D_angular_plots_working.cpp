@@ -208,7 +208,7 @@ auto main(int argc, char *argv[]) -> int
     // format: "xJ+yBJ"/"xJ+yBJ+X"/"xJ+yBJ+nJ" for exclusive/all-inclusive/jet-inclusive class containing x jets and y
     // bjets is currently extracted from the -tv argument: -tv argument string: "classname1,classname2..." has to be
     // separated
-    std::vector<std::vector<int>> ptbins {
+    std::vector<std::vector<float>> ptbins {
         {0,100},
         {100,200},
         {200,300},
@@ -217,11 +217,11 @@ auto main(int argc, char *argv[]) -> int
         {500,600},
         {600,700},
         };
-    std::string class_prefix = "2J+0BJ+0MET_";
+    std::string class_prefix = "2J+0BJ+0MET:";
     std::set<std::string> to_validate;
     for(size_t i = 0; i < ptbins.size(); i++)
     {
-        to_validate.insert(class_prefix + std::to_string(ptbins.at(i).at(0)) + "_" + std::to_string(ptbins.at(i).at(1)));
+        to_validate.insert(class_prefix + std::to_string(ptbins.at(i).at(0)) + ":" + std::to_string(ptbins.at(i).at(1)));
     }
 
     // systematics prefixes (systnames):
@@ -240,16 +240,19 @@ auto main(int argc, char *argv[]) -> int
     }
     // jet classification instances: saved in a map {classname: pointer to jet class validation instance}
     // nl: nominal, up: systematic up, dn: systematic down
-    std::map<std::string, std::map<std::string, JetClass2D *>> validation_classes;
+    std::map<std::string, std::map<std::string, JetClass2 *>> validation_classes;
     // stores validation classes: {classname: {systname: jetclass instance pointer}}
     // fill maps
-    for (const auto &c_name : to_validate)
+    if (plotclasses) // only if classes should be plotted
     {
-        for (const auto &s_name : systematics)
+        for (const auto &c_name : to_validate)
         {
-            validation_classes[c_name][s_name] = new JetClass2D(
-                fmt::format("{}/{}_{}_{}_{}.root", output_path, c_name, s_name, process, year), c_name);
-            // file format: classname_systname_samplename_year.root
+            for (const auto &s_name : systematics)
+            {
+                validation_classes[c_name][s_name] = new JetClass2(
+                    fmt::format("{}/{}_{}_{}_{}.root", output_path, c_name, s_name, process, year), c_name);
+                // file format: classname_systname_samplename_year.root
+            }
         }
     }
 
@@ -410,16 +413,12 @@ auto main(int argc, char *argv[]) -> int
         }
         //*/
 
-        // 2J+0BJ excl class only
-        if(nbjet >= 1)
+        // VETO BJETS for this analysis
+        if(nbjets >= 1)
         {
             continue;
         }
-        if(not(njet == 2))
-        {
-            continue;
-        }
-        if(is_met)
+        if(not(njets = 2)) // check 2J+0BJ class only
         {
             continue;
         }
@@ -442,11 +441,12 @@ auto main(int argc, char *argv[]) -> int
         }
         
         // fill histograms for the respective ptbin
+        validation_classes[c_name][s_name]->fill(jets, bjets, nelectron, nmuon, met, weight[s_name]);
         for(size_t i = 0; i < ptbins.size(); i++)
         {
             if(jets.at(1).pt() >= ptbins.at(i).at(0) and jets.at(1).pt() < ptbins.at(i).at(1))
             {
-                validation_classes[class_prefix + std::to_string(ptbins.at(i).at(0)) + "_" + std::to_string(ptbins.at(i).at(1))]["nominal"]->fill(jets, bjets, nelectron, nmuon, met, weight["nominal"]);
+                validation_classes[class_prefix + std::to_string(ptbins.at(i).at(0)) + ":" + std::to_string(ptbins.at(i).at(1))]["nominal"]->fill(jets, bjets, nelectron, nmuon, met, weight["nominal"]);
             }
         }
 

@@ -4,6 +4,7 @@
 // analysis classes
 #include "Dijets.hpp"
 #include "JetClass2.hpp"
+#include "JetClass2D.hpp"
 #include "ZToLepLepX.hpp"
 
 // objectfactories
