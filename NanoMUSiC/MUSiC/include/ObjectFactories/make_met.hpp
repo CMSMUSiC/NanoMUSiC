@@ -39,8 +39,8 @@ inline auto make_met(const float met_pt,                      //
     auto scale_factors = RVec<double>{};
     auto scale_factor_up = RVec<double>{};
     auto scale_factor_down = RVec<double>{};
-    auto delta_met_x = 0.;
-    auto delta_met_y = 0.;
+    auto delta_met_x = RVec<double>{};
+    auto delta_met_y = RVec<double>{};
     auto is_fake = RVec<bool>{};
 
     auto met_px = met_pt * std::cos(met_phi)    //
@@ -70,9 +70,8 @@ inline auto make_met(const float met_pt,                      //
         scale_factor_down.push_back(1.);
         met_p4.push_back(Math::PtEtaPhiMVector(this_met));
 
-        // not needed...
-        // delta_met_x += 0.;
-        // delta_met_y += 0.;
+        delta_met_x.push_back(0.);
+        delta_met_y.push_back(0.);
 
         is_fake.push_back(false);
     }

@@ -18,6 +18,10 @@ class Shifts
                                                       "PU_Down",                 //
                                                       "Luminosity_Up",           //
                                                       "Luminosity_Down",         //
+                                                      "xSecOrder_Up",            //
+                                                      "xSecOrder_Down",          //
+                                                      "Fake_Up",                 //
+                                                      "Fake_Down",               //
                                                       "ScaleFactor_Up",          //
                                                       "ScaleFactor_Down",        //
                                                       "PreFiring_Up",            //
@@ -68,6 +72,11 @@ class Shifts
     auto get_shifts() const -> std::vector<std::string>
     {
         return m_shifts;
+    }
+
+    auto size() const -> std::size_t
+    {
+        return m_shifts.size();
     }
 
     static auto get_pu_variation(const std::string &shift) -> std::string

@@ -79,6 +79,7 @@ auto main(int argc, char *argv[]) -> int
     const std::string process_order = cmdl({"-x", "--process_order"}).str();
     const std::string process_group = cmdl({"-x", "--process_group"}).str();
     const std::string input_file = cmdl({"-i", "--input"}).str();
+    const bool debug = cmdl[{"--debug"}];
 
     if (show_help or process == "" or year == "" or output_path == "" or input_file == "" or x_section_str == "" or
         filter_eff_str == "" or k_factor_str == "" or luminosity_str == "" or process_order == "" or
@@ -97,6 +98,7 @@ auto main(int argc, char *argv[]) -> int
         fmt::print("          -x|--process_order: Process order.\n");
         fmt::print("          -x|--process_group: Process group.\n");
         fmt::print("          -i|--input: Path to a txt with input files (one per line).\n");
+        fmt::print("          --debug: Run in debug mode..\n");
 
         exit(-1);
     }
@@ -107,10 +109,12 @@ auto main(int argc, char *argv[]) -> int
 
     // create tree reader and add values and arrays
     TChain input_chain("nano_music");
+
     for (auto &&file : load_input_files(input_file))
     {
         input_chain.Add(file.c_str());
     }
+
     auto tree_reader = TTreeReader(&input_chain);
 
     ADD_VALUE_READER(pass_low_pt_muon_trigger, bool);
@@ -208,6 +212,18 @@ auto main(int argc, char *argv[]) -> int
                                                                {"bJet", 0},
                                                                {"MET", 0}};
 
+    const std::map<std::string, int> z_to_ele_ele_x_count_map = {{"Ele", 2},
+                                                                 {"EleEE", 0},
+                                                                 {"EleEB", 0},
+                                                                 {"Muon", 0},
+                                                                 {"Gamma", 0},
+                                                                 {"GammaEB", 0},
+                                                                 {"GammaEE", 0},
+                                                                 {"Tau", 0},
+                                                                 {"Jet", 0},
+                                                                 {"bJet", 0},
+                                                                 {"MET", 0}};
+
     const std::map<std::string, int> dijets_count_map = {{"Ele", 0},
                                                          {"EleEE", 0},
                                                          {"EleEB", 0},
@@ -235,14 +251,14 @@ auto main(int argc, char *argv[]) -> int
                                           year);
 
     auto z_to_ele_ele_x = ZToLepLepX(fmt::format("{}/z_to_ele_ele_x_{}_{}.root", output_path, process, year),
-                                     z_to_mu_mu_x_count_map,
+                                     z_to_ele_ele_x_count_map,
                                      false,
                                      shifts.get_shifts(),
                                      process,
                                      year);
     auto z_to_ele_ele_x_Z_mass =
         ZToLepLepX(fmt::format("{}/z_to_ele_ele_x__Z_mass_{}_{}.root", output_path, process, year),
-                   z_to_mu_mu_x_count_map,
+                   z_to_ele_ele_x_count_map,
                    true,
                    shifts.get_shifts(),
                    process,
@@ -277,10 +293,10 @@ auto main(int argc, char *argv[]) -> int
         // remove the "unused variable" warning during compilation
         static_cast<void>(event);
 
-        // if (event > 1000000)
-        // {
-        //     break;
-        // }
+        if (event > 500000)
+        {
+            break;
+        }
 
         // Trigger
         //
@@ -394,20 +410,20 @@ auto main(int argc, char *argv[]) -> int
                                                                         year,                                     //
                                                                         "Nominal");
 
-        auto nominal_met = ObjectFactories::make_met(unwrap(MET_pt),                //
-                                                     unwrap(MET_phi),               //
-                                                     nominal_muons.delta_met_x,     //
-                                                     nominal_muons.delta_met_y,     //
-                                                     nominal_electrons.delta_met_x, //
-                                                     nominal_electrons.delta_met_y, //
-                                                     nominal_photons.delta_met_x,   //
-                                                     nominal_photons.delta_met_y,   //
-                                                     nominal_jets.delta_met_x,      //
-                                                     nominal_jets.delta_met_y,      //
-                                                     nominal_bjets.delta_met_x,     //
-                                                     nominal_bjets.delta_met_y,     //
-                                                     is_data,                       //
-                                                     year,                          //
+        auto nominal_met = ObjectFactories::make_met(unwrap(MET_pt),                      //
+                                                     unwrap(MET_phi),                     //
+                                                     nominal_muons.get_delta_met_x(),     //
+                                                     nominal_muons.get_delta_met_y(),     //
+                                                     nominal_electrons.get_delta_met_x(), //
+                                                     nominal_electrons.get_delta_met_y(), //
+                                                     nominal_photons.get_delta_met_x(),   //
+                                                     nominal_photons.get_delta_met_y(),   //
+                                                     nominal_jets.get_delta_met_x(),      //
+                                                     nominal_jets.get_delta_met_y(),      //
+                                                     nominal_bjets.get_delta_met_x(),     //
+                                                     nominal_bjets.get_delta_met_y(),     //
+                                                     is_data,                             //
+                                                     year,                                //
                                                      "Nominal");
 
         // loop over each shift (systematic uncerts)
@@ -427,6 +443,8 @@ auto main(int argc, char *argv[]) -> int
             MUSiCObjects shifted_jets = MUSiCObjects();
             MUSiCObjects shifted_bjets = MUSiCObjects();
             MUSiCObjects shifted_met = MUSiCObjects();
+
+            bool is_differential_shift = false;
 
             if (starts_with(shift, "Muon"))
             {
@@ -448,23 +466,7 @@ auto main(int argc, char *argv[]) -> int
                                                             year,                        //
                                                             shift);
                 muons = &shifted_muons;
-
-                shifted_met = ObjectFactories::make_met(unwrap(MET_pt),         //
-                                                        unwrap(MET_phi),        //
-                                                        muons->delta_met_x,     //
-                                                        muons->delta_met_y,     //
-                                                        electrons->delta_met_x, //
-                                                        electrons->delta_met_y, //
-                                                        photons->delta_met_x,   //
-                                                        photons->delta_met_y,   //
-                                                        jets->delta_met_x,      //
-                                                        jets->delta_met_y,      //
-                                                        bjets->delta_met_x,     //
-                                                        bjets->delta_met_y,     //
-                                                        is_data,                //
-                                                        year,                   //
-                                                        shift);
-                met = &shifted_met;
+                is_differential_shift = true;
             }
 
             if (starts_with(shift, "Electron"))
@@ -486,23 +488,7 @@ auto main(int argc, char *argv[]) -> int
                                                                     year,                           //
                                                                     shift);
                 electrons = &shifted_electrons;
-
-                shifted_met = ObjectFactories::make_met(unwrap(MET_pt),         //
-                                                        unwrap(MET_phi),        //
-                                                        muons->delta_met_x,     //
-                                                        muons->delta_met_y,     //
-                                                        electrons->delta_met_x, //
-                                                        electrons->delta_met_y, //
-                                                        photons->delta_met_x,   //
-                                                        photons->delta_met_y,   //
-                                                        jets->delta_met_x,      //
-                                                        jets->delta_met_y,      //
-                                                        bjets->delta_met_x,     //
-                                                        bjets->delta_met_y,     //
-                                                        is_data,                //
-                                                        year,                   //
-                                                        shift);
-                met = &shifted_met;
+                is_differential_shift = true;
             }
 
             if (starts_with(shift, "Photon"))
@@ -524,23 +510,7 @@ auto main(int argc, char *argv[]) -> int
                                                                   year,                           //
                                                                   shift);
                 photons = &shifted_photons;
-
-                shifted_met = ObjectFactories::make_met(unwrap(MET_pt),         //
-                                                        unwrap(MET_phi),        //
-                                                        muons->delta_met_x,     //
-                                                        muons->delta_met_y,     //
-                                                        electrons->delta_met_x, //
-                                                        electrons->delta_met_y, //
-                                                        photons->delta_met_x,   //
-                                                        photons->delta_met_y,   //
-                                                        jets->delta_met_x,      //
-                                                        jets->delta_met_y,      //
-                                                        bjets->delta_met_x,     //
-                                                        bjets->delta_met_y,     //
-                                                        is_data,                //
-                                                        year,                   //
-                                                        shift);
-                met = &shifted_met;
+                is_differential_shift = true;
             }
 
             if (starts_with(shift, "Jet"))
@@ -569,41 +539,36 @@ auto main(int argc, char *argv[]) -> int
                 shifted_bjets = _shifted_bjets;
                 jets = &shifted_jets;
                 bjets = &shifted_bjets;
-
-                shifted_met = ObjectFactories::make_met(unwrap(MET_pt),         //
-                                                        unwrap(MET_phi),        //
-                                                        muons->delta_met_x,     //
-                                                        muons->delta_met_y,     //
-                                                        electrons->delta_met_x, //
-                                                        electrons->delta_met_y, //
-                                                        photons->delta_met_x,   //
-                                                        photons->delta_met_y,   //
-                                                        jets->delta_met_x,      //
-                                                        jets->delta_met_y,      //
-                                                        bjets->delta_met_x,     //
-                                                        bjets->delta_met_y,     //
-                                                        is_data,                //
-                                                        year,                   //
-                                                        shift);
-                met = &shifted_met;
+                is_differential_shift = true;
             }
 
-            if (starts_with(shift, "MET"))
+            // remove overlaps
+            electrons->clear(muons);
+            photons->clear(electrons);
+            photons->clear(muons);
+            jets->clear(photons, 0.5);
+            bjets->clear(photons, 0.5);
+            jets->clear(electrons, 0.5);
+            bjets->clear(electrons, 0.5);
+            jets->clear(muons, 0.5);
+            bjets->clear(muons, 0.5);
+
+            if (is_differential_shift)
             {
-                shifted_met = ObjectFactories::make_met(unwrap(MET_pt),         //
-                                                        unwrap(MET_phi),        //
-                                                        muons->delta_met_x,     //
-                                                        muons->delta_met_y,     //
-                                                        electrons->delta_met_x, //
-                                                        electrons->delta_met_y, //
-                                                        photons->delta_met_x,   //
-                                                        photons->delta_met_y,   //
-                                                        jets->delta_met_x,      //
-                                                        jets->delta_met_y,      //
-                                                        bjets->delta_met_x,     //
-                                                        bjets->delta_met_y,     //
-                                                        is_data,                //
-                                                        year,                   //
+                shifted_met = ObjectFactories::make_met(unwrap(MET_pt),               //
+                                                        unwrap(MET_phi),              //
+                                                        muons->get_delta_met_x(),     //
+                                                        muons->get_delta_met_y(),     //
+                                                        electrons->get_delta_met_x(), //
+                                                        electrons->get_delta_met_y(), //
+                                                        photons->get_delta_met_x(),   //
+                                                        photons->get_delta_met_y(),   //
+                                                        jets->get_delta_met_x(),      //
+                                                        jets->get_delta_met_y(),      //
+                                                        bjets->get_delta_met_x(),     //
+                                                        bjets->get_delta_met_y(),     //
+                                                        is_data,                      //
+                                                        year,                         //
                                                         shift);
                 met = &shifted_met;
             }
@@ -630,8 +595,8 @@ auto main(int argc, char *argv[]) -> int
             // MuMu + X
             if (muons->size() >= 2)
             {
-                auto muon_1 = muons->p4.at(0);
-                auto muon_2 = muons->p4.at(1);
+                auto muon_1 = muons->p4[0];
+                auto muon_2 = muons->p4[1];
 
                 // wide mass range
                 z_to_mu_mu_x.fill(muon_1, muon_2, bjets->p4, jets->p4, met->p4, weight, shift);
@@ -646,8 +611,8 @@ auto main(int argc, char *argv[]) -> int
             // EleEle + X
             if (electrons->size() >= 2)
             {
-                auto electron_1 = electrons->p4.at(0);
-                auto electron_2 = electrons->p4.at(1);
+                auto electron_1 = electrons->p4[0];
+                auto electron_2 = electrons->p4[1];
 
                 // wide mass range
                 z_to_ele_ele_x.fill(electron_1, electron_2, bjets->p4, jets->p4, met->p4, weight, shift);
@@ -663,14 +628,30 @@ auto main(int argc, char *argv[]) -> int
             // // Dijets
             // if (jets.size() >= 2)
             // {
-            //     auto jet_1 = jets.p4.at(0);
-            //     auto jet_2 = jets.p4.at(1);
+            //     auto jet_1 = jets.p4[0];
+            //     auto jet_2 = jets.p4[1];
 
             //     if ((jet_1.pt() > 600.) and std::fabs(jet_1.eta() - jet_2.eta()) < 1.1)
             //     {
             //         dijets.fill(jet_1, jet_2, std::nullopt, weight);
             //     }
             // }
+        }
+
+        // process monitoring
+        if (debug)
+        {
+            if ((event < 10) or                           //
+                (event < 100 && event % 10 == 0) or       //
+                (event < 1000 && event % 100 == 0) or     //
+                (event < 10000 && event % 1000 == 0) or   //
+                (event < 100000 && event % 10000 == 0) or //
+                (event >= 100000 && event % 100000 == 0)  //
+            )
+            {
+                fmt::print("\n\nProcessed {} events ...\n", event);
+                PrintProcessInfo();
+            }
         }
     }
 

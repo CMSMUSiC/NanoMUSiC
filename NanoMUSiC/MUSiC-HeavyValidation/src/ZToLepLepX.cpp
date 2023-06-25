@@ -27,37 +27,95 @@ ZToLepLepX::ZToLepLepX(const std::string &output_path,
       is_Z_mass_validation(_is_Z_mass_validation),
       shifts(_shifts)
 {
+
+    std::string histo_name = "";
     for (auto &&shift : shifts)
     {
         if (is_Z_mass_validation)
         {
-            ADD_TH1F(shift, _process, _year, h_invariant_mass, n_energy_bins * 10, min_energy, max_energy);
+            histo_name = fmt::format("{}_{}_{}_{}", "h_invariant_mass", _process, _year, shift);
+            h_invariant_mass.insert(
+                {shift, TH1F(histo_name.c_str(), histo_name.c_str(), n_energy_bins * 10, min_energy, max_energy)});
+            h_invariant_mass.at(shift).Sumw2();
         }
         else
         {
-            ADD_TH1F(shift, _process, _year, h_invariant_mass, n_energy_bins, min_energy, max_energy);
+            histo_name = fmt::format("{}_{}_{}_{}", "h_invariant_mass", _process, _year, shift);
+            h_invariant_mass.insert(
+                {shift, TH1F(histo_name.c_str(), histo_name.c_str(), n_energy_bins, min_energy, max_energy)});
+            h_invariant_mass.at(shift).Sumw2();
         }
-        ADD_TH1F(shift, _process, _year, h_sum_pt, n_energy_bins, min_energy, max_energy);
-        ADD_TH1F(shift, _process, _year, h_met, n_energy_bins, min_energy, max_energy);
-        ADD_TH1F(shift, _process, _year, h_lepton_1_pt, n_energy_bins, min_energy, max_energy);
-        ADD_TH1F(shift, _process, _year, h_lepton_2_pt, n_energy_bins, min_energy, max_energy);
-        ADD_TH1F(shift, _process, _year, h_lepton_1_eta, n_eta_bins, min_eta, max_eta);
-        ADD_TH1F(shift, _process, _year, h_lepton_2_eta, n_eta_bins, min_eta, max_eta);
-        ADD_TH1F(shift, _process, _year, h_lepton_1_phi, n_phi_bins, min_phi, max_phi);
-        ADD_TH1F(shift, _process, _year, h_lepton_2_phi, n_phi_bins, min_phi, max_phi);
-        ADD_TH1F(shift, _process, _year, h_lepton_1_jet_1_dPhi, n_phi_bins, min_phi, max_phi);
-        ADD_TH1F(shift, _process, _year, h_lepton_1_jet_1_dR, n_dR_bins, min_dR, max_dR);
-        ADD_TH1F(shift, _process, _year, h_jet_multiplicity, n_multiplicity_bins, min_multiplicity, max_multiplicity);
-        ADD_TH1F(shift, _process, _year, h_bjet_multiplicity, n_multiplicity_bins, min_multiplicity, max_multiplicity);
 
-        h_lepton_1_pt_eta.insert(
+        histo_name = fmt::format("{}_{}_{}_{}", "h_sum_pt", _process, _year, shift);
+        h_sum_pt.insert({shift, TH1F(histo_name.c_str(), histo_name.c_str(), n_energy_bins, min_energy, max_energy)});
+        h_sum_pt.at(shift).Sumw2();
+
+        histo_name = fmt::format("{}_{}_{}_{}", "h_met", _process, _year, shift);
+        h_met.insert({shift, TH1F(histo_name.c_str(), histo_name.c_str(), n_energy_bins, min_energy, max_energy)});
+        h_met.at(shift).Sumw2();
+
+        histo_name = fmt::format("{}_{}_{}_{}", "h_lepton_1_pt", _process, _year, shift);
+        h_lepton_1_pt.insert(
+            {shift, TH1F(histo_name.c_str(), histo_name.c_str(), n_energy_bins, min_energy, max_energy)});
+        h_lepton_1_pt.at(shift).Sumw2();
+
+        histo_name = fmt::format("{}_{}_{}_{}", "h_lepton_2_pt", _process, _year, shift);
+        h_lepton_2_pt.insert(
+            {shift, TH1F(histo_name.c_str(), histo_name.c_str(), n_energy_bins, min_energy, max_energy)});
+        h_lepton_2_pt.at(shift).Sumw2();
+
+        histo_name = fmt::format("{}_{}_{}_{}", "h_lepton_1_eta", _process, _year, shift);
+        h_lepton_1_eta.insert({shift, TH1F(histo_name.c_str(), histo_name.c_str(), n_eta_bins, min_eta, max_eta)});
+        h_lepton_1_eta.at(shift).Sumw2();
+
+        histo_name = fmt::format("{}_{}_{}_{}", "h_lepton_2_eta", _process, _year, shift);
+        h_lepton_2_eta.insert({shift, TH1F(histo_name.c_str(), histo_name.c_str(), n_eta_bins, min_eta, max_eta)});
+        h_lepton_2_eta.at(shift).Sumw2();
+
+        histo_name = fmt::format("{}_{}_{}_{}", "h_lepton_1_phi", _process, _year, shift);
+        h_lepton_1_phi.insert({shift, TH1F(histo_name.c_str(), histo_name.c_str(), n_phi_bins, min_phi, max_phi)});
+        h_lepton_1_phi.at(shift).Sumw2();
+
+        histo_name = fmt::format("{}_{}_{}_{}", "h_lepton_2_phi", _process, _year, shift);
+        h_lepton_2_phi.insert({shift, TH1F(histo_name.c_str(), histo_name.c_str(), n_phi_bins, min_phi, max_phi)});
+        h_lepton_2_phi.at(shift).Sumw2();
+
+        histo_name = fmt::format("{}_{}_{}_{}", "h_lepton_1_jet_1_dPhi", _process, _year, shift);
+        h_lepton_1_jet_1_dPhi.insert(
+            {shift, TH1F(histo_name.c_str(), histo_name.c_str(), n_phi_bins, min_phi, max_phi)});
+        h_lepton_1_jet_1_dPhi.at(shift).Sumw2();
+
+        histo_name = fmt::format("{}_{}_{}_{}", "h_lepton_1_jet_1_dR", _process, _year, shift);
+        h_lepton_1_jet_1_dR.insert({shift, TH1F(histo_name.c_str(), histo_name.c_str(), n_dR_bins, min_dR, max_dR)});
+        h_lepton_1_jet_1_dR.at(shift).Sumw2();
+
+        histo_name = fmt::format("{}_{}_{}_{}", "h_jet_multiplicity", _process, _year, shift);
+        h_jet_multiplicity.insert(
             {shift,
-             TH2F("h_lepton_1_pt_eta", "h_lepton_1_pt_eta", 130, min_energy, 900, n_eta_bins, min_eta, max_eta)});
+             TH1F(histo_name.c_str(), histo_name.c_str(), n_multiplicity_bins, min_multiplicity, max_multiplicity)});
+        h_jet_multiplicity.at(shift).Sumw2();
+
+        histo_name = fmt::format("{}_{}_{}_{}", "h_bjet_multiplicity", _process, _year, shift);
+        h_bjet_multiplicity.insert(
+            {shift,
+             TH1F(histo_name.c_str(), histo_name.c_str(), n_multiplicity_bins, min_multiplicity, max_multiplicity)});
+        h_bjet_multiplicity.at(shift).Sumw2();
+
+        histo_name = fmt::format("{}_{}_{}_{}", "h_lepton_1_pt_eta", _process, _year, shift);
+        h_lepton_1_pt_eta.insert({shift,
+                                  TH2F(histo_name.c_str(),
+                                       histo_name.c_str(),
+                                       130,
+                                       min_energy,
+                                       900,
+                                       n_multiplicity_bins,
+                                       min_multiplicity,
+                                       max_multiplicity)});
         h_lepton_1_pt_eta.at(shift).Sumw2();
 
+        histo_name = fmt::format("{}_{}_{}_{}", "h_lepton_1_pt_phi", _process, _year, shift);
         h_lepton_1_pt_phi.insert(
-            {shift,
-             TH2F("h_lepton_1_pt_eta", "h_lepton_1_pt_eta", 130, min_energy, 900, n_phi_bins, min_phi, max_phi)});
+            {shift, TH2F(histo_name.c_str(), histo_name.c_str(), 130, min_energy, 900, n_phi_bins, min_phi, max_phi)});
         h_lepton_1_pt_phi.at(shift).Sumw2();
     }
 }

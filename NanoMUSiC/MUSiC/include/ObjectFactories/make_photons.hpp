@@ -24,22 +24,22 @@ inline auto get_photon_energy_corrections(const std::string &shift,
                                           float dEsigmaDown,
                                           double energy) -> double
 {
-    if (shift == "Pho_systScaleUp")
+    if (shift == "PhotonScale_Up")
     {
         return (1.f - dEscaleUp / energy);
     }
 
-    if (shift == "Pho_systScaleDown")
+    if (shift == "PhotonScale_Down")
     {
         return (1.f - dEscaleDown / energy);
     }
 
-    if (shift == "Pho_systResolutionUp")
+    if (shift == "PhotonResolution_Up")
     {
         return (1.f - dEsigmaUp / energy);
     }
 
-    if (shift == "Pho_systResolutionDown")
+    if (shift == "PhotonResolution_Up")
     {
         return (1.f - dEsigmaDown / energy);
     }
@@ -113,8 +113,8 @@ inline auto make_photons(const RVec<float> &Photon_pt,  //
     auto scale_factors = RVec<double>{};
     auto scale_factor_up = RVec<double>{};
     auto scale_factor_down = RVec<double>{};
-    auto delta_met_x = 0.;
-    auto delta_met_y = 0.;
+    auto delta_met_x = RVec<double>{};
+    auto delta_met_y = RVec<double>{};
     auto is_fake = RVec<bool>{};
 
     for (std::size_t i = 0; i < Photon_pt.size(); i++)
@@ -141,26 +141,32 @@ inline auto make_photons(const RVec<float> &Photon_pt,  //
 
                 scale_factors.push_back( //
                     MUSiCObjects::get_scale_factor(
-                        photon_sf, is_data, {get_year_for_photon_sf(year), "sf", "Tight", "EBInc"}) *
+                        photon_sf,
+                        is_data,
+                        {get_year_for_photon_sf(year), "sf", "Tight", photon_p4.eta(), photon_p4.pt()}) *
                     MUSiCObjects::get_scale_factor(
                         photon_pixel_veto_sf, is_data, {get_year_for_photon_sf(year), "sf", "Tight", "EBInc"}));
 
                 scale_factor_up.push_back( //
                     MUSiCObjects::get_scale_factor(
-                        photon_sf, is_data, {get_year_for_photon_sf(year), "sfup", "Tight", "EBInc"}) *
+                        photon_sf,
+                        is_data,
+                        {get_year_for_photon_sf(year), "sfup", "Tight", photon_p4.eta(), photon_p4.pt()}) *
                     MUSiCObjects::get_scale_factor(
                         photon_pixel_veto_sf, is_data, {get_year_for_photon_sf(year), "sfup", "Tight", "EBInc"}));
 
                 scale_factor_down.push_back( //
                     MUSiCObjects::get_scale_factor(
-                        photon_sf, is_data, {get_year_for_photon_sf(year), "sfdown", "Tight", "EBInc"}) *
+                        photon_sf,
+                        is_data,
+                        {get_year_for_photon_sf(year), "sfdown", "Tight", photon_p4.eta(), photon_p4.pt()}) *
                     MUSiCObjects::get_scale_factor(
                         photon_pixel_veto_sf, is_data, {get_year_for_photon_sf(year), "sfdown", "Tight", "EBInc"}));
 
                 photons_p4.push_back(photon_p4);
 
-                delta_met_x += (photon_p4.pt() - Photon_pt[i]) * std::cos(Photon_phi[i]);
-                delta_met_y += (photon_p4.pt() - Photon_pt[i]) * std::sin(Photon_phi[i]);
+                delta_met_x.push_back((photon_p4.pt() - Photon_pt[i]) * std::cos(Photon_phi[i]));
+                delta_met_y.push_back((photon_p4.pt() - Photon_pt[i]) * std::sin(Photon_phi[i]));
 
                 is_fake.push_back(is_data ? false : Photon_genPartIdx[i] == -1);
             }

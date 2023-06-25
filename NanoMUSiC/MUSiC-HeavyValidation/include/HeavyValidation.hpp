@@ -59,6 +59,8 @@ auto make_value_reader(TTreeReader &tree_reader, const std::string &leaf) -> std
     {
         return std::make_optional<TTreeReaderValue<T>>(tree_reader, leaf.c_str());
     }
+
+    fmt::print("WARNING: Could not read branch: {}\n", leaf);
     return std::nullopt;
 }
 
@@ -69,6 +71,8 @@ auto make_array_reader(TTreeReader &tree_reader, const std::string &leaf) -> std
     {
         return std::make_optional<TTreeReaderArray<T>>(tree_reader, leaf.c_str());
     }
+
+    fmt::print("WARNING: Could not read branch: {}\n", leaf);
     return std::nullopt;
 }
 
@@ -106,6 +110,16 @@ auto unwrap(std::optional<TTreeReaderArray<T>> &array) -> RVec<T>
         return RVec<T>(static_cast<T *>((*array).GetAddress()), (*array).GetSize());
     }
     return RVec<T>();
+}
+
+template <typename T, typename Q, typename R>
+auto unwrap(std::optional<TTreeReaderArray<T>> &array, Q &&default_value, R &&default_size) -> T
+{
+    if (array)
+    {
+        return RVec<T>(static_cast<T *>((*array).GetAddress()), (*array).GetSize());
+    }
+    return RVec<T>(default_size, default_value);
 }
 
 inline auto PrintProcessInfo() -> void

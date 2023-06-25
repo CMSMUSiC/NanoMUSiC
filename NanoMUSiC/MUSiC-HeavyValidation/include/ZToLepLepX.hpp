@@ -23,21 +23,21 @@ class ZToLepLepX
   public:
     std::unique_ptr<TFile> output_file;
 
-    std::map<std::string, TH1F> h_invariant_mass;
-    std::map<std::string, TH1F> h_sum_pt;
-    std::map<std::string, TH1F> h_met;
-    std::map<std::string, TH1F> h_lepton_1_pt;
-    std::map<std::string, TH1F> h_lepton_2_pt;
-    std::map<std::string, TH1F> h_lepton_1_eta;
-    std::map<std::string, TH1F> h_lepton_2_eta;
-    std::map<std::string, TH1F> h_lepton_1_phi;
-    std::map<std::string, TH1F> h_lepton_2_phi;
-    std::map<std::string, TH1F> h_lepton_1_jet_1_dPhi;
-    std::map<std::string, TH1F> h_lepton_1_jet_1_dR;
-    std::map<std::string, TH1F> h_jet_multiplicity;
-    std::map<std::string, TH1F> h_bjet_multiplicity;
-    std::map<std::string, TH2F> h_lepton_1_pt_eta;
-    std::map<std::string, TH2F> h_lepton_1_pt_phi;
+    std::unordered_map<std::string, TH1F> h_invariant_mass;
+    std::unordered_map<std::string, TH1F> h_sum_pt;
+    std::unordered_map<std::string, TH1F> h_met;
+    std::unordered_map<std::string, TH1F> h_lepton_1_pt;
+    std::unordered_map<std::string, TH1F> h_lepton_2_pt;
+    std::unordered_map<std::string, TH1F> h_lepton_1_eta;
+    std::unordered_map<std::string, TH1F> h_lepton_2_eta;
+    std::unordered_map<std::string, TH1F> h_lepton_1_phi;
+    std::unordered_map<std::string, TH1F> h_lepton_2_phi;
+    std::unordered_map<std::string, TH1F> h_lepton_1_jet_1_dPhi;
+    std::unordered_map<std::string, TH1F> h_lepton_1_jet_1_dR;
+    std::unordered_map<std::string, TH1F> h_jet_multiplicity;
+    std::unordered_map<std::string, TH1F> h_bjet_multiplicity;
+    std::unordered_map<std::string, TH2F> h_lepton_1_pt_eta;
+    std::unordered_map<std::string, TH2F> h_lepton_1_pt_phi;
 
     const double min_bin_width;
     const std::map<std::string, int> countMap;
