@@ -46,12 +46,18 @@ inline std::optional<std::pair<unsigned int, unsigned int>> get_pdf_ids(TTree *e
     if (has_pdf_weight(events_tree))
     {
         std::string LHEPdfWeight_description = events_tree->GetBranch("LHEPdfWeight")->GetTitle();
+
+        if (LHEPdfWeight_description.empty())
+        {
+            return ids;
+        }
+
         std::regex expression("[0-9]+");
 
         // default constructor = end-of-sequence:
         std::regex_token_iterator<std::string::iterator> regex_end;
-        std::regex_token_iterator<std::string::iterator> regex_iter(LHEPdfWeight_description.begin(),
-                                                                    LHEPdfWeight_description.end(), expression);
+        std::regex_token_iterator<std::string::iterator> regex_iter(
+            LHEPdfWeight_description.begin(), LHEPdfWeight_description.end(), expression);
         auto match_counter = 0;
         std::array<std::string, 2> buffer_ids = {"0", "0"};
 
@@ -66,7 +72,10 @@ inline std::optional<std::pair<unsigned int, unsigned int>> get_pdf_ids(TTree *e
             throw std::runtime_error(
                 fmt::format("Too many or too few matches ({}) to LHAPDF IDs.\nLHEPdfWeight description:\n "
                             "{}\nFirst 2 matches: {} and {}",
-                            match_counter, LHEPdfWeight_description, buffer_ids[0], buffer_ids[1]));
+                            match_counter,
+                            LHEPdfWeight_description,
+                            buffer_ids[0],
+                            buffer_ids[1]));
         }
 
         ids = std::make_pair(static_cast<unsigned int>(std::stoi(buffer_ids[0])),

@@ -20,34 +20,35 @@ using namespace ROOT::VecOps;
 
 class ZToLepLepX
 {
+  private:
   public:
-    std::unique_ptr<TFile> output_file;
+    const std::string output_path;
 
-    std::unordered_map<std::string, TH1F> h_invariant_mass;
-    std::unordered_map<std::string, TH1F> h_sum_pt;
-    std::unordered_map<std::string, TH1F> h_met;
-    std::unordered_map<std::string, TH1F> h_lepton_1_pt;
-    std::unordered_map<std::string, TH1F> h_lepton_2_pt;
-    std::unordered_map<std::string, TH1F> h_lepton_1_eta;
-    std::unordered_map<std::string, TH1F> h_lepton_2_eta;
-    std::unordered_map<std::string, TH1F> h_lepton_1_phi;
-    std::unordered_map<std::string, TH1F> h_lepton_2_phi;
-    std::unordered_map<std::string, TH1F> h_lepton_1_jet_1_dPhi;
-    std::unordered_map<std::string, TH1F> h_lepton_1_jet_1_dR;
-    std::unordered_map<std::string, TH1F> h_jet_multiplicity;
-    std::unordered_map<std::string, TH1F> h_bjet_multiplicity;
-    std::unordered_map<std::string, TH2F> h_lepton_1_pt_eta;
-    std::unordered_map<std::string, TH2F> h_lepton_1_pt_phi;
+    TH1F h_invariant_mass;
+    TH1F h_sum_pt;
+    TH1F h_met;
+    TH1F h_lepton_1_pt;
+    TH1F h_lepton_2_pt;
+    TH1F h_lepton_1_eta;
+    TH1F h_lepton_2_eta;
+    TH1F h_lepton_1_phi;
+    TH1F h_lepton_2_phi;
+    TH1F h_lepton_1_jet_1_dPhi;
+    TH1F h_lepton_1_jet_1_dR;
+    TH1F h_jet_multiplicity;
+    TH1F h_bjet_multiplicity;
+    TH2F h_lepton_1_pt_eta;
+    TH2F h_lepton_1_pt_phi;
 
     const double min_bin_width;
     const std::map<std::string, int> countMap;
     const bool is_Z_mass_validation;
-    std::vector<std::string> shifts;
+    std::string shift;
 
     ZToLepLepX(const std::string &output_path,
                const std::map<std::string, int> &countMap,
                bool is_Z_mass_validation,
-               const std::vector<std::string> &_shifts,
+               std::string _shift,
                const std::string &_process,
                const std::string &_year);
 
@@ -56,8 +57,7 @@ class ZToLepLepX
               const RVec<Math::PtEtaPhiMVector> &bjets,
               const RVec<Math::PtEtaPhiMVector> &jets,
               const RVec<Math::PtEtaPhiMVector> &met,
-              float weight,
-              const std::string &shift) -> void;
+              float weight) -> void;
 
     auto save_histo(TH1 histo) -> void;
     auto save_histo(TH2 histo) -> void;

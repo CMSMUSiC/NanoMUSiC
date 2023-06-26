@@ -87,13 +87,14 @@ auto EventAnalyzer::set_pdf_alpha_s_weights(const std::optional<std::pair<unsign
                 lhe_info.LHEPdfWeight.erase(lhe_info.LHEPdfWeight.end() - 1);
                 lhe_info.LHEPdfWeight.erase(lhe_info.LHEPdfWeight.end() - 1);
             }
+
             // don't have alpha_s weights, should get the one from the 5f LHAPDF set.
             // REF:
             // https://cms-pdmv.gitbook.io/project/mccontact/info-for-mc-production-for-ultra-legacy-campaigns-2016-2017-2018#recommendations-on-the-usage-of-pdfs-and-cpx-tunes
             else if (lhe_info.nLHEPdfWeight == 101 or lhe_info.nLHEPdfWeight == 31)
             {
                 // Those are some possible convertion from for NNPDF31, without to with alpha_s
-                // During the classification, the coded should check the status of alpha_s_up and alpha_s_down
+                // During the classification, the code should check the status of alpha_s_up and alpha_s_down
                 // and react accordinly.
                 // 304400 --> 306000
                 // 316200 --> 325300

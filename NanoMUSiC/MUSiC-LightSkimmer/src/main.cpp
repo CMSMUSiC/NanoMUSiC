@@ -1,10 +1,12 @@
-#include "ROOT/RVec.hxx"
 #include "Skimmer.hpp"
+
 #include <cmath>
 #include <fmt/core.h>
 #include <limits>
 #include <optional>
 #include <stdexcept>
+
+#include "ROOT/RVec.hxx"
 
 auto main(int argc, char *argv[]) -> int
 {
@@ -142,79 +144,62 @@ auto main(int argc, char *argv[]) -> int
 
     auto dataframe = RDataFrame("Events"s, files_to_load);
 
+    bool transform_mc_weight = false;
+    if (not(configuration.is_data) and dataframe.HasColumn("LHEWeight_originalXWGTUP"))
+    {
+        auto genWeight = dataframe.Take<float, RVec<float>>("genWeight");
+        if (VecOps::All(genWeight.GetValue() == 1.f))
+        {
+            transform_mc_weight = true;
+        }
+    }
+
+    auto pre_skimmed_dataframe = dataframe.Define("DUMMY", "1.f");
+    if (not(configuration.is_data) and not(dataframe.HasColumn("LHEPdfWeight")))
+    {
+        pre_skimmed_dataframe = pre_skimmed_dataframe.Define("LHEPdfWeight", "ROOT::RVec<float>{}");
+    }
+    if (not(configuration.is_data) and not(dataframe.HasColumn("LHEScaleWeight")))
+    {
+        pre_skimmed_dataframe = pre_skimmed_dataframe.Define("LHEScaleWeight", "ROOT::RVec<float>{}");
+    }
+    if (not(configuration.is_data) and not(dataframe.HasColumn("LHEWeight_originalXWGTUP")))
+    {
+        pre_skimmed_dataframe = pre_skimmed_dataframe.Define("LHEWeight_originalXWGTUP", "1.f");
+    }
+    if (not(configuration.is_data) and not(dataframe.HasColumn("LHE_HT")))
+    {
+        pre_skimmed_dataframe = pre_skimmed_dataframe.Define("LHE_HT", "1.f");
+    }
+    if (not(configuration.is_data) and not(dataframe.HasColumn("LHE_HTIncoming")))
+    {
+        pre_skimmed_dataframe = pre_skimmed_dataframe.Define("LHE_HTIncoming", "1.f");
+    }
+    if (not(configuration.is_data) and not(dataframe.HasColumn("LHE_HTIncoming")))
+    {
+        pre_skimmed_dataframe = pre_skimmed_dataframe.Define("LHE_HTIncoming", "1.f");
+    }
+    // Define if does not exists
     auto skimmed_dataframe =
-        dataframe
-            // Define if does not exists
-            .Define("_LHEPdfWeight",
-                    [&configuration, &dataframe]() -> std::string_view
-                    {
-                        if (not(configuration.is_data) and dataframe.HasColumn("LHEPdfWeight"))
-                        {
-                            return "LHEPdfWeight"sv;
-                        }
-                        return "ROOT::RVec<float>{}"sv;
-                    }())
-            .Define("_LHEScaleWeight",
-                    [&configuration, &dataframe]() -> std::string_view
-                    {
-                        if (not(configuration.is_data) and dataframe.HasColumn("LHEScaleWeight"))
-                        {
-                            return "LHEScaleWeight"sv;
-                        }
-                        return "ROOT::RVec<float>(9,-1.)"sv;
-                    }())
-            .Define("_LHEWeight_originalXWGTUP",
-                    [&configuration, &dataframe]() -> std::string_view
-                    {
-                        if (not(configuration.is_data) and dataframe.HasColumn("LHEWeight_originalXWGTUP"))
-                        {
-                            return "LHEWeight_originalXWGTUP"sv;
-                        }
-                        return "-1."sv;
-                    }())
-            .Define("_LHE_HT",
-                    [&configuration, &dataframe]() -> std::string_view
-                    {
-                        if (not(configuration.is_data) and dataframe.HasColumn("LHE_HT"))
-                        {
-                            return "LHE_HT"sv;
-                        }
-                        return "-1."sv;
-                    }())
-            .Define("_LHE_HTIncoming",
-                    [&configuration, &dataframe]() -> std::string_view
-                    {
-                        if (not(configuration.is_data) and dataframe.HasColumn("LHE_HTIncoming"))
-                        {
-                            return "LHE_HTIncoming"sv;
-                        }
-                        return "-1."sv;
-                    }())
-            .Define("gen_weight",
-                    [&configuration, &dataframe]() -> std::string_view
+        pre_skimmed_dataframe
+            .Define("mc_weight",
+                    [&configuration, transform_mc_weight]() -> std::string_view
                     {
                         if (not(configuration.is_data))
                         {
-                            if (dataframe.HasColumn("LHEWeight_originalXWGTUP"))
-                            {
-                                return "LHEWeight_originalXWGTUP"sv;
-                            }
-                            else
-                            {
-                                return "genWeight"sv;
-                            }
+                            return transform_mc_weight ? "LHEWeight_originalXWGTUP"sv : "genWeight"sv;
                         }
                         return "1.f"sv;
                     }())
             // Dummy filter- Used only for setting total event counts
             .Filter(
-                [&cutflow_histo, &Cuts](float gen_weight) -> bool
+                [&cutflow_histo, &Cuts](float mc_weight) -> bool
                 {
-                    cutflow_histo.Fill(Cuts.index_of("NoCuts"), gen_weight);
+                    cutflow_histo.Fill(Cuts.index_of("NoCuts"), mc_weight);
 
                     return true;
                 },
-                {"gen_weight"})
+                {"mc_weight"})
             .Define("_LHEPart_pt",
                     [&configuration, &dataframe]() -> std::string_view
                     {
@@ -321,7 +306,7 @@ auto main(int argc, char *argv[]) -> int
                                                                   const RVec<Int_t> &_GenPart_pdgId,
                                                                   const RVec<Int_t> &_GenPart_status,
                                                                   const RVec<Int_t> &_GenPart_statusFlags,
-                                                                  float gen_weight) -> bool
+                                                                  float mc_weight) -> bool
                 {
                     bool pass_gen_filter = true;
                     // if MC
@@ -356,8 +341,8 @@ auto main(int argc, char *argv[]) -> int
                     }
                     if (pass_gen_filter)
                     {
-                        cutflow_histo.Fill(Cuts.index_of("GeneratorFilter"), gen_weight);
-                        cutflow_histo.Fill(Cuts.index_of("GeneratorWeight"), gen_weight);
+                        cutflow_histo.Fill(Cuts.index_of("GeneratorFilter"), mc_weight);
+                        cutflow_histo.Fill(Cuts.index_of("GeneratorWeight"), mc_weight);
                         return true;
                     }
                     return false;
@@ -377,32 +362,32 @@ auto main(int argc, char *argv[]) -> int
                  "_GenPart_pdgId",
                  "_GenPart_status",
                  "_GenPart_statusFlags",
-                 "gen_weight"})
+                 "mc_weight"})
             // Run/Lumi Filter
             .Filter(
                 [&cutflow_histo, &Cuts, &run_lumi_filter, &configuration](
-                    unsigned int run, unsigned int luminosityBlock, float gen_weight) -> bool
+                    unsigned int run, unsigned int luminosityBlock, float mc_weight) -> bool
                 {
                     if (run_lumi_filter(run, luminosityBlock, configuration.is_data))
                     {
-                        cutflow_histo.Fill(Cuts.index_of("RunLumi"), gen_weight);
+                        cutflow_histo.Fill(Cuts.index_of("RunLumi"), mc_weight);
                         return true;
                     }
                     return false;
                 },
-                {"run", "luminosityBlock", "gen_weight"})
+                {"run", "luminosityBlock", "mc_weight"})
             // nPV Filter
             .Filter(
-                [&cutflow_histo, &Cuts](int PV_npvsGood, float gen_weight) -> bool
+                [&cutflow_histo, &Cuts](int PV_npvsGood, float mc_weight) -> bool
                 {
                     if (PV_npvsGood > 0)
                     {
-                        cutflow_histo.Fill(Cuts.index_of("nPV"), gen_weight);
+                        cutflow_histo.Fill(Cuts.index_of("nPV"), mc_weight);
                         return true;
                     }
                     return false;
                 },
-                {"PV_npvsGood", "gen_weight"})
+                {"PV_npvsGood", "mc_weight"})
             // MET Filters (Flag)
             .Filter(
                 [&cutflow_histo, &Cuts](bool Flag_goodVertices,
@@ -414,13 +399,13 @@ auto main(int argc, char *argv[]) -> int
                                         bool Flag_BadPFMuonDzFilter,
                                         bool Flag_eeBadScFilter,
                                         bool Flag_ecalBadCalibFilter,
-                                        float gen_weight) -> bool
+                                        float mc_weight) -> bool
                 {
                     if (Flag_goodVertices and Flag_globalSuperTightHalo2016Filter and Flag_HBHENoiseFilter and
                         Flag_HBHENoiseIsoFilter and Flag_EcalDeadCellTriggerPrimitiveFilter and Flag_BadPFMuonFilter and
                         Flag_BadPFMuonDzFilter and Flag_eeBadScFilter and Flag_ecalBadCalibFilter)
                     {
-                        cutflow_histo.Fill(Cuts.index_of("METFilters"), gen_weight);
+                        cutflow_histo.Fill(Cuts.index_of("METFilters"), mc_weight);
                         return true;
                     }
                     return false;
@@ -434,17 +419,9 @@ auto main(int argc, char *argv[]) -> int
                  "Flag_BadPFMuonDzFilter",
                  "Flag_eeBadScFilter",
                  "Flag_ecalBadCalibFilter",
-                 "gen_weight"})
+                 "mc_weight"})
             //  Define trigger columns
             .Define("pass_low_pt_muon_trigger",
-                    // [](bool HLT_IsoMu24) -> bool
-                    // {
-                    // if (HLT_IsoMu24)
-                    // {
-                    //     return true;
-                    // }
-                    // return false;
-
                     [&configuration]() -> std::string_view
                     {
                         if (configuration.year == Year::Run2016APV)
@@ -456,14 +433,19 @@ auto main(int argc, char *argv[]) -> int
                         {
                             return "HLT_IsoMu24 or HLT_IsoTkMu24"sv;
                         }
+
                         if (configuration.year == Year::Run2017)
                         {
                             return "HLT_IsoMu27"sv;
                         }
+
                         if (configuration.year == Year::Run2018)
                         {
                             return "HLT_IsoMu24"sv;
                         }
+                        throw std::invalid_argument(
+                            fmt::format("ERROR: Could not define trigger bits. The requested year ({}) is invalid.",
+                                        configuration.year_str));
                     }())
             .Define("pass_high_pt_muon_trigger",
                     [](bool HLT_Mu50, bool HLT_TkMu100, bool HLT_OldMu100) -> bool
@@ -523,12 +505,12 @@ auto main(int argc, char *argv[]) -> int
                                         bool pass_high_pt_electron_trigger,
                                         bool pass_jet_ht_trigger,
                                         bool pass_jet_pt_trigger,
-                                        float gen_weight) -> bool
+                                        float mc_weight) -> bool
                 {
                     if (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger or pass_low_pt_electron_trigger or
                         pass_high_pt_electron_trigger or pass_jet_ht_trigger or pass_jet_pt_trigger)
                     {
-                        cutflow_histo.Fill(Cuts.index_of("TriggerCut"), gen_weight);
+                        cutflow_histo.Fill(Cuts.index_of("TriggerCut"), mc_weight);
                         return true;
                     }
                     return false;
@@ -539,221 +521,7 @@ auto main(int argc, char *argv[]) -> int
                  "pass_high_pt_electron_trigger",
                  "pass_jet_ht_trigger",
                  "pass_jet_pt_trigger",
-                 "gen_weight"})
-            // // Object Pre-object_selection
-            // // Muons
-            // .Define("good_muons",
-            //         [&configuration](const RVec<float> &Muon_eta,
-            //                          const RVec<bool> &Muon_tightId,
-            //                          const RVec<UChar_t> &Muon_highPtId,
-            //                          const RVec<float> &Muon_pfRelIso04_all,
-            //                          const RVec<float> &Muon_tkRelIso) -> RVec<int>
-            //         {
-            //             const auto good_eta = VecOps::abs(Muon_eta) <=
-            //             ObjConfig::Muons[configuration.year].MaxAbsEta; const auto good_id = (Muon_highPtId >= 2)
-            //             || (Muon_tightId); const auto good_iso =
-            //                 (Muon_pfRelIso04_all < ObjConfig::Muons[configuration.year].PFRelIso_WP) ||
-            //                 (Muon_tkRelIso < ObjConfig::Muons[configuration.year].TkRelIso_WP);
-
-            //             return good_eta && good_id && good_iso;
-            //         },
-            //         {"Muon_eta", "Muon_tightId", "Muon_highPtId", "Muon_pfRelIso04_all", "Muon_tkRelIso"})
-            // .Redefine("Muon_pt",
-            //           [](const RVec<float> &Muon_pt, const RVec<int> &good_muons)
-            //           {
-            //               return Muon_pt[good_muons];
-            //           },
-            //           {
-            //               "Muon_pt",
-            //               "good_muons",
-            //           })
-            // .Redefine("Muon_eta",
-            //           [](const RVec<float> &Muon_eta, const RVec<int> &good_muons)
-            //           {
-            //               return Muon_eta[good_muons];
-            //           },
-            //           {
-            //               "Muon_eta",
-            //               "good_muons",
-            //           })
-            // .Redefine("Muon_phi",
-            //           [](const RVec<float> &Muon_phi, const RVec<int> &good_muons)
-            //           {
-            //               return Muon_phi[good_muons];
-            //           },
-            //           {
-            //               "Muon_phi",
-            //               "good_muons",
-            //           })
-            // .Redefine("Muon_tightId",
-            //           [](const RVec<bool> &Muon_tightId, const RVec<int> &good_muons)
-            //           {
-            //               return Muon_tightId[good_muons];
-            //           },
-            //           {
-            //               "Muon_tightId",
-            //               "good_muons",
-            //           })
-            // .Redefine("Muon_highPtId",
-            //           [](const RVec<UChar_t> &Muon_highPtId, const RVec<int> &good_muons)
-            //           {
-            //               return Muon_highPtId[good_muons];
-            //           },
-            //           {
-            //               "Muon_highPtId",
-            //               "good_muons",
-            //           })
-            // .Redefine("Muon_pfRelIso04_all",
-            //           [](const RVec<float> &Muon_pfRelIso04_all, const RVec<int> &good_muons)
-            //           {
-            //               return Muon_pfRelIso04_all[good_muons];
-            //           },
-            //           {
-            //               "Muon_pfRelIso04_all",
-            //               "good_muons",
-            //           })
-            // .Redefine("Muon_tkRelIso",
-            //           [](const RVec<float> &Muon_tkRelIso, const RVec<int> &good_muons)
-            //           {
-            //               return Muon_tkRelIso[good_muons];
-            //           },
-            //           {
-            //               "Muon_tkRelIso",
-            //               "good_muons",
-            //           })
-            // .Redefine("Muon_highPurity",
-            //           [](const RVec<bool> &Muon_highPurity, const RVec<int> &good_muons)
-            //           {
-            //               return Muon_highPurity[good_muons];
-            //           },
-            //           {
-            //               "Muon_highPurity",
-            //               "good_muons",
-            //           })
-            // .Redefine("Muon_tunepRelPt",
-            //           [](const RVec<float> &Muon_tunepRelPt, const RVec<int> &good_muons)
-            //           {
-            //               return Muon_tunepRelPt[good_muons];
-            //           },
-            //           {
-            //               "Muon_tunepRelPt",
-            //               "good_muons",
-            //           })
-            // // Electrons
-            // .Define("good_electrons",
-            //         [&configuration](const RVec<float> &Electron_eta,
-            //                          const RVec<float> &Electron_deltaEtaSC,
-            //                          const RVec<int> &Electron_cutBased,
-            //                          const RVec<bool> &Electron_cutBased_HEEP) -> RVec<int>
-            //         {
-            //             return ((VecOps::abs(Electron_eta + Electron_deltaEtaSC) <= 1.442) ||
-            //                     ((VecOps::abs(Electron_eta + Electron_deltaEtaSC) >= 1.566) &&
-            //                      (VecOps::abs(Electron_eta + Electron_deltaEtaSC) <= 2.5))) &&
-            //                    ((Electron_cutBased >= ObjConfig::Electrons[configuration.year].cutBasedId) ||
-            //                     (Electron_cutBased_HEEP));
-            //         },
-            //         {"Electron_eta", "Electron_deltaEtaSC", "Electron_cutBased", "Electron_cutBased_HEEP"})
-            // .Redefine("Electron_pt", "Electron_pt[good_electrons]")
-            // .Redefine("Electron_eta", "Electron_eta[good_electrons]")
-            // .Redefine("Electron_phi", "Electron_phi[good_electrons]")
-            // .Redefine("Electron_cutBased", "Electron_cutBased[good_electrons]")
-            // .Redefine("Electron_cutBased_HEEP", "Electron_cutBased_HEEP[good_electrons]")
-            // .Redefine("Electron_deltaEtaSC", "Electron_deltaEtaSC[good_electrons]")
-            // .Redefine("Electron_dEscaleDown", "Electron_dEscaleDown[good_electrons]")
-            // .Redefine("Electron_dEscaleUp", "Electron_dEscaleUp[good_electrons]")
-            // .Redefine("Electron_dEsigmaDown", "Electron_dEsigmaDown[good_electrons]")
-            // .Redefine("Electron_dEsigmaUp", "Electron_dEsigmaUp[good_electrons]")
-            // .Redefine("Electron_eCorr", "Electron_eCorr[good_electrons]")
-            // // Photons
-            // .Define("good_photons",
-            //         [&configuration](const RVec<bool> &Photon_isScEtaEB,
-            //                          const RVec<bool> &Photon_isScEtaEE,
-            //                          const RVec<int> &Photon_cutBased,
-            //                          const RVec<bool> &Photon_pixelSeed) -> RVec<int>
-            //         {
-            //             return (Photon_isScEtaEB)        //
-            //                    && (not Photon_isScEtaEE) // only EB photons
-            //                    && (Photon_cutBased >= ObjConfig::Photons[configuration.year].cutBasedId) //
-            //                    && (Photon_pixelSeed == false);
-            //         },
-            //         {"Photon_isScEtaEB", "Photon_isScEtaEE", "Photon_cutBased", "Photon_pixelSeed"})
-            // .Redefine("Photon_pt", "Photon_pt[good_photons]")
-            // .Redefine("Photon_eta", "Photon_eta[good_photons]")
-            // .Redefine("Photon_phi", "Photon_phi[good_photons]")
-            // .Redefine("Photon_cutBased", "Photon_cutBased[good_photons]")
-            // .Redefine("Photon_pixelSeed", "Photon_pixelSeed[good_photons]")
-            // .Redefine("Photon_isScEtaEB", "Photon_isScEtaEB[good_photons]")
-            // .Redefine("Photon_isScEtaEE", "Photon_isScEtaEE[good_photons]")
-            // // Jets
-            // .Define("good_jets",
-            //         [&configuration](const RVec<float> &Jet_eta, const RVec<int> &Jet_jetId) -> RVec<int>
-            //         {
-            //             return (VecOps::abs(Jet_eta) <= ObjConfig::Jets[configuration.year].MaxAbsEta) &&
-            //                    (Jet_jetId >= ObjConfig::Jets[configuration.year].MinJetID);
-            //         },
-            //         {
-            //             "Jet_eta",
-            //             "Jet_jetId",
-            //         })
-            // .Redefine("Jet_pt", "Jet_pt[good_jets]")
-            // .Redefine("Jet_eta", "Jet_eta[good_jets]")
-            // .Redefine("Jet_phi", "Jet_phi[good_jets]")
-            // .Redefine("Jet_mass", "Jet_mass[good_jets]")
-            // .Redefine("Jet_jetId", "Jet_jetId[good_jets]")
-            // .Redefine("Jet_btagDeepFlavB", "Jet_btagDeepFlavB[good_jets]")
-            // .Redefine("Jet_rawFactor", "Jet_rawFactor[good_jets]")
-            // .Redefine("Jet_area", "Jet_area[good_jets]")
-            // .Redefine(
-            //     [&configuration]()
-            //     {
-            //         if (configuration.is_data)
-            //         {
-            //             return "Jet_pt"sv;
-            //         }
-            //         return "Jet_genJetIdx"sv;
-            //     }(),
-            //     [&configuration]()
-            //     {
-            //         if (configuration.is_data)
-            //         {
-            //             return "Jet_pt"sv;
-            //         }
-            //         return "Jet_genJetIdx[good_jets]"sv;
-            //     }())
-            // .Redefine(
-            //     [&configuration]()
-            //     {
-            //         if (configuration.is_data)
-            //         {
-            //             return "Jet_pt"sv;
-            //         }
-            //         return "Jet_hadronFlavour"sv;
-            //     }(),
-            //     [&configuration]()
-            //     {
-            //         if (configuration.is_data)
-            //         {
-            //             return "Jet_pt"sv;
-            //         }
-            //         return "Jet_hadronFlavour[good_jets]"sv;
-            //     }())
-            // // At least one good object Filter
-            // .Filter(
-            //     [&cutflow_histo, &Cuts](const RVec<int> &good_muons,
-            //                                                           const RVec<int> &good_electrons,
-            //                                                           const RVec<int> &good_photons,
-            //                                                           const RVec<int> &good_jets, float gen_weight)
-            //                                                           -> bool
-            //     {
-            //         if (VecOps::Sum(good_muons) > 0 or VecOps::Sum(good_electrons) > 0 or
-            //             VecOps::Sum(good_photons) > 0 or VecOps::Sum(good_jets) > 0)
-            //         {
-            //             cutflow_histo.Fill(Cuts.index_of("AtLeastOneSelectedObject"), gen_weight);
-            //             return true;
-            //         }
-            //         return false;
-            //     },
-            //     {"good_muons", "good_electrons", "good_photons", "good_jets", "gen_weight"})
+                 "mc_weight"})
             // Dummy filter - Used only for event counting
             .Filter(
                 [&event_counter, &dTime1, &cutflow_histo]() -> bool

@@ -53,7 +53,13 @@ using namespace ROOT::Math;
 using namespace ROOT::VecOps;
 
 template <typename T>
-auto make_value_reader(TTreeReader &tree_reader, const std::string &leaf) -> std::optional<TTreeReaderValue<T>>
+using OptValueReader_t = std::optional<TTreeReaderValue<T>>;
+
+template <typename T>
+using OptArrayReader_t = std::optional<TTreeReaderArray<T>>;
+
+template <typename T>
+auto make_value_reader(TTreeReader &tree_reader, const std::string &leaf) -> OptValueReader_t<T>
 {
     if (tree_reader.GetTree()->GetLeaf(leaf.c_str()) != nullptr)
     {
@@ -65,7 +71,7 @@ auto make_value_reader(TTreeReader &tree_reader, const std::string &leaf) -> std
 }
 
 template <typename T>
-auto make_array_reader(TTreeReader &tree_reader, const std::string &leaf) -> std::optional<TTreeReaderArray<T>>
+auto make_array_reader(TTreeReader &tree_reader, const std::string &leaf) -> OptArrayReader_t<T>
 {
     if (tree_reader.GetTree()->GetLeaf(leaf.c_str()) != nullptr)
     {
