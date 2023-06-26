@@ -16,6 +16,7 @@ class Shifts
   public:
     Shifts(bool is_data)
         : m_shifts(is_data ? std::vector<std::string>{"Nominal"}
+
                            : std::vector<std::string>{"Nominal",                 //
                                                       "PU_Up",                   //
                                                       "PU_Down",                 //
