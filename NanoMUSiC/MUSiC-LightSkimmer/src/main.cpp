@@ -169,16 +169,13 @@ auto main(int argc, char *argv[]) -> int
     }
     if (not(configuration.is_data) and not(dataframe.HasColumn("LHE_HT")))
     {
-        pre_skimmed_dataframe = pre_skimmed_dataframe.Define("LHE_HT", "1.f");
+        pre_skimmed_dataframe = pre_skimmed_dataframe.Define("LHE_HT", "0.f");
     }
     if (not(configuration.is_data) and not(dataframe.HasColumn("LHE_HTIncoming")))
     {
-        pre_skimmed_dataframe = pre_skimmed_dataframe.Define("LHE_HTIncoming", "1.f");
+        pre_skimmed_dataframe = pre_skimmed_dataframe.Define("LHE_HTIncoming", "0.f");
     }
-    if (not(configuration.is_data) and not(dataframe.HasColumn("LHE_HTIncoming")))
-    {
-        pre_skimmed_dataframe = pre_skimmed_dataframe.Define("LHE_HTIncoming", "1.f");
-    }
+
     // Define if does not exists
     auto skimmed_dataframe =
         pre_skimmed_dataframe
@@ -389,37 +386,50 @@ auto main(int argc, char *argv[]) -> int
                 },
                 {"PV_npvsGood", "mc_weight"})
             // MET Filters (Flag)
+            .Define("pass_met_filters",
+                    [&configuration]() -> std::string_view
+                    {
+                        if (configuration.year == Year::Run2016APV or configuration.year == Year::Run2016)
+                        {
+                            return "Flag_goodVertices
+                                   && Flag_globalSuperTightHalo2016Filter && Flag_HBHENoiseFilter &&
+                                   Flag_HBHENoiseIsoFilter && Flag_EcalDeadCellTriggerPrimitiveFilter &&
+                                   Flag_BadPFMuonFilter && Flag_BadPFMuonDzFilter && Flag_eeBadScFilter "sv;
+                        }
+
+                        if (configuration.year == Year::Run2017 or configuration.year == Year::Run2018)
+                        {
+                            return "Flag_goodVertices
+                                   && Flag_globalSuperTightHalo2016Filter && Flag_HBHENoiseFilter &&
+                                   Flag_HBHENoiseIsoFilter && Flag_EcalDeadCellTriggerPrimitiveFilter &&
+                                   Flag_BadPFMuonFilter && Flag_BadPFMuonDzFilter && Flag_eeBadScFilter &&
+                                   Flag_ecalBadCalibFilter "sv;
+                        }
+
+                        if (configuration.year == Year::Run2017)
+                        {
+                            return "HLT_IsoMu27"sv;
+                        }
+
+                        if (configuration.year == Year::Run2018)
+                        {
+                            return "HLT_IsoMu24"sv;
+                        }
+                        throw std::invalid_argument(
+                            fmt::format("ERROR: Could not define trigger bits. The requested year ({}) is invalid.",
+                                        configuration.year_str));
+                    }())
             .Filter(
-                [&cutflow_histo, &Cuts](bool Flag_goodVertices,
-                                        bool Flag_globalSuperTightHalo2016Filter,
-                                        bool Flag_HBHENoiseFilter,
-                                        bool Flag_HBHENoiseIsoFilter,
-                                        bool Flag_EcalDeadCellTriggerPrimitiveFilter,
-                                        bool Flag_BadPFMuonFilter,
-                                        bool Flag_BadPFMuonDzFilter,
-                                        bool Flag_eeBadScFilter,
-                                        bool Flag_ecalBadCalibFilter,
-                                        float mc_weight) -> bool
+                [&cutflow_histo, &Cuts](bool pass_met_filters, float mc_weight) -> bool
                 {
-                    if (Flag_goodVertices and Flag_globalSuperTightHalo2016Filter and Flag_HBHENoiseFilter and
-                        Flag_HBHENoiseIsoFilter and Flag_EcalDeadCellTriggerPrimitiveFilter and Flag_BadPFMuonFilter and
-                        Flag_BadPFMuonDzFilter and Flag_eeBadScFilter and Flag_ecalBadCalibFilter)
+                    if (pass_met_filters)
                     {
                         cutflow_histo.Fill(Cuts.index_of("METFilters"), mc_weight);
                         return true;
                     }
                     return false;
                 },
-                {"Flag_goodVertices",
-                 "Flag_globalSuperTightHalo2016Filter",
-                 "Flag_HBHENoiseFilter",
-                 "Flag_HBHENoiseIsoFilter",
-                 "Flag_EcalDeadCellTriggerPrimitiveFilter",
-                 "Flag_BadPFMuonFilter",
-                 "Flag_BadPFMuonDzFilter",
-                 "Flag_eeBadScFilter",
-                 "Flag_ecalBadCalibFilter",
-                 "mc_weight"})
+                {"pass_met_filters", "mc_weight"})
             //  Define trigger columns
             .Define("pass_low_pt_muon_trigger",
                     [&configuration]() -> std::string_view
@@ -448,35 +458,68 @@ auto main(int argc, char *argv[]) -> int
                                         configuration.year_str));
                     }())
             .Define("pass_high_pt_muon_trigger",
-                    [](bool HLT_Mu50, bool HLT_TkMu100, bool HLT_OldMu100) -> bool
+                    [&configuration]() -> std::string_view
                     {
-                        if (HLT_Mu50 or HLT_TkMu100 or HLT_OldMu100)
+                        if (configuration.year == Year::Run2016APV)
                         {
-                            return true;
+                            return "HLT_Mu50 or HLT_TkMu50"sv;
                         }
-                        return false;
-                    },
-                    {"HLT_Mu50", "HLT_TkMu100", "HLT_OldMu100"})
+
+                        if (configuration.year == Year::Run2016)
+                        {
+                            return "HLT_Mu50 or HLT_TkMu50"sv;
+                        }
+                        if (configuration.year == Year::Run2017)
+                        {
+                            return "HLT_Mu50 or HLT_TkMu100 or HLT_OldMu100"sv;
+                        }
+                        if (configuration.year == Year::Run2018)
+                        {
+                            return "HLT_Mu50 or HLT_TkMu100 or HLT_OldMu100"sv;
+                        }
+                    }())
             .Define("pass_low_pt_electron_trigger",
-                    [](bool HLT_Ele32_WPTight_Gsf, bool HLT_Photon200) -> bool
+                    [&configuration]() -> std::string_view
                     {
-                        if (HLT_Ele32_WPTight_Gsf or HLT_Photon200)
+                        if (configuration.year == Year::Run2016APV)
                         {
-                            return true;
+                            return "HLT_Ele27_WPTight_Gsf or HLT_Photon175"sv;
                         }
-                        return false;
-                    },
-                    {"HLT_Ele32_WPTight_Gsf", "HLT_Photon200"})
+
+                        if (configuration.year == Year::Run2016)
+                        {
+                            return "HLT_Ele27_WPTight_Gsf or HLT_Photon175"sv;
+                        }
+                        if (configuration.year == Year::Run2017)
+                        {
+                            return "HLT_Ele35_WPTight_Gsf or HLT_Photon200"sv;
+                        }
+                        if (configuration.year == Year::Run2018)
+                        {
+                            return "HLT_Ele35_WPTight_Gsf or HLT_Photon200"sv;
+                        }
+                    }())
             .Define("pass_high_pt_electron_trigger",
-                    [](bool HLT_Ele32_WPTight_Gsf, bool HLT_Photon200, bool HLT_Ele115_CaloIdVT_GsfTrkIdT) -> bool
+                    [&configuration]() -> std::string_view
                     {
-                        if (HLT_Ele32_WPTight_Gsf or HLT_Photon200 or HLT_Ele115_CaloIdVT_GsfTrkIdT)
+                        if (configuration.year == Year::Run2016APV)
                         {
-                            return true;
+                            return "HLT_Ele27_WPTight_Gsf or HLT_Photon175 or HLT_Ele115_CaloIdVT_GsfTrkIdT"sv;
                         }
-                        return false;
-                    },
-                    {"HLT_Ele32_WPTight_Gsf", "HLT_Photon200", "HLT_Ele115_CaloIdVT_GsfTrkIdT"})
+
+                        if (configuration.year == Year::Run2016)
+                        {
+                            return "HLT_Ele27_WPTight_Gsf or HLT_Photon175 or HLT_Ele115_CaloIdVT_GsfTrkIdT"sv;
+                        }
+                        if (configuration.year == Year::Run2017)
+                        {
+                            return "HLT_Ele35_WPTight_Gsf or HLT_Photon200 or HLT_Ele115_CaloIdVT_GsfTrkIdT"sv;
+                        }
+                        if (configuration.year == Year::Run2018)
+                        {
+                            return "HLT_Ele32_WPTight_Gsf or HLT_Photon200 or HLT_Ele115_CaloIdVT_GsfTrkIdT"sv;
+                        }
+                    }())
             .Define("pass_jet_ht_trigger",
                     [](bool HLT_PFHT1050) -> bool
                     {
