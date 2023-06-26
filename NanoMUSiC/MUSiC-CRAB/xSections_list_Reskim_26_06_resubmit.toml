@@ -1,0 +1,59 @@
+
+[DYJetsToLL_LHEFilterPtZ-100To250_MatchEWPDG20_13TeV_AM]
+XSec = 84.97
+FilterEff = 0.3386
+kFactor = 1.0
+XSecOrder = "NLO"
+ProcessGroup = "DrellYan"
+generator_filter_key = "dyjets_mass_less_120"
+is_data = false
+das_name_2018 = ["/DYJetsToLL_LHEFilterPtZ-100To250_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM"]
+
+[DYJetsToLL_LHEFilterPtZ-250To400_MatchEWPDG20_13TeV_AM]
+XSec = 2.906
+FilterEff = 0.4402
+kFactor = 1.0
+XSecOrder = "NLO"
+ProcessGroup = "DrellYan"
+generator_filter_key = "dyjets_mass_less_120"
+is_data = false
+das_name_2018 = ["/DYJetsToLL_LHEFilterPtZ-250To400_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM"]
+
+[DYJetsToLL_LHEFilterPtZ-400To650_MatchEWPDG20_13TeV_AM]
+XSec = 0.4352
+FilterEff = 0.5951
+kFactor = 1.0
+XSecOrder = "NLO"
+ProcessGroup = "DrellYan"
+generator_filter_key = "dyjets_mass_less_120"
+is_data = false
+das_name_2018 = ["/DYJetsToLL_LHEFilterPtZ-400To650_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM"]
+
+[DYJetsToLL_LHEFilterPtZ-50To100_MatchEWPDG20_13TeV_AM]
+XSec = 361.7
+FilterEff = 0.2254
+kFactor = 1.0
+XSecOrder = "NLO"
+ProcessGroup = "DrellYan"
+generator_filter_key = "dyjets_mass_less_120"
+is_data = false
+das_name_2018 = ["/DYJetsToLL_LHEFilterPtZ-50To100_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM"]
+
+[DYJetsToLL_LHEFilterPtZ-650ToInf_MatchEWPDG20_13TeV_AM]
+XSec = 0.05448
+FilterEff = 0.6898
+kFactor = 1.0
+XSecOrder = "NLO"
+ProcessGroup = "DrellYan"
+generator_filter_key = "dyjets_mass_less_120"
+is_data = false
+das_name_2018 = ["/DYJetsToLL_LHEFilterPtZ-650ToInf_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM"]
+
+[DYToEE_M-3500To4500_13TeV_PH]
+XSec = 4.135e-06
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "NLO"
+ProcessGroup = "DrellYan"
+is_data = false
+das_name_2018 = ["/DYToEE_M-3500To4500_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM"]

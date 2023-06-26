@@ -97,6 +97,17 @@ const std::map<std::string,
              return dy_filter(lhe_particles, 50., 120., 0., MAX_FLOAT, h_debug);
          }},
 
+        // ADDED BECAUSE IT WAS MISSING
+        //  DY Jets - pT binned
+        {"dyjets_mass_less_120"s,
+         [](const NanoObjects::LHEParticles &lhe_particles,
+            const NanoObjects::GenParticles &gen_particles,
+            Year &year,
+            debugger_t &h_debug) -> bool
+         {
+             return dy_filter(lhe_particles, 0., 120., 0., MAX_FLOAT, h_debug);
+         }},
+
         // DY Jets - Inclusive
         {"dyjets_pt_less_50_mass_less_120"s,
          [](const NanoObjects::LHEParticles &lhe_particles,

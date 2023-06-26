@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////
-///////////     JET CLASS 2D VALIDATION CODE        ///////////
-///////////      2D angular plots, only stat err   ///////////
+///////////       JET CLASS VALIDATION CODE        ///////////
+///////////           with systematics!            ///////////
 //////////////////////////////////////////////////////////////
 
 #include "HeavyValidation.hpp"
@@ -62,10 +62,48 @@ inline auto update_class(std::set<std::string> &eventclass,
         zero_class_map(classes, classes_stat, systematics, c_name);
         for (const auto &s_name : systematics)
         {
-            classes[c_name][s_name] += weight[s_name];                     // add weight to class count
+            classes[c_name][s_name] += weight[s_name]; // add weight to class count
             classes_stat[c_name] += weight["nominal"] * weight["nominal"]; // add weight^2 to syst_err^2
         }
     }
+}
+
+// string parser (separate string to set/vector of substrings)
+auto parsestring_set(const std::string &input, const char &separator) -> std::set<std::string>
+{
+    std::set<std::string> output;
+    int startIndex = 0;
+    int endIndex = 0;
+    for (int i = 0; i <= (int)input.size(); i++)
+    {
+        if (input[i] == separator || i == (int)input.size())
+        {
+            endIndex = i;
+            std::string temp;
+            temp.append(input, startIndex, endIndex - startIndex);
+            output.insert(temp); // store different classnames in the set
+            startIndex = endIndex + 1;
+        }
+    }
+    return output;
+}
+auto parsestring_vec(const std::string &input, const char &separator) -> std::vector<std::string>
+{
+    std::vector<std::string> output;
+    int startIndex = 0;
+    int endIndex = 0;
+    for (int i = 0; i <= (int)input.size(); i++)
+    {
+        if (input[i] == separator || i == (int)input.size())
+        {
+            endIndex = i;
+            std::string temp;
+            temp.append(input, startIndex, endIndex - startIndex);
+            output.push_back(temp); // store different classnames in the set
+            startIndex = endIndex + 1;
+        }
+    }
+    return output;
 }
 
 // main function
@@ -208,21 +246,17 @@ auto main(int argc, char *argv[]) -> int
     // format: "xJ+yBJ"/"xJ+yBJ+X"/"xJ+yBJ+nJ" for exclusive/all-inclusive/jet-inclusive class containing x jets and y
     // bjets is currently extracted from the -tv argument: -tv argument string: "classname1,classname2..." has to be
     // separated
-    std::vector<std::vector<int>> ptbins{
-        {0, 100},
-        {100, 200},
-        {200, 300},
-        {300, 400},
-        {400, 500},
-        {500, 600},
-        {600, 700},
-    };
-    std::string class_prefix = "2J+0BJ+0MET_";
-    std::set<std::string> to_validate;
-    for (size_t i = 0; i < ptbins.size(); i++)
+    auto to_validate = parsestring_set(tv_argument, ',');
+    bool plotclasses = false;                            // at least one class validation should be executed
+    bool countclasses = false;                           // the class counts should be calculated
+    if (to_validate.find("COUNTS") != to_validate.end()) // check whether class counts should be calculated
     {
-        to_validate.insert(class_prefix + std::to_string(ptbins.at(i).at(0)) + "_" +
-                           std::to_string(ptbins.at(i).at(1)));
+        countclasses = true;
+        to_validate.erase("COUNTS"); // erase element because it is not a class name
+    }
+    if (to_validate.size() >= 1) // check whether a class validation (create histograms for class) should be executed
+    {
+        plotclasses = true;
     }
 
     // systematics prefixes (systnames):
@@ -232,6 +266,12 @@ auto main(int argc, char *argv[]) -> int
     std::set<std::string> systematics{
         // holds all systematics, the specific systematics are merged into this set
         "nominal",
+        "up_lumi", // lumi
+        "down_lumi",
+        "up_xsec", // cross section (for each pertubation order)
+        "down_xsec",
+        "up_pu",   // pile-up
+        "down_pu",
     };
 
     // create the classification instances
@@ -241,16 +281,63 @@ auto main(int argc, char *argv[]) -> int
     }
     // jet classification instances: saved in a map {classname: pointer to jet class validation instance}
     // nl: nominal, up: systematic up, dn: systematic down
-    std::map<std::string, std::map<std::string, JetClass2D *>> validation_classes;
+    std::map<std::string, std::map<std::string, JetClass2 *>> validation_classes;
     // stores validation classes: {classname: {systname: jetclass instance pointer}}
     // fill maps
-    for (const auto &c_name : to_validate)
+    if (plotclasses) // only if classes should be plotted
     {
-        for (const auto &s_name : systematics)
+        for (const auto &c_name : to_validate)
         {
-            validation_classes[c_name][s_name] =
-                new JetClass2D(fmt::format("{}/{}_{}_{}_{}.root", output_path, c_name, s_name, process, year), c_name);
-            // file format: classname_systname_samplename_year.root
+            for (const auto &s_name : systematics)
+            {
+                validation_classes[c_name][s_name] = new JetClass2(
+                    fmt::format("{}/{}_{}_{}_{}.root", output_path, c_name, s_name, process, year), c_name);
+                // file format: classname_systname_samplename_year.root
+            }
+        }
+    }
+
+    // classes event counts map: {classname: {systname: counts}}
+    std::map<std::string, std::map<std::string, float>> classes;
+    // classes event counts systematic errors map: {classname: {squared syst error}}
+    std::map<std::string, float> classes_stat;
+
+    // quality control to order argument
+    const std::set<std::string> allowed_orders{"LO", "NLO", "NNLO", "N3LO"};
+    if (!is_data and (allowed_orders.find(order) == allowed_orders.end()))
+    {
+        throw std::runtime_error(fmt::format("Invalid order given: {}", order));
+    }
+    // definition of cross section uncertainties
+    const std::map<std::string, float> x_sec_uncertainty{
+        {"LO", 0.5},
+        {"NLO", 0},
+        {"NNLO", 0},
+        {"N3LO", 0},
+    };
+
+    // read in demanded jet triggers and thresholds from argument
+    if (debugprint)
+    {
+        std::cout << "Read in trigger information." << std::endl;
+    }
+    // is currently extracted from the -trg argument:
+    // -tv argument string: "HT1600,PT600" has to be separated
+    std::vector<bool> trigger_flags{false, false};   // contains {PT on/off, HT on/off }
+    std::vector<float> trigger_thresholds{0.f, 0.f}; // contains {PT thres, HT thres}
+    auto trigger_strings = parsestring_set(trigger_argument, ',');
+    for (const auto &trigger_string : trigger_strings)
+    {
+        auto trigger_parameters = parsestring_vec(trigger_string, 'T'); // vector that contains {"P"/"H", "number"}
+        if (trigger_parameters.at(0) == "P")
+        {
+            trigger_flags.at(0) = true;
+            trigger_thresholds.at(0) = std::stof(trigger_parameters.at(1));
+        }
+        else if (trigger_parameters.at(0) == "H")
+        {
+            trigger_flags.at(1) = true;
+            trigger_thresholds.at(1) = std::stof(trigger_parameters.at(1));
         }
     }
 
@@ -302,25 +389,76 @@ auto main(int argc, char *argv[]) -> int
         // calculate effective event weight
 
         // create weight set
-        std::map<std::string, float> weight{{"nominal", 1.f}};
+        std::map<std::string, float> weight;   // {systname: weight}
+        for (const auto &s_name : systematics) // fill with ones as default value (for data)
+        {
+            weight[s_name] = 1.f;
+        }
 
         if (not(is_data))
         {
             float const_weights = 1.f;
             std::map<std::string, float> pu_weight;
             pu_weight["nominal"] = pu_corrector->evaluate({unwrap(Pileup_nTrueInt), "nominal"});
+            pu_weight["up"] = pu_corrector->evaluate({unwrap(Pileup_nTrueInt), "up"});
+            pu_weight["down"] = pu_corrector->evaluate({unwrap(Pileup_nTrueInt), "down"});
 
             // calculate event weight
-            weight["nominal"] = const_weights * unwrap(gen_weight) * pu_weight["nominal"] * generator_filter / no_cuts /
-                                generator_filter * effective_x_section;
-            // weight = const_weights * gen_weight * pu_weight * xsection * filter_eff * k_factor * luminosity /
-            // no_cuts | python calculates: effective_x_section = xsection * filter_eff * k_factor * luminosity
-            // (is the weighting formula of the MUSiC AN p.9)
+            for (const auto &s_name : systematics) // fill with ones
+            {
+                if (s_name == "up_lumi")           // lumi syst + 2.5%
+                {
+                    weight[s_name] = const_weights * unwrap(gen_weight) * pu_weight["nominal"] * generator_filter /
+                                     no_cuts / generator_filter * effective_x_section * (1 + 0.025);
+                }
+                else if (s_name == "down_lumi") // lumi syst - 2.5%
+                {
+                    weight[s_name] = const_weights * unwrap(gen_weight) * pu_weight["nominal"] * generator_filter /
+                                     no_cuts / generator_filter * effective_x_section * (1 - 0.025);
+                }
+                else if (s_name == "up_xsec") // cross section uncertainty depending on order up
+                {
+                    weight[s_name] = const_weights * unwrap(gen_weight) * pu_weight["nominal"] * generator_filter /
+                                     no_cuts / generator_filter * effective_x_section *
+                                     (1 + x_sec_uncertainty.at(order));
+                }
+                else if (s_name == "down_xsec") // cross section uncertainty depending on order down
+                {
+                    weight[s_name] = const_weights * unwrap(gen_weight) * pu_weight["nominal"] * generator_filter /
+                                     no_cuts / generator_filter * effective_x_section *
+                                     (1 - x_sec_uncertainty.at(order));
+                }
+                else if (s_name == "up_pu") // pileup uncertainty up
+                {
+                    weight[s_name] = const_weights * unwrap(gen_weight) * pu_weight["up"] * generator_filter / no_cuts /
+                                     generator_filter * effective_x_section;
+                }
+                else if (s_name == "down_pu") // pileup uncertainty down
+                {
+                    weight[s_name] = const_weights * unwrap(gen_weight) * pu_weight["down"] * generator_filter /
+                                     no_cuts / generator_filter * effective_x_section;
+                }
+                else // fill all other with nominal value
+                {
+                    weight[s_name] = const_weights * unwrap(gen_weight) * pu_weight["nominal"] * generator_filter /
+                                     no_cuts / generator_filter * effective_x_section;
+                    // weight = const_weights * gen_weight * pu_weight * xsection * filter_eff * k_factor * luminosity /
+                    // no_cuts python calculates: effective_x_section = xsection * filter_eff * k_factor * luminosity
+                    // (is the weighting formula of the MUSiC AN p.9)
+                }
+            }
         }
 
-        // JET TRIGGER (HT1050)
+        // JET TRIGGER
         bool is_good_trigger = false;
-        is_good_trigger = unwrap(pass_jet_ht_trigger);
+        if (trigger_flags.at(0)) // PT trigger
+        {
+            is_good_trigger = is_good_trigger || unwrap(pass_jet_pt_trigger);
+        }
+        if (trigger_flags.at(1)) // HT trigger
+        {
+            is_good_trigger = is_good_trigger || unwrap(pass_jet_ht_trigger);
+        }
         if (not(is_good_trigger))
         {
             continue; // skip if no trigger fired
@@ -411,48 +549,163 @@ auto main(int argc, char *argv[]) -> int
         }
         //*/
 
-        // 2J+0BJ excl class only
+        // CHECK TRIGGER THRESHOLDS
+        if (trigger_flags.at(0))                     // PT trigger
+        {
+            std::vector<float> leading_pt{0.f, 0.f}; // check threshold for pt of leading jet/bjet
+            // because jet or bjet could have higher pt, use the following approach
+            if (njet >= 1)
+            {
+                leading_pt.at(0) = jets.at(0).pt();
+            }
+            if (nbjet >= 1)
+            {
+                leading_pt.at(1) = bjets.at(0).pt();
+            }
+            if (not(leading_pt.at(0) >= trigger_thresholds.at(0) or leading_pt.at(1) >= trigger_thresholds.at(0)))
+            {
+                continue; // skip this event
+            }
+        }
+        if (trigger_flags.at(1)) // HT trigger
+        {
+            float sum_pt = 0;    // check sum pt threshold
+            for (size_t i = 0; i < njet; i++)
+            {
+                sum_pt += jets.at(i).pt();
+            }
+            for (size_t i = 0; i < nbjet; i++)
+            {
+                sum_pt += bjets.at(i).pt();
+            }
+            if (not(sum_pt >= trigger_thresholds.at(1)))
+            {
+                continue; // skip this event
+            }
+        }
+        if (debugprint)
+        {
+            std::cout << "Passed trigger threshold checks." << std::endl;
+        }
+
+        /*// optional: MAX DELTA ETA VETO
+        // Delta Eta < 1.5 for all Jets
+        // Calculate Delta Eta with respect to the leading jet/bjet
+        std::vector<float> delta_eta{0.f};
+        // find pt of leading jet and bjet
+        std::vector<float> _leading_pt{0.f, 0.f};
+        if (njet >= 1)
+        {
+            _leading_pt.at(0) = jets.at(0).pt();
+        }
         if (nbjet >= 1)
         {
-            continue;
+            _leading_pt.at(1) = bjets.at(0).pt();
         }
-        if (not(njet == 2))
+        // find leading jet (as above)
+        float eta_ref = 0;
+        if (nbjet >= 1)
         {
-            continue;
+            eta_ref = bjets.at(0).eta();                         // default bjet > jet
         }
-        if (is_met)
+        if (_leading_pt.at(0) >= _leading_pt.at(1) && njet >= 1) // jet > bjet
         {
-            continue;
+            eta_ref = jets.at(0).eta();
         }
-
-        // HT CUT (for trigger efficiency)
-        float sum_pt = 0.f;
-        for (size_t i = 0; i < jets.size(); i++)
+        // calculate Delta Eta with respect to leading jet
+        for (size_t i = 0; i < njet; i++)
         {
-            sum_pt += jets.at(i).pt();
+            delta_eta.push_back(std::abs(eta_ref - jets.at(i).eta()));
         }
-        if (sum_pt < 1600)
+        for (size_t i = 0; i < nbjet; i++)
         {
-            continue;
+            delta_eta.push_back(std::abs(eta_ref - bjets.at(i).eta()));
         }
+        // find maximum Delta Eta and veto if condition |DeltaEta_max| < threshold is not true
+        auto max_delta_eta = *std::max_element(delta_eta.begin(), delta_eta.end());
+        if (not(max_delta_eta < 1.5))
+        {
+            continue; // skip this event
+        }
+        if (debugprint)
+        {
+            std::cout << "Passed delta eta filter." << std::endl;
+        }
+        */
 
         // JET CLASS VALIDATION
+        std::set<std::string> eventclass =
+            {}; // set that includes all classes the current sample is a member of (for plotting)
+        // find all classes for the event
+        // event class inhabitation is counted in the map classes {classname: counts}
+        // all event classes for current event are stored in the set eventclass {classnames}
         if (debugprint)
         {
             std::cout << "ACCEPTED EVENT.\nStart event class loop." << std::endl;
         }
-
-        // fill histograms for the respective ptbin
-        for (size_t i = 0; i < ptbins.size(); i++)
+        for (int c_njet = (int)njet; c_njet >= 0; c_njet--)
         {
-            if (jets.at(1).pt() >= ptbins.at(i).at(0) and jets.at(1).pt() < ptbins.at(i).at(1))
+            for (int c_nbjet = (int)nbjet; c_nbjet >= 0; c_nbjet--)
             {
-                validation_classes[class_prefix + std::to_string(ptbins.at(i).at(0)) + "_" +
-                                   std::to_string(ptbins.at(i).at(1))]["nominal"]
-                    ->fill(jets, bjets, nelectron, nmuon, met, weight["nominal"]);
+                if ((c_njet == 0 and c_nbjet == 0) == false) // skip 0 jet class
+                {
+                    // std::cout << "Next loop iteration." << std::endl;
+                    if (c_njet == (int)njet and c_nbjet == (int)nbjet) // exclusive class
+                    {
+                        // differentiate met in classname
+                        std::string c_name = fmt::format("{}J+{}BJ+0MET", c_njet, c_nbjet);
+                        if (is_met)
+                        {
+                            c_name = fmt::format("{}J+{}BJ+1MET", c_njet, c_nbjet);
+                        }
+                        update_class(eventclass,
+                                     classes,
+                                     classes_stat,
+                                     c_name,
+                                     systematics,
+                                     countclasses,
+                                     weight);                          // log class name and update class count
+                    }
+                    if (c_njet <= (int)njet and c_nbjet <= (int)nbjet) // jet- and bjet-inclusive class (+XJ)
+                    {
+                        // differentiate met in classname
+                        std::string c_name = fmt::format("{}J+{}BJ+0MET+XJ", c_njet, c_nbjet);
+                        if (is_met)
+                        {
+                            c_name = fmt::format("{}J+{}BJ+1MET+XJ", c_njet, c_nbjet);
+                        }
+                        update_class(eventclass,
+                                     classes,
+                                     classes_stat,
+                                     c_name,
+                                     systematics,
+                                     countclasses,
+                                     weight); // log class name and update class count
+                    }
+                    // note: inclusive classes can be XJ = 0, so the exclusive classes are
+                    // included in the inclusive classes
+                }
             }
         }
-
+        // fill histograms for all event classes that should be validated and that the current event is
+        // a member of
+        if (plotclasses)
+        {
+            for (const auto &c_name : eventclass)
+            {
+                for (const auto &c_name_toval : to_validate)
+                {
+                    if (c_name == c_name_toval)
+                    { // fill the event in the class
+                        for (const auto &s_name : systematics)
+                        {
+                            validation_classes[c_name][s_name]->fill(
+                                jets, bjets, nelectron, nmuon, met, weight[s_name]);
+                        }
+                    }
+                }
+            }
+        }
         // std::cout << "Finished event classification." << std::endl;
     }
 
@@ -463,10 +716,41 @@ auto main(int argc, char *argv[]) -> int
     dijets.dump_outputs();
     */
     // SAVE JET CLASS VALIDATION
-    // save the validation example classes
-    for (const auto &c_name : to_validate)
+    // save classes and counts in toml file
+    if (countclasses)
     {
-        validation_classes[c_name]["nominal"]->dump_outputs();
+        classfile.open(fmt::format("{}/classes_{}_{}.toml", output_path, process, year).c_str());
+        // fill nominal and systematics
+        for (const auto &s_name : systematics)
+        {
+            classfile << "\n\n[" << s_name << "]\n";
+            for (auto &[c_name, c_count] : classes)
+            {
+                if (c_count[s_name] < 0) // if negative weights dominate, set count to 0
+                {
+                    c_count[s_name] = 0;
+                }
+                classfile << "\"" << c_name << "\" = " << c_count[s_name] << "\n";
+            }
+        }
+        // fill stat err
+        classfile << "\n\n[" << "stat" << "]\n";
+        for (auto &[c_name, c_stat] : classes_stat)
+        {
+            classfile << "\"" << c_name << "\" = " << c_stat << "\n";
+        }
+        classfile.close();
+    }
+    // save the validation example classes
+    if (plotclasses)
+    {
+        for (const auto &c_name : to_validate)
+        {
+            for (const auto &s_name : systematics)
+            {
+                validation_classes[c_name][s_name]->dump_outputs();
+            }
+        }
     }
 
     fmt::print("\n[MUSiC Validation] Done ...\n");

@@ -417,20 +417,29 @@ def plotter(
     # """
 
     # plot
-    if not normalize:
-        im = ax.matshow(
-            matrix,
-            cmap="YlGnBu",
-            norm=LogNorm(vmin=0.1, vmax=max([max(r) for r in mcsum])),
-            aspect="auto",
+    if not dataset == "ratio":
+        if not normalize:
+            im = ax.matshow(
+                matrix,
+                cmap="YlGnBu",
+                norm=LogNorm(vmin=0.1, vmax=max([max(r) for r in mcsum])),
+                aspect="auto",
+            )
+        else:
+            im = ax.matshow(
+                matrix,
+                cmap="YlGnBu",
+                norm=LogNorm(vmin=0.01, vmax=1),
+                aspect="auto",
         )
     else:
         im = ax.matshow(
-            matrix,
-            cmap="YlGnBu",
-            norm=LogNorm(vmin=0.01, vmax=1),
-            aspect="auto",
-        )
+                matrix,
+                cmap="seismic",
+                norm=LogNorm(vmin=0.01, vmax=100),
+                aspect="auto",
+            )
+
 
     # add colorbar#
     divider = make_axes_locatable(ax)

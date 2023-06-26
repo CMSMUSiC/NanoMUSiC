@@ -29,42 +29,26 @@
 #include <unordered_map>
 #include <unordered_set>
 
-// add zero counts for new classname
-inline auto zero_class_map(std::map<std::string, std::map<std::string, float>> &classes,
-                           std::map<std::string, float> &classes_stat,
-                           const std::set<std::string> &systematics,
-                           const std::string c_name) -> void
-{
-    std::map<std::string, std::map<std::string, float>>::iterator it = classes.find(c_name);
-    if (it == classes.end()) // it not in map, create new entry with counts 0
-    {
-        std::map<std::string, float> emptyweights;
-        for (const auto &_s_name : systematics)
-        {
-            emptyweights.insert({_s_name, 0.f});
-        }
-        classes.insert({c_name, emptyweights});
-        classes_stat.insert({c_name, 0.f});
-    }
-}
-
+// update class count
 inline auto update_class(std::set<std::string> &eventclass,
-                         std::map<std::string, std::map<std::string, float>> &classes,
+                         std::map<std::string, float> &classes,
                          std::map<std::string, float> &classes_stat,
                          const std::string &c_name,
-                         const std::set<std::string> &systematics,
                          const bool countclasses,
-                         std::map<std::string, float> &weight) -> void
+                         float &weight) -> void
 {
     eventclass.insert(c_name); // log class name for this event (for plotting)
     if (countclasses)          // update class count map if classes should be counted
     {
-        zero_class_map(classes, classes_stat, systematics, c_name);
-        for (const auto &s_name : systematics)
+        // create class counter if not there
+        if (classes.find(c_name) == classes.end()) // it not in map, create new entry with counts 0
         {
-            classes[c_name][s_name] += weight[s_name]; // add weight to class count
-            classes_stat[c_name] += weight["nominal"] * weight["nominal"]; // add weight^2 to syst_err^2
+            classes.insert({c_name, 0.f});
+            classes_stat.insert({c_name, 0.f});
         }
+        // add weight to class
+        classes[c_name] += weight; // add weight to class count
+        classes_stat[c_name] += weight * weight; // add weight^2 to syst_err^2
     }
 }
 
@@ -106,6 +90,49 @@ auto parsestring_vec(const std::string &input, const char &separator) -> std::ve
     return output;
 }
 
+// string utils
+auto starts_with(const std::string &str, const std::string &prefix) -> bool
+{
+    return str.compare(0, prefix.length(), prefix) == 0;
+}
+
+// trigger filter check
+inline auto trigger_filter(const std::string &process,
+                           bool is_data,
+                           bool pass_low_pt_muon_trigger,
+                           bool pass_high_pt_muon_trigger,
+                           bool pass_low_pt_electron_trigger,
+                           bool pass_high_pt_electron_trigger) -> bool
+{
+    if (is_data)
+    {
+        // Electron/Photon dataset
+        if (process.find("EGamma") != std::string::npos      //
+            or process.find("Electron") != std::string::npos //
+            or process.find("Photon") != std::string::npos)
+        {
+            return not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) and
+                   (pass_low_pt_electron_trigger or pass_high_pt_electron_trigger);
+        }
+
+        // Muon dataset
+        return (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) and
+               not(pass_low_pt_electron_trigger or pass_high_pt_electron_trigger);
+    }
+
+    // MC
+    return (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger or pass_low_pt_electron_trigger or
+            pass_high_pt_electron_trigger);
+};
+
+// jet trigger filter check
+inline auto jets_trigger_filter(bool pass_jet_ht_trigger, bool pass_jet_pt_trigger) -> bool
+{
+    return pass_jet_ht_trigger or pass_jet_pt_trigger;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // main function
 auto main(int argc, char *argv[]) -> int
 {
@@ -114,9 +141,6 @@ auto main(int argc, char *argv[]) -> int
     {
         std::cout << "Start validation code." << std::endl;
     }
-
-    // silence LHAPDF
-    LHAPDF::setVerbosity(0);
 
     // set SumW2 as default
     TH1::SetDefaultSumw2(true);
@@ -128,37 +152,52 @@ auto main(int argc, char *argv[]) -> int
     const std::string year = cmdl({"-y", "--year"}).str();
     const bool is_data = cmdl[{"-d", "--is_data"}];
     const std::string output_path = cmdl({"-o", "--output"}).str();
-    const std::string effective_x_section_str = cmdl({"-x", "--xsection"}).str();
+    const std::string x_section_str = cmdl({"-x", "--xsection"}).str();
+    const std::string filter_eff_str = cmdl({"-f", "--filter_eff"}).str();
+    const std::string k_factor_str = cmdl({"-k", "--k_factor"}).str();
+    const std::string luminosity_str = cmdl({"-l", "--luminosity"}).str();
+    const std::string process_order = cmdl({"-po", "--process_order"}).str();
+    const std::string process_group = cmdl({"-pg", "--process_group"}).str();
     const std::string input_file = cmdl({"-i", "--input"}).str();
     const std::string trigger_argument = cmdl({"-trg", "--trigger"}).str();
     const std::string tv_argument = cmdl({"-tv", "--tovalidate"}).str();
-    const std::string order = cmdl({"-or", "--order"}).str();
-    if (show_help or process == "" or year == "" or output_path == "" or input_file == "" or
-        effective_x_section_str == "" or trigger_argument == "" or tv_argument == "")
+    const std::string shift = cmdl({"-s", "--shift"}).str();
+    if (show_help or process == "" or year == "" or output_path == "" or input_file == "" or x_section_str == "" or
+        filter_eff_str == "" or k_factor_str == "" or luminosity_str == "" or process_order == "" or
+        process_group == "" or shift == "" or trigger_argument == "" or tv_argument == "")
     {
-        fmt::print("Usage: validation [OPTIONS]\n");
+        fmt::print("Usage: heavy_validation [OPTIONS]\n");
         fmt::print("          -h|--help: Shows this message.\n");
         fmt::print("          -p|--process: Process (aka sample).\n");
         fmt::print("          -y|--year: Year.\n");
         fmt::print("          -d|--is_data: Is data ?\n");
         fmt::print("          -o|--output: Output path.\n");
-        fmt::print("          -x|--xsection: Effective cross-section (xsection * lumi).\n");
-        fmt::print("         -or|--order: Order of MC (LO,...).\n");
+        fmt::print("          -x|--xsection: Cross-section.\n");
+        fmt::print("          -f|--filter_eff: Filter efficiency.\n");
+        fmt::print("          -k|--k_factor: K-Factor.\n");
+        fmt::print("         -po|--process_order: Process order.\n");
+        fmt::print("         -pg|--process_group: Process group.\n");
+        fmt::print("         -or|--order: Order of MC.\n");
         fmt::print("        -trg|--trigger: Specify trigger and lower limits, e.g. HT1600/PT600.\n");
         fmt::print(
             "         -tv|--tovalidate: Names of the classes that should be plotted. Seperate "
             "Classnames by comma without spaces. Class name format is 'xJ+yBJ+zMET[+XJ]' for "
             "exclusive [_] / jet- and bjet-inclusive [+XJ] classes (with z = 0, 1). "
             "Use class name 'COUNTS' to also create class inhabitation file (event counts per class).\n");
+        fmt::print("          -i|--input: Path to a txt with input files (one per line).\n");
+        fmt::print("          -s|--shift: Shift being applied (systematics).\n");
 
         exit(-1);
     }
-    // read in effective cross section (calculated by python code)
-    const double effective_x_section = std::stod(effective_x_section_str);
+    // read in constants from argument (convert to float)
+    const float x_section = std::stod(x_section_str);
+    const float filter_eff = std::stod(filter_eff_str);
+    const float k_factor = std::stod(k_factor_str);
+    const float luminosity = std::stod(luminosity_str);
 
     if (debugprint)
     {
-        std::cout << "Processing sample " << process << "..." << std::endl;
+        std::cout << "-> Processing sample " << process << "..." << std::endl;
     }
 
     // load input files
@@ -194,6 +233,17 @@ auto main(int argc, char *argv[]) -> int
 
     ADD_VALUE_READER(gen_weight, float);
     ADD_VALUE_READER(Pileup_nTrueInt, float);
+    ADD_VALUE_READER(L1PreFiringWeight_Up, float);
+    ADD_VALUE_READER(L1PreFiringWeight_Dn, float);
+    ADD_VALUE_READER(L1PreFiringWeight_Nom, float);
+
+    ADD_ARRAY_READER(_LHEPdfWeight, float);
+    ADD_VALUE_READER(Generator_scalePDF, float);
+    ADD_VALUE_READER(Generator_x1, float);
+    ADD_VALUE_READER(Generator_x2, float);
+    ADD_VALUE_READER(Generator_id1, int);
+    ADD_VALUE_READER(Generator_id2, int);
+    ADD_VALUE_READER(_LHEWeight_originalXWGTUP, float);
 
     ADD_ARRAY_READER(Muon_pt, float);
     ADD_ARRAY_READER(Muon_eta, float);
@@ -203,13 +253,20 @@ auto main(int argc, char *argv[]) -> int
     ADD_ARRAY_READER(Muon_pfRelIso04_all, float);
     ADD_ARRAY_READER(Muon_tkRelIso, float);
     ADD_ARRAY_READER(Muon_tunepRelPt, float);
+    ADD_ARRAY_READER(Muon_genPartIdx, int);
 
     ADD_ARRAY_READER(Electron_pt, float);
     ADD_ARRAY_READER(Electron_eta, float);
     ADD_ARRAY_READER(Electron_phi, float);
     ADD_ARRAY_READER(Electron_deltaEtaSC, float);
-    ADD_ARRAY_READER(Electron_cutBased, Int_t);
+    ADD_ARRAY_READER(Electron_cutBased, int);
     ADD_ARRAY_READER(Electron_cutBased_HEEP, bool);
+    ADD_ARRAY_READER(Electron_scEtOverPt, float);
+    ADD_ARRAY_READER(Electron_dEscaleUp, float);
+    ADD_ARRAY_READER(Electron_dEscaleDown, float);
+    ADD_ARRAY_READER(Electron_dEsigmaUp, float);
+    ADD_ARRAY_READER(Electron_dEsigmaDown, float);
+    ADD_ARRAY_READER(Electron_genPartIdx, int);
 
     ADD_ARRAY_READER(Photon_pt, float);
     ADD_ARRAY_READER(Photon_eta, float);
@@ -218,6 +275,11 @@ auto main(int argc, char *argv[]) -> int
     ADD_ARRAY_READER(Photon_isScEtaEE, bool);
     ADD_ARRAY_READER(Photon_cutBased, Int_t);
     ADD_ARRAY_READER(Photon_pixelSeed, bool);
+    ADD_ARRAY_READER(Photon_dEscaleUp, float);
+    ADD_ARRAY_READER(Photon_dEscaleDown, float);
+    ADD_ARRAY_READER(Photon_dEsigmaUp, float);
+    ADD_ARRAY_READER(Photon_dEsigmaDown, float);
+    ADD_ARRAY_READER(Photon_genPartIdx, int);
 
     ADD_VALUE_READER(fixedGridRhoFastjetAll, float);
 
@@ -237,6 +299,7 @@ auto main(int argc, char *argv[]) -> int
 
     ADD_VALUE_READER(MET_pt, float);
     ADD_VALUE_READER(MET_phi, float);
+
 
     // build jetclass analysis
     if (debugprint)
@@ -258,55 +321,45 @@ auto main(int argc, char *argv[]) -> int
     {
         plotclasses = true;
     }
+    // ==> classname convention: xJ+yBJ+zMET(+XJ)
 
-    // systematics prefixes (systnames):
-    // nominal: nominal (no systematics applied)
-    // up_name: constant systematics "name" applied up
-    // down_name: constant systematics "name" applied down
-    std::set<std::string> systematics{
-        // holds all systematics, the specific systematics are merged into this set
-        "nominal",
-        "up_lumi", // lumi
-        "down_lumi",
-        "up_xsec", // cross section (for each pertubation order)
-        "down_xsec",
-        "up_pu",   // pile-up
-        "down_pu",
-    };
+    // systematics prefixes (systnames): Nominal or Syst_Up/Down stored in Shifts class
+    const auto shifts = Shifts(is_data);
+    if (not(shifts.is_valid(shift)))
+    {
+        throw std::invalid_argument(fmt::format("ERROR: Could not validate shift: {}.", shift));
+    }
 
     // create the classification instances
     if (debugprint)
     {
-        std::cout << "Create class instances." << std::endl;
+        std::cout << "Initialize the custom JetClass validation instances and files." << std::endl;
     }
     // jet classification instances: saved in a map {classname: pointer to jet class validation instance}
     // nl: nominal, up: systematic up, dn: systematic down
-    std::map<std::string, std::map<std::string, JetClass2 *>> validation_classes;
-    // stores validation classes: {classname: {systname: jetclass instance pointer}}
+    std::map<std::string, JetClass2 *> validation_classes;
+    // stores validation classes: {classname: jetclass instance pointer}
     // fill maps
     if (plotclasses) // only if classes should be plotted
     {
         for (const auto &c_name : to_validate)
         {
-            for (const auto &s_name : systematics)
-            {
-                validation_classes[c_name][s_name] = new JetClass2(
-                    fmt::format("{}/{}_{}_{}_{}.root", output_path, c_name, s_name, process, year), c_name);
-                // file format: classname_systname_samplename_year.root
-            }
+            validation_classes[c_name] = new JetClass2(
+                fmt::format("{}/{}_{}_{}_{}.root", output_path, c_name, shift, process, year), c_name);
+            // file format: classname_systname/shift_samplename_year.root (classname includes shift/systname after underscore)
         }
     }
 
-    // classes event counts map: {classname: {systname: counts}}
-    std::map<std::string, std::map<std::string, float>> classes;
-    // classes event counts systematic errors map: {classname: {squared syst error}}
+    // classes event counts map: {classname: counts}
+    std::map<std::string, float> classes;
+    // classes event counts systematic errors map: {classname: squared syst error}
     std::map<std::string, float> classes_stat;
 
     // quality control to order argument
     const std::set<std::string> allowed_orders{"LO", "NLO", "NNLO", "N3LO"};
-    if (!is_data and (allowed_orders.find(order) == allowed_orders.end()))
+    if (!is_data and (allowed_orders.find(process_order) == allowed_orders.end()))
     {
-        throw std::runtime_error(fmt::format("Invalid order given: {}", order));
+        throw std::runtime_error(fmt::format("Invalid order given: {}", process_order));
     }
     // definition of cross section uncertainties
     const std::map<std::string, float> x_sec_uncertainty{
@@ -315,6 +368,9 @@ auto main(int argc, char *argv[]) -> int
         {"NNLO", 0},
         {"N3LO", 0},
     };
+
+    // file where the class counts are stored
+    std::ofstream classfile;
 
     // read in demanded jet triggers and thresholds from argument
     if (debugprint)
@@ -341,14 +397,73 @@ auto main(int argc, char *argv[]) -> int
         }
     }
 
-    // build jet corrections
+    // build corrections
+    if (debugprint)
+    {
+        std::cout << "Build corrections." << std::endl;
+    }
+    auto correctionlib_utils = CorrectionLibUtils();
     auto jet_corrections = JetCorrector(get_runyear(year), get_era_from_process_name(process, is_data), is_data);
+    auto pu_corrector = correctionlib_utils.make_correctionlib_ref("PU", year);
+    auto muon_sf_reco = correctionlib_utils.make_correctionlib_ref("MuonReco", year);
+    auto muon_sf_id_low_pt = correctionlib_utils.make_correctionlib_ref("MuonIdLowPt", year);
+    auto muon_sf_id_high_pt = correctionlib_utils.make_correctionlib_ref("MuonIdHighPt", year);
+    auto muon_sf_iso_low_pt = correctionlib_utils.make_correctionlib_ref("MuonIsoLowPt", year);
+    auto muon_sf_iso_high_pt = correctionlib_utils.make_correctionlib_ref("MuonIsoHighPt", year);
+    auto electron_sf = correctionlib_utils.make_correctionlib_ref("ElectronSF", year);
+    auto photon_sf = correctionlib_utils.make_correctionlib_ref("PhotonSF", year);
+    auto pixel_veto_sf = correctionlib_utils.make_correctionlib_ref("PixelVetoSF", year);
 
-    auto pu_corrector =
-        correction::CorrectionSet::from_file(
-            "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/2018_UL/puWeights.json.gz")
-            ->at("Collisions18_UltraLegacy_goldenJSON");
+    /////////////////////////////////////////////
+    /////////////////////////////////////////////
+    // [ BEGIN ]  LHAPDF
+    /////////////////////////////////////////////
+    /////////////////////////////////////////////
+    // initilize pdf sets for fallback cases ...
+    if (debugprint)
+    {
+        std::cout << "Build LHAPDF." << std::endl;
+    }
+    // silence LHAPDF
+    LHAPDF::setVerbosity(0);
+    // NNPDF31_nnlo_as_0118_hessian
+    int lha_id_fallback = 304400;
+    int lha_size = 101;
 
+    // Compute the PDF weight for this event using NNPDF31_nnlo_as_0118_hessian (304400) and divide the
+    // new weight by the weight from the PDF the event was produced with.
+    std::tuple<std::vector<std::unique_ptr<LHAPDF::PDF>>, std::unique_ptr<LHAPDF::PDF>, std::unique_ptr<LHAPDF::PDF>>
+        default_pdf_sets;
+    std::get<0>(default_pdf_sets).reserve(101);
+    for (int idx = lha_id_fallback; idx < (lha_id_fallback + lha_size); idx++)
+    {
+        std::get<0>(default_pdf_sets).push_back(std::unique_ptr<LHAPDF::PDF>(LHAPDF::mkPDF(lha_id_fallback)));
+    }
+
+    // Compute the Alpha_S weight for this event using NNPDF31_nnlo_as_0120 (319500) and divide the new
+    // weight by the weight from the PDF the event was produced with.
+    std::get<1>(default_pdf_sets) = std::unique_ptr<LHAPDF::PDF>(LHAPDF::mkPDF(319500));
+
+    // Compute the Alpha_S weight for this event using NNPDF31_nnlo_as_0116 (319300) and divide the new
+    // weight by the weight from the PDF the event was produced with.
+    std::get<2>(default_pdf_sets) = std::unique_ptr<LHAPDF::PDF>(LHAPDF::mkPDF(319300));
+
+    // check for the available pdf weights in the tree
+    std::optional<std::pair<unsigned int, unsigned int>> lha_indexes =
+        PDFAlphaSWeights::get_pdf_ids(tree_reader.GetTree());
+
+    /////////////////////////////////////////////
+    /////////////////////////////////////////////
+    // [ END ] LHAPDF
+    /////////////////////////////////////////////
+    /////////////////////////////////////////////
+
+
+    // read cutflow
+    if (debugprint)
+    {
+        std::cout << "Read cutflow histogram." << std::endl;
+    }
     const auto cutflow_file =
         std::unique_ptr<TFile>(TFile::Open(fmt::format("{}/cutflow_{}_{}.root", output_path, process, year).c_str()));
     const auto cutflow_histo = cutflow_file->Get<TH1F>("cutflow");
@@ -356,12 +471,10 @@ auto main(int argc, char *argv[]) -> int
     const auto no_cuts = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("NoCuts") + 1);
     const auto generator_filter = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("GeneratorFilter") + 1);
 
-    // fmt::print("\n[MUSiC Validation] Creating set of processed events ...\n");
-    // MAP[run_number : SET[event_number]]
-    std::unordered_map<unsigned int, std::unordered_set<unsigned long>> processed_data_events;
-
-    // file where the class counts are stored
-    std::ofstream classfile;
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////         EVENT LOOP        ////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     if (debugprint)
     {
@@ -370,6 +483,19 @@ auto main(int argc, char *argv[]) -> int
     //  launch event loop for Data or MC
     for (auto &&event : tree_reader)
     {
+        // check for chain readout quaility
+        // REFERENCE: https://root.cern.ch/doc/v608/classTTreeReader.html#a568e43c7d7d8b1f511bbbeb92c9094a8
+        auto reader_status = tree_reader.GetEntryStatus();
+        if (reader_status == TTreeReader::EEntryStatus::kEntryChainFileError or
+            reader_status == TTreeReader::EEntryStatus::kEntryNotLoaded or
+            reader_status == TTreeReader::EEntryStatus::kEntryNoTree or
+            reader_status == TTreeReader::EEntryStatus::kEntryNotFound or
+            reader_status == TTreeReader::EEntryStatus::kEntryChainSetupError or
+            reader_status == TTreeReader::EEntryStatus::kEntryDictionaryError)
+        {
+            throw std::runtime_error(fmt::format("ERROR: Could not load TChain entry."));
+        }
+
         (void)event; // remove the "unused variable" warning during compilation
 
         if (debugprint)
@@ -385,69 +511,6 @@ auto main(int argc, char *argv[]) -> int
         }
         */
         // std::cout << "****************\nEvent No. " << event << std::endl;
-
-        // calculate effective event weight
-
-        // create weight set
-        std::map<std::string, float> weight;   // {systname: weight}
-        for (const auto &s_name : systematics) // fill with ones as default value (for data)
-        {
-            weight[s_name] = 1.f;
-        }
-
-        if (not(is_data))
-        {
-            float const_weights = 1.f;
-            std::map<std::string, float> pu_weight;
-            pu_weight["nominal"] = pu_corrector->evaluate({unwrap(Pileup_nTrueInt), "nominal"});
-            pu_weight["up"] = pu_corrector->evaluate({unwrap(Pileup_nTrueInt), "up"});
-            pu_weight["down"] = pu_corrector->evaluate({unwrap(Pileup_nTrueInt), "down"});
-
-            // calculate event weight
-            for (const auto &s_name : systematics) // fill with ones
-            {
-                if (s_name == "up_lumi")           // lumi syst + 2.5%
-                {
-                    weight[s_name] = const_weights * unwrap(gen_weight) * pu_weight["nominal"] * generator_filter /
-                                     no_cuts / generator_filter * effective_x_section * (1 + 0.025);
-                }
-                else if (s_name == "down_lumi") // lumi syst - 2.5%
-                {
-                    weight[s_name] = const_weights * unwrap(gen_weight) * pu_weight["nominal"] * generator_filter /
-                                     no_cuts / generator_filter * effective_x_section * (1 - 0.025);
-                }
-                else if (s_name == "up_xsec") // cross section uncertainty depending on order up
-                {
-                    weight[s_name] = const_weights * unwrap(gen_weight) * pu_weight["nominal"] * generator_filter /
-                                     no_cuts / generator_filter * effective_x_section *
-                                     (1 + x_sec_uncertainty.at(order));
-                }
-                else if (s_name == "down_xsec") // cross section uncertainty depending on order down
-                {
-                    weight[s_name] = const_weights * unwrap(gen_weight) * pu_weight["nominal"] * generator_filter /
-                                     no_cuts / generator_filter * effective_x_section *
-                                     (1 - x_sec_uncertainty.at(order));
-                }
-                else if (s_name == "up_pu") // pileup uncertainty up
-                {
-                    weight[s_name] = const_weights * unwrap(gen_weight) * pu_weight["up"] * generator_filter / no_cuts /
-                                     generator_filter * effective_x_section;
-                }
-                else if (s_name == "down_pu") // pileup uncertainty down
-                {
-                    weight[s_name] = const_weights * unwrap(gen_weight) * pu_weight["down"] * generator_filter /
-                                     no_cuts / generator_filter * effective_x_section;
-                }
-                else // fill all other with nominal value
-                {
-                    weight[s_name] = const_weights * unwrap(gen_weight) * pu_weight["nominal"] * generator_filter /
-                                     no_cuts / generator_filter * effective_x_section;
-                    // weight = const_weights * gen_weight * pu_weight * xsection * filter_eff * k_factor * luminosity /
-                    // no_cuts python calculates: effective_x_section = xsection * filter_eff * k_factor * luminosity
-                    // (is the weighting formula of the MUSiC AN p.9)
-                }
-            }
-        }
 
         // JET TRIGGER
         bool is_good_trigger = false;
@@ -468,24 +531,9 @@ auto main(int argc, char *argv[]) -> int
             std::cout << "Passed trigger fire check." << std::endl;
         }
 
-        // Build good objects (selection level objects)
-        // jets
-        auto [jets, bjets] = ObjectFactories::make_jets(unwrap(Jet_pt),                           //
-                                                        unwrap(Jet_eta),                          //
-                                                        unwrap(Jet_phi),                          //
-                                                        unwrap(Jet_mass),                         //
-                                                        unwrap(Jet_jetId),                        //
-                                                        unwrap(Jet_btagDeepFlavB),                //
-                                                        unwrap(Jet_rawFactor),                    //
-                                                        unwrap(Jet_area),                         //
-                                                        unwrap(Jet_genJetIdx),                    //
-                                                        unwrap(fixedGridRhoFastjetAll),           //
-                                                        jet_corrections,                          //
-                                                        NanoObjects::GenJets(unwrap(GenJet_pt),   //
-                                                                             unwrap(GenJet_eta),  //
-                                                                             unwrap(GenJet_phi)), //
-                                                        year);
+        // BUILD GOOD OBJECTS (selection level objects)
         // muons
+        // build good objects
         auto muons = ObjectFactories::make_muons(unwrap(Muon_pt),             //
                                                  unwrap(Muon_eta),            //
                                                  unwrap(Muon_phi),            //
@@ -493,29 +541,97 @@ auto main(int argc, char *argv[]) -> int
                                                  unwrap(Muon_highPtId),       //
                                                  unwrap(Muon_pfRelIso04_all), //
                                                  unwrap(Muon_tkRelIso),       //
-                                                 unwrap(Muon_tunepRelPt),
-                                                 year);
-        // electrons
-        auto electrons = ObjectFactories::make_electrons(unwrap(Electron_pt),       //
-                                                         unwrap(Electron_eta),      //
-                                                         unwrap(Electron_phi),      //
-                                                         unwrap(Electron_deltaEtaSC),
-                                                         unwrap(Electron_cutBased), //
-                                                         unwrap(Electron_cutBased_HEEP),
-                                                         year);
-        // photons
-        auto photons = ObjectFactories::make_photons(unwrap(Photon_pt),        //
-                                                     unwrap(Photon_eta),       //
-                                                     unwrap(Photon_phi),       //
-                                                     unwrap(Photon_isScEtaEB), //
-                                                     unwrap(Photon_isScEtaEE), //
-                                                     unwrap(Photon_cutBased),  //
-                                                     unwrap(Photon_pixelSeed), //
-                                                     year);
-        // met
-        float met_px = unwrap(MET_pt) * std::cos(unwrap(MET_phi));
-        float met_py = unwrap(MET_pt) * std::sin(unwrap(MET_phi));
-        auto met = ObjectFactories::make_met(met_px, met_py, year);
+                                                 unwrap(Muon_tunepRelPt),     //
+                                                 unwrap(Muon_genPartIdx),     //
+                                                 muon_sf_reco,                //
+                                                 muon_sf_id_low_pt,           //
+                                                 muon_sf_id_high_pt,          //
+                                                 muon_sf_iso_low_pt,          //
+                                                 muon_sf_iso_high_pt,         //
+                                                 is_data,                     //
+                                                 year,                        //
+                                                 shift);
+
+        auto electrons = ObjectFactories::make_electrons(unwrap(Electron_pt),            //
+                                                         unwrap(Electron_eta),           //
+                                                         unwrap(Electron_phi),           //
+                                                         unwrap(Electron_deltaEtaSC),    //
+                                                         unwrap(Electron_cutBased),      //
+                                                         unwrap(Electron_cutBased_HEEP), //
+                                                         unwrap(Electron_scEtOverPt),    //
+                                                         unwrap(Electron_dEscaleUp),     //
+                                                         unwrap(Electron_dEscaleDown),   //
+                                                         unwrap(Electron_dEsigmaUp),     //
+                                                         unwrap(Electron_dEsigmaDown),   //
+                                                         unwrap(Electron_genPartIdx),    //
+                                                         electron_sf,                    //
+                                                         is_data,                        //
+                                                         year,                           //
+                                                         shift);
+
+        auto photons = ObjectFactories::make_photons(unwrap(Photon_pt),          //
+                                                     unwrap(Photon_eta),         //
+                                                     unwrap(Photon_phi),         //
+                                                     unwrap(Photon_isScEtaEB),   //
+                                                     unwrap(Photon_isScEtaEE),   //
+                                                     unwrap(Photon_cutBased),    //
+                                                     unwrap(Photon_pixelSeed),   //
+                                                     unwrap(Photon_dEscaleUp),   //
+                                                     unwrap(Photon_dEscaleDown), //
+                                                     unwrap(Photon_dEsigmaUp),   //
+                                                     unwrap(Photon_dEsigmaDown), //
+                                                     unwrap(Photon_genPartIdx),  //
+                                                     photon_sf,                  //
+                                                     pixel_veto_sf,              //
+                                                     is_data,                    //
+                                                     year,                       //
+                                                     shift);
+
+        auto [jets, bjets] = ObjectFactories::make_jets(unwrap(Jet_pt),                 //
+                                                        unwrap(Jet_eta),                //
+                                                        unwrap(Jet_phi),                //
+                                                        unwrap(Jet_mass),               //
+                                                        unwrap(Jet_jetId),              //
+                                                        unwrap(Jet_btagDeepFlavB),      //
+                                                        unwrap(Jet_rawFactor),          //
+                                                        unwrap(Jet_area),               //
+                                                        unwrap(Jet_genJetIdx),          //
+                                                        unwrap(fixedGridRhoFastjetAll), //
+                                                        jet_corrections,                //
+                                                        // btag_sf_Corrector,                    //
+                                                        NanoObjects::GenJets(unwrap(GenJet_pt),   //
+                                                                             unwrap(GenJet_eta),  //
+                                                                             unwrap(GenJet_phi)), //
+                                                        is_data,                                  //
+                                                        year,                                     //
+                                                        shift);
+
+        // clear objects
+        electrons.clear(muons, 0.4);
+        photons.clear(electrons, 0.4);
+        photons.clear(muons, 0.4);
+        jets.clear(photons, 0.5);
+        bjets.clear(photons, 0.5);
+        jets.clear(electrons, 0.5);
+        bjets.clear(electrons, 0.5);
+        jets.clear(muons, 0.5);
+        bjets.clear(muons, 0.5);
+
+        auto met = ObjectFactories::make_met(unwrap(MET_pt),              //
+                                             unwrap(MET_phi),             //
+                                             muons.get_delta_met_x(),     //
+                                             muons.get_delta_met_y(),     //
+                                             electrons.get_delta_met_x(), //
+                                             electrons.get_delta_met_y(), //
+                                             photons.get_delta_met_x(),   //
+                                             photons.get_delta_met_y(),   //
+                                             jets.get_delta_met_x(),      //
+                                             jets.get_delta_met_y(),      //
+                                             bjets.get_delta_met_x(),     //
+                                             bjets.get_delta_met_y(),     //
+                                             is_data,                     //
+                                             year,                        //
+                                             shift); // returns 4-vector
 
         // Type counts
         unsigned int nelectron = electrons.size();
@@ -529,10 +645,17 @@ auto main(int argc, char *argv[]) -> int
             is_met = true;
         }
 
+        // Generate 4-vectors (only for relevant objects)
+        auto jets_4vec = jets.p4;
+        auto bjets_4vec = bjets.p4;
+        auto met_4vec = met.p4;
+
+
         if (debugprint)
         {
             std::cout << "Generated objects." << std::endl;
         }
+
 
         ///* optional: LEPTON VETO or CONDITIONS
         // if (not(nelectron == 0 and nmuon == 0)) // veto all leptons
@@ -556,11 +679,11 @@ auto main(int argc, char *argv[]) -> int
             // because jet or bjet could have higher pt, use the following approach
             if (njet >= 1)
             {
-                leading_pt.at(0) = jets.at(0).pt();
+                leading_pt.at(0) = jets_4vec.at(0).pt();
             }
             if (nbjet >= 1)
             {
-                leading_pt.at(1) = bjets.at(0).pt();
+                leading_pt.at(1) = bjets_4vec.at(0).pt();
             }
             if (not(leading_pt.at(0) >= trigger_thresholds.at(0) or leading_pt.at(1) >= trigger_thresholds.at(0)))
             {
@@ -572,11 +695,11 @@ auto main(int argc, char *argv[]) -> int
             float sum_pt = 0;    // check sum pt threshold
             for (size_t i = 0; i < njet; i++)
             {
-                sum_pt += jets.at(i).pt();
+                sum_pt += jets_4vec.at(i).pt();
             }
             for (size_t i = 0; i < nbjet; i++)
             {
-                sum_pt += bjets.at(i).pt();
+                sum_pt += bjets_4vec.at(i).pt();
             }
             if (not(sum_pt >= trigger_thresholds.at(1)))
             {
@@ -585,55 +708,52 @@ auto main(int argc, char *argv[]) -> int
         }
         if (debugprint)
         {
-            std::cout << "Passed trigger threshold checks." << std::endl;
+            std::cout << "Passed trigger threshold checks.\nCalculate event weight." << std::endl;
         }
 
-        /*// optional: MAX DELTA ETA VETO
-        // Delta Eta < 1.5 for all Jets
-        // Calculate Delta Eta with respect to the leading jet/bjet
-        std::vector<float> delta_eta{0.f};
-        // find pt of leading jet and bjet
-        std::vector<float> _leading_pt{0.f, 0.f};
-        if (njet >= 1)
-        {
-            _leading_pt.at(0) = jets.at(0).pt();
-        }
-        if (nbjet >= 1)
-        {
-            _leading_pt.at(1) = bjets.at(0).pt();
-        }
-        // find leading jet (as above)
-        float eta_ref = 0;
-        if (nbjet >= 1)
-        {
-            eta_ref = bjets.at(0).eta();                         // default bjet > jet
-        }
-        if (_leading_pt.at(0) >= _leading_pt.at(1) && njet >= 1) // jet > bjet
-        {
-            eta_ref = jets.at(0).eta();
-        }
-        // calculate Delta Eta with respect to leading jet
-        for (size_t i = 0; i < njet; i++)
-        {
-            delta_eta.push_back(std::abs(eta_ref - jets.at(i).eta()));
-        }
-        for (size_t i = 0; i < nbjet; i++)
-        {
-            delta_eta.push_back(std::abs(eta_ref - bjets.at(i).eta()));
-        }
-        // find maximum Delta Eta and veto if condition |DeltaEta_max| < threshold is not true
-        auto max_delta_eta = *std::max_element(delta_eta.begin(), delta_eta.end());
-        if (not(max_delta_eta < 1.5))
-        {
-            continue; // skip this event
-        }
-        if (debugprint)
-        {
-            std::cout << "Passed delta eta filter." << std::endl;
-        }
-        */
+        // CALCULATE EVENT WEIGHT
+        // Here goes the real analysis...
+        // get effective event weight
+        float weight = 1.;
 
-        // JET CLASS VALIDATION
+        if (not(is_data))
+        {
+            auto pu_weight = pu_corrector->evaluate({unwrap(Pileup_nTrueInt), Shifts::get_pu_variation(shift)});
+
+            auto prefiring_weight = Shifts::get_prefiring_weight( //
+                unwrap(L1PreFiringWeight_Nom, 1.),                //
+                unwrap(L1PreFiringWeight_Up, 1.),                 //
+                unwrap(L1PreFiringWeight_Dn, 1.),                 //
+                shift);
+
+            auto scaled_luminosity = Shifts::scale_luminosity(luminosity, shift);
+
+            auto pdf_as_weight = Shifts::get_pdf_alpha_s_weights(shift,
+                                                                 lha_indexes,
+                                                                 default_pdf_sets,           //
+                                                                 unwrap(_LHEPdfWeight),      //
+                                                                 unwrap(Generator_scalePDF), //
+                                                                 unwrap(Generator_x1),       //
+                                                                 unwrap(Generator_x2),       //
+                                                                 unwrap(Generator_id1),      //
+                                                                 unwrap(Generator_id2),      //
+                                                                 unwrap(_LHEWeight_originalXWGTUP, 1.f));
+
+            weight = unwrap(gen_weight, 1.) //
+                     * pu_weight            //
+                     * prefiring_weight     //
+                     * generator_filter     //
+                     / no_cuts              //
+                     / generator_filter     //
+                     * x_section            //
+                     * filter_eff           //
+                     * k_factor             //
+                     * scaled_luminosity    //
+                     * pdf_as_weight;
+        }
+
+
+        // JET CLASS VALIDATION AND CLASS COUNTING
         std::set<std::string> eventclass =
             {}; // set that includes all classes the current sample is a member of (for plotting)
         // find all classes for the event
@@ -662,7 +782,6 @@ auto main(int argc, char *argv[]) -> int
                                      classes,
                                      classes_stat,
                                      c_name,
-                                     systematics,
                                      countclasses,
                                      weight);                          // log class name and update class count
                     }
@@ -678,7 +797,6 @@ auto main(int argc, char *argv[]) -> int
                                      classes,
                                      classes_stat,
                                      c_name,
-                                     systematics,
                                      countclasses,
                                      weight); // log class name and update class count
                     }
@@ -697,11 +815,8 @@ auto main(int argc, char *argv[]) -> int
                 {
                     if (c_name == c_name_toval)
                     { // fill the event in the class
-                        for (const auto &s_name : systematics)
-                        {
-                            validation_classes[c_name][s_name]->fill(
-                                jets, bjets, nelectron, nmuon, met, weight[s_name]);
-                        }
+                        validation_classes[c_name]->fill(
+                            jets_4vec, bjets_4vec, nelectron, nmuon, met_4vec, weight);
                     }
                 }
             }
@@ -717,21 +832,23 @@ auto main(int argc, char *argv[]) -> int
     */
     // SAVE JET CLASS VALIDATION
     // save classes and counts in toml file
+    // ==> class counts are stored in file classes_systname/shift_process_year.toml (so for each syst in a separate file)
+    // the class counts for this systematic are stored with the key [counts]
+    // the stat error is included in each file with key [stat]
     if (countclasses)
     {
-        classfile.open(fmt::format("{}/classes_{}_{}.toml", output_path, process, year).c_str());
+        classfile.open(fmt::format("{}/classes_{}_{}_{}.toml", output_path, shift, process, year).c_str());
         // fill nominal and systematics
-        for (const auto &s_name : systematics)
+        classfile << "\n\n[" << "counts" << "]\n";
+        for (auto &[c_name, c_count] : classes)
         {
-            classfile << "\n\n[" << s_name << "]\n";
-            for (auto &[c_name, c_count] : classes)
+            /* // dont do this for now
+            if (c_count < 0) // if negative weights dominate, set count to 0
             {
-                if (c_count[s_name] < 0) // if negative weights dominate, set count to 0
-                {
-                    c_count[s_name] = 0;
-                }
-                classfile << "\"" << c_name << "\" = " << c_count[s_name] << "\n";
+                c_count = 0;
             }
+            */
+            classfile << "\"" << c_name << "\" = " << c_count << "\n";
         }
         // fill stat err
         classfile << "\n\n[" << "stat" << "]\n";
@@ -746,10 +863,7 @@ auto main(int argc, char *argv[]) -> int
     {
         for (const auto &c_name : to_validate)
         {
-            for (const auto &s_name : systematics)
-            {
-                validation_classes[c_name][s_name]->dump_outputs();
-            }
+            validation_classes[c_name]->dump_outputs();
         }
     }
 
