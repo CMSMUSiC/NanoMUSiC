@@ -386,39 +386,33 @@ auto main(int argc, char *argv[]) -> int
                 },
                 {"PV_npvsGood", "mc_weight"})
             // MET Filters (Flag)
-            .Define("pass_met_filters",
-                    [&configuration]() -> std::string_view
+            .Define(
+                "pass_met_filters",
+                [&configuration]() -> std::string_view
+                {
+                    if (configuration.year == Year::Run2016APV or configuration.year == Year::Run2016)
                     {
-                        if (configuration.year == Year::Run2016APV or configuration.year == Year::Run2016)
-                        {
-                            return "Flag_goodVertices
-                                   && Flag_globalSuperTightHalo2016Filter && Flag_HBHENoiseFilter &&
-                                   Flag_HBHENoiseIsoFilter && Flag_EcalDeadCellTriggerPrimitiveFilter &&
-                                   Flag_BadPFMuonFilter && Flag_BadPFMuonDzFilter && Flag_eeBadScFilter "sv;
-                        }
+                        return "Flag_goodVertices && Flag_globalSuperTightHalo2016Filter && Flag_HBHENoiseFilter && Flag_HBHENoiseIsoFilter && Flag_EcalDeadCellTriggerPrimitiveFilter && Flag_BadPFMuonFilter && Flag_BadPFMuonDzFilter && Flag_eeBadScFilter"sv;
+                    }
 
-                        if (configuration.year == Year::Run2017 or configuration.year == Year::Run2018)
-                        {
-                            return "Flag_goodVertices
-                                   && Flag_globalSuperTightHalo2016Filter && Flag_HBHENoiseFilter &&
-                                   Flag_HBHENoiseIsoFilter && Flag_EcalDeadCellTriggerPrimitiveFilter &&
-                                   Flag_BadPFMuonFilter && Flag_BadPFMuonDzFilter && Flag_eeBadScFilter &&
-                                   Flag_ecalBadCalibFilter "sv;
-                        }
+                    if (configuration.year == Year::Run2017 or configuration.year == Year::Run2018)
+                    {
+                        return "Flag_goodVertices && Flag_globalSuperTightHalo2016Filter && Flag_HBHENoiseFilter && Flag_HBHENoiseIsoFilter && Flag_EcalDeadCellTriggerPrimitiveFilter && Flag_BadPFMuonFilter && Flag_BadPFMuonDzFilter && Flag_eeBadScFilter && Flag_ecalBadCalibFilter"sv;
+                    }
 
-                        if (configuration.year == Year::Run2017)
-                        {
-                            return "HLT_IsoMu27"sv;
-                        }
+                    if (configuration.year == Year::Run2017)
+                    {
+                        return "HLT_IsoMu27"sv;
+                    }
 
-                        if (configuration.year == Year::Run2018)
-                        {
-                            return "HLT_IsoMu24"sv;
-                        }
-                        throw std::invalid_argument(
-                            fmt::format("ERROR: Could not define trigger bits. The requested year ({}) is invalid.",
-                                        configuration.year_str));
-                    }())
+                    if (configuration.year == Year::Run2018)
+                    {
+                        return "HLT_IsoMu24"sv;
+                    }
+                    throw std::invalid_argument(
+                        fmt::format("ERROR: Could not define trigger bits. The requested year ({}) is invalid.",
+                                    configuration.year_str));
+                }())
             .Filter(
                 [&cutflow_histo, &Cuts](bool pass_met_filters, float mc_weight) -> bool
                 {

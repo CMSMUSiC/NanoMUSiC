@@ -435,7 +435,7 @@ auto gamma_jet_cleanner_filter(const NanoObjects::LHEParticles &lhe_particles, f
     float dr = -999.;
 
     auto gamma_idx = (lhe_particles.pdgId == 22) && (lhe_particles.status == 1);
-    if (gamma_idx.size() > 0)
+    if (VecOps::Sum(gamma_idx) >= 1)
     {
         auto jets_idx = (lhe_particles.pdgId != 22) && (lhe_particles.status == 1);
 

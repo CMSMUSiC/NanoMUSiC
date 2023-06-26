@@ -145,7 +145,7 @@ def build_task_tarball():
     print("Packing input files ...")
     os.system(r"rm task.tar.gz > /dev/null 2>&1")
     os.system(
-        r'tar --exclude="*.log" --exclude="rootlogon.C" --exclude="crab.log" --exclude="raw_config.toml" --exclude="crab_nano_music_*" --exclude="crab_music_pset.py" --exclude="task.tar.gz" --exclude="CMSSW_*" --exclude="__pycache*" --exclude="build" --exclude="docs_BKP" --exclude="docs" --exclude="crab_nano_music_date_*" --exclude="NanoMUSiC/tools" --exclude="NanoMUSiC/PxlAnalyzer" --exclude="*.root" --exclude="NanoMUSiC/PlotLib" --exclude="NanoMUSiC/MUSiC-Configs" --exclude="NanoMUSiC/MUSiC-RoIScanner" --exclude="NanoMUSiC/MUSiC-Utils" --exclude="NanoMUSiC/MUSiC-CRAB/crab_nano_music_DYJetsToLL*" -zcvf task.tar.gz $CRAB_MUSIC_BASE/../../*'
+        r'tar --exclude="*.log" --exclude="rootlogon.C" --exclude="crab.log" --exclude="raw_config.toml" --exclude="crab_nano_music_*" --exclude="crab_music_pset.py" --exclude="task.tar.gz" --exclude="CMSSW_*" --exclude="__pycache*" --exclude="build" --exclude="docs_BKP" --exclude="docs" --exclude="crab_nano_music_date_*" --exclude="NanoMUSiC/tools" --exclude="NanoMUSiC/PxlAnalyzer" --exclude="*.root" --exclude="NanoMUSiC/PlotLib" --exclude="NanoMUSiC/MUSiC-Configs" --exclude="NanoMUSiC/MUSiC-RoIScanner" --exclude="NanoMUSiC/MUSiC-Utils" --exclude="NanoMUSiC/MUSiC-CRAB/crab_nano_music_DYJetsToLL*" --exclude="NanoMUSiC/MUSiC-BTagEff/Outputs" -zcvf task.tar.gz $CRAB_MUSIC_BASE/../../*'
     )
     print("")
 
