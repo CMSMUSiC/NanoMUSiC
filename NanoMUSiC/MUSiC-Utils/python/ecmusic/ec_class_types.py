@@ -66,17 +66,17 @@ class ECClassTypeMixin(object):
             for obj in objects:
                 rules.append("*" + obj + "+NJets")
                 rules.append("*" + obj + "_1MET+NJets")
-            for i in xrange(1, n):
+            for i in range(1, n):
                 rules.append("*%dJet*+NJets*" % i)
-        for i in xrange(1, n+1):
-            for j in xrange(n-i + 1 , n+1):
+        for i in range(1, n+1):
+            for j in range(n-i + 1 , n+1):
                 rules.append("*%dJet_%dbJet*" % (j ,i ))
                 rules.append("*%dJet_1MET_%dbJet*" % (j ,i ))
         rules.append("*%dJet" % n)
         rules.append("*%dJet_1MET" % n)
         rules.append("*%dJet_1MET_1bJet" % (n -1) )
 
-        for j in xrange(n+1, nmax):
+        for j in range(n+1, nmax):
             rules.append("*%dJet*" % j)
             rules.append("*%dbJet*" % j)
         return set(ec_names) - set(multi_filter(ec_names, rules))

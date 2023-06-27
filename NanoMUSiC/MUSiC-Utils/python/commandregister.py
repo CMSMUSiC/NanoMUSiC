@@ -112,9 +112,9 @@ if __name__=="__main__":
         @cmd.command
         def echo( self, text, n=5 ):
             """ Echo the given text multiple times. """
-            print "Echo is brought to you by", self.author
-            for i in xrange( n ):
-                print text
+            print ("Echo is brought to you by", self.author)
+            for i in range( n ):
+                print (text)
 
     EchoExample.cmd.run(EchoExample)
 

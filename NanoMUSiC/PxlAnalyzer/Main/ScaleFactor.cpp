@@ -142,7 +142,7 @@ double ScaleFactor::getScaleFactorError(const pxl::Particle *object) const
     return 0.;
 }
 
-bool ScaleFactor::inXrange(const double x) const
+bool ScaleFactor::inrange(const double x) const
 {
     if (x < m_min_x or x > m_max_x)
         return false;
@@ -167,7 +167,7 @@ double ScaleFactor::getPtEtaScaleFactor(const pxl::Particle *object) const
         eta = std::fabs(eta);
     }
     int bin_number;
-    if (inXrange(pt) and inYrange(eta))
+    if (inrange(pt) and inYrange(eta))
     {
         bin_number = m_scale_factor_hist->FindBin(pt, eta);
         return m_scale_factor_hist->GetBinContent(bin_number);
@@ -193,12 +193,12 @@ double ScaleFactor::getEtaPtScaleFactor(const pxl::Particle *object) const
         eta = std::fabs(eta);
     }
     int bin_number;
-    if (inXrange(eta) and inYrange(pt))
+    if (inrange(eta) and inYrange(pt))
     {
         bin_number = m_scale_factor_hist->FindBin(eta, pt);
         return m_scale_factor_hist->GetBinContent(bin_number);
     }
-    else if (inXrange(eta) and pt > m_max_y)
+    else if (inrange(eta) and pt > m_max_y)
     {
         bin_number = m_scale_factor_hist->FindBin(eta, m_max_y - 0.00001);
         return m_scale_factor_hist->GetBinContent(bin_number);
@@ -219,7 +219,7 @@ double ScaleFactor::getPtEtaScaleFactorError(const pxl::Particle *object) const
         eta = std::fabs(eta);
     }
     int bin_number;
-    if (inXrange(pt) and inYrange(eta))
+    if (inrange(pt) and inYrange(eta))
     {
         bin_number = m_scale_factor_hist->FindBin(pt, eta);
         return m_scale_factor_hist->GetBinError(bin_number);
@@ -245,12 +245,12 @@ double ScaleFactor::getEtaPtScaleFactorError(const pxl::Particle *object) const
         eta = std::fabs(eta);
     }
     int bin_number;
-    if (inXrange(eta) and inYrange(pt))
+    if (inrange(eta) and inYrange(pt))
     {
         bin_number = m_scale_factor_hist->FindBin(eta, pt);
         return m_scale_factor_hist->GetBinError(bin_number);
     }
-    else if (inXrange(eta) and pt > m_max_y)
+    else if (inrange(eta) and pt > m_max_y)
     {
         bin_number = m_scale_factor_hist->FindBin(eta, m_max_y - 0.000001);
         return m_scale_factor_hist->GetBinError(bin_number);

@@ -116,7 +116,7 @@ class TreeView(QTreeView):
 
     def fit_columns(self, index=None):
         N = 3
-        for i in xrange(N):
+        for i in range(N):
             self.resizeColumnToContents(i)
 
 

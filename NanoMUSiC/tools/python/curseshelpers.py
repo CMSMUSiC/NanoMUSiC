@@ -22,7 +22,7 @@ def default(x, y):
 def chunks(l, n):
     """ Yield successive n-sized chunks from l.
     """
-    for i in xrange(0, len(l), n):
+    for i in range(0, len(l), n):
         yield l[i:i+n]
 
 def bicolor(screen, row, col, splitter, color0, color1, text):
@@ -298,7 +298,7 @@ class Text(BaseElement):
 def colWidthsReducerMaximum(colWidths, totalWidth):
     # reduces the maximum width by 1 as long as the desired total width is reached
     while sum(colWidths) > totalWidth:
-        colWidths[max(xrange(len(colWidths)),key=colWidths.__getitem__)]-=1
+        colWidths[max(range(len(colWidths)),key=colWidths.__getitem__)]-=1
     return colWidths
 
 class SelectTable(BaseElement):

@@ -163,24 +163,24 @@ class ECDistributionPlot(GeneralPlots):
         if hasattr(self, "_pad1b") and self._pad1b is not None:
             self._pad1b.Close()
         self.canvas.Close()
-        if "mc" in self.plot_case:
-            self.mc_stack.Delete()
-            self.total_mc_hist.Delete()
-            self.total_mc_hist_unscaled.Delete()
-            if self.opt_error_band:
-                if self.systematics:
-                    self.systematics.Delete()
-                    self.systematics_unscaled.Delete()
-        if "data" in self.plot_case:
-            self.data_hist.Delete()
-            self.data_hist_unscaled.Delete()
-        if self.opt_ratio:
-            if self.opt_ratio_error == "band":
-                self.ratio_error_band.Delete()
-            elif self.opt_ratio_error == "total":
-                self.ratio_error_total.Delete()
-            self.ratio.Delete()
-            self.ratio_den.Delete()
+        # if "mc" in self.plot_case:
+        #     self.mc_stack.Delete()
+        #     self.total_mc_hist.Delete()
+        #     self.total_mc_hist_unscaled.Delete()
+        #     if self.opt_error_band:
+        #         if self.systematics:
+        #             self.systematics.Delete()
+        #             self.systematics_unscaled.Delete()
+        # if "data" in self.plot_case:
+        #     self.data_hist.Delete()
+        #     self.data_hist_unscaled.Delete()
+        # if self.opt_ratio:
+        #     if self.opt_ratio_error == "band":
+        #         self.ratio_error_band.Delete()
+        #     elif self.opt_ratio_error == "total":
+        #         self.ratio_error_total.Delete()
+        #     self.ratio.Delete()
+        #     self.ratio_den.Delete()
         self._canvas = None
 
     def plot(self):
@@ -237,7 +237,7 @@ class ECDistributionPlot(GeneralPlots):
         # create cumulative plot if option is used
         if self.config.cumulative:
             sum = 0
-            for ibin in reversed(xrange(self.systematics.GetNbinsX())):
+            for ibin in reversed(range(self.systematics.GetNbinsX())):
                 sum += (
                     self.systematics.GetBinContent(ibin + 1)
                     * self.systematics.GetBinWidth(ibin + 1)
@@ -384,7 +384,7 @@ class ECDistributionPlot(GeneralPlots):
             for ibin in range(1, self.ratio_den.GetNbinsX() + 1):
                 ratio_syst.SetBinError(ibin, shift_hist.GetBinError(ibin))
             self.ratio_error_total.Divide(self.ratio, ratio_syst, "pois midp")
-            ratio_syst.Delete()
+            #ratio_syst.Delete()
 
         # find y plotting range
         y_min = 999.0
@@ -456,7 +456,7 @@ class ECDistributionPlot(GeneralPlots):
         self.line = ro.TLine(linemin, 1, linemax, 1)
         self.line.Draw()
 
-        shift_hist.Delete()
+        #shift_hist.Delete()
 
     def create_input_layers(self):
         self.skip = True

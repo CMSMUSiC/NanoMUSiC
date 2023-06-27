@@ -80,6 +80,6 @@ class _ScanDBSessionMixin( object ):
             if len(res) == round_end - round_start:
                 return []
             rounds = [r.round for r in res]
-        return sorted(set(xrange(round_start, round_end + 1)).difference(rounds))
+        return sorted(set(range(round_start, round_end + 1)).difference(rounds))
 
 

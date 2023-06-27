@@ -58,7 +58,7 @@ class PdistPlot(ECCollectorConsumerPlot):
             for record in self.ec_records:
                 self._p_hist.Fill(record["p-value"])
                 n += 1
-            print "Filled %d in p_hist" % n
+            print ("Filled %d in p_hist" % n)
         return self._p_hist
 
     @property
@@ -73,14 +73,14 @@ class PdistPlot(ECCollectorConsumerPlot):
             self._uniform_hist.SetLineColor( 417 )
             self._uniform_hist.SetLineWidth( 3 )
             self._uniform_hist.SetLineStyle( 9 )
-            print self.class_type, len(self.ec_records), len(self.ec_records) / self.config.nbins
+            print (self.class_type, len(self.ec_records), len(self.ec_records) / self.config.nbins)
             filled = 0
             bin_value = len(self.ec_records) / self.config.nbins
             for ibin in range(self.config.nbins + 1):
                 self._uniform_hist.SetBinContent(ibin, bin_value)
                 filled += bin_value
             if filled - self.p_hist.Integral() > 0.001:
-                print "Filled does not match integral", filled, self.p_hist.Integral()
+                print ("Filled does not match integral", filled, self.p_hist.Integral())
         return self._uniform_hist
 
     def plot(self):

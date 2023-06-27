@@ -39,7 +39,7 @@ class ScaleFactor
     double getEtaPtScaleFactor(const pxl::Particle *object) const;
     double getPtEtaScaleFactorError(const pxl::Particle *object) const;
     double getEtaPtScaleFactorError(const pxl::Particle *object) const;
-    bool inXrange(const double x) const;
+    bool inrange(const double x) const;
     bool inYrange(const double y) const;
     // Member variables
     std::string m_name;
