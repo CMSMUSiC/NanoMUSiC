@@ -439,8 +439,8 @@ auto main(int argc, char *argv[]) -> int
         }
         //*/
 
-        // VETO BJETS for this analysis
-        if(nbjet >= 1)
+        // VETO BJETS for this analysis, only look at (wide)jet events
+        if(not(nbjet == 1))
         {
             continue;
         }
@@ -482,11 +482,13 @@ auto main(int argc, char *argv[]) -> int
             }
         }
 
+        /*// DONT DO !!! WHY NEED TWO?
         // AT LEAST 2 SEED JETS REQUIRED
         if (not(seed_jets.size() >= 2))
         {
             continue;
         }
+        */
 
         // JET MERGING TO WIDE JETS
         auto widejets = seed_jets; // wide jets
@@ -495,16 +497,21 @@ auto main(int argc, char *argv[]) -> int
             for (size_t i = 0; i < noseed_jets.size(); i++)
             {
                 auto cur_jet = noseed_jets.at(i);
-                for (size_t j = 0; j < seed_jets.size(); j++)
+                auto all_delta_r  = RVec<float>{};
+                for (size_t j = 0; j < jetseeds.size(); j++)
                 {
-                    // try to merge non-seed jets to the seeds
-                    if (std::abs(Math::VectorUtil::DeltaR(seed_jets.at(j), cur_jet)) < 1.1)
-                    {
-                        widejets.at(j) += cur_jet;
-                        break; // do not try to merge the same jet twice
-                        // merge priority for highest pt seed
-                        // reject non-seed jet if it couldn't be merged
-                    }
+                    // calculate distances to wide jets
+                    all_delta_r.push_back(std::abs(Math::VectorUtil::DeltaR(jetseeds.at(j), cur_jet)));
+                }
+                // sort after shortest distance
+                sortidx = VecOps::Argsort(all_delta_r, // sort, smallest element first
+                                [](auto p1, auto p2) -> bool
+                                {
+                                    p1 < p2;
+                                })
+                if(all_delta_r.at(sortidx.at(0)) < 1.1) // check if smallest deltar is < 1.1
+                {
+                    widejets.at(sortidx.at(0)) += cur_jet; // if so, add the current jet to this particular widejet
                 }
             }
         }
@@ -517,14 +524,16 @@ auto main(int argc, char *argv[]) -> int
                                                            });
         auto widejets_sorted = VecOps::Take(widejets, wjets_reordering_mask);
 
+        /*// DONT DO !!!
         // DELTA ETA FILTER FOR 2 LEADING WIDE JETS
         float delta_eta = std::abs(widejets_sorted.at(0).eta() - widejets_sorted.at(1).eta());
         if (not(delta_eta < 1.1))
         {
             continue;
         }
+        */
 
-        /*// optional: invariant mass and sum pt cuts
+        /*// OPTIONAL: invariant mass and sum pt cuts
         sum_pt = 0.f;
         auto vec_sum = Math::PtEtaPhiMVector(0, 0, 0, 0);
         for (size_t i = 0; i < widejets_sorted.size(); i++)
@@ -538,7 +547,7 @@ auto main(int argc, char *argv[]) -> int
         }
         */
 
-        // refer to wide jets as jets
+        // refer to wide jets as jets (formal change for plotting and classification)
         njet = widejets_sorted.size();
         jets = widejets_sorted;
 

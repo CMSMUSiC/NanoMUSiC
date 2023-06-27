@@ -222,7 +222,6 @@ def validation(args):
         )
 
     # print("[ MUSiC Validation ] Merging cutflow histograms ...\n")
-    merge_cutflow_histograms(process, year, output_path, input_files)
 
     # print("[ MUSiC Validation ] Starting validation ...\n")
     inputs = dump_list_to_temp_file(input_files)
@@ -245,16 +244,6 @@ def validation(args):
         shift,
     )
     os.system(f"rm -rf {inputs} > /dev/null")
-
-    # remove the cutflow files
-    if savepath != "":
-        os.system(
-            f"rm -rf validation_outputs/{year}/{savepath}/files/cutflow_{process}_{year}.root"
-        )
-    else:
-        os.system(
-            f"rm -rf validation_outputs/{year}/files/cutflow_{process}_{year}.root"
-        )
 
 
 def get_year_era(process_name):
@@ -297,8 +286,10 @@ def create_arguments(
         "JetScale_Down",
     ]
     for sample in configuration:
-        for shift in shifts:  # for all shifts the executable is now calles separately
-            if ismc:  # generate mc argument
+        if ismc:  # generate mc argument
+            for (
+                shift
+            ) in shifts:  # for all shifts the executable is now calles separately
                 if f"das_name_{year}" in configuration[sample].keys():
                     validation_arguments.append(
                         {
@@ -324,7 +315,8 @@ def create_arguments(
                             "shift": shift,
                         }
                     )
-            else:  # generate data argument
+        else:  # generate data argument
+            if f"das_name_{year}" in configuration[sample].keys():
                 validation_arguments.append(
                     {
                         "process": sample,
@@ -341,10 +333,30 @@ def create_arguments(
                         "tovalidate": tvarg,
                         "process_order": "_",
                         "process_group": "_",
-                        "shift": shift,
+                        "shift": "Nominal",
                     }
                 )
     return validation_arguments
+
+
+def merge_task(args):
+    (
+        process,
+        year,
+        output_path,
+        input_files,
+    ) = list(args.values())
+    merge_cutflow_histograms(process, year, output_path, input_files)
+
+
+def delete_task(args):
+    (
+        process,
+        year,
+        output_path,
+        input_files,
+    ) = list(args.values())
+    os.system(f"rm -rf {output_path}/cutflow_{process}_{year}.root")
 
 
 def main():
@@ -490,6 +502,51 @@ def main():
         if not (os.path.isdir(f"validation_outputs/{args.year}/{savepath}/files")):
             os.system(f"mkdir -p validation_outputs/{args.year}/{savepath}/files")
 
+    print("Creating cutflow files...")
+    # create cutflow hists
+    merge_arguments = []
+    for varg in validation_arguments:
+        (
+            process,
+            year,
+            luminosity,
+            is_data,
+            x_section,
+            filter_eff,
+            k_factor,
+            input_files,
+            executable,
+            savepath,
+            trigger,
+            tvarg,
+            process_order,
+            process_group,
+            shift,
+        ) = list(varg.values())
+        if shift == "Nominal":
+            output_path = ""
+            if savepath != "":
+                output_path = f"validation_outputs/{year}/{savepath}/files/"
+            else:
+                output_path = f"validation_outputs/{year}/files/"
+            merge_arguments.append(
+                {
+                    "process": process,
+                    "year": year,
+                    "output_path": output_path,
+                    "input_files": input_files,
+                }
+            )
+
+    with Pool(min(args.jobs, len(merge_arguments))) as pool:
+        list(
+            tqdm(
+                pool.imap_unordered(merge_task, merge_arguments),
+                total=len(merge_arguments),
+                unit="cutflow",
+            )
+        )
+
     # run validation jobs with the generated arguments
     print(f"Starting {len(validation_arguments)} validation jobs...")
     with Pool(min(args.jobs, len(validation_arguments))) as pool:
@@ -498,6 +555,17 @@ def main():
                 pool.imap_unordered(validation, validation_arguments),
                 total=len(validation_arguments),
                 unit="sample",
+            )
+        )
+
+    print("Cleaning all cutflow files...")
+    # remove all cutflow files after completing all jobs...
+    with Pool(min(args.jobs, len(merge_arguments))) as pool:
+        list(
+            tqdm(
+                pool.imap_unordered(delete_task, merge_arguments),
+                total=len(merge_arguments),
+                unit="cutflow",
             )
         )
 

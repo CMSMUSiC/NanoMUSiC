@@ -242,8 +242,8 @@ class Shifts
                                         float Generator_x1,                                                      //
                                         float Generator_x2,                                                      //
                                         int Generator_id1,                                                       //
-                                        int Generator_id2,                                                       //
-                                        float LHEWeight_originalXWGTUP) -> double
+                                        int Generator_id2) -> double
+                                        // float LHEWeight_originalXWGTUP, // changed to fix problem
     {
         if (shift == "PDF_As_Up" or shift == "PDF_As_Down")
         {
@@ -337,6 +337,8 @@ class Shifts
                 }
             }
             */
+
+            float LHEWeight_originalXWGTUP; // only for fixing, commented in the function argument so define it here
 
             // NNPDF31_nnlo_as_0118_hessian - 304400
             float alpha_s_up = 1.;

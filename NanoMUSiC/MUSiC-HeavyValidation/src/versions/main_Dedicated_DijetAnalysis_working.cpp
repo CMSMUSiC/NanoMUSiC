@@ -165,7 +165,7 @@ auto main(int argc, char *argv[]) -> int
 
     JetClass2* validation_class;
     validation_class = new JetClass2(
-        fmt::format("{}/{}_{}_{}_{}.root", output_path, "2widejet", "nominal", process, year), "2J+0BJ+0MET");
+        fmt::format("{}/{}_{}_{}_{}.root", output_path,"2J+0BJ+0MET", "Nominal", process, year), "2J+0BJ+0MET");
 
     // build jet corrections
     auto jet_corrections = JetCorrector(get_runyear(year), get_era_from_process_name(process, is_data), is_data);
@@ -326,6 +326,12 @@ auto main(int argc, char *argv[]) -> int
         // Displayed classname is 0MET however they simply dont care about met and do not explicitly veto it
         // We are also not vetiong MET the classname is just to use the already implemented classnames and plotting tools
 
+        // VETO BJETS
+        if (not(nbjet == 0)) // veto bjets
+        {
+            continue;                                            // veto is condition is not satisfied
+        }
+
         // DIJET REQUIREMENT
         if (not(njet >= 2))
         {
@@ -341,15 +347,21 @@ auto main(int argc, char *argv[]) -> int
             for(size_t i = 0; i < not_leading.size(); i++)
             {
                 auto cur_jet = not_leading.at(i);
+                auto all_delta_r  = RVec<float>{};
                 for (size_t j = 0; j < jetseeds.size(); j++)
                 {
-                    // try to merge non-leading jets to the seeds
-                    // priotize the leading seed
-                    if(std::abs(Math::VectorUtil::DeltaR(jetseeds.at(j), cur_jet)) < 1.1)
-                    {
-                        widejets.at(j) += cur_jet;
-                        continue; // do not try to merge the same jet twice
-                    }
+                    // calculate distances to wide jets
+                    all_delta_r.push_back(std::abs(Math::VectorUtil::DeltaR(jetseeds.at(j), cur_jet)));
+                }
+                // sort after shortest distance
+                sortidx = VecOps::Argsort(all_delta_r, // sort, smallest element first
+                                [](auto p1, auto p2) -> bool
+                                {
+                                    p1 < p2;
+                                })
+                if(all_delta_r.at(sortidx.at(0)) < 1.1) // check if smallest deltar is < 1.1
+                {
+                    widejets.at(sortidx.at(0)) += cur_jet; // if so, add the current jet to this particular widejet
                 }
             }
         }

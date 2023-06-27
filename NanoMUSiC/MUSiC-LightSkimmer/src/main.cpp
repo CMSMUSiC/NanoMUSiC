@@ -170,7 +170,7 @@ auto main(int argc, char *argv[]) -> int
                         {
                             return "LHEWeight_originalXWGTUP"sv;
                         }
-                        return "-1."sv;
+                        return "-1.f"sv;
                     }())
             .Define("_LHE_HT",
                     [&configuration, &dataframe]() -> std::string_view

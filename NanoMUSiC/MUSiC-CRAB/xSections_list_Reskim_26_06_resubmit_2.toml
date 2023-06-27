@@ -1,0 +1,10 @@
+
+[WGToLNuG_01J_5f_13TeV_AM]
+XSec = 0.0412
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "WG"
+generator_filter_key = "pt_gamma_less_130"
+is_data = false
+das_name_2018 = ["/WGToLNuG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM"]

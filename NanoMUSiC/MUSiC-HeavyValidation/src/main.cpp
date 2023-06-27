@@ -47,7 +47,7 @@ inline auto update_class(std::set<std::string> &eventclass,
             classes_stat.insert({c_name, 0.f});
         }
         // add weight to class
-        classes[c_name] += weight; // add weight to class count
+        classes[c_name] += weight;               // add weight to class count
         classes_stat[c_name] += weight * weight; // add weight^2 to syst_err^2
     }
 }
@@ -178,7 +178,6 @@ auto main(int argc, char *argv[]) -> int
         fmt::print("          -l|--luminosity: Integrated luminosity.\n");
         fmt::print("         -po|--process_order: Process order.\n");
         fmt::print("         -pg|--process_group: Process group.\n");
-        fmt::print("         -or|--order: Order of MC.\n");
         fmt::print("        -trg|--trigger: Specify trigger and lower limits, e.g. HT1600/PT600.\n");
         fmt::print(
             "         -tv|--tovalidate: Names of the classes that should be plotted. Seperate "
@@ -191,10 +190,10 @@ auto main(int argc, char *argv[]) -> int
         exit(-1);
     }
     // read in constants from argument (convert to float)
-    const float x_section = std::stod(x_section_str);
-    const float filter_eff = std::stod(filter_eff_str);
-    const float k_factor = std::stod(k_factor_str);
-    const float luminosity = std::stod(luminosity_str);
+    const float x_section = std::stof(x_section_str);
+    const float filter_eff = std::stof(filter_eff_str);
+    const float k_factor = std::stof(k_factor_str);
+    const float luminosity = std::stof(luminosity_str);
 
     if (debugprint)
     {
@@ -244,7 +243,7 @@ auto main(int argc, char *argv[]) -> int
     ADD_VALUE_READER(Generator_x2, float);
     ADD_VALUE_READER(Generator_id1, int);
     ADD_VALUE_READER(Generator_id2, int);
-    ADD_VALUE_READER(_LHEWeight_originalXWGTUP, float);
+    //  ADD_VALUE_READER(_LHEWeight_originalXWGTUP, double); // fix error with the current skimmed dataset
 
     ADD_ARRAY_READER(Muon_pt, float);
     ADD_ARRAY_READER(Muon_eta, float);
@@ -301,7 +300,6 @@ auto main(int argc, char *argv[]) -> int
     ADD_VALUE_READER(MET_pt, float);
     ADD_VALUE_READER(MET_phi, float);
 
-
     // build jetclass analysis
     if (debugprint)
     {
@@ -345,9 +343,10 @@ auto main(int argc, char *argv[]) -> int
     {
         for (const auto &c_name : to_validate)
         {
-            validation_classes[c_name] = new JetClass2(
-                fmt::format("{}/{}_{}_{}_{}.root", output_path, c_name, shift, process, year), c_name);
-            // file format: classname_systname/shift_samplename_year.root (classname includes shift/systname after underscore)
+            validation_classes[c_name] =
+                new JetClass2(fmt::format("{}/{}_{}_{}_{}.root", output_path, c_name, shift, process, year), c_name);
+            // file format: classname_systname/shift_samplename_year.root (classname includes shift/systname after
+            // underscore)
         }
     }
 
@@ -363,7 +362,7 @@ auto main(int argc, char *argv[]) -> int
         throw std::runtime_error(fmt::format("Invalid order given: {}", process_order));
     }
     // definition of cross section uncertainties
-    const std::map<std::string, float> x_sec_uncertainty{
+    std::map<std::string, float> x_sec_uncertainty{
         {"LO", 0.5},
         {"NLO", 0},
         {"NNLO", 0},
@@ -459,7 +458,6 @@ auto main(int argc, char *argv[]) -> int
     /////////////////////////////////////////////
     /////////////////////////////////////////////
 
-
     // read cutflow
     if (debugprint)
     {
@@ -472,10 +470,10 @@ auto main(int argc, char *argv[]) -> int
     const auto no_cuts = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("NoCuts") + 1);
     const auto generator_filter = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("GeneratorFilter") + 1);
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////         EVENT LOOP        ////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////         EVENT LOOP ////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     if (debugprint)
     {
@@ -652,12 +650,10 @@ auto main(int argc, char *argv[]) -> int
         auto bjets_4vec = bjets.p4;
         auto met_4vec = met.p4;
 
-
         if (debugprint)
         {
             std::cout << "Generated objects." << std::endl;
         }
-
 
         ///* optional: LEPTON VETO or CONDITIONS
         // if (not(nelectron == 0 and nmuon == 0)) // veto all leptons
@@ -738,8 +734,8 @@ auto main(int argc, char *argv[]) -> int
                                                                  unwrap(Generator_x1),       //
                                                                  unwrap(Generator_x2),       //
                                                                  unwrap(Generator_id1),      //
-                                                                 unwrap(Generator_id2),      //
-                                                                 unwrap(_LHEWeight_originalXWGTUP, 1.f));
+                                                                 unwrap(Generator_id2));
+                                                                 //unwrap(_LHEWeight_originalXWGTUP, 1.f),);
 
             weight = unwrap(gen_weight, 1.) //
                      * pu_weight            //
@@ -752,8 +748,17 @@ auto main(int argc, char *argv[]) -> int
                      * k_factor             //
                      * scaled_luminosity    //
                      * pdf_as_weight;
-        }
 
+            // xSecOrder uncertainty for LO
+            if (shift == "xSecOrder_Up")
+            {
+                weight = weight * (1 + x_sec_uncertainty[process_order]);
+            }
+            else if (shift == "xSecOrder_Down")
+            {
+                weight = weight * (1 - x_sec_uncertainty[process_order]);
+            }
+        }
 
         // JET CLASS VALIDATION AND CLASS COUNTING
         std::set<std::string> eventclass =
@@ -817,8 +822,7 @@ auto main(int argc, char *argv[]) -> int
                 {
                     if (c_name == c_name_toval)
                     { // fill the event in the class
-                        validation_classes[c_name]->fill(
-                            jets_4vec, bjets_4vec, nelectron, nmuon, met_4vec, weight);
+                        validation_classes[c_name]->fill(jets_4vec, bjets_4vec, nelectron, nmuon, met_4vec, weight);
                     }
                 }
             }
@@ -834,14 +838,16 @@ auto main(int argc, char *argv[]) -> int
     */
     // SAVE JET CLASS VALIDATION
     // save classes and counts in toml file
-    // ==> class counts are stored in file classes_systname/shift_process_year.toml (so for each syst in a separate file)
-    // the class counts for this systematic are stored with the key [counts]
-    // the stat error is included in each file with key [stat]
+    // ==> class counts are stored in file classes_systname/shift_process_year.toml (so for each syst in a separate
+    // file) the class counts for this systematic are stored with the key [counts] the stat error is included in each
+    // file with key [stat]
     if (countclasses)
     {
         classfile.open(fmt::format("{}/classes_{}_{}_{}.toml", output_path, shift, process, year).c_str());
         // fill nominal and systematics
-        classfile << "\n\n[" << "counts" << "]\n";
+        classfile << "\n\n["
+                  << "counts"
+                  << "]\n";
         for (auto &[c_name, c_count] : classes)
         {
             /* // dont do this for now
@@ -853,7 +859,9 @@ auto main(int argc, char *argv[]) -> int
             classfile << "\"" << c_name << "\" = " << c_count << "\n";
         }
         // fill stat err
-        classfile << "\n\n[" << "stat" << "]\n";
+        classfile << "\n\n["
+                  << "stat"
+                  << "]\n";
         for (auto &[c_name, c_stat] : classes_stat)
         {
             classfile << "\"" << c_name << "\" = " << c_stat << "\n";

@@ -369,9 +369,9 @@ def stacker(
             if syst == "Nominal":  # fill statistical error
                 mcstaterrors.update({sample: sampleerrors})
 
-    # import data histograms for every systematic
+    # import data histograms (only nominal)
     printdebug(f"Importing {len(datasamples)} data histograms for year {year}...")
-    for syst in systematics:
+    for syst in ["Nominal"]:  # only nominal for data
         for sample in datasamples:
             fileprefix_syst = fileprefix + syst + "_"  # add syst name to file prefix
             samplecounts, sampleedges, sampleerrors = import_hist(
@@ -396,7 +396,7 @@ def stacker(
             for i in range(validation_len_edges):
                 if mcedges[syst][sample][i] != validation_edges[i]:
                     binerror()
-    for syst in systematics:
+    for syst in ["Nominal"]:  # only nominal for data
         for sample in datasamples:
             if len(dataedges[syst][sample]) != validation_len_edges:
                 binerror()
@@ -543,7 +543,7 @@ def stacker(
                     + np.abs(mcsystematics[newname + "_Down"][sample])
                 ) / 2  # calculate mean error for each sample and bin
                 mcsystematics[newname + "_Up"].pop(sample)
-                mcsystematics[newname + "_Up"].pop(sample)
+                mcsystematics[newname + "_Down"].pop(sample)
                 if newname in mcsystematics.keys():  # update mccounts
                     mcsystematics[newname].update({sample: newsyst})
                 else:
@@ -564,7 +564,7 @@ def stacker(
     # exceptions exist e.g. for the xsection errors where the errors of different groups are assumed to be uncorrelated
     for syst in systematics:
         s_error = np.zeros(nbins)
-        # TREAT FULLY CORRELATED
+        # TREAT ALL SAMPLES FULLY CORRELATED
         if syst in [
             "stat",
             "Luminosity",
@@ -578,6 +578,16 @@ def stacker(
                 s_error += np.array(
                     mcsystematics[syst][sample]
                 )  # assumed correlated for every sample
+        # TREAT ALL SAMPLES UNCORRELATED
+        elif syst in [
+            "stat",
+        ]:
+            temp = 0
+            for sample in mcsamples:
+                temp += (
+                    np.array(mcsystematics[syst][sample]) ** 2
+                )  # assumed uncorrelated for every sample
+            s_error = np.sqrt(temp)
         # ONLY TREAT ONE GROUP CORRELATED
         elif syst in ["xSecOrder"]:
             # error only for LO order, others have error 0 currently, therefore this code does not decide between different orders

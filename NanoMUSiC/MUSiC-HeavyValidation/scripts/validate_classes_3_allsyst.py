@@ -574,7 +574,6 @@ def countplotter(
             s_error = 0
             # TREAT FULLY CORRELATED
             if syst in [
-                "stat",
                 "Luminosity",
                 "PU",
                 "PDF_As",
@@ -586,6 +585,16 @@ def countplotter(
                     s_error += mcclasstypedict_syst[classname][sample][
                         syst
                     ]  # assumed correlated for every sample
+            # TREAT ALL SAMPLES UNCORRELATED
+            elif syst in [
+                "stat",
+            ]:
+                temp = 0
+                for sample in mcsamples:
+                    temp += (
+                        mcclasstypedict_syst[classname][sample][syst] ** 2
+                    )  # assumed uncorrelated for every sample
+                s_error = np.sqrt(temp)
             # ONLY TREAT ONE GROUP CORRELATED
             elif syst in ["xSecOrder"]:
                 # error only for LO order, others have error 0 currently, therefore this code does not decide between different orders
