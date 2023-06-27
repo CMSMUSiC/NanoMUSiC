@@ -1,4 +1,3 @@
-ECPlot_root.py --data first_folder/data_30_05.root --mc first_folder/bg_05_06_2023.root -j 126 --filter Rec_2Ele --out FixTest9 --detailed-groups strong --legend-include-yield False --ymin 0.0001 --legend-number-columns 1 --header-subtitle "Simulation Preliminary" --text-size-scale-factor 1.4 --legend-label-uncert 'Bkg. uncert.' --legend-number-columns 1 --legend-xlow 0.75 --legend-xup 0.92 --legend-yup 0.9 --canvas-width 1600 --canvas-height 1400 --show-roi True --scale-to-area True##### CUSTOM #####
 .vscode/.nfs*
 docs_BKP/
 *CMSSW_*
@@ -31,6 +30,11 @@ NanoMUSiC/special_studies/muon_selection/*.pdf
 
 test/secondtry/*
 test/thirdtry/*
+
+test/**/*.pdf
+test/**/*.png
+test/**/*.root
+test/**/*.C
 
 
 ##### PYTHON #####
