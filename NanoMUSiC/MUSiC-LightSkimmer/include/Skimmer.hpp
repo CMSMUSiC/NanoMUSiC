@@ -354,7 +354,7 @@ inline auto get_output_branches(const TaskConfiguration &configuration) -> std::
         "MET_phi",
     };
     const std::vector<std::string> output_branches_mc_only = {
-        "gen_weight",
+        "mc_weight",
         "Jet_hadronFlavour",
         "Jet_genJetIdx",
         "Pileup_nTrueInt",

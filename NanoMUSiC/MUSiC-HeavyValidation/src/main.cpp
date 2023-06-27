@@ -124,7 +124,7 @@ auto main(int argc, char *argv[]) -> int
     ADD_VALUE_READER(pass_jet_ht_trigger, bool);
     ADD_VALUE_READER(pass_jet_pt_trigger, bool);
 
-    ADD_VALUE_READER(gen_weight, float);
+    ADD_VALUE_READER(mc_weight, float);
     ADD_VALUE_READER(Pileup_nTrueInt, float);
     ADD_VALUE_READER(L1PreFiringWeight_Up, float);
     ADD_VALUE_READER(L1PreFiringWeight_Dn, float);
@@ -539,16 +539,16 @@ auto main(int argc, char *argv[]) -> int
                                                                  unwrap(Generator_id2),      //
                                                                  unwrap(LHEWeight_originalXWGTUP, 1.f));
 
-            weight = unwrap(gen_weight, 1.) //
-                     * pu_weight            //
-                     * prefiring_weight     //
-                     * generator_filter     //
-                     / no_cuts              //
-                     / generator_filter     //
-                     * x_section            //
-                     * filter_eff           //
-                     * k_factor             //
-                     * scaled_luminosity    //
+            weight = unwrap(mc_weight, 1.) //
+                     * pu_weight           //
+                     * prefiring_weight    //
+                     * generator_filter    //
+                     / no_cuts             //
+                     / generator_filter    //
+                     * x_section           //
+                     * filter_eff          //
+                     * k_factor            //
+                     * scaled_luminosity   //
                      * pdf_as_weight;
         }
 
