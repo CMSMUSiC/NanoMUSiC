@@ -25,7 +25,7 @@ inline auto get_scale_resolution_shifts(const std::string &shift) -> std::pair<s
         return std::make_pair<std::string, std::string>("Up", "Nominal");
     }
 
-    if (shift == "JetScale_Dow")
+    if (shift == "JetScale_Down")
     {
         return std::make_pair<std::string, std::string>("Down", "Nominal");
     }

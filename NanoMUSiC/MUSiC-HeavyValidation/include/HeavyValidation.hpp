@@ -212,4 +212,33 @@ inline auto get_era_from_process_name(const std::string &process, bool is_data) 
     return "_";
 }
 
+inline auto is_data_to_string(bool is_data) -> std::string
+{
+    if (is_data)
+    {
+        return "Data";
+    }
+    return "MC";
+}
+
+inline auto get_output_file_path(const std::string &prefix,
+                                 const std::string &output_path,
+                                 const std::string &process,
+                                 const std::string &year,
+                                 const std::string &process_group,
+                                 const std::string &xs_order,
+                                 bool is_data,
+                                 const std::string &shift,
+                                 const std::string &suffix = ".root") -> std::string
+{
+    return fmt::format("{}/z_to_ele_ele_x__Z_mass_{}_{}_{}.root",
+                       output_path,
+                       process,
+                       year,
+                       process_group,
+                       xs_order,
+                       is_data_to_string(is_data),
+                       shift);
+}
+
 #endif // VALIDATION
