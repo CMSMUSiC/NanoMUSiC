@@ -400,15 +400,6 @@ auto main(int argc, char *argv[]) -> int
                         return "Flag_goodVertices && Flag_globalSuperTightHalo2016Filter && Flag_HBHENoiseFilter && Flag_HBHENoiseIsoFilter && Flag_EcalDeadCellTriggerPrimitiveFilter && Flag_BadPFMuonFilter && Flag_BadPFMuonDzFilter && Flag_eeBadScFilter && Flag_ecalBadCalibFilter"sv;
                     }
 
-                    if (configuration.year == Year::Run2017)
-                    {
-                        return "HLT_IsoMu27"sv;
-                    }
-
-                    if (configuration.year == Year::Run2018)
-                    {
-                        return "HLT_IsoMu24"sv;
-                    }
                     throw std::invalid_argument(
                         fmt::format("ERROR: Could not define trigger bits. The requested year ({}) is invalid.",
                                     configuration.year_str));
@@ -463,14 +454,20 @@ auto main(int argc, char *argv[]) -> int
                         {
                             return "HLT_Mu50 or HLT_TkMu50"sv;
                         }
+
                         if (configuration.year == Year::Run2017)
                         {
                             return "HLT_Mu50 or HLT_TkMu100 or HLT_OldMu100"sv;
                         }
+
                         if (configuration.year == Year::Run2018)
                         {
                             return "HLT_Mu50 or HLT_TkMu100 or HLT_OldMu100"sv;
                         }
+
+                        throw std::invalid_argument(
+                            fmt::format("ERROR: Could not define trigger bits. The requested year ({}) is invalid.",
+                                        configuration.year_str));
                     }())
             .Define("pass_low_pt_electron_trigger",
                     [&configuration]() -> std::string_view
@@ -492,6 +489,10 @@ auto main(int argc, char *argv[]) -> int
                         {
                             return "HLT_Ele35_WPTight_Gsf or HLT_Photon200"sv;
                         }
+
+                        throw std::invalid_argument(
+                            fmt::format("ERROR: Could not define trigger bits. The requested year ({}) is invalid.",
+                                        configuration.year_str));
                     }())
             .Define("pass_high_pt_electron_trigger",
                     [&configuration]() -> std::string_view
@@ -513,6 +514,10 @@ auto main(int argc, char *argv[]) -> int
                         {
                             return "HLT_Ele32_WPTight_Gsf or HLT_Photon200 or HLT_Ele115_CaloIdVT_GsfTrkIdT"sv;
                         }
+
+                        throw std::invalid_argument(
+                            fmt::format("ERROR: Could not define trigger bits. The requested year ({}) is invalid.",
+                                        configuration.year_str));
                     }())
             .Define("pass_jet_ht_trigger",
                     [](bool HLT_PFHT1050) -> bool

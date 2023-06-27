@@ -130,13 +130,13 @@ auto main(int argc, char *argv[]) -> int
     ADD_VALUE_READER(L1PreFiringWeight_Dn, float);
     ADD_VALUE_READER(L1PreFiringWeight_Nom, float);
 
-    ADD_ARRAY_READER(_LHEPdfWeight, float);
+    ADD_ARRAY_READER(LHEPdfWeight, float);
     ADD_VALUE_READER(Generator_scalePDF, float);
     ADD_VALUE_READER(Generator_x1, float);
     ADD_VALUE_READER(Generator_x2, float);
     ADD_VALUE_READER(Generator_id1, int);
     ADD_VALUE_READER(Generator_id2, int);
-    ADD_VALUE_READER(_LHEWeight_originalXWGTUP, float);
+    ADD_VALUE_READER(LHEWeight_originalXWGTUP, float);
 
     ADD_ARRAY_READER(Muon_pt, float);
     ADD_ARRAY_READER(Muon_eta, float);
@@ -509,13 +509,13 @@ auto main(int argc, char *argv[]) -> int
             auto pdf_as_weight = Shifts::get_pdf_alpha_s_weights(shift,
                                                                  lha_indexes,
                                                                  default_pdf_sets,           //
-                                                                 unwrap(_LHEPdfWeight),      //
+                                                                 unwrap(LHEPdfWeight),       //
                                                                  unwrap(Generator_scalePDF), //
                                                                  unwrap(Generator_x1),       //
                                                                  unwrap(Generator_x2),       //
                                                                  unwrap(Generator_id1),      //
                                                                  unwrap(Generator_id2),      //
-                                                                 unwrap(_LHEWeight_originalXWGTUP, 1.f));
+                                                                 unwrap(LHEWeight_originalXWGTUP, 1.f));
 
             weight = unwrap(gen_weight, 1.) //
                      * pu_weight            //
