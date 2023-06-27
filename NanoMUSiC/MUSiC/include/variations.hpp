@@ -98,7 +98,7 @@
 //                                     });
 
 // constexpr unsigned int kTotalVariationsAndShifts = (Outputs::kTotalVariations - 1) * 2 + 1;
-// const auto VariationsAndShiftsIndexRange = RangesHelpers::index_range<unsigned long>(kTotalVariationsAndShifts);
+// const auto VariationsAndShiftsInderange = RangesHelpers::index_range<unsigned long>(kTotalVariationsAndShifts);
 
 // } // namespace Variations
 

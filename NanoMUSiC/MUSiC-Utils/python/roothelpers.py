@@ -8,6 +8,7 @@ from collections import namedtuple
 import numpy as np
 import matplotlib
 import ROOT
+import ctypes
 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.TH1.AddDirectory( False )
@@ -45,11 +46,11 @@ def root_setup():
             #  "TEventClass already loaded from '%s'.\n" % lib
             return
 
-    pxlana_path = os.getenv( 'MUSIC_UTILS' )
+    pxlana_path = os.getenv( 'MUSIC_BASE' ).replace('/home/home1','/.automount/home/home__home1')
     if not pxlana_path:
-        raise EnvironmentError( "MUSIC_UTILS environment variable not set" )
+        raise EnvironmentError( "MUSIC_BASE environment variable not set" )
     if not os.path.isdir( pxlana_path ):
-        raise IOError( "MUSIC_UTILS path does not exist" )
+        raise IOError( "MUSIC_BASE path does not exist" )
 
     shared_lib = os.path.join( pxlana_path, 'lib', library_name )
     if not os.path.isfile( shared_lib ):
@@ -60,6 +61,8 @@ def root_setup():
         raise IOError( "Shared library '%s' could not be loaded" % shared_lib )
 
     libs = ROOT.gSystem.GetLibraries( "", "D" ).split( " " )
+    #print (libs)
+    #print(shared_lib)
     assert shared_lib in libs
 
 @contextmanager
@@ -86,7 +89,7 @@ def root_map_hist( func, hist, dummy= False):
     arr = np.zeros( N )
     if dummy:
         return arr
-    for i in xrange( N ):
+    for i in range( N ):
         arr[i] = func( i+1 )
     return arr
 
@@ -101,7 +104,7 @@ def root_hist2arrays( hist, bin_center=True ):
     ''' Convert a root histo to array '''
     ar_x = array.array( "f" )
     ar_y = array.array( "f" )
-    for ibin in xrange( hist.GetNbinsX() ):
+    for ibin in range( hist.GetNbinsX() ):
         ar_y.append( hist.GetBinContent( ibin + 1 ) )
         if bin_center:
             ar_x.append( hist.GetBinCenter( ibin + 1 ) )
@@ -112,6 +115,8 @@ def root_hist2arrays( hist, bin_center=True ):
 def root_sum_hist( hists ):
     if not hists:
         raise ValueError( "Sum over 0 histograms." )
+    
+    hists = list(hists)
     combined = hists[0].Clone()
     for hist in hists[1:]:
         combined.Add( hist )
@@ -121,7 +126,7 @@ def root_get_error_hist( hists ):
     ''' Return combined error entries in hist as new hist'''
     combined = root_sum_hist( hists )
     N = combined.GetNbinsX()
-    for i in xrange( 1, N+1 ):
+    for i in range( 1, N+1 ):
         value = 0.
         for hist in hists:
             value = math.sqrt( value**2 + hist.GetBinError( i )**2 )
@@ -131,10 +136,10 @@ def root_get_error_hist( hists ):
 def root_sqsum_hist( hists ):
     if not hists:
         raise ValueError( "Squared sum over 0 histograms." )
-
+    hists = list(hists)
     combined = hists[0].Clone()
     N = combined.GetNbinsX()
-    for i in xrange( 1, N+1 ):
+    for i in range( 1, N+1 ):
         value = 0
         for hist in hists:
             value += math.pow( hist.GetBinContent( i ), 2 )
@@ -193,14 +198,15 @@ def root_absolute_difference( hist1, hist2, sign_if_first_negative=False):
 def get_canvas_size(pad):
     """ Get user size of canvas """
     Coordinates = namedtuple("Coordinates", ("xlow", "xup", "ylow", "yup"))
-    xlow_canvas = ROOT.Double( 0. )
-    ylow_canvas = ROOT.Double( 0. )
-    xup_canvas = ROOT.Double( 0. )
-    yup_canvas = ROOT.Double( 0. )
+    xlow_canvas = ctypes.c_double(0) # ROOT.double( 0. ) 
+    ylow_canvas = ctypes.c_double(0) #ROOT.double( 0. )
+    xup_canvas = ctypes.c_double(0) #ROOT.double( 0. )
+    yup_canvas = ctypes.c_double(0) #ROOT.double( 0. )
+    
     pad.Modified()
     pad.Update()
     pad.GetRangeAxis( xlow_canvas, ylow_canvas, xup_canvas, yup_canvas )
-    return Coordinates(xlow_canvas, xup_canvas, ylow_canvas, yup_canvas)
+    return Coordinates(xlow_canvas.value, xup_canvas.value, ylow_canvas.value, yup_canvas.value)
 
 
 def convert_ndc_axis_to_pad(value, margin1, margin2):
@@ -243,8 +249,9 @@ def convert_tlatex_to_tbox(pad, text):
     height_ndc_axis = height_user / (coordinates_canvas.yup - coordinates_canvas.ylow)
     height_ndc_pad = height_ndc_axis * (1 - pad.GetBottomMargin() - pad.GetTopMargin())
     align = text.GetTextAlign()
-    h_align = align / 10
+    h_align = align // 10
     v_align = align - 10 * h_align
+    
     if h_align == 1:
         dx = 0
     elif h_align == 2:

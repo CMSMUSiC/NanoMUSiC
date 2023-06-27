@@ -219,7 +219,7 @@ def main():
         # Thus, by default we set the maximum number of ROOTFILES to be
         # merged at once to ~500, what should not be too much.
         root_file_paths_chunks = [ root_file_paths[ x:x + maxFilesPerChunk ]
-                                   for x in xrange( 0,
+                                   for x in range( 0,
                                                     len( root_file_paths ),
                                                     maxFilesPerChunk
                                                     ) ]

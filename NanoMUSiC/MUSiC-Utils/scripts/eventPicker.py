@@ -106,7 +106,7 @@ def main():
     das = DasFileFinder()
     for ec_name in args.ecs:
         df = load_eventlist(args.basepath, ec_name, args.distribution)
-        for i in xrange(args.nevents):
+        for i in range(args.nevents):
             sample = "_".join(df['pxliofile'][i].split("_")[:-1])
             lfn = das.get_file(sample,
                                df['run'][i],

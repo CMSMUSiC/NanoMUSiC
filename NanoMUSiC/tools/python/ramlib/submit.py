@@ -133,7 +133,7 @@ class Submitter(gridlib.ce.ProxyDelegator, gridlib.se.GridpackManager):
             arguments = []
             # split files into bunches of size 'filesperjob' - last bunch might be smaller
             chunks = [files[x:x+int(self.settings['filesperjob'])]
-                      for x in xrange(0, len(files), int(self.settings['filesperjob']))]
+                      for x in range(0, len(files), int(self.settings['filesperjob']))]
         else:
             raise Exception('Can\'t build arguments: Choose either events or files per job')
         return arguments, chunks

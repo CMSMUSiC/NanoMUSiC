@@ -52,8 +52,8 @@ class ECRootHelper(ECIOHelper):
                      in list(event_class.getProcessList()))
 
         # Filter out null-pointers
-        hists = filter(bool, hists)
-
+        hists_filtered = filter(bool, hists)
+        hists = list(hists_filtered)
         if len(hists) < 1:
             return None
         else:
@@ -225,8 +225,8 @@ class ECRootHelper(ECIOHelper):
                                        0.5)
 
                     # Cleaning up of temporary histograms.
-                    hist_syst_diff_up.Delete()
-                    hist_syst_diff_down.Delete()
+                    # hist_syst_diff_up.Delete()
+                    # hist_syst_diff_down.Delete()
 
                 # Add to existing systematic entry or clone the histogram
                 # and store it.
@@ -241,7 +241,7 @@ class ECRootHelper(ECIOHelper):
                     combined_systematics[systematic] = hist_syst_diff.Clone()
 
                 # Clean up ROOT histograms.
-                hist_syst_diff.Delete()
+                #hist_syst_diff.Delete()
 
                 # hist_systematic must not be deleted, it's owned by the
                 # Event Class.
@@ -249,8 +249,8 @@ class ECRootHelper(ECIOHelper):
             for syst in combined_systematics:
                 combined_systematics[syst].Divide(total)
         # hist must not be deleted, it's owned by the Event Class.
-        if total:
-            total.Delete()
+        # if total:
+        #     total.Delete()
         if with_stat:
             combined_systematics["MCstat"] = cls.total_combined_stat_uncertainty(
                                                     event_class,
@@ -313,8 +313,8 @@ class ECRootHelper(ECIOHelper):
             aggregation_level="none")
 
         stat_error_hist = root_get_error_hist(process_hists.values())
-        for key, hist in process_hists.items():
-            hist.Delete()
+        #for key, hist in process_hists.items():
+        #    hist.Delete()
         return stat_error_hist
 
     @classmethod
@@ -353,8 +353,8 @@ class ECRootHelper(ECIOHelper):
 
         # Add up all uncertainties (given as TH1s) in quadrature (as TH1).
         retval = root_sqsum_hist(combined_systematics.values())
-        for hist in combined_systematics.values():
-            hist.Delete()
+        #for hist in combined_systematics.values():
+        #    hist.Delete()
         return retval
 
     # ==============================
@@ -381,7 +381,7 @@ class ECRootHelper(ECIOHelper):
         if not group or aggregation_level=="customDY" or aggregation_level=="customWJ":
             group = process
         grouping_dict = cls.get_aggregation_groups().get(aggregation_level, {})
-        for group_name, aggregated_group_name in grouping_dict.iteritems():
+        for group_name, aggregated_group_name in grouping_dict.items():
             if fnmatch.fnmatchcase(group, group_name):
                 return aggregated_group_name
         return group
@@ -399,7 +399,10 @@ class ECRootHelper(ECIOHelper):
         """
         try:
             vec = ROOT.std.vector(str)(event_class.getDistTypes())
-            return list(vec)
+            new_vec = []
+            for i in vec:
+                new_vec.append(str(i))
+            return new_vec
         except:
             return []
 
@@ -510,34 +513,34 @@ class ECRootHelper(ECIOHelper):
             if "TGraphErrors" in object.ClassName():
                 n_points = object.GetN()
                 tmp = object.GetX()
-                x_values = [tmp[i] for i in xrange(n_points)]
+                x_values = [tmp[i] for i in range(n_points)]
                 tmp = object.GetEX()
-                x_errors = [tmp[i] for i in xrange(n_points)]
+                x_errors = [tmp[i] for i in range(n_points)]
                 tmp = object.GetY()
-                y_values = [tmp[i] for i in xrange(n_points)]
+                y_values = [tmp[i] for i in range(n_points)]
                 tmp = object.GetEY()
-                y_errors = [tmp[i] for i in xrange(n_points)]
+                y_errors = [tmp[i] for i in range(n_points)]
             elif "TGraphAsymmErrors" in object.ClassName():
                 n_points = object.GetN()
                 tmp = object.GetX()
-                x_values = [tmp[i] for i in xrange(n_points)]
+                x_values = [tmp[i] for i in range(n_points)]
                 tmp = object.GetEXhigh()
-                x_errors = [tmp[i] for i in xrange(n_points)]
+                x_errors = [tmp[i] for i in range(n_points)]
                 tmp = object.GetY()
-                y_values = [tmp[i] for i in xrange(n_points)]
+                y_values = [tmp[i] for i in range(n_points)]
                 tmp = object.GetEYhigh()
-                y_errors = [tmp[i] for i in xrange(n_points)]
+                y_errors = [tmp[i] for i in range(n_points)]
             elif "TH1" in object.ClassName():
-                x_values = [object.GetBinCenter(ibin + 1) for ibin in xrange(object.GetNbinsX())]
-                x_errors = [object.GetBinWidth(ibin + 1) / 2 for ibin in xrange(object.GetNbinsX())]
-                y_values = [object.GetBinContent(ibin + 1) for ibin in xrange(object.GetNbinsX())]
-                y_errors = [0. for ibin in xrange(object.GetNbinsX())]
+                x_values = [object.GetBinCenter(ibin + 1) for ibin in range(object.GetNbinsX())]
+                x_errors = [object.GetBinWidth(ibin + 1) / 2 for ibin in range(object.GetNbinsX())]
+                y_values = [object.GetBinContent(ibin + 1) for ibin in range(object.GetNbinsX())]
+                y_errors = [0. for ibin in range(object.GetNbinsX())]
                 n_points = object.GetNbinsX()
             else:
                 raise AttributeError("Object is not of type TGraph(Asymm)Errors or TH1")
 
             # Get Lower and Upper intersection bin
-            for i in xrange(0, n_points):
+            for i in range(0, n_points):
                 ndc_coord = convert_user_to_ndc(x_values[i] + x_errors[i],
                                                 coordinates_canvas.xlow,
                                                 coordinates_canvas.xup)
@@ -547,7 +550,7 @@ class ECRootHelper(ECIOHelper):
                 if converted_ndc > coordinates_box.xlow:
                     lower_bin = i
                     break
-            for i in reversed(xrange(0, n_points)):
+            for i in reversed(range(0, n_points)):
                 ndc_coord = convert_user_to_ndc(x_values[i] - x_errors[i],
                                                 coordinates_canvas.xlow,
                                                 coordinates_canvas.xup)
@@ -559,7 +562,7 @@ class ECRootHelper(ECIOHelper):
                     break
 
             # Get maximum value in intersection region
-            for i in xrange(lower_bin, upper_bin + 1):
+            for i in range(lower_bin, upper_bin + 1):
                 maximum = max(maximum, y_values[i] + y_errors[i])
 
         is_logy = pad.GetLogy()
@@ -596,7 +599,7 @@ class ECRootHelper(ECIOHelper):
         empty_key = the_file.GetKey("Rec_Empty+X")
         empty_class = empty_key.ReadObj()
         run_hash = empty_class.getRunHash()
-        empty_class.Delete()
+        #empty_class.Delete()
         return run_hash
 
     @classmethod
@@ -787,12 +790,12 @@ class ECRootHelper(ECIOHelper):
                     if conf.ecout:
                         data_outfile.cd()
                         data_ec.Write()
-                    data_ec.Delete()
+                    #data_ec.Delete()
                 if mc_ec:
                     if conf.ecout:
                         mc_outfile.cd()
                         mc_ec.Write()
-                    mc_ec.Delete()
+                    #mc_ec.Delete()
 
             if conf.keep_vetoed:
                 for i, name in enumerate(sorted(names_vetoed)):
@@ -803,12 +806,12 @@ class ECRootHelper(ECIOHelper):
                         if conf.ecout:
                             data_outfile.cd()
                             data_ec.Write()
-                        data_ec.Delete()
+                        #data_ec.Delete()
                     if mc_ec:
                         if conf.ecout:
                             mc_outfile.cd()
                             mc_ec.Write()
-                        mc_ec.Delete()
+                        #mc_ec.Delete()
 
         finally:
             # try to get results from pool if multiporcessing is used
@@ -850,7 +853,7 @@ class ECRootHelper(ECIOHelper):
                            int(max_rel_deviation * 100),
                            0.0,
                            max_rel_deviation)
-        for ibin in xrange(hist.GetNbinsX()):
+        for ibin in range(hist.GetNbinsX()):
             # Fill each bin with width as weight to estimate part of x-axis
             if hist.GetBinContent( ibin+1 ) > 0.001:
                 if yield_histo.GetBinContent(ibin + 1) > bin_min_yield:
@@ -936,13 +939,13 @@ class ECRootHelper(ECIOHelper):
             return '' , 0
         name = mc_ec.GetName()
         if any(n in name for n in cls.rejected_object_types()):
-            total_hist.Delete()
+            #total_hist.Delete()
             return '', 0
         if not any(n in name for n in cls.required_object_types()):
-            total_hist.Delete()
+            #total_hist.Delete()
             return '', 0
         integral = total_hist.Integral()
-        total_hist.Delete()
+        #total_hist.Delete()
         return name, integral
 
     @classmethod

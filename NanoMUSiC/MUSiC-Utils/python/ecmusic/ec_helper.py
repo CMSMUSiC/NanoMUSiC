@@ -92,7 +92,7 @@ class ECMUSiCRootHelper(ECMUSiCStatsHelper, ECRootHelper):
     def get_ec_distribution_types(cls, event_class):
         """Reimplementation using class name as fallback"""
         dists = super(ECMUSiCStatsHelper, cls).get_ec_distribution_types(event_class)
-
+        
         if not dists:
             dists = [d.name_tag for d in cls.distribution_types()]
             if "MET" not in event_class.GetName():

@@ -106,7 +106,7 @@ class PtildeYieldMapPlot( ECCollectorConsumerPlot ):
         #~ for i in range(1, int(np.log10(by_yield[0]['integral'])) + 1 ):
             #~ bin_edges = np.concatenate([bin_edges, np.linspace( 10**(i-1), 10**i, 10, endpoint=False)])
 
-        print bin_edges
+        print (bin_edges)
         return bin_edges
 
     @property

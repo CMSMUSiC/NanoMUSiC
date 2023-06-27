@@ -4,7 +4,7 @@ import argparse
 import fnmatch
 import json
 import textwrap
-import ConfigParser as configparser
+import configparser as configparser
 from collections import defaultdict
 
 class ExtendableNamespace( argparse.Namespace ):
@@ -37,11 +37,11 @@ class SmartNamespace( object ):
             ns._extend( self._cli_default )
             ns._extend( self._config_default )
 
-            for section, value in self._config_patterns.iteritems():
+            for section, value in self._config_patterns.items():
                 if fnmatch.fnmatch( section, match ):
                     ns._extend( value )
 
-            for section, value in self._config_explicit.iteritems():
+            for section, value in self._config_explicit.items():
                 if section == match:
                     ns._extend( value )
 
@@ -272,6 +272,6 @@ if __name__=="__main__":
     parser.add_argument( "-v", action="count", default=0 )
     parser.add_argument( "-x", action="store_const", const=5 )
     args = parser.parse_args()
-    print args.option
+    print (args.option)
     #print args("test").option
 

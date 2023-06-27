@@ -10,7 +10,7 @@ var variations_8hpp =
     [ "kTotalWeights", "variations_8hpp.html#a0b26e00c0f903ece8bc9a20ea4a5ed79", null ],
     [ "Shifts", "variations_8hpp.html#af38c4696586d4069cd343c2d9c1a2def", null ],
     [ "Variations", "variations_8hpp.html#a1d7b333ccffb424b9c45a95f680b760d", null ],
-    [ "VariationsAndShiftsIndexRange", "variations_8hpp.html#ad3cbffd6c724d522145cda38a9d4bec5", null ],
+    [ "VariationsAndShiftsInderange", "variations_8hpp.html#ad3cbffd6c724d522145cda38a9d4bec5", null ],
     [ "VariationsAndShiftsRange", "variations_8hpp.html#a6b34827b8432bb749397c1331bacd23d", null ],
     [ "Weights", "variations_8hpp.html#aad223089c2e2f52440c2fe9c8daded16", null ]
 ];

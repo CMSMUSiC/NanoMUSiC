@@ -11,7 +11,7 @@ import configargparser
 from ectools.register import ecroot
 from ecresults.plots import ECDistributionPlot
 
-ro.gROOT.SetBatch()
+ro.gROOT.SetBatch(True)
 
 ro.gErrorIgnoreLevel = ro.kWarning
 
@@ -77,8 +77,8 @@ def plot_ec( conf, i=0, N=0, data_ec=None, mc_ec=None, signal_ec=None, config=No
     else:
         make_plots()
 
-    if conf.jobs > 1 and mc_ec: mc_ec.Delete()
-    if conf.jobs > 1 and data_ec: data_ec.Delete()
+    #if conf.jobs > 1 and mc_ec: mc_ec.Delete()
+    #if conf.jobs > 1 and data_ec: data_ec.Delete()
 
 def parse_arguments():
     """Argument parsing. Configuration is returned as namespace object."""

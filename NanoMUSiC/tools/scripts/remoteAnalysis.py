@@ -384,7 +384,7 @@ def determineJobChunksByEvents(files, eventsperjob):
     cummulativeLow=[0]+cummulativeHigh[:-1]
     totalevents=cummulativeHigh[-1]
     result=[]
-    for i in xrange(int(math.ceil(totalevents/eventsperjob))):
+    for i in range(int(math.ceil(totalevents/eventsperjob))):
         skipEventsGlobal=eventsperjob*i
         skipEventsLocal=getSkipEventsLocal(cummulativeLow, skipEventsGlobal)
         filenames=getFileList(files, cummulativeHigh, cummulativeLow, skipEventsGlobal, eventsperjob)
@@ -392,12 +392,12 @@ def determineJobChunksByEvents(files, eventsperjob):
     return result
 
 def getFileList(files, cummulativeHigh, cummulativeLow, skipEventsGlobal, eventsperjob):
-    filenames = [files[i]['path'] for i in xrange(len(files)) if skipEventsGlobal<=cummulativeHigh[i] and skipEventsGlobal+eventsperjob>cummulativeLow[i]]
+    filenames = [files[i]['path'] for i in range(len(files)) if skipEventsGlobal<=cummulativeHigh[i] and skipEventsGlobal+eventsperjob>cummulativeLow[i]]
     return filenames
 
 def getSkipEventsLocal(cummulativeLow, skipEventsGlobal):
     skipEventsLocal=0
-    for i in xrange(len(cummulativeLow)):
+    for i in range(len(cummulativeLow)):
         if skipEventsGlobal>=cummulativeLow[i]:
             skipEventsLocal=skipEventsGlobal-cummulativeLow[i]
         else:
@@ -424,13 +424,13 @@ def prepareConfigs( skimlist, options ):
 #@param l: The iterable from which chunks are determiend.
 #@return A list of chunks from l.
 def chunks(l, n):
-    for i in xrange(0, len(l), n):
+    for i in range(0, len(l), n):
         yield l[i:i+n]
 
 def cummulative(l):
     """Yield cummulative sums."""
     n=0
-    for i in xrange(len(l)):
+    for i in range(len(l)):
         n+=l[i]
         yield n
 
