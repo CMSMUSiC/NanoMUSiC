@@ -520,7 +520,8 @@ auto main(int argc, char *argv[]) -> int
                                         configuration.year_str));
                     }())
             .Define("pass_jet_ht_trigger",
-                    [](bool HLT_PFHT1050) -> bool
+                    // [](bool HLT_PFHT1050) -> bool
+                    []() -> bool
                     {
                         // if (HLT_PFHT1050)
                         // {
@@ -528,9 +529,10 @@ auto main(int argc, char *argv[]) -> int
                         // }
                         return false;
                     },
-                    {"HLT_PFHT1050"})
+                    {})
             .Define("pass_jet_pt_trigger",
-                    [](bool HLT_PFJet500) -> bool
+                    // [](bool HLT_PFJet500) -> bool
+                    []() -> bool
                     {
                         // if (HLT_PFJet500)
                         // {
@@ -538,7 +540,7 @@ auto main(int argc, char *argv[]) -> int
                         // }
                         return false;
                     },
-                    {"HLT_PFJet500"})
+                    {})
             // Trigger Filter
             .Filter(
                 [&cutflow_histo, &Cuts](bool pass_low_pt_muon_trigger,
