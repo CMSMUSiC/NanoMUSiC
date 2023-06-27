@@ -320,8 +320,30 @@ auto main(int argc, char *argv[]) -> int
     // build Dijets
     // auto dijets = Dijets(fmt::format("{}/dijets_{}_{}.root", output_path, process, year), dijets_count_map);
 
-    const auto cutflow_file =
-        std::unique_ptr<TFile>(TFile::Open(fmt::format("{}/cutflow_{}_{}.root", output_path, process, year).c_str()));
+    std::unique_ptr<TFile> cutflow_file;
+    bool is_local_validation = [&input_file]() -> bool
+    {
+        const std::string suffix = ".root";
+        if (input_file.length() > suffix.length())
+        {
+            if (input_file.substr(input_file.length() - suffix.length()) == suffix)
+            {
+                return true;
+            }
+        }
+        return false;
+    }();
+
+    if (is_local_validation)
+    {
+
+        std::unique_ptr<TFile>(TFile::Open(input_file.c_str()));
+    }
+    else
+    {
+        cutflow_file = std::unique_ptr<TFile>(
+            TFile::Open(fmt::format("{}/cutflow_{}_{}.root", output_path, process, year).c_str()));
+    }
     const auto cutflow_histo = cutflow_file->Get<TH1F>("cutflow");
     // const auto total_generator_weight = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("GeneratorWeight") + 1);
     const auto no_cuts = cutflow_histo->GetBinContent(Outputs::Cuts.index_of("NoCuts") + 1);
