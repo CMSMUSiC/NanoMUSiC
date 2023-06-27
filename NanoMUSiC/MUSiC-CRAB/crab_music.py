@@ -5,6 +5,8 @@ import subprocess
 import os
 import argparse
 import shlex
+from multiprocessing import Pool
+from tqdm import tqdm
 
 from CRABClient.UserUtilities import config
 from CRABAPI.RawCommand import crabCommand
@@ -67,9 +69,15 @@ def make_task_config_file(
     print("\n" + "*" * 56)
 
     # dump new config to file
-    os.system("rm raw_config.toml > /dev/null 2>&1")
-    with open("raw_config.toml", "w") as new_config_file:
+    # os.system("rm raw_config.toml > /dev/null 2>&1")
+    os.system(f"mkdir -p Raw_Configs/{process_name}_{year}")
+
+    # raw_config = "raw_config_"
+    with open(
+        f"Raw_Configs/{process_name}_{year}/raw_config.toml", "w"
+    ) as new_config_file:
         new_config_file.write(new_config)
+    os.system("cd ../../")
 
 
 def get_username():
@@ -105,7 +113,10 @@ def build_crab_config(process_name, das_name, year, is_data):
         print("Will submit BTag Efficiency code ...")
         this_config.JobType.scriptExe = f"{os.getenv('CRAB_MUSIC_BASE')}/run_btageff.sh"
 
-    this_config.JobType.inputFiles = ["task.tar.gz", "raw_config.toml"]
+    this_config.JobType.inputFiles = [
+        "task.tar.gz",
+        f"Raw_Configs/{process_name}/raw_config.toml",
+    ]
 
     this_config.Data.inputDataset = das_name
     this_config.Data.inputDBS = "global"
@@ -167,6 +178,19 @@ def main():
 
     # create the task tarball and submit the jobs
     build_task_tarball()
+
+    os.system("rm -rf Raw_Configs")
+    os.system("mkdir Raw_Configs")
+    sample_list = make_sample_list(args.xsection_file_path)
+    with Pool(15) as pool:
+        list(
+            tqdm(
+                pool.imap_unordered(submit, sample_list),
+                total=len(sample_list),
+                unit="sample",
+            )
+        )
+
     for sample in make_sample_list(args.xsection_file_path):
         submit(sample)
 

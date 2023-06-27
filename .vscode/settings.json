@@ -92,7 +92,7 @@
   },
   // "C_Cpp.loggingLevel": "Debug",
   // "clang-format.executable": "/.automount/home/home__home1/institut_3a/silva/.local/bin/clang-format",
-  "python.formatting.provider": "black",
+  "python.formatting.provider": "none",
   // "python.formatting.blackPath": "/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/bin/python3 /.automount/home/home__home1/institut_3a/silva/.local/bin/black",
   // "python.formatting.blackPath": "/usr/bin/python3 /.automount/home/home__home1/institut_3a/silva/.local/bin/black",
   "editor.formatOnSave": true,
@@ -161,4 +161,7 @@
   ],
   "clang-tidy.lintOnSave": false,
   "black-formatter.importStrategy": "fromEnvironment",
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  },
 }
