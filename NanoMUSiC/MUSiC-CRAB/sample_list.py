@@ -17,7 +17,7 @@ def get_era(process_name, is_data):
 
 def get_extension_suffix(idx: int):
     if idx > 0:
-        return "_ext{idx}"
+        return f"_ext{idx}"
     return ""
 
 
