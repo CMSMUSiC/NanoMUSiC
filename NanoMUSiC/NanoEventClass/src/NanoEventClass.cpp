@@ -149,3 +149,15 @@ auto NanoEventClass::filter_histos(const std::string &process_group_pattern,
 
     return filtered_histos;
 }
+
+auto NanoEventClass::make_histogram_full_name(const std::string &class_name,
+                                              const std::string &process_group,
+                                              const std::string &xs_order,
+                                              const std::string &sample,
+                                              const std::string &year,
+                                              const std::string &shift,
+                                              const std::string &histo_name) -> std::string
+{
+    return fmt::format(
+        "[{}]_[{}]_[{}]_[{}]_[{}]_[{}]_[{}]", class_name, process_group, xs_order, sample, year, shift, histo_name);
+}

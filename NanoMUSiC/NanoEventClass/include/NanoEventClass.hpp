@@ -54,6 +54,14 @@ class NanoEventClass
                        const std::string &year,
                        const std::string &shift,
                        const std::string &histo_name) -> std::vector<NanoEventHisto>;
+
+    static auto make_histogram_full_name(const std::string &class_name,
+                                         const std::string &process_group,
+                                         const std::string &xs_order,
+                                         const std::string &sample,
+                                         const std::string &year,
+                                         const std::string &shift,
+                                         const std::string &histo_name) -> std::string;
 };
 
 #endif // NANOEVENTCLASS_HPP
