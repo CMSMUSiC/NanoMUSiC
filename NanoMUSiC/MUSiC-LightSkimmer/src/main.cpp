@@ -1,3 +1,4 @@
+#include "ROOT/RDataFrame.hxx"
 #include "Skimmer.hpp"
 
 #include <cmath>
@@ -142,473 +143,489 @@ auto main(int argc, char *argv[]) -> int
     //////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////
 
-    auto dataframe = RDataFrame("Events"s, files_to_load);
-
-    bool transform_mc_weight = false;
-    if (not(configuration.is_data) and dataframe.HasColumn("LHEWeight_originalXWGTUP"))
+    // Turns out that, specially in data, not all files from the same era has the same event content.
+    // because of this, we have to run the data frame over each file, to allow it to reconfigure by checking the
+    // available columns.
+    for (auto &&file : files_to_load)
     {
-        auto genWeight = dataframe.Take<float, RVec<float>>("genWeight");
-        if (VecOps::All(genWeight.GetValue() == 1.f))
+        auto dataframe = RDataFrame("Events"s, file);
+
+        bool transform_mc_weight = false;
+        if (not(configuration.is_data) and dataframe.HasColumn("LHEWeight_originalXWGTUP"))
         {
-            transform_mc_weight = true;
+            auto genWeight = dataframe.Take<float, RVec<float>>("genWeight");
+            if (VecOps::All(genWeight.GetValue() == 1.f))
+            {
+                transform_mc_weight = true;
+            }
         }
-    }
 
-    auto pre_skimmed_dataframe = dataframe.Define("DUMMY", "1.f");
-    if (not(configuration.is_data) and not(dataframe.HasColumn("LHEPdfWeight")))
-    {
-        pre_skimmed_dataframe = pre_skimmed_dataframe.Define("LHEPdfWeight", "ROOT::RVec<float>{}");
-    }
-    if (not(configuration.is_data) and not(dataframe.HasColumn("LHEScaleWeight")))
-    {
-        pre_skimmed_dataframe = pre_skimmed_dataframe.Define("LHEScaleWeight", "ROOT::RVec<float>{}");
-    }
-    if (not(configuration.is_data) and not(dataframe.HasColumn("LHEWeight_originalXWGTUP")))
-    {
-        pre_skimmed_dataframe = pre_skimmed_dataframe.Define("LHEWeight_originalXWGTUP", "1.f");
-    }
-    if (not(configuration.is_data) and not(dataframe.HasColumn("LHE_HT")))
-    {
-        pre_skimmed_dataframe = pre_skimmed_dataframe.Define("LHE_HT", "0.f");
-    }
-    if (not(configuration.is_data) and not(dataframe.HasColumn("LHE_HTIncoming")))
-    {
-        pre_skimmed_dataframe = pre_skimmed_dataframe.Define("LHE_HTIncoming", "0.f");
-    }
+        auto pre_skimmed_dataframe = dataframe.Define("DUMMY", "1.f");
+        if (not(configuration.is_data) and not(dataframe.HasColumn("LHEPdfWeight")))
+        {
+            pre_skimmed_dataframe = pre_skimmed_dataframe.Define("LHEPdfWeight", "ROOT::RVec<float>{}");
+        }
+        if (not(configuration.is_data) and not(dataframe.HasColumn("LHEScaleWeight")))
+        {
+            pre_skimmed_dataframe = pre_skimmed_dataframe.Define("LHEScaleWeight", "ROOT::RVec<float>{}");
+        }
+        if (not(configuration.is_data) and not(dataframe.HasColumn("LHEWeight_originalXWGTUP")))
+        {
+            pre_skimmed_dataframe = pre_skimmed_dataframe.Define("LHEWeight_originalXWGTUP", "1.f");
+        }
+        if (not(configuration.is_data) and not(dataframe.HasColumn("LHE_HT")))
+        {
+            pre_skimmed_dataframe = pre_skimmed_dataframe.Define("LHE_HT", "0.f");
+        }
+        if (not(configuration.is_data) and not(dataframe.HasColumn("LHE_HTIncoming")))
+        {
+            pre_skimmed_dataframe = pre_skimmed_dataframe.Define("LHE_HTIncoming", "0.f");
+        }
 
-    // Define if does not exists
-    auto skimmed_dataframe =
-        pre_skimmed_dataframe
-            .Define("mc_weight",
-                    [&configuration, transform_mc_weight]() -> std::string_view
-                    {
-                        if (not(configuration.is_data))
+        // Define if does not exists
+        auto skimmed_dataframe =
+            pre_skimmed_dataframe
+                .Define("mc_weight",
+                        [&configuration, transform_mc_weight]() -> std::string_view
                         {
-                            return transform_mc_weight ? "LHEWeight_originalXWGTUP"sv : "genWeight"sv;
-                        }
-                        return "1.f"sv;
-                    }())
-            // Dummy filter- Used only for setting total event counts
-            .Filter(
-                [&cutflow_histo, &Cuts](float mc_weight) -> bool
-                {
-                    cutflow_histo.Fill(Cuts.index_of("NoCuts"), mc_weight);
+                            if (not(configuration.is_data))
+                            {
+                                return transform_mc_weight ? "LHEWeight_originalXWGTUP"sv : "genWeight"sv;
+                            }
+                            return "1.f"sv;
+                        }())
+                // Dummy filter- Used only for setting total event counts
+                .Filter(
+                    [&cutflow_histo, &Cuts](float mc_weight) -> bool
+                    {
+                        cutflow_histo.Fill(Cuts.index_of("NoCuts"), mc_weight);
 
-                    return true;
-                },
-                {"mc_weight"})
-            .Define("_LHEPart_pt",
-                    [&configuration, &dataframe]() -> std::string_view
-                    {
-                        return (not(configuration.is_data) and dataframe.HasColumn("LHEPart_pt"))
-                                   ? "LHEPart_pt"sv
-                                   : "ROOT::RVec<float>{}"sv;
-                    }())
-            .Define("_LHEPart_eta",
-                    [&configuration, &dataframe]() -> std::string_view
-                    {
-                        return (not(configuration.is_data) and dataframe.HasColumn("LHEPart_eta"))
-                                   ? "LHEPart_eta"sv
-                                   : "ROOT::RVec<float>{}"sv;
-                    }())
-            .Define("_LHEPart_phi",
-                    [&configuration, &dataframe]() -> std::string_view
-                    {
-                        return (not(configuration.is_data) and dataframe.HasColumn("LHEPart_phi"))
-                                   ? "LHEPart_phi"sv
-                                   : "ROOT::RVec<float>{}"sv;
-                    }())
-            .Define("_LHEPart_mass",
-                    [&configuration, &dataframe]() -> std::string_view
-                    {
-                        return (not(configuration.is_data) and dataframe.HasColumn("LHEPart_mass"))
-                                   ? "LHEPart_mass"sv
-                                   : "ROOT::RVec<float>{}"sv;
-                    }())
-            .Define("_LHEPart_incomingpz",
-                    [&configuration, &dataframe]() -> std::string_view
-                    {
-                        return (not(configuration.is_data) and dataframe.HasColumn("LHEPart_incomingpz"))
-                                   ? "LHEPart_incomingpz"sv
-                                   : "ROOT::RVec<float>{}"sv;
-                    }())
-            .Define("_LHEPart_pdgId",
-                    [&configuration, &dataframe]() -> std::string_view
-                    {
-                        return (not(configuration.is_data) and dataframe.HasColumn("LHEPart_pdgId"))
-                                   ? "LHEPart_pdgId"sv
-                                   : "ROOT::RVec<Int_t>{}"sv;
-                    }())
-            .Define("_LHEPart_status",
-                    [&configuration, &dataframe]() -> std::string_view
-                    {
-                        return (not(configuration.is_data) and dataframe.HasColumn("LHEPart_status"))
-                                   ? "LHEPart_status"sv
-                                   : "ROOT::RVec<Int_t>{}"sv;
-                    }())
-            .Define("_GenPart_pt",
-                    [&configuration]() -> std::string_view
-                    {
-                        return configuration.is_data ? "ROOT::RVec<float>{}"sv : "GenPart_pt"sv;
-                    }())
-            .Define("_GenPart_eta",
-                    [&configuration]() -> std::string_view
-                    {
-                        return configuration.is_data ? "ROOT::RVec<float>{}"sv : "GenPart_eta"sv;
-                    }())
-            .Define("_GenPart_phi",
-                    [&configuration]() -> std::string_view
-                    {
-                        return configuration.is_data ? "ROOT::RVec<float>{}"sv : "GenPart_phi"sv;
-                    }())
-            .Define("_GenPart_mass",
-                    [&configuration]() -> std::string_view
-                    {
-                        return configuration.is_data ? "ROOT::RVec<float>{}"sv : "GenPart_mass"sv;
-                    }())
-            .Define("_GenPart_genPartIdxMother",
-                    [&configuration]() -> std::string_view
-                    {
-                        return configuration.is_data ? "ROOT::RVec<Int_t>{}"sv : "GenPart_genPartIdxMother"sv;
-                    }())
-            .Define("_GenPart_pdgId",
-                    [&configuration]() -> std::string_view
-                    {
-                        return configuration.is_data ? "ROOT::RVec<Int_t>{}"sv : "GenPart_pdgId"sv;
-                    }())
-            .Define("_GenPart_status",
-                    [&configuration]() -> std::string_view
-                    {
-                        return configuration.is_data ? "ROOT::RVec<Int_t>{}"sv : "GenPart_status"sv;
-                    }())
-            .Define("_GenPart_statusFlags",
-                    [&configuration]() -> std::string_view
-                    {
-                        return configuration.is_data ? "ROOT::RVec<Int_t>{}"sv : "GenPart_statusFlags"sv;
-                    }())
-            // generator filter
-            .Filter(
-                [&cutflow_histo, &Cuts, &configuration, &h_debug](const RVec<float> &_LHEPart_pt,
-                                                                  const RVec<float> &_LHEPart_eta,
-                                                                  const RVec<float> &_LHEPart_phi,
-                                                                  const RVec<float> &_LHEPart_mass,
-                                                                  const RVec<float> &_LHEPart_incomingpz,
-                                                                  const RVec<Int_t> &_LHEPart_pdgId,
-                                                                  const RVec<Int_t> &_LHEPart_status,
-                                                                  const RVec<float> &_GenPart_pt,
-                                                                  const RVec<float> &_GenPart_eta,
-                                                                  const RVec<float> &_GenPart_phi,
-                                                                  const RVec<float> &_GenPart_mass,
-                                                                  const RVec<Int_t> &_GenPart_genPartIdxMother,
-                                                                  const RVec<Int_t> &_GenPart_pdgId,
-                                                                  const RVec<Int_t> &_GenPart_status,
-                                                                  const RVec<Int_t> &_GenPart_statusFlags,
-                                                                  float mc_weight) -> bool
-                {
-                    bool pass_gen_filter = true;
-                    // if MC
-                    if (!configuration.is_data)
-                    {
-                        if (configuration.generator_filter_key)
-                        {
-                            auto lhe_particles = NanoObjects::LHEParticles(_LHEPart_pt,
-                                                                           _LHEPart_eta,
-                                                                           _LHEPart_phi,
-                                                                           _LHEPart_mass,
-                                                                           _LHEPart_incomingpz,
-                                                                           _LHEPart_pdgId,
-                                                                           _LHEPart_status);
-
-                            auto gen_particles = NanoObjects::GenParticles(_GenPart_pt,
-                                                                           _GenPart_eta,
-                                                                           _GenPart_phi,
-                                                                           _GenPart_mass,
-                                                                           _GenPart_genPartIdxMother,
-                                                                           _GenPart_pdgId,
-                                                                           _GenPart_status,
-                                                                           _GenPart_statusFlags);
-                            Year _year = configuration.year;
-                            pass_gen_filter = GeneratorFilters::filters.at(*(configuration.generator_filter_key))(
-                                lhe_particles, gen_particles, _year, h_debug);
-                        }
-                        else
-                        {
-                            pass_gen_filter = true;
-                        }
-                    }
-                    if (pass_gen_filter)
-                    {
-                        cutflow_histo.Fill(Cuts.index_of("GeneratorFilter"), mc_weight);
-                        cutflow_histo.Fill(Cuts.index_of("GeneratorWeight"), mc_weight);
                         return true;
-                    }
-                    return false;
-                },
-                {"_LHEPart_pt",
-                 "_LHEPart_eta",
-                 "_LHEPart_phi",
-                 "_LHEPart_mass",
-                 "_LHEPart_incomingpz",
-                 "_LHEPart_pdgId",
-                 "_LHEPart_status",
-                 "_GenPart_pt",
-                 "_GenPart_eta",
-                 "_GenPart_phi",
-                 "_GenPart_mass",
-                 "_GenPart_genPartIdxMother",
-                 "_GenPart_pdgId",
-                 "_GenPart_status",
-                 "_GenPart_statusFlags",
-                 "mc_weight"})
-            // Run/Lumi Filter
-            .Filter(
-                [&cutflow_histo, &Cuts, &run_lumi_filter, &configuration](
-                    unsigned int run, unsigned int luminosityBlock, float mc_weight) -> bool
-                {
-                    if (run_lumi_filter(run, luminosityBlock, configuration.is_data))
+                    },
+                    {"mc_weight"})
+                .Define("_LHEPart_pt",
+                        [&configuration, &dataframe]() -> std::string_view
+                        {
+                            return (not(configuration.is_data) and dataframe.HasColumn("LHEPart_pt"))
+                                       ? "LHEPart_pt"sv
+                                       : "ROOT::RVec<float>{}"sv;
+                        }())
+                .Define("_LHEPart_eta",
+                        [&configuration, &dataframe]() -> std::string_view
+                        {
+                            return (not(configuration.is_data) and dataframe.HasColumn("LHEPart_eta"))
+                                       ? "LHEPart_eta"sv
+                                       : "ROOT::RVec<float>{}"sv;
+                        }())
+                .Define("_LHEPart_phi",
+                        [&configuration, &dataframe]() -> std::string_view
+                        {
+                            return (not(configuration.is_data) and dataframe.HasColumn("LHEPart_phi"))
+                                       ? "LHEPart_phi"sv
+                                       : "ROOT::RVec<float>{}"sv;
+                        }())
+                .Define("_LHEPart_mass",
+                        [&configuration, &dataframe]() -> std::string_view
+                        {
+                            return (not(configuration.is_data) and dataframe.HasColumn("LHEPart_mass"))
+                                       ? "LHEPart_mass"sv
+                                       : "ROOT::RVec<float>{}"sv;
+                        }())
+                .Define("_LHEPart_incomingpz",
+                        [&configuration, &dataframe]() -> std::string_view
+                        {
+                            return (not(configuration.is_data) and dataframe.HasColumn("LHEPart_incomingpz"))
+                                       ? "LHEPart_incomingpz"sv
+                                       : "ROOT::RVec<float>{}"sv;
+                        }())
+                .Define("_LHEPart_pdgId",
+                        [&configuration, &dataframe]() -> std::string_view
+                        {
+                            return (not(configuration.is_data) and dataframe.HasColumn("LHEPart_pdgId"))
+                                       ? "LHEPart_pdgId"sv
+                                       : "ROOT::RVec<Int_t>{}"sv;
+                        }())
+                .Define("_LHEPart_status",
+                        [&configuration, &dataframe]() -> std::string_view
+                        {
+                            return (not(configuration.is_data) and dataframe.HasColumn("LHEPart_status"))
+                                       ? "LHEPart_status"sv
+                                       : "ROOT::RVec<Int_t>{}"sv;
+                        }())
+                .Define("_GenPart_pt",
+                        [&configuration]() -> std::string_view
+                        {
+                            return configuration.is_data ? "ROOT::RVec<float>{}"sv : "GenPart_pt"sv;
+                        }())
+                .Define("_GenPart_eta",
+                        [&configuration]() -> std::string_view
+                        {
+                            return configuration.is_data ? "ROOT::RVec<float>{}"sv : "GenPart_eta"sv;
+                        }())
+                .Define("_GenPart_phi",
+                        [&configuration]() -> std::string_view
+                        {
+                            return configuration.is_data ? "ROOT::RVec<float>{}"sv : "GenPart_phi"sv;
+                        }())
+                .Define("_GenPart_mass",
+                        [&configuration]() -> std::string_view
+                        {
+                            return configuration.is_data ? "ROOT::RVec<float>{}"sv : "GenPart_mass"sv;
+                        }())
+                .Define("_GenPart_genPartIdxMother",
+                        [&configuration]() -> std::string_view
+                        {
+                            return configuration.is_data ? "ROOT::RVec<Int_t>{}"sv : "GenPart_genPartIdxMother"sv;
+                        }())
+                .Define("_GenPart_pdgId",
+                        [&configuration]() -> std::string_view
+                        {
+                            return configuration.is_data ? "ROOT::RVec<Int_t>{}"sv : "GenPart_pdgId"sv;
+                        }())
+                .Define("_GenPart_status",
+                        [&configuration]() -> std::string_view
+                        {
+                            return configuration.is_data ? "ROOT::RVec<Int_t>{}"sv : "GenPart_status"sv;
+                        }())
+                .Define("_GenPart_statusFlags",
+                        [&configuration]() -> std::string_view
+                        {
+                            return configuration.is_data ? "ROOT::RVec<Int_t>{}"sv : "GenPart_statusFlags"sv;
+                        }())
+                // generator filter
+                .Filter(
+                    [&cutflow_histo, &Cuts, &configuration, &h_debug](const RVec<float> &_LHEPart_pt,
+                                                                      const RVec<float> &_LHEPart_eta,
+                                                                      const RVec<float> &_LHEPart_phi,
+                                                                      const RVec<float> &_LHEPart_mass,
+                                                                      const RVec<float> &_LHEPart_incomingpz,
+                                                                      const RVec<Int_t> &_LHEPart_pdgId,
+                                                                      const RVec<Int_t> &_LHEPart_status,
+                                                                      const RVec<float> &_GenPart_pt,
+                                                                      const RVec<float> &_GenPart_eta,
+                                                                      const RVec<float> &_GenPart_phi,
+                                                                      const RVec<float> &_GenPart_mass,
+                                                                      const RVec<Int_t> &_GenPart_genPartIdxMother,
+                                                                      const RVec<Int_t> &_GenPart_pdgId,
+                                                                      const RVec<Int_t> &_GenPart_status,
+                                                                      const RVec<Int_t> &_GenPart_statusFlags,
+                                                                      float mc_weight) -> bool
                     {
-                        cutflow_histo.Fill(Cuts.index_of("RunLumi"), mc_weight);
-                        return true;
-                    }
-                    return false;
-                },
-                {"run", "luminosityBlock", "mc_weight"})
-            // nPV Filter
-            .Filter(
-                [&cutflow_histo, &Cuts](int PV_npvsGood, float mc_weight) -> bool
-                {
-                    if (PV_npvsGood > 0)
-                    {
-                        cutflow_histo.Fill(Cuts.index_of("nPV"), mc_weight);
-                        return true;
-                    }
-                    return false;
-                },
-                {"PV_npvsGood", "mc_weight"})
-            // MET Filters (Flag)
-            .Define(
-                "pass_met_filters",
-                [&configuration]() -> std::string_view
-                {
-                    if (configuration.year == Year::Run2016APV or configuration.year == Year::Run2016)
-                    {
-                        return "Flag_goodVertices && Flag_globalSuperTightHalo2016Filter && Flag_HBHENoiseFilter && Flag_HBHENoiseIsoFilter && Flag_EcalDeadCellTriggerPrimitiveFilter && Flag_BadPFMuonFilter && Flag_BadPFMuonDzFilter && Flag_eeBadScFilter"sv;
-                    }
+                        bool pass_gen_filter = true;
+                        // if MC
+                        if (!configuration.is_data)
+                        {
+                            if (configuration.generator_filter_key)
+                            {
+                                auto lhe_particles = NanoObjects::LHEParticles(_LHEPart_pt,
+                                                                               _LHEPart_eta,
+                                                                               _LHEPart_phi,
+                                                                               _LHEPart_mass,
+                                                                               _LHEPart_incomingpz,
+                                                                               _LHEPart_pdgId,
+                                                                               _LHEPart_status);
 
-                    if (configuration.year == Year::Run2017 or configuration.year == Year::Run2018)
+                                auto gen_particles = NanoObjects::GenParticles(_GenPart_pt,
+                                                                               _GenPart_eta,
+                                                                               _GenPart_phi,
+                                                                               _GenPart_mass,
+                                                                               _GenPart_genPartIdxMother,
+                                                                               _GenPart_pdgId,
+                                                                               _GenPart_status,
+                                                                               _GenPart_statusFlags);
+                                Year _year = configuration.year;
+                                pass_gen_filter = GeneratorFilters::filters.at(*(configuration.generator_filter_key))(
+                                    lhe_particles, gen_particles, _year, h_debug);
+                            }
+                            else
+                            {
+                                pass_gen_filter = true;
+                            }
+                        }
+                        if (pass_gen_filter)
+                        {
+                            cutflow_histo.Fill(Cuts.index_of("GeneratorFilter"), mc_weight);
+                            cutflow_histo.Fill(Cuts.index_of("GeneratorWeight"), mc_weight);
+                            return true;
+                        }
+                        return false;
+                    },
+                    {"_LHEPart_pt",
+                     "_LHEPart_eta",
+                     "_LHEPart_phi",
+                     "_LHEPart_mass",
+                     "_LHEPart_incomingpz",
+                     "_LHEPart_pdgId",
+                     "_LHEPart_status",
+                     "_GenPart_pt",
+                     "_GenPart_eta",
+                     "_GenPart_phi",
+                     "_GenPart_mass",
+                     "_GenPart_genPartIdxMother",
+                     "_GenPart_pdgId",
+                     "_GenPart_status",
+                     "_GenPart_statusFlags",
+                     "mc_weight"})
+                // Run/Lumi Filter
+                .Filter(
+                    [&cutflow_histo, &Cuts, &run_lumi_filter, &configuration](
+                        unsigned int run, unsigned int luminosityBlock, float mc_weight) -> bool
                     {
-                        return "Flag_goodVertices && Flag_globalSuperTightHalo2016Filter && Flag_HBHENoiseFilter && Flag_HBHENoiseIsoFilter && Flag_EcalDeadCellTriggerPrimitiveFilter && Flag_BadPFMuonFilter && Flag_BadPFMuonDzFilter && Flag_eeBadScFilter && Flag_ecalBadCalibFilter"sv;
-                    }
-
-                    throw std::invalid_argument(
-                        fmt::format("ERROR: Could not define trigger bits. The requested year ({}) is invalid.",
-                                    configuration.year_str));
-                }())
-            .Filter(
-                [&cutflow_histo, &Cuts](bool pass_met_filters, float mc_weight) -> bool
-                {
-                    if (pass_met_filters)
+                        if (run_lumi_filter(run, luminosityBlock, configuration.is_data))
+                        {
+                            cutflow_histo.Fill(Cuts.index_of("RunLumi"), mc_weight);
+                            return true;
+                        }
+                        return false;
+                    },
+                    {"run", "luminosityBlock", "mc_weight"})
+                // nPV Filter
+                .Filter(
+                    [&cutflow_histo, &Cuts](int PV_npvsGood, float mc_weight) -> bool
                     {
-                        cutflow_histo.Fill(Cuts.index_of("METFilters"), mc_weight);
-                        return true;
-                    }
-                    return false;
-                },
-                {"pass_met_filters", "mc_weight"})
-            //  Define trigger columns
-            .Define("pass_low_pt_muon_trigger",
+                        if (PV_npvsGood > 0)
+                        {
+                            cutflow_histo.Fill(Cuts.index_of("nPV"), mc_weight);
+                            return true;
+                        }
+                        return false;
+                    },
+                    {"PV_npvsGood", "mc_weight"})
+                // MET Filters (Flag)
+                .Define(
+                    "pass_met_filters",
                     [&configuration]() -> std::string_view
                     {
-                        if (configuration.year == Year::Run2016APV)
+                        if (configuration.year == Year::Run2016APV or configuration.year == Year::Run2016)
                         {
-                            return "HLT_IsoMu24 or HLT_IsoTkMu24"sv;
+                            return "Flag_goodVertices && Flag_globalSuperTightHalo2016Filter && Flag_HBHENoiseFilter && Flag_HBHENoiseIsoFilter && Flag_EcalDeadCellTriggerPrimitiveFilter && Flag_BadPFMuonFilter && Flag_BadPFMuonDzFilter && Flag_eeBadScFilter"sv;
                         }
 
-                        if (configuration.year == Year::Run2016)
+                        if (configuration.year == Year::Run2017 or configuration.year == Year::Run2018)
                         {
-                            return "HLT_IsoMu24 or HLT_IsoTkMu24"sv;
+                            return "Flag_goodVertices && Flag_globalSuperTightHalo2016Filter && Flag_HBHENoiseFilter && Flag_HBHENoiseIsoFilter && Flag_EcalDeadCellTriggerPrimitiveFilter && Flag_BadPFMuonFilter && Flag_BadPFMuonDzFilter && Flag_eeBadScFilter && Flag_ecalBadCalibFilter"sv;
                         }
 
-                        if (configuration.year == Year::Run2017)
-                        {
-                            return "HLT_IsoMu27"sv;
-                        }
-
-                        if (configuration.year == Year::Run2018)
-                        {
-                            return "HLT_IsoMu24"sv;
-                        }
                         throw std::invalid_argument(
                             fmt::format("ERROR: Could not define trigger bits. The requested year ({}) is invalid.",
                                         configuration.year_str));
                     }())
-            .Define("pass_high_pt_muon_trigger",
-                    [&configuration, &pre_skimmed_dataframe]() -> std::string_view
+                .Filter(
+                    [&cutflow_histo, &Cuts](bool pass_met_filters, float mc_weight) -> bool
                     {
-                        if (configuration.year == Year::Run2016APV)
+                        if (pass_met_filters)
                         {
-                            if (pre_skimmed_dataframe.HasColumn("HLT_TkMu50"))
+                            cutflow_histo.Fill(Cuts.index_of("METFilters"), mc_weight);
+                            return true;
+                        }
+                        return false;
+                    },
+                    {"pass_met_filters", "mc_weight"})
+                //  Define trigger columns
+                .Define("pass_low_pt_muon_trigger",
+                        [&configuration]() -> std::string_view
+                        {
+                            if (configuration.year == Year::Run2016APV)
+                            {
+                                return "HLT_IsoMu24 or HLT_IsoTkMu24"sv;
+                            }
+
+                            if (configuration.year == Year::Run2016)
+                            {
+                                return "HLT_IsoMu24 or HLT_IsoTkMu24"sv;
+                            }
+
+                            if (configuration.year == Year::Run2017)
+                            {
+                                return "HLT_IsoMu27"sv;
+                            }
+
+                            if (configuration.year == Year::Run2018)
+                            {
+                                return "HLT_IsoMu24"sv;
+                            }
+                            throw std::invalid_argument(
+                                fmt::format("ERROR: Could not define trigger bits. The requested year ({}) is invalid.",
+                                            configuration.year_str));
+                        }())
+                .Define("pass_high_pt_muon_trigger",
+                        [&configuration, &pre_skimmed_dataframe]() -> std::string_view
+                        {
+                            if (configuration.year == Year::Run2016APV)
+                            {
+                                if (pre_skimmed_dataframe.HasColumn("HLT_TkMu50"))
+                                {
+                                    return "HLT_Mu50 or HLT_TkMu50"sv;
+                                }
+                                return "HLT_Mu50"sv;
+                            }
+
+                            if (configuration.year == Year::Run2016)
                             {
                                 return "HLT_Mu50 or HLT_TkMu50"sv;
                             }
-                            return "HLT_Mu50"sv;
-                        }
 
-                        if (configuration.year == Year::Run2016)
-                        {
-                            return "HLT_Mu50 or HLT_TkMu50"sv;
-                        }
+                            if (configuration.year == Year::Run2017)
+                            {
+                                if (pre_skimmed_dataframe.HasColumn("HLT_TkMu100") and
+                                    pre_skimmed_dataframe.HasColumn("HLT_OldMu100"))
+                                {
+                                    return "HLT_Mu50 or HLT_TkMu100 or HLT_OldMu100"sv;
+                                }
+                                return "HLT_Mu50"sv;
+                            }
 
-                        if (configuration.year == Year::Run2017)
-                        {
-                            if (pre_skimmed_dataframe.HasColumn("HLT_TkMu100") and
-                                pre_skimmed_dataframe.HasColumn("HLT_OldMu100"))
+                            if (configuration.year == Year::Run2018)
                             {
                                 return "HLT_Mu50 or HLT_TkMu100 or HLT_OldMu100"sv;
                             }
-                            return "HLT_Mu50"sv;
-                        }
 
-                        if (configuration.year == Year::Run2018)
+                            throw std::invalid_argument(
+                                fmt::format("ERROR: Could not define trigger bits. The requested year ({}) is invalid.",
+                                            configuration.year_str));
+                        }())
+                .Define("pass_low_pt_electron_trigger",
+                        [&configuration]() -> std::string_view
                         {
-                            return "HLT_Mu50 or HLT_TkMu100 or HLT_OldMu100"sv;
-                        }
+                            if (configuration.year == Year::Run2016APV)
+                            {
+                                return "HLT_Ele27_WPTight_Gsf or HLT_Photon175"sv;
+                            }
 
-                        throw std::invalid_argument(
-                            fmt::format("ERROR: Could not define trigger bits. The requested year ({}) is invalid.",
-                                        configuration.year_str));
-                    }())
-            .Define("pass_low_pt_electron_trigger",
-                    [&configuration]() -> std::string_view
+                            if (configuration.year == Year::Run2016)
+                            {
+                                return "HLT_Ele27_WPTight_Gsf or HLT_Photon175"sv;
+                            }
+
+                            if (configuration.year == Year::Run2017)
+                            {
+                                return "HLT_Ele35_WPTight_Gsf or HLT_Photon200"sv;
+                            }
+
+                            if (configuration.year == Year::Run2018)
+                            {
+                                return "HLT_Ele35_WPTight_Gsf or HLT_Photon200"sv;
+                            }
+
+                            throw std::invalid_argument(
+                                fmt::format("ERROR: Could not define trigger bits. The requested year ({}) is invalid.",
+                                            configuration.year_str));
+                        }())
+                .Define("pass_high_pt_electron_trigger",
+                        [&configuration, &pre_skimmed_dataframe]() -> std::string_view
+                        {
+                            if (configuration.year == Year::Run2016APV)
+                            {
+                                return "HLT_Ele27_WPTight_Gsf or HLT_Photon175 or HLT_Ele115_CaloIdVT_GsfTrkIdT"sv;
+                            }
+
+                            if (configuration.year == Year::Run2016)
+                            {
+                                return "HLT_Ele27_WPTight_Gsf or HLT_Photon175 or HLT_Ele115_CaloIdVT_GsfTrkIdT"sv;
+                            }
+
+                            if (configuration.year == Year::Run2017)
+                            {
+                                if (pre_skimmed_dataframe.HasColumn("HLT_Ele115_CaloIdVT_GsfTrkIdT"))
+                                {
+                                    return "HLT_Ele35_WPTight_Gsf or HLT_Photon200 or HLT_Ele115_CaloIdVT_GsfTrkIdT"sv;
+                                }
+                                return "HLT_Ele35_WPTight_Gsf or HLT_Photon200"sv;
+                            }
+                            if (configuration.year == Year::Run2018)
+                            {
+                                return "HLT_Ele32_WPTight_Gsf or HLT_Photon200 or HLT_Ele115_CaloIdVT_GsfTrkIdT"sv;
+                            }
+
+                            throw std::invalid_argument(
+                                fmt::format("ERROR: Could not define trigger bits. The requested year ({}) is invalid.",
+                                            configuration.year_str));
+                        }())
+                .Define("pass_jet_ht_trigger",
+                        // [](bool HLT_PFHT1050) -> bool
+                        []() -> bool
+                        {
+                            // if (HLT_PFHT1050)
+                            // {
+                            //     return true;
+                            // }
+                            return false;
+                        },
+                        // {"HLT_PFHT1050"})
+                        {})
+                .Define("pass_jet_pt_trigger",
+                        // [](bool HLT_PFJet500) -> bool
+                        []() -> bool
+                        {
+                            // if (HLT_PFJet500)
+                            // {
+                            //     return true;
+                            // }
+                            return false;
+                        },
+                        {})
+                // Trigger Filter
+                .Filter(
+                    [&cutflow_histo, &Cuts](bool pass_low_pt_muon_trigger,
+                                            bool pass_high_pt_muon_trigger,
+                                            bool pass_low_pt_electron_trigger,
+                                            bool pass_high_pt_electron_trigger,
+                                            bool pass_jet_ht_trigger,
+                                            bool pass_jet_pt_trigger,
+                                            float mc_weight) -> bool
                     {
-                        if (configuration.year == Year::Run2016APV)
+                        if (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger or pass_low_pt_electron_trigger or
+                            pass_high_pt_electron_trigger or pass_jet_ht_trigger or pass_jet_pt_trigger)
                         {
-                            return "HLT_Ele27_WPTight_Gsf or HLT_Photon175"sv;
+                            cutflow_histo.Fill(Cuts.index_of("TriggerCut"), mc_weight);
+                            return true;
                         }
-
-                        if (configuration.year == Year::Run2016)
-                        {
-                            return "HLT_Ele27_WPTight_Gsf or HLT_Photon175"sv;
-                        }
-                        if (configuration.year == Year::Run2017)
-                        {
-                            return "HLT_Ele35_WPTight_Gsf or HLT_Photon200"sv;
-                        }
-                        if (configuration.year == Year::Run2018)
-                        {
-                            return "HLT_Ele35_WPTight_Gsf or HLT_Photon200"sv;
-                        }
-
-                        throw std::invalid_argument(
-                            fmt::format("ERROR: Could not define trigger bits. The requested year ({}) is invalid.",
-                                        configuration.year_str));
-                    }())
-            .Define("pass_high_pt_electron_trigger",
-                    [&configuration]() -> std::string_view
-                    {
-                        if (configuration.year == Year::Run2016APV)
-                        {
-                            return "HLT_Ele27_WPTight_Gsf or HLT_Photon175 or HLT_Ele115_CaloIdVT_GsfTrkIdT"sv;
-                        }
-
-                        if (configuration.year == Year::Run2016)
-                        {
-                            return "HLT_Ele27_WPTight_Gsf or HLT_Photon175 or HLT_Ele115_CaloIdVT_GsfTrkIdT"sv;
-                        }
-                        if (configuration.year == Year::Run2017)
-                        {
-                            return "HLT_Ele35_WPTight_Gsf or HLT_Photon200 or HLT_Ele115_CaloIdVT_GsfTrkIdT"sv;
-                        }
-                        if (configuration.year == Year::Run2018)
-                        {
-                            return "HLT_Ele32_WPTight_Gsf or HLT_Photon200 or HLT_Ele115_CaloIdVT_GsfTrkIdT"sv;
-                        }
-
-                        throw std::invalid_argument(
-                            fmt::format("ERROR: Could not define trigger bits. The requested year ({}) is invalid.",
-                                        configuration.year_str));
-                    }())
-            .Define("pass_jet_ht_trigger",
-                    // [](bool HLT_PFHT1050) -> bool
-                    []() -> bool
-                    {
-                        // if (HLT_PFHT1050)
-                        // {
-                        //     return true;
-                        // }
                         return false;
                     },
-                    // {"HLT_PFHT1050"})
-                    {})
-            .Define("pass_jet_pt_trigger",
-                    // [](bool HLT_PFJet500) -> bool
-                    []() -> bool
+                    {"pass_low_pt_muon_trigger",
+                     "pass_high_pt_muon_trigger",
+                     "pass_low_pt_electron_trigger",
+                     "pass_high_pt_electron_trigger",
+                     "pass_jet_ht_trigger",
+                     "pass_jet_pt_trigger",
+                     "mc_weight"})
+                // Dummy filter - Used only for event counting
+                .Filter(
+                    [&event_counter, &dTime1, &cutflow_histo]() -> bool
                     {
-                        // if (HLT_PFJet500)
-                        // {
-                        //     return true;
-                        // }
-                        return false;
-                    },
-                    {})
-            // Trigger Filter
-            .Filter(
-                [&cutflow_histo, &Cuts](bool pass_low_pt_muon_trigger,
-                                        bool pass_high_pt_muon_trigger,
-                                        bool pass_low_pt_electron_trigger,
-                                        bool pass_high_pt_electron_trigger,
-                                        bool pass_jet_ht_trigger,
-                                        bool pass_jet_pt_trigger,
-                                        float mc_weight) -> bool
-                {
-                    if (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger or pass_low_pt_electron_trigger or
-                        pass_high_pt_electron_trigger or pass_jet_ht_trigger or pass_jet_pt_trigger)
-                    {
-                        cutflow_histo.Fill(Cuts.index_of("TriggerCut"), mc_weight);
+                        // process monitoring
+                        if (event_counter < 10 || (event_counter < 100 && event_counter % 10 == 0) ||
+                            (event_counter < 1000 && event_counter % 100 == 0) ||
+                            (event_counter < 10000 && event_counter % 1000 == 0) ||
+                            (event_counter >= 10000 && event_counter % 10000 == 0))
+                        {
+                            print_report(dTime1, event_counter, cutflow_histo);
+                            PrintProcessInfo();
+                        }
+                        event_counter++;
+
+                        // always return true
                         return true;
-                    }
-                    return false;
-                },
-                {"pass_low_pt_muon_trigger",
-                 "pass_high_pt_muon_trigger",
-                 "pass_low_pt_electron_trigger",
-                 "pass_high_pt_electron_trigger",
-                 "pass_jet_ht_trigger",
-                 "pass_jet_pt_trigger",
-                 "mc_weight"})
-            // Dummy filter - Used only for event counting
-            .Filter(
-                [&event_counter, &dTime1, &cutflow_histo]() -> bool
-                {
-                    // process monitoring
-                    if (event_counter < 10 || (event_counter < 100 && event_counter % 10 == 0) ||
-                        (event_counter < 1000 && event_counter % 100 == 0) ||
-                        (event_counter < 10000 && event_counter % 1000 == 0) ||
-                        (event_counter >= 10000 && event_counter % 10000 == 0))
-                    {
-                        print_report(dTime1, event_counter, cutflow_histo);
-                        PrintProcessInfo();
-                    }
-                    event_counter++;
+                    },
+                    {});
 
-                    // always return true
-                    return true;
-                },
-                {});
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////       [ BEGIN ]      //////////////////////////////////////
+        //////////////////////////////////////   loop over events   //////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        std::cout << colors.acqua << "Starting timer ..." << colors.def << std::endl;
+        dTime1 = getCpuTime(); // Start Timer
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////       [ BEGIN ]      //////////////////////////////////////
-    //////////////////////////////////////   loop over events   //////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////////
-    std::cout << colors.acqua << "Starting timer ..." << colors.def << std::endl;
-    dTime1 = getCpuTime(); // Start Timer
+        // launch event loop for Data or MC
+        std::cout << colors.green << "\nLaunching event loop ..." << colors.def << std::endl;
 
-    // launch event loop for Data or MC
-    std::cout << colors.green << "\nLaunching event loop ..." << colors.def << std::endl;
+        RDF::RSnapshotOptions opts;
+        opts.fMode = "UPDATE";
+        skimmed_dataframe.Snapshot("nano_music", output_file_name, get_output_branches(configuration), opts);
+    }
 
-    skimmed_dataframe.Snapshot("nano_music", output_file_name, get_output_branches(configuration));
     auto output_file = TFile::Open(output_file_name.c_str(), "UPDATE");
     output_file->cd();
     cutflow_histo.Write();

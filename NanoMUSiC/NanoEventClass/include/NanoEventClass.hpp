@@ -48,12 +48,12 @@ class NanoEventClass
   public:
     NanoEventClass(const std::string &class_name, const std::string &file_path, bool is_data, bool debug = false);
 
-    auto filter_histos(const std::string &process_group = "*",
-                       const std::string &xs_order = "*",
-                       const std::string &sample = "*",
-                       const std::string &year = "*",
-                       const std::string &shift = "*",
-                       const std::string &histo_name = "*") -> std::vector<NanoEventHisto>;
+    auto filter_histos(const std::string &process_group,
+                       const std::string &xs_order,
+                       const std::string &sample,
+                       const std::string &year,
+                       const std::string &shift,
+                       const std::string &histo_name) -> std::vector<NanoEventHisto>;
 };
 
 #endif // NANOEVENTCLASS_HPP

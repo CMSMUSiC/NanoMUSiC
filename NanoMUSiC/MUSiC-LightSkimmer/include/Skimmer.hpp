@@ -339,9 +339,18 @@ inline auto get_output_branches(const TaskConfiguration &configuration) -> std::
         "Photon_dEscaleDown",
         "Photon_dEsigmaUp",
         "Photon_dEsigmaDown",
-        // "Tau_pt",
-        // "Tau_eta",
-        // "Tau_phi",
+        "Tau_decayMode",
+        "Tau_dz",
+        "Tau_idDeepTau2017v2p1VSe",
+        "Tau_idDeepTau2017v2p1VSjet",
+        "Tau_idDeepTau2017v2p1VSmu",
+        "Tau_leadTkDeltaEta",
+        "Tau_leadTkDeltaPhi",
+        "Tau_leadTkPtOverTauPt",
+        "Tau_pt",
+        "Tau_eta",
+        "Tau_phi",
+        "Tau_mass",
         "Jet_pt",
         "Jet_eta",
         "Jet_phi",
@@ -353,7 +362,7 @@ inline auto get_output_branches(const TaskConfiguration &configuration) -> std::
         "MET_pt",
         "MET_phi",
         "MET_MetUnclustEnUpDeltaX",
-        "MET_MetUnclustEnUpDeltaY",
+        "MET_MetUnclustEnUpDeltaY" //
     };
     const std::vector<std::string> output_branches_mc_only = {
         "mc_weight",
@@ -400,6 +409,8 @@ inline auto get_output_branches(const TaskConfiguration &configuration) -> std::
         "Muon_genPartIdx",
         "Electron_genPartIdx",
         "Photon_genPartIdx",
+        "Tau_genPartFlav",
+        "Tau_genPartIdx" //
     };
 
     if (!configuration.is_data)
