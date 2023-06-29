@@ -146,6 +146,8 @@ auto main(int argc, char *argv[]) -> int
     // Turns out that, specially in data, not all files from the same era has the same event content.
     // because of this, we have to run the data frame over each file, to allow it to reconfigure by checking the
     // available columns.
+
+    std::vector<std::string> output_files;
     for (auto &&file : files_to_load)
     {
         auto dataframe = RDataFrame("Events"s, file);
@@ -621,10 +623,16 @@ auto main(int argc, char *argv[]) -> int
         // launch event loop for Data or MC
         std::cout << colors.green << "\nLaunching event loop ..." << colors.def << std::endl;
 
-        RDF::RSnapshotOptions opts;
-        opts.fMode = "UPDATE";
-        skimmed_dataframe.Snapshot("nano_music", output_file_name, get_output_branches(configuration), opts);
+        auto this_file_name = get_hash(file) + "_" + output_file_name;
+        skimmed_dataframe.Snapshot("nano_music", this_file_name, get_output_branches(configuration));
+        output_files.push_back(this_file_name);
     }
+
+    // merge output files
+    fmt::print("Merging output files ...");
+    auto hadd_command = fmt::format("hadd -f {} {}", output_file_name, fmt::join(output_files, " "));
+    std::system(hadd_command.c_str());
+    fmt::print("... done.");
 
     auto output_file = TFile::Open(output_file_name.c_str(), "UPDATE");
     output_file->cd();

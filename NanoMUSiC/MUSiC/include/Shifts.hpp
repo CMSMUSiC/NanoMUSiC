@@ -335,6 +335,23 @@ class Shifts
         return 1.;
     }
 
+    static auto get_qcd_scale_modifier(const std::string &shift, const std::string &xs_order) -> double
+    {
+        // LHEScaleWeight
+        if (xs_order == "LO")
+        {
+            if (shift == "xSecOrder_Up")
+            {
+                return 1. + .5;
+            }
+            if (shift == "xSecOrder_Down")
+            {
+                return 1. - .5;
+            }
+        }
+        return 1.;
+    }
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////
     /// Set PDF and Alpha_S uncertainties.
     /// Those are tricky beasts, since they are not simple weights added to the event, but rather, should be treated
@@ -441,10 +458,9 @@ class Shifts
                     auto sum_shifts_squared = 0.;
                     for (std::size_t i = 1; i < LHEPdfWeight.size(); i++)
                     {
-
                         sum_shifts_squared += std::pow(LHEPdfWeight[i] - LHEWeight_originalXWGTUP, 2.);
                     }
-                    pdf_shift = std::sqrt(sum_shifts_squared / LHEWeight_originalXWGTUP);
+                    pdf_shift = std::sqrt(sum_shifts_squared) / LHEWeight_originalXWGTUP;
                 }
                 else if (contains(default_pdf.at(0)->set().errorType(), "replica"))
                 {
@@ -512,7 +528,7 @@ class Shifts
 
             // auto sorted_weights = VecOps::Sort(LHEPdfWeight);
             // auto pdf_shift = (sorted_weights[83] - sorted_weights[15]) / 2.f;
-            auto pdf_shift = std::sqrt(sum_shifts_squared / LHEWeight_originalXWGTUP);
+            auto pdf_shift = std::sqrt(sum_shifts_squared) / LHEWeight_originalXWGTUP;
             auto alpha_s_shift = (alpha_s_up - alpha_s_down) / 2.f;
 
             if (shift == "PDF_As_Up")

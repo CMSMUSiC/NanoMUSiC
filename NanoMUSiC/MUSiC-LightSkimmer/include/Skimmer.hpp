@@ -26,6 +26,7 @@
 #include <sys/time.h>
 #include <thread>
 #include <typeinfo>
+#include <unordered_map>
 #include <unordered_set>
 
 // ROOT Stuff
@@ -418,6 +419,13 @@ inline auto get_output_branches(const TaskConfiguration &configuration) -> std::
         output_branches.insert(output_branches.end(), output_branches_mc_only.cbegin(), output_branches_mc_only.cend());
     }
     return output_branches;
+}
+
+inline auto get_hash(const std::string &str) -> std::string
+{
+    hash<string> hasher;
+
+    return std::to_string(hasher(s));
 }
 
 #endif /*SKIMMER_HPP*/

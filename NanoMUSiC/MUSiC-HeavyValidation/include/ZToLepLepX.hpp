@@ -45,12 +45,15 @@ class ZToLepLepX
     const bool is_Z_mass_validation;
     std::string shift;
 
-    ZToLepLepX(const std::string &output_path,
-               const std::map<std::string, int> &countMap,
-               bool is_Z_mass_validation,
-               std::string _shift,
-               const std::string &_process,
-               const std::string &_year);
+    ZToLepLepX(const std::string &_analysis_name,
+               const std::string &_output_path,
+               const std::map<std::string, int> &_countMap,
+               bool _is_Z_mass_validation,
+               const std::string _shift,
+               const std::string &_sample,
+               const std::string &_year,
+               const std::string &_process_group,
+               const std::string &_xs_order);
 
     auto fill(const Math::PtEtaPhiMVector &lepton_1,
               const Math::PtEtaPhiMVector &lepton_2,
