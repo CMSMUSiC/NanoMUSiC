@@ -1,9 +1,9 @@
 output = "outputs"
-is_data = false
-year = "2017"
-era = "DUMMY"
-process = "DYJetsToLL_LHEFilterPtZ-100To250_MatchEWPDG20_13TeV_AM"
-dataset = "/DYJetsToLL_LHEFilterPtZ-100To250_MatchEWPDG20_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM"
+is_data = true
+year = "2018"
+era = "D"
+process = "EGamma_13TeV_2018_D"
+dataset = "/EGamma/Run2018D-UL2018_MiniAODv2_NanoAODv9-v3/NANOAOD"
 is_crab_job = false
 input_files = []
-generator_filter_key = "dyjets_mass_less_120_mass_greater_50"
+generator_filter_key = ""

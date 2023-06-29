@@ -74,15 +74,15 @@ auto main(int argc, char *argv[]) -> int
     const std::string filter_eff_str = cmdl({"-f", "--filter_eff"}).str();
     const std::string k_factor_str = cmdl({"-k", "--k_factor"}).str();
     const std::string luminosity_str = cmdl({"-l", "--luminosity"}).str();
-    const std::string process_order = cmdl({"-po", "--process_order"}).str();
+    const std::string xs_order = cmdl({"-po", "--xs_order"}).str();
     const std::string process_group = cmdl({"-pg", "--process_group"}).str();
     const std::string input_file = cmdl({"-i", "--input"}).str();
     const std::string shift = cmdl({"-s", "--shift"}).str();
     const bool debug = cmdl[{"--debug"}];
 
     if (show_help or process == "" or year == "" or output_path == "" or input_file == "" or x_section_str == "" or
-        filter_eff_str == "" or k_factor_str == "" or luminosity_str == "" or process_order == "" or
-        process_group == "" or shift == "")
+        filter_eff_str == "" or k_factor_str == "" or luminosity_str == "" or xs_order == "" or process_group == "" or
+        shift == "")
     {
         fmt::print("Usage: heavy_validation [OPTIONS]\n");
         fmt::print("          -h|--help: Shows this message.\n");
@@ -94,7 +94,7 @@ auto main(int argc, char *argv[]) -> int
         fmt::print("          -f|--filter_eff: Generator level filter efficiency.\n");
         fmt::print("          -k|--k_factor: K-Factor.\n");
         fmt::print("          -l|--luminosity: Int. luminosity.\n");
-        fmt::print("          -po|--process_order: Process order.\n");
+        fmt::print("          -po|--xs_order: Process order.\n");
         fmt::print("          -pg|--process_group: Process group.\n");
         fmt::print("          -i|--input: Path to a txt with input files (one per line).\n");
         fmt::print("          -s|--shift: Shift being applied.\n");
@@ -289,28 +289,32 @@ auto main(int argc, char *argv[]) -> int
                                                          {"MET", 0}};
 
     // build DY analysis
-    auto z_to_mu_mu_x = ZToLepLepX(fmt::format("{}/z_to_mu_mu_x_{}_{}_{}.root", output_path, process, year, shift),
-                                   z_to_mu_mu_x_count_map,
-                                   false,
-                                   shift,
-                                   process,
-                                   year);
+    auto z_to_mu_mu_x = ZToLepLepX(
+        get_output_file_path("z_to_mu_mu_x", output_path, process, year, process_group, xs_order, is_data, shift),
+        z_to_mu_mu_x_count_map,
+        false,
+        shift,
+        process,
+        year);
     auto z_to_mu_mu_x_Z_mass =
-        ZToLepLepX(fmt::format("{}/z_to_mu_mu_x_Z_mass_{}_{}_{}.root", output_path, process, year, shift),
+        ZToLepLepX(get_output_file_path(
+                       "z_to_mu_mu_x_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
                    z_to_mu_mu_x_count_map,
                    true,
                    shift,
                    process,
                    year);
 
-    auto z_to_ele_ele_x = ZToLepLepX(fmt::format("{}/z_to_ele_ele_x_{}_{}_{}.root", output_path, process, year, shift),
-                                     z_to_ele_ele_x_count_map,
-                                     false,
-                                     shift,
-                                     process,
-                                     year);
+    auto z_to_ele_ele_x = ZToLepLepX(
+        get_output_file_path("z_to_ele_ele_x", output_path, process, year, process_group, xs_order, is_data, shift),
+        z_to_ele_ele_x_count_map,
+        false,
+        shift,
+        process,
+        year);
     auto z_to_ele_ele_x_Z_mass =
-        ZToLepLepX(fmt::format("{}/z_to_ele_ele_x__Z_mass_{}_{}_{}.root", output_path, process, year, shift),
+        ZToLepLepX(get_output_file_path(
+                       "z_to_ele_ele_x_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
                    z_to_ele_ele_x_count_map,
                    true,
                    shift,
@@ -539,16 +543,16 @@ auto main(int argc, char *argv[]) -> int
                                                                  unwrap(Generator_id2),      //
                                                                  unwrap(LHEWeight_originalXWGTUP, 1.f));
 
-            weight = unwrap(mc_weight, 1.) //
-                     * pu_weight           //
-                     * prefiring_weight    //
-                     * generator_filter    //
-                     / no_cuts             //
-                     / generator_filter    //
-                     * x_section           //
-                     * filter_eff          //
-                     * k_factor            //
-                     * scaled_luminosity   //
+            weight = unwrap(mc_weight, 1.)                                          //
+                     * pu_weight                                                    //
+                     * prefiring_weight                                             //
+                     * generator_filter                                             //
+                     / no_cuts                                                      //
+                     / generator_filter                                             //
+                     * x_section * Shifts::get_xsec_order_modifier(shift, xs_order) //
+                     * filter_eff                                                   //
+                     * k_factor                                                     //
+                     * scaled_luminosity                                            //
                      * pdf_as_weight;
         }
 

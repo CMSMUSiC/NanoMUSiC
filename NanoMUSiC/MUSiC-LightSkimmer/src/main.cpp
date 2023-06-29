@@ -443,11 +443,15 @@ auto main(int argc, char *argv[]) -> int
                                         configuration.year_str));
                     }())
             .Define("pass_high_pt_muon_trigger",
-                    [&configuration]() -> std::string_view
+                    [&configuration, &pre_skimmed_dataframe]() -> std::string_view
                     {
                         if (configuration.year == Year::Run2016APV)
                         {
-                            return "HLT_Mu50 or HLT_TkMu50"sv;
+                            if (pre_skimmed_dataframe.HasColumn("HLT_TkMu50"))
+                            {
+                                return "HLT_Mu50 or HLT_TkMu50"sv;
+                            }
+                            return "HLT_Mu50"sv;
                         }
 
                         if (configuration.year == Year::Run2016)
@@ -457,7 +461,12 @@ auto main(int argc, char *argv[]) -> int
 
                         if (configuration.year == Year::Run2017)
                         {
-                            return "HLT_Mu50 or HLT_TkMu100 or HLT_OldMu100"sv;
+                            if (pre_skimmed_dataframe.HasColumn("HLT_TkMu100") and
+                                pre_skimmed_dataframe.HasColumn("HLT_OldMu100"))
+                            {
+                                return "HLT_Mu50 or HLT_TkMu100 or HLT_OldMu100"sv;
+                            }
+                            return "HLT_Mu50"sv;
                         }
 
                         if (configuration.year == Year::Run2018)
