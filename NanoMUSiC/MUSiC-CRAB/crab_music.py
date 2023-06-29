@@ -77,7 +77,7 @@ def make_task_config_file(
         f"Raw_Configs/{process_name}_{year}/raw_config.toml", "w"
     ) as new_config_file:
         new_config_file.write(new_config)
-    os.system("cd ../../")
+    # os.system("cd ../../")
 
 
 def get_username():
@@ -182,7 +182,7 @@ def main():
     os.system("rm -rf Raw_Configs")
     os.system("mkdir Raw_Configs")
     sample_list = make_sample_list(args.xsection_file_path)
-    with Pool(15) as pool:
+    with Pool(30) as pool:
         list(
             tqdm(
                 pool.imap_unordered(submit, sample_list),
@@ -190,9 +190,6 @@ def main():
                 unit="sample",
             )
         )
-
-    for sample in make_sample_list(args.xsection_file_path):
-        submit(sample)
 
 
 if __name__ == "__main__":

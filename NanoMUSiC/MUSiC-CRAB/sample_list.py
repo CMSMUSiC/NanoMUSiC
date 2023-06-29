@@ -15,6 +15,12 @@ def get_era(process_name, is_data):
     )
 
 
+def get_extension_suffix(idx: int):
+    if idx > 0:
+        return "_ext{idx}"
+    return ""
+
+
 def make_sample_list(xSection_file_path):
     input_file = ""
     input_file = xSection_file_path
@@ -26,10 +32,12 @@ def make_sample_list(xSection_file_path):
         if "generator_filter_key" in xsections[process_name].keys():
             generator_filter_key = xsections[process_name]["generator_filter_key"]
         if "das_name_2016APV" in xsections[process_name]:
-            for das_name in xsections[process_name]["das_name_2016APV"]:
+            for idx_das_name, das_name in enumerate(
+                xsections[process_name]["das_name_2016APV"]
+            ):
                 sample_list.append(
                     (
-                        process_name,
+                        process_name + get_extension_suffix(idx_das_name),
                         das_name,
                         "2016APV",
                         get_era(process_name, xsections[process_name]["is_data"]),
@@ -38,10 +46,12 @@ def make_sample_list(xSection_file_path):
                     )
                 )
         if "das_name_2016" in xsections[process_name]:
-            for das_name in xsections[process_name]["das_name_2016"]:
+            for idx_das_name, das_name in enumerate(
+                xsections[process_name]["das_name_2016"]
+            ):
                 sample_list.append(
                     (
-                        process_name,
+                        process_name + get_extension_suffix(idx_das_name),
                         das_name,
                         "2016",
                         get_era(process_name, xsections[process_name]["is_data"]),
@@ -50,10 +60,12 @@ def make_sample_list(xSection_file_path):
                     )
                 )
         if "das_name_2017" in xsections[process_name]:
-            for das_name in xsections[process_name]["das_name_2017"]:
+            for idx_das_name, das_name in enumerate(
+                xsections[process_name]["das_name_2017"]
+            ):
                 sample_list.append(
                     (
-                        process_name,
+                        process_name + get_extension_suffix(idx_das_name),
                         das_name,
                         "2017",
                         get_era(process_name, xsections[process_name]["is_data"]),
@@ -62,10 +74,12 @@ def make_sample_list(xSection_file_path):
                     )
                 )
         if "das_name_2018" in xsections[process_name]:
-            for das_name in xsections[process_name]["das_name_2018"]:
+            for idx_das_name, das_name in enumerate(
+                xsections[process_name]["das_name_2018"]
+            ):
                 sample_list.append(
                     (
-                        process_name,
+                        process_name + get_extension_suffix(idx_das_name),
                         das_name,
                         "2018",
                         get_era(process_name, xsections[process_name]["is_data"]),
