@@ -423,9 +423,9 @@ inline auto get_output_branches(const TaskConfiguration &configuration) -> std::
 
 inline auto get_hash(const std::string &str) -> std::string
 {
-    hash<string> hasher;
+    std::hash<std::string> hasher;
 
-    return std::to_string(hasher(s));
+    return std::to_string(hasher(str));
 }
 
 #endif /*SKIMMER_HPP*/

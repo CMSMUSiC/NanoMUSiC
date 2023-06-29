@@ -245,3 +245,5 @@ foo
 gdb.txt
 NanoMUSiC/MUSiC-CRAB/task.tar.gz
 NanoMUSiC/MUSiC-CRAB/xSections_list_Jets_2018_only.toml
+NanoMUSiC/MUSiC-CRAB/check_samples.py
+NanoMUSiC/MUSiC-CRAB/*.toml
