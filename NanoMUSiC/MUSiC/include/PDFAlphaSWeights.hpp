@@ -47,7 +47,7 @@ inline std::optional<std::pair<unsigned int, unsigned int>> get_pdf_ids(TTree *e
     {
         std::string LHEPdfWeight_description = events_tree->GetBranch("LHEPdfWeight")->GetTitle();
 
-        if (LHEPdfWeight_description.empty())
+        if (LHEPdfWeight_description == "LHEPdfWeight" or LHEPdfWeight_description.empty())
         {
             return ids;
         }

@@ -217,19 +217,21 @@ auto ZToLepLepX::fill(const Math::PtEtaPhiMVector &lepton_1,
                       const RVec<Math::PtEtaPhiMVector> &met,
                       float weight) -> void
 {
-
     h_invariant_mass.Fill((lepton_1 + lepton_2).mass(), weight);
     h_sum_pt.Fill(lepton_1.pt() + lepton_2.pt(), weight);
+
     if (met.size() > 0)
     {
         h_met.Fill(met[0].pt(), weight);
     }
+
     h_lepton_1_pt.Fill(lepton_1.pt(), weight);
     h_lepton_2_pt.Fill(lepton_2.pt(), weight);
     h_lepton_1_eta.Fill(lepton_1.eta(), weight);
     h_lepton_2_eta.Fill(lepton_2.eta(), weight);
     h_lepton_1_phi.Fill(lepton_1.phi(), weight);
     h_lepton_2_phi.Fill(lepton_2.phi(), weight);
+
     if (jets.size() > 0 or bjets.size() > 0)
     {
         Math::PtEtaPhiMVector leading_jet = [&]() -> Math::PtEtaPhiMVector
@@ -248,9 +250,11 @@ auto ZToLepLepX::fill(const Math::PtEtaPhiMVector &lepton_1,
             }
             return bjets[0];
         }();
+
         h_lepton_1_jet_1_dPhi.Fill(VectorUtil::DeltaPhi(lepton_1, leading_jet), weight);
         h_lepton_1_jet_1_dR.Fill(VectorUtil::DeltaR(lepton_1, leading_jet), weight);
     }
+
     h_jet_multiplicity.Fill(jets.size(), weight);
     h_bjet_multiplicity.Fill(bjets.size(), weight);
 
