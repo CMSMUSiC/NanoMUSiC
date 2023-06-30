@@ -466,8 +466,8 @@ auto main(int argc, char *argv[]) -> int
             continue;
         }
 
-        // muons
         // build good objects
+        // muons
         auto muons = ObjectFactories::make_muons(unwrap(Muon_pt),             //
                                                  unwrap(Muon_eta),            //
                                                  unwrap(Muon_phi),            //
