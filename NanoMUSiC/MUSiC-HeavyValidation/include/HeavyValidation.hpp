@@ -231,7 +231,7 @@ inline auto get_output_file_path(const std::string &prefix,
                                  const std::string &shift,
                                  const std::string &suffix = ".root") -> std::string
 {
-    return fmt::format("{}/{}_{}_{}_{}_{}_{}_{}",
+    return fmt::format("{}/{}_{}_{}_{}_{}_{}_{}{}",
                        output_path,
                        prefix,
                        process,
@@ -239,7 +239,8 @@ inline auto get_output_file_path(const std::string &prefix,
                        process_group,
                        xs_order,
                        is_data_to_string(is_data),
-                       shift);
+                       shift,
+                       suffix);
 }
 
 #endif // VALIDATION

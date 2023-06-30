@@ -55,8 +55,8 @@ inline auto trigger_filter(const std::string &process,
         }
 
         // Muon dataset
-        if ((pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) and
-            not(pass_low_pt_electron_trigger or pass_high_pt_electron_trigger))
+        else if ((pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) and
+                 not(pass_low_pt_electron_trigger or pass_high_pt_electron_trigger))
         {
             trigger_filter_res = {{"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},
                                   {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},
@@ -360,16 +360,17 @@ auto main(int argc, char *argv[]) -> int
         year,
         process_group,
         xs_order);
-    auto z_to_ele_ele_x_Z_mass = ZToLepLepX(
-        "z_to_ele_ele_x_Z_mass",
-        get_output_file_path("z_to_mu_mu_x", output_path, process, year, process_group, xs_order, is_data, shift),
-        z_to_ele_ele_x_count_map,
-        true,
-        shift,
-        process,
-        year,
-        process_group,
-        xs_order);
+    auto z_to_ele_ele_x_Z_mass =
+        ZToLepLepX("z_to_ele_ele_x_Z_mass",
+                   get_output_file_path(
+                       "z_to_ele_ele_x_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
+                   z_to_ele_ele_x_count_map,
+                   true,
+                   shift,
+                   process,
+                   year,
+                   process_group,
+                   xs_order);
 
     // build Dijets
     // auto dijets = Dijets(fmt::format("{}/dijets_{}_{}.root", output_path, process, year), dijets_count_map);
@@ -422,10 +423,10 @@ auto main(int argc, char *argv[]) -> int
         // remove the "unused variable" warning during compilation
         static_cast<void>(event);
 
-        // if (event > 1)
-        // {
-        //     break;
-        // }
+        if (event > 30000)
+        {
+            break;
+        }
 
         // Trigger
         //
