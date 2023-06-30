@@ -3,6 +3,7 @@
 ###########################################
 ## PLOT VALIDATION 3 (with systematics!) ##
 ## for new heavy val. with all syst      ##
+## normalization code included           ##
 ###########################################
 
 from __future__ import annotations
@@ -115,6 +116,12 @@ def parse_args():
         "-ns",
         "--nosyst",
         help="Optional: Don't use systematics for plotting.",
+        action="store_true",
+    )
+    parser.add_argument(
+        "-norm",
+        "--normalize",
+        help="Optional: Enable normalization algorithm.",
         action="store_true",
     )
     args = parser.parse_args()
@@ -647,7 +654,7 @@ def stacker(
     # calculate data errors, only stat error
     total_data_errors = np.zeros(nbins)
     for sample in datasamples:  # stat error for every sample
-        total_data_errors += np.array(datastaterrors[sample])**2 # treat uncorrelated
+        total_data_errors += np.array(datastaterrors[sample])
     total_data_errors = np.sqrt(total_data_errors)  # combined data errors
 
     # return stacked data and mc
@@ -873,13 +880,6 @@ def plotter(args):
                     new_error_data += [temp_error_data]
                     new_barwidth += [temp_barwidth]
                     newbin = True
-            # re-reverse the order to normal
-            new_bins = new_bins[::-1]
-            new_mcsum = new_mcsum[::-1]
-            new_error_mc = new_error_mc[::-1]
-            new_datasum = new_datasum[::-1]
-            new_error_data = new_error_data[::-1]
-            new_barwidth = new_barwidth[::-1]
         else:  # if no bin merge simply use the old bins
             new_bins = np.copy(bins)
             new_mcsum = np.copy(mcsum)
@@ -1180,6 +1180,12 @@ def main():
     nosyst = False
     if args.nosyst:
         nosyst = True
+
+    # normalize flag
+    global normalize
+    normalize = False:
+    if args.normalize:
+        normalize = True
 
     # import task config file that includes references to all files that should be validated
     print(f"Importing task config...")

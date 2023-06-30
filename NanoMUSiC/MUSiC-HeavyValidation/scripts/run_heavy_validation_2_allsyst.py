@@ -20,6 +20,24 @@ years = ["2016APV", "2016", "2017", "2018"]
 # for the new heavy validation code with all systematics #
 ##########################################################
 
+shifts = [  # all activated shifts in the Shifts.hpp
+    "Nominal",
+    "PU_Up",
+    "PU_Down",
+    "Luminosity_Up",
+    "Luminosity_Down",
+    "xSecOrder_Up",
+    "xSecOrder_Down",
+    "PDF_As_Up",
+    "PDF_As_Down",
+    "PreFiring_Up",
+    "PreFiring_Down",
+    "JetResolution_Up",
+    "JetResolution_Down",
+    "JetScale_Up",
+    "JetScale_Down",
+]
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -71,6 +89,11 @@ def parse_args():
         "-cc",
         "--classconfig",
         help="Class configuration (TOML) file containing the names of the classes to be validated.",
+    )
+    parser.add_argument(
+        "-sh",
+        "--shifts",
+        help="Optional: Leave out to run all shifts, or give the shifts that should be run separated by comma.",
     )
 
     args = parser.parse_args()
@@ -268,23 +291,6 @@ def create_arguments(
     tvarg,
     validation_arguments,
 ):
-    shifts = [  # all activated shifts in the Shifts.hpp
-        "Nominal",
-        "PU_Up",
-        "PU_Down",
-        "Luminosity_Up",
-        "Luminosity_Down",
-        "xSecOrder_Up",
-        "xSecOrder_Down",
-        "PDF_As_Up",
-        "PDF_As_Down",
-        "PreFiring_Up",
-        "PreFiring_Down",
-        "JetResolution_Up",
-        "JetResolution_Down",
-        "JetScale_Up",
-        "JetScale_Down",
-    ]
     for sample in configuration:
         if ismc:  # generate mc argument
             for (
@@ -404,6 +410,18 @@ def main():
     mcsamples = [i for i in mcconfig]
     datasamples = [i for i in dataconfig]
 
+    # global shifts
+    global shifts
+
+    # check if custom shifts are given
+    if args.shifts:
+        newshifts = args.shifts.split(",")
+        for newshift in newshifts:
+            if newshift not in shifts:
+                raise RuntimeError(f"Invalid shift! Allowed are only {shifts}.")
+        shifts = newshifts
+    print(f"Using shifts {shifts}.")
+
     # specify classes to be plotted in JetClass mode
     tvarg = ""  # default: no plots only count class inhabitation
     if args.tovalidate:  # manual specification of the classes that should be validated
@@ -470,11 +488,12 @@ def main():
         )
     # run all samples in the config
     elif args.all and args.year:
+        # run data first and mc second
         validation_arguments = create_arguments(
-            mcconfig,
+            dataconfig,
             args.year,
             lumi,
-            True,
+            False,
             args.executable,
             savepath,
             trigger,
@@ -482,10 +501,10 @@ def main():
             validation_arguments,
         )
         validation_arguments = create_arguments(
-            dataconfig,
+            mcconfig,
             args.year,
             lumi,
-            False,
+            True,
             args.executable,
             savepath,
             trigger,
@@ -505,6 +524,7 @@ def main():
     print("Creating cutflow files...")
     # create cutflow hists
     merge_arguments = []
+    merge_sample_list = set()
     for varg in validation_arguments:
         (
             process,
@@ -523,7 +543,7 @@ def main():
             process_group,
             shift,
         ) = list(varg.values())
-        if shift == "Nominal":
+        if process not in merge_sample_list:
             output_path = ""
             if savepath != "":
                 output_path = f"validation_outputs/{year}/{savepath}/files/"
@@ -537,6 +557,7 @@ def main():
                     "input_files": input_files,
                 }
             )
+            merge_sample_list.add(process)
 
     with Pool(min(args.jobs, len(merge_arguments))) as pool:
         list(

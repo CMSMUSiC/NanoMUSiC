@@ -325,6 +325,28 @@ auto main(int argc, char *argv[]) -> int
     }
     // ==> classname convention: xJ+yBJ+zMET(+XJ)
 
+    ////////////////////////////////// ONLY FOR 2D PLOT
+    std::vector<std::vector<int>> ptbins{
+        {0, 100},
+        {100, 200},
+        {200, 300},
+        {300, 400},
+        {400, 500},
+        {500, 600},
+        {600, 700},
+        {700, 800},
+        {800, 900},
+        {900, 1000},
+    };
+    std::string class_prefix = "2J+0BJ+0MET_";
+    to_validate = {};
+    for (size_t i = 0; i < ptbins.size(); i++)
+    {
+        to_validate.insert(class_prefix + std::to_string(ptbins.at(i).at(0)) + "_" +
+                           std::to_string(ptbins.at(i).at(1)));
+    }
+    //////////////////////////////////
+
     // systematics prefixes (systnames): Nominal or Syst_Up/Down stored in Shifts class
     const auto shifts = Shifts(is_data);
     if (not(shifts.is_valid(shift)))
@@ -339,15 +361,15 @@ auto main(int argc, char *argv[]) -> int
     }
     // jet classification instances: saved in a map {classname: pointer to jet class validation instance}
     // nl: nominal, up: systematic up, dn: systematic down
-    std::map<std::string, JetClass2 *> validation_classes;
+    std::map<std::string, JetClass2D *> validation_classes; // CHANGED TO JETCLASS2D FOR 2D PLOT
     // stores validation classes: {classname: jetclass instance pointer}
     // fill maps
     if (plotclasses) // only if classes should be plotted
     {
         for (const auto &c_name : to_validate)
         {
-            validation_classes[c_name] =
-                new JetClass2(fmt::format("{}/{}_{}_{}_{}.root", output_path, c_name, shift, process, year), c_name);
+            validation_classes[c_name] = // CHANGED TO JETCLASS2D FOR 2D PLOT
+                new JetClass2D(fmt::format("{}/{}_{}_{}_{}.root", output_path, c_name, shift, process, year), c_name);
             // file format: classname_systname/shift_samplename_year.root (classname includes shift/systname after
             // underscore)
         }
@@ -677,7 +699,7 @@ auto main(int argc, char *argv[]) -> int
         }
 
         ///* optional: LEPTON VETO or CONDITIONS
-        // if (not((nelectron >= 1 or nmuon >= 1) and nphoton == 0)) // require one lepton, veto photons
+        // if (not((nelectron >= 1 or nmuon >= 1) and nphoton == 0)) // at least one lepton, no photon
         if (not(nelectron == 0 and nmuon == 0 and nphoton == 0)) // veto all leptons, photons
         {
             continue;                                            // veto is condition is not satisfied
@@ -688,6 +710,7 @@ auto main(int argc, char *argv[]) -> int
         }
         //*/
 
+        ///*
         // CHECK TRIGGER THRESHOLDS
         if (trigger_flags.at(0))                     // PT trigger
         {
@@ -726,6 +749,7 @@ auto main(int argc, char *argv[]) -> int
         {
             std::cout << "Passed trigger threshold checks.\nCalculate event weight." << std::endl;
         }
+        //*/
 
         // CALCULATE EVENT WEIGHT
         // Here goes the real analysis...
@@ -794,99 +818,35 @@ auto main(int argc, char *argv[]) -> int
         ////////////////    Of the systematics is already taken care of                       /////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////    Specific processing name:   //////      MUSIC WIDE JETS V2        /////////////////////////
+        ////////////////    Specific processing name:   //////      2D plots                  /////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // CHANGE JETCLASS2D t JETCLASS2
 
-        // NAME: MUSIC WIDE JETS
-
-        // SELECT SEED JETS
-        auto seed_jets = RVec<Math::PtEtaPhiMVector>{};   // jet seeds
-        auto noseed_jets = RVec<Math::PtEtaPhiMVector>{}; // jets that are no seeds
-        for (size_t i = 0; i < jets_4vec.size(); i++)
+        // 2J+0BJ excl class only
+        if (nbjet >= 1)
         {
-            if (jets_4vec.at(i).pt() > 250) // select as seed
+            continue;
+        }
+        if (not(njet == 2))
+        {
+            continue;
+        }
+        if (is_met)
+        {
+            continue;
+        }
+
+        // fill histograms for the respective ptbin
+        for (size_t i = 0; i < ptbins.size(); i++)
+        {
+            if (jets_4vec.at(1).pt() >= ptbins.at(i).at(0) and jets_4vec.at(1).pt() < ptbins.at(i).at(1))
             {
-                seed_jets.push_back(jets_4vec.at(i));
-            }
-            else // don't select as seed
-            {
-                noseed_jets.push_back(jets_4vec.at(i));
+                validation_classes[class_prefix + std::to_string(ptbins.at(i).at(0)) + "_" +
+                                   std::to_string(ptbins.at(i).at(1))]
+                    ->fill(jets_4vec, bjets_4vec, nelectron, nmuon, met_4vec, weight);
             }
         }
 
-        // JET MERGING TO WIDE JETS
-        auto widejets = seed_jets;                           // wide jets
-        if (noseed_jets.size() > 0 and seed_jets.size() > 0) // only try to merge if seed and noseed jets were found
-        {
-            for (size_t i = 0; i < noseed_jets.size(); i++)  // try to merge for each noseed jet
-            {
-                auto cur_jet = noseed_jets.at(i);
-                auto all_delta_r = RVec<float>{};
-                for (size_t j = 0; j < seed_jets.size(); j++) // try to merge to every seed jet
-                {
-                    // calculate distances to wide jets
-                    all_delta_r.push_back(std::abs(Math::VectorUtil::DeltaR(seed_jets.at(j), cur_jet)));
-                }
-                // sort after shortest distance
-                auto sortidx_delta_r = VecOps::Argsort(all_delta_r, // sort, smallest element first
-                                                       [](auto p1, auto p2) -> bool
-                                                       {
-                                                           return p1 < p2;
-                                                       });
-                // std::cout << "WJ MERGING: DeltaR=" << all_delta_r << ", DeltaRMin=" <<
-                // all_delta_r.at(sortidx_delta_r.at(0)) << ", Merge=" << (all_delta_r.at(sortidx_delta_r.at(0)) < 1.1)
-                // << ", MergeIdx=" << sortidx_delta_r.at(0) << std::endl;
-                if (all_delta_r.at(sortidx_delta_r.at(0)) < 1.1)   // check if smallest deltar is < 1.1
-                {
-                    widejets.at(sortidx_delta_r.at(0)) += cur_jet; // if so, add the current jet to the closest widejet
-                }
-            }
-        }
-
-        // DO DELTA ETA MAX CUT
-        if (widejets.size() > 1) // only try delta eta max cut if at least two wide jets exist
-        {
-            auto all_widejet_delta_eta = RVec<float>{};
-            for (size_t i = 0; i < widejets.size(); i++)     // try to merge to every seed jet
-            {
-                for (size_t j = 0; j < widejets.size(); j++) // try to merge to every seed jet
-                {
-                    // calculate delta eta between all wide jets
-                    if (i < j) // exclude double calculations and exclude two same jets
-                    {
-                        all_widejet_delta_eta.push_back(std::abs(widejets.at(i).eta() - widejets.at(j).eta()));
-                    }
-                }
-            }
-            auto sortidx_delta_eta = VecOps::Argsort(all_widejet_delta_eta, // sort, largest element first
-                                                     [](auto p1, auto p2) -> bool
-                                                     {
-                                                         return p1 > p2;
-                                                     });
-            // std::cout << "WJ DEL ETA: DeltaEta=" << all_widejet_delta_eta << ", DeltaEtaMax=" <<
-            // all_widejet_delta_eta.at(sortidx_delta_eta.at(0)) << ", Accept=" <<
-            // (all_widejet_delta_eta.at(sortidx_delta_eta.at(0)) < 1.8) << std::endl;
-            if (not(all_widejet_delta_eta.at(sortidx_delta_eta.at(0)) <
-                    1.4)) // check if largest delta eta is below threshold
-            {
-                continue; // if not, reject event
-            }
-        }
-
-        // REORDER WIDEJETS AFTER PT
-        const auto wjets_reordering_mask = VecOps::Argsort(widejets,
-                                                           [](auto wjet_1, auto wjet_2) -> bool
-                                                           {
-                                                               return wjet_1.pt() > wjet_2.pt();
-                                                           });
-        auto widejets_sorted = VecOps::Take(widejets, wjets_reordering_mask);
-
-        // refer to wide jets as jets (formal change for plotting and classification)
-        njet = widejets_sorted.size();
-        jets_4vec = widejets_sorted;
-
-        // effectively all other jets that are not merged are rejected
-
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -895,6 +855,7 @@ auto main(int argc, char *argv[]) -> int
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        /*
         // JET CLASS VALIDATION AND CLASS COUNTING
         std::set<std::string> eventclass =
             {}; // set that includes all classes the current sample is a member of (for plotting)
@@ -963,6 +924,7 @@ auto main(int argc, char *argv[]) -> int
             }
         }
         // std::cout << "Finished event classification." << std::endl;
+        */
     }
 
     fmt::print("\n[MUSiC Validation] Saving outputs ({} - {} - {}) ...\n", output_path, process, year);

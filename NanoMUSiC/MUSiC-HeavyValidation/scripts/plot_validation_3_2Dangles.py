@@ -253,13 +253,16 @@ def stacker(
         [400, 500],
         [500, 600],
         [600, 700],
+        [700, 800],
+        [800, 900],
+        [900, 1000],
     ]
     ptbinsstrgs = [str((str(ptbin[0]) + "_" + str(ptbin[1]))) for ptbin in ptbins]
 
     # import mc histograms for all ptbins
     for ptbinsstr in ptbinsstrgs:
         for sample in mcsamples:
-            fileprefix_syst = fileprefix + "_" + ptbinsstr + "_nominal_"
+            fileprefix_syst = fileprefix + "_" + ptbinsstr + "_Nominal_"
             samplecounts, sampleedges, sampleerrors = import_hist(
                 year, sample, fileprefix_syst, histname, savepath
             )
@@ -273,7 +276,7 @@ def stacker(
     # import data histograms for all ptbins
     for ptbinsstr in ptbinsstrgs:
         for sample in datasamples:
-            fileprefix_syst = fileprefix + "_" + ptbinsstr + "_nominal_"
+            fileprefix_syst = fileprefix + "_" + ptbinsstr + "_Nominal_"
             samplecounts, sampleedges, sampleerrors = import_hist(
                 year, sample, fileprefix_syst, histname, savepath
             )
@@ -364,7 +367,7 @@ def plotter(
     fig.subplots_adjust(left=left, right=right, bottom=bottom, top=top)
 
     # reference maps for labels
-    pt_edges_2d = [0, 100, 200, 300, 400, 500, 600, 700]
+    pt_edges_2d = [0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
     hist_edges_2d = {
         "h_deltar_jetjet": np.linspace(0, 10, 26).round(decimals=2),
         "h_deltaphi_jetjet": np.linspace(-np.pi, np.pi, 21).round(decimals=2),

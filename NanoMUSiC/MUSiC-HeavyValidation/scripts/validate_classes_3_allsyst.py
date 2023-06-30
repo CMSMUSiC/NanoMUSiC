@@ -92,6 +92,26 @@ def parse_args():
         help="Optional: Don't use systematics for plotting.",
         action="store_true",
     )
+    parser.add_argument(
+        "-ci",
+        "--cincludes",
+        help="Optional: Plot only classes containing this string in their name.",
+    )
+    parser.add_argument(
+        "-ce",
+        "--cexcludes",
+        help="Optional: Plot only classes not containing this string in their name.",
+    )
+    parser.add_argument(
+        "-mm",
+        "--mcthreshold",
+        help="Optional: Plot only classes with MC > threshold.",
+    )
+    parser.add_argument(
+        "-tt",
+        "--titletext",
+        help="Optional: Add this string to title text. Put spaces as underscores.",
+    )
     args = parser.parse_args()
     return args
 
@@ -167,7 +187,7 @@ def import_counts(year, sample, savepath, systematics):
         file_contents = toml.load(file_path)
         returndict.update({syst: file_contents})
     return (
-        returndict  # returns dictionary: {systname: {classname: counts}} for the sample
+        returndict  # returns dictionary: {systname: {'counts'/'stat': {classname: counts}}} for the sample
     )
 
 
@@ -254,7 +274,7 @@ def countplotter(
         "JetScale_Down",
     }
     if nosyst == True:
-        systematics = {"Nominal", "stat"}
+        systematics = {"Nominal"}
 
     mcsamples_classes = {}
     datasamples_classes = {}
@@ -263,20 +283,23 @@ def countplotter(
     for sample in mcsamples:
         samplecountdict = import_counts(
             year, sample, savepath, systematics
-        )  # returns {systname: {classname: counts}}
+        )  # returns {systname: {'counts'/'stat': {classname: counts}}}
         mcsamples_classes.update(
             {sample: samplecountdict}
-        )  # dictionary: {sample: {systname: {classname: counts}}} for the sample
+        )  # dictionary: {sample: {systname: {'counts'/'stat': {classname: counts}}}} for the sample
 
     # import data event counts
     printdebug(f"Importing {len(datasamples)} data event counts for year {year}...")
     for sample in datasamples:
         samplecountdict = import_counts(
-            year, sample, savepath, systematics
-        )  # returns {systname: {classname: counts}}
+            year, sample, savepath, ["Nominal"]
+        )  # returns {systname: {'counts'/'stat': {classname: counts}}}
         datasamples_classes.update(
             {sample: samplecountdict}
-        )  # dictionary: {sample: {systname: {classname: counts}}} for the sample
+        )  # dictionary: {sample: {systname: {'counts'/'stat': {classname: counts}}}} for the sample
+
+    # add statistical error
+    systematics.add("stat")
 
     # sort samples into class dictionary
     # for mc
@@ -284,39 +307,52 @@ def countplotter(
     mcclassnames = set()  # set of all classnames with mc events
     # fill classname set
     for sample in mcsamples:
-        for classname in mcsamples_classes[sample]["Nominal"].keys():
+        for classname in mcsamples_classes[sample]["Nominal"]["counts"].keys():
             mcclassnames.add(classname)
     # fill mcclassdict
     for classname in mcclassnames:
         for sample in mcsamples:
             templist = {}
             for syst in systematics:
-                if classname in mcsamples_classes[sample][syst].keys():
-                    templist.update({syst: mcsamples_classes[sample][syst][classname]})
-                else:
-                    templist.update({syst: 0})
+                if syst != "stat":
+                    if classname in mcsamples_classes[sample][syst]["counts"].keys():
+                        templist.update({syst: mcsamples_classes[sample][syst]["counts"][classname]})
+                    else:
+                        templist.update({syst: 0})
+                else: # stat error
+                    if classname in mcsamples_classes[sample]["Nominal"]["stat"].keys():
+                        templist.update({syst: mcsamples_classes[sample]["Nominal"]["stat"][classname]})
+                    else:
+                        templist.update({syst: 0})
             if classname in mcclassdict.keys():
                 mcclassdict[classname].update({sample: templist.copy()})
             else:
                 mcclassdict.update({classname: {sample: templist.copy()}})
+
     # for data
     dataclassdict = {}  # dictionary: {classname: {sample: {systname: counts}}}
     dataclassnames = set()  # set of all classnames with data events
     # fill classname set
     for sample in datasamples:
-        for classname in datasamples_classes[sample]["Nominal"].keys():
+        for classname in datasamples_classes[sample]["Nominal"]["counts"].keys():
             dataclassnames.add(classname)
     # fill dataclassdict
     for classname in dataclassnames:
         for sample in datasamples:
             templist = {}
-            for syst in systematics:
-                if classname in datasamples_classes[sample][syst].keys():
-                    templist.update(
-                        {syst: datasamples_classes[sample][syst][classname]}
-                    )
-                else:
-                    templist.update({syst: 0})
+            for syst in ["Nominal", "stat"]:
+                if syst != "stat":
+                    if classname in datasamples_classes[sample][syst]["counts"].keys():
+                        templist.update(
+                            {syst: datasamples_classes[sample][syst]["counts"][classname]}
+                        )
+                    else:
+                        templist.update({syst: 0})
+                else: # stat error
+                    if classname in datasamples_classes[sample]["Nominal"]["stat"].keys():
+                        templist.update({syst: datasamples_classes[sample]["Nominal"]["stat"][classname]})
+                    else:
+                        templist.update({syst: 0})
             if classname in dataclassdict.keys():
                 dataclassdict[classname].update({sample: templist.copy()})
             else:
@@ -416,7 +452,7 @@ def countplotter(
 
     # print result
     if classsuffix == "+XJ":
-        specifier = "(b)jet inclusive"
+        specifier = "jet-inclusive"
     elif classsuffix == "+0":
         specifier = "exclusive"
     else:
@@ -580,7 +616,7 @@ def countplotter(
                 "PreFiring",
                 "JetResolution",
                 "JetScale",
-            ]:  # stat error, read in from file
+            ]:
                 for sample in mcsamples:
                     s_error += mcclasstypedict_syst[classname][sample][
                         syst
@@ -592,8 +628,10 @@ def countplotter(
                 temp = 0
                 for sample in mcsamples:
                     temp += (
-                        mcclasstypedict_syst[classname][sample][syst] ** 2
+                        mcclasstypedict_syst[classname][sample][syst]
                     )  # assumed uncorrelated for every sample
+                    # sum the squared stat errors together and take sqrt in the end
+                    # since the squared error is stored in the classes_ [stat] file do not square again
                 s_error = np.sqrt(temp)
             # ONLY TREAT ONE GROUP CORRELATED
             elif syst in ["xSecOrder"]:
@@ -644,13 +682,15 @@ def countplotter(
     printdebug("Stacked the event counts for data.")
 
     # calculate data errors
-    # assume uncorrelated sqrt(bincounts) errors
+    # assume uncorrelated stat errors
     total_data_errors = {}  # dict: {classname: total combined data errors}
     for classname in classnames:
         temp = 0
         for sample in datasamples:
             temp += dataclasstypedict[classsuffix][classname][sample]["stat"]
-        total_data_errors.update({classname: temp})  # only statistical error
+            # sum the squared stat errors together and take sqrt in the end
+            # since the squared error is stored in the classes_ [stat] file do not square again
+        total_data_errors.update({classname: np.sqrt(temp)})  # only statistical error
 
     # sort classes after the event counts in data (first the highest count)
     for classname in classes_data.keys():
@@ -684,16 +724,34 @@ def countplotter(
 
     # ---------------------- reduce the data sets to fewer sets that should be plotted ----------------------
 
-    # default selection: 30 most inhabited classes
-    classes_data_toplot = {}
+    classnames_selected = [] # this contains the classnames to plot
     n = 0
+    # always plot 30 classes maximum
     for classname in classes_data.keys():
+        temp_mc_sum = 0
+        for category in allcategories:
+            temp_mc_sum += classes_categories[classname][category]
+        # selection by name
+        if cincludes != "":
+            if not(cincludes in classname):
+                continue
+        if cexcludes != "":
+            if (cexcludes in classname):
+                continue
+        # mc threshold
+        if temp_mc_sum < mcthreshold_classes:
+            break
         if n >= 30:
             break
         n += 1
+        classnames_selected += [classname]
+
+    # fill the _toplot variables from the selected classnames to plot in classnames_selected
+    classes_data_toplot = {}
+    for classname in classnames_selected:
         classes_data_toplot.update({classname: classes_data[classname]})
     print(
-        f"The <=30 classes with the highest data event counts are:\n{classes_data_toplot}"
+        f"The {n} classes for the current selection are:\n{classes_data_toplot}"
     )
     classes_categories_toplot = {}
     for classname in classes_data_toplot.keys():
@@ -705,8 +763,8 @@ def countplotter(
             else:
                 classes_categories_toplot.update(
                     {classname: {category: classes_categories[classname][category]}}
-                )
-
+                )           
+    
     # reduced class/category list
     allclasses_toplot = set(classes_data_toplot.keys())
     allcategories_toplot = set()
@@ -745,7 +803,7 @@ def countplotter(
     top = 0.95
     if histproperties["top"] != "":
         top = float(histproperties["top"])
-    bottom = 0.2  # 0.13
+    bottom = 0.16  # 0.13
     if histproperties["bottom"] != "":
         bottom = float(histproperties["bottom"])
     fig.subplots_adjust(left=left, right=right, bottom=bottom, top=top)
@@ -967,7 +1025,7 @@ def countplotter(
                         for i in divisionidx
                     ]
                 ),
-                np.amax([1 + mcerr_overmc[i] + whitespace2 for i in divisionidx]),
+                #np.amax([1 + mcerr_overmc[i] + whitespace2 for i in divisionidx]),
             ]
         ),
     )
@@ -998,7 +1056,7 @@ def countplotter(
     )
 
     # add text with class type (excl, j-incl)
-    plt.figtext(0.3, 0.958, specifier + " classes", fontsize=19, ha="left")
+    plt.figtext(0.3, 0.958, specifier + " classes " + titletext, fontsize=19, ha="left")
 
     # add text with lumi info
     int_lumi = 59.8  # hardcoded for 2018 for now
@@ -1038,6 +1096,12 @@ def countplotter(
     figname = specifier + "_counts"
     if args.title:  # optional custom file title
         figname = args.title
+    if mcthreshold_classes != 0:
+        figname += "_mcthr_" + mcthreshold_classes
+    if cincludes != "":
+        figname += "_incl_" + cincludes
+    if cexcludes != "":
+        figname += "_excl_" + cexcludes
     outputpath = validation_path + "/" + str(args.year) + "/plots/" + figname + ".pdf"
     if savepath != "":
         outputpath = (
@@ -1075,6 +1139,29 @@ def main():
     nosyst = False
     if args.nosyst:
         nosyst = True
+
+    # includes/excludes from classname to plot
+    global cincludes
+    cincludes = ""
+    if args.cincludes:
+        cincludes = args.cincludes
+    global cexcludes
+    cexcludes = ""
+    if args.cexcludes:
+        cexcludes = args.cexcludes
+
+    # import mc threshold
+    global mcthreshold_classes
+    mcthreshold_classes = 0
+    if args.mcthreshold:
+        mcthreshold_classes = float(args.mcthreshold)
+
+    # read in optional title text
+    global titletext
+    titletext = ""
+    if args.titletext:
+        for temp in args.titletext.split("_"):
+            titletext += temp + " "
 
     # import class type(s)
     classtypes = args.classtype.split(",")

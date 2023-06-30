@@ -17,37 +17,38 @@ class Shifts
     Shifts(bool is_data)
         : m_shifts(is_data ? std::vector<std::string>{"Nominal"}
 
-                           : std::vector<std::string>{"Nominal",                 //
-                                                      "PU_Up",                   //
-                                                      "PU_Down",                 //
-                                                      "Luminosity_Up",           //
-                                                      "Luminosity_Down",         //
-                                                      "xSecOrder_Up",            //
-                                                      "xSecOrder_Down",          //
-                                                      //"Fake_Up",                 // dont correct for jets (said felipe and analysis note suggests that the correction would be small)
-                                                      //"Fake_Down",               //
-                                                      "PDF_As_Up",               // use the second correction method since felipe said that (see in code)
-                                                      "PDF_As_Down",             //
-                                                      //"ScaleFactor_Up",          // dont need since jets dont use SFs currently
-                                                      //"ScaleFactor_Down",        //
-                                                      "PreFiring_Up",            //
-                                                      "PreFiring_Down",          //
-                                                      //"MuonResolution_Up",       //
-                                                      //"MuonResolution_Down",     //
-                                                      //"MuonScale_Up",            //
-                                                      //"MuonScale_Down",          //
-                                                      //"ElectronResolution_Up",   //
-                                                      //"ElectronResolution_Down", //
-                                                      //"ElectronScale_Up",        //
-                                                      //"ElectronScale_Down",      //
-                                                      //"PhotonResolution_Up",     //
-                                                      //"PhotonResolution_Down",   //
-                                                      //"PhotonScale_Up",          //
-                                                      //"PhotonScale_Down",        //
-                                                      "JetResolution_Up",        //
-                                                      "JetResolution_Down",      //
-                                                      "JetScale_Up",             //
-                                                      "JetScale_Down"})
+                           : std::vector<std::string>{
+                                 "Nominal",         //
+                                 "PU_Up",           //
+                                 "PU_Down",         //
+                                 "Luminosity_Up",   //
+                                 "Luminosity_Down", //
+                                 "xSecOrder_Up",    //
+                                 "xSecOrder_Down",  //
+                                 //"Fake_Up",                 // dont correct for jets (said felipe and analysis note
+                                 // suggests that the correction would be small) "Fake_Down",               //
+                                 "PDF_As_Up",   // use the second correction method since felipe said that (see in code)
+                                 "PDF_As_Down", //
+                                 //"ScaleFactor_Up",          // dont need since jets dont use SFs currently
+                                 //"ScaleFactor_Down",        //
+                                 "PreFiring_Up",   //
+                                 "PreFiring_Down", //
+                                 //"MuonResolution_Up",       //
+                                 //"MuonResolution_Down",     //
+                                 //"MuonScale_Up",            //
+                                 //"MuonScale_Down",          //
+                                 //"ElectronResolution_Up",   //
+                                 //"ElectronResolution_Down", //
+                                 //"ElectronScale_Up",        //
+                                 //"ElectronScale_Down",      //
+                                 //"PhotonResolution_Up",     //
+                                 //"PhotonResolution_Down",   //
+                                 //"PhotonScale_Up",          //
+                                 //"PhotonScale_Down",        //
+                                 "JetResolution_Up",   //
+                                 "JetResolution_Down", //
+                                 "JetScale_Up",        //
+                                 "JetScale_Down"})
     {
     }
 
@@ -126,7 +127,7 @@ class Shifts
         return L1PreFiringWeight_Nom;
     }
 
-    static auto scale_luminosity(const double luminosity, const std::string &shift) -> float
+    static auto scale_luminosity(const float luminosity, const std::string &shift) -> float
     {
         if (shift == "Luminosity_Up")
         {
@@ -137,7 +138,7 @@ class Shifts
             return luminosity * (1 - 2.5 / 100.);
         }
 
-        return 1.;
+        return luminosity;
     }
 
     static auto get_scale_factor(const std::string &shift,
@@ -218,11 +219,11 @@ class Shifts
                * std::reduce(photons.scale_factor.begin(),
                              photons.scale_factor.begin() + n_photons,
                              1.,
-                             std::multiplies<double>()) //
+                             std::multiplies<double>())                                                               //
                * std::reduce(
                      bjets.scale_factor.begin(), bjets.scale_factor.begin() + n_bjets, 1., std::multiplies<double>()) //
                * std::reduce(
-                     jets.scale_factor.begin(), jets.scale_factor.begin() + n_jets, 1., std::multiplies<double>()) //
+                     jets.scale_factor.begin(), jets.scale_factor.begin() + n_jets, 1., std::multiplies<double>())    //
                * std::reduce(met.scale_factor.begin(), met.scale_factor.begin() + n_met, 1., std::multiplies<double>());
     }
 
@@ -243,7 +244,7 @@ class Shifts
                                         float Generator_x2,                                                      //
                                         int Generator_id1,                                                       //
                                         int Generator_id2) -> double
-                                        // float LHEWeight_originalXWGTUP, // changed to fix problem
+    // float LHEWeight_originalXWGTUP, // changed to fix problem
     {
         if (shift == "PDF_As_Up" or shift == "PDF_As_Down")
         {
@@ -252,9 +253,9 @@ class Shifts
             auto &default_pdf = std::get<0>(default_pdf_sets);
             auto &alpha_s_up_pdf = std::get<1>(default_pdf_sets);
             auto &alpha_s_down_pdf = std::get<2>(default_pdf_sets);
-            
-            /* // FELIPE SAID I SHOULD COMMENT THIS AND USE THE CORRECTION BELOW SINCE THIS CORRECTION IS NOT AVAILABLE YET
-            if (LHEPdfWeight.size() > 0)
+
+            /* // FELIPE SAID I SHOULD COMMENT THIS AND USE THE CORRECTION BELOW SINCE THIS CORRECTION IS NOT AVAILABLE
+            YET if (LHEPdfWeight.size() > 0)
             {
                 float alpha_s_up = 1.;
                 float alpha_s_down = 1.;
@@ -288,7 +289,8 @@ class Shifts
 
                 // don't have alpha_s weights, should get the one from the 5f LHAPDF set.
                 // REF:
-                // https://cms-pdmv.gitbook.io/project/mccontact/info-for-mc-production-for-ultra-legacy-campaigns-2016-2017-2018#recommendations-on-the-usage-of-pdfs-and-cpx-tunes
+                //
+            https://cms-pdmv.gitbook.io/project/mccontact/info-for-mc-production-for-ultra-legacy-campaigns-2016-2017-2018#recommendations-on-the-usage-of-pdfs-and-cpx-tunes
                 // else if (LHEPdfWeight.size() == 101 or LHEPdfWeight.size() == 31)
                 else if (LHEPdfWeight.size() == 101)
                 {
@@ -339,6 +341,7 @@ class Shifts
             */
 
             float LHEWeight_originalXWGTUP; // only for fixing, commented in the function argument so define it here
+            LHEPdfWeight = {};
 
             // NNPDF31_nnlo_as_0118_hessian - 304400
             float alpha_s_up = 1.;
@@ -346,41 +349,63 @@ class Shifts
 
             // Compute the PDF weight for this event using NNPDF31_nnlo_as_0118_hessian (304400) and divide the
             // new weight by the weight from the PDF the event was produced with.
-            LHEWeight_originalXWGTUP = default_pdf[0]->xfxQ(Generator_id1, Generator_x1, Generator_scalePDF) *
-                                       default_pdf[0]->xfxQ(Generator_id2, Generator_x2, Generator_scalePDF);
+            LHEWeight_originalXWGTUP = default_pdf[0]->xfxQ2(Generator_id1, Generator_x1, Generator_scalePDF) *
+                                       default_pdf[0]->xfxQ2(Generator_id2, Generator_x2, Generator_scalePDF);
 
             // skip the first, since it corresponds to the originalXWGTUP (nominal)
+            float sumsq_pdf_shifts = 0.f;
             for (std::size_t i = 1; i < default_pdf.size(); i++)
             {
-                LHEPdfWeight.push_back(default_pdf[i]->xfxQ(Generator_id1, Generator_x1, Generator_scalePDF) *
-                                       default_pdf[i]->xfxQ(Generator_id2, Generator_x2, Generator_scalePDF) /
-                                       LHEWeight_originalXWGTUP);
+                sumsq_pdf_shifts += std::pow(((default_pdf[i]->xfxQ2(Generator_id1, Generator_x1, Generator_scalePDF) *
+                                               default_pdf[i]->xfxQ2(Generator_id2, Generator_x2, Generator_scalePDF)) -
+                                              LHEWeight_originalXWGTUP),
+                                             2.);
             }
+            auto pdf_shift = std::sqrt(sumsq_pdf_shifts) / LHEWeight_originalXWGTUP;
 
             // Compute the Alpha_S weight for this event using NNPDF31_nnlo_as_0120 (319500) and divide the new
             // weight by the weight from the PDF the event was produced with.
-            alpha_s_up = alpha_s_up_pdf->xfxQ(Generator_id1, Generator_x1, Generator_scalePDF) *
-                         alpha_s_up_pdf->xfxQ(Generator_id2, Generator_x2, Generator_scalePDF) /
+            alpha_s_up = alpha_s_up_pdf->xfxQ2(Generator_id1, Generator_x1, Generator_scalePDF) *
+                         alpha_s_up_pdf->xfxQ2(Generator_id2, Generator_x2, Generator_scalePDF) /
                          LHEWeight_originalXWGTUP;
 
             // Compute the Alpha_S weight for this event using NNPDF31_nnlo_as_0116 (319300) and divide the new
             // weight by the weight from the PDF the event was produced with.
-            alpha_s_down = alpha_s_down_pdf->xfxQ(Generator_id1, Generator_x1, Generator_scalePDF) *
-                           alpha_s_down_pdf->xfxQ(Generator_id2, Generator_x2, Generator_scalePDF) /
+            alpha_s_down = alpha_s_down_pdf->xfxQ2(Generator_id1, Generator_x1, Generator_scalePDF) *
+                           alpha_s_down_pdf->xfxQ2(Generator_id2, Generator_x2, Generator_scalePDF) /
                            LHEWeight_originalXWGTUP;
 
-            auto sorted_weights = VecOps::Sort(LHEPdfWeight);
-            auto pdf_shift = (sorted_weights[83] - sorted_weights[15]) / 2.f;
             auto alpha_s_shift = (alpha_s_up - alpha_s_down) / 2.f;
+
+            float return_shift_value = std::sqrt(std::pow(pdf_shift, 2.) + std::pow(alpha_s_shift, 2.));
+            /*
+            if ((not(isnormal(return_shift_value))))
+            {
+                std::cout << "sorted_weights: " << sorted_weights << std::endl;
+                std::cout << "pdf_shift: " << pdf_shift << std::endl;
+                std::cout << "alpha_s_shift: " << alpha_s_shift << std::endl;
+                std::cout << "return_shift_value: " << return_shift_value << std::endl;
+                throw std::runtime_error(fmt::format("not normal pdf shift."));
+            }
+            */
+            /*
+            std::cout << std::endl;
+            std::cout << "Generator_id2: " << Generator_id2 << std::endl;
+            std::cout << "Generator_x2: " << Generator_x2 << std::endl;
+            std::cout << "Generator_scalePDF: " << Generator_scalePDF << std::endl;
+            std::cout << "pdf_shift: " << pdf_shift << std::endl;
+            std::cout << "alpha_s_shift: " << alpha_s_shift << std::endl;
+            std::cout << "return_shift_value: " << return_shift_value << std::endl;
+            */
 
             if (shift == "PDF_As_Up")
             {
-                return 1. + std::sqrt(std::pow(pdf_shift, 2.) + std::pow(alpha_s_shift, 2.));
+                return 1. + return_shift_value;
             }
 
             if (shift == "PDF_As_Down")
             {
-                return 1. - std::sqrt(std::pow(pdf_shift, 2.) + std::pow(alpha_s_shift, 2.));
+                return 1. - return_shift_value;
             }
         }
 
