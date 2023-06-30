@@ -17,6 +17,7 @@
 #include <optional>
 #include <stdexcept>
 #include <string>
+#include <type_traits>
 #include <unordered_map>
 
 auto starts_with(const std::string &str, const std::string &prefix) -> bool
@@ -29,27 +30,54 @@ inline auto trigger_filter(const std::string &process,
                            bool pass_low_pt_muon_trigger,
                            bool pass_high_pt_muon_trigger,
                            bool pass_low_pt_electron_trigger,
-                           bool pass_high_pt_electron_trigger) -> bool
+                           bool pass_high_pt_electron_trigger) -> std::optional<std::map<std::string, bool>>
 {
+    std::optional<std::map<std::string, bool>> trigger_filter_res = std::nullopt;
+
+    // Data
     if (is_data)
     {
-        // Electron/Photon dataset
-        if (process.find("EGamma") != std::string::npos      //
+        // Electron/Photon/EGamma dataset
+        if (                                                 //
+            process.find("EGamma") != std::string::npos      //
             or process.find("Electron") != std::string::npos //
-            or process.find("Photon") != std::string::npos)
+            or process.find("Photon") != std::string::npos   //
+        )
         {
-            return not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) and
-                   (pass_low_pt_electron_trigger or pass_high_pt_electron_trigger);
+            if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) and
+                (pass_low_pt_electron_trigger or pass_high_pt_electron_trigger))
+            {
+                trigger_filter_res = {{"pass_low_pt_muon_trigger", false},
+                                      {"pass_high_pt_muon_trigger", false},
+                                      {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},
+                                      {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger}};
+            }
         }
 
         // Muon dataset
-        return (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) and
-               not(pass_low_pt_electron_trigger or pass_high_pt_electron_trigger);
+        if ((pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) and
+            not(pass_low_pt_electron_trigger or pass_high_pt_electron_trigger))
+        {
+            trigger_filter_res = {{"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},
+                                  {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},
+                                  {"pass_low_pt_electron_trigger", false},
+                                  {"pass_high_pt_electron_trigger", false}};
+        }
+
+        return trigger_filter_res;
     }
 
     // MC
-    return (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger or pass_low_pt_electron_trigger or
-            pass_high_pt_electron_trigger);
+    if (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger or pass_low_pt_electron_trigger or
+        pass_high_pt_electron_trigger)
+    {
+        trigger_filter_res = {{"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},
+                              {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},
+                              {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},
+                              {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger}};
+    }
+
+    return trigger_filter_res;
 };
 
 inline auto jets_trigger_filter(bool pass_jet_ht_trigger, bool pass_jet_pt_trigger) -> bool
@@ -74,15 +102,15 @@ auto main(int argc, char *argv[]) -> int
     const std::string filter_eff_str = cmdl({"-f", "--filter_eff"}).str();
     const std::string k_factor_str = cmdl({"-k", "--k_factor"}).str();
     const std::string luminosity_str = cmdl({"-l", "--luminosity"}).str();
-    const std::string process_order = cmdl({"-po", "--process_order"}).str();
+    const std::string xs_order = cmdl({"-po", "--xs_order"}).str();
     const std::string process_group = cmdl({"-pg", "--process_group"}).str();
     const std::string input_file = cmdl({"-i", "--input"}).str();
     const std::string shift = cmdl({"-s", "--shift"}).str();
     const bool debug = cmdl[{"--debug"}];
 
     if (show_help or process == "" or year == "" or output_path == "" or input_file == "" or x_section_str == "" or
-        filter_eff_str == "" or k_factor_str == "" or luminosity_str == "" or process_order == "" or
-        process_group == "" or shift == "")
+        filter_eff_str == "" or k_factor_str == "" or luminosity_str == "" or xs_order == "" or process_group == "" or
+        shift == "")
     {
         fmt::print("Usage: heavy_validation [OPTIONS]\n");
         fmt::print("          -h|--help: Shows this message.\n");
@@ -94,7 +122,7 @@ auto main(int argc, char *argv[]) -> int
         fmt::print("          -f|--filter_eff: Generator level filter efficiency.\n");
         fmt::print("          -k|--k_factor: K-Factor.\n");
         fmt::print("          -l|--luminosity: Int. luminosity.\n");
-        fmt::print("          -po|--process_order: Process order.\n");
+        fmt::print("          -po|--xs_order: Process order.\n");
         fmt::print("          -pg|--process_group: Process group.\n");
         fmt::print("          -i|--input: Path to a txt with input files (one per line).\n");
         fmt::print("          -s|--shift: Shift being applied.\n");
@@ -289,33 +317,59 @@ auto main(int argc, char *argv[]) -> int
                                                          {"MET", 0}};
 
     // build DY analysis
-    auto z_to_mu_mu_x = ZToLepLepX(fmt::format("{}/z_to_mu_mu_x_{}_{}_{}.root", output_path, process, year, shift),
-                                   z_to_mu_mu_x_count_map,
-                                   false,
-                                   shift,
-                                   process,
-                                   year);
+
+    // const std::string &_analysis_name,
+    // const std::string &_output_path,
+    // const std::map<std::string, int> &_countMap,
+    // bool _is_Z_mass_validation,
+    // const std::string _shift,
+    // const std::string &_sample,
+    // const std::string &_year,
+    // const std::string &_process_group,
+    // const std::string &_xs_order
+
+    auto z_to_mu_mu_x = ZToLepLepX(
+        "z_to_mu_mu_x",
+        get_output_file_path("z_to_mu_mu_x", output_path, process, year, process_group, xs_order, is_data, shift),
+        z_to_mu_mu_x_count_map,
+        false,
+        shift,
+        process,
+        year,
+        process_group,
+        xs_order);
     auto z_to_mu_mu_x_Z_mass =
-        ZToLepLepX(fmt::format("{}/z_to_mu_mu_x_Z_mass_{}_{}_{}.root", output_path, process, year, shift),
+        ZToLepLepX("z_to_mu_mu_x_Z_mass",
+                   get_output_file_path(
+                       "z_to_mu_mu_x_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
                    z_to_mu_mu_x_count_map,
                    true,
                    shift,
                    process,
-                   year);
+                   year,
+                   process_group,
+                   xs_order);
 
-    auto z_to_ele_ele_x = ZToLepLepX(fmt::format("{}/z_to_ele_ele_x_{}_{}_{}.root", output_path, process, year, shift),
-                                     z_to_ele_ele_x_count_map,
-                                     false,
-                                     shift,
-                                     process,
-                                     year);
-    auto z_to_ele_ele_x_Z_mass =
-        ZToLepLepX(fmt::format("{}/z_to_ele_ele_x__Z_mass_{}_{}_{}.root", output_path, process, year, shift),
-                   z_to_ele_ele_x_count_map,
-                   true,
-                   shift,
-                   process,
-                   year);
+    auto z_to_ele_ele_x = ZToLepLepX(
+        "z_to_ele_ele_x",
+        get_output_file_path("z_to_ele_ele_x", output_path, process, year, process_group, xs_order, is_data, shift),
+        z_to_ele_ele_x_count_map,
+        false,
+        shift,
+        process,
+        year,
+        process_group,
+        xs_order);
+    auto z_to_ele_ele_x_Z_mass = ZToLepLepX(
+        "z_to_ele_ele_x_Z_mass",
+        get_output_file_path("z_to_mu_mu_x", output_path, process, year, process_group, xs_order, is_data, shift),
+        z_to_ele_ele_x_count_map,
+        true,
+        shift,
+        process,
+        year,
+        process_group,
+        xs_order);
 
     // build Dijets
     // auto dijets = Dijets(fmt::format("{}/dijets_{}_{}.root", output_path, process, year), dijets_count_map);
@@ -368,10 +422,10 @@ auto main(int argc, char *argv[]) -> int
         // remove the "unused variable" warning during compilation
         static_cast<void>(event);
 
-        if (event > 1)
-        {
-            break;
-        }
+        // if (event > 1)
+        // {
+        //     break;
+        // }
 
         // Trigger
         //
@@ -396,7 +450,7 @@ auto main(int argc, char *argv[]) -> int
         // pass_high_pt_electron_trigger
         // pass_jet_ht_trigger
         // pass_jet_pt_trigger
-        bool is_good_trigger = trigger_filter(process,
+        auto is_good_trigger = trigger_filter(process,
                                               is_data,
                                               unwrap(pass_low_pt_muon_trigger),
                                               unwrap(pass_high_pt_muon_trigger),
@@ -539,16 +593,16 @@ auto main(int argc, char *argv[]) -> int
                                                                  unwrap(Generator_id2),      //
                                                                  unwrap(LHEWeight_originalXWGTUP, 1.f));
 
-            weight = unwrap(mc_weight, 1.) //
-                     * pu_weight           //
-                     * prefiring_weight    //
-                     * generator_filter    //
-                     / no_cuts             //
-                     / generator_filter    //
-                     * x_section           //
-                     * filter_eff          //
-                     * k_factor            //
-                     * scaled_luminosity   //
+            weight = unwrap(mc_weight, 1.)                                          //
+                     * pu_weight                                                    //
+                     * prefiring_weight                                             //
+                     * generator_filter                                             //
+                     / no_cuts                                                      //
+                     / generator_filter                                             //
+                     * x_section * Shifts::get_xsec_order_modifier(shift, xs_order) //
+                     * filter_eff                                                   //
+                     * k_factor                                                     //
+                     * scaled_luminosity                                            //
                      * pdf_as_weight;
         }
 

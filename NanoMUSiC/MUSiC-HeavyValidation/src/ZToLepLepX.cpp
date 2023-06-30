@@ -8,12 +8,17 @@
 #include <fmt/format.h>
 #include <string_view>
 
-ZToLepLepX::ZToLepLepX(const std::string &_output_path,
+#include "NanoEventClass.hpp"
+
+ZToLepLepX::ZToLepLepX(const std::string &_analysis_name,
+                       const std::string &_output_path,
                        const std::map<std::string, int> &_countMap,
                        bool _is_Z_mass_validation,
                        const std::string _shift,
-                       const std::string &_process,
-                       const std::string &_year)
+                       const std::string &_sample,
+                       const std::string &_year,
+                       const std::string &_process_group,
+                       const std::string &_xs_order)
     : output_path(_output_path),
       min_bin_width(10.),
       countMap(_countMap),
@@ -30,68 +35,159 @@ ZToLepLepX::ZToLepLepX(const std::string &_output_path,
     std::string histo_name = "";
     if (is_Z_mass_validation)
     {
-        histo_name = fmt::format("{}_{}_{}_{}", "h_invariant_mass", _process, _year, shift);
+
+        histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+                                                              _process_group, //
+                                                              _xs_order,      //
+                                                              _sample,        //
+                                                              _year,          //
+                                                              _shift,         //
+                                                              "h_invariant_mass");
         h_invariant_mass = TH1F(histo_name.c_str(), histo_name.c_str(), limits_Z_val.size() - 1, limits_Z_val.data());
         h_invariant_mass.Sumw2();
     }
     else
     {
-        histo_name = fmt::format("{}_{}_{}_{}", "h_invariant_mass", _process, _year, shift);
+        histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+                                                              _process_group, //
+                                                              _xs_order,      //
+                                                              _sample,        //
+                                                              _year,          //
+                                                              _shift,         //
+                                                              "h_invariant_mass");
         h_invariant_mass = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
         h_invariant_mass.Sumw2();
     }
 
-    histo_name = fmt::format("{}_{}_{}_{}", "h_sum_pt", _process, _year, shift);
+    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+                                                          _process_group, //
+                                                          _xs_order,      //
+                                                          _sample,        //
+                                                          _year,          //
+                                                          _shift,         //
+                                                          "h_sum_pt");
     h_sum_pt = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
     h_sum_pt.Sumw2();
 
-    histo_name = fmt::format("{}_{}_{}_{}", "h_met", _process, _year, shift);
+    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+                                                          _process_group, //
+                                                          _xs_order,      //
+                                                          _sample,        //
+                                                          _year,          //
+                                                          _shift,         //
+                                                          "h_met");
     h_met = TH1F(histo_name.c_str(), histo_name.c_str(), limits_met.size() - 1, limits_met.data());
     h_met.Sumw2();
 
-    histo_name = fmt::format("{}_{}_{}_{}", "h_lepton_1_pt", _process, _year, shift);
+    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+                                                          _process_group, //
+                                                          _xs_order,      //
+                                                          _sample,        //
+                                                          _year,          //
+                                                          _shift,         //
+                                                          "h_lepton_1_pt");
     h_lepton_1_pt = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
     h_lepton_1_pt.Sumw2();
 
-    histo_name = fmt::format("{}_{}_{}_{}", "h_lepton_2_pt", _process, _year, shift);
+    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+                                                          _process_group, //
+                                                          _xs_order,      //
+                                                          _sample,        //
+                                                          _year,          //
+                                                          _shift,         //
+                                                          "h_lepton_2_pt");
     h_lepton_2_pt = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
     h_lepton_2_pt.Sumw2();
 
-    histo_name = fmt::format("{}_{}_{}_{}", "h_lepton_1_eta", _process, _year, shift);
+    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+                                                          _process_group, //
+                                                          _xs_order,      //
+                                                          _sample,        //
+                                                          _year,          //
+                                                          _shift,         //
+                                                          "h_lepton_1_eta");
     h_lepton_1_eta = TH1F(histo_name.c_str(), histo_name.c_str(), n_eta_bins, min_eta, max_eta);
     h_lepton_1_eta.Sumw2();
 
-    histo_name = fmt::format("{}_{}_{}_{}", "h_lepton_2_eta", _process, _year, shift);
+    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+                                                          _process_group, //
+                                                          _xs_order,      //
+                                                          _sample,        //
+                                                          _year,          //
+                                                          _shift,         //
+                                                          "h_lepton_2_eta");
     h_lepton_2_eta = TH1F(histo_name.c_str(), histo_name.c_str(), n_eta_bins, min_eta, max_eta);
     h_lepton_2_eta.Sumw2();
 
-    histo_name = fmt::format("{}_{}_{}_{}", "h_lepton_1_phi", _process, _year, shift);
+    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+                                                          _process_group, //
+                                                          _xs_order,      //
+                                                          _sample,        //
+                                                          _year,          //
+                                                          _shift,         //
+                                                          "h_lepton_1_phi");
     h_lepton_1_phi = TH1F(histo_name.c_str(), histo_name.c_str(), n_phi_bins, min_phi, max_phi);
     h_lepton_1_phi.Sumw2();
 
-    histo_name = fmt::format("{}_{}_{}_{}", "h_lepton_2_phi", _process, _year, shift);
+    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+                                                          _process_group, //
+                                                          _xs_order,      //
+                                                          _sample,        //
+                                                          _year,          //
+                                                          _shift,         //
+                                                          "h_lepton_2_phi");
     h_lepton_2_phi = TH1F(histo_name.c_str(), histo_name.c_str(), n_phi_bins, min_phi, max_phi);
     h_lepton_2_phi.Sumw2();
 
-    histo_name = fmt::format("{}_{}_{}_{}", "h_lepton_1_jet_1_dPhi", _process, _year, shift);
+    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+                                                          _process_group, //
+                                                          _xs_order,      //
+                                                          _sample,        //
+                                                          _year,          //
+                                                          _shift,         //
+                                                          "h_lepton_1_jet_1_dPhi");
     h_lepton_1_jet_1_dPhi = TH1F(histo_name.c_str(), histo_name.c_str(), n_phi_bins, min_phi, max_phi);
     h_lepton_1_jet_1_dPhi.Sumw2();
 
-    histo_name = fmt::format("{}_{}_{}_{}", "h_lepton_1_jet_1_dR", _process, _year, shift);
+    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+                                                          _process_group, //
+                                                          _xs_order,      //
+                                                          _sample,        //
+                                                          _year,          //
+                                                          _shift,         //
+                                                          "h_lepton_1_jet_1_dR");
     h_lepton_1_jet_1_dR = TH1F(histo_name.c_str(), histo_name.c_str(), n_dR_bins, min_dR, max_dR);
     h_lepton_1_jet_1_dR.Sumw2();
 
-    histo_name = fmt::format("{}_{}_{}_{}", "h_jet_multiplicity", _process, _year, shift);
+    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+                                                          _process_group, //
+                                                          _xs_order,      //
+                                                          _sample,        //
+                                                          _year,          //
+                                                          _shift,         //
+                                                          "h_jet_multiplicity");
     h_jet_multiplicity =
         TH1F(histo_name.c_str(), histo_name.c_str(), n_multiplicity_bins, min_multiplicity, max_multiplicity);
     h_jet_multiplicity.Sumw2();
 
-    histo_name = fmt::format("{}_{}_{}_{}", "h_bjet_multiplicity", _process, _year, shift);
+    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+                                                          _process_group, //
+                                                          _xs_order,      //
+                                                          _sample,        //
+                                                          _year,          //
+                                                          _shift,         //
+                                                          "h_bjet_multiplicity");
     h_bjet_multiplicity =
         TH1F(histo_name.c_str(), histo_name.c_str(), n_multiplicity_bins, min_multiplicity, max_multiplicity);
     h_bjet_multiplicity.Sumw2();
 
-    histo_name = fmt::format("{}_{}_{}_{}", "h_lepton_1_pt_eta", _process, _year, shift);
+    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+                                                          _process_group, //
+                                                          _xs_order,      //
+                                                          _sample,        //
+                                                          _year,          //
+                                                          _shift,         //
+                                                          "h_lepton_1_pt_eta");
     h_lepton_1_pt_eta = TH2F(histo_name.c_str(),
                              histo_name.c_str(),
                              130,
@@ -102,7 +198,13 @@ ZToLepLepX::ZToLepLepX(const std::string &_output_path,
                              max_multiplicity);
     h_lepton_1_pt_eta.Sumw2();
 
-    histo_name = fmt::format("{}_{}_{}_{}", "h_lepton_1_pt_phi", _process, _year, shift);
+    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+                                                          _process_group, //
+                                                          _xs_order,      //
+                                                          _sample,        //
+                                                          _year,          //
+                                                          _shift,         //
+                                                          "h_lepton_1_pt_phi");
     h_lepton_1_pt_phi =
         TH2F(histo_name.c_str(), histo_name.c_str(), 130, min_energy, 900, n_phi_bins, min_phi, max_phi);
     h_lepton_1_pt_phi.Sumw2();

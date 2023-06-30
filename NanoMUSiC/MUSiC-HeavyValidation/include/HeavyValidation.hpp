@@ -231,8 +231,9 @@ inline auto get_output_file_path(const std::string &prefix,
                                  const std::string &shift,
                                  const std::string &suffix = ".root") -> std::string
 {
-    return fmt::format("{}/z_to_ele_ele_x__Z_mass_{}_{}_{}.root",
+    return fmt::format("{}/{}_{}_{}_{}_{}_{}_{}",
                        output_path,
+                       prefix,
                        process,
                        year,
                        process_group,

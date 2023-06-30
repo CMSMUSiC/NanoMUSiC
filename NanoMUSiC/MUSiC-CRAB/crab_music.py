@@ -70,14 +70,13 @@ def make_task_config_file(
 
     # dump new config to file
     # os.system("rm raw_config.toml > /dev/null 2>&1")
-    os.system(f"mkdir -p Raw_Configs/{process_name}_{year}")
+    os.system(f"mkdir -p raw_configs/{process_name}_{year}")
 
     # raw_config = "raw_config_"
     with open(
-        f"Raw_Configs/{process_name}_{year}/raw_config.toml", "w"
+        f"raw_configs/{process_name}_{year}/raw_config.toml", "w"
     ) as new_config_file:
         new_config_file.write(new_config)
-    os.system("cd ../../")
 
 
 def get_username():
@@ -115,7 +114,7 @@ def build_crab_config(process_name, das_name, year, is_data):
 
     this_config.JobType.inputFiles = [
         "task.tar.gz",
-        f"Raw_Configs/{process_name}/raw_config.toml",
+        f"raw_configs/{process_name}/raw_config.toml",
     ]
 
     this_config.Data.inputDataset = das_name
@@ -179,10 +178,10 @@ def main():
     # create the task tarball and submit the jobs
     build_task_tarball()
 
-    os.system("rm -rf Raw_Configs")
-    os.system("mkdir Raw_Configs")
+    os.system("rm -rf raw_configs")
+    os.system("mkdir raw_configs")
     sample_list = make_sample_list(args.xsection_file_path)
-    with Pool(15) as pool:
+    with Pool(30) as pool:
         list(
             tqdm(
                 pool.imap_unordered(submit, sample_list),
@@ -190,9 +189,6 @@ def main():
                 unit="sample",
             )
         )
-
-    for sample in make_sample_list(args.xsection_file_path):
-        submit(sample)
 
 
 if __name__ == "__main__":

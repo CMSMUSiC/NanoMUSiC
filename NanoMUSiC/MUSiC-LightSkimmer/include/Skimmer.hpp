@@ -26,6 +26,7 @@
 #include <sys/time.h>
 #include <thread>
 #include <typeinfo>
+#include <unordered_map>
 #include <unordered_set>
 
 // ROOT Stuff
@@ -339,9 +340,18 @@ inline auto get_output_branches(const TaskConfiguration &configuration) -> std::
         "Photon_dEscaleDown",
         "Photon_dEsigmaUp",
         "Photon_dEsigmaDown",
-        // "Tau_pt",
-        // "Tau_eta",
-        // "Tau_phi",
+        "Tau_decayMode",
+        "Tau_dz",
+        "Tau_idDeepTau2017v2p1VSe",
+        "Tau_idDeepTau2017v2p1VSjet",
+        "Tau_idDeepTau2017v2p1VSmu",
+        "Tau_leadTkDeltaEta",
+        "Tau_leadTkDeltaPhi",
+        "Tau_leadTkPtOverTauPt",
+        "Tau_pt",
+        "Tau_eta",
+        "Tau_phi",
+        "Tau_mass",
         "Jet_pt",
         "Jet_eta",
         "Jet_phi",
@@ -353,7 +363,7 @@ inline auto get_output_branches(const TaskConfiguration &configuration) -> std::
         "MET_pt",
         "MET_phi",
         "MET_MetUnclustEnUpDeltaX",
-        "MET_MetUnclustEnUpDeltaY",
+        "MET_MetUnclustEnUpDeltaY" //
     };
     const std::vector<std::string> output_branches_mc_only = {
         "mc_weight",
@@ -400,6 +410,8 @@ inline auto get_output_branches(const TaskConfiguration &configuration) -> std::
         "Muon_genPartIdx",
         "Electron_genPartIdx",
         "Photon_genPartIdx",
+        "Tau_genPartFlav",
+        "Tau_genPartIdx" //
     };
 
     if (!configuration.is_data)
@@ -407,6 +419,13 @@ inline auto get_output_branches(const TaskConfiguration &configuration) -> std::
         output_branches.insert(output_branches.end(), output_branches_mc_only.cbegin(), output_branches_mc_only.cend());
     }
     return output_branches;
+}
+
+inline auto get_hash(const std::string &str) -> std::string
+{
+    std::hash<std::string> hasher;
+
+    return std::to_string(hasher(str));
 }
 
 #endif /*SKIMMER_HPP*/

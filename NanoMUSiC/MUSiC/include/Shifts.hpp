@@ -1,5 +1,6 @@
 #ifndef SHIFTS
 #define SHIFTS
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -7,6 +8,19 @@
 
 #include "ObjectFactories/music_objects.hpp"
 #include "PDFAlphaSWeights.hpp"
+
+inline auto contains(std::string &&str, const std::string &substring) -> bool
+{
+    std::transform(str.begin(),
+                   str.end(),
+                   str.begin(),
+                   [](unsigned char c) -> unsigned char
+                   {
+                       return std::tolower(c);
+                   });
+
+    return str.find(substring) != std::string::npos;
+}
 
 //////////////////////////////////////////////////////////
 /// All systematics implemented in one of Yannik's bg.root
@@ -216,7 +230,7 @@ class Shifts
             return luminosity * (1 - 2.5 / 100.);
         }
 
-        return 1.;
+        return luminosity;
     }
 
     static auto get_scale_factor(const std::string &shift,
@@ -305,12 +319,46 @@ class Shifts
                * std::reduce(met.scale_factor.begin(), met.scale_factor.begin() + n_met, 1., std::multiplies<double>());
     }
 
+    static auto get_xsec_order_modifier(const std::string &shift, const std::string &xs_order) -> double
+    {
+        if (xs_order == "LO")
+        {
+            if (shift == "xSecOrder_Up")
+            {
+                return 1. + .5;
+            }
+            if (shift == "xSecOrder_Down")
+            {
+                return 1. - .5;
+            }
+        }
+        return 1.;
+    }
+
+    static auto get_qcd_scale_modifier(const std::string &shift, const std::string &xs_order) -> double
+    {
+        // LHEScaleWeight
+        if (xs_order == "LO")
+        {
+            if (shift == "xSecOrder_Up")
+            {
+                return 1. + .5;
+            }
+            if (shift == "xSecOrder_Down")
+            {
+                return 1. - .5;
+            }
+        }
+
+        return 1.;
+    }
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////
     /// Set PDF and Alpha_S uncertainties.
-    /// Those are tricky beasts, since they are not simple weights added to the event, but rather, should be treated as
-    /// variations and have their uncert. squared-summed in the end of the processing (classification).
-    /// This method also saves the LHA ID that was used during generation or rescaling.
-    /// Ref: https://arxiv.org/pdf/1510.03865.pdf
+    /// Those are tricky beasts, since they are not simple weights added to the event, but rather, should be treated
+    /// as variations and have their uncert. squared-summed in the end of the processing (classification). This
+    /// method also saves the LHA ID that was used during generation or rescaling. Ref:
+    /// https://arxiv.org/pdf/1510.03865.pdf
     static auto get_pdf_alpha_s_weights(const std::string &shift,                                                //
                                         const std::optional<std::pair<unsigned int, unsigned int>> &lha_indexes, //
                                         const std::tuple<std::vector<std::unique_ptr<LHAPDF::PDF>>,              //
@@ -351,8 +399,8 @@ class Shifts
                 LHEPdfWeight = LHEPdfWeight / LHEPdfWeight[0];
 
                 // has alpha_s weights
-                // if (LHEPdfWeight.size() == 103 or LHEPdfWeight.size() == 33)
-                if (LHEPdfWeight.size() == 103)
+                if (LHEPdfWeight.size() == 103 or LHEPdfWeight.size() == 33)
+                // if (LHEPdfWeight.size() == 103)
                 {
                     alpha_s_up = LHEPdfWeight[101];
                     alpha_s_down = LHEPdfWeight[102];
@@ -367,8 +415,8 @@ class Shifts
                 // don't have alpha_s weights, should get the one from the 5f LHAPDF set.
                 // REF:
                 // https://cms-pdmv.gitbook.io/project/mccontact/info-for-mc-production-for-ultra-legacy-campaigns-2016-2017-2018#recommendations-on-the-usage-of-pdfs-and-cpx-tunes
-                // else if (LHEPdfWeight.size() == 101 or LHEPdfWeight.size() == 31)
-                else if (LHEPdfWeight.size() == 101)
+                else if (LHEPdfWeight.size() == 101 or LHEPdfWeight.size() == 31)
+                // else if (LHEPdfWeight.size() == 101)
                 {
                     // Those are some possible convertion from for NNPDF31, without to with alpha_s
                     // During the classification, the code should check the status of alpha_s_up and alpha_s_down
@@ -377,6 +425,9 @@ class Shifts
                     // 316200 --> 325300
                     // 325500 --> 325300
                     // 320900 --> 306000
+
+                    // remove the first weight (always 1.)
+                    LHEPdfWeight.erase(LHEPdfWeight.begin());
 
                     // Compute the Alpha_S weight for this event using NNPDF31_nnlo_as_0120 (319500) and divide the new
                     // weight by the weight from the PDF the event was produced with.
@@ -400,9 +451,36 @@ class Shifts
                         LHEPdfWeight.size()));
                 }
 
-                auto sorted_weights = VecOps::Sort(LHEPdfWeight);
-                auto pdf_shift = (sorted_weights[83] - sorted_weights[15]) / 2.f;
+                // calculate shifts
                 auto alpha_s_shift = (alpha_s_up - alpha_s_down) / 2.f;
+                float pdf_shift = std::numeric_limits<float>::max();
+                if (contains(default_pdf.at(0)->set().errorType(), "hessian"))
+                {
+                    auto sum_shifts_squared = 0.;
+                    for (std::size_t i = 1; i < LHEPdfWeight.size(); i++)
+                    {
+                        sum_shifts_squared += std::pow(LHEPdfWeight[i] - LHEWeight_originalXWGTUP, 2.);
+                    }
+                    pdf_shift = std::sqrt(sum_shifts_squared) / LHEWeight_originalXWGTUP;
+                }
+                else if (contains(default_pdf.at(0)->set().errorType(), "replica"))
+                {
+                    if (LHEPdfWeight.size() == 100)
+                    {
+                        auto sorted_weights = VecOps::Sort(LHEPdfWeight);
+                        pdf_shift = (sorted_weights[83] - sorted_weights[15]) / 2.f;
+                    }
+                    else if (LHEPdfWeight.size() == 30)
+                    {
+                        pdf_shift = VecOps::StdDev(LHEPdfWeight);
+                    }
+                }
+                else
+                {
+                    throw std::runtime_error(
+                        fmt::format("ERROR: Could not get PDF error type. Unexpected error type ({}).\n",
+                                    default_pdf.at(0)->set().errorType()));
+                }
 
                 if (shift == "PDF_As_Up")
                 {
@@ -414,7 +492,8 @@ class Shifts
                     return 1. - std::sqrt(std::pow(pdf_shift, 2.) + std::pow(alpha_s_shift, 2.));
                 }
             }
-            // NNPDF31_nnlo_as_0118_hessian - 304400
+
+            // Assuming: NNPDF31_nnlo_as_0118_hessian - 304400 (Hessian)
             float alpha_s_up = 1.;
             float alpha_s_down = 1.;
 
@@ -424,11 +503,16 @@ class Shifts
                                        default_pdf[0]->xfxQ(Generator_id2, Generator_x2, Generator_scalePDF);
 
             // skip the first, since it corresponds to the originalXWGTUP (nominal)
+            auto sum_shifts_squared = 0.;
             for (std::size_t i = 1; i < default_pdf.size(); i++)
             {
-                LHEPdfWeight.push_back(default_pdf[i]->xfxQ(Generator_id1, Generator_x1, Generator_scalePDF) *
-                                       default_pdf[i]->xfxQ(Generator_id2, Generator_x2, Generator_scalePDF) /
-                                       LHEWeight_originalXWGTUP);
+                //     LHEPdfWeight.push_back(default_pdf[i]->xfxQ(Generator_id1, Generator_x1, Generator_scalePDF) *
+                //                            default_pdf[i]->xfxQ(Generator_id2, Generator_x2, Generator_scalePDF) /
+                //                            LHEWeight_originalXWGTUP);
+                sum_shifts_squared += std::pow((default_pdf[i]->xfxQ(Generator_id1, Generator_x1, Generator_scalePDF) *
+                                                default_pdf[i]->xfxQ(Generator_id2, Generator_x2, Generator_scalePDF)) -
+                                                   LHEWeight_originalXWGTUP,
+                                               2.);
             }
 
             // Compute the Alpha_S weight for this event using NNPDF31_nnlo_as_0120 (319500) and divide the new
@@ -443,8 +527,9 @@ class Shifts
                            alpha_s_down_pdf->xfxQ(Generator_id2, Generator_x2, Generator_scalePDF) /
                            LHEWeight_originalXWGTUP;
 
-            auto sorted_weights = VecOps::Sort(LHEPdfWeight);
-            auto pdf_shift = (sorted_weights[83] - sorted_weights[15]) / 2.f;
+            // auto sorted_weights = VecOps::Sort(LHEPdfWeight);
+            // auto pdf_shift = (sorted_weights[83] - sorted_weights[15]) / 2.f;
+            auto pdf_shift = std::sqrt(sum_shifts_squared) / LHEWeight_originalXWGTUP;
             auto alpha_s_shift = (alpha_s_up - alpha_s_down) / 2.f;
 
             if (shift == "PDF_As_Up")

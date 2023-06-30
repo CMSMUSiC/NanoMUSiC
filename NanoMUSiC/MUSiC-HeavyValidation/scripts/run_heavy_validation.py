@@ -97,17 +97,19 @@ def run_validation(
     processOrder: str,
     processGroup: str,
     executable: str,
+    shift: str,
     input_file: str,
     debug: bool = False,
 ) -> bool:
     # debug: bool = False
 
     # default is MC
-    cmd_str: str = f"{executable} --process {process_name} --year {year} --output {output_path} --xsection {str(xsection)} --filter_eff {str(filter_eff)} --k_factor {str(k_factor)} --luminosity {str(luminosity)} --process_order {processOrder} --process_group {processGroup} --input {input_file}"
+    cmd_str: str = f"{executable} --process {process_name} --year {year} --output {output_path} --xsection {str(xsection)} --filter_eff {str(filter_eff)} --k_factor {str(k_factor)} --luminosity {str(luminosity)} --xs_order {processOrder} --process_group {processGroup} --input {input_file} --shift {shift}"
     if is_data:
-        cmd_str: str = f"{executable} --process {process_name} --year {year} --is_data --output {output_path} --xsection {str(xsection)} --filter_eff {str(filter_eff)} --k_factor {str(k_factor)} --luminosity {str(luminosity)} --process_order {processOrder} --process_group {processGroup} --input {input_file}"
+        cmd_str: str = f"{executable} --process {process_name} --year {year} --is_data --output {output_path} --xsection {str(xsection)} --filter_eff {str(filter_eff)} --k_factor {str(k_factor)} --luminosity {str(luminosity)} --xs_order {processOrder} --process_group {processGroup} --input {input_file} --shift {shift}"
 
     if debug:
+        cmd_str = cmd_str + " --debug"
         print(f"Executing: {cmd_str}")
 
     validation_result = subprocess.run(
@@ -150,6 +152,7 @@ def validation(args):
         processGroup,
         input_files,
         executable,
+        shift,
         debug,
     ) = list(args.values())
 
@@ -176,6 +179,7 @@ def validation(args):
         processOrder,
         processGroup,
         executable,
+        shift,
         inputs,
         debug,
     )
@@ -217,6 +221,7 @@ def main():
                     )
                 ),
                 "executable": args.executable,
+                "shift": "Nominal",
                 "debug": args.debug,
             }
             if not (task_config[sample]["is_data"]):
