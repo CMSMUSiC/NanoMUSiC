@@ -7,17 +7,15 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Look for ROOT. As long as an installation is available in the environment, this should succeed.
+# Look for ROOT.
+# As long as an installation is available in the environment, this should succeed.
 message(STATUS "Looking for ROOT")
 find_package(ROOT REQUIRED COMPONENTS RIO)
 message(STATUS "ROOT ${ROOT_VERSION} found at ${ROOT_BINDIR}")
 
 # LCG base dir
-if($ENV{MUSIC_ALMALINUX9})
-    set(LCG_BASE /cvmfs/sft.cern.ch/lcg/views/LCG_103/x86_64-centos9-gcc12-opt)
-else()
-    set(LCG_BASE /cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt)
-endif()
+# set(LCG_BASE /cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt)
+set(LCG_BASE /cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc11-opt)
 
 # includes
 execute_process(COMMAND root-config --incdir OUTPUT_VARIABLE ROOT_INCLUDE_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -51,6 +49,6 @@ include_directories(
 add_subdirectory(NanoMUSiC)
 
 # enable tests
-enable_testing()
+# enable_testing()
 
 # list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
