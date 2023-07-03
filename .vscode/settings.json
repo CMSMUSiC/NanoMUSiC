@@ -161,4 +161,7 @@
   ],
   "clang-tidy.lintOnSave": false,
   "black-formatter.importStrategy": "fromEnvironment",
+  "python.analysis.extraPaths": [
+    "./NanoMUSiC/MUSiC-HeavyValidation/python"
+  ],
 }

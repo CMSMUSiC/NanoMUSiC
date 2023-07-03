@@ -119,7 +119,8 @@ inline auto get_high_pt_sf(bool is_data, const Year &year, const std::string &va
     }
     else
     {
-        throw std::runtime_error(fmt::format("The Eta SC ({}) value is out of range.", eta));
+        eta = std::min(std::fabs(eta), 2.5f) * eta / eta;
+        // throw std::runtime_error(fmt::format("Eta SC value ({}) is out of range.", eta));
     }
 
     auto syst_multiplier = [&variation]() -> float

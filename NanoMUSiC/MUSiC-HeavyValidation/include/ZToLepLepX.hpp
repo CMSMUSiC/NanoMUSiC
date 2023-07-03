@@ -22,7 +22,7 @@ class ZToLepLepX
 {
   private:
   public:
-    const std::string output_path;
+    std::string output_path;
 
     TH1F h_invariant_mass;
     TH1F h_sum_pt;
@@ -40,10 +40,12 @@ class ZToLepLepX
     TH2F h_lepton_1_pt_eta;
     TH2F h_lepton_1_pt_phi;
 
-    const double min_bin_width;
-    const std::map<std::string, int> countMap;
-    const bool is_Z_mass_validation;
+    double min_bin_width;
+    std::map<std::string, int> countMap;
+    bool is_Z_mass_validation;
     std::string shift;
+
+    ZToLepLepX() = default;
 
     ZToLepLepX(const std::string &_analysis_name,
                const std::string &_output_path,

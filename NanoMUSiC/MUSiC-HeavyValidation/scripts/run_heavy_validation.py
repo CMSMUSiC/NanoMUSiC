@@ -25,28 +25,47 @@ def parse_args():
         required=True,
         help='Task configuration (TOML) file, produced by "analysis_config_builder.py"',
     )
-    parser.add_argument("-s", "--sample", help="Sample to be processed.")
-    parser.add_argument("-y", "--year", help="Year to be processed.")
+    parser.add_argument("-s", "--sample", help="Sample to be processed.", default="")
+    parser.add_argument("-y", "--year", help="Year to be processed.", default="")
     parser.add_argument(
         "--all_data",
         help='Starts validation for all Data samples. Incompatible with "--sample" and "--all_mc".',
         action="store_true",
+        default=False,
     )
     parser.add_argument(
         "--all_mc",
         help='Starts validation for all MC samples. Incompatible with "--sample" and "--all-data".',
         action="store_true",
+        default=False,
     )
     parser.add_argument(
         "--all",
         help='Starts validation for all MC and Data samples. Incompatible with "--sample", "--all-data" and  "--all-mc".',
         action="store_true",
+        default=False,
     )
-    parser.add_argument("-j", "--jobs", help="Pool size.", type=int, default=100)
+    parser.add_argument("-j", "--jobs", help="Pool size.", type=int, default=120)
     parser.add_argument(
         "-e", "--executable", help="Validation excutable.", default="heavy_validation"
     )
     parser.add_argument("--debug", help="print debugging info", action="store_true")
+
+    parser.add_argument(
+        "-fl",
+        "--file_limit",
+        help="Limit the number of files to be processed, pre sample.",
+        type=int,
+        default=-1,
+    )
+
+    parser.add_argument(
+        "-o",
+        "--output",
+        help="Output base path.",
+        type=str,
+        default=".",
+    )
 
     args = parser.parse_args()
 
@@ -54,20 +73,19 @@ def parse_args():
     if (args.all_data and (args.sample or args.all_mc)) or (
         args.all_mc and (args.sample or args.all_data)
     ):
-        raise RuntimeError(
+        raise Exception(
             'ERROR: Could not satrt validation. "--all_data" is incompatible with "--all_mc" and "--sample".'
         )
 
     if args.sample and not (args.year):
-        raise RuntimeError(
+        raise Exception(
             'ERROR: Could not start validation. When "--sample" is set, "--year" is required.'
         )
     return args
 
 
-def merge_cutflow_histograms(
-    process, year, output_path, input_files, debug: bool = False
-):
+def merge_cutflow_histograms(args):
+    process, year, output_path, input_files, debug = args
     merge_result = subprocess.run(
         [
             "hadd",
@@ -80,6 +98,7 @@ def merge_cutflow_histograms(
     )
     if debug:
         print(merge_result.stdout.decode("utf-8"))
+
     if merge_result.returncode != 0:
         error = merge_result.stderr.decode("utf-8")
         raise RuntimeError(f"ERROR: could not merge cutflow files.\n{error}")
@@ -98,19 +117,20 @@ def run_validation(
     processGroup: str,
     executable: str,
     shift: str,
+    file_index: str,
     input_file: str,
-    debug: bool = False,
+    debug: bool,
 ) -> bool:
     # debug: bool = False
 
     # default is MC
-    cmd_str: str = f"{executable} --process {process_name} --year {year} --output {output_path} --xsection {str(xsection)} --filter_eff {str(filter_eff)} --k_factor {str(k_factor)} --luminosity {str(luminosity)} --xs_order {processOrder} --process_group {processGroup} --input {input_file} --shift {shift}"
+    cmd_str: str = f"{executable} --process {process_name} --year {year} --output {output_path} --file_index {file_index} --xsection {str(xsection)} --filter_eff {str(filter_eff)} --k_factor {str(k_factor)} --luminosity {str(luminosity)} --xs_order {processOrder} --process_group {processGroup} --input {input_file} --shift {shift}"
     if is_data:
         cmd_str: str = f"{executable} --process {process_name} --year {year} --is_data --output {output_path} --xsection {str(xsection)} --filter_eff {str(filter_eff)} --k_factor {str(k_factor)} --luminosity {str(luminosity)} --xs_order {processOrder} --process_group {processGroup} --input {input_file} --shift {shift}"
 
     if debug:
         cmd_str = cmd_str + " --debug"
-        print(f"Executing: {cmd_str}")
+        print(f"\nExecuting: {cmd_str}")
 
     validation_result = subprocess.run(
         shlex.split(cmd_str),
@@ -128,17 +148,6 @@ def run_validation(
     return True
 
 
-def dump_list_to_temp_file(list_of_files):
-    # Create a temporary file
-    with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
-        # Write each list entry to a separate line in the file
-        for item in list_of_files:
-            temp_file.write(str(item) + "\n")
-
-    # Return the path of the temporary file
-    return temp_file.name
-
-
 def validation(args):
     (
         process,
@@ -150,23 +159,25 @@ def validation(args):
         k_factor,
         processOrder,
         processGroup,
-        input_files,
+        file_index,
+        input_file,
         executable,
         shift,
+        output_base,
         debug,
     ) = list(args.values())
 
-    output_path: str = f"validation_outputs/{year}/{process}"
+    output_path: str = (
+        f"{output_base}/validation_outputs/{year}/{process}/buffer/buffer_{file_index}"
+    )
 
     # print("[ MUSiC Validation ] Loading samples ...\n")
     # print("[ MUSiC Validation ] Preparing output directory ...\n")
-    os.system(f"rm -rf validation_outputs/{year}/{process}/*_{process}_{year}.root")
-
-    # print("[ MUSiC Validation ] Merging cutflow histograms ...\n")
-    merge_cutflow_histograms(process, year, output_path, input_files)
+    os.system(
+        f"rm -rf {output_base}/validation_outputs/{year}/{process}/buffer/buffer_{file_index}/*_{process}_{year}_{file_index}.root"
+    )
 
     # print("[ MUSiC Validation ] Starting validation ...\n")
-    inputs = dump_list_to_temp_file(input_files)
     run_validation(
         process,
         year,
@@ -180,10 +191,95 @@ def validation(args):
         processGroup,
         executable,
         shift,
-        inputs,
+        file_index,
+        input_file,
         debug,
     )
-    os.system(f"rm -rf {inputs} > /dev/null")
+
+
+def get_file_paths(root_dir, extension=".root"):
+    file_paths = []
+    for dirpath, dirnames, filenames in os.walk(root_dir):
+        for filename in filenames:
+            if filename.endswith(extension):
+                file_paths.append(os.path.join(dirpath, filename))
+    return file_paths
+
+
+def validation_merger(args):
+    process, year, output_base, debug = args
+
+    output_file_path: str = (
+        f"{output_base}/validation_outputs/{year}/{process}/{process}_{year}.root"
+    )
+
+    validation_merge_result = subprocess.run(
+        [
+            "hadd",
+            "-f",
+            output_file_path,
+            *get_file_paths(
+                f"{output_base}/validation_outputs/{year}/{process}/buffer"
+            ),
+        ],
+        capture_output=True,
+    )
+    if debug:
+        print(validation_merge_result.stdout.decode("utf-8"))
+
+    if validation_merge_result.returncode != 0:
+        error = validation_merge_result.stderr.decode("utf-8")
+        raise RuntimeError(f"ERROR: could not merge cutflow files.\n{error}")
+
+    os.system(f"rm -rf {output_base}/validation_outputs/{year}/{process}/buffer")
+
+
+def process_filter(args, is_data: bool, process: str, year: str) -> bool:
+    if (
+        args.sample != ""
+        and args.year != ""
+        and args.sample == process
+        and args.year == year
+    ):
+        return True
+    if args.sample != "" and args.year == "" and args.sample == process:
+        return True
+
+    if args.all_data and is_data and args.year != "" and args.year == year:
+        return True
+
+    if args.all_data and args.year == "" and is_data:
+        return True
+
+    if args.all_mc and not is_data and args.year != "" and args.year == year:
+        return True
+
+    if args.all_mc and args.year == "" and not is_data:
+        return True
+
+    if args.all and args.year != "" and args.year == year:
+        return True
+
+    if args.all and args.year == "":
+        return True
+
+    return False
+
+
+def files_to_process(file_limit, year, output_files):
+    if file_limit < 0:
+        return list(
+            filter(
+                lambda file: f"{year}_date" in file,
+                output_files,
+            )
+        )
+    return list(
+        filter(
+            lambda file: f"{year}_date" in file,
+            output_files,
+        )
+    )[:file_limit]
 
 
 def main():
@@ -198,209 +294,137 @@ def main():
     task_config_file: str = args.config
     task_config: dict[str, Any] = toml.load(task_config_file)
 
-    # single sample
-    if args.sample and args.year:
-        sample = args.sample
-        year = args.year
-        validation_arguments = {}
-        if f"das_name_{year}" in task_config[sample].keys():
-            validation_arguments = {
-                "process": sample,
-                "year": year,
-                "luminosity": task_config["Lumi"][year],
-                "is_data": task_config[sample]["is_data"],
-                "xsection": 1.0,
-                "filter_eff": 1.0,
-                "k_factor": 1.0,
-                "processOrder": "DUMMY",
-                "processGroup": "DUMMY",
-                "input_files": list(
-                    filter(
-                        lambda file: f"{year}_date" in file,
-                        task_config[sample]["output_files"],
-                    )
-                ),
-                "executable": args.executable,
-                "shift": "Nominal",
-                "debug": args.debug,
-            }
-            if not (task_config[sample]["is_data"]):
-                validation_arguments["xsection"] = task_config[sample]["XSec"]
-                validation_arguments["filter_eff"] = task_config[sample]["FilterEff"]
-                validation_arguments["k_factor"] = task_config[sample]["kFactor"]
-                validation_arguments["processOrder"] = task_config[sample]["XSecOrder"]
-                validation_arguments["processGroup"] = task_config[sample][
-                    "ProcessGroup"
-                ]
+    print("Building jobs ...")
+    merge_cutflow_arguments = []
+    validation_arguments = []
+    merge_arguments = []
 
-        if not (os.path.isdir(f"validation_outputs/{year}/{sample}")):
-            os.system(f"mkdir -p validation_outputs/{year}/{sample}")
-
-        validation(validation_arguments)
-
-        exit(0)
-
-    # data workflow
-    if args.all_data:
-        validation_arguments = {}
-        for sample in task_config:
-            if (
-                sample != "Lumi"
-                and sample != "Global"
-                and task_config[sample]["is_data"]
-            ):
-                year, era = get_year_era(sample)
-                if f"Data_{year}_{era}" in validation_arguments:
-                    validation_arguments[f"Data_{year}_{era}"]["input_files"].extend(
-                        task_config[sample]["output_files"]
-                    )
-                else:
-                    validation_arguments[f"Data_{year}_{era}"] = {
-                        "process": f"Data_{year}_{era}",
-                        "year": year,
-                        "luminosity": 1,
-                        "is_data": True,
-                        "xsection": 1,
-                        "filter_eff": 1,
-                        "k_factor": 1,
-                        "input_files": task_config[sample]["output_files"],
-                        "executable": args.executable,
-                        "debug": args.debug,
-                    }
-
-                if not (os.path.isdir(f"validation_outputs/{year}")):
-                    os.system(f"mkdir -p validation_outputs/{year}")
-
-        validation_arguments = list(validation_arguments.values())
-        with Pool(min(args.jobs, len(validation_arguments))) as pool:
-            list(
-                tqdm(
-                    pool.imap_unordered(validation, validation_arguments),
-                    total=len(validation_arguments),
-                    unit=" sample",
-                )
-            )
-
-        exit(0)
-
-    if args.all_mc:
-        validation_arguments = []
-        for sample in task_config:
-            if (
-                sample != "Lumi"
-                and sample != "Global"
-                and not (task_config[sample]["is_data"])
-            ):
-                for year in years:
-                    if f"das_name_{year}" in task_config[sample].keys():
-                        validation_arguments.append(
-                            {
-                                "process": sample,
-                                "year": year,
-                                "luminosity": task_config["Lumi"][year],
-                                "is_data": task_config[sample]["is_data"],
-                                "xsection": task_config[sample]["XSec"],
-                                "filter_eff": task_config[sample]["FilterEff"],
-                                "k_factor": task_config[sample]["kFactor"],
-                                "input_files": list(
-                                    filter(
-                                        lambda file: f"{year}_date" in file,
-                                        task_config[sample]["output_files"],
-                                    )
-                                ),
-                                "executable": args.executable,
-                                "debug": args.debug,
-                            }
+    for sample in tqdm(task_config, unit=" tasks"):
+        if sample != "Lumi" and sample != "Global":
+            for year in years:
+                if f"das_name_{year}" in task_config[sample].keys():
+                    if process_filter(
+                        args, task_config[sample]["is_data"], sample, year
+                    ):
+                        if not (
+                            os.path.isdir(
+                                f"{args.output}/validation_outputs/{year}/{sample}"
+                            )
+                        ):
+                            os.system(
+                                f"mkdir -p {args.output}/validation_outputs/{year}/{sample}"
+                            )
+                        merge_cutflow_arguments.append(
+                            (
+                                sample,
+                                year,
+                                f"{args.output}/validation_outputs/{year}/{sample}",
+                                task_config[sample]["output_files"],
+                                args.debug,
+                            )
                         )
-                    if not (os.path.isdir(f"validation_outputs/{year}")):
-                        os.system(f"mkdir -p validation_outputs/{year}")
 
-        with Pool(min(args.jobs, len(validation_arguments))) as pool:
+                        for idx, f in enumerate(
+                            files_to_process(
+                                args.file_limit,
+                                year,
+                                task_config[sample]["output_files"],
+                            )
+                        ):
+                            validation_arguments.append(
+                                {
+                                    "process": sample,
+                                    "year": year,
+                                    "luminosity": task_config["Lumi"][year],
+                                    "is_data": task_config[sample]["is_data"],
+                                    "xsection": 1.0,
+                                    "filter_eff": 1.0,
+                                    "k_factor": 1.0,
+                                    "processOrder": "DUMMY",
+                                    "processGroup": "Data",
+                                    "file_index": idx,
+                                    "input_files": f,
+                                    "executable": args.executable,
+                                    "shift": "Nominal",
+                                    "output_base": args.output,
+                                    "debug": args.debug,
+                                }
+                            )
+                            if not (task_config[sample]["is_data"]):
+                                validation_arguments[-1]["xsection"] = task_config[
+                                    sample
+                                ]["XSec"]
+                                validation_arguments[-1]["filter_eff"] = task_config[
+                                    sample
+                                ]["FilterEff"]
+                                validation_arguments[-1]["k_factor"] = task_config[
+                                    sample
+                                ]["kFactor"]
+                                validation_arguments[-1]["processOrder"] = task_config[
+                                    sample
+                                ]["XSecOrder"]
+                                validation_arguments[-1]["processGroup"] = task_config[
+                                    sample
+                                ]["ProcessGroup"]
+
+                            if not (
+                                os.path.isdir(
+                                    f"{args.output}/validation_outputs/{year}/{sample}/buffer/buffer_{idx}"
+                                )
+                            ):
+                                os.system(
+                                    f"mkdir -p {args.output}/validation_outputs/{year}/{sample}/buffer/buffer_{idx}"
+                                )
+
+                        # prepare merge jobs
+                        merge_arguments.append((sample, year, args.output, args.debug))
+
+    if len(validation_arguments) > 0:
+        # merge cutflow histograms
+        print("\nMerging cutflow histograms ...")
+        with Pool(min(args.jobs, len(merge_cutflow_arguments))) as pool:
             list(
                 tqdm(
-                    pool.imap_unordered(validation, validation_arguments),
-                    total=len(validation_arguments),
-                    unit="sample",
+                    pool.imap_unordered(
+                        merge_cutflow_histograms, merge_cutflow_arguments
+                    ),
+                    total=len(merge_cutflow_arguments),
+                    unit=" samples",
                 )
             )
 
-        exit(0)
+        # run validation
+        print("\nProcessing validation code ...")
+        with Pool(min(args.jobs, len(validation_arguments))) as pool:
+            list(
+                tqdm(
+                    pool.imap_unordered(
+                        validation,
+                        sorted(
+                            validation_arguments,
+                            key=lambda x: x["is_data"],
+                            reverse=True,
+                        ),
+                    ),
+                    total=len(validation_arguments),
+                    unit=" files",
+                )
+            )
 
-    # # data workflow
-    # if args.all:
-    #     validation_arguments = {}
-    #     for sample in task_config:
-    #         if (
-    #             sample != "Lumi"
-    #             and sample != "Global"
-    #             and task_config[sample]["is_data"]
-    #         ):
-    #             year, era = get_year_era(sample)
-    #             if f"Data_{year}_{era}" in validation_arguments:
-    #                 validation_arguments[f"Data_{year}_{era}"][
-    #                     "input_files"
-    #                 ].extend(task_config[sample]["output_files"])
-    #             else:
-    #                 validation_arguments[f"Data_{year}_{era}"] = {
-    #                     "process": f"Data_{year}_{era}",
-    #                     "year": year,
-    #                     "luminosity": 1,
-    #                     "is_data": True,
-    #                     "xsection": 1,
-    #                     "filter_eff": 1,
-    #                     "k_factor": 1,
-    #                     "input_files": task_config[sample]["output_files"],
-    #                     "executable": args.executable,
-    #                 }
-
-    #             if not (os.path.isdir(f"validation_outputs/{year}")):
-    #                 os.system(f"mkdir -p validation_outputs/{year}")
-
-    #     validation_arguments_data = list(validation_arguments.values())
-
-    #     validation_arguments = []
-    #     for sample in task_config:
-    #         if (
-    #             sample != "Lumi"
-    #             and sample != "Global"
-    #             and not (task_config[sample]["is_data"])
-    #         ):
-    #             for year in years:
-    #                 if f"das_name_{year}" in task_config[sample].keys():
-    #                     validation_arguments.append(
-    #                         {
-    #                             "process": sample,
-    #                             "year": year,
-    #                             "luminosity": task_config["Lumi"][year],
-    #                             "is_data": task_config[sample]["is_data"],
-    #                             "xsection": task_config[sample]["XSec"],
-    #                             "filter_eff": task_config[sample]["FilterEff"],
-    #                             "k_factor": task_config[sample]["kFactor"],
-    #                             "input_files": list(
-    #                                 filter(
-    #                                     lambda file: f"{year}_date" in file,
-    #                                     task_config[sample]["output_files"],
-    #                                 )
-    #                             ),
-    #                             "executable": args.executable,
-    #                         }
-    #                     )
-    #                 if not (os.path.isdir(f"validation_outputs/{year}")):
-    #                     os.system(f"mkdir -p validation_outputs/{year}")
-
-    #     validation_arguments += validation_arguments_data
-    #     with Pool(min(args.jobs, len(validation_arguments))) as pool:
-    #         list(
-    #             tqdm(
-    #                 pool.imap_unordered(validation, validation_arguments),
-    #                 total=len(validation_arguments),
-    #                 unit="sample",
-    #             )
-    #         )
-    #     exit(0)
-
-    print("ERROR: Could not start validation with the provided argumenrs.")
-    exit(-1)
+        # merge outputs
+        print("\nMerging outputs ...")
+        with Pool(min(args.jobs, len(merge_arguments))) as pool:
+            list(
+                tqdm(
+                    pool.imap_unordered(validation_merger, merge_arguments),
+                    total=len(merge_arguments),
+                    unit=" samples",
+                )
+            )
+    else:
+        raise Exception(
+            "ERROR: Could not start validation with the provided arguments. Not enough files to validate."
+        )
 
 
 if __name__ == "__main__":

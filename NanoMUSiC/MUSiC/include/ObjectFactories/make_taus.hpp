@@ -17,12 +17,12 @@ using namespace ROOT::VecOps;
 namespace ObjectFactories
 {
 
-inline auto get_photon_energy_corrections(const std::string &shift,
-                                          float dEscaleUp,
-                                          float dEscaleDown,
-                                          float dEsigmaUp,
-                                          float dEsigmaDown,
-                                          double energy) -> double
+inline auto get_tau_energy_corrections(const std::string &shift,
+                                       float dEscaleUp,
+                                       float dEscaleDown,
+                                       float dEsigmaUp,
+                                       float dEsigmaDown,
+                                       double energy) -> double
 {
     if (shift == "PhotonScale_Up")
     {
@@ -72,7 +72,7 @@ inline auto get_photon_energy_corrections(const std::string &shift,
 /// bin choices: ['EBInc','EBHighR9','EBLowR9','EEInc','EEHighR9','EELowR9']
 ///////////////////////////////////////////////////////////////
 /// For some reason, the Official Muon SFs requires a field of the requested year, with proper formating.
-inline auto get_year_for_photon_sf(Year year) -> std::string
+inline auto get_year_for_tau_sf(Year year) -> std::string
 {
     switch (year)
     {
