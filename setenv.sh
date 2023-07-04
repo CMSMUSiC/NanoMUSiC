@@ -7,14 +7,14 @@ SCRIPTDIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 # List of available software:
 # https://lcginfo.cern.ch/release_packages/x86_6
 
-# echo "[ LCG View ] Using x86_64-centos7-gcc12-opt ..."
-# source /cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/setup.sh
-# echo "[ LCG View ] Done ..."
-
-
-echo "[ LCG View ] Using x86_64-centos7-gcc11-opt ..."
-source /cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc11-opt/setup.sh
+echo "[ LCG View ] Using x86_64-centos7-gcc12-opt ..."
+source /cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/setup.sh
 echo "[ LCG View ] Done ..."
+
+
+# echo "[ LCG View ] Using x86_64-centos7-gcc11-opt ..."
+# source /cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc11-opt/setup.sh
+# echo "[ LCG View ] Done ..."
 
 
 # Set ninja as default CMake generator
