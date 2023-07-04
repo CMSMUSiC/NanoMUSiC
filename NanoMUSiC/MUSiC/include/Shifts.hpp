@@ -1,6 +1,7 @@
 #ifndef SHIFTS
 #define SHIFTS
 #include <limits>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -104,84 +105,98 @@ inline auto contains(std::string &&str, const std::string &substring) -> bool
 class Shifts
 {
   private:
-    const std::vector<std::string> m_shifts;
+    const std::vector<std::string> m_constant_shifts;
+    const std::vector<std::string> m_differential_shifts;
 
   public:
     Shifts(bool is_data)
-        : m_shifts(is_data ? std::vector<std::string>{"Nominal"}
-
-                           : std::vector<std::string>{"Nominal",                 //
-                                                      "PU_Up",                   //
-                                                      "PU_Down",                 //
-                                                      "Luminosity_Up",           //
-                                                      "Luminosity_Down",         //
-                                                      "xSecOrder_Up",            //
-                                                      "xSecOrder_Down",          //
-                                                      "Fake_Up",                 //
-                                                      "Fake_Down",               //
-                                                      "PDF_As_Up",               //
-                                                      "PDF_As_Down",             //
-                                                      "ScaleFactor_Up",          //
-                                                      "ScaleFactor_Down",        //
-                                                      "PreFiring_Up",            //
-                                                      "PreFiring_Down",          //
-                                                      "MuonResolution_Up",       //
-                                                      "MuonResolution_Down",     //
-                                                      "MuonScale_Up",            //
-                                                      "MuonScale_Down",          //
-                                                      "ElectronResolution_Up",   //
-                                                      "ElectronResolution_Down", //
-                                                      "ElectronScale_Up",        //
-                                                      "ElectronScale_Down",      //
-                                                      "PhotonResolution_Up",     //
-                                                      "PhotonResolution_Down",   //
-                                                      "PhotonScale_Up",          //
-                                                      "PhotonScale_Down",        //
-                                                      "JetResolution_Up",        //
-                                                      "JetResolution_Down",      //
-                                                      "JetScale_Up",             //
-                                                      "JetScale_Down"})
+        // : m_constant_shifts(is_data ? std::vector<std::string>{"Nominal"}
+        : m_constant_shifts(is_data ? std::vector<std::string>{"Nominal"}
+                                    : std::vector<std::string>{"Nominal",          //
+                                                               "PU_Up",            //
+                                                               "PU_Down",          //
+                                                               "Fake_Up",          //
+                                                               "Fake_Down",        //
+                                                               "PDF_As_Up",        //
+                                                               "PDF_As_Down",      //
+                                                               "ScaleFactor_Up",   //
+                                                               "ScaleFactor_Down", //
+                                                               "PreFiring_Up",     //
+                                                               "PreFiring_Down"}),
+          m_differential_shifts(is_data ? std::vector<std::string>{"Nominal"}
+                                        : std::vector<std::string>{"Nominal", //
+                                                                              //    "MuonResolution_Up",       //
+                                                                              //    "MuonResolution_Down",     //
+                                                                              //    "MuonScale_Up",            //
+                                                                              //    "MuonScale_Down",          //
+                                                                   "ElectronResolution_Up",   //
+                                                                   "ElectronResolution_Down", //
+                                                                   "ElectronScale_Up",        //
+                                                                   "ElectronScale_Down",      //
+                                                                   "PhotonResolution_Up",     //
+                                                                   "PhotonResolution_Down",   //
+                                                                   "PhotonScale_Up",          //
+                                                                   "PhotonScale_Down",        //
+                                                                   "JetResolution_Up",        //
+                                                                   "JetResolution_Down",      //
+                                                                   "JetScale_Up",             //
+                                                                   "JetScale_Down"})
     {
     }
 
-    // Iterator types
-    using const_iterator = std::vector<std::string>::const_iterator;
-
-    // Member functions for iterators
-    const_iterator begin() const
+    auto get_constant_shifts() const -> std::vector<std::string>
     {
-        return m_shifts.cbegin();
+        return m_constant_shifts;
     }
 
-    const_iterator end() const
+    auto get_constant_shifts(const std::string &diff_shift) const -> std::vector<std::string>
     {
-        return m_shifts.cend();
+        if (diff_shift == "Nominal")
+        {
+            auto _m_constant_shifts = m_constant_shifts;
+            _m_constant_shifts.push_back("Nominal");
+            return _m_constant_shifts;
+        }
+        return {"Nominal"};
     }
 
-    const_iterator cbegin() const
+    auto get_differential_shifts() const -> std::vector<std::string>
     {
-        return m_shifts.cbegin();
-    }
-
-    const_iterator cend() const
-    {
-        return m_shifts.cend();
-    }
-
-    auto get_shifts() const -> std::vector<std::string>
-    {
-        return m_shifts;
+        return m_differential_shifts;
     }
 
     auto size() const -> std::size_t
     {
-        return m_shifts.size();
+        return m_constant_shifts.size() + m_differential_shifts.size();
+    }
+
+    static auto resolve_shifts(const std::string &const_shift, const std::string &diff_shift) -> std::string
+    {
+        if (diff_shift != "Nominal" and const_shift != "Nominal")
+        {
+            throw std::runtime_error(
+                fmt::format("ERROR: Could not resolve shift. Differential ({}) and Constant ({}) can not be variations "
+                            "at the same time.",
+                            diff_shift,
+                            const_shift));
+        }
+
+        if (diff_shift == "Nominal")
+        {
+            return const_shift;
+        }
+        return diff_shift;
     }
 
     auto is_valid(const std::string &shift) const -> bool
     {
-        auto it = std::find(m_shifts.cbegin(), m_shifts.cend(), shift);
-        if (it != m_shifts.end())
+        auto it = std::find(m_constant_shifts.cbegin(), m_constant_shifts.cend(), shift);
+        if (it != m_constant_shifts.end())
+        {
+            return true;
+        }
+        it = std::find(m_differential_shifts.cbegin(), m_differential_shifts.cend(), shift);
+        if (it != m_differential_shifts.end())
         {
             return true;
         }

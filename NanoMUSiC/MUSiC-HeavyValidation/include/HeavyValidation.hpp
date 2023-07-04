@@ -43,6 +43,7 @@
 #include "ObjectFactories/make_met.hpp"
 #include "ObjectFactories/make_muons.hpp"
 #include "ObjectFactories/make_photons.hpp"
+#include "ObjectFactories/make_taus.hpp"
 
 #include "CorrectionLibUtils.hpp"
 

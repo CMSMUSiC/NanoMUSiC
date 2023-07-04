@@ -1,5 +1,5 @@
-#ifndef MAKE_PHOTONS_HPP
-#define MAKE_PHOTONS_HPP
+#ifndef MAKE_TAUS_HPP
+#define MAKE_TAUS_HPP
 
 // ROOT Stuff
 #include "Math/Vector4D.h"
@@ -17,12 +17,12 @@ using namespace ROOT::VecOps;
 namespace ObjectFactories
 {
 
-inline auto get_photon_energy_corrections(const std::string &shift,
-                                          float dEscaleUp,
-                                          float dEscaleDown,
-                                          float dEsigmaUp,
-                                          float dEsigmaDown,
-                                          double energy) -> double
+inline auto get_tau_energy_corrections(const std::string &shift,
+                                       float dEscaleUp,
+                                       float dEscaleDown,
+                                       float dEsigmaUp,
+                                       float dEsigmaDown,
+                                       double energy) -> double
 {
     if (shift == "PhotonScale_Up")
     {
@@ -72,7 +72,7 @@ inline auto get_photon_energy_corrections(const std::string &shift,
 /// bin choices: ['EBInc','EBHighR9','EBLowR9','EEInc','EEHighR9','EELowR9']
 ///////////////////////////////////////////////////////////////
 /// For some reason, the Official Muon SFs requires a field of the requested year, with proper formating.
-inline auto get_year_for_photon_sf(Year year) -> std::string
+inline auto get_year_for_tau_sf(Year year) -> std::string
 {
     switch (year)
     {
@@ -90,23 +90,23 @@ inline auto get_year_for_photon_sf(Year year) -> std::string
     }
 }
 
-inline auto make_photons(const RVec<float> &Photon_pt,  //
-                         const RVec<float> &Photon_eta, //
-                         const RVec<float> &Photon_phi, //
-                         const RVec<bool> &Photon_isScEtaEB,
-                         const RVec<bool> &Photon_isScEtaEE,
-                         const RVec<Int_t> &Photon_cutBased,             //
-                         const RVec<bool> &Photon_pixelSeed,             //
-                         const RVec<float> &Photon_dEscaleUp,            //
-                         const RVec<float> &Photon_dEscaleDown,          //
-                         const RVec<float> &Photon_dEsigmaUp,            //
-                         const RVec<float> &Photon_dEsigmaDown,          //
-                         const RVec<int> &Photon_genPartIdx,             //
-                         const CorrectionlibRef_t &photon_sf,            //
-                         const CorrectionlibRef_t &photon_pixel_veto_sf, //
-                         bool is_data,                                   //
-                         const std::string &_year,                       //
-                         const std::string &shift) -> MUSiCObjects
+inline auto make_taus(const RVec<float> &Photon_pt,  //
+                      const RVec<float> &Photon_eta, //
+                      const RVec<float> &Photon_phi, //
+                      const RVec<bool> &Photon_isScEtaEB,
+                      const RVec<bool> &Photon_isScEtaEE,
+                      const RVec<Int_t> &Photon_cutBased,             //
+                      const RVec<bool> &Photon_pixelSeed,             //
+                      const RVec<float> &Photon_dEscaleUp,            //
+                      const RVec<float> &Photon_dEscaleDown,          //
+                      const RVec<float> &Photon_dEsigmaUp,            //
+                      const RVec<float> &Photon_dEsigmaDown,          //
+                      const RVec<int> &Photon_genPartIdx,             //
+                      const CorrectionlibRef_t &photon_sf,            //
+                      const CorrectionlibRef_t &photon_pixel_veto_sf, //
+                      bool is_data,                                   //
+                      const std::string &_year,                       //
+                      const std::string &shift) -> MUSiCObjects
 {
     auto year = get_runyear(_year);
 
@@ -185,4 +185,4 @@ inline auto make_photons(const RVec<float> &Photon_pt,  //
 
 } // namespace ObjectFactories
 
-#endif // !MAKE_PHOTONS_HPP
+#endif // !MAKE_TAUS_HPP
