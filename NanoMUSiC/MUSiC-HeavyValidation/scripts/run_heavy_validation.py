@@ -70,12 +70,12 @@ def parse_args():
     args = parser.parse_args()
 
     # quality control
-    if (args.all_data and (args.sample or args.all_mc)) or (
-        args.all_mc and (args.sample or args.all_data)
-    ):
-        raise Exception(
-            'ERROR: Could not satrt validation. "--all_data" is incompatible with "--all_mc" and "--sample".'
-        )
+    # if (args.all_data and (args.sample or args.all_mc)) or (
+    #     args.all_mc and (args.sample or args.all_data)
+    # ):
+    #     raise Exception(
+    #         'ERROR: Could not satrt validation. "--all_data" is incompatible with "--all_mc" and "--sample".'
+    #     )
 
     if args.sample and not (args.year):
         raise Exception(
