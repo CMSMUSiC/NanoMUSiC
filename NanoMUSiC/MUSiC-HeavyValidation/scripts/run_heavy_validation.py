@@ -116,7 +116,7 @@ def run_validation(
     processOrder: str,
     processGroup: str,
     executable: str,
-    shift: str,
+    # shift: str,
     file_index: str,
     input_file: str,
     debug: bool,
@@ -124,9 +124,9 @@ def run_validation(
     # debug: bool = False
 
     # default is MC
-    cmd_str: str = f"{executable} --process {process_name} --year {year} --output {output_path} --file_index {file_index} --xsection {str(xsection)} --filter_eff {str(filter_eff)} --k_factor {str(k_factor)} --luminosity {str(luminosity)} --xs_order {processOrder} --process_group {processGroup} --input {input_file} --shift {shift}"
+    cmd_str: str = f"{executable} --process {process_name} --year {year} --output {output_path} --file_index {file_index} --xsection {str(xsection)} --filter_eff {str(filter_eff)} --k_factor {str(k_factor)} --luminosity {str(luminosity)} --xs_order {processOrder} --process_group {processGroup} --input {input_file}"
     if is_data:
-        cmd_str: str = f"{executable} --process {process_name} --year {year} --is_data --output {output_path} --xsection {str(xsection)} --filter_eff {str(filter_eff)} --k_factor {str(k_factor)} --luminosity {str(luminosity)} --xs_order {processOrder} --process_group {processGroup} --input {input_file} --shift {shift}"
+        cmd_str: str = f"{executable} --process {process_name} --year {year} --is_data --output {output_path} --xsection {str(xsection)} --filter_eff {str(filter_eff)} --k_factor {str(k_factor)} --luminosity {str(luminosity)} --xs_order {processOrder} --process_group {processGroup} --input {input_file}"
 
     if debug:
         cmd_str = cmd_str + " --debug"
@@ -162,7 +162,7 @@ def validation(args):
         file_index,
         input_file,
         executable,
-        shift,
+        # shift,
         output_base,
         debug,
     ) = list(args.values())
@@ -190,7 +190,7 @@ def validation(args):
         processOrder,
         processGroup,
         executable,
-        shift,
+        # shift,
         file_index,
         input_file,
         debug,
@@ -345,7 +345,7 @@ def main():
                                     "file_index": idx,
                                     "input_files": f,
                                     "executable": args.executable,
-                                    "shift": "Nominal",
+                                    # "shift": "Nominal",
                                     "output_base": args.output,
                                     "debug": args.debug,
                                 }

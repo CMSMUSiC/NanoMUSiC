@@ -378,58 +378,62 @@ auto main(int argc, char *argv[]) -> int
 
     for (auto &&shift : shifts.get_differential_shifts())
     {
-        z_to_mu_mu_x.insert(
-            {shift,
-             ZToLepLepX("z_to_mu_mu_x",
-                        get_output_file_path(
-                            "z_to_mu_mu_x", output_path, process, year, process_group, xs_order, is_data, shift),
-                        z_to_mu_mu_x_count_map,
-                        false,
-                        shift,
-                        process,
-                        year,
-                        process_group,
-                        xs_order)});
+        if (shift != "Nominal")
+        {
+            z_to_mu_mu_x.insert(
+                {shift,
+                 ZToLepLepX("z_to_mu_mu_x",
+                            get_output_file_path(
+                                "z_to_mu_mu_x", output_path, process, year, process_group, xs_order, is_data, shift),
+                            z_to_mu_mu_x_count_map,
+                            false,
+                            shift,
+                            process,
+                            year,
+                            process_group,
+                            xs_order)});
 
-        z_to_mu_mu_x_Z_mass.insert(
-            {shift,
-             ZToLepLepX("z_to_mu_mu_x_Z_mass",
-                        get_output_file_path(
-                            "z_to_mu_mu_x_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
-                        z_to_mu_mu_x_count_map,
-                        true,
-                        shift,
-                        process,
-                        year,
-                        process_group,
-                        xs_order)});
+            z_to_mu_mu_x_Z_mass.insert(
+                {shift,
+                 ZToLepLepX(
+                     "z_to_mu_mu_x_Z_mass",
+                     get_output_file_path(
+                         "z_to_mu_mu_x_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
+                     z_to_mu_mu_x_count_map,
+                     true,
+                     shift,
+                     process,
+                     year,
+                     process_group,
+                     xs_order)});
 
-        z_to_ele_ele_x.insert(
-            {shift,
-             ZToLepLepX("z_to_ele_ele_x",
-                        get_output_file_path(
-                            "z_to_ele_ele_x", output_path, process, year, process_group, xs_order, is_data, shift),
-                        z_to_ele_ele_x_count_map,
-                        false,
-                        shift,
-                        process,
-                        year,
-                        process_group,
-                        xs_order)});
+            z_to_ele_ele_x.insert(
+                {shift,
+                 ZToLepLepX("z_to_ele_ele_x",
+                            get_output_file_path(
+                                "z_to_ele_ele_x", output_path, process, year, process_group, xs_order, is_data, shift),
+                            z_to_ele_ele_x_count_map,
+                            false,
+                            shift,
+                            process,
+                            year,
+                            process_group,
+                            xs_order)});
 
-        z_to_ele_ele_x_Z_mass.insert(
-            {shift,
-             ZToLepLepX(
-                 "z_to_ele_ele_x_Z_mass",
-                 get_output_file_path(
-                     "z_to_ele_ele_x_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
-                 z_to_ele_ele_x_count_map,
-                 true,
-                 shift,
-                 process,
-                 year,
-                 process_group,
-                 xs_order)});
+            z_to_ele_ele_x_Z_mass.insert(
+                {shift,
+                 ZToLepLepX(
+                     "z_to_ele_ele_x_Z_mass",
+                     get_output_file_path(
+                         "z_to_ele_ele_x_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
+                     z_to_ele_ele_x_count_map,
+                     true,
+                     shift,
+                     process,
+                     year,
+                     process_group,
+                     xs_order)});
+        }
     }
 
     // build Dijets
@@ -611,68 +615,59 @@ auto main(int argc, char *argv[]) -> int
             // Here goes the real analysis...
             for (auto &&const_shift : shifts.get_constant_shifts(diff_shift))
             {
-                // get effective event weight
-                double weight = 1.;
-
-                auto shift = Shifts::resolve_shifts(const_shift, diff_shift);
-
-                if (not(is_data))
+                if (const_shift == "Nominal")
                 {
-                    auto pu_weight = pu_corrector->evaluate({unwrap(Pileup_nTrueInt), Shifts::get_pu_variation(shift)});
+                    // get effective event weight
+                    double weight = 1.;
 
-                    auto prefiring_weight = Shifts::get_prefiring_weight( //
-                        unwrap(L1PreFiringWeight_Nom, 1.),                //
-                        unwrap(L1PreFiringWeight_Up, 1.),                 //
-                        unwrap(L1PreFiringWeight_Dn, 1.),                 //
-                        shift);
+                    auto shift = Shifts::resolve_shifts(const_shift, diff_shift);
 
-                    auto scaled_luminosity = Shifts::scale_luminosity(luminosity, shift);
-
-                    auto pdf_as_weight = Shifts::get_pdf_alpha_s_weights(shift,
-                                                                         lha_indexes,
-                                                                         default_pdf_sets,           //
-                                                                         unwrap(LHEPdfWeight),       //
-                                                                         unwrap(Generator_scalePDF), //
-                                                                         unwrap(Generator_x1),       //
-                                                                         unwrap(Generator_x2),       //
-                                                                         unwrap(Generator_id1),      //
-                                                                         unwrap(Generator_id2),      //
-                                                                         unwrap(LHEWeight_originalXWGTUP, 1.f));
-
-                    weight = unwrap(mc_weight, 1.)                                          //
-                             * pu_weight                                                    //
-                             * prefiring_weight                                             //
-                             * generator_filter                                             //
-                             / no_cuts                                                      //
-                             / generator_filter                                             //
-                             * x_section * Shifts::get_xsec_order_modifier(shift, xs_order) //
-                             * filter_eff                                                   //
-                             * k_factor                                                     //
-                             * scaled_luminosity                                            //
-                             * pdf_as_weight;
-                }
-
-                // MuMu + X
-                unsigned int n_muons = 2;
-                if (muons.size() >= n_muons)
-                {
-                    auto muon_1 = muons.p4[0];
-                    auto muon_2 = muons.p4[1];
-
-                    // wide mass range
-                    z_to_mu_mu_x[shift].fill(
-                        muon_1,
-                        muon_2,
-                        bjets.p4,
-                        jets.p4,
-                        met.p4,
-                        weight * Shifts::get_scale_factor(
-                                     shift, n_muons, 0, 0, 0, 0, 0, muons, electrons, photons, bjets, jets, met));
-
-                    // Z mass range
-                    if (PDG::Z::Mass - 20. < (muon_1 + muon_2).mass() and (muon_1 + muon_2).mass() < PDG::Z::Mass + 20.)
+                    if (not(is_data))
                     {
-                        z_to_mu_mu_x_Z_mass[shift].fill(
+                        auto pu_weight =
+                            pu_corrector->evaluate({unwrap(Pileup_nTrueInt), Shifts::get_pu_variation(shift)});
+
+                        auto prefiring_weight = Shifts::get_prefiring_weight( //
+                            unwrap(L1PreFiringWeight_Nom, 1.),                //
+                            unwrap(L1PreFiringWeight_Up, 1.),                 //
+                            unwrap(L1PreFiringWeight_Dn, 1.),                 //
+                            shift);
+
+                        auto scaled_luminosity = Shifts::scale_luminosity(luminosity, shift);
+
+                        auto pdf_as_weight = Shifts::get_pdf_alpha_s_weights(shift,
+                                                                             lha_indexes,
+                                                                             default_pdf_sets,           //
+                                                                             unwrap(LHEPdfWeight),       //
+                                                                             unwrap(Generator_scalePDF), //
+                                                                             unwrap(Generator_x1),       //
+                                                                             unwrap(Generator_x2),       //
+                                                                             unwrap(Generator_id1),      //
+                                                                             unwrap(Generator_id2),      //
+                                                                             unwrap(LHEWeight_originalXWGTUP, 1.f));
+
+                        weight = unwrap(mc_weight, 1.)                                          //
+                                 * pu_weight                                                    //
+                                 * prefiring_weight                                             //
+                                 * generator_filter                                             //
+                                 / no_cuts                                                      //
+                                 / generator_filter                                             //
+                                 * x_section * Shifts::get_xsec_order_modifier(shift, xs_order) //
+                                 * filter_eff                                                   //
+                                 * k_factor                                                     //
+                                 * scaled_luminosity                                            //
+                                 * pdf_as_weight;
+                    }
+
+                    // MuMu + X
+                    unsigned int n_muons = 2;
+                    if (muons.size() >= n_muons)
+                    {
+                        auto muon_1 = muons.p4[0];
+                        auto muon_2 = muons.p4[1];
+
+                        // wide mass range
+                        z_to_mu_mu_x[shift].fill(
                             muon_1,
                             muon_2,
                             bjets.p4,
@@ -680,31 +675,32 @@ auto main(int argc, char *argv[]) -> int
                             met.p4,
                             weight * Shifts::get_scale_factor(
                                          shift, n_muons, 0, 0, 0, 0, 0, muons, electrons, photons, bjets, jets, met));
+
+                        // Z mass range
+                        if (PDG::Z::Mass - 20. < (muon_1 + muon_2).mass() and
+                            (muon_1 + muon_2).mass() < PDG::Z::Mass + 20.)
+                        {
+                            z_to_mu_mu_x_Z_mass[shift].fill(
+                                muon_1,
+                                muon_2,
+                                bjets.p4,
+                                jets.p4,
+                                met.p4,
+                                weight *
+                                    Shifts::get_scale_factor(
+                                        shift, n_muons, 0, 0, 0, 0, 0, muons, electrons, photons, bjets, jets, met));
+                        }
                     }
-                }
 
-                // EleEle + X
-                unsigned int n_electrons = 2;
-                if (electrons.size() >= n_electrons)
-                {
-                    auto electron_1 = electrons.p4[0];
-                    auto electron_2 = electrons.p4[1];
-
-                    // wide mass range
-                    z_to_ele_ele_x[shift].fill(
-                        electron_1,
-                        electron_2,
-                        bjets.p4,
-                        jets.p4,
-                        met.p4,
-                        weight * Shifts::get_scale_factor(
-                                     shift, n_muons, 0, 0, 0, 0, 0, muons, electrons, photons, bjets, jets, met));
-
-                    // Z mass range
-                    if (PDG::Z::Mass - 20. < (electron_1 + electron_2).mass() and
-                        (electron_1 + electron_2).mass() < PDG::Z::Mass + 20.)
+                    // EleEle + X
+                    unsigned int n_electrons = 2;
+                    if (electrons.size() >= n_electrons)
                     {
-                        z_to_ele_ele_x_Z_mass[shift].fill(
+                        auto electron_1 = electrons.p4[0];
+                        auto electron_2 = electrons.p4[1];
+
+                        // wide mass range
+                        z_to_ele_ele_x[shift].fill(
                             electron_1,
                             electron_2,
                             bjets.p4,
@@ -712,20 +708,35 @@ auto main(int argc, char *argv[]) -> int
                             met.p4,
                             weight * Shifts::get_scale_factor(
                                          shift, n_muons, 0, 0, 0, 0, 0, muons, electrons, photons, bjets, jets, met));
+
+                        // Z mass range
+                        if (PDG::Z::Mass - 20. < (electron_1 + electron_2).mass() and
+                            (electron_1 + electron_2).mass() < PDG::Z::Mass + 20.)
+                        {
+                            z_to_ele_ele_x_Z_mass[shift].fill(
+                                electron_1,
+                                electron_2,
+                                bjets.p4,
+                                jets.p4,
+                                met.p4,
+                                weight *
+                                    Shifts::get_scale_factor(
+                                        shift, n_muons, 0, 0, 0, 0, 0, muons, electrons, photons, bjets, jets, met));
+                        }
                     }
+
+                    // // Dijets
+                    // if (jets.size() >= 2)
+                    // {
+                    //     auto jet_1 = jets.p4[0];
+                    //     auto jet_2 = jets.p4[1];
+
+                    //     if ((jet_1.pt() > 600.) and std::fabs(jet_1.eta() - jet_2.eta()) < 1.1)
+                    //     {
+                    //         dijets.fill(jet_1, jet_2, std::nullopt, weight);
+                    //     }
+                    // }
                 }
-
-                // // Dijets
-                // if (jets.size() >= 2)
-                // {
-                //     auto jet_1 = jets.p4[0];
-                //     auto jet_2 = jets.p4[1];
-
-                //     if ((jet_1.pt() > 600.) and std::fabs(jet_1.eta() - jet_2.eta()) < 1.1)
-                //     {
-                //         dijets.fill(jet_1, jet_2, std::nullopt, weight);
-                //     }
-                // }
             }
 
             // process monitoring
@@ -757,11 +768,14 @@ auto main(int argc, char *argv[]) -> int
     }
     for (auto &&shift : shifts.get_differential_shifts())
     {
-        z_to_mu_mu_x[shift].dump_outputs();
-        z_to_mu_mu_x_Z_mass[shift].dump_outputs();
-        z_to_ele_ele_x[shift].dump_outputs();
-        z_to_ele_ele_x_Z_mass[shift].dump_outputs();
-        // dijets.dump_outputs();
+        if (shift != "Nominal")
+        {
+            z_to_mu_mu_x[shift].dump_outputs();
+            z_to_mu_mu_x_Z_mass[shift].dump_outputs();
+            z_to_ele_ele_x[shift].dump_outputs();
+            z_to_ele_ele_x_Z_mass[shift].dump_outputs();
+            // dijets.dump_outputs();
+        }
     }
 
     fmt::print("\n[MUSiC Validation] Done ...\n");
