@@ -326,7 +326,7 @@ auto main(int argc, char *argv[]) -> int
     std::map<std::string, JetClass2 *> validation_classes;
     // stores validation classes: {classname: jetclass instance pointer}
     // fill maps
-    std::set<std::string> to_validate{"2J+0BJ+0MET+XJ", "2J+0BJ+1MET+XJ"};
+    std::set<std::string> to_validate {"2J+0BJ+0MET+XJ", "2J+0BJ+1MET+XJ"};
     for (const auto &c_name : to_validate)
     {
         validation_classes[c_name] =
@@ -505,13 +505,13 @@ auto main(int argc, char *argv[]) -> int
             std::cout << std::endl;
         }
 
-        ///* EVENT BREAK IF NECESSARY
+        /* EVENT BREAK IF NECESSARY
         if (event > 10000)
         {
             throw std::runtime_error("finished after given event break");
             break;
         }
-        //*/
+        */
         // std::cout << "****************\nEvent No. " << event << std::endl;
 
         // JET TRIGGER HT
@@ -724,20 +724,6 @@ auto main(int argc, char *argv[]) -> int
                      * k_factor             //
                      * scaled_luminosity    //
                      * pdf_as_weight;
-
-            /*
-            std::cout << "########## 2J+0BJ+1MET+XJ ##########" << std::endl;
-            std::cout << "gen weight: " << unwrap(gen_weight, 1.) << std::endl;
-            std::cout << "pu_weight: " << pu_weight << std::endl;
-            std::cout << "prefiring_weight: " << prefiring_weight << std::endl;
-            std::cout << "no_cuts: " << no_cuts << std::endl;
-            std::cout << "x_section: " << x_section << std::endl;
-            std::cout << "filter_eff: " << filter_eff << std::endl;
-            std::cout << "k_factor: " << k_factor << std::endl;
-            std::cout << "scaled_luminosity: " << scaled_luminosity << std::endl;
-            std::cout << "pdf_as_weight: " << pdf_as_weight << std::endl;
-            std::cout << "WEIGHT: " << weight << std::endl;
-            */
 
             /*/
             // bug search: check for nan

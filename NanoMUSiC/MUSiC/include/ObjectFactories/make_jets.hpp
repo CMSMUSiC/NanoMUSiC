@@ -118,15 +118,16 @@ inline auto make_jets(const RVec<float> &Jet_pt,            //
     for (std::size_t i = 0; i < Jet_pt.size(); i++)
     {
         // dont do b-tagging
-        
-        auto is_good_jet_pre_filter = (std::fabs(Jet_eta[i]) <= ObjConfig::Jets[year].MaxAbsEta) //
-                                      and (Jet_jetId[i] >= ObjConfig::Jets[year].MinJetID);       //
-                                      //and (Jet_btagDeepFlavB[i] < ObjConfig::Jets[year].MaxBTagWPTight);
+
+        auto is_good_jet_pre_filter =
+            (std::fabs(Jet_eta[i]) <= ObjConfig::Jets[year].MaxAbsEta) //
+            and (Jet_jetId[i] >= ObjConfig::Jets[year].MinJetID); //
+        // and (Jet_btagDeepFlavB[i] < ObjConfig::Jets[year].MaxBTagWPTight); // DONT B TAG ANYMORE
 
         auto is_good_bjet_pre_filter = false;
-                                       //(std::fabs(Jet_eta[i]) <= ObjConfig::Jets[year].MaxAbsEta) //
-                                       //and (Jet_jetId[i] >= ObjConfig::Jets[year].MinJetID)       //
-                                       //and (Jet_btagDeepFlavB[i] >= ObjConfig::Jets[year].MaxBTagWPTight);
+        //(std::fabs(Jet_eta[i]) <= ObjConfig::Jets[year].MaxAbsEta) //
+        // and (Jet_jetId[i] >= ObjConfig::Jets[year].MinJetID)       //
+        // and (Jet_btagDeepFlavB[i] >= ObjConfig::Jets[year].MaxBTagWPTight);
 
         if (is_good_jet_pre_filter or is_good_bjet_pre_filter)
         {

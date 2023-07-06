@@ -170,4 +170,5 @@
   ],
   "clang-tidy.lintOnSave": false,
   "black-formatter.importStrategy": "fromEnvironment",
+  "pdf-preview.default.scale": "page-fit",
 }

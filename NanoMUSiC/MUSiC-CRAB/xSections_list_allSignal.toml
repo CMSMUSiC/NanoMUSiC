@@ -1,0 +1,37 @@
+
+[RSGravitonToGluonGluon_kMpl01_M_1000]
+XSec = 7.94
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "Gluon"
+is_data = false
+das_name_2018 = ["/RSGravitonToGluonGluon_kMpl01_M_1000_TuneCP5_13TeV_pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM"]
+
+[RSGravitonToGluonGluon_kMpl01_M_2000]
+XSec = 0.1112
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "Gluon"
+is_data = false
+das_name_2018 = ["/RSGravitonToGluonGluon_kMpl01_M_2000_TuneCP5_13TeV_pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM"]
+
+[RSGravitonToGluonGluon_kMpl01_M_3000]
+XSec = 0.004869
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "Gluon"
+is_data = false
+das_name_2018 = ["/RSGravitonToGluonGluon_kMpl01_M_3000_TuneCP5_13TeV_pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM"]
+
+[RSGravitonToGluonGluon_kMpl01_M_5000]
+XSec = 0.00002429
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "Gluon"
+is_data = false
+das_name_2018 = ["/RSGravitonToGluonGluon_kMpl01_M_5000_TuneCP5_13TeV_pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM"]
+

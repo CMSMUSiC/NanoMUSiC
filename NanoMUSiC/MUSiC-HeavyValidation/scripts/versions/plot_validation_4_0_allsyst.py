@@ -12,6 +12,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
+import matplotlib.patheffects as pe
 import uproot
 import toml
 import argparse
@@ -42,6 +43,10 @@ __all__ = ("poisson_interval", "clopper_pearson_interval", "ratio_uncertainty")
 def __dir__() -> tuple[str, ...]:
     return __all__
 
+
+#################################
+# ONLY PLOTS WITH ALL SYSTEMATICS
+#################################
 
 # valid years to enter as an argument
 valid_years = {"2016APV", "2016", "2017", "2018"}
@@ -119,10 +124,9 @@ def parse_args():
         action="store_true",
     )
     parser.add_argument(
-        "-norm",
-        "--normalize",
-        help="Optional: Enable normalization algorithm.",
-        action="store_true",
+        "-is",
+        "--injectsignal",
+        help="Optional: Inject signal from separate task config (TOML) file given in the argument.",
     )
     args = parser.parse_args()
     if (args.fileprefix and args.jetclass) or (
@@ -292,6 +296,7 @@ def create_arguments(
     classname,
     subfolder,
     plotting_arguments,
+    signalsamples,
 ):
     plotting_arguments.append(
         {
@@ -315,6 +320,7 @@ def create_arguments(
             "fileprefix": fileprefix,
             "classname": classname,
             "subfolder": subfolder,
+            "signalsamples": signalsamples,
         }
     )
     return plotting_arguments
@@ -323,6 +329,10 @@ def create_arguments(
 # imports, sorts and stacks data and mc from input files
 # and processes mc errors
 def stacker(
+    xlimit,
+    ylimit,
+    jetclass,
+    title,
     savepath,
     datasamples,
     mcsamples,
@@ -330,8 +340,12 @@ def stacker(
     histname,
     color_dict,
     aggregation_dict,
+    histproperties,
     year,
     fileprefix,
+    classname,
+    subfolder,
+    signalsamples,
 ):
     # names of the systematics (mc error) data sets (same as in the heavy validation code named 'shifts')
     systematics = {  # all activated shifts in the Shifts.hpp
@@ -356,7 +370,8 @@ def stacker(
 
     mccounts, mcedges = {}, {}  # {systname: {sample: counts}}
     datacounts, dataedges = {}, {}  # {systname: {sample: counts}}
-    mcstaterrors, datastaterrors = {}, {}  # {sample: staterror}
+    signalcounts, signaledges = {}, {}  # {systname: {sample: counts}}
+    mcstaterrors, datastaterrors, signalstaterrors = {}, {}, {}  # {sample: staterror}
     validation_edges = []
     nbins = 0
 
@@ -393,6 +408,43 @@ def stacker(
                 dataedges[syst] = {sample: sampleedges}
             if syst == "Nominal":  # fill statistical error
                 datastaterrors.update({sample: sampleerrors})
+
+    # ----------- "inject" (add) signal to data ------------
+    signalsum = []
+    if len(signalsamples) > 0: # if signal is given
+        # read in and inject signal
+        printdebug(
+            f"Importing {len(signalsamples)} signal histograms for year {year}..."
+        )
+        for syst in ["Nominal"]:  # only nominal for signal
+            for sample in signalsamples:
+                # import signal histograms (only nominal)
+                fileprefix_syst = (
+                    fileprefix + syst + "_"
+                )  # add syst name to file prefix
+                samplecounts, sampleedges, sampleerrors = import_hist(
+                    year, sample, fileprefix_syst, histname, savepath
+                )
+                # add signal sample add to data set
+                datasamples += [sample]
+                # save signal nominal count and inject signal to data
+                if syst in signalcounts.keys():
+                    signalcounts[syst].update({sample: samplecounts})
+                    signaledges[syst].update({sample: sampleedges})
+                else:
+                    signalcounts[syst] = {sample: samplecounts}
+                    signaledges[syst] = {sample: sampleedges}
+                datacounts[syst].update({sample: samplecounts})
+                dataedges[syst].update({sample: sampleedges})
+                if syst == "Nominal":  # fill statistical error
+                    signalstaterrors.update({sample: sampleerrors})
+                    datastaterrors.update({sample: sampleerrors})
+
+        # stack nominal signal counts for plotting
+        signalsum = np.zeros(len(signalcounts["Nominal"][signalsamples[0]]))
+        for sample in signalsamples:
+            signalsum += signalcounts["Nominal"][sample]
+    # ------------------------------------------------------------------
 
     # validation, check whether all histograms have the same edges
     validation_edges = mcedges["Nominal"][mcsamples[0]]
@@ -432,17 +484,10 @@ def stacker(
                     nanlist.add(f"{sample},{syst}")
     if foundnan:
         # simply ignore these errors
-        #""" # raise error and dont plot
+        # """ # raise error and dont plot
         raise RuntimeError(
-                        f"NaN in {fileprefix} {histname} for the mc samples {nanlist}."
-                    )
-        """
-        for nancase in nanlist:
-            sample = nancase.split(",")[0]
-            syst = nancase.split(",")[1]
-            mccounts[syst][sample] = np.zeros(nbins)
-        """
-        
+            f"NaN in {fileprefix} {histname} for the mc samples {nanlist}."
+        )
 
     # remove 'nominal' from 'systematics' set
     systematics.discard("Nominal")
@@ -457,7 +502,7 @@ def stacker(
     )  # {systname: {sample: error (deviation for systematic from nominal value)}}
     for syst in systematics:
         for sample in mcsamples:
-            if syst in mcsystematics.keys():
+            if (syst in mcsystematics.keys()) and (syst not in ["norm"]): # for norm it is already done
                 mcsystematics[syst].update(
                     {sample: np.abs(mcnominal[sample] - mccounts[syst][sample])}
                 )
@@ -545,16 +590,6 @@ def stacker(
         # with categories ordered after their cumulated contribution (sum of all bins), smallest contribution first
     printdebug("Sorted mc categories by their maximum contribution.")
 
-    # stack mc categories
-    mcsum = np.zeros(nbins)
-    categories_stacked = sorted_categories_samples.keys()
-    counts_stacked = []
-    colors_stacked = []
-    for category in categories_stacked:
-        counts_stacked += [categories_counts[category]]
-        colors_stacked += [categories_colors[category]]
-        mcsum += categories_counts[category]
-
     # symmetrize all mc up/down errors to a single error that is applied in both directions
     # the systematics set content is changed to the symmetrized errors as well as the mc counts dict content
     for syst in systematics.copy():
@@ -582,6 +617,7 @@ def stacker(
                     mcsystematics[newname].update({sample: newsyst})
                 else:
                     mcsystematics.update({newname: {sample: newsyst}})
+    printdebug("Symmetrized all systematics.")
 
     # include statistical error for mc
     systematics.add("stat")
@@ -590,14 +626,35 @@ def stacker(
             mcsystematics["stat"].update({sample: mcstaterrors[sample]})
         else:
             mcsystematics.update({"stat": {sample: mcstaterrors[sample]}})
+    printdebug("Added statistical error.")
 
-    # calculate all mc errors and merge them
-    mc_errors = {}  # {systname: merged error for all samples}
+    # create combined sums (QCD, Non-QCD)
+    # also create all-combined mcsum
+    categories_stacked = sorted_categories_samples.keys()
+    mcsum = np.zeros(nbins)
+    qcd_sum = np.zeros(nbins)
+    non_qcd_sum = np.zeros(nbins)
+    for category in categories_stacked:
+        mcsum += categories_counts[category]
+        if category == "QCD":
+            qcd_sum = categories_counts[category]
+        else:
+            non_qcd_sum += categories_counts[category]
+    printdebug("Stacked mc categories (QCD, Non-QCD and all MC).")
+
+    # calculate all mc errors and merge them for QCD and Non-QCD
+    mc_errors_qcd = {}  # {systname: merged error for all mc samples} for qcd
+    mc_errors_non_qcd = {}  # {systname: merged error for all mc samples} for non-qcd
+    mc_errors = (
+        {}
+    )  # {systname: merged error for all mc samples} for all mc (merged qcd and non-qcd)
     # calculate stacked error for all samples for each systematic separately
     # usually, for a given systematic the errors are treated fully correlated (linear addition) for all samples and process groups
     # exceptions exist e.g. for the xsection errors where the errors of different groups are assumed to be uncorrelated
     for syst in systematics:
-        s_error = np.zeros(nbins)
+        s_error_qcd = np.zeros(nbins)
+        s_error_non_qcd = np.zeros(nbins)
+        s_error = np.zeros(nbins)  # for all mc
         # TREAT ALL SAMPLES FULLY CORRELATED
         if syst in [
             "stat",
@@ -608,41 +665,71 @@ def stacker(
             "JetResolution",
             "JetScale",
         ]:
-            for sample in mcsamples:
+            for category in categories_samples.keys():
+                if category == "QCD":  # for QCD samples
+                    for sample in categories_samples[category]:
+                        s_error_qcd += mcsystematics[syst][sample]
+                else:  # for Non-QCD samples
+                    for sample in categories_samples[category]:
+                        s_error_non_qcd += mcsystematics[syst][sample]
+            for sample in mcsamples:  # for all mc
                 s_error += mcsystematics[syst][sample]
-                # assumed correlated for every sample
         # TREAT ALL SAMPLES UNCORRELATED
         elif syst in [
             "stat",
         ]:
-            temp = 0
-            for sample in mcsamples:
-                temp += (
-                    np.array(mcsystematics[syst][sample]) ** 2
-                )  # assumed uncorrelated for every sample
-            s_error = np.sqrt(temp)
+            for category in categories_samples.keys():
+                if category == "QCD":  # for QCD samples
+                    for sample in categories_samples[category]:
+                        s_error_qcd += np.array(mcsystematics[syst][sample]) ** 2
+                else:  # for Non-QCD samples
+                    for sample in categories_samples[category]:
+                        s_error_non_qcd += np.array(mcsystematics[syst][sample]) ** 2
+            for sample in mcsamples:  # for all mc
+                s_error += np.array(mcsystematics[syst][sample]) ** 2
+            s_error = np.sqrt(s_error)
+            s_error_qcd = np.sqrt(s_error_qcd)
+            s_error_non_qcd = np.sqrt(s_error_non_qcd)
         # ONLY TREAT ONE GROUP CORRELATED
         elif syst in ["xSecOrder"]:
-            # error only for LO order, others have error 0 currently, therefore this code does not decide between different orders
+            # error only for LO order, others have error 0 currently, therefore this code does not differentiate between different orders
             for category in categories_samples.keys():
-                temp = np.zeros(nbins)
-                for sample in categories_samples[category]:
-                    temp += mcsystematics[syst][
-                        sample
-                    ]  # assumed correlated for samples of the same category
-                s_error += temp**2  # assumed uncorrelated for different categories
-            s_error = np.sqrt(s_error)
+                if (
+                    category != "QCD"
+                ):  # only apply XSec error to non-QCD since QCD is normalized and the large XSec error is not used anymore
+                    # QCD does not get an xSec uncertainty anymore
+                    temp = np.zeros(nbins)
+                    for sample in categories_samples[category]:
+                        temp += mcsystematics[syst][
+                            sample
+                        ]  # assumed correlated for samples of the same category
+                    s_error_non_qcd += (
+                        temp**2
+                    )  # assumed uncorrelated for different categories
+            s_error_non_qcd = np.sqrt(s_error_non_qcd)
+            s_error = np.copy(
+                s_error_non_qcd
+            )  # also not apply QCD uncertainty here, as dicussed in comment above
         # save error value for systematic source
+        mc_errors_qcd.update({syst: s_error_qcd})
+        mc_errors_non_qcd.update({syst: s_error_non_qcd})
         mc_errors.update({syst: s_error})
+    printdebug("Calculated the mc errors for the different systematics.")
 
-    # combine all different systematic errors together for plotting
+    # combine all different systematic errors together for plotting separately for QCD and Non-QCD
     # assume the different systematic sources to be uncorrelated
-    temp = np.zeros(nbins)  # holds squared combined errors
+    total_qcd_errors = np.zeros(nbins)  # holds squared combined errors
+    total_non_qcd_errors = np.zeros(nbins)
+    total_mc_errors = np.zeros(nbins)
     for syst in systematics:
         if syst != "Nominal":
-            temp += mc_errors[syst] ** 2
-    total_mc_errors = np.sqrt(temp)  # combined errors
-    printdebug("Calculated the mc errors.")
+            total_qcd_errors += mc_errors_qcd[syst] ** 2
+            total_non_qcd_errors += mc_errors_non_qcd[syst] ** 2
+            total_mc_errors += mc_errors[syst] ** 2
+    total_qcd_errors = np.sqrt(total_qcd_errors)  # combined errors
+    total_non_qcd_errors = np.sqrt(total_non_qcd_errors)
+    total_mc_errors = np.sqrt(total_mc_errors)
+    printdebug("Merged the mc errors.")
 
     # stack nominal data counts
     datasum = np.zeros(nbins)
@@ -656,6 +743,12 @@ def stacker(
     for sample in datasamples:  # stat error for every sample
         total_data_errors += np.array(datastaterrors[sample])
     total_data_errors = np.sqrt(total_data_errors)  # combined data errors
+    printdebug("Calculated data errors.")
+
+    # DONT USE THE total_qcd_errors AND total_non_qcd_errors BECAUSE THEY ARE CALCULATED PER BIN
+    # THE NORMALIZATION NEEDS THEM CALCULATED OVER THE WHOLE NORMALIZATION INTERVAL
+
+    # ----------------------------------------------------------------------------------
 
     # return stacked data and mc
     return (
@@ -670,6 +763,7 @@ def stacker(
         total_mc_errors,
         datasum,
         total_data_errors,
+        signalsum,
     )
 
 
@@ -694,8 +788,10 @@ def plotter(args):
         fileprefix,
         classname,
         subfolder,
+        signalsamples,
     ) = list(args.values())
-    # ----------------- import, sort and stack data and mc -----------------
+    # ----------------- import, sort and stack data and mc of histogram to plot -----------------
+
     (
         bins,
         edges,
@@ -708,7 +804,12 @@ def plotter(args):
         error_mc,
         datasum,
         error_data,
+        signalsum,
     ) = stacker(
+        xlimit,
+        ylimit,
+        jetclass,
+        title,
         savepath,
         datasamples,
         mcsamples,
@@ -716,8 +817,12 @@ def plotter(args):
         histname,
         color_dict,
         aggregation_dict,
+        histproperties,
         year,
         fileprefix,
+        classname,
+        subfolder,
+        signalsamples,
     )
 
     # ----------------- plotting -----------------
@@ -790,6 +895,17 @@ def plotter(args):
         markersize=3,
         label="Data",
     )
+
+    # optional: plot injected signal
+    if len(signalsamples) > 0:
+        ax[0].stairs(
+            signalsum,
+            edges,
+            label="Signal",
+            color="red",
+            linewidth=2,
+            path_effects=[pe.Stroke(linewidth=3, foreground="white"), pe.Normal()],
+        )
 
     # only plot when there is data
     datapresent = False
@@ -880,6 +996,12 @@ def plotter(args):
                     new_error_data += [temp_error_data]
                     new_barwidth += [temp_barwidth]
                     newbin = True
+            new_bins = new_bins[::-1]
+            new_mcsum = new_mcsum[::-1]
+            new_error_mc = new_error_mc[::-1]
+            new_datasum = new_datasum[::-1]
+            new_error_data = new_error_data[::-1]
+            new_barwidth = new_barwidth[::-1]
         else:  # if no bin merge simply use the old bins
             new_bins = np.copy(bins)
             new_mcsum = np.copy(mcsum)
@@ -1160,7 +1282,9 @@ def plotter(args):
 
 ##### MAIN FUNCTION #####
 def main():
-    print("\n\n📶 [ MUSiC Validation Plotter 3 ] 📶\n")
+    print(
+        "\n\n📶 [ MUSiC Validation Plotter 4 (normal plotting with all systematics) ] 📶\n"
+    )
 
     # parse arguments
     args = parse_args()
@@ -1180,12 +1304,6 @@ def main():
     nosyst = False
     if args.nosyst:
         nosyst = True
-
-    # normalize flag
-    global normalize
-    normalize = False:
-    if args.normalize:
-        normalize = True
 
     # import task config file that includes references to all files that should be validated
     print(f"Importing task config...")
@@ -1246,6 +1364,17 @@ def main():
     if "COUNTS" in histograms.keys():
         histograms.pop("COUNTS")
     # histograms is a dict {histname: {properties: values}}
+
+    # option: import signal config if given
+    # signal is imported as MC samples, all parameters for the MC samples do not matter
+    # data samples in the signal config are ignored
+    signalsamples = set()
+    if args.injectsignal:
+        print(f"Importing signal config...")
+        signal_config_file: str = args.injectsignal
+        signal_config: dict[str, Any] = toml.load(signal_config_file)
+        signalconfig, _ = extract_config(signal_config, year)
+        signalsamples = [sample for sample in signalconfig]
 
     # option: jetclass, read in jetclass names to plot
     classnames = (
@@ -1327,6 +1456,7 @@ def main():
                 classname,
                 subfolder,
                 plotting_arguments,
+                signalsamples,
             )
         else:  # plot all validation histograms
             for histname in histograms.keys():
@@ -1348,6 +1478,7 @@ def main():
                     classname,
                     subfolder,
                     plotting_arguments,
+                    signalsamples,
                 )
 
     # perform plotting with multitasking

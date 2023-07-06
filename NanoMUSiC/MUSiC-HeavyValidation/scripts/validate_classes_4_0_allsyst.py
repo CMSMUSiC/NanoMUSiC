@@ -112,6 +112,23 @@ def parse_args():
         "--titletext",
         help="Optional: Add this string to title text. Put spaces as underscores.",
     )
+    parser.add_argument(
+        "-nt",
+        "--normalizethis",
+        help="Optional: Normalize the QCD with the information of the file [normalizethis]/plots/QCD_normalization.toml, the subfolder is specified by this argument.",
+    )
+    parser.add_argument(
+        "-qcdu",
+        "--addqcduncertainty",
+        help="Optional: Include the 50% QCD uncertainty.",
+        action="store_true",
+    )
+    parser.add_argument(
+        "-perr",
+        "--printerrors",
+        help="Optional: Print relative errors.",
+        action="store_true",
+    )
     args = parser.parse_args()
     return args
 
@@ -186,9 +203,7 @@ def import_counts(year, sample, savepath, systematics):
             )
         file_contents = toml.load(file_path)
         returndict.update({syst: file_contents})
-    return (
-        returndict  # returns dictionary: {systname: {'counts'/'stat': {classname: counts}}} for the sample
-    )
+    return returndict  # returns dictionary: {systname: {'counts'/'stat': {classname: counts}}} for the sample
 
 
 def getkeyfromvalue(dict, value):
@@ -316,12 +331,20 @@ def countplotter(
             for syst in systematics:
                 if syst != "stat":
                     if classname in mcsamples_classes[sample][syst]["counts"].keys():
-                        templist.update({syst: mcsamples_classes[sample][syst]["counts"][classname]})
+                        templist.update(
+                            {syst: mcsamples_classes[sample][syst]["counts"][classname]}
+                        )
                     else:
                         templist.update({syst: 0})
-                else: # stat error
+                else:  # stat error
                     if classname in mcsamples_classes[sample]["Nominal"]["stat"].keys():
-                        templist.update({syst: mcsamples_classes[sample]["Nominal"]["stat"][classname]})
+                        templist.update(
+                            {
+                                syst: mcsamples_classes[sample]["Nominal"]["stat"][
+                                    classname
+                                ]
+                            }
+                        )
                     else:
                         templist.update({syst: 0})
             if classname in mcclassdict.keys():
@@ -344,13 +367,26 @@ def countplotter(
                 if syst != "stat":
                     if classname in datasamples_classes[sample][syst]["counts"].keys():
                         templist.update(
-                            {syst: datasamples_classes[sample][syst]["counts"][classname]}
+                            {
+                                syst: datasamples_classes[sample][syst]["counts"][
+                                    classname
+                                ]
+                            }
                         )
                     else:
                         templist.update({syst: 0})
-                else: # stat error
-                    if classname in datasamples_classes[sample]["Nominal"]["stat"].keys():
-                        templist.update({syst: datasamples_classes[sample]["Nominal"]["stat"][classname]})
+                else:  # stat error
+                    if (
+                        classname
+                        in datasamples_classes[sample]["Nominal"]["stat"].keys()
+                    ):
+                        templist.update(
+                            {
+                                syst: datasamples_classes[sample]["Nominal"]["stat"][
+                                    classname
+                                ]
+                            }
+                        )
                     else:
                         templist.update({syst: 0})
             if classname in dataclassdict.keys():
@@ -510,6 +546,44 @@ def countplotter(
         f"   The mc categories {nomembers} have no member mc groups for the given task config."
     )
 
+    # -------------- normalize if needed -----------------
+    norm_fac = 1
+    err_norm_fac = 0
+    if normalizethis != "":
+        # ------ read in normalization ------
+        # apply previously calculated normalization factors
+        printdebug(f"Apply the QCD normalization stored in the given file.")
+        norm_filepath = (
+            validation_path + "/" + str(year) + "/" + normalizethis + "/plots/"
+        )
+        norm_filepath += f"QCD_normalization.toml"
+        norm_dict: dict[str, Any] = toml.load(norm_filepath)
+        norm_fac = float(norm_dict["normalization"])
+        err_norm_fac = float(norm_dict["error"])
+
+        # ------ apply normalization ------
+        # add normalization uncertainty originating from the uncertainty of the normalization factor
+        systematics.add("norm")
+        for classname in mcclasstypedict[classsuffix].keys():
+            for sample in mcsamples:
+                mcclasstypedict[classsuffix][classname][sample].update({"norm": 0.0})
+                if (sample in categories_samples["QCD"]) and ("0MET" in classname):
+                    mcclasstypedict[classsuffix][classname][sample]["norm"] = (
+                        mcclasstypedict[classsuffix][classname][sample]["Nominal"]
+                        * err_norm_fac
+                    )
+                    # error is *OLD* count times the normalization factor uncertainty, thats why it is calculated before rescaling the nominal counts
+        # rescale all QCD samples for all syst with the normalization factor
+        for classname in mcclasstypedict[classsuffix].keys():
+            if "0MET" in classname:
+                for sample in categories_samples["QCD"]:
+                    for syst in systematics:
+                        if syst != "norm":
+                            mcclasstypedict[classsuffix][classname][sample][
+                                syst
+                            ] *= norm_fac  # rescale all syst shifts (including nominal)
+        # ----------------------------------
+
     # set of all classnames to be analyzed
     classnames = set(dataclasstypedict[classsuffix].keys())
 
@@ -551,9 +625,10 @@ def countplotter(
                 temp = mcclasstypedict[classsuffix][classname][sample][
                     syst
                 ]  # for 'stat' simply take error
-                if (
-                    syst != "stat"
-                ):  # calculate absolute deviation (for 'stat' this is already done)
+                if syst not in [
+                    "stat",
+                    "norm",
+                ]:  # calculate absolute deviation (for 'stat' this is already done)
                     temp = np.abs(
                         mcclasstypedict[classsuffix][classname][sample]["Nominal"]
                         - mcclasstypedict[classsuffix][classname][sample][syst]
@@ -616,6 +691,7 @@ def countplotter(
                 "PreFiring",
                 "JetResolution",
                 "JetScale",
+                "norm",
             ]:
                 for sample in mcsamples:
                     s_error += mcclasstypedict_syst[classname][sample][
@@ -627,9 +703,9 @@ def countplotter(
             ]:
                 temp = 0
                 for sample in mcsamples:
-                    temp += (
-                        mcclasstypedict_syst[classname][sample][syst]
-                    )  # assumed uncorrelated for every sample
+                    temp += mcclasstypedict_syst[classname][sample][
+                        syst
+                    ]  # assumed uncorrelated for every sample
                     # sum the squared stat errors together and take sqrt in the end
                     # since the squared error is stored in the classes_ [stat] file do not square again
                 s_error = np.sqrt(temp)
@@ -637,14 +713,19 @@ def countplotter(
             elif syst in ["xSecOrder"]:
                 # error only for LO order, others have error 0 currently, therefore this code does not decide between different orders
                 for category in categories_samples.keys():
-                    temp = 0
-                    for sample in categories_samples[category]:
-                        temp += mcclasstypedict_syst[classname][sample][
-                            syst
-                        ]  # assumed correlated for samples of the same category
-                    s_error += (
-                        temp**2
-                    )  # assumed uncorrelated for different categories
+                    if (addqcduncertainty == True) or (
+                        addqcduncertainty == False and category != "QCD"
+                    ):
+                        # only apply XSec error to non-QCD since QCD is normalized and the large XSec error is not used anymore
+                        # QCD does not get an xSec uncertainty anymore
+                        temp = 0
+                        for sample in categories_samples[category]:
+                            temp += mcclasstypedict_syst[classname][sample][
+                                syst
+                            ]  # assumed correlated for samples of the same category
+                        s_error += (
+                            temp**2
+                        )  # assumed uncorrelated for different categories
                 s_error = np.sqrt(s_error)
             # save error value for systematic source
             if classname in mc_errors.keys():
@@ -724,7 +805,7 @@ def countplotter(
 
     # ---------------------- reduce the data sets to fewer sets that should be plotted ----------------------
 
-    classnames_selected = [] # this contains the classnames to plot
+    classnames_selected = []  # this contains the classnames to plot
     n = 0
     # always plot 30 classes maximum
     for classname in classes_data.keys():
@@ -733,10 +814,10 @@ def countplotter(
             temp_mc_sum += classes_categories[classname][category]
         # selection by name
         if cincludes != "":
-            if not(cincludes in classname):
+            if not (cincludes in classname):
                 continue
         if cexcludes != "":
-            if (cexcludes in classname):
+            if cexcludes in classname:
                 continue
         # mc threshold
         if temp_mc_sum < mcthreshold_classes:
@@ -750,9 +831,7 @@ def countplotter(
     classes_data_toplot = {}
     for classname in classnames_selected:
         classes_data_toplot.update({classname: classes_data[classname]})
-    print(
-        f"The {n} classes for the current selection are:\n{classes_data_toplot}"
-    )
+    print(f"The {n} classes for the current selection are:\n{classes_data_toplot}")
     classes_categories_toplot = {}
     for classname in classes_data_toplot.keys():
         for category in classes_categories[classname]:
@@ -763,8 +842,8 @@ def countplotter(
             else:
                 classes_categories_toplot.update(
                     {classname: {category: classes_categories[classname][category]}}
-                )           
-    
+                )
+
     # reduced class/category list
     allclasses_toplot = set(classes_data_toplot.keys())
     allcategories_toplot = set()
@@ -774,6 +853,16 @@ def countplotter(
 
     # number of classes that are plotted
     nbins = len(classes_data_toplot)
+
+    # --- printerrors of classes to plot if needed ---
+    if printerrors:
+        for classname in classnames:
+            print(f"################## {classname} ##################")
+            for syst in systematics:
+                if syst != "Nominal":
+                    print(f"{syst}: {mc_errors[classname][syst]/total_mc[classname]}")
+            print(f"Combined: {total_mc_errors[classname]/total_mc[classname]}")
+        print(f"###################################################")
 
     # ---------------------- start plotting the class counts ----------------------
 
@@ -1025,7 +1114,7 @@ def countplotter(
                         for i in divisionidx
                     ]
                 ),
-                #np.amax([1 + mcerr_overmc[i] + whitespace2 for i in divisionidx]),
+                # np.amax([1 + mcerr_overmc[i] + whitespace2 for i in divisionidx]),
             ]
         ),
     )
@@ -1077,6 +1166,16 @@ def countplotter(
     ax[0].set_title(plottitle, fontsize=19)
     """
 
+    # add normalized text
+    if normalizethis != "":
+        plt.figtext(
+            0.3,
+            0.983,
+            f"QCD normalized with $\\alpha_{{QCD}} = {np.array(float(norm_fac)).round(decimals=2)}\\pm{np.array(float(err_norm_fac)).round(decimals=2)}$",
+            fontsize=12,
+            ha="left",
+        )
+
     # set plot axis labels
     xlabel = ""
     if histproperties["xlabel"] != "":
@@ -1097,11 +1196,13 @@ def countplotter(
     if args.title:  # optional custom file title
         figname = args.title
     if mcthreshold_classes != 0:
-        figname += "_mcthr_" + mcthreshold_classes
+        figname += "_mcthr_" + str(mcthreshold_classes)
     if cincludes != "":
         figname += "_incl_" + cincludes
     if cexcludes != "":
         figname += "_excl_" + cexcludes
+    if normalizethis != "":
+        figname += "_normalized"
     outputpath = validation_path + "/" + str(args.year) + "/plots/" + figname + ".pdf"
     if savepath != "":
         outputpath = (
@@ -1162,6 +1263,24 @@ def main():
     if args.titletext:
         for temp in args.titletext.split("_"):
             titletext += temp + " "
+
+    # normalize this
+    global normalizethis
+    normalizethis = ""
+    if args.normalizethis:
+        normalizethis = args.normalizethis
+
+    # addqcduncertainty
+    global addqcduncertainty
+    addqcduncertainty = False
+    if args.addqcduncertainty:
+        addqcduncertainty = True
+
+    # printerrors
+    global printerrors
+    printerrors = False
+    if args.printerrors:
+        printerrors = True
 
     # import class type(s)
     classtypes = args.classtype.split(",")

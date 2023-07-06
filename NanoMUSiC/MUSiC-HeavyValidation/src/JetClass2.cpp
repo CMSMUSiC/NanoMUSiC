@@ -128,7 +128,11 @@ auto JetClass2::fill(RVec<Math::PtEtaPhiMVector> jets,
     {
         sumpt += bjets.at(i).pt();
     }
-    if (c_nJet >= 1 or c_nBJet >= 1)
+    if(c_nMET == 1)
+    {
+        sumpt += met.at(0).pt();
+    }
+    if (c_nJet >= 1 or c_nBJet >= 1 or c_nMET == 1)
     {
         h_sum_pt.Fill(sumpt, weight);
     }
