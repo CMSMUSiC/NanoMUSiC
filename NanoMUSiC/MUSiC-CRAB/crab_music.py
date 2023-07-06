@@ -19,6 +19,7 @@ from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import Terminal256Formatter
 
+
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "xsection_file_path",
@@ -89,16 +90,16 @@ def get_username():
         raise RuntimeError("[ERROR] Could not get username.")
 
 
-def build_crab_config(process_name, das_name, year, is_data):
+def build_crab_config(process_name, das_name, year, is_data, global_now):
     this_config = config()
 
     process_name = f"{process_name}_{year}"
-    now = datetime.now().strftime(r"date_%Y_%m_%d_time_%H_%M_%S")
+    # now = datetime.now().strftime(r"date_%Y_%m_%d_time_%H_%M_%S")
 
     this_config.General.requestName = process_name
-    this_config.General.workArea = f"crab_nano_music_{process_name}_{now}"
+    this_config.General.workArea = f"crab_nano_music_{process_name}"
     if args.btageff:
-        this_config.General.workArea = f"crab_btageff_{process_name}_{now}"
+        this_config.General.workArea = f"crab_btageff_{process_name}"
     this_config.General.transferOutputs = True
 
     this_config.JobType.pluginName = "Analysis"
@@ -120,16 +121,15 @@ def build_crab_config(process_name, das_name, year, is_data):
     this_config.Data.inputDataset = das_name
     this_config.Data.inputDBS = "global"
     this_config.Data.splitting = "FileBased"
-    if is_data:
-        this_config.Data.unitsPerJob = 10
-    else:
-        this_config.Data.unitsPerJob = 5
+    this_config.Data.unitsPerJob = 3
+    # if is_data:
+    #     this_config.Data.unitsPerJob = 10
+    # else:
+    #     this_config.Data.unitsPerJob = 5
     this_config.Data.totalUnits = -1
     this_config.Data.publication = False
     this_config.Data.outputDatasetTag = process_name
-    this_config.Data.outLFNDirBase = (
-        f"/store/user/{get_username()}/nano_music/{this_config.General.workArea}"
-    )
+    this_config.Data.outLFNDirBase = f"/store/user/{get_username()}/nano_music_{global_now}/{this_config.General.workArea}"
     this_config.JobType.outputFiles = [r"nano_music.root"]
     if args.btageff:
         this_config.JobType.outputFiles = [r"efficiency_hist.root"]
@@ -141,12 +141,21 @@ def build_crab_config(process_name, das_name, year, is_data):
 
 
 def submit(sample):
-    process_name, das_name, year, era, is_data, generator_filter_key = sample
+    (
+        process_name,
+        das_name,
+        year,
+        era,
+        is_data,
+        generator_filter_key,
+        global_now,
+    ) = sample
     make_task_config_file(
         process_name, das_name, year, era, is_data, generator_filter_key
     )
     sub_res = crabCommand(
-        "submit", config=build_crab_config(process_name, das_name, year, is_data)
+        "submit",
+        config=build_crab_config(process_name, das_name, year, is_data, global_now),
     )
     print(sub_res)
 
@@ -171,6 +180,8 @@ def check_voms():
 
 
 def main():
+    global_now = datetime.now().strftime(r"date_%Y_%m_%d_time_%H_%M_%S")
+
     # check for VOMS proxy
     if not (check_voms()):
         raise RuntimeError("ERROR: Could not find valid VOMS proxy.")
@@ -180,7 +191,7 @@ def main():
 
     os.system("rm -rf raw_configs")
     os.system("mkdir raw_configs")
-    sample_list = make_sample_list(args.xsection_file_path)
+    sample_list = make_sample_list(args.xsection_file_path, global_now)
     with Pool(30) as pool:
         list(
             tqdm(

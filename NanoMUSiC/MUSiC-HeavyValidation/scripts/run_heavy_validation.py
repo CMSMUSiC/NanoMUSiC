@@ -14,6 +14,8 @@ from pprint import pprint
 
 from sample_helpers import get_year_era
 
+from local_condor import submit_condor_task
+
 years = ["2016APV", "2016", "2017", "2018"]
 
 
@@ -42,6 +44,12 @@ def parse_args():
     parser.add_argument(
         "--all",
         help='Starts validation for all MC and Data samples. Incompatible with "--sample", "--all-data" and  "--all-mc".',
+        action="store_true",
+        default=False,
+    )
+    parser.add_argument(
+        "--condor",
+        help="Run validation on on the Linux Cluster. The merging of the outputs has to be done separeted",
         action="store_true",
         default=False,
     )
@@ -193,6 +201,46 @@ def validation(args):
         # shift,
         file_index,
         input_file,
+        debug,
+    )
+
+
+def validation_condor(args):
+    (
+        process,
+        year,
+        luminosity,
+        is_data,
+        xsection,
+        filter_eff,
+        k_factor,
+        processOrder,
+        processGroup,
+        file_index,
+        input_file,
+        executable,
+        # shift,
+        output_base,
+        debug,
+    ) = list(args.values())
+
+    output_path: str = (
+        f"{output_base}/validation_outputs/{year}/{process}/buffer/buffer_{file_index}"
+    )
+
+    submit_condor_task(
+        process,
+        year,
+        is_data,
+        output_path,
+        xsection,
+        filter_eff,
+        k_factor,
+        luminosity,
+        processOrder,
+        processGroup,
+        input_file,
+        output_path,
         debug,
     )
 
@@ -393,34 +441,53 @@ def main():
                 )
             )
 
-        # run validation
-        print("\nProcessing validation code ...")
-        with Pool(min(args.jobs, len(validation_arguments))) as pool:
-            list(
-                tqdm(
-                    pool.imap_unordered(
-                        validation,
-                        sorted(
-                            validation_arguments,
-                            key=lambda x: x["is_data"],
-                            reverse=True,
+        if args.condor:
+            # submit validation
+            print("\nSubmiting validation ...")
+            with Pool(min(args.jobs, len(validation_arguments))) as pool:
+                list(
+                    tqdm(
+                        pool.imap_unordered(
+                            validation_condor,
+                            sorted(
+                                validation_arguments,
+                                key=lambda x: x["is_data"],
+                                reverse=True,
+                            ),
                         ),
-                    ),
-                    total=len(validation_arguments),
-                    unit=" files",
+                        total=len(validation_arguments),
+                        unit=" files",
+                    )
                 )
-            )
+        else:
+            # run validation
+            print("\nProcessing validation ...")
+            with Pool(min(args.jobs, len(validation_arguments))) as pool:
+                list(
+                    tqdm(
+                        pool.imap_unordered(
+                            validation,
+                            sorted(
+                                validation_arguments,
+                                key=lambda x: x["is_data"],
+                                reverse=True,
+                            ),
+                        ),
+                        total=len(validation_arguments),
+                        unit=" files",
+                    )
+                )
 
-        # merge outputs
-        print("\nMerging outputs ...")
-        with Pool(min(args.jobs, len(merge_arguments))) as pool:
-            list(
-                tqdm(
-                    pool.imap_unordered(validation_merger, merge_arguments),
-                    total=len(merge_arguments),
-                    unit=" samples",
+            # merge outputs
+            print("\nMerging outputs ...")
+            with Pool(min(args.jobs, len(merge_arguments))) as pool:
+                list(
+                    tqdm(
+                        pool.imap_unordered(validation_merger, merge_arguments),
+                        total=len(merge_arguments),
+                        unit=" samples",
+                    )
                 )
-            )
     else:
         raise Exception(
             "ERROR: Could not start validation with the provided arguments. Not enough files to validate."
