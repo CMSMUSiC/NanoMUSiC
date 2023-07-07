@@ -313,12 +313,51 @@ auto main(int argc, char *argv[]) -> int
                                                          {"bJet", 0},
                                                          {"MET", 0}};
 
+    const std::map<std::string, int> gamma_plus_jet_count_map = {{"Ele", 0},
+                                                                 {"EleEE", 0},
+                                                                 {"EleEB", 0},
+                                                                 {"Muon", 0},
+                                                                 {"Gamma", 0},
+                                                                 {"GammaEB", 1},
+                                                                 {"GammaEE", 0},
+                                                                 {"Tau", 0},
+                                                                 {"Jet", 1},
+                                                                 {"bJet", 0},
+                                                                 {"MET", 0}};
+
+    const std::map<std::string, int> ttbar_to_1ele_2bjet_2jet_met_count_map = {{"Ele", 1},
+                                                                               {"EleEE", 0},
+                                                                               {"EleEB", 0},
+                                                                               {"Muon", 0},
+                                                                               {"Gamma", 0},
+                                                                               {"GammaEB", 0},
+                                                                               {"GammaEE", 0},
+                                                                               {"Tau", 0},
+                                                                               {"Jet", 2},
+                                                                               {"bJet", 2},
+                                                                               {"MET", 1}};
+
+    const std::map<std::string, int> ttbar_to_1mu_2bjet_2jet_met_count_map = {{"Ele", 0},
+                                                                              {"EleEE", 0},
+                                                                              {"EleEB", 0},
+                                                                              {"Muon", 1},
+                                                                              {"Gamma", 0},
+                                                                              {"GammaEB", 0},
+                                                                              {"GammaEE", 0},
+                                                                              {"Tau", 0},
+                                                                              {"Jet", 2},
+                                                                              {"bJet", 1},
+                                                                              {"MET", 1}};
+
     // build validation factories
     // map each shift to one analysis factory
     std::unordered_map<std::string, ZToLepLepX> z_to_mu_mu_x;
     std::unordered_map<std::string, ZToLepLepX> z_to_mu_mu_x_Z_mass;
     std::unordered_map<std::string, ZToLepLepX> z_to_ele_ele_x;
     std::unordered_map<std::string, ZToLepLepX> z_to_ele_ele_x_Z_mass;
+    std::unordered_map<std::string, GammaPlusJet> gamma_plus_jet;
+    std::unordered_map<std::string, TTBarTo1Lep2Bjet2JetMET> ttbar_to_1mu_2bjet_2jet_MET;
+    std::unordered_map<std::string, TTBarTo1Lep2Bjet2JetMET> ttbar_to_1ele_2bjet_2jet_MET;
 
     for (auto &&shift : shifts.get_constant_shifts())
     {
@@ -374,6 +413,55 @@ auto main(int argc, char *argv[]) -> int
                  year,
                  process_group,
                  xs_order)});
+
+        gamma_plus_jet.insert(
+            {shift,
+             GammaPlusJet("gamma_plus_jet",
+                          get_output_file_path(
+                              "gamma_plus_jet", output_path, process, year, process_group, xs_order, is_data, shift),
+                          gamma_plus_jet_count_map,
+                          shift,
+                          process,
+                          year,
+                          process_group,
+                          xs_order)});
+
+        ttbar_to_1mu_2bjet_2jet_MET.insert({shift,
+                                            TTBarTo1Lep2Bjet2JetMET("ttbar_to_1mu_2bjet_2jet_MET",
+                                                                    get_output_file_path("ttbar_to_1mu_2bjet_2jet_MET",
+                                                                                         output_path,
+                                                                                         process,
+                                                                                         year,
+                                                                                         process_group,
+                                                                                         xs_order,
+                                                                                         is_data,
+                                                                                         shift),
+
+                                                                    ttbar_to_1mu_2bjet_2jet_met_count_map,
+                                                                    shift,
+                                                                    process,
+                                                                    year,
+                                                                    process_group,
+                                                                    xs_order)});
+
+        ttbar_to_1ele_2bjet_2jet_MET.insert(
+            {shift,
+             TTBarTo1Lep2Bjet2JetMET("ttbar_to_1ele_2bjet_2jet_MET",
+                                     get_output_file_path("ttbar_to_1ele_2bjet_2jet_MET",
+                                                          output_path,
+                                                          process,
+                                                          year,
+                                                          process_group,
+                                                          xs_order,
+                                                          is_data,
+                                                          shift),
+
+                                     ttbar_to_1ele_2bjet_2jet_met_count_map,
+                                     shift,
+                                     process,
+                                     year,
+                                     process_group,
+                                     xs_order)});
     }
 
     for (auto &&shift : shifts.get_differential_shifts())
@@ -433,6 +521,55 @@ auto main(int argc, char *argv[]) -> int
                      year,
                      process_group,
                      xs_order)});
+
+            gamma_plus_jet.insert(
+                {shift,
+                 GammaPlusJet(
+                     "gamma_plus_jet",
+                     get_output_file_path(
+                         "gamma_plus_jet", output_path, process, year, process_group, xs_order, is_data, shift),
+                     gamma_plus_jet_count_map,
+                     shift,
+                     process,
+                     year,
+                     process_group,
+                     xs_order)});
+
+            ttbar_to_1mu_2bjet_2jet_MET.insert(
+                {shift,
+                 TTBarTo1Lep2Bjet2JetMET("ttbar_to_1mu_2bjet_2jet_MET",
+                                         get_output_file_path("ttbar_to_1mu_2bjet_2jet_MET",
+                                                              output_path,
+                                                              process,
+                                                              year,
+                                                              process_group,
+                                                              xs_order,
+                                                              is_data,
+                                                              shift),
+                                         ttbar_to_1mu_2bjet_2jet_met_count_map,
+                                         shift,
+                                         process,
+                                         year,
+                                         process_group,
+                                         xs_order)});
+
+            ttbar_to_1ele_2bjet_2jet_MET.insert(
+                {shift,
+                 TTBarTo1Lep2Bjet2JetMET("ttbar_to_1ele_2bjet_2jet_MET",
+                                         get_output_file_path("ttbar_to_1ele_2bjet_2jet_MET",
+                                                              output_path,
+                                                              process,
+                                                              year,
+                                                              process_group,
+                                                              xs_order,
+                                                              is_data,
+                                                              shift),
+                                         ttbar_to_1ele_2bjet_2jet_met_count_map,
+                                         shift,
+                                         process,
+                                         year,
+                                         process_group,
+                                         xs_order)});
         }
     }
 
@@ -463,13 +600,13 @@ auto main(int argc, char *argv[]) -> int
             throw std::runtime_error(fmt::format("ERROR: Could not load TChain entry."));
         }
 
-        // remove the "unused variable" warning during compilation
-        static_cast<void>(event);
+        // // remove the "unused variable" warning during compilation
+        // static_cast<void>(event);
 
-        if (event > 3)
-        {
-            break;
-        }
+        // if (event > 3)
+        // {
+        //     break;
+        // }
 
         // Trigger
         //
@@ -736,6 +873,59 @@ auto main(int argc, char *argv[]) -> int
                     //         dijets.fill(jet_1, jet_2, std::nullopt, weight);
                     //     }
                     // }
+
+                    // Gamma Plus Jets
+                    if (photons.size() > 0)
+                    {
+                        auto gamma = photons.p4[0];
+
+                        gamma_plus_jet[shift].fill(
+                            gamma,
+                            weight * Shifts::get_scale_factor(
+                                         shift, 0, 0, 1, 0, 1, 0, muons, electrons, photons, bjets, jets, met));
+                    }
+
+                    // ttbar to ele
+                    if (electrons.size() > 0)
+                    {
+                        auto electron = electrons.p4[0];
+                        auto jet_1 = jets.p4[0];
+                        auto jet_2 = jets.p4[1];
+                        auto bjet_1 = bjets.p4[0];
+                        auto bjet_2 = bjets.p4[1];
+                        auto MET = met.p4[0];
+
+                        ttbar_to_1ele_2bjet_2jet_MET[shift].fill(
+                            electron,
+                            jet_1,
+                            jet_2,
+                            bjet_1,
+                            bjet_2,
+                            MET,
+                            weight * Shifts::get_scale_factor(
+                                         shift, 0, 1, 0, 2, 2, 1, muons, electrons, photons, bjets, jets, met));
+                    }
+
+                    // ttbar to mu
+                    if (muons.size() > 0)
+                    {
+                        auto muon = muons.p4[0];
+                        auto jet_1 = jets.p4[0];
+                        auto jet_2 = jets.p4[1];
+                        auto bjet_1 = bjets.p4[0];
+                        auto bjet_2 = bjets.p4[1];
+                        auto MET = met.p4[0];
+
+                        ttbar_to_1ele_2bjet_2jet_MET[shift].fill(
+                            muon,
+                            jet_1,
+                            jet_2,
+                            bjet_1,
+                            bjet_2,
+                            MET,
+                            weight * Shifts::get_scale_factor(
+                                         shift, 1, 0, 0, 2, 2, 1, muons, electrons, photons, bjets, jets, met));
+                    }
                 }
             }
 
@@ -764,6 +954,9 @@ auto main(int argc, char *argv[]) -> int
         z_to_mu_mu_x_Z_mass[shift].dump_outputs();
         z_to_ele_ele_x[shift].dump_outputs();
         z_to_ele_ele_x_Z_mass[shift].dump_outputs();
+        ttbar_to_1ele_2bjet_2jet_MET[shift].dump_outputs();
+        ttbar_to_1mu_2bjet_2jet_MET[shift].dump_outputs();
+        gamma_plus_jet[shift].dump_outputs();
         // dijets.dump_outputs();
     }
     for (auto &&shift : shifts.get_differential_shifts())
@@ -774,6 +967,9 @@ auto main(int argc, char *argv[]) -> int
             z_to_mu_mu_x_Z_mass[shift].dump_outputs();
             z_to_ele_ele_x[shift].dump_outputs();
             z_to_ele_ele_x_Z_mass[shift].dump_outputs();
+            ttbar_to_1ele_2bjet_2jet_MET[shift].dump_outputs();
+            ttbar_to_1mu_2bjet_2jet_MET[shift].dump_outputs();
+            gamma_plus_jet[shift].dump_outputs();
             // dijets.dump_outputs();
         }
     }
