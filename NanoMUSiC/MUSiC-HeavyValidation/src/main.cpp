@@ -123,7 +123,7 @@ auto main(int argc, char *argv[]) -> int
         fmt::print("          -l|--luminosity: Int. luminosity.\n");
         fmt::print("          -po|--xs_order: Process order.\n");
         fmt::print("          -pg|--process_group: Process group.\n");
-        fmt::print("          -i|--input: Path to a txt with input files (one per line).\n");
+        fmt::print("          -i|--input: Path to a .txt with input files (one per line).\n");
         fmt::print("          --debug: Run in debug mode..\n");
 
         exit(-1);
@@ -134,17 +134,20 @@ auto main(int argc, char *argv[]) -> int
     const double k_factor = std::stod(k_factor_str);
     const double luminosity = std::stod(luminosity_str);
 
+    // clear output path
+    std::system(fmt::format("rm -rf {}/*.root", output_path).c_str());
+
     // create tree reader and add values and arrays
-    // TChain input_chain("nano_music");
-    // for (auto &&file : load_input_files(input_file))
-    // {
-    //     input_chain.Add(file.c_str());
-    // }
+    TChain input_chain("nano_music");
+    for (auto &&file : load_input_files(input_file))
+    {
+        input_chain.Add(file.c_str());
+    }
 
-    auto f = std::unique_ptr<TFile>(TFile::Open(input_file.c_str()));
-    auto input_chain = std::unique_ptr<TTree>(f->Get<TTree>("nano_music"));
+    // auto f = std::unique_ptr<TFile>(TFile::Open(input_file.c_str()));
+    // auto input_chain = std::unique_ptr<TTree>(f->Get<TTree>("nano_music"));
 
-    auto tree_reader = TTreeReader(input_chain.get());
+    auto tree_reader = TTreeReader(&input_chain);
 
     ADD_VALUE_READER(pass_low_pt_muon_trigger, bool);
     ADD_VALUE_READER(pass_high_pt_muon_trigger, bool);
@@ -466,10 +469,10 @@ auto main(int argc, char *argv[]) -> int
         // remove the "unused variable" warning during compilation
         static_cast<void>(event);
 
-        if (event > 3)
-        {
-            break;
-        }
+        // if (event > 3)
+        // {
+        //     break;
+        // }
 
         // Trigger
         //

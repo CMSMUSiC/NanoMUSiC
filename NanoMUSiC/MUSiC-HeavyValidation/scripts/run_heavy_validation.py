@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import multiprocessing
 from multiprocessing import Pool
 from typing import Any
 from tqdm import tqdm
@@ -18,6 +19,22 @@ from local_condor import submit_condor_task
 
 years = ["2016APV", "2016", "2017", "2018"]
 
+nproc = multiprocessing.cpu_count()
+
+
+def split_list(lst, max_size):
+    sublists = []
+    for i in range(0, len(lst), max_size):
+        sublist = lst[i : i + max_size]
+        sublists.append(sublist)
+    return sublists
+
+
+def dump_list_to_file(lst, file_path):
+    with open(file_path, "w") as file:
+        for item in lst:
+            file.write(item + "\n")
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -30,13 +47,13 @@ def parse_args():
     parser.add_argument("-s", "--sample", help="Sample to be processed.", default="")
     parser.add_argument("-y", "--year", help="Year to be processed.", default="")
     parser.add_argument(
-        "--all_data",
+        "--all-data",
         help='Starts validation for all Data samples. Incompatible with "--sample" and "--all_mc".',
         action="store_true",
         default=False,
     )
     parser.add_argument(
-        "--all_mc",
+        "--all-mc",
         help='Starts validation for all MC samples. Incompatible with "--sample" and "--all-data".',
         action="store_true",
         default=False,
@@ -53,7 +70,15 @@ def parse_args():
         action="store_true",
         default=False,
     )
-    parser.add_argument("-j", "--jobs", help="Pool size.", type=int, default=120)
+
+    parser.add_argument(
+        "-j",
+        "--jobs",
+        help="Multiprocessing pool size.",
+        type=int,
+        default=min(60, nproc),
+    )
+
     parser.add_argument(
         "-e", "--executable", help="Validation excutable.", default="heavy_validation"
     )
@@ -62,7 +87,7 @@ def parse_args():
     parser.add_argument(
         "-fl",
         "--file_limit",
-        help="Limit the number of files to be processed, pre sample.",
+        help="Limit the number of files to be processed, per sample.",
         type=int,
         default=-1,
     )
@@ -73,6 +98,36 @@ def parse_args():
         help="Output base path.",
         type=str,
         default=".",
+    )
+
+    parser.add_argument(
+        "-sdt",
+        "--split-data",
+        help="Limit the number of Data files to be processed, per job.",
+        type=int,
+        default=2,
+    )
+
+    parser.add_argument(
+        "-smc",
+        "--split-mc",
+        help="Limit the number of MC files to be processed, per job.",
+        type=int,
+        default=6,
+    )
+
+    parser.add_argument(
+        "--harvest-only",
+        help="Will only harvest results, after condor execution is complete.",
+        action="store_true",
+        default=False,
+    )
+
+    parser.add_argument(
+        "--clear-buffers",
+        help="Will only clear buffer areas.",
+        action="store_true",
+        default=False,
     )
 
     args = parser.parse_args()
@@ -168,7 +223,7 @@ def validation(args):
         processOrder,
         processGroup,
         file_index,
-        input_file,
+        input_files,
         executable,
         # shift,
         output_base,
@@ -185,6 +240,8 @@ def validation(args):
         f"rm -rf {output_base}/validation_outputs/{year}/{process}/buffer/buffer_{file_index}/*_{process}_{year}_{file_index}.root"
     )
 
+    dump_list_to_file(input_files, f"{output_path}/inputs.txt")
+
     # print("[ MUSiC Validation ] Starting validation ...\n")
     run_validation(
         process,
@@ -200,7 +257,7 @@ def validation(args):
         executable,
         # shift,
         file_index,
-        input_file,
+        os.path.abspath(f"{output_path}/inputs.txt"),
         debug,
     )
 
@@ -217,7 +274,7 @@ def validation_condor(args):
         processOrder,
         processGroup,
         file_index,
-        input_file,
+        input_files,
         executable,
         # shift,
         output_base,
@@ -227,6 +284,8 @@ def validation_condor(args):
     output_path: str = (
         f"{output_base}/validation_outputs/{year}/{process}/buffer/buffer_{file_index}"
     )
+
+    dump_list_to_file(input_files, f"{output_path}/inputs.txt")
 
     submit_condor_task(
         process,
@@ -239,7 +298,7 @@ def validation_condor(args):
         luminosity,
         processOrder,
         processGroup,
-        input_file,
+        os.path.abspath(f"{output_path}/inputs.txt"),
         output_path,
         debug,
     )
@@ -279,7 +338,7 @@ def validation_merger(args):
         error = validation_merge_result.stderr.decode("utf-8")
         raise RuntimeError(f"ERROR: could not merge cutflow files.\n{error}")
 
-    os.system(f"rm -rf {output_base}/validation_outputs/{year}/{process}/buffer")
+    # os.system(f"rm -rf {output_base}/validation_outputs/{year}/{process}/buffer")
 
 
 def process_filter(args, is_data: bool, process: str, year: str) -> bool:
@@ -318,13 +377,13 @@ def files_to_process(file_limit, year, output_files):
     if file_limit < 0:
         return list(
             filter(
-                lambda file: f"{year}_date" in file,
+                lambda file: f"_{year}/" in file,
                 output_files,
             )
         )
     return list(
         filter(
-            lambda file: f"{year}_date" in file,
+            lambda file: f"_{year}/" in file,
             output_files,
         )
     )[:file_limit]
@@ -338,6 +397,13 @@ def main():
 
     if args.debug:
         print("Will run in DEBUG mode ...")
+
+    # cleanning job
+    if args.clear_buffers:
+        os.system(
+            f"rm -rf {args.output}/validation_outputs/*/*/buffer/buffer_*/*.root > /dev/null 2>&1"
+        )
+        exit(0)
 
     task_config_file: str = args.config
     task_config: dict[str, Any] = toml.load(task_config_file)
@@ -354,80 +420,94 @@ def main():
                     if process_filter(
                         args, task_config[sample]["is_data"], sample, year
                     ):
-                        if not (
-                            os.path.isdir(
-                                f"{args.output}/validation_outputs/{year}/{sample}"
-                            )
-                        ):
-                            os.system(
-                                f"mkdir -p {args.output}/validation_outputs/{year}/{sample}"
-                            )
-                        merge_cutflow_arguments.append(
-                            (
-                                sample,
-                                year,
-                                f"{args.output}/validation_outputs/{year}/{sample}",
-                                task_config[sample]["output_files"],
-                                args.debug,
-                            )
-                        )
-
-                        for idx, f in enumerate(
-                            files_to_process(
-                                args.file_limit,
-                                year,
-                                task_config[sample]["output_files"],
-                            )
-                        ):
-                            validation_arguments.append(
-                                {
-                                    "process": sample,
-                                    "year": year,
-                                    "luminosity": task_config["Lumi"][year],
-                                    "is_data": task_config[sample]["is_data"],
-                                    "xsection": 1.0,
-                                    "filter_eff": 1.0,
-                                    "k_factor": 1.0,
-                                    "processOrder": "DUMMY",
-                                    "processGroup": "Data",
-                                    "file_index": idx,
-                                    "input_files": f,
-                                    "executable": args.executable,
-                                    # "shift": "Nominal",
-                                    "output_base": args.output,
-                                    "debug": args.debug,
-                                }
-                            )
-                            if not (task_config[sample]["is_data"]):
-                                validation_arguments[-1]["xsection"] = task_config[
-                                    sample
-                                ]["XSec"]
-                                validation_arguments[-1]["filter_eff"] = task_config[
-                                    sample
-                                ]["FilterEff"]
-                                validation_arguments[-1]["k_factor"] = task_config[
-                                    sample
-                                ]["kFactor"]
-                                validation_arguments[-1]["processOrder"] = task_config[
-                                    sample
-                                ]["XSecOrder"]
-                                validation_arguments[-1]["processGroup"] = task_config[
-                                    sample
-                                ]["ProcessGroup"]
-
+                        if not args.harvest_only:
                             if not (
                                 os.path.isdir(
-                                    f"{args.output}/validation_outputs/{year}/{sample}/buffer/buffer_{idx}"
+                                    f"{args.output}/validation_outputs/{year}/{sample}"
                                 )
                             ):
                                 os.system(
-                                    f"mkdir -p {args.output}/validation_outputs/{year}/{sample}/buffer/buffer_{idx}"
+                                    f"mkdir -p {args.output}/validation_outputs/{year}/{sample}"
                                 )
+                            merge_cutflow_arguments.append(
+                                (
+                                    sample,
+                                    year,
+                                    f"{args.output}/validation_outputs/{year}/{sample}",
+                                    task_config[sample]["output_files"],
+                                    args.debug,
+                                )
+                            )
+
+                            # get splitting for Data/MC
+                            splitting = args.split_mc
+                            if task_config[sample]["is_data"]:
+                                splitting = args.split_data
+
+                            for idx, f in enumerate(
+                                split_list(
+                                    files_to_process(
+                                        args.file_limit,
+                                        year,
+                                        task_config[sample]["output_files"],
+                                    ),
+                                    splitting,
+                                )
+                            ):
+                                validation_arguments.append(
+                                    {
+                                        "process": sample,
+                                        "year": year,
+                                        "luminosity": task_config["Lumi"][year],
+                                        "is_data": task_config[sample]["is_data"],
+                                        "xsection": 1.0,
+                                        "filter_eff": 1.0,
+                                        "k_factor": 1.0,
+                                        "processOrder": "DUMMY",
+                                        "processGroup": "Data",
+                                        "file_index": idx,
+                                        "input_files": f,
+                                        "executable": args.executable,
+                                        # "shift": "Nominal",
+                                        "output_base": args.output,
+                                        "debug": args.debug,
+                                    }
+                                )
+                                if not (task_config[sample]["is_data"]):
+                                    validation_arguments[-1]["xsection"] = task_config[
+                                        sample
+                                    ]["XSec"]
+                                    validation_arguments[-1][
+                                        "filter_eff"
+                                    ] = task_config[sample]["FilterEff"]
+                                    validation_arguments[-1]["k_factor"] = task_config[
+                                        sample
+                                    ]["kFactor"]
+                                    validation_arguments[-1][
+                                        "processOrder"
+                                    ] = task_config[sample]["XSecOrder"]
+                                    validation_arguments[-1][
+                                        "processGroup"
+                                    ] = task_config[sample]["ProcessGroup"]
+
+                                if not (
+                                    os.path.isdir(
+                                        f"{args.output}/validation_outputs/{year}/{sample}/buffer/buffer_{idx}"
+                                    )
+                                ):
+                                    os.system(
+                                        f"mkdir -p {args.output}/validation_outputs/{year}/{sample}/buffer/buffer_{idx}"
+                                    )
 
                         # prepare merge jobs
                         merge_arguments.append((sample, year, args.output, args.debug))
 
-    if len(validation_arguments) > 0:
+    if not args.harvest_only:
+        if len(validation_arguments) == 0:
+            raise Exception(
+                "ERROR: Could not start validation with the provided arguments. Not enough files to validate."
+            )
+
         # merge cutflow histograms
         print("\nMerging cutflow histograms ...")
         with Pool(min(args.jobs, len(merge_cutflow_arguments))) as pool:
@@ -444,6 +524,7 @@ def main():
         if args.condor:
             # submit validation
             print("\nSubmiting validation ...")
+            # with Pool(min(args.jobs, 10, len(validation_arguments))) as pool:
             with Pool(min(args.jobs, len(validation_arguments))) as pool:
                 list(
                     tqdm(
@@ -456,7 +537,7 @@ def main():
                             ),
                         ),
                         total=len(validation_arguments),
-                        unit=" files",
+                        unit=" jobs",
                     )
                 )
         else:
@@ -478,19 +559,15 @@ def main():
                     )
                 )
 
-            # merge outputs
-            print("\nMerging outputs ...")
-            with Pool(min(args.jobs, len(merge_arguments))) as pool:
-                list(
-                    tqdm(
-                        pool.imap_unordered(validation_merger, merge_arguments),
-                        total=len(merge_arguments),
-                        unit=" samples",
-                    )
-                )
-    else:
-        raise Exception(
-            "ERROR: Could not start validation with the provided arguments. Not enough files to validate."
+    # merge outputs
+    print("\nMerging outputs ...")
+    with Pool(min(args.jobs, len(merge_arguments))) as pool:
+        list(
+            tqdm(
+                pool.imap_unordered(validation_merger, merge_arguments),
+                total=len(merge_arguments),
+                unit=" samples",
+            )
         )
 
 

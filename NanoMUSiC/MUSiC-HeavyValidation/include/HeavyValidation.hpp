@@ -156,15 +156,15 @@ inline auto load_input_files(const std::string &filename) -> std::vector<std::st
     std::vector<std::string> input_files;
 
     // check if input is a single file
-    const std::string suffix = ".root";
-    if (filename.length() > suffix.length())
-    {
-        if (filename.substr(filename.length() - suffix.length()) == suffix)
-        {
-            input_files.push_back(filename);
-            return input_files;
-        }
-    }
+    // const std::string suffix = ".root";
+    // if (filename.length() > suffix.length())
+    // {
+    //     if (filename.substr(filename.length() - suffix.length()) == suffix)
+    //     {
+    //         input_files.push_back(filename);
+    //         return input_files;
+    //     }
+    // }
 
     std::ifstream file(filename);
 
