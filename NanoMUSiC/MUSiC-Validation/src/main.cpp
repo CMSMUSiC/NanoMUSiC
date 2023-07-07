@@ -606,10 +606,10 @@ auto main(int argc, char *argv[]) -> int
         // // remove the "unused variable" warning during compilation
         static_cast<void>(event);
 
-        if (event > 3)
-        {
-            break;
-        }
+        // if (event > 3)
+        // {
+        //     break;
+        // }
 
         // Trigger
         //

@@ -13,8 +13,6 @@ import tempfile
 from collections import defaultdict
 from pprint import pprint
 
-from sample_helpers import get_year_era
-
 from local_condor import submit_condor_task
 
 years = ["2016APV", "2016", "2017", "2018"]
@@ -559,16 +557,17 @@ def main():
                     )
                 )
 
-    # merge outputs
-    print("\nMerging outputs ...")
-    with Pool(min(args.jobs, len(merge_arguments))) as pool:
-        list(
-            tqdm(
-                pool.imap_unordered(validation_merger, merge_arguments),
-                total=len(merge_arguments),
-                unit=" samples",
+    if not args.condor:
+        # merge outputs
+        print("\nMerging outputs ...")
+        with Pool(min(args.jobs, len(merge_arguments))) as pool:
+            list(
+                tqdm(
+                    pool.imap_unordered(validation_merger, merge_arguments),
+                    total=len(merge_arguments),
+                    unit=" samples",
+                )
             )
-        )
 
 
 if __name__ == "__main__":
