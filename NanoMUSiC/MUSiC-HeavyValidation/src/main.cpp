@@ -604,7 +604,7 @@ auto main(int argc, char *argv[]) -> int
         }
 
         // // remove the "unused variable" warning during compilation
-        // static_cast<void>(event);
+        static_cast<void>(event);
 
         // if (event > 3)
         // {
@@ -888,27 +888,6 @@ auto main(int argc, char *argv[]) -> int
                                          shift, 0, 0, 1, 0, 1, 0, muons, electrons, photons, bjets, jets, met));
                     }
 
-                    // ttbar to ele
-                    if (electrons.size() > 0)
-                    {
-                        auto electron = electrons.p4[0];
-                        auto jet_1 = jets.p4[0];
-                        auto jet_2 = jets.p4[1];
-                        auto bjet_1 = bjets.p4[0];
-                        auto bjet_2 = bjets.p4[1];
-                        auto MET = met.p4[0];
-
-                        ttbar_to_1ele_2bjet_2jet_MET[shift].fill(
-                            electron,
-                            jet_1,
-                            jet_2,
-                            bjet_1,
-                            bjet_2,
-                            MET,
-                            weight * Shifts::get_scale_factor(
-                                         shift, 0, 1, 0, 2, 2, 1, muons, electrons, photons, bjets, jets, met));
-                    }
-
                     // ttbar to mu
                     if (muons.size() > 0)
                     {
@@ -928,6 +907,27 @@ auto main(int argc, char *argv[]) -> int
                             MET,
                             weight * Shifts::get_scale_factor(
                                          shift, 1, 0, 0, 2, 2, 1, muons, electrons, photons, bjets, jets, met));
+                    }
+
+                    // ttbar to ele
+                    if (electrons.size() > 0)
+                    {
+                        auto electron = electrons.p4[0];
+                        auto jet_1 = jets.p4[0];
+                        auto jet_2 = jets.p4[1];
+                        auto bjet_1 = bjets.p4[0];
+                        auto bjet_2 = bjets.p4[1];
+                        auto MET = met.p4[0];
+
+                        ttbar_to_1ele_2bjet_2jet_MET[shift].fill(
+                            electron,
+                            jet_1,
+                            jet_2,
+                            bjet_1,
+                            bjet_2,
+                            MET,
+                            weight * Shifts::get_scale_factor(
+                                         shift, 0, 1, 0, 2, 2, 1, muons, electrons, photons, bjets, jets, met));
                     }
                 }
             }
@@ -957,9 +957,9 @@ auto main(int argc, char *argv[]) -> int
         z_to_mu_mu_x_Z_mass[shift].dump_outputs();
         z_to_ele_ele_x[shift].dump_outputs();
         z_to_ele_ele_x_Z_mass[shift].dump_outputs();
-        ttbar_to_1ele_2bjet_2jet_MET[shift].dump_outputs();
-        ttbar_to_1mu_2bjet_2jet_MET[shift].dump_outputs();
         gamma_plus_jet[shift].dump_outputs();
+        ttbar_to_1mu_2bjet_2jet_MET[shift].dump_outputs();
+        ttbar_to_1ele_2bjet_2jet_MET[shift].dump_outputs();
         // dijets.dump_outputs();
     }
     for (auto &&shift : shifts.get_differential_shifts())
@@ -970,9 +970,9 @@ auto main(int argc, char *argv[]) -> int
             z_to_mu_mu_x_Z_mass[shift].dump_outputs();
             z_to_ele_ele_x[shift].dump_outputs();
             z_to_ele_ele_x_Z_mass[shift].dump_outputs();
-            ttbar_to_1ele_2bjet_2jet_MET[shift].dump_outputs();
-            ttbar_to_1mu_2bjet_2jet_MET[shift].dump_outputs();
             gamma_plus_jet[shift].dump_outputs();
+            ttbar_to_1mu_2bjet_2jet_MET[shift].dump_outputs();
+            ttbar_to_1ele_2bjet_2jet_MET[shift].dump_outputs();
             // dijets.dump_outputs();
         }
     }
