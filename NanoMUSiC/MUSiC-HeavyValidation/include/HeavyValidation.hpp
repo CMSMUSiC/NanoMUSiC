@@ -3,6 +3,8 @@
 
 // analysis classes
 // #include "Dijets.hpp"
+#include "GammaPlusJet.hpp"
+#include "TTBarTo1Lep2Bjet2JetMET.hpp"
 #include "ZToLepLepX.hpp"
 
 #include <optional>
