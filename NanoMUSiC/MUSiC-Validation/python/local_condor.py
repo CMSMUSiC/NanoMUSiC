@@ -27,7 +27,7 @@ def make_condor_executable(
     input_file,
     log_dir,
 ):
-    # NanoMUSiC/MUSiC-HeavyValidation/heavy_validation --process SingleMuon_13TeV_2018_C --year 2018 --is_data --output ./validation_outputs/2018/SingleMuon_13TeV_2018_C/buffer/buffer_0 --xsection 1.0 --filter_eff 1.0 --k_factor 1.0 --luminosity 59830.0 --xs_order DUMMY --process_group Data --input dcap://grid-dcap-extern.physik.rwth-aachen.de/pnfs/physik.rwth-aachen.de/cms/store/user/ftorresd/nano_music/crab_nano_music_SingleMuon_13TeV_2018_C_2018_date_2023_06_29_time_17_48_20/SingleMuon/SingleMuon_13TeV_2018_C_2018/230629_154843/0000/nano_music_10.root
+    # NanoMUSiC/MUSiC-HeavyValidation/validation --process SingleMuon_13TeV_2018_C --year 2018 --is_data --output ./validation_outputs/2018/SingleMuon_13TeV_2018_C/buffer/buffer_0 --xsection 1.0 --filter_eff 1.0 --k_factor 1.0 --luminosity 59830.0 --xs_order DUMMY --process_group Data --input dcap://grid-dcap-extern.physik.rwth-aachen.de/pnfs/physik.rwth-aachen.de/cms/store/user/ftorresd/nano_music/crab_nano_music_SingleMuon_13TeV_2018_C_2018_date_2023_06_29_time_17_48_20/SingleMuon/SingleMuon_13TeV_2018_C_2018/230629_154843/0000/nano_music_10.root
     current_dir = os.getcwd()
     executable = []
     executable.append(r"#!/usr/bin/bash")
@@ -40,12 +40,11 @@ def make_condor_executable(
     executable.append(r"cd $_CONDOR_SCRATCH_DIR")
     executable.append(r"pwd")
     executable.append(f"cmake -S {current_dir}/.. -B .")
-    executable.append(f"ninja heavy_validation")
+    executable.append(f"ninja validation")
     executable.append("date")
     executable.append("hostname")
     executable.append(
-        f"$_CONDOR_SCRATCH_DIR/NanoMUSiC/MUSiC-HeavyValidation/heavy_validation --process {process} --year {year} {get_is_data_argument(is_data)} --output {get_absolute_path(output_path)} --xsection {xsection} --filter_eff {filter_eff} --k_factor {k_factor} --luminosity {luminosity} --xs_order {xs_order} --process_group {process_group} --input {input_file} && echo YAY!"
-        # f"$_CONDOR_SCRATCH_DIR/NanoMUSiC/MUSiC-HeavyValidation/heavy_validation --process {process} --year {year} {get_is_data_argument(is_data)} --output $_CONDOR_SCRATCH_DIR --xsection {xsection} --filter_eff {filter_eff} --k_factor {k_factor} --luminosity {luminosity} --xs_order {xs_order} --process_group {process_group} --input {input_file} && echo YAY!"
+        f"$_CONDOR_SCRATCH_DIR/NanoMUSiC/MUSiC-HeavyValidation/validation --process {process} --year {year} {get_is_data_argument(is_data)} --output {get_absolute_path(output_path)} --xsection {xsection} --filter_eff {filter_eff} --k_factor {k_factor} --luminosity {luminosity} --xs_order {xs_order} --process_group {process_group} --input {input_file} && echo YAY!"
     )
     executable.append("date")
 

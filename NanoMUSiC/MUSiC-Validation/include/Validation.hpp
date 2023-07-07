@@ -1,17 +1,26 @@
 #ifndef VALIDATION
 #define VALIDATION
 
+// analysis classes
+// #include "Dijets.hpp"
+#include "GammaPlusJet.hpp"
+#include "TTBarTo1Lep2Bjet2JetMET.hpp"
+#include "ZToLepLepX.hpp"
+
 #include <optional>
 #include <stdexcept>
 #include <sys/time.h>
 
 // ROOT Stuff
 #include "Math/Vector4D.h"
+#include "Math/Vector4Dfwd.h"
 #include "Math/VectorUtil.h"
 #include "ROOT/RDataFrame.hxx"
 #include "ROOT/RVec.hxx"
 #include "RtypesCore.h"
+#include "TCanvas.h"
 #include "TChain.h"
+#include "TEfficiency.h"
 #include "TFile.h"
 #include "TH1.h"
 #include "TTree.h"
@@ -19,33 +28,107 @@
 #include "TTreeReaderArray.h"
 #include "TTreeReaderValue.h"
 
+#include "Configs.hpp"
+#include "JetCorrector.hpp"
 #include "MUSiCTools.hpp"
 #include "TOMLConfig.hpp"
-#include "ZToLepLepX.hpp"
+
+#include "PDFAlphaSWeights.hpp"
 
 #include "argh.h"
 #include "emoji.hpp"
 #include "fmt/format.h"
 #include "processed_data_events.hpp"
 
+#include "ObjectFactories/make_electrons.hpp"
+#include "ObjectFactories/make_jets.hpp"
+#include "ObjectFactories/make_met.hpp"
+#include "ObjectFactories/make_muons.hpp"
+#include "ObjectFactories/make_photons.hpp"
+#include "ObjectFactories/make_taus.hpp"
+
+#include "CorrectionLibUtils.hpp"
+
+#include "Shifts.hpp"
+
 using namespace ROOT;
 using namespace ROOT::Math;
 using namespace ROOT::VecOps;
 
-// helper macros
-#define ADD_VALUE_READER(VAR, TYPE) auto VAR = TTreeReaderValue<TYPE>(tree_reader, #VAR)
-#define ADD_ARRAY_READER(VAR, TYPE) auto VAR = TTreeReaderArray<TYPE>(tree_reader, #VAR)
+template <typename T>
+using OptValueReader_t = std::optional<TTreeReaderValue<T>>;
 
 template <typename T>
-auto unwrap(TTreeReaderValue<T> &value) -> T
+using OptArrayReader_t = std::optional<TTreeReaderArray<T>>;
+
+template <typename T>
+auto make_value_reader(TTreeReader &tree_reader, const std::string &leaf) -> OptValueReader_t<T>
 {
-    return *value;
+    if (tree_reader.GetTree()->GetLeaf(leaf.c_str()) != nullptr)
+    {
+        return std::make_optional<TTreeReaderValue<T>>(tree_reader, leaf.c_str());
+    }
+
+    fmt::print("WARNING: Could not read branch: {}\n", leaf);
+    return std::nullopt;
 }
 
 template <typename T>
-auto unwrap(TTreeReaderArray<T> &array) -> RVec<T>
+auto make_array_reader(TTreeReader &tree_reader, const std::string &leaf) -> OptArrayReader_t<T>
 {
-    return RVec<T>(static_cast<T *>(array.GetAddress()), array.GetSize());
+    if (tree_reader.GetTree()->GetLeaf(leaf.c_str()) != nullptr)
+    {
+        return std::make_optional<TTreeReaderArray<T>>(tree_reader, leaf.c_str());
+    }
+
+    fmt::print("WARNING: Could not read branch: {}\n", leaf);
+    return std::nullopt;
+}
+
+// helper macros
+#define ADD_VALUE_READER(VAR, TYPE) auto VAR = make_value_reader<TYPE>(tree_reader, #VAR)
+#define ADD_ARRAY_READER(VAR, TYPE) auto VAR = make_array_reader<TYPE>(tree_reader, #VAR)
+
+template <typename T>
+auto unwrap(std::optional<TTreeReaderValue<T>> &value) -> T
+{
+    if (value)
+    {
+        return **value;
+    }
+    return T();
+}
+
+template <typename T, typename Q>
+auto unwrap(std::optional<TTreeReaderValue<T>> &value, Q &&default_value = Q()) -> T
+{
+    static_assert(std::is_arithmetic<T>::value, "The default type must be numeric.");
+
+    if (value)
+    {
+        return **value;
+    }
+    return static_cast<T>(default_value);
+}
+
+template <typename T>
+auto unwrap(std::optional<TTreeReaderArray<T>> &array) -> RVec<T>
+{
+    if (array)
+    {
+        return RVec<T>(static_cast<T *>((*array).GetAddress()), (*array).GetSize());
+    }
+    return RVec<T>();
+}
+
+template <typename T, typename Q, typename R>
+auto unwrap(std::optional<TTreeReaderArray<T>> &array, Q &&default_value, R &&default_size) -> T
+{
+    if (array)
+    {
+        return RVec<T>(static_cast<T *>((*array).GetAddress()), (*array).GetSize());
+    }
+    return RVec<T>(default_size, default_value);
 }
 
 inline auto PrintProcessInfo() -> void
@@ -73,6 +156,18 @@ inline auto getCpuTime() -> double
 inline auto load_input_files(const std::string &filename) -> std::vector<std::string>
 {
     std::vector<std::string> input_files;
+
+    // check if input is a single file
+    // const std::string suffix = ".root";
+    // if (filename.length() > suffix.length())
+    // {
+    //     if (filename.substr(filename.length() - suffix.length()) == suffix)
+    //     {
+    //         input_files.push_back(filename);
+    //         return input_files;
+    //     }
+    // }
+
     std::ifstream file(filename);
 
     if (!file.is_open())
@@ -88,6 +183,67 @@ inline auto load_input_files(const std::string &filename) -> std::vector<std::st
     file.close();
 
     return input_files;
+}
+
+template <typename T>
+inline auto save_as(T &histo, std::string &&filename) -> void
+{
+    system(fmt::format("rm {}.png", filename).c_str());
+    system(fmt::format("rm {}.pdf", filename).c_str());
+
+    auto c = TCanvas();
+
+    // Set logarithmic scale on the y-axis
+    c.SetLogy();
+
+    histo.Draw("ep1");
+
+    c.SaveAs((filename + ".png").c_str());
+    c.SaveAs((filename + ".pdf").c_str());
+}
+
+inline auto get_era_from_process_name(const std::string &process, bool is_data) -> std::string
+{
+    if (is_data)
+    {
+        if (not(process.empty()))
+        {
+            return process.substr(process.length() - 1);
+        }
+        throw std::runtime_error(fmt::format("ERROR: Could not get era from process name ({}).\n", process));
+    }
+    return "_";
+}
+
+inline auto is_data_to_string(bool is_data) -> std::string
+{
+    if (is_data)
+    {
+        return "Data";
+    }
+    return "MC";
+}
+
+inline auto get_output_file_path(const std::string &prefix,
+                                 const std::string &output_path,
+                                 const std::string &process,
+                                 const std::string &year,
+                                 const std::string &process_group,
+                                 const std::string &xs_order,
+                                 bool is_data,
+                                 const std::string &shift,
+                                 const std::string &suffix = ".root") -> std::string
+{
+    return fmt::format("{}/{}_{}_{}_{}_{}_{}_{}{}",
+                       output_path,
+                       prefix,
+                       process,
+                       year,
+                       process_group,
+                       xs_order,
+                       is_data_to_string(is_data),
+                       shift,
+                       suffix);
 }
 
 #endif // VALIDATION

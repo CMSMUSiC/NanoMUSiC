@@ -3,53 +3,71 @@
 
 #include "Histograms.hpp"
 #include "Math/Vector4D.h"
+#include "Math/Vector4Dfwd.h"
+#include "Math/VectorUtil.h"
+#include "ROOT/RVec.hxx"
 #include "TEfficiency.h"
 #include <TFile.h>
 #include <TH1F.h>
+#include <TH2F.h>
 #include <memory>
 #include <optional>
 #include <string_view>
 
 using namespace ROOT;
 using namespace ROOT::Math;
+using namespace ROOT::VecOps;
 
 class ZToLepLepX
 {
+  private:
   public:
-    std::unique_ptr<TFile> output_file;
+    std::string output_path;
 
-    // histograms
-    ADD_TH1F(h_invariant_mass, n_energy_bins, min_energy, max_energy);
-    ADD_TH1F(h_sum_pt, n_energy_bins, min_energy, max_energy);
-    ADD_TH1F(h_met, n_energy_bins, min_energy, max_energy);
-    ADD_TH1F(h_lepton_1_pt, n_energy_bins, min_energy, max_energy);
-    ADD_TH1F(h_lepton_2_pt, n_energy_bins, min_energy, max_energy);
-    ADD_TH1F(h_lepton_1_eta, n_eta_bins, min_eta, max_eta);
-    ADD_TH1F(h_lepton_2_eta, n_eta_bins, min_eta, max_eta);
-    ADD_TH1F(h_lepton_1_phi, n_phi_bins, min_phi, max_phi);
-    ADD_TH1F(h_lepton_2_phi, n_phi_bins, min_phi, max_phi);
-    ADD_TH1F(h_lepton_1_jet_1_dPhi, n_phi_bins, min_phi, max_phi);
-    ADD_TH1F(h_lepton_1_jet_1_dR, n_dR_bins, min_dR, max_dR);
-    ADD_TH1F(h_jet_multiplicity, n_multiplicity_bins, min_multiplicity, max_multiplicity);
-    ADD_TH1F(h_bjet_multiplicity, n_multiplicity_bins, min_multiplicity, max_multiplicity);
+    TH1F h_invariant_mass;
+    TH1F h_sum_pt;
+    TH1F h_met;
+    TH1F h_lepton_1_pt;
+    TH1F h_lepton_2_pt;
+    TH1F h_lepton_1_eta;
+    TH1F h_lepton_2_eta;
+    TH1F h_lepton_1_phi;
+    TH1F h_lepton_2_phi;
+    TH1F h_lepton_1_jet_1_dPhi;
+    TH1F h_lepton_1_jet_1_dR;
+    TH1F h_jet_multiplicity;
+    TH1F h_bjet_multiplicity;
+    TH2F h_lepton_1_pt_eta;
+    TH2F h_lepton_1_pt_phi;
 
-    ZToLepLepX(const std::string &output_path,
-               const std::map<std::string, int> &countMap,
-               bool is_Z_mass_validation = false);
+    double min_bin_width;
+    std::map<std::string, int> countMap;
+    bool is_Z_mass_validation;
+    std::string shift;
 
-    auto fill(Math::PtEtaPhiMVector lepton_1,
-              Math::PtEtaPhiMVector lepton_2,
-              unsigned int nBJet,
-              std::optional<Math::PtEtaPhiMVector> bjet,
-              unsigned int nJet,
-              std::optional<Math::PtEtaPhiMVector> jet,
-              std::optional<float> met,
-              float weight = 1.) -> void;
+    ZToLepLepX() = default;
 
-    auto save_histo(TH1F &histo) -> void;
+    ZToLepLepX(const std::string &_analysis_name,
+               const std::string &_output_path,
+               const std::map<std::string, int> &_countMap,
+               bool _is_Z_mass_validation,
+               const std::string _shift,
+               const std::string &_sample,
+               const std::string &_year,
+               const std::string &_process_group,
+               const std::string &_xs_order);
+
+    auto fill(const Math::PtEtaPhiMVector &lepton_1,
+              const Math::PtEtaPhiMVector &lepton_2,
+              const RVec<Math::PtEtaPhiMVector> &bjets,
+              const RVec<Math::PtEtaPhiMVector> &jets,
+              const RVec<Math::PtEtaPhiMVector> &met,
+              float weight) -> void;
+
+    auto save_histo(TH1 histo) -> void;
+    auto save_histo(TH2 histo) -> void;
 
     auto dump_outputs() -> void;
-    auto dump_outputs(TEfficiency &efficiency) -> void;
 };
 
 #endif // !ZTOLEPLEPX
