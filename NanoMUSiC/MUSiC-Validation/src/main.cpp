@@ -73,7 +73,7 @@ inline auto trigger_filter(const std::string &process,
 
         throw std::runtime_error(
             fmt::format("ERROR: Could not check trigger filter for Data file. The requested process ({}) does not "
-                        "match any pattern.",
+                        "match any dataset pattern.",
                         process));
     }
 
