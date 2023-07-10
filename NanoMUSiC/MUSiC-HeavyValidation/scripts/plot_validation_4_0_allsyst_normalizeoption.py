@@ -52,7 +52,7 @@ def __dir__() -> tuple[str, ...]:
 valid_years = {"2016APV", "2016", "2017", "2018"}
 
 # path of the validation files
-validation_path = "./validation_outputs"
+validation_path = "/home/home1/institut_3a/seth/MUSiC/NanoMUSiC/build/validation_outputs_2023_07_07"
 
 # debug flag, if true more detailed console output is active
 debug = False
@@ -189,16 +189,15 @@ def extract_config(task_config, year):
 
 
 # import one histogram from given root file
-def import_hist(year, sample, file_prefix, hist_name, savepath):
+def import_hist(year, sample, file_prefix, hist_name, savepath, syst, sample_group = "Data", sample_order = "DUMMY"):
     file_path = (
         validation_path
         + "/"
         + str(year)
-        + "/files/"
-        + file_prefix
+        + f"/{sample}/"
         + sample
-        + "_"
-        + str(year)
+        +"_"
+        +str(year)
         + ".root"
     )
     if savepath != "":
@@ -208,15 +207,15 @@ def import_hist(year, sample, file_prefix, hist_name, savepath):
             + str(year)
             + "/"
             + savepath
-            + "/files/"
-            + file_prefix
+            + f"/{sample}/"
             + sample
-            + "_"
-            + str(year)
+            +"_"
+            +str(year)
             + ".root"
         )
     rootfile = uproot.open(file_path)
-    hist = rootfile[hist_name]
+    sample_hist_name = f"[{file_prefix}]_[{sample_group}]_[{sample_order}]_[{sample}]_[{year}]_[{syst}]_[{hist_name}]"
+    hist = rootfile[sample_hist_name]
     counts = hist.values()
     errcounts = hist.errors()
     edges = hist.axis().edges()
@@ -304,6 +303,7 @@ def create_arguments(
     datasamples,
     mcsamples,
     mcsorted,
+    mc_order,
     histname,
     color_dict,
     aggregation_dict,
@@ -327,6 +327,7 @@ def create_arguments(
             "datasamples": datasamples,
             "mcsamples": mcsamples,
             "mcsorted": mcsorted,
+            "mc_order": mc_order,
             "histname": histname,
             "histname": histname,
             "color_dict": color_dict,
@@ -341,6 +342,20 @@ def create_arguments(
     )
     return plotting_arguments
 
+# Gets the process group of the sample
+def get_sample_group(sample, mc_sorted):
+    for group in mc_sorted.keys():
+        if sample in mc_sorted[group]:
+            return group
+
+def get_sample_order(sample_name, mc_order):
+    for sample in mc_order:
+        if sample == sample_name:
+            return mc_order[sample]
+
+
+
+
 
 # imports, sorts and stacks data and mc from input files
 # and processes mc errors
@@ -353,6 +368,7 @@ def stacker(
     datasamples,
     mcsamples,
     mcsorted,
+    mc_order,
     histname,
     color_dict,
     aggregation_dict,
@@ -395,9 +411,11 @@ def stacker(
     printdebug(f"Importing {len(mcsamples)} mc histograms for year {year}...")
     for syst in systematics:
         for sample in mcsamples:
-            fileprefix_syst = fileprefix + syst + "_"  # add syst name to file prefix
+            sample_group = get_sample_group(sample, mcsorted)
+            sample_order = get_sample_order(sample, mc_order)
+            # fileprefix_syst = fileprefix + syst + "_"  # add syst name to file prefix
             samplecounts, sampleedges, sampleerrors = import_hist(
-                year, sample, fileprefix_syst, histname, savepath
+                year, sample, fileprefix, histname, savepath, syst, sample_group, sample_order # type: ignore
             )
             if syst in mccounts.keys():
                 mccounts[syst].update({sample: samplecounts})
@@ -412,9 +430,9 @@ def stacker(
     printdebug(f"Importing {len(datasamples)} data histograms for year {year}...")
     for syst in ["Nominal"]:  # only nominal for data
         for sample in datasamples:
-            fileprefix_syst = fileprefix + syst + "_"  # add syst name to file prefix
+            # fileprefix_syst = fileprefix + syst + "_"  # add syst name to file prefix
             samplecounts, sampleedges, sampleerrors = import_hist(
-                year, sample, fileprefix_syst, histname, savepath
+                year, sample, fileprefix, histname, savepath, syst,
             )
             if syst in datacounts.keys():
                 datacounts[syst].update({sample: samplecounts})
@@ -435,11 +453,11 @@ def stacker(
         for syst in ["Nominal"]:  # only nominal for signal
             for sample in signalsamples:
                 # import signal histograms (only nominal)
-                fileprefix_syst = (
-                    fileprefix + syst + "_"
-                )  # add syst name to file prefix
+                # fileprefix_syst = (
+                #     fileprefix + syst + "_"
+                # )  # add syst name to file prefix
                 samplecounts, sampleedges, sampleerrors = import_hist(
-                    year, sample, fileprefix_syst, histname, savepath
+                    year, sample, fileprefix, histname, savepath, syst,
                 )
                 # optional signal amplification (default factor 1)
                 samplecounts *= signalamplification
@@ -809,6 +827,7 @@ def plotter(args):
         datasamples,
         mcsamples,
         mcsorted,
+        mc_order,
         histname,
         color_dict,
         aggregation_dict,
@@ -845,6 +864,7 @@ def plotter(args):
         datasamples,
         mcsamples,
         mcsorted,
+        mc_order,
         histname,
         color_dict,
         aggregation_dict,
@@ -1397,6 +1417,11 @@ def main():
     datasamples = [sample for sample in dataconfig]
     mcsamples = [sample for sample in mcconfig]
 
+    # extract the process order for each sample
+    mc_order = {}
+    for sample in mcconfig:
+        mc_order[sample] = mcconfig[sample]["XSecOrder"] 
+
     # sort mc samples in their groups
     mcgroups = set(
         [mcconfig[i]["ProcessGroup"] for i in mcconfig.keys()]
@@ -1511,6 +1536,7 @@ def main():
                 datasamples,
                 mcsamples,
                 mcsorted,
+                mc_order,
                 histname,
                 color_dict,
                 aggregation_dict,
@@ -1533,6 +1559,7 @@ def main():
                     datasamples,
                     mcsamples,
                     mcsorted,
+                    mc_order,
                     histname,
                     color_dict,
                     aggregation_dict,
@@ -1546,7 +1573,7 @@ def main():
                 )
 
     # perform plotting with multitasking
-    print(f"Start the {len(plotting_arguments)} plotting jobs.")
+    print(f"Starting {len(plotting_arguments)} plotting jobs.")
     with Pool(min(args.jobs, len(plotting_arguments))) as pool:
         list(
             tqdm(
@@ -1562,3 +1589,9 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+"""
+[z_to_mu_mu_x]_[DrellYan]_[NLO]__[DYJetsToLL_LHEFilterPtZ-100To250_MatchEWPDG20_13TeV_AM]_[2018]_[Nominal]_[h_met]
+[z_to_mu_mu_x]_[DrellYan]_[NLO]_[DYJetsToLL_LHEFilterPtZ-100To250_MatchEWPDG20_13TeV_AM]_[2018]_[Nominal]_[h_met]
+"""
