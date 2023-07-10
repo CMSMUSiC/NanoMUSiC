@@ -41,7 +41,9 @@ add_executable(
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/NanoObjects.cpp //
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/JetCorrector.cpp //
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/NanoEventClass/src/NanoEventClass.cpp //
+    src/WToLepNu.cpp //
     src/ZToLepLepX.cpp //
+    
 
     # src/Dijets.cpp //
 )

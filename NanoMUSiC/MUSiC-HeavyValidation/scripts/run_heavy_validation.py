@@ -270,13 +270,13 @@ def files_to_process(file_limit, year, output_files):
     if file_limit < 0:
         return list(
             filter(
-                lambda file: f"{year}_date" in file,
+                lambda file: f"_{year}/" in file,
                 output_files,
             )
         )
     return list(
         filter(
-            lambda file: f"{year}_date" in file,
+            lambda file: f"_{year}/" in file,
             output_files,
         )
     )[:file_limit]

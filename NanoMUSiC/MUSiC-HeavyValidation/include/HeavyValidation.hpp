@@ -4,6 +4,7 @@
 // analysis classes
 // #include "Dijets.hpp"
 #include "ZToLepLepX.hpp"
+#include "WToLepNu.hpp"
 
 #include <optional>
 #include <stdexcept>
