@@ -5,6 +5,7 @@
 // #include "Dijets.hpp"
 #include "GammaPlusJet.hpp"
 #include "TTBarTo1Lep2Bjet2JetMET.hpp"
+#include "WToLepNu.hpp"
 #include "ZToLepLepX.hpp"
 
 #include <optional>

@@ -186,7 +186,7 @@ def main():
         print("data_hist:")
         data_hist.Print()
 
-    data_hist.SetMaximum(800.0)
+    # data_hist.SetMaximum(800.0)
 
     # Stack the background
     # TODO: check integral and reorder

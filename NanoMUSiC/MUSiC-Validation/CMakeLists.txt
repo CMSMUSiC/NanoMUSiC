@@ -44,6 +44,7 @@ add_executable(
     src/ZToLepLepX.cpp //
     src/GammaPlusJet.cpp //
     src/TTBarTo1Lep2Bjet2JetMET.cpp //
+    src/WToLepNu.cpp //
 
     # src/Dijets.cpp //
 )

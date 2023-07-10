@@ -90,27 +90,23 @@ inline auto get_year_for_tau_sf(Year year) -> std::string
     }
 }
 
-inline auto make_taus(const RVec<float> &Photon_pt,  //
-                      const RVec<float> &Photon_eta, //
-                      const RVec<float> &Photon_phi, //
-                      const RVec<bool> &Photon_isScEtaEB,
-                      const RVec<bool> &Photon_isScEtaEE,
-                      const RVec<Int_t> &Photon_cutBased,             //
-                      const RVec<bool> &Photon_pixelSeed,             //
-                      const RVec<float> &Photon_dEscaleUp,            //
-                      const RVec<float> &Photon_dEscaleDown,          //
-                      const RVec<float> &Photon_dEsigmaUp,            //
-                      const RVec<float> &Photon_dEsigmaDown,          //
-                      const RVec<int> &Photon_genPartIdx,             //
-                      const CorrectionlibRef_t &photon_sf,            //
-                      const CorrectionlibRef_t &photon_pixel_veto_sf, //
-                      bool is_data,                                   //
-                      const std::string &_year,                       //
+inline auto make_taus(const RVec<float> &Tau_pt,  //
+                      const RVec<float> &Tau_eta, //
+                      const RVec<float> &Tau_phi, //
+                      const RVec<float> &Tau_dz,                        //
+                      const RVec<float> &Tau_mass,                      //    
+                      const RVec<int> &Tau_genPartIdx,                  //    
+                      const RVec<int> &Tau_decayMode,                   //    
+                      const RVec<UChar_t> &Tau_idDeepTau2017v2p1VSe,    //        
+                      const RVec<UChar_t> &Tau_idDeepTau2017v2p1VSmu,   //        
+                      const RVec<UChar_t> &Tau_idDeepTau2017v2p1VSjet,  //    
+                      bool is_data,                                     //
+                      const std::string &_year,                         //
                       const std::string &shift) -> MUSiCObjects
 {
     auto year = get_runyear(_year);
 
-    auto photons_p4 = RVec<Math::PtEtaPhiMVector>{};
+    auto taus_p4 = RVec<Math::PtEtaPhiMVector>{};
     auto scale_factors = RVec<double>{};
     auto scale_factor_up = RVec<double>{};
     auto scale_factor_down = RVec<double>{};
@@ -118,63 +114,43 @@ inline auto make_taus(const RVec<float> &Photon_pt,  //
     auto delta_met_y = RVec<double>{};
     auto is_fake = RVec<bool>{};
 
-    for (std::size_t i = 0; i < Photon_pt.size(); i++)
+    for (std::size_t i = 0; i < Tau_pt.size(); i++)
     {
-        bool is_good_photon_pre_filter = (Photon_isScEtaEB[i])         //
-                                         and (not Photon_isScEtaEE[i]) // only EB photons
-                                         and (Photon_cutBased[i] >= ObjConfig::Photons[year].cutBasedId) //
-                                         and (Photon_pixelSeed[i] == false);
+        bool is_good_tau_pre_filter =       ((Tau_idDeepTau2017v2p1VSe[i] & 32) == 32)      //(Tau_idDeepTau2017v2p1VSe[i] >= 63)
+                                        and ((Tau_idDeepTau2017v2p1VSjet[i] & 32) == 32)    //(Tau_idDeepTau2017v2p1VSjet[i] >= 63)    
+                                        and ((Tau_idDeepTau2017v2p1VSmu[i] & 8) == 8)       //(Tau_idDeepTau2017v2p1VSmu[i] >= 15)
+                                        and (Tau_decayMode[i] != 5)
+                                        and (Tau_decayMode[i] != 6)
+                                        and (std::fabs(Tau_eta[i]) <= 2.1)
+                                        and (std::fabs(Tau_dz[i]) < 0.2);
 
-        if (is_good_photon_pre_filter)
+        if (is_good_tau_pre_filter)
         {
-            auto photon_p4 = Math::PtEtaPhiMVector(Photon_pt[i], Photon_eta[i], Photon_phi[i], PDG::Photon::Mass);
-            photon_p4 = photon_p4 * get_photon_energy_corrections(shift,
-                                                                  Photon_dEscaleUp[i],
-                                                                  Photon_dEscaleDown[i],
-                                                                  Photon_dEsigmaUp[i],
-                                                                  Photon_dEsigmaDown[i],
-                                                                  photon_p4.energy());
+            auto tau_p4 = Math::PtEtaPhiMVector(Tau_pt[i], Tau_eta[i], Tau_phi[i], PDG::Tau::Mass);
+            
+                    
+            bool is_good_tau =  (tau_p4.pt() >= 100. ) and is_good_tau_pre_filter; //look for 130 / 160 / 190 efficiency
 
-            bool is_good_photon = (photon_p4.pt() >= ObjConfig::Photons[year].MinPt) and is_good_photon_pre_filter;
-
-            if (is_good_photon)
+            if (is_good_tau)
             {
 
-                scale_factors.push_back( //
-                    MUSiCObjects::get_scale_factor(
-                        photon_sf,
-                        is_data,
-                        {get_year_for_photon_sf(year), "sf", "Tight", photon_p4.eta(), photon_p4.pt()}) *
-                    MUSiCObjects::get_scale_factor(
-                        photon_pixel_veto_sf, is_data, {get_year_for_photon_sf(year), "sf", "Tight", "EBInc"}));
+                    // fmt::print("\n Mass of Taus: {}\n", Tau_mass[i]);
+                    // fmt::print("\n Reference Mass of Taus: {}\n", PDG::Tau::Mass);
 
-                scale_factor_up.push_back( //
-                    MUSiCObjects::get_scale_factor(
-                        photon_sf,
-                        is_data,
-                        {get_year_for_photon_sf(year), "sfup", "Tight", photon_p4.eta(), photon_p4.pt()}) *
-                    MUSiCObjects::get_scale_factor(
-                        photon_pixel_veto_sf, is_data, {get_year_for_photon_sf(year), "sfup", "Tight", "EBInc"}));
+                scale_factors.push_back(1.);     //
+                scale_factor_up.push_back(1.);   //
+                scale_factor_down.push_back(1.); //
+                taus_p4.push_back(tau_p4);
 
-                scale_factor_down.push_back( //
-                    MUSiCObjects::get_scale_factor(
-                        photon_sf,
-                        is_data,
-                        {get_year_for_photon_sf(year), "sfdown", "Tight", photon_p4.eta(), photon_p4.pt()}) *
-                    MUSiCObjects::get_scale_factor(
-                        photon_pixel_veto_sf, is_data, {get_year_for_photon_sf(year), "sfdown", "Tight", "EBInc"}));
+                delta_met_x.push_back((tau_p4.pt() - Tau_pt[i]) * std::cos(Tau_phi[i]));
+                delta_met_y.push_back((tau_p4.pt() - Tau_pt[i]) * std::sin(Tau_phi[i]));
 
-                photons_p4.push_back(photon_p4);
-
-                delta_met_x.push_back((photon_p4.pt() - Photon_pt[i]) * std::cos(Photon_phi[i]));
-                delta_met_y.push_back((photon_p4.pt() - Photon_pt[i]) * std::sin(Photon_phi[i]));
-
-                is_fake.push_back(is_data ? false : Photon_genPartIdx[i] == -1);
+                is_fake.push_back(is_data ? false : Tau_genPartIdx[i] == -2);
             }
         }
     }
 
-    return MUSiCObjects(photons_p4,        //
+    return MUSiCObjects(taus_p4,        //
                         scale_factors,     //
                         scale_factor_up,   //
                         scale_factor_down, //
