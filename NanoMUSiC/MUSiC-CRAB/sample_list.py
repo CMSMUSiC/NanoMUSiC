@@ -21,7 +21,7 @@ def get_extension_suffix(idx: int):
     return ""
 
 
-def make_sample_list(xSection_file_path):
+def make_sample_list(xSection_file_path, global_now):
     input_file = ""
     input_file = xSection_file_path
 
@@ -43,6 +43,7 @@ def make_sample_list(xSection_file_path):
                         get_era(process_name, xsections[process_name]["is_data"]),
                         xsections[process_name]["is_data"],
                         generator_filter_key,
+                        global_now,
                     )
                 )
         if "das_name_2016" in xsections[process_name]:
@@ -57,6 +58,7 @@ def make_sample_list(xSection_file_path):
                         get_era(process_name, xsections[process_name]["is_data"]),
                         xsections[process_name]["is_data"],
                         generator_filter_key,
+                        global_now,
                     )
                 )
         if "das_name_2017" in xsections[process_name]:
@@ -71,6 +73,7 @@ def make_sample_list(xSection_file_path):
                         get_era(process_name, xsections[process_name]["is_data"]),
                         xsections[process_name]["is_data"],
                         generator_filter_key,
+                        global_now,
                     )
                 )
         if "das_name_2018" in xsections[process_name]:
@@ -85,6 +88,7 @@ def make_sample_list(xSection_file_path):
                         get_era(process_name, xsections[process_name]["is_data"]),
                         xsections[process_name]["is_data"],
                         generator_filter_key,
+                        global_now,
                     )
                 )
         else:

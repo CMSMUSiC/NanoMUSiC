@@ -18,17 +18,34 @@ import collections
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("username", help="Username of the dCache owner.")
+parser.add_argument(
+    "-u",
+    "--username",
+    required=True,
+    help="Username of the dCache owner.",
+)
+
+parser.add_argument(
+    "-dt",
+    "--datetime",
+    help="Submition date and time.",
+    type=str,
+    required=True,
+)
+
 parser.add_argument(
     "xsection_file_path",
     help="Give path to the toml file containing cross-section and das_name per sample.",
 )
+
 parser.add_argument(
     "-j", "--jobs", help="Simultanious number of jobs.", type=int, default=10
 )
+
 parser.add_argument(
     "--btag", help="Will collect outpouts for the BTagging Efficeincy code.", type=bool
 )
+
 args = parser.parse_args()
 
 
@@ -89,8 +106,9 @@ def main():
 
     job_list = xsection_list
 
-    cmd_str = r"""srmls  -recursion_depth=999 "srm://grid-srm.physik.rwth-aachen.de:8443/srm/managerv2?SFN=/pnfs/physik.rwth-aachen.de/cms/store/user/__USERNAME__/nano_music/__taskname__/" """
+    cmd_str = r"""srmls  -recursion_depth=999 "srm://grid-srm.physik.rwth-aachen.de:8443/srm/managerv2?SFN=/pnfs/physik.rwth-aachen.de/cms/store/user/__USERNAME__/nano_music___DATETIME__/__taskname__/" """
     cmd_str = cmd_str.replace("__USERNAME__", args.username)
+    cmd_str = cmd_str.replace("__DATETIME__", args.datetime)
 
     print(f"--> Collecting outputs path ...")
     with multiprocessing.Pool(args.jobs) as pool:

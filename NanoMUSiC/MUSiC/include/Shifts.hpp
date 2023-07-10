@@ -110,7 +110,7 @@ class Shifts
 
   public:
     Shifts(bool is_data)
-        // : m_constant_shifts(is_data ? std::vector<std::string>{"Nominal"}
+        // : m_constant_shifts(std::vector<std::string>{"Nominal"}),
         : m_constant_shifts(is_data ? std::vector<std::string>{"Nominal"}
                                     : std::vector<std::string>{"Nominal",          //
                                                                "PU_Up",            //
@@ -123,6 +123,8 @@ class Shifts
                                                                "ScaleFactor_Down", //
                                                                "PreFiring_Up",     //
                                                                "PreFiring_Down"}),
+
+          //   m_differential_shifts(std::vector<std::string>{"Nominal"})
           m_differential_shifts(is_data ? std::vector<std::string>{"Nominal"}
                                         : std::vector<std::string>{"Nominal", //
                                                                               //    "MuonResolution_Up",       //
@@ -318,7 +320,8 @@ class Shifts
         }
 
         return std::reduce(
-                   muons.scale_factor.begin(), muons.scale_factor.begin() + n_muons, 1., std::multiplies<double>()) //
+                   muons.scale_factor.begin(), muons.scale_factor.begin() + n_muons, 1., std::multiplies<double>())
+               //
                * std::reduce(electrons.scale_factor.begin(),
                              electrons.scale_factor.begin() + n_electrons,
                              1.,
@@ -328,7 +331,8 @@ class Shifts
                              1.,
                              std::multiplies<double>()) //
                * std::reduce(
-                     bjets.scale_factor.begin(), bjets.scale_factor.begin() + n_bjets, 1., std::multiplies<double>()) //
+                     bjets.scale_factor.begin(), bjets.scale_factor.begin() + n_bjets, 1., std::multiplies<double>())
+               //
                * std::reduce(
                      jets.scale_factor.begin(), jets.scale_factor.begin() + n_jets, 1., std::multiplies<double>()) //
                * std::reduce(met.scale_factor.begin(), met.scale_factor.begin() + n_met, 1., std::multiplies<double>());

@@ -23,6 +23,8 @@ inline auto make_met(const float met_pt,                      //
                      const float delta_met_py_from_muons,     //
                      const float delta_met_px_from_electrons, //
                      const float delta_met_py_from_electrons, //
+                     const float delta_met_px_from_taus,      //
+                     const float delta_met_py_from_taus,      //
                      const float delta_met_px_from_photons,   //
                      const float delta_met_py_from_photons,   //
                      const float delta_met_px_from_jets,      //
@@ -46,6 +48,7 @@ inline auto make_met(const float met_pt,                      //
     auto met_px = met_pt * std::cos(met_phi)    //
                   + delta_met_px_from_muons     //
                   + delta_met_px_from_electrons //
+                  + delta_met_px_from_taus      //
                   + delta_met_px_from_photons   //
                   + delta_met_px_from_jets      //
                   + delta_met_px_from_bjets;
@@ -53,6 +56,7 @@ inline auto make_met(const float met_pt,                      //
     auto met_py = met_pt * std::sin(met_phi)    //
                   + delta_met_py_from_muons     //
                   + delta_met_py_from_electrons //
+                  + delta_met_py_from_taus      //
                   + delta_met_py_from_photons   //
                   + delta_met_py_from_jets      //
                   + delta_met_py_from_bjets;
