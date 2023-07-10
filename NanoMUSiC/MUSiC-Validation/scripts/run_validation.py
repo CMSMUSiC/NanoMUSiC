@@ -4,14 +4,11 @@ import multiprocessing
 from multiprocessing import Pool
 from typing import Any
 from tqdm import tqdm
-import toml
+import toml  # type: ignore
 import argparse
 import os
 import subprocess
 import shlex
-import tempfile
-from collections import defaultdict
-from pprint import pprint
 
 from local_condor import submit_condor_task
 
@@ -403,6 +400,7 @@ def main():
         )
         exit(0)
 
+    # load analysis config file
     task_config_file: str = args.config
     task_config: dict[str, Any] = toml.load(task_config_file)
 
@@ -432,7 +430,11 @@ def main():
                                     sample,
                                     year,
                                     f"{args.output}/validation_outputs/{year}/{sample}",
-                                    task_config[sample]["output_files"],
+                                    files_to_process(
+                                        -1,
+                                        year,
+                                        task_config[sample]["output_files"],
+                                    ),
                                     args.debug,
                                 )
                             )

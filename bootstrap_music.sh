@@ -31,3 +31,7 @@ cd $SCRIPT_DIR
 
 # install poxy (documentation generation manager, based on doxygen)
 pip install --user poxy
+
+# install atlasplot
+# clould be usefull in the future, for debugging or even, ploting itself
+# pip install --user atlasplots

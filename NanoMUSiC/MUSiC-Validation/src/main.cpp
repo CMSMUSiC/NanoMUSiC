@@ -37,6 +37,21 @@ inline auto trigger_filter(const std::string &process,
     // Data
     if (is_data)
     {
+
+        // Muon dataset
+        if (process.find("Muon") != std::string::npos)
+        {
+            if (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger)
+            {
+                trigger_filter_res = {{"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},
+                                      {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},
+                                      {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},
+                                      {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger}};
+            }
+
+            return trigger_filter_res;
+        }
+
         // Electron/Photon/EGamma dataset
         if (                                                 //
             process.find("EGamma") != std::string::npos      //
@@ -47,24 +62,19 @@ inline auto trigger_filter(const std::string &process,
             if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) and
                 (pass_low_pt_electron_trigger or pass_high_pt_electron_trigger))
             {
-                trigger_filter_res = {{"pass_low_pt_muon_trigger", false},
-                                      {"pass_high_pt_muon_trigger", false},
+                trigger_filter_res = {{"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},
+                                      {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},
                                       {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},
                                       {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger}};
             }
+
+            return trigger_filter_res;
         }
 
-        // Muon dataset
-        else if ((pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) and
-                 not(pass_low_pt_electron_trigger or pass_high_pt_electron_trigger))
-        {
-            trigger_filter_res = {{"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},
-                                  {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},
-                                  {"pass_low_pt_electron_trigger", false},
-                                  {"pass_high_pt_electron_trigger", false}};
-        }
-
-        return trigger_filter_res;
+        throw std::runtime_error(
+            fmt::format("ERROR: Could not check trigger filter for Data file. The requested process ({}) does not "
+                        "match any pattern.",
+                        process));
     }
 
     // MC
@@ -135,7 +145,7 @@ auto main(int argc, char *argv[]) -> int
     const double luminosity = std::stod(luminosity_str);
 
     // clear output path
-    std::system(fmt::format("rm -rf {}/*.root", output_path).c_str());
+    std::system(fmt::format("rm -rf {}/*.root  >/dev/null 2>&1", output_path).c_str());
 
     // create tree reader and add values and arrays
     TChain input_chain("nano_music");
@@ -755,7 +765,7 @@ auto main(int argc, char *argv[]) -> int
             // Here goes the real analysis...
             for (auto &&const_shift : shifts.get_constant_shifts(diff_shift))
             {
-                if (const_shift == "Nominal")
+                if (const_shift == "Nominal" or diff_shift == "Nominal")
                 {
                     // get effective event weight
                     double weight = 1.;
@@ -962,6 +972,7 @@ auto main(int argc, char *argv[]) -> int
         ttbar_to_1ele_2bjet_2jet_MET[shift].dump_outputs();
         // dijets.dump_outputs();
     }
+
     for (auto &&shift : shifts.get_differential_shifts())
     {
         if (shift != "Nominal")
