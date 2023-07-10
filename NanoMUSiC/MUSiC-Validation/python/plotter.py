@@ -200,7 +200,7 @@ class Plotter:
         ax2.set_xlabel(x_axis_label, loc="right")
 
         # fig.tight_layout()
-        
+
         self.print_canvas(fig, histogram_name)
 
         # all open plots are correctly closed
