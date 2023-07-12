@@ -41,7 +41,8 @@ inline auto trigger_filter(const std::string &process,
         // Muon dataset
         if (process.find("Muon") != std::string::npos)
         {
-            if (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger)
+            // if (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger)
+            if (pass_low_pt_muon_trigger)
             {
                 trigger_filter_res = {{"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},
                                       {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},
@@ -59,8 +60,8 @@ inline auto trigger_filter(const std::string &process,
             or process.find("Photon") != std::string::npos   //
         )
         {
-            if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) and
-                (pass_low_pt_electron_trigger or pass_high_pt_electron_trigger))
+            // if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) and
+            if (not(pass_low_pt_muon_trigger) and (pass_low_pt_electron_trigger or pass_high_pt_electron_trigger))
             {
                 trigger_filter_res = {{"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},
                                       {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},
@@ -78,8 +79,9 @@ inline auto trigger_filter(const std::string &process,
     }
 
     // MC
-    if (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger or pass_low_pt_electron_trigger or
-        pass_high_pt_electron_trigger)
+    // if (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger or pass_low_pt_electron_trigger or
+    //     pass_high_pt_electron_trigger)
+    if (pass_low_pt_muon_trigger or pass_low_pt_electron_trigger or pass_high_pt_electron_trigger)
     {
         trigger_filter_res = {{"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},
                               {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},
