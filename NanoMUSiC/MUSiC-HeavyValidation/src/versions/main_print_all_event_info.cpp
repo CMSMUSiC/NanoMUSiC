@@ -6,9 +6,7 @@
 #include "HeavyValidation.hpp"
 
 #include "Configs.hpp"
-#include "Math/Vector4D.h"
 #include "Math/Vector4Dfwd.h"
-#include "Math/VectorUtil.h"
 #include "Outputs.hpp"
 #include "ROOT/RVec.hxx"
 #include "RtypesCore.h"
@@ -55,6 +53,50 @@ inline auto update_class(std::set<std::string> &eventclass,
         classes[c_name] += weight;               // add weight to class count
         classes_stat[c_name] += weight * weight; // add weight^2 to syst_err^2
     }
+}
+
+auto printpt(RVec<Math::PtEtaPhiMVector> vector) -> std::string
+{
+    std::string output = "{";
+    for (size_t i = 0; i < vector.size(); i++)
+    {
+        output.append(fmt::format("{},\n", vector.at(i).pt()));
+    }
+    output.append("},");
+    return output;
+}
+
+auto printeta(RVec<Math::PtEtaPhiMVector> vector) -> std::string
+{
+    std::string output = "{";
+    for (size_t i = 0; i < vector.size(); i++)
+    {
+        output.append(fmt::format("{},\n", vector.at(i).eta()));
+    }
+    output.append("},");
+    return output;
+}
+
+auto printphi(RVec<Math::PtEtaPhiMVector> vector) -> std::string
+{
+    std::string output = "{";
+    for (size_t i = 0; i < vector.size(); i++)
+    {
+        output.append(fmt::format("{},\n", vector.at(i).phi()));
+    }
+    output.append("},");
+    return output;
+}
+
+auto printvec(RVec<float> vector) -> std::string
+{
+    std::string output = "{";
+    for (size_t i = 0; i < vector.size(); i++)
+    {
+        output.append(fmt::format("{},\n", vector.at(i)));
+    }
+    output.append("},");
+    return output;
 }
 
 // string parser (separate string to set/vector of substrings)
@@ -194,6 +236,18 @@ auto main(int argc, char *argv[]) -> int
 
         exit(-1);
     }
+    // arguments for event info
+    const std::string event_argument = cmdl({"-evt", "--event"}).str();
+    const std::string lumisection_argument = cmdl({"-lsec", "--lumisection"}).str();
+    const std::string run_argument = cmdl({"-run", "--runnumber"}).str();
+    if (event_argument == "" or lumisection_argument == "" or run_argument == "")
+    {
+        throw std::runtime_error("No event, lumisection or runnumber was given although required.");
+    }
+    const unsigned long event_tofind = std::stoul(event_argument);
+    const unsigned long lumisection_tofind = std::stoul(lumisection_argument);
+    const unsigned long run_tofind = std::stoul(run_argument);
+
     // read in constants from argument (convert to float)
     const float x_section = std::stof(x_section_str);
     const float filter_eff = std::stof(filter_eff_str);
@@ -305,27 +359,15 @@ auto main(int argc, char *argv[]) -> int
     ADD_VALUE_READER(MET_pt, float);
     ADD_VALUE_READER(MET_phi, float);
 
+    ADD_VALUE_READER(run, UInt_t);
+    ADD_VALUE_READER(luminosityBlock, UInt_t);
+    ADD_VALUE_READER(event, ULong64_t);
+
     // build jetclass analysis
     if (debugprint)
     {
         std::cout << "Read in class information." << std::endl;
     }
-    // format: "xJ+yBJ"/"xJ+yBJ+X"/"xJ+yBJ+nJ" for exclusive/all-inclusive/jet-inclusive class containing x jets and y
-    // bjets is currently extracted from the -tv argument: -tv argument string: "classname1,classname2..." has to be
-    // separated
-    auto to_validate = parsestring_set(tv_argument, ',');
-    bool plotclasses = false;                            // at least one class validation should be executed
-    bool countclasses = false;                           // the class counts should be calculated
-    if (to_validate.find("COUNTS") != to_validate.end()) // check whether class counts should be calculated
-    {
-        countclasses = true;
-        to_validate.erase("COUNTS"); // erase element because it is not a class name
-    }
-    if (to_validate.size() >= 1) // check whether a class validation (create histograms for class) should be executed
-    {
-        plotclasses = true;
-    }
-    // ==> classname convention: xJ+yBJ+zMET(+XJ)
 
     // systematics prefixes (systnames): Nominal or Syst_Up/Down stored in Shifts class
     const auto shifts = Shifts(is_data);
@@ -339,26 +381,8 @@ auto main(int argc, char *argv[]) -> int
     {
         std::cout << "Initialize the custom JetClass validation instances and files." << std::endl;
     }
-    // jet classification instances: saved in a map {classname: pointer to jet class validation instance}
-    // nl: nominal, up: systematic up, dn: systematic down
-    std::map<std::string, JetClass2 *> validation_classes;
-    // stores validation classes: {classname: jetclass instance pointer}
-    // fill maps
-    if (plotclasses) // only if classes should be plotted
-    {
-        for (const auto &c_name : to_validate)
-        {
-            validation_classes[c_name] =
-                new JetClass2(fmt::format("{}/{}_{}_{}_{}.root", output_path, c_name, shift, process, year), c_name);
-            // file format: classname_systname/shift_samplename_year.root (classname includes shift/systname after
-            // underscore)
-        }
-    }
-
-    // classes event counts map: {classname: counts}
-    std::map<std::string, float> classes;
-    // classes event counts systematic errors map: {classname: squared syst error}
-    std::map<std::string, float> classes_stat;
+    // classes event info map
+    std::map<std::string, std::set<std::map<std::string, unsigned long>>> classes_events;
 
     // quality control to order argument
     const std::set<std::string> allowed_orders{"LO", "NLO", "NNLO", "N3LO"};
@@ -376,30 +400,13 @@ auto main(int argc, char *argv[]) -> int
 
     // file where the class counts are stored
     std::ofstream classfile;
+    // file where the class event info are stored
+    std::ofstream classeventfile;
 
     // read in demanded jet triggers and thresholds from argument
     if (debugprint)
     {
         std::cout << "Read in trigger information." << std::endl;
-    }
-    // is currently extracted from the -trg argument:
-    // -tv argument string: "HT1600,PT600" has to be separated
-    std::vector<bool> trigger_flags{false, false};   // contains {PT on/off, HT on/off }
-    std::vector<float> trigger_thresholds{0.f, 0.f}; // contains {PT thres, HT thres}
-    auto trigger_strings = parsestring_set(trigger_argument, ',');
-    for (const auto &trigger_string : trigger_strings)
-    {
-        auto trigger_parameters = parsestring_vec(trigger_string, 'T'); // vector that contains {"P"/"H", "number"}
-        if (trigger_parameters.at(0) == "P")
-        {
-            trigger_flags.at(0) = true;
-            trigger_thresholds.at(0) = std::stof(trigger_parameters.at(1));
-        }
-        else if (trigger_parameters.at(0) == "H")
-        {
-            trigger_flags.at(1) = true;
-            trigger_thresholds.at(1) = std::stof(trigger_parameters.at(1));
-        }
     }
 
     // build corrections
@@ -503,7 +510,7 @@ auto main(int argc, char *argv[]) -> int
         std::cout << "Start event loop." << std::endl;
     }
     //  launch event loop for Data or MC
-    for (auto &&event : tree_reader)
+    for (auto &&event_tree : tree_reader)
     {
         // check for chain readout quaility
         // REFERENCE: https://root.cern.ch/doc/v608/classTTreeReader.html#a568e43c7d7d8b1f511bbbeb92c9094a8
@@ -518,7 +525,7 @@ auto main(int argc, char *argv[]) -> int
             throw std::runtime_error(fmt::format("ERROR: Could not load TChain entry."));
         }
 
-        (void)event; // remove the "unused variable" warning during compilation
+        (void)event_tree; // remove the "unused variable" warning during compilation
 
         if (debugprint)
         {
@@ -526,7 +533,7 @@ auto main(int argc, char *argv[]) -> int
         }
 
         /* EVENT BREAK IF NECESSARY
-        if (event > 10000)
+        if (event_tree > 10000)
         {
             throw std::runtime_error("finished after given event break");
             break;
@@ -534,16 +541,9 @@ auto main(int argc, char *argv[]) -> int
         */
         // std::cout << "****************\nEvent No. " << event << std::endl;
 
-        // JET TRIGGER
+        // JET TRIGGER HT
         bool is_good_trigger = false;
-        if (trigger_flags.at(0)) // PT trigger
-        {
-            is_good_trigger = is_good_trigger || unwrap(pass_jet_pt_trigger);
-        }
-        if (trigger_flags.at(1)) // HT trigger
-        {
-            is_good_trigger = is_good_trigger || unwrap(pass_jet_ht_trigger);
-        }
+        is_good_trigger = is_good_trigger || unwrap(pass_jet_ht_trigger);
         if (not(is_good_trigger))
         {
             continue; // skip if no trigger fired
@@ -554,10 +554,36 @@ auto main(int argc, char *argv[]) -> int
         }
 
         // BUILD GOOD OBJECTS (selection level objects)
-        // muons
-        // build good objects
-        // dont correct systematics for muons, electrons, photons since they are only used to veto
-        auto muons = ObjectFactories::make_muons(unwrap(Muon_pt),             //
+
+        auto run_current = (unsigned long)unwrap(run);
+        auto luminosityBlockcurrent = (unsigned long)unwrap(luminosityBlock);
+        auto event_current = (unsigned long)unwrap(event);
+
+        auto Muon_pt_unwrapped = unwrap(Muon_pt);
+        auto Electron_pt_unwrapped = unwrap(Electron_pt);
+        auto Photon_pt_unwrapped = unwrap(Photon_pt);
+        auto Jet_pt_unwrapped = unwrap(Jet_pt);
+
+        if (run_tofind == run_current and lumisection_tofind == luminosityBlockcurrent and
+            event_tofind == event_current)
+        {
+            classeventfile.open(fmt::format("{}/eventinfo_{}_{}_{}.toml", output_path, shift, process, year).c_str());
+            classeventfile << "[event_info]\n";
+            classeventfile << "\"run\" = " << run_tofind << "\n";
+            classeventfile << "\"lumi\" = " << lumisection_tofind << "\n";
+            classeventfile << "\"event\" = " << event_tofind << "\n";
+
+            classeventfile << "\n\n[pf_electrons_pt]\n";
+            classeventfile << printvec(Electron_pt_unwrapped);
+            classeventfile << "\n[pf_photons_pt]\n";
+            classeventfile << printvec(Photon_pt_unwrapped);
+            classeventfile << "\n[pf_muons_pt]\n";
+            classeventfile << printvec(Muon_pt_unwrapped);
+            classeventfile << "\n[pf_jets_pt]\n";
+            classeventfile << printvec(Jet_pt_unwrapped);
+        }
+
+        auto muons = ObjectFactories::make_muons(Muon_pt_unwrapped,           //
                                                  unwrap(Muon_eta),            //
                                                  unwrap(Muon_phi),            //
                                                  unwrap(Muon_tightId),        //
@@ -575,7 +601,7 @@ auto main(int argc, char *argv[]) -> int
                                                  year,                        //
                                                  "Nominal");
 
-        auto electrons = ObjectFactories::make_electrons(unwrap(Electron_pt),            //
+        auto electrons = ObjectFactories::make_electrons(Electron_pt_unwrapped,          //
                                                          unwrap(Electron_eta),           //
                                                          unwrap(Electron_phi),           //
                                                          unwrap(Electron_deltaEtaSC),    //
@@ -592,7 +618,7 @@ auto main(int argc, char *argv[]) -> int
                                                          year,                           //
                                                          "Nominal");
 
-        auto photons = ObjectFactories::make_photons(unwrap(Photon_pt),          //
+        auto photons = ObjectFactories::make_photons(Photon_pt_unwrapped,        //
                                                      unwrap(Photon_eta),         //
                                                      unwrap(Photon_phi),         //
                                                      unwrap(Photon_isScEtaEB),   //
@@ -610,7 +636,7 @@ auto main(int argc, char *argv[]) -> int
                                                      year,                       //
                                                      "Nominal");
 
-        auto [jets, bjets] = ObjectFactories::make_jets(unwrap(Jet_pt),                 //
+        auto [jets, bjets] = ObjectFactories::make_jets(Jet_pt_unwrapped,               //
                                                         unwrap(Jet_eta),                //
                                                         unwrap(Jet_phi),                //
                                                         unwrap(Jet_mass),               //
@@ -628,6 +654,19 @@ auto main(int argc, char *argv[]) -> int
                                                         is_data,                                  //
                                                         year,                                     //
                                                         shift);
+
+        if (run_tofind == run_current and lumisection_tofind == luminosityBlockcurrent and
+            event_tofind == event_current)
+        {
+            classeventfile << "\n\n[uncleared_electrons_pt]\n";
+            classeventfile << printpt(electrons.p4);
+            classeventfile << "\n[uncleared_photons_pt]\n";
+            classeventfile << printpt(photons.p4);
+            classeventfile << "\n[uncleared_muons_pt]\n";
+            classeventfile << printpt(muons.p4);
+            classeventfile << "\n[uncleared_jets_pt]\n";
+            classeventfile << printpt(jets.p4);
+        }
 
         // clear objects
         electrons.clear(muons, 0.4);
@@ -656,316 +695,27 @@ auto main(int argc, char *argv[]) -> int
                                              year,                        //
                                              shift);
 
-        //////////////////////////
-        // experimental new MET calculation for testing
-        auto met_p4 = RVec<Math::PtEtaPhiMVector>{};
-        auto scale_factors = RVec<double>{};
-        auto scale_factor_up = RVec<double>{};
-        auto scale_factor_down = RVec<double>{};
-        auto delta_met_x = RVec<double>{};
-        auto delta_met_y = RVec<double>{};
-        auto is_fake = RVec<bool>{};
-        // calculate met
-        std::set<MUSiCObjects *> music_objects = {&muons, &electrons, &photons, &jets, &bjets};
-        auto temp_met = Math::PtEtaPhiMVector(0, 0, 0, 0);
-        for (auto &obj : music_objects)
+        if (run_tofind == run_current and lumisection_tofind == luminosityBlockcurrent and
+            event_tofind == event_current)
         {
-            for (size_t i = 0; i < obj->size(); i++)
-            {
-                temp_met -= obj->p4.at(i);
-            }
+            classeventfile << "\n\n[cleared_electrons_pt]\n";
+            classeventfile << printpt(electrons.p4);
+            classeventfile << "\n[cleared_photons_pt]\n";
+            classeventfile << printpt(photons.p4);
+            classeventfile << "\n[cleared_muons_pt]\n";
+            classeventfile << printpt(muons.p4);
+            classeventfile << "\n[cleared_jets_pt]\n";
+            classeventfile << printpt(jets.p4);
+            classeventfile << "\n[cleared_jets_eta]\n";
+            classeventfile << printeta(jets.p4);
+            classeventfile << "\n[cleared_jets_phi]\n";
+            classeventfile << printphi(jets.p4);
+            classeventfile.close();
+            exit(0);
         }
-        // check for good met
-        bool is_good_met = temp_met.pt() >= 100;
-        if (is_good_met)
-        {
-            scale_factors.push_back(1.);
-            scale_factor_up.push_back(1.);
-            scale_factor_down.push_back(1.);
-            met_p4.push_back(temp_met);
-            delta_met_x.push_back(0.);
-            delta_met_y.push_back(0.);
-            is_fake.push_back(false);
-        }
-        met = MUSiCObjects(met_p4,            //
-                           scale_factors,     //
-                           scale_factor_up,   //
-                           scale_factor_down, //
-                           delta_met_x,       //
-                           delta_met_y,       //
-                           is_fake);
-        //////////////////////////
-
-        // Type counts
-        unsigned int nelectron = electrons.size();
-        unsigned int nmuon = muons.size();
-        unsigned int njet = jets.size();
-        unsigned int nbjet = bjets.size();
-        unsigned int nphoton = photons.size();
-        bool is_met = false; // set met flag
-        if (met.size() >= 1)
-        {
-            is_met = true;
-        }
-
-        // Generate 4-vectors (only for relevant objects)
-        auto jets_4vec = jets.p4;
-        auto bjets_4vec = bjets.p4;
-        auto met_4vec = met.p4;
-
-        if (debugprint)
-        {
-            std::cout << "Generated objects." << std::endl;
-        }
-
-        ///* optional: LEPTON VETO or CONDITIONS
-        // if (not(nelectron == 0 and nmuon == 0)) // veto all leptons
-        // if (not(nelectron >= 1 or nmuon >= 1)) // at least one lepton
-        // if (not(nelectron == 0 and nmuon == 0 and (not is_met) and nphoton == 0)) // veto all leptons, photons and
-        // met
-        if (not(nelectron == 0 and nmuon == 0 and nphoton == 0)) // veto all leptons, photons
-        {
-            continue;                                            // veto is condition is not satisfied
-        }
-        if (debugprint)
-        {
-            std::cout << "Passed object veto." << std::endl;
-        }
-        //*/
-
-        // CHECK TRIGGER THRESHOLDS
-        if (trigger_flags.at(0))                     // PT trigger
-        {
-            std::vector<float> leading_pt{0.f, 0.f}; // check threshold for pt of leading jet/bjet
-            // because jet or bjet could have higher pt, use the following approach
-            if (njet >= 1)
-            {
-                leading_pt.at(0) = jets_4vec.at(0).pt();
-            }
-            if (nbjet >= 1)
-            {
-                leading_pt.at(1) = bjets_4vec.at(0).pt();
-            }
-            if (not(leading_pt.at(0) >= trigger_thresholds.at(0) or leading_pt.at(1) >= trigger_thresholds.at(0)))
-            {
-                continue; // skip this event
-            }
-        }
-        if (trigger_flags.at(1)) // HT trigger
-        {
-            float sum_pt = 0;    // check sum pt threshold
-            for (size_t i = 0; i < njet; i++)
-            {
-                sum_pt += jets_4vec.at(i).pt();
-            }
-            for (size_t i = 0; i < nbjet; i++)
-            {
-                sum_pt += bjets_4vec.at(i).pt();
-            }
-            if (not(sum_pt >= trigger_thresholds.at(1)))
-            {
-                continue; // skip this event
-            }
-        }
-        if (debugprint)
-        {
-            std::cout << "Passed trigger threshold checks.\nCalculate event weight." << std::endl;
-        }
-
-        // CALCULATE EVENT WEIGHT
-        // Here goes the real analysis...
-        // get effective event weight
-        float weight = 1.;
-
-        if (not(is_data))
-        {
-            auto pu_weight = pu_corrector->evaluate({unwrap(Pileup_nTrueInt), Shifts::get_pu_variation(shift)});
-
-            auto prefiring_weight = Shifts::get_prefiring_weight( //
-                unwrap(L1PreFiringWeight_Nom, 1.),                //
-                unwrap(L1PreFiringWeight_Up, 1.),                 //
-                unwrap(L1PreFiringWeight_Dn, 1.),                 //
-                shift);
-
-            auto scaled_luminosity = Shifts::scale_luminosity(luminosity, shift);
-
-            auto pdf_as_weight = Shifts::get_pdf_alpha_s_weights(shift,
-                                                                 lha_indexes,
-                                                                 default_pdf_sets,           //
-                                                                 unwrap(_LHEPdfWeight),      //
-                                                                 unwrap(Generator_scalePDF), //
-                                                                 unwrap(Generator_x1),       //
-                                                                 unwrap(Generator_x2),       //
-                                                                 unwrap(Generator_id1),      //
-                                                                 unwrap(Generator_id2));
-            // unwrap(_LHEWeight_originalXWGTUP, 1.f),);
-
-            weight = unwrap(gen_weight, 1.) //
-                     * pu_weight            //
-                     * prefiring_weight     //
-                     * generator_filter     //
-                     / no_cuts              //
-                     / generator_filter     //
-                     * x_section            //
-                     * filter_eff           //
-                     * k_factor             //
-                     * scaled_luminosity    //
-                     * pdf_as_weight;
-
-            /*/
-            // bug search: check for nan
-            if (not (isnormal(weight)))
-            {
-                throw std::runtime_error(fmt::format("not normal weight: {}, {}", weight, pdf_as_weight));
-            }
-            */
-
-            // xSecOrder uncertainty for LO
-            if (shift == "xSecOrder_Up")
-            {
-                weight = weight * (1 + x_sec_uncertainty[process_order]);
-            }
-            else if (shift == "xSecOrder_Down")
-            {
-                weight = weight * (1 - x_sec_uncertainty[process_order]);
-            }
-        }
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////    ADD SOME SPECIFIC PROCESSING                                      /////////////////////////
-        ////////////////                                                                      /////////////////////////
-        ////////////////    Here special object selection and processing can be implemented   /////////////////////////
-        ////////////////    Of the systematics is already taken care of                       /////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////    Specific processing name:   //////      ???????????????           /////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        // JET CLASS VALIDATION AND CLASS COUNTING
-        std::set<std::string> eventclass =
-            {}; // set that includes all classes the current sample is a member of (for plotting)
-        // find all classes for the event
-        // event class inhabitation is counted in the map classes {classname: counts}
-        // all event classes for current event are stored in the set eventclass {classnames}
-        if (debugprint)
-        {
-            std::cout << "ACCEPTED EVENT.\nStart event class loop." << std::endl;
-        }
-        for (int c_njet = (int)njet; c_njet >= 0; c_njet--)
-        {
-            for (int c_nbjet = (int)nbjet; c_nbjet >= 0; c_nbjet--)
-            {
-                if ((c_njet == 0 and c_nbjet == 0) == false) // skip 0 jet class
-                {
-                    // std::cout << "Next loop iteration." << std::endl;
-                    if (c_njet == (int)njet and c_nbjet == (int)nbjet) // exclusive class
-                    {
-                        // differentiate met in classname
-                        std::string c_name = fmt::format("{}J+{}BJ+0MET", c_njet, c_nbjet);
-                        if (is_met)
-                        {
-                            c_name = fmt::format("{}J+{}BJ+1MET", c_njet, c_nbjet);
-                        }
-                        update_class(eventclass,
-                                     classes,
-                                     classes_stat,
-                                     c_name,
-                                     countclasses,
-                                     weight);                          // log class name and update class count
-                    }
-                    if (c_njet <= (int)njet and c_nbjet <= (int)nbjet) // jet- and bjet-inclusive class (+XJ)
-                    {
-                        // differentiate met in classname
-                        std::string c_name = fmt::format("{}J+{}BJ+0MET+XJ", c_njet, c_nbjet);
-                        if (is_met)
-                        {
-                            c_name = fmt::format("{}J+{}BJ+1MET+XJ", c_njet, c_nbjet);
-                        }
-                        update_class(eventclass,
-                                     classes,
-                                     classes_stat,
-                                     c_name,
-                                     countclasses,
-                                     weight); // log class name and update class count
-                    }
-                    // note: inclusive classes can be XJ = 0, so the exclusive classes are
-                    // included in the inclusive classes
-                }
-            }
-        }
-        // fill histograms for all event classes that should be validated and that the current event is
-        // a member of
-        if (plotclasses)
-        {
-            for (const auto &c_name : eventclass)
-            {
-                for (const auto &c_name_toval : to_validate)
-                {
-                    if (c_name == c_name_toval)
-                    { // fill the event in the class
-                        validation_classes[c_name]->fill(jets_4vec, bjets_4vec, nelectron, nmuon, met_4vec, weight);
-                    }
-                }
-            }
-        }
-        // std::cout << "Finished event classification." << std::endl;
     }
 
     fmt::print("\n[MUSiC Validation] Saving outputs ({} - {} - {}) ...\n", output_path, process, year);
-    /*
-    z_to_mu_mu_x.dump_outputs();
-    z_to_mu_mu_x_Z_mass.dump_outputs();
-    dijets.dump_outputs();
-    */
-    // SAVE JET CLASS VALIDATION
-    // save classes and counts in toml file
-    // ==> class counts are stored in file classes_systname/shift_process_year.toml (so for each syst in a separate
-    // file) the class counts for this systematic are stored with the key [counts] the stat error is included in each
-    // file with key [stat]
-    if (countclasses)
-    {
-        classfile.open(fmt::format("{}/classes_{}_{}_{}.toml", output_path, shift, process, year).c_str());
-        // fill nominal and systematics
-        classfile << "\n\n["
-                  << "counts"
-                  << "]\n";
-        for (auto &[c_name, c_count] : classes)
-        {
-            /* // dont do this for now
-            if (c_count < 0) // if negative weights dominate, set count to 0
-            {
-                c_count = 0;
-            }
-            */
-            classfile << "\"" << c_name << "\" = " << c_count << "\n";
-        }
-        // fill stat err
-        classfile << "\n\n["
-                  << "stat"
-                  << "]\n";
-        for (auto &[c_name, c_stat] : classes_stat)
-        {
-            classfile << "\"" << c_name << "\" = " << c_stat << "\n";
-        }
-        classfile.close();
-    }
-    // save the validation example classes
-    if (plotclasses)
-    {
-        for (const auto &c_name : to_validate)
-        {
-            validation_classes[c_name]->dump_outputs();
-        }
-    }
 
     fmt::print("\n[MUSiC Validation] Done ...\n");
     PrintProcessInfo();

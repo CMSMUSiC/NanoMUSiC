@@ -6,9 +6,7 @@
 #include "HeavyValidation.hpp"
 
 #include "Configs.hpp"
-#include "Math/Vector4D.h"
 #include "Math/Vector4Dfwd.h"
-#include "Math/VectorUtil.h"
 #include "Outputs.hpp"
 #include "ROOT/RVec.hxx"
 #include "RtypesCore.h"
@@ -305,6 +303,10 @@ auto main(int argc, char *argv[]) -> int
     ADD_VALUE_READER(MET_pt, float);
     ADD_VALUE_READER(MET_phi, float);
 
+    ADD_VALUE_READER(run, UInt_t);
+    ADD_VALUE_READER(luminosityBlock, UInt_t);
+    ADD_VALUE_READER(event, ULong64_t);
+
     // build jetclass analysis
     if (debugprint)
     {
@@ -344,21 +346,13 @@ auto main(int argc, char *argv[]) -> int
     std::map<std::string, JetClass2 *> validation_classes;
     // stores validation classes: {classname: jetclass instance pointer}
     // fill maps
-    if (plotclasses) // only if classes should be plotted
-    {
-        for (const auto &c_name : to_validate)
-        {
-            validation_classes[c_name] =
-                new JetClass2(fmt::format("{}/{}_{}_{}_{}.root", output_path, c_name, shift, process, year), c_name);
-            // file format: classname_systname/shift_samplename_year.root (classname includes shift/systname after
-            // underscore)
-        }
-    }
 
     // classes event counts map: {classname: counts}
     std::map<std::string, float> classes;
     // classes event counts systematic errors map: {classname: squared syst error}
     std::map<std::string, float> classes_stat;
+    // classes event info map
+    std::map<std::string, std::set<std::map<std::string, unsigned long>>> classes_events;
 
     // quality control to order argument
     const std::set<std::string> allowed_orders{"LO", "NLO", "NNLO", "N3LO"};
@@ -376,6 +370,8 @@ auto main(int argc, char *argv[]) -> int
 
     // file where the class counts are stored
     std::ofstream classfile;
+    // file where the class event info are stored
+    std::ofstream classeventfile;
 
     // read in demanded jet triggers and thresholds from argument
     if (debugprint)
@@ -503,7 +499,7 @@ auto main(int argc, char *argv[]) -> int
         std::cout << "Start event loop." << std::endl;
     }
     //  launch event loop for Data or MC
-    for (auto &&event : tree_reader)
+    for (auto &&event_tree : tree_reader)
     {
         // check for chain readout quaility
         // REFERENCE: https://root.cern.ch/doc/v608/classTTreeReader.html#a568e43c7d7d8b1f511bbbeb92c9094a8
@@ -518,7 +514,7 @@ auto main(int argc, char *argv[]) -> int
             throw std::runtime_error(fmt::format("ERROR: Could not load TChain entry."));
         }
 
-        (void)event; // remove the "unused variable" warning during compilation
+        (void)event_tree; // remove the "unused variable" warning during compilation
 
         if (debugprint)
         {
@@ -526,7 +522,7 @@ auto main(int argc, char *argv[]) -> int
         }
 
         /* EVENT BREAK IF NECESSARY
-        if (event > 10000)
+        if (event_tree > 10000)
         {
             throw std::runtime_error("finished after given event break");
             break;
@@ -655,46 +651,6 @@ auto main(int argc, char *argv[]) -> int
                                              is_data,                     //
                                              year,                        //
                                              shift);
-
-        //////////////////////////
-        // experimental new MET calculation for testing
-        auto met_p4 = RVec<Math::PtEtaPhiMVector>{};
-        auto scale_factors = RVec<double>{};
-        auto scale_factor_up = RVec<double>{};
-        auto scale_factor_down = RVec<double>{};
-        auto delta_met_x = RVec<double>{};
-        auto delta_met_y = RVec<double>{};
-        auto is_fake = RVec<bool>{};
-        // calculate met
-        std::set<MUSiCObjects *> music_objects = {&muons, &electrons, &photons, &jets, &bjets};
-        auto temp_met = Math::PtEtaPhiMVector(0, 0, 0, 0);
-        for (auto &obj : music_objects)
-        {
-            for (size_t i = 0; i < obj->size(); i++)
-            {
-                temp_met -= obj->p4.at(i);
-            }
-        }
-        // check for good met
-        bool is_good_met = temp_met.pt() >= 100;
-        if (is_good_met)
-        {
-            scale_factors.push_back(1.);
-            scale_factor_up.push_back(1.);
-            scale_factor_down.push_back(1.);
-            met_p4.push_back(temp_met);
-            delta_met_x.push_back(0.);
-            delta_met_y.push_back(0.);
-            is_fake.push_back(false);
-        }
-        met = MUSiCObjects(met_p4,            //
-                           scale_factors,     //
-                           scale_factor_up,   //
-                           scale_factor_down, //
-                           delta_met_x,       //
-                           delta_met_y,       //
-                           is_fake);
-        //////////////////////////
 
         // Type counts
         unsigned int nelectron = electrons.size();
@@ -842,82 +798,124 @@ auto main(int argc, char *argv[]) -> int
         ////////////////    Specific processing name:   //////      ???????????????           /////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        auto njet_before = njet;
 
-        // JET CLASS VALIDATION AND CLASS COUNTING
-        std::set<std::string> eventclass =
-            {}; // set that includes all classes the current sample is a member of (for plotting)
-        // find all classes for the event
-        // event class inhabitation is counted in the map classes {classname: counts}
-        // all event classes for current event are stored in the set eventclass {classnames}
-        if (debugprint)
+        // NAME: MUSIC WIDE JETS
+
+        // SELECT SEED JETS
+        auto seed_jets = RVec<Math::PtEtaPhiMVector>{};   // jet seeds
+        auto noseed_jets = RVec<Math::PtEtaPhiMVector>{}; // jets that are no seeds
+        for (size_t i = 0; i < jets_4vec.size(); i++)
         {
-            std::cout << "ACCEPTED EVENT.\nStart event class loop." << std::endl;
-        }
-        for (int c_njet = (int)njet; c_njet >= 0; c_njet--)
-        {
-            for (int c_nbjet = (int)nbjet; c_nbjet >= 0; c_nbjet--)
+            if (jets_4vec.at(i).pt() > 250) // select as seed
             {
-                if ((c_njet == 0 and c_nbjet == 0) == false) // skip 0 jet class
+                seed_jets.push_back(jets_4vec.at(i));
+            }
+            else // don't select as seed
+            {
+                noseed_jets.push_back(jets_4vec.at(i));
+            }
+        }
+
+        bool merged = false;
+
+        // JET MERGING TO WIDE JETS
+        auto widejets = seed_jets;                           // wide jets
+        if (noseed_jets.size() > 0 and seed_jets.size() > 0) // only try to merge if seed and noseed jets were found
+        {
+            for (size_t i = 0; i < noseed_jets.size(); i++)  // try to merge for each noseed jet
+            {
+                auto cur_jet = noseed_jets.at(i);
+                auto all_delta_r = RVec<float>{};
+                for (size_t j = 0; j < seed_jets.size(); j++) // try to merge to every seed jet
                 {
-                    // std::cout << "Next loop iteration." << std::endl;
-                    if (c_njet == (int)njet and c_nbjet == (int)nbjet) // exclusive class
-                    {
-                        // differentiate met in classname
-                        std::string c_name = fmt::format("{}J+{}BJ+0MET", c_njet, c_nbjet);
-                        if (is_met)
-                        {
-                            c_name = fmt::format("{}J+{}BJ+1MET", c_njet, c_nbjet);
-                        }
-                        update_class(eventclass,
-                                     classes,
-                                     classes_stat,
-                                     c_name,
-                                     countclasses,
-                                     weight);                          // log class name and update class count
-                    }
-                    if (c_njet <= (int)njet and c_nbjet <= (int)nbjet) // jet- and bjet-inclusive class (+XJ)
-                    {
-                        // differentiate met in classname
-                        std::string c_name = fmt::format("{}J+{}BJ+0MET+XJ", c_njet, c_nbjet);
-                        if (is_met)
-                        {
-                            c_name = fmt::format("{}J+{}BJ+1MET+XJ", c_njet, c_nbjet);
-                        }
-                        update_class(eventclass,
-                                     classes,
-                                     classes_stat,
-                                     c_name,
-                                     countclasses,
-                                     weight); // log class name and update class count
-                    }
-                    // note: inclusive classes can be XJ = 0, so the exclusive classes are
-                    // included in the inclusive classes
+                    // calculate distances to wide jets
+                    all_delta_r.push_back(std::abs(Math::VectorUtil::DeltaR(seed_jets.at(j), cur_jet)));
+                }
+                // sort after shortest distance
+                auto sortidx_delta_r = VecOps::Argsort(all_delta_r, // sort, smallest element first
+                                                       [](auto p1, auto p2) -> bool
+                                                       {
+                                                           return p1 < p2;
+                                                       });
+                // std::cout << "WJ MERGING: DeltaR=" << all_delta_r << ", DeltaRMin=" <<
+                // all_delta_r.at(sortidx_delta_r.at(0)) << ", Merge=" << (all_delta_r.at(sortidx_delta_r.at(0)) < 1.1)
+                // << ", MergeIdx=" << sortidx_delta_r.at(0) << std::endl;
+                if (all_delta_r.at(sortidx_delta_r.at(0)) < 1.1)   // check if smallest deltar is < 1.1
+                {
+                    widejets.at(sortidx_delta_r.at(0)) += cur_jet; // if so, add the current jet to the closest widejet
+                    merged = true;
                 }
             }
         }
-        // fill histograms for all event classes that should be validated and that the current event is
-        // a member of
-        if (plotclasses)
+
+        // DO DELTA ETA MAX CUT
+        if (widejets.size() > 1) // only try delta eta max cut if at least two wide jets exist
         {
-            for (const auto &c_name : eventclass)
+            auto all_widejet_delta_eta = RVec<float>{};
+            for (size_t i = 0; i < widejets.size(); i++)     // try to merge to every seed jet
             {
-                for (const auto &c_name_toval : to_validate)
+                for (size_t j = 0; j < widejets.size(); j++) // try to merge to every seed jet
                 {
-                    if (c_name == c_name_toval)
-                    { // fill the event in the class
-                        validation_classes[c_name]->fill(jets_4vec, bjets_4vec, nelectron, nmuon, met_4vec, weight);
+                    // calculate delta eta between all wide jets
+                    if (i < j) // exclude double calculations and exclude two same jets
+                    {
+                        all_widejet_delta_eta.push_back(std::abs(widejets.at(i).eta() - widejets.at(j).eta()));
                     }
                 }
             }
+            auto sortidx_delta_eta = VecOps::Argsort(all_widejet_delta_eta, // sort, largest element first
+                                                     [](auto p1, auto p2) -> bool
+                                                     {
+                                                         return p1 > p2;
+                                                     });
+            // std::cout << "WJ DEL ETA: DeltaEta=" << all_widejet_delta_eta << ", DeltaEtaMax=" <<
+            // all_widejet_delta_eta.at(sortidx_delta_eta.at(0)) << ", Accept=" <<
+            // (all_widejet_delta_eta.at(sortidx_delta_eta.at(0)) < 1.8) << std::endl;
+            if (not(all_widejet_delta_eta.at(sortidx_delta_eta.at(0)) <
+                    1.4)) // check if largest delta eta is below threshold
+            {
+                continue; // if not, reject event
+            }
         }
-        // std::cout << "Finished event classification." << std::endl;
+
+        // REORDER WIDEJETS AFTER PT
+        const auto wjets_reordering_mask = VecOps::Argsort(widejets,
+                                                           [](auto wjet_1, auto wjet_2) -> bool
+                                                           {
+                                                               return wjet_1.pt() > wjet_2.pt();
+                                                           });
+        auto widejets_sorted = VecOps::Take(widejets, wjets_reordering_mask);
+
+        // refer to wide jets as jets (formal change for plotting and classification)
+        njet = widejets_sorted.size();
+        jets_4vec = widejets_sorted;
+
+        // effectively all other jets that are not merged are rejected
+
+        // fill event information
+        if (njet == 2 and nbjet == 0 and (not is_met) and njet_before == 3 and merged) // exclusive class
+        {
+            std::string c_name = fmt::format("{}J+{}BJ+0MET", njet, 0);
+            if (classes_events.find(c_name) == classes_events.end()) // it not in map, create new entry with counts 0
+            {
+                std::set<std::map<std::string, unsigned long>> emptyset;
+                classes_events.insert({c_name, emptyset});
+            }
+            classes_events[c_name].insert({
+                {"run", (unsigned long)unwrap(run)},
+                {"luminosityBlock", (unsigned long)unwrap(luminosityBlock)},
+                {"event", (unsigned long)unwrap(event)},
+            });
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
 
     fmt::print("\n[MUSiC Validation] Saving outputs ({} - {} - {}) ...\n", output_path, process, year);
@@ -931,40 +929,22 @@ auto main(int argc, char *argv[]) -> int
     // ==> class counts are stored in file classes_systname/shift_process_year.toml (so for each syst in a separate
     // file) the class counts for this systematic are stored with the key [counts] the stat error is included in each
     // file with key [stat]
-    if (countclasses)
+
+    // save the event numbers
+    classeventfile.open(fmt::format("{}/events_{}_{}_{}.toml", output_path, shift, process, year).c_str());
+    for (auto &[c_name, c_event_info_set] : classes_events)
     {
-        classfile.open(fmt::format("{}/classes_{}_{}_{}.toml", output_path, shift, process, year).c_str());
-        // fill nominal and systematics
-        classfile << "\n\n["
-                  << "counts"
-                  << "]\n";
-        for (auto &[c_name, c_count] : classes)
+        classeventfile << fmt::format("\n[{}]\n\"events\" = {{\n", c_name);
+        for (auto &c_event_info : c_event_info_set)
         {
-            /* // dont do this for now
-            if (c_count < 0) // if negative weights dominate, set count to 0
-            {
-                c_count = 0;
-            }
-            */
-            classfile << "\"" << c_name << "\" = " << c_count << "\n";
+            classeventfile << fmt::format("{{\"run\": {}, \"luminosityBlock\": {}, \"event\": {},}},\n",
+
+                                          c_event_info.at("run"),
+                                          c_event_info.at("luminosityBlock"),
+                                          c_event_info.at("event"));
         }
-        // fill stat err
-        classfile << "\n\n["
-                  << "stat"
-                  << "]\n";
-        for (auto &[c_name, c_stat] : classes_stat)
-        {
-            classfile << "\"" << c_name << "\" = " << c_stat << "\n";
-        }
-        classfile.close();
-    }
-    // save the validation example classes
-    if (plotclasses)
-    {
-        for (const auto &c_name : to_validate)
-        {
-            validation_classes[c_name]->dump_outputs();
-        }
+        classeventfile << "},\n";
+        classeventfile.close();
     }
 
     fmt::print("\n[MUSiC Validation] Done ...\n");

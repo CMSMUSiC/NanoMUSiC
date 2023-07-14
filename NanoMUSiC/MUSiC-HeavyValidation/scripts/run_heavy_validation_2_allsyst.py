@@ -95,6 +95,18 @@ def parse_args():
         "--shifts",
         help="Optional: Leave out to run all shifts, or give the shifts that should be run separated by comma.",
     )
+    parser.add_argument(
+        "-run",
+        "--runnumber",
+    )
+    parser.add_argument(
+        "-lumi",
+        "--lumisection",
+    )
+    parser.add_argument(
+        "-event",
+        "--eventnumber",
+    )
 
     args = parser.parse_args()
 
@@ -162,9 +174,14 @@ def run_validation(
     debug: bool = False
 
     # default is MC
-    cmd_str: str = f"{executable} --process {process_name} --year {year} --output {output_path} --shift {shift} --luminosity {luminosity} --process_group {process_group} --filter_eff {filter_eff} --process_order {process_order} --k_factor {k_factor} --xsection {str(x_section)} --input {input_file} --trigger {trigger} --tovalidate {tvarg}"
-    if is_data:
-        cmd_str: str = f"{executable} --process {process_name} --year {year} --is_data --output {output_path} --luminosity {luminosity} --shift {shift} --process_group {process_group} --process_order {process_order} --k_factor {k_factor} --filter_eff {filter_eff} --xsection {str(x_section)} --input {input_file} --trigger {trigger} --tovalidate {tvarg}"
+    if not eventinfo:  # default
+        cmd_str: str = f"{executable} --process {process_name} --year {year} --output {output_path} --shift {shift} --luminosity {luminosity} --process_group {process_group} --filter_eff {filter_eff} --process_order {process_order} --k_factor {k_factor} --xsection {str(x_section)} --input {input_file} --trigger {trigger} --tovalidate {tvarg}"
+        if is_data:
+            cmd_str: str = f"{executable} --process {process_name} --year {year} --is_data --output {output_path} --luminosity {luminosity} --shift {shift} --process_group {process_group} --process_order {process_order} --k_factor {k_factor} --filter_eff {filter_eff} --xsection {str(x_section)} --input {input_file} --trigger {trigger} --tovalidate {tvarg}"
+    else:  # for passing eventinfo
+        cmd_str: str = f"{executable} --process {process_name} --year {year} --output {output_path} --shift {shift} --luminosity {luminosity} --process_group {process_group} --filter_eff {filter_eff} --process_order {process_order} --k_factor {k_factor} --xsection {str(x_section)} --input {input_file} --trigger {trigger} --tovalidate {tvarg} --event {eventnumber} --lumisection {lumisection} --runnumber {runnumber}"
+        if is_data:
+            cmd_str: str = f"{executable} --process {process_name} --year {year} --is_data --output {output_path} --luminosity {luminosity} --shift {shift} --process_group {process_group} --process_order {process_order} --k_factor {k_factor} --filter_eff {filter_eff} --xsection {str(x_section)} --input {input_file} --trigger {trigger} --tovalidate {tvarg} --event {eventnumber} --lumisection {lumisection} --runnumber {runnumber}"
 
     if debug:
         print(f"Executing: {cmd_str}")
@@ -380,6 +397,19 @@ def main():
     trigger = ""
     if args.trigger:
         trigger = args.trigger
+
+    # option: pass eventinfo
+    global eventinfo
+    global eventnumber
+    global lumisection
+    global runnumber
+    eventinfo = False
+    if args.eventnumber and args.lumisection and args.runnumber:
+        eventinfo = True
+        eventnumber = args.eventnumber
+        lumisection = args.lumisection
+        runnumber = args.runnumber
+        print(f"Passing event information: run={runnumber}, lumisection={lumisection}, event={eventnumber}.")
 
     # import task config file that includes references to all files that should be validated
     print(f"Importing task config...")
