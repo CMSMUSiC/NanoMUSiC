@@ -45,6 +45,8 @@ add_executable(
     src/GammaPlusJet.cpp //
     src/TTBarTo1Lep2Bjet2JetMET.cpp //
     src/WToLepNu.cpp //
+    src/WToLepNu_eff.cpp //
+    src/Tau_efficiency.cpp //
 
     # src/Dijets.cpp //
 )

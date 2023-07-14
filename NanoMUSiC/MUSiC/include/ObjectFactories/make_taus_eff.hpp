@@ -1,5 +1,5 @@
-#ifndef MAKE_TAUS_HPP
-#define MAKE_TAUS_HPP
+#ifndef MAKE_TAUS_EFF_HPP
+#define MAKE_TAUS_EFF_HPP
 
 // ROOT Stuff
 #include "Math/Vector4D.h"
@@ -17,7 +17,7 @@ using namespace ROOT::VecOps;
 namespace ObjectFactories
 {
 
-inline auto get_tau_energy_corrections(const std::string &shift,
+inline auto get_tau_energy_corrections_eff(const std::string &shift,
                                        float dEscaleUp,
                                        float dEscaleDown,
                                        float dEsigmaUp,
@@ -72,7 +72,7 @@ inline auto get_tau_energy_corrections(const std::string &shift,
 /// bin choices: ['EBInc','EBHighR9','EBLowR9','EEInc','EEHighR9','EELowR9']
 ///////////////////////////////////////////////////////////////
 /// For some reason, the Official Muon SFs requires a field of the requested year, with proper formating.
-inline auto get_year_for_tau_sf(Year year) -> std::string
+inline auto get_year_for_tau_sf_eff(Year year) -> std::string
 {
     switch (year)
     {
@@ -90,7 +90,7 @@ inline auto get_year_for_tau_sf(Year year) -> std::string
     }
 }
 
-inline auto make_taus(const RVec<float> &Tau_pt,  //
+inline auto make_taus_eff(const RVec<float> &Tau_pt,  //
                       const RVec<float> &Tau_eta, //
                       const RVec<float> &Tau_phi, //
                       const RVec<float> &Tau_dz,                        //
@@ -116,37 +116,33 @@ inline auto make_taus(const RVec<float> &Tau_pt,  //
 
     for (std::size_t i = 0; i < Tau_pt.size(); i++)
     {
-        bool is_good_tau_pre_filter =       ((Tau_idDeepTau2017v2p1VSe[i] & 32) == 32)    
-                                        and ((Tau_idDeepTau2017v2p1VSjet[i] & 32) == 32)      
-                                        and ((Tau_idDeepTau2017v2p1VSmu[i] & 8) == 8)     
+        bool is_good_tau_eff_filter =   //Tight Working Point
+                                            ((Tau_idDeepTau2017v2p1VSe[i] & 32) == 32)     
+                                        and ((Tau_idDeepTau2017v2p1VSjet[i] & 32) == 32)       
+                                        and ((Tau_idDeepTau2017v2p1VSmu[i] & 8) == 8)  
+
+                                        //Loose Working Point
+                                        //     ((Tau_idDeepTau2017v2p1VSe[i] & 8) == 8)     
+                                        // and ((Tau_idDeepTau2017v2p1VSjet[i] & 8) == 8)       
+                                        // and ((Tau_idDeepTau2017v2p1VSmu[i] & 2) == 2)
+
                                         and (Tau_decayMode[i] != 5)
                                         and (Tau_decayMode[i] != 6)
                                         and (std::fabs(Tau_eta[i]) <= 2.1)
                                         and (std::fabs(Tau_dz[i]) < 0.2);
 
-        if (is_good_tau_pre_filter)
+        if (is_good_tau_eff_filter)
         {
-            auto tau_p4 = Math::PtEtaPhiMVector(Tau_pt[i], Tau_eta[i], Tau_phi[i], PDG::Tau::Mass);
+            auto tau_p4 = Math::PtEtaPhiMVector(Tau_pt[i], Tau_eta[i], Tau_phi[i], PDG::Tau::Mass); //think about Tau mass
+
+            scale_factors.push_back(1.);     //
+            scale_factor_up.push_back(1.);   //
+            scale_factor_down.push_back(1.); //
+            taus_p4.push_back(tau_p4);   
+            delta_met_x.push_back((tau_p4.pt() - Tau_pt[i]) * std::cos(Tau_phi[i]));
+            delta_met_y.push_back((tau_p4.pt() - Tau_pt[i]) * std::sin(Tau_phi[i])); 
+            is_fake.push_back(is_data ? false : Tau_genPartIdx[i] < 0);
             
-                    
-            bool is_good_tau =  (tau_p4.pt() >= 25. ) and is_good_tau_pre_filter;
-
-            if (is_good_tau)
-            {
-
-                    // fmt::print("\n Mass of Taus: {}\n", Tau_mass[i]);
-                    // fmt::print("\n Reference Mass of Taus: {}\n", PDG::Tau::Mass);
-
-                scale_factors.push_back(1.);     //
-                scale_factor_up.push_back(1.);   //
-                scale_factor_down.push_back(1.); //
-                taus_p4.push_back(tau_p4);
-
-                delta_met_x.push_back((tau_p4.pt() - Tau_pt[i]) * std::cos(Tau_phi[i]));
-                delta_met_y.push_back((tau_p4.pt() - Tau_pt[i]) * std::sin(Tau_phi[i]));
-
-                is_fake.push_back(is_data ? false : Tau_genPartIdx[i] < 0);
-            }
         }
     }
 
@@ -161,4 +157,4 @@ inline auto make_taus(const RVec<float> &Tau_pt,  //
 
 } // namespace ObjectFactories
 
-#endif // !MAKE_TAUS_HPP
+#endif // !MAKE_TAUS_HPP_EFF
