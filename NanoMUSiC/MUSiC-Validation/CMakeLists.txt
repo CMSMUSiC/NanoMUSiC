@@ -31,6 +31,10 @@ add_link_options(
     -lfmt
     -lz
     -lstdc++fs
+    -L/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/lib
+    -L/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/lib64
+
+    # -lboost
 )
 
 add_executable(

@@ -110,41 +110,39 @@ class Shifts
 
   public:
     Shifts(bool is_data)
-        // : m_constant_shifts(std::vector<std::string>{"Nominal"}),
-        : m_constant_shifts(is_data ? std::vector<std::string>{"Nominal"}
-                                    : std::vector<std::string>{"Nominal"//,          //
-                                                            //    "PU_Up",            //
-                                                            //    "PU_Down",          //
-                                                            //    "Fake_Up",          //
-                                                            //    "Fake_Down",        //
-                                                            //    "PDF_As_Up",        //
-                                                            //    "PDF_As_Down",      //
-                                                            //    "ScaleFactor_Up",   //
-                                                            //    "ScaleFactor_Down", //
-                                                            //    "PreFiring_Up",     //
-                                                            //    "PreFiring_Down"
-                                                               }),
+        : m_constant_shifts(std::vector<std::string>{"Nominal"}),
+          // : m_constant_shifts(is_data ? std::vector<std::string>{"Nominal"}
+          //                             : std::vector<std::string>{"Nominal",          //
+          //                                                        "PU_Up",            //
+          //                                                        "PU_Down",          //
+          //                                                        "Fake_Up",          //
+          //                                                        "Fake_Down",        //
+          //                                                        "PDF_As_Up",        //
+          //                                                        "PDF_As_Down",      //
+          //                                                        "ScaleFactor_Up",   //
+          //                                                        "ScaleFactor_Down", //
+          //                                                        "PreFiring_Up",     //
+          //                                                        "PreFiring_Down"}),
 
-          //   m_differential_shifts(std::vector<std::string>{"Nominal"})
-          m_differential_shifts(is_data ? std::vector<std::string>{"Nominal"}
-                                        : std::vector<std::string>{"Nominal"//, //
-                                                                              //    "MuonResolution_Up",       //
-                                                                              //    "MuonResolution_Down",     //
-                                                                              //    "MuonScale_Up",            //
-                                                                              //    "MuonScale_Down",          //
-                                                                //    "ElectronResolution_Up",   //
-                                                                //    "ElectronResolution_Down", //
-                                                                //    "ElectronScale_Up",        //
-                                                                //    "ElectronScale_Down",      //
-                                                                //    "PhotonResolution_Up",     //
-                                                                //    "PhotonResolution_Down",   //
-                                                                //    "PhotonScale_Up",          //
-                                                                //    "PhotonScale_Down",        //
-                                                                //    "JetResolution_Up",        //
-                                                                //    "JetResolution_Down",      //
-                                                                //    "JetScale_Up",             //
-                                                                //    "JetScale_Down"
-                                                                   })
+          m_differential_shifts(std::vector<std::string>{"Nominal"})
+    //   m_differential_shifts(is_data ? std::vector<std::string>{"Nominal"}
+    //                                 : std::vector<std::string>{"Nominal", //
+    //                                                                       //    "MuonResolution_Up",       //
+    //                                                                       //    "MuonResolution_Down",     //
+    //                                                                       //    "MuonScale_Up",            //
+    //                                                                       //    "MuonScale_Down",          //
+    //                                                            "ElectronResolution_Up",   //
+    //                                                            "ElectronResolution_Down", //
+    //                                                            "ElectronScale_Up",        //
+    //                                                            "ElectronScale_Down",      //
+    //                                                            "PhotonResolution_Up",     //
+    //                                                            "PhotonResolution_Down",   //
+    //                                                            "PhotonScale_Up",          //
+    //                                                            "PhotonScale_Down",        //
+    //                                                            "JetResolution_Up",        //
+    //                                                            "JetResolution_Down",      //
+    //                                                            "JetScale_Up",             //
+    //                                                            "JetScale_Down"})
     {
     }
 

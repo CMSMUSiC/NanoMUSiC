@@ -344,6 +344,7 @@ auto main(int argc, char *argv[]) -> int
                                 pass_gen_filter = true;
                             }
                         }
+
                         if (pass_gen_filter)
                         {
                             cutflow_histo.Fill(Cuts.index_of("GeneratorFilter"), mc_weight);

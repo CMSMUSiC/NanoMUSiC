@@ -288,7 +288,6 @@ inline auto print_report(const double &dTime1,
         fmt::print(" {:25}: {: >6.2f} %\n",
                    Outputs::Cuts[cut],
                    cutflow.GetBinContent(cut + 1) / cutflow.GetBinContent(3) * 100);
-        // fmt::print("--> {:8}: {:>0.2f}|\n", s);
     }
     fmt::print("=====================================\n");
 

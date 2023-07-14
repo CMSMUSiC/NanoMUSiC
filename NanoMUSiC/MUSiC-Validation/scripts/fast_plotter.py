@@ -9,6 +9,12 @@ from tqdm import tqdm
 import toml  # type: ignore
 import argparse
 import os
+from decimal import Decimal
+
+aplt.set_atlas_style()
+import tdrstyle
+
+root.gStyle.SetMarkerSize(0.5)
 
 from colors import PROCESS_GROUP_STYLES
 
@@ -45,6 +51,20 @@ def parse_args():
         help="Output base path.",
         type=str,
         default=".",
+    )
+
+    parser.add_argument(
+        "--xmin",
+        help="xmin",
+        type=float,
+        default=0,
+    )
+
+    parser.add_argument(
+        "--xmax",
+        help="xmax",
+        type=float,
+        default=2000,
     )
 
     parser.add_argument(
@@ -156,10 +176,12 @@ def main():
     # z_to_mu_mu_x_Z_mass
 
     # Set the ATLAS Style
-    aplt.set_atlas_style()
+    # aplt.set_atlas_style()
 
     # Create a figure and axes
     fig, (ax1, ax2) = aplt.ratio_plot(name="fig1", figsize=(800, 800), hspace=0.05)
+    x_min = args.xmin
+    x_max = args.xmax
 
     # add all Data histograms
     data_hist = get_histogram(
@@ -190,30 +212,62 @@ def main():
 
     # Stack the background
     # TODO: check integral and reorder
-    mc_hists = []
+    mc_hists = {}
     for i in range(0, len(plotter_arguments_mc)):
         print(f"Adding to stack: {plotter_arguments_mc[i]['sample']}")
-        mc_hists.append(
-            get_histogram(
+        if plotter_arguments_mc[i]["process_group"] not in mc_hists:
+            mc_hists[plotter_arguments_mc[i]["process_group"]] = get_histogram(
                 args,
                 input_files_mc[plotter_arguments_mc[i]["sample"]],
                 plotter_arguments_mc[i]["sample"],
                 plotter_arguments_mc[i]["year"],
                 plotter_arguments_mc[i]["process_group"],
                 plotter_arguments_mc[i]["xsec_order"],
-            )
-        )
-        mc_hists[-1].SetFillColor(
-            # PROCESS_GROUP_STYLES[plotter_arguments_mc[i]["process_group"]].color
-            root.TColor.GetColor("#4daf4a")
-        )
-        mc_hists[-1].SetLineWidth(0)
+            ).Clone()
 
-    # mc_hists = sorted(mc_hists, key=lambda x: x.Integral())
+            mc_hists[plotter_arguments_mc[i]["process_group"]].SetFillColor(
+                PROCESS_GROUP_STYLES[plotter_arguments_mc[i]["process_group"]].color
+                # root.TColor.GetColor("#4daf4a")
+            )
+            mc_hists[plotter_arguments_mc[i]["process_group"]].SetLineWidth(0)
+        else:
+            mc_hists[plotter_arguments_mc[i]["process_group"]].Add(
+                get_histogram(
+                    args,
+                    input_files_mc[plotter_arguments_mc[i]["sample"]],
+                    plotter_arguments_mc[i]["sample"],
+                    plotter_arguments_mc[i]["year"],
+                    plotter_arguments_mc[i]["process_group"],
+                    plotter_arguments_mc[i]["xsec_order"],
+                )
+            )
+
+    mc_hists_keys_sorted = sorted(mc_hists, key=lambda x: mc_hists[x].Integral())
+
+    print(mc_hists_keys_sorted)
+
+    # Add legend
+    legend = ax1.legend(
+        loc=(
+            0.68,
+            # 5,
+            0.35,
+            1 - root.gPad.GetRightMargin() - 0.03,
+            1 - root.gPad.GetTopMargin() - 0.03,
+        ),
+        textsize=10,
+    )
 
     bkg_stack = root.THStack("bkg", "")
-    for i in range(0, len(plotter_arguments_mc)):
-        bkg_stack.Add(mc_hists[i])
+    for hist in mc_hists_keys_sorted:
+        bkg_stack.Add(mc_hists[hist])
+
+    for hist in reversed(mc_hists_keys_sorted):
+        legend.AddEntry(
+            mc_hists[hist],
+            f"{hist} ({Decimal(mc_hists[hist].Integral()):.2E})",
+            "F",
+        )
 
     # # Create a figure and axes
     # fig, ax = aplt.subplots(1, 1, name="fig2", figsize=(800, 600))
@@ -263,12 +317,13 @@ def main():
 
     # Plot the data as a graph
     data_graph = aplt.root_helpers.hist_to_graph(data_hist)
+    legend.AddEntry(data_graph, "Data", "EP")
     ax1.plot(data_graph, "P")
-    ax1.set_xlim(0, 800)
+    ax1.set_xlim(x_min, x_max)
 
     # Use same x-range in lower axes as upper axes
     ax2.set_xlim(ax1.get_xlim())
-    ax2.set_xlim(0, 800)
+    ax2.set_xlim(x_min, x_max)
 
     # Draw line at y=1 in ratio panel
     line = root.TLine(ax1.get_xlim()[0], 1, ax1.get_xlim()[1], 1)
@@ -294,10 +349,10 @@ def main():
     ax1.set_ylabel("Events / 10 GeV")
     ax2.set_ylabel("Data / Pred.", loc="centre")
 
-    ax2.set_ylim(0.75, 2)
+    ax2.set_ylim(0, 2)
     ax2.draw_arrows_outside_range(ratio_graph)
 
-    ax2.set_xlim(0, 800)
+    ax2.set_xlim(x_min, x_max)
 
     # Go back to top axes to add labels
     ax1.cd()
@@ -306,23 +361,11 @@ def main():
     # aplt.atlas_label(text="Not ATLAS! CMS...", loc="upper left", size=0)
     # ax1.text(0.2, 0.84, "#sqrt{s} = 13 TeV, ~60 fb^{-1}", size=22, align=13)
 
-    # # Add legend
-    # legend = ax1.legend(
-    #     loc=(
-    #         0.68,
-    #         0.65,
-    #         1 - root.gPad.GetRightMargin() - 0.03,
-    #         1 - root.gPad.GetTopMargin() - 0.03,
-    #     ),
-    #     textsize=22,
-    # )
-    # legend.AddEntry(data_graph, "Data", "EP")
-    # legend.AddEntry(sig_hist, "Signal", "F")
-    # legend.AddEntry(bkg_hist, "Background", "F")
-    # legend.AddEntry(err_band, "MC Stat. Unc.", "F")
-
     # # Save the plot as a PDF
     fig.savefig("data_vs_mc.png")
+    fig.savefig("data_vs_mc.pdf")
+    # fig.savefig("data_vs_mc.root")
+    # fig.savefig("data_vs_mc.C")
 
 
 if __name__ == "__main__":

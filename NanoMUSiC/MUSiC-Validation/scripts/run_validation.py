@@ -9,6 +9,7 @@ import argparse
 import os
 import subprocess
 import shlex
+import pprint
 
 from local_condor import submit_condor_task
 
@@ -100,7 +101,7 @@ def parse_args():
         "--split-data",
         help="Limit the number of Data files to be processed, per job.",
         type=int,
-        default=2,
+        default=1,
     )
 
     parser.add_argument(
@@ -108,7 +109,7 @@ def parse_args():
         "--split-mc",
         help="Limit the number of MC files to be processed, per job.",
         type=int,
-        default=6,
+        default=3,
     )
 
     parser.add_argument(
@@ -403,6 +404,12 @@ def main():
     # load analysis config file
     task_config_file: str = args.config
     task_config: dict[str, Any] = toml.load(task_config_file)
+
+    if args.sample:
+        if not (args.sample in task_config.keys()):
+            raise Exception(
+                f"ERROR: Could not start validation. Requested sample ({args.sample}) not found in analysis config.\n Available samples are: {list(task_config.keys())}"
+            )
 
     print("Building jobs ...")
     merge_cutflow_arguments = []

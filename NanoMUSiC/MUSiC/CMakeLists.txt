@@ -50,6 +50,8 @@ add_link_options(
     # -L${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-Utils/lib
     -lz
     -lstdc++fs
+    -L/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/lib
+    -L/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/lib64
 )
 
 add_executable(nano_music src/main.cpp /
