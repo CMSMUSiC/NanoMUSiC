@@ -9,6 +9,7 @@ import argparse
 import os
 import subprocess
 import shlex
+import pprint
 
 from local_condor import submit_condor_task
 
@@ -403,6 +404,12 @@ def main():
     # load analysis config file
     task_config_file: str = args.config
     task_config: dict[str, Any] = toml.load(task_config_file)
+
+    if args.sample:
+        if not (args.sample in task_config.keys()):
+            raise Exception(
+                f"ERROR: Could not start validation. Requested sample ({args.sample}) not found in analysis config.\n Available samples are: {list(task_config.keys())}"
+            )
 
     print("Building jobs ...")
     merge_cutflow_arguments = []

@@ -20,83 +20,6 @@
 #include <type_traits>
 #include <unordered_map>
 
-auto starts_with(const std::string &str, const std::string &prefix) -> bool
-{
-    return str.compare(0, prefix.length(), prefix) == 0;
-}
-
-inline auto trigger_filter(const std::string &process,
-                           bool is_data,
-                           bool pass_low_pt_muon_trigger,
-                           bool pass_high_pt_muon_trigger,
-                           bool pass_low_pt_electron_trigger,
-                           bool pass_high_pt_electron_trigger) -> std::optional<std::map<std::string, bool>>
-{
-    std::optional<std::map<std::string, bool>> trigger_filter_res = std::nullopt;
-
-    // Data
-    if (is_data)
-    {
-
-        // Muon dataset
-        if (process.find("Muon") != std::string::npos)
-        {
-            // if (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger)
-            if (pass_low_pt_muon_trigger)
-            {
-                trigger_filter_res = {{"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},
-                                      {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},
-                                      {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},
-                                      {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger}};
-            }
-
-            return trigger_filter_res;
-        }
-
-        // Electron/Photon/EGamma dataset
-        if (                                                 //
-            process.find("EGamma") != std::string::npos      //
-            or process.find("Electron") != std::string::npos //
-            or process.find("Photon") != std::string::npos   //
-        )
-        {
-            // if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) and
-            if (not(pass_low_pt_muon_trigger) and (pass_low_pt_electron_trigger or pass_high_pt_electron_trigger))
-            {
-                trigger_filter_res = {{"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},
-                                      {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},
-                                      {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},
-                                      {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger}};
-            }
-
-            return trigger_filter_res;
-        }
-
-        throw std::runtime_error(
-            fmt::format("ERROR: Could not check trigger filter for Data file. The requested process ({}) does not "
-                        "match any dataset pattern.",
-                        process));
-    }
-
-    // MC
-    // if (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger or pass_low_pt_electron_trigger or
-    //     pass_high_pt_electron_trigger)
-    if (pass_low_pt_muon_trigger or pass_low_pt_electron_trigger or pass_high_pt_electron_trigger)
-    {
-        trigger_filter_res = {{"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},
-                              {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},
-                              {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},
-                              {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger}};
-    }
-
-    return trigger_filter_res;
-};
-
-inline auto jets_trigger_filter(bool pass_jet_ht_trigger, bool pass_jet_pt_trigger) -> bool
-{
-    return pass_jet_ht_trigger or pass_jet_pt_trigger;
-};
-
 auto main(int argc, char *argv[]) -> int
 {
 
@@ -255,6 +178,10 @@ auto main(int argc, char *argv[]) -> int
     auto jet_corrections = JetCorrector(get_runyear(year), get_era_from_process_name(process, is_data), is_data);
     auto pu_corrector = correctionlib_utils.make_correctionlib_ref("PU", year);
     auto muon_sf_reco = correctionlib_utils.make_correctionlib_ref("MuonReco", year);
+
+    auto low_pt_muon_trigger_sf = correctionlib_utils.make_correctionlib_ref("SingleMuonLowPt", year);
+    auto high_pt_muon_trigger_sf = correctionlib_utils.make_correctionlib_ref("SingleMuonHighPt", year);
+
     auto muon_sf_id_low_pt = correctionlib_utils.make_correctionlib_ref("MuonIdLowPt", year);
     auto muon_sf_id_high_pt = correctionlib_utils.make_correctionlib_ref("MuonIdHighPt", year);
     auto muon_sf_iso_low_pt = correctionlib_utils.make_correctionlib_ref("MuonIsoLowPt", year);
@@ -764,7 +691,7 @@ auto main(int argc, char *argv[]) -> int
         // // remove the "unused variable" warning during compilation
         static_cast<void>(event);
 
-        // if (event > 3)
+        // if (event > 3000)
         // {
         //     break;
         // }
@@ -931,6 +858,14 @@ auto main(int argc, char *argv[]) -> int
                                                  year,                        //
                                                  diff_shift);
 
+            // check for trigger matching
+            const auto trigger_match =
+                get_trigger_matching(is_good_trigger, muons, electrons, photons, get_runyear(year));
+            if (not(trigger_match))
+            {
+                continue;
+            }
+
             // Here goes the real analysis...
             for (auto &&const_shift : shifts.get_constant_shifts(diff_shift))
             {
@@ -943,6 +878,25 @@ auto main(int argc, char *argv[]) -> int
 
                     if (not(is_data))
                     {
+                        // get trigger sf
+                        auto trigger_sf = 1.;
+                        if ((*trigger_match).matched_trigger == "match_low_pt_muon")
+                        {
+                            trigger_sf = low_pt_muon_trigger_sf->evaluate(
+                                {ObjectFactories::get_year_for_muon_sf(get_runyear(year)),
+                                 std::fabs((*trigger_match).matched_eta),
+                                 (*trigger_match).matched_pt,
+                                 "sf"});
+                        }
+                        if ((*trigger_match).matched_trigger == "match_high_pt_muon")
+                        {
+                            trigger_sf = high_pt_muon_trigger_sf->evaluate(
+                                {ObjectFactories::get_year_for_muon_sf(get_runyear(year)),
+                                 std::fabs((*trigger_match).matched_eta),
+                                 (*trigger_match).matched_pt,
+                                 "sf"});
+                        }
+
                         auto pu_weight =
                             pu_corrector->evaluate({unwrap(Pileup_nTrueInt), Shifts::get_pu_variation(shift)});
 
@@ -968,6 +922,7 @@ auto main(int argc, char *argv[]) -> int
                         weight = unwrap(mc_weight, 1.)                                          //
                                  * pu_weight                                                    //
                                  * prefiring_weight                                             //
+                                 * trigger_sf                                                   //
                                  * generator_filter                                             //
                                  / no_cuts                                                      //
                                  / generator_filter                                             //
@@ -1179,6 +1134,14 @@ auto main(int argc, char *argv[]) -> int
                     (event < 100000 && event % 10000 == 0) or //
                     (event >= 100000 && event % 100000 == 0)  //
                 )
+                {
+                    fmt::print("\n\nProcessed {} events ...\n", event);
+                    PrintProcessInfo();
+                }
+            }
+            else
+            {
+                if ((event > 1000000 and event % 1000000 == 0))
                 {
                     fmt::print("\n\nProcessed {} events ...\n", event);
                     PrintProcessInfo();

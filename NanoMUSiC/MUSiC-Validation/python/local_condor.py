@@ -66,6 +66,17 @@ def cluster_block_list() -> str:
         "lxblade18.physik.RWTH-Aachen.de",
         "lxblade17.physik.RWTH-Aachen.de",
         "lxblade33.physik.RWTH-Aachen.de",
+        "lx1b14.physik.RWTH-Aachen.de",
+        "lx3a14.physik.RWTH-Aachen.de",
+        "lxcip24.physik.RWTH-Aachen.de",
+        "lx3b26.physik.RWTH-Aachen.de",
+        "lx3b46.physik.RWTH-Aachen.de",
+        "lx3b47.physik.RWTH-Aachen.de",
+        "lx3b34.physik.RWTH-Aachen.de",
+        "lx3b06.physik.RWTH-Aachen.de",
+        "lxcip54.physik.RWTH-Aachen.de",
+        "lxblade36.physik.RWTH-Aachen.de",
+        "lxblade39.physik.RWTH-Aachen.de",
     ]
 
     block_list_str = ""

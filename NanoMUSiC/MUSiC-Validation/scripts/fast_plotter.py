@@ -9,6 +9,12 @@ from tqdm import tqdm
 import toml  # type: ignore
 import argparse
 import os
+from decimal import Decimal
+
+aplt.set_atlas_style()
+import tdrstyle
+
+root.gStyle.SetMarkerSize(0.5)
 
 from colors import PROCESS_GROUP_STYLES
 
@@ -170,7 +176,7 @@ def main():
     # z_to_mu_mu_x_Z_mass
 
     # Set the ATLAS Style
-    aplt.set_atlas_style()
+    # aplt.set_atlas_style()
 
     # Create a figure and axes
     fig, (ax1, ax2) = aplt.ratio_plot(name="fig1", figsize=(800, 800), hspace=0.05)
@@ -257,7 +263,11 @@ def main():
         bkg_stack.Add(mc_hists[hist])
 
     for hist in reversed(mc_hists_keys_sorted):
-        legend.AddEntry(mc_hists[hist], hist, "F")
+        legend.AddEntry(
+            mc_hists[hist],
+            f"{hist} ({Decimal(mc_hists[hist].Integral()):.2E})",
+            "F",
+        )
 
     # # Create a figure and axes
     # fig, ax = aplt.subplots(1, 1, name="fig2", figsize=(800, 600))
@@ -355,7 +365,7 @@ def main():
     fig.savefig("data_vs_mc.png")
     fig.savefig("data_vs_mc.pdf")
     # fig.savefig("data_vs_mc.root")
-    fig.savefig("data_vs_mc.C")
+    # fig.savefig("data_vs_mc.C")
 
 
 if __name__ == "__main__":
