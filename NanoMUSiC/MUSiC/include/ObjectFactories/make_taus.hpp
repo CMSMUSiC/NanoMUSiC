@@ -126,9 +126,8 @@ inline auto make_taus(const RVec<float> &Tau_pt,  //
 
         if (is_good_tau_pre_filter)
         {
-            auto tau_p4 = Math::PtEtaPhiMVector(Tau_pt[i], Tau_eta[i], Tau_phi[i], PDG::Tau::Mass);
-            
-                    
+            auto tau_p4 = Math::PtEtaPhiMVector(Tau_pt[i], Tau_eta[i], Tau_phi[i], Tau_mass[i]); //regard Tau_mass right here ("PDG::Tau::Mass" is only literature value)
+                   
             bool is_good_tau =  (tau_p4.pt() >= 25. ) and is_good_tau_pre_filter;
 
             if (is_good_tau)

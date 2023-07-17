@@ -326,17 +326,17 @@ auto main(int argc, char *argv[]) -> int
                                                               {"bJet", 0},
                                                               {"MET", 1}};
 
-    const std::map<std::string, int> one_tau_at_least_count_map = {{"Ele", 0},
-                                                                   {"EleEE", 0},
-                                                                   {"EleEB", 0},
-                                                                   {"Muon", 0},
-                                                                   {"Gamma", 0},
-                                                                   {"GammaEB", 0},
-                                                                   {"GammaEE", 0},
-                                                                   {"Tau", 1},
-                                                                   {"Jet", 0},
-                                                                   {"bJet", 0},
-                                                                   {"MET", 0}};
+    // const std::map<std::string, int> one_tau_at_least_count_map = {{"Ele", 0},
+    //                                                                {"EleEE", 0},
+    //                                                                {"EleEB", 0},
+    //                                                                {"Muon", 0},
+    //                                                                {"Gamma", 0},
+    //                                                                {"GammaEB", 0},
+    //                                                                {"GammaEE", 0},
+    //                                                                {"Tau", 1},
+    //                                                                {"Jet", 0},
+    //                                                                {"bJet", 0},
+    //                                                                {"MET", 0}};
 
     // build validation factories
     // map each shift to one analysis factory
@@ -351,8 +351,8 @@ auto main(int argc, char *argv[]) -> int
     std::unordered_map<std::string, ZToLepLepX> z_to_tau_tau_x_Z_mass;
     std::unordered_map<std::string, WToLepNu> w_to_tau_nu;
     std::unordered_map<std::string, WToLepNu> w_to_tau_nu_Z_mass;
-    std::unordered_map<std::string, WToLepNu_eff> w_to_tau_nu_eff;
-    std::unordered_map<std::string, Tau_efficiency> one_tau_at_least;
+    // std::unordered_map<std::string, WToLepNu_eff> w_to_tau_nu_eff;
+    // std::unordered_map<std::string, Tau_efficiency> one_tau_at_least;
 
     for (auto &&shift : shifts.get_constant_shifts())
     {
@@ -458,58 +458,55 @@ auto main(int argc, char *argv[]) -> int
         //                              process_group,
         //                              xs_order)});
 
-        // z_to_tau_tau_x.insert(
-        //     {shift,
-        //      ZToLepLepX("z_to_tau_tau_x",
-        //                 get_output_file_path(
-        //                     "z_to_tau_tau_x", output_path, process, year, process_group, xs_order, is_data, shift),
-        //                 z_to_tau_tau_x_count_map,
-        //                 false,
-        //                 shift,
-        //                 process,
-        //                 year,
-        //                 process_group,
-        //                 xs_order)});
-
-        // z_to_tau_tau_x_Z_mass.insert(
-        //     {shift,
-        //      ZToLepLepX(
-        //          "z_to_tau_tau_x_Z_mass",
-        //          get_output_file_path(
-        //              "z_to_tau_tau_x_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
-        //          z_to_tau_tau_x_count_map,
-        //          true,
-        //          shift,
-        //          process,
-        //          year,
-        //          process_group,
-        //          xs_order)});
-
-        // w_to_tau_nu.insert(
-        //     {shift,
-        //      WToLepNu("w_to_tau_nu",
-        //               get_output_file_path(
-        //                   "w_to_tau_nu", output_path, process, year, process_group, xs_order, is_data, shift),
-        //               w_to_tau_nu_count_map,
-        //               false,
-        //               shift,
-        //               process,
-        //               year,
-        //               process_group,
-        //               xs_order)});
-
-        // w_to_tau_nu_Z_mass.insert(
-        //     {shift,
-        //      WToLepNu("w_to_tau_nu_Z_mass",
-        //               get_output_file_path(
-        //                   "w_to_tau_nu_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
-        //               w_to_tau_nu_count_map,
-        //               true,
-        //               shift,
-        //               process,
-        //               year,
-        //               process_group,
-        //               xs_order)});
+         z_to_tau_tau_x.insert(
+             {shift,
+              ZToLepLepX("z_to_tau_tau_x",
+                         get_output_file_path(
+                             "z_to_tau_tau_x", output_path, process, year, process_group, xs_order, is_data, shift),
+                         z_to_tau_tau_x_count_map,
+                         false,
+                         shift,
+                         process,
+                         year,
+                         process_group,
+                         xs_order)});
+         z_to_tau_tau_x_Z_mass.insert(
+             {shift,
+              ZToLepLepX(
+                  "z_to_tau_tau_x_Z_mass",
+                  get_output_file_path(
+                      "z_to_tau_tau_x_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
+                  z_to_tau_tau_x_count_map,
+                  true,
+                  shift,
+                  process,
+                  year,
+                  process_group,
+                  xs_order)});
+         w_to_tau_nu.insert(
+             {shift,
+              WToLepNu("w_to_tau_nu",
+                       get_output_file_path(
+                           "w_to_tau_nu", output_path, process, year, process_group, xs_order, is_data, shift),
+                       w_to_tau_nu_count_map,
+                       false,
+                       shift,
+                       process,
+                       year,
+                       process_group,
+                       xs_order)});
+         w_to_tau_nu_Z_mass.insert(
+             {shift,
+              WToLepNu("w_to_tau_nu_Z_mass",
+                       get_output_file_path(
+                           "w_to_tau_nu_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
+                       w_to_tau_nu_count_map,
+                       true,
+                       shift,
+                       process,
+                       year,
+                       process_group,
+                       xs_order)});
 
         // w_to_tau_nu_eff.insert(
         //     {shift,
@@ -524,18 +521,18 @@ auto main(int argc, char *argv[]) -> int
         //               process_group,
         //               xs_order)});
 
-        one_tau_at_least.insert(
-            {shift,
-             Tau_efficiency("one_tau_at_least",
-                      get_output_file_path(
-                          "one_tau_at_least", output_path, process, year, process_group, xs_order, is_data, shift),
-                      one_tau_at_least_count_map,
-                      false,
-                      shift,
-                      process,
-                      year,
-                      process_group,
-                      xs_order)});
+        // one_tau_at_least.insert(
+        //     {shift,
+        //      Tau_efficiency("one_tau_at_least",
+        //               get_output_file_path(
+        //                   "one_tau_at_least", output_path, process, year, process_group, xs_order, is_data, shift),
+        //               one_tau_at_least_count_map,
+        //               false,
+        //               shift,
+        //               process,
+        //               year,
+        //               process_group,
+        //               xs_order)});
     }
 
     for (auto &&shift : shifts.get_differential_shifts())
@@ -645,60 +642,56 @@ auto main(int argc, char *argv[]) -> int
             //                              process_group,
             //                              xs_order)});
 
-            // z_to_tau_tau_x.insert(
-            //     {shift,
-            //      ZToLepLepX("z_to_tau_tau_x",
-            //                 get_output_file_path(
-            //                     "z_to_tau_tau_x", output_path, process, year, process_group, xs_order, is_data, shift),
-            //                 z_to_tau_tau_x_count_map,
-            //                 false,
-            //                 shift,
-            //                 process,
-            //                 year,
-            //                 process_group,
-            //                 xs_order)});
-
-            // z_to_tau_tau_x_Z_mass.insert(
-            //     {shift,
-            //      ZToLepLepX(
-            //          "z_to_tau_tau_x_Z_mass",
-            //          get_output_file_path(
-            //              "z_to_tau_tau_x_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
-            //          z_to_tau_tau_x_count_map,
-            //          true,
-            //          shift,
-            //          process,
-            //          year,
-            //          process_group,
-            //          xs_order)});
-
-            // w_to_tau_nu.insert(
-            //     {shift,
-            //      WToLepNu("w_to_tau_nu",
-            //               get_output_file_path(
-            //                   "w_to_tau_nu", output_path, process, year, process_group, xs_order, is_data, shift),
-            //               w_to_tau_nu_count_map,
-            //               false,
-            //               shift,
-            //               process,
-            //               year,
-            //               process_group,
-            //               xs_order)});
-
-            // w_to_tau_nu_Z_mass.insert(
-            //     {shift,
-            //      WToLepNu(
-            //          "w_to_tau_nu_Z_mass",
-            //          get_output_file_path(
-            //              "w_to_tau_nu_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
-            //          w_to_tau_nu_count_map,
-            //          false,
-            //          shift,
-            //          process,
-            //          year,
-            //          process_group,
-            //          xs_order)});
-
+             z_to_tau_tau_x.insert(
+                 {shift,
+                  ZToLepLepX("z_to_tau_tau_x",
+                             get_output_file_path(
+                                 "z_to_tau_tau_x", output_path, process, year, process_group, xs_order, is_data, shift),
+                             z_to_tau_tau_x_count_map,
+                             false,
+                             shift,
+                             process,
+                             year,
+                             process_group,
+                             xs_order)});
+             z_to_tau_tau_x_Z_mass.insert(
+                 {shift,
+                  ZToLepLepX(
+                      "z_to_tau_tau_x_Z_mass",
+                      get_output_file_path(
+                          "z_to_tau_tau_x_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
+                      z_to_tau_tau_x_count_map,
+                      true,
+                      shift,
+                      process,
+                      year,
+                      process_group,
+                      xs_order)});
+             w_to_tau_nu.insert(
+                 {shift,
+                  WToLepNu("w_to_tau_nu",
+                           get_output_file_path(
+                               "w_to_tau_nu", output_path, process, year, process_group, xs_order, is_data, shift),
+                           w_to_tau_nu_count_map,
+                           false,
+                           shift,
+                           process,
+                           year,
+                           process_group,
+                           xs_order)});
+             w_to_tau_nu_Z_mass.insert(
+                 {shift,
+                  WToLepNu(
+                      "w_to_tau_nu_Z_mass",
+                      get_output_file_path(
+                          "w_to_tau_nu_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
+                      w_to_tau_nu_count_map,
+                      false,
+                      shift,
+                      process,
+                      year,
+                      process_group,
+                      xs_order)});
             // w_to_tau_nu_eff.insert(
             //     {shift,
             //      WToLepNu_eff("w_to_tau_nu_eff",
@@ -712,18 +705,18 @@ auto main(int argc, char *argv[]) -> int
             //               process_group,
             //               xs_order)});
 
-            one_tau_at_least.insert(
-                {shift,
-                 Tau_efficiency("one_tau_at_least",
-                          get_output_file_path(
-                              "one_tau_at_least", output_path, process, year, process_group, xs_order, is_data, shift),
-                          one_tau_at_least_count_map,
-                          false,
-                          shift,
-                          process,
-                          year,
-                          process_group,
-                          xs_order)});
+            // one_tau_at_least.insert(
+            //     {shift,
+            //      Tau_efficiency("one_tau_at_least",
+            //               get_output_file_path(
+            //                   "one_tau_at_least", output_path, process, year, process_group, xs_order, is_data, shift),
+            //               one_tau_at_least_count_map,
+            //               false,
+            //               shift,
+            //               process,
+            //               year,
+            //               process_group,
+            //               xs_order)});
         }
     }
 
@@ -853,19 +846,19 @@ auto main(int argc, char *argv[]) -> int
                                                    year,                               //
                                                    shift);                             //
 
-            auto taus_eff = ObjectFactories::make_taus_eff(unwrap(Tau_pt),                     //
-                                                   unwrap(Tau_eta),                    //
-                                                   unwrap(Tau_phi),                    //
-                                                   unwrap(Tau_dz),                     //
-                                                   unwrap(Tau_mass),                   //
-                                                   unwrap(Tau_genPartIdx),             //
-                                                   unwrap(Tau_decayMode),              //
-                                                   unwrap(Tau_idDeepTau2017v2p1VSe),   //
-                                                   unwrap(Tau_idDeepTau2017v2p1VSmu),  //
-                                                   unwrap(Tau_idDeepTau2017v2p1VSjet), //
-                                                   is_data,                            //
-                                                   year,                               //
-                                                   shift);
+            // auto taus_eff = ObjectFactories::make_taus_eff(unwrap(Tau_pt),                     //
+            //                                        unwrap(Tau_eta),                    //
+            //                                        unwrap(Tau_phi),                    //
+            //                                        unwrap(Tau_dz),                     //
+            //                                        unwrap(Tau_mass),                   //
+            //                                        unwrap(Tau_genPartIdx),             //
+            //                                        unwrap(Tau_decayMode),              //
+            //                                        unwrap(Tau_idDeepTau2017v2p1VSe),   //
+            //                                        unwrap(Tau_idDeepTau2017v2p1VSmu),  //
+            //                                        unwrap(Tau_idDeepTau2017v2p1VSjet), //
+            //                                        is_data,                            //
+            //                                        year,                               //
+            //                                        shift);
 
              auto photons = ObjectFactories::make_photons(unwrap(Photon_pt),          //
                                                           unwrap(Photon_eta),         //
@@ -908,8 +901,8 @@ auto main(int argc, char *argv[]) -> int
              taus.clear(electrons, 0.4);
              taus.clear(muons, 0.4);
             //
-             taus_eff.clear(electrons, 0.4);
-             taus_eff.clear(muons, 0.4);
+            //  taus_eff.clear(electrons, 0.4);
+            //  taus_eff.clear(muons, 0.4);
             //
              photons.clear(electrons, 0.4);
              photons.clear(muons, 0.4);
@@ -1149,37 +1142,80 @@ auto main(int argc, char *argv[]) -> int
 
                     // Tau analysis
                     // TauTau + X
-                    // unsigned int n_taus = 2;
-                    // if (taus.size() >= n_taus)
-                    // {
-                    //     auto tau_1 = taus.p4[0];
-                    //     auto tau_2 = taus.p4[1];
+                    unsigned int n_taus = 2;
+                    if (taus.size() >= n_taus)
+                    {
+                        auto tau_1 = taus.p4[0];
+                        auto tau_2 = taus.p4[1];
 
-                    //     // wide mass range
-                    //     z_to_tau_tau_x[shift].fill(tau_1,
-                    //                                tau_2,
-                    //                                bjets.p4,
-                    //                                jets.p4,
-                    //                                met.p4,
-                    //                                weight); // * Shifts::get_scale_factor(shift, n_muons, 0, 0, 0, 0, 0,
-                    //                                         // muons, electrons, photons, bjets, jets, met));
+                        // wide mass range
+                        z_to_tau_tau_x[shift].fill(tau_1,
+                                                   tau_2,
+                                                   bjets.p4,
+                                                   jets.p4,
+                                                   met.p4,
+                                                   weight); // * Shifts::get_scale_factor(shift, n_muons, 0, 0, 0, 0, 0,
+                                                            // muons, electrons, photons, bjets, jets, met));
 
-                    //     // Z mass range
-                    //     if (PDG::Z::Mass - 20. < (tau_1 + tau_2).mass() and (tau_1 + tau_2).mass() < PDG::Z::Mass + 20.)
-                    //     {
-                    //         z_to_tau_tau_x_Z_mass[shift].fill(
-                    //             tau_1,
-                    //             tau_2,
-                    //             bjets.p4,
-                    //             jets.p4,
-                    //             met.p4,
-                    //             weight); // * Shifts::get_scale_factor(shift, n_muons, 0, 0, 0, 0, 0, muons, electrons,
-                    //                      // photons, bjets, jets, met));
-                    //     }
-                    // }
+                        // Z mass range
+                        if (PDG::Z::Mass - 20. < (tau_1 + tau_2).mass() and (tau_1 + tau_2).mass() < PDG::Z::Mass + 20.)
+                        {
+                            z_to_tau_tau_x_Z_mass[shift].fill(
+                                tau_1,
+                                tau_2,
+                                bjets.p4,
+                                jets.p4,
+                                met.p4,
+                                weight); // * Shifts::get_scale_factor(shift, n_muons, 0, 0, 0, 0, 0, muons, electrons,
+                                         // photons, bjets, jets, met));
+                        }
+                    }
 
                     // // TauNu
-                    // unsigned int n_taus2 = 1;
+                    unsigned int n_taus2 = 1;
+
+                    if (taus.size() >= n_taus2 and met.size() >= 1)
+                    {
+                        auto tau_1 = taus.p4[0];
+                        
+                        // wide mass range
+                        w_to_tau_nu[shift].fill(tau_1,
+                                                // bjets.p4,
+                                                // jets.p4,
+                                                met.p4,
+                                                weight); // * Shifts::get_scale_factor(shift, n_muons, 0, 0, 0, 0, 0,
+                                                         // muons, electrons, photons, bjets, jets, met));
+
+                        // Z mass range
+                        if (PDG::Z::Mass - 20. < (tau_1).mass() and (tau_1).mass() < PDG::Z::Mass + 20.)
+                        {
+                            w_to_tau_nu_Z_mass[shift].fill(
+                                tau_1,
+                                // bjets.p4,
+                                // jets.p4,
+                                met.p4,
+                                weight); // * Shifts::get_scale_factor(shift, n_muons, 0, 0, 0, 0, 0, muons, electrons,
+                                         // photons, bjets, jets, met));
+                        }
+                    }
+
+                     // // Tau efficiency
+                    // if ((taus_eff.size() > 0) and (met.size() > 0))
+                    // {
+                    //     auto taus = taus_eff.p4;
+                    //     auto fakeness = taus_eff.is_fake;
+                    //                                                                     // fmt::print("\n\nIs it a Vector? taus: {}\n", taus);
+                    //                                                                     // fmt::print("\n\nIs it a Vector? fakeness: {}\n", fakeness);
+                    //     one_tau_at_least[shift].fill_eff(taus,
+                    //                             // bjets.p4,
+                    //                             // jets.p4,
+                    //                             // met.p4,
+                    //                             weight,
+                    //                             fakeness); // * Shifts::get_scale_factor(shift, n_muons, 0, 0, 0, 0, 0,
+                    //                                      // muons, electrons, photons, bjets, jets, met));
+                    // }
+
+                    // 
 
                     // if (taus_eff.size() >= n_taus2 and met.size() >= 1)
                     // {
@@ -1193,48 +1229,6 @@ auto main(int argc, char *argv[]) -> int
                     //                             weight,
                     //                             fake_tau); // * Shifts::get_scale_factor(shift, n_muons, 0, 0, 0, 0, 0,
                     //                                      // muons, electrons, photons, bjets, jets, met));
-                    // }
-
-                    // Tau efficiency
-                    if ((taus_eff.size() > 0) and (met.size() > 0))
-                    {
-                        auto taus = taus_eff.p4;
-                        auto fakeness = taus_eff.is_fake;
-                                                                                        // fmt::print("\n\nIs it a Vector? taus: {}\n", taus);
-                                                                                        // fmt::print("\n\nIs it a Vector? fakeness: {}\n", fakeness);
-                        one_tau_at_least[shift].fill_eff(taus,
-                                                // bjets.p4,
-                                                // jets.p4,
-                                                // met.p4,
-                                                weight,
-                                                fakeness); // * Shifts::get_scale_factor(shift, n_muons, 0, 0, 0, 0, 0,
-                                                         // muons, electrons, photons, bjets, jets, met));
-                    }
-
-                    // if (taus.size() >= n_taus2 and met.size() >= 1)
-                    // {
-                    //     auto tau_1 = taus.p4[0];
-                        
-
-                    //     // wide mass range
-                    //     w_to_tau_nu[shift].fill(tau_1,
-                    //                             // bjets.p4,
-                    //                             // jets.p4,
-                    //                             met.p4,
-                    //                             weight); // * Shifts::get_scale_factor(shift, n_muons, 0, 0, 0, 0, 0,
-                    //                                      // muons, electrons, photons, bjets, jets, met));
-
-                    //     // Z mass range
-                    //     if (PDG::Z::Mass - 20. < (tau_1).mass() and (tau_1).mass() < PDG::Z::Mass + 20.)
-                    //     {
-                    //         w_to_tau_nu_Z_mass[shift].fill(
-                    //             tau_1,
-                    //             // bjets.p4,
-                    //             // jets.p4,
-                    //             met.p4,
-                    //             weight); // * Shifts::get_scale_factor(shift, n_muons, 0, 0, 0, 0, 0, muons, electrons,
-                    //                      // photons, bjets, jets, met));
-                    //     }
                     // }
                 }
             }
@@ -1275,12 +1269,12 @@ auto main(int argc, char *argv[]) -> int
         // gamma_plus_jet[shift].dump_outputs();
         // ttbar_to_1mu_2bjet_2jet_MET[shift].dump_outputs();
         // ttbar_to_1ele_2bjet_2jet_MET[shift].dump_outputs();
-        // z_to_tau_tau_x[shift].dump_outputs();
-        // z_to_tau_tau_x_Z_mass[shift].dump_outputs();
-        // w_to_tau_nu[shift].dump_outputs();
-        // w_to_tau_nu_Z_mass[shift].dump_outputs();
+        z_to_tau_tau_x[shift].dump_outputs();
+        z_to_tau_tau_x_Z_mass[shift].dump_outputs();
+        w_to_tau_nu[shift].dump_outputs();
+        w_to_tau_nu_Z_mass[shift].dump_outputs();
         // w_to_tau_nu_eff[shift].dump_outputs_eff();
-        one_tau_at_least[shift].dump_outputs_eff();
+        // one_tau_at_least[shift].dump_outputs_eff();
         // dijets.dump_outputs();
     }
 
@@ -1295,12 +1289,12 @@ auto main(int argc, char *argv[]) -> int
             // gamma_plus_jet[shift].dump_outputs();
             // ttbar_to_1mu_2bjet_2jet_MET[shift].dump_outputs();
             // ttbar_to_1ele_2bjet_2jet_MET[shift].dump_outputs();
-            // z_to_tau_tau_x[shift].dump_outputs();
-            // z_to_tau_tau_x_Z_mass[shift].dump_outputs();
-            // w_to_tau_nu[shift].dump_outputs();
-            // w_to_tau_nu_Z_mass[shift].dump_outputs();
+            z_to_tau_tau_x[shift].dump_outputs();
+            z_to_tau_tau_x_Z_mass[shift].dump_outputs();
+            w_to_tau_nu[shift].dump_outputs();
+            w_to_tau_nu_Z_mass[shift].dump_outputs();
             // w_to_tau_nu_eff[shift].dump_outputs_eff();
-            one_tau_at_least[shift].dump_outputs_eff();
+            // one_tau_at_least[shift].dump_outputs_eff();
             // dijets.dump_outputs();
         }
     }

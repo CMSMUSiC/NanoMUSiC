@@ -133,7 +133,7 @@ inline auto make_taus_eff(const RVec<float> &Tau_pt,  //
 
         if (is_good_tau_eff_filter)
         {
-            auto tau_p4 = Math::PtEtaPhiMVector(Tau_pt[i], Tau_eta[i], Tau_phi[i], PDG::Tau::Mass); //think about Tau mass
+            auto tau_p4 = Math::PtEtaPhiMVector(Tau_pt[i], Tau_eta[i], Tau_phi[i], Tau_mass[i]); //"PDG::Tau::Mass"
 
             scale_factors.push_back(1.);     //
             scale_factor_up.push_back(1.);   //
