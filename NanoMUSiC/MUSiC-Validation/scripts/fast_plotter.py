@@ -54,6 +54,20 @@ def parse_args():
     )
 
     parser.add_argument(
+        "--output-suffix",
+        help="Suffix to the output file.",
+        type=str,
+        default="",
+    )
+
+    parser.add_argument(
+        "--mc-sample",
+        help="MC sample to plot. Will filter all other samples.",
+        type=str,
+        default="",
+    )
+
+    parser.add_argument(
         "--xmin",
         help="xmin",
         type=float,
@@ -83,6 +97,12 @@ def parse_args():
         )
 
     return args
+
+
+def get_reweighting_factor(config):
+    if "reweighting_factor" in config.keys():
+        return config["reweighting_factor"]
+    return 1.0
 
 
 def files_to_process(file_limit, year, output_files):
@@ -145,20 +165,25 @@ def main():
                                     "is_data": task_config[sample]["is_data"],
                                     "process_group": "Data",
                                     "xsec_order": "DUMMY",
+                                    "reweighting_factor": 1.0,
                                 }
                             )
                         else:
-                            plotter_arguments_mc.append(
-                                {
-                                    "sample": sample,
-                                    "year": year,
-                                    "is_data": task_config[sample]["is_data"],
-                                    "process_group": task_config[sample][
-                                        "ProcessGroup"
-                                    ],
-                                    "xsec_order": task_config[sample]["XSecOrder"],
-                                }
-                            )
+                            if args.mc_sample == "" or args.mc_sample == sample:
+                                plotter_arguments_mc.append(
+                                    {
+                                        "sample": sample,
+                                        "year": year,
+                                        "is_data": task_config[sample]["is_data"],
+                                        "process_group": task_config[sample][
+                                            "ProcessGroup"
+                                        ],
+                                        "xsec_order": task_config[sample]["XSecOrder"],
+                                        "reweighting_factor": get_reweighting_factor(
+                                            task_config[sample]
+                                        ),
+                                    }
+                                )
 
     input_files_data = {}
     for s in plotter_arguments_data:
@@ -179,7 +204,8 @@ def main():
     # aplt.set_atlas_style()
 
     # Create a figure and axes
-    fig, (ax1, ax2) = aplt.ratio_plot(name="fig1", figsize=(800, 800), hspace=0.05)
+    fig, (ax1, ax2) = aplt.ratio_plot(name="ratio", figsize=(800, 600), hspace=0.05)
+
     x_min = args.xmin
     x_max = args.xmax
 
@@ -211,12 +237,11 @@ def main():
     # data_hist.SetMaximum(800.0)
 
     # Stack the background
-    # TODO: check integral and reorder
     mc_hists = {}
     for i in range(0, len(plotter_arguments_mc)):
         print(f"Adding to stack: {plotter_arguments_mc[i]['sample']}")
         if plotter_arguments_mc[i]["process_group"] not in mc_hists:
-            mc_hists[plotter_arguments_mc[i]["process_group"]] = get_histogram(
+            this_histogram = get_histogram(
                 args,
                 input_files_mc[plotter_arguments_mc[i]["sample"]],
                 plotter_arguments_mc[i]["sample"],
@@ -225,22 +250,29 @@ def main():
                 plotter_arguments_mc[i]["xsec_order"],
             ).Clone()
 
+            this_histogram.Scale(plotter_arguments_mc[i]["reweighting_factor"])
+
+            mc_hists[plotter_arguments_mc[i]["process_group"]] = this_histogram
+
             mc_hists[plotter_arguments_mc[i]["process_group"]].SetFillColor(
                 PROCESS_GROUP_STYLES[plotter_arguments_mc[i]["process_group"]].color
                 # root.TColor.GetColor("#4daf4a")
             )
             mc_hists[plotter_arguments_mc[i]["process_group"]].SetLineWidth(0)
+            # reweight
+
         else:
-            mc_hists[plotter_arguments_mc[i]["process_group"]].Add(
-                get_histogram(
-                    args,
-                    input_files_mc[plotter_arguments_mc[i]["sample"]],
-                    plotter_arguments_mc[i]["sample"],
-                    plotter_arguments_mc[i]["year"],
-                    plotter_arguments_mc[i]["process_group"],
-                    plotter_arguments_mc[i]["xsec_order"],
-                )
-            )
+            this_histogram = get_histogram(
+                args,
+                input_files_mc[plotter_arguments_mc[i]["sample"]],
+                plotter_arguments_mc[i]["sample"],
+                plotter_arguments_mc[i]["year"],
+                plotter_arguments_mc[i]["process_group"],
+                plotter_arguments_mc[i]["xsec_order"],
+            ).Clone()
+            this_histogram.Scale(plotter_arguments_mc[i]["reweighting_factor"])
+
+            mc_hists[plotter_arguments_mc[i]["process_group"]].Add(this_histogram)
 
     mc_hists_keys_sorted = sorted(mc_hists, key=lambda x: mc_hists[x].Integral())
 
@@ -249,9 +281,8 @@ def main():
     # Add legend
     legend = ax1.legend(
         loc=(
-            0.68,
-            # 5,
-            0.35,
+            0.58,
+            0.3,
             1 - root.gPad.GetRightMargin() - 0.03,
             1 - root.gPad.GetTopMargin() - 0.03,
         ),
@@ -268,40 +299,6 @@ def main():
             f"{hist} ({Decimal(mc_hists[hist].Integral()):.2E})",
             "F",
         )
-
-    # # Create a figure and axes
-    # fig, ax = aplt.subplots(1, 1, name="fig2", figsize=(800, 600))
-    # print(ax.get_xlim())
-
-    # # Define a distribution
-    # sqroot = root.TF1("sqroot", "x*gaus(0) + [3]*abs(sin(x)/x)", 0, 10)
-    # sqroot.SetParameters(10, 4, 1, 20)
-
-    # data_hist = root.TH1F("hist", "Random Histogram", 50, 0, 10)
-    # data_hist.FillRandom("sqroot", 20000)
-    # print(ax.get_xlim())
-
-    # # data_hist.SetAxisRange(0.0, 3.0, "X")
-    # data_hist.GetXaxis().SetRangeUser(0, 3)
-    # # data_hist.GetXaxis().SetLimits(0, 3)
-
-    # print(ax.get_xlim())
-
-    # # Draw the histogram on these axes
-    # ax.plot(data_hist, label="data_hist", labelfmt="F")
-    # print(ax.get_xlim())
-    # ax.set_xlim(0, 3)
-    # print(ax.get_xlim())
-
-    # # Add extra space at top of plot to make room for labels
-    # ax.add_margins(top=0.16)
-
-    # # Set axis titles
-    # ax.set_xlabel("X [GeV]")
-    # ax.set_ylabel("Events / 0.2 GeV")
-
-    # # Save the plot as a PNG
-    # fig.savefig("data_vs_mc.png")
 
     # Draw the stacked histogram on these axes
     ax1.plot(bkg_stack)
@@ -347,7 +344,7 @@ def main():
     # Set axis titles
     ax2.set_xlabel("X [GeV]")
     ax1.set_ylabel("Events / 10 GeV")
-    ax2.set_ylabel("Data / Pred.", loc="centre")
+    ax2.set_ylabel("Obs./Pred.", loc="centre")
 
     ax2.set_ylim(0, 2)
     ax2.draw_arrows_outside_range(ratio_graph)
@@ -362,8 +359,8 @@ def main():
     # ax1.text(0.2, 0.84, "#sqrt{s} = 13 TeV, ~60 fb^{-1}", size=22, align=13)
 
     # # Save the plot as a PDF
-    fig.savefig("data_vs_mc.png")
-    fig.savefig("data_vs_mc.pdf")
+    fig.savefig(f"data_vs_mc_{args.output_suffix}.png")
+    fig.savefig(f"data_vs_mc_{args.output_suffix}.pdf")
     # fig.savefig("data_vs_mc.root")
     # fig.savefig("data_vs_mc.C")
 
