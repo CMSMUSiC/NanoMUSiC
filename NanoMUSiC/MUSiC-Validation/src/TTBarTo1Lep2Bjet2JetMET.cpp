@@ -1,9 +1,9 @@
+#include "TTBarTo1Lep2Bjet2JetMET.hpp"
 #include "Configs.hpp"
 #include "Histograms.hpp"
 #include "Math/GenVector/VectorUtil.h"
 #include "Math/VectorUtil.h"
 #include "NanoEventClass.hpp"
-#include "TTBarTo1Lep2Bjet2JetMET.hpp"
 #include <filesystem>
 #include <fmt/format.h>
 #include <string_view>
@@ -44,16 +44,6 @@ TTBarTo1Lep2Bjet2JetMET::TTBarTo1Lep2Bjet2JetMET(const std::string &_analysis_na
                                                           "h_invariant_mass_jet1");
     h_invariant_mass_jet1 = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
     h_invariant_mass_jet1.Sumw2();
-
-    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
-                                                          _process_group, //
-                                                          _xs_order,      //
-                                                          _sample,        //
-                                                          _year,          //
-                                                          _shift,         //
-                                                          "h_transverse_mass_lep_MET");
-    h_transverse_mass_lep_MET = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
-    h_transverse_mass_lep_MET.Sumw2();
 
     histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
                                                           _process_group, //

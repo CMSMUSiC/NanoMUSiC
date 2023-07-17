@@ -52,7 +52,7 @@ def __dir__() -> tuple[str, ...]:
 valid_years = {"2016APV", "2016", "2017", "2018"}
 
 # path of the validation files
-validation_path = "/home/home1/institut_3a/seth/MUSiC/NanoMUSiC/build/validation_outputs_2023_07_07"
+validation_path = "/home/home1/institut_3a/seth/MUSiC/NanoMUSiC/build/validation_outputs"
 
 # debug flag, if true more detailed console output is active
 debug = False
@@ -1328,7 +1328,7 @@ def plotter(args):
         figname = histname
         if jetclass:
             figname = classname + "_" + histname
-        outputpath = validation_path + "/" + str(year) + "/plots/"
+        outputpath = "/home/home1/institut_3a/seth/MUSiC/NanoMUSiC/build/validation_plots/" + str(year) + "/plots/"
         if savepath != "":
             outputpath = validation_path + "/" + str(year) + "/" + savepath + "/plots/"
         if subfolder != "":
@@ -1509,11 +1509,12 @@ def main():
         jetclass = True
 
     # check output path
-    outputpath = validation_path + "/" + str(args.year) + "/plots/"
-    if savepath != "":
-        outputpath = validation_path + "/" + str(args.year) + "/" + savepath + "/plots/"
-    if subfolder != "":
-        outputpath += subfolder + "/"
+    os.system("mkdir -p /home/home1/institut_3a/seth/MUSiC/NanoMUSiC/build/validation_plots")
+    outputpath = "/home/home1/institut_3a/seth/MUSiC/NanoMUSiC/build/validatin_plots/" + str(args.year) + "/plots/"
+    # if savepath != "":
+    #     outputpath = validation_path + "/" + str(args.year) + "/" + savepath + "/plots/"
+    # if subfolder != "":
+    #     outputpath += subfolder + "/"
     if not (os.path.isdir(f"{outputpath}")):
         os.system(f"mkdir -p {outputpath}")
 
@@ -1591,7 +1592,3 @@ if __name__ == "__main__":
     main()
 
 
-"""
-[z_to_mu_mu_x]_[DrellYan]_[NLO]__[DYJetsToLL_LHEFilterPtZ-100To250_MatchEWPDG20_13TeV_AM]_[2018]_[Nominal]_[h_met]
-[z_to_mu_mu_x]_[DrellYan]_[NLO]_[DYJetsToLL_LHEFilterPtZ-100To250_MatchEWPDG20_13TeV_AM]_[2018]_[Nominal]_[h_met]
-"""

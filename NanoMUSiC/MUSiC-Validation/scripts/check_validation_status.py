@@ -126,6 +126,7 @@ def main():
         if all(job_status.values()):
             print(f"All done ({list(job_status.values()).count(True)} jobs)!")
             os.system("condor_q | tail -5")
+            break
         else:
             print("Running jobs:")
             for job in job_status:

@@ -41,7 +41,8 @@ inline auto trigger_filter(const std::string &process,
         // Muon dataset
         if (process.find("Muon") != std::string::npos)
         {
-            if (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger)
+            // if (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger)
+            if (pass_high_pt_muon_trigger)
             {
                 trigger_filter_res = {{"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},
                                       {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},
@@ -59,8 +60,8 @@ inline auto trigger_filter(const std::string &process,
             or process.find("Photon") != std::string::npos   //
         )
         {
-            if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) and
-                (pass_low_pt_electron_trigger or pass_high_pt_electron_trigger))
+            // if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) and
+            if (not(pass_high_pt_muon_trigger) and (pass_low_pt_electron_trigger or pass_high_pt_electron_trigger))
             {
                 trigger_filter_res = {{"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},
                                       {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},
@@ -78,8 +79,8 @@ inline auto trigger_filter(const std::string &process,
     }
 
     // MC
-    if (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger or pass_low_pt_electron_trigger or
-        pass_high_pt_electron_trigger)
+    // if (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger or pass_low_pt_electron_trigger or
+    if (pass_high_pt_muon_trigger or pass_low_pt_electron_trigger or pass_high_pt_electron_trigger)
     {
         trigger_filter_res = {{"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},
                               {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},
@@ -858,22 +859,22 @@ auto main(int argc, char *argv[]) -> int
                                                    year,                               //
                                                    shift);                             //
 
-            auto photons = ObjectFactories::make_photons(unwrap(Photon_pt),          //
-                                                         unwrap(Photon_eta),         //
-                                                         unwrap(Photon_phi),         //
-                                                         unwrap(Photon_isScEtaEB),   //
-                                                         unwrap(Photon_isScEtaEE),   //
-                                                         unwrap(Photon_cutBased),    //
-                                                         unwrap(Photon_pixelSeed),   //
-                                                         unwrap(Photon_dEscaleUp),   //
-                                                         unwrap(Photon_dEscaleDown), //
-                                                         unwrap(Photon_dEsigmaUp),   //
-                                                         unwrap(Photon_dEsigmaDown), //
-                                                         unwrap(Photon_genPartIdx),  //
-                                                         photon_sf,                  //
-                                                         pixel_veto_sf,              //
-                                                         is_data,                    //
-                                                         year,                       //
+            auto photons = ObjectFactories::make_photons(unwrap(Photon_pt),            //
+                                                         unwrap(Photon_eta),           //
+                                                         unwrap(Photon_phi),           //
+                                                         unwrap(Photon_isScEtaEB),     //
+                                                         unwrap(Photon_isScEtaEE),     //
+                                                         unwrap(Photon_cutBased),      //
+                                                         unwrap(Photon_pixelSeed),     //
+                                                         unwrap(Photon_dEscaleUp),     //
+                                                         unwrap(Photon_dEscaleDown),   //
+                                                         unwrap(Photon_dEsigmaUp),     //
+                                                         unwrap(Photon_dEsigmaDown),   //
+                                                         unwrap(Photon_genPartIdx),    //
+                                                         photon_sf,                    //
+                                                         pixel_veto_sf,                //
+                                                         is_data,                      //
+                                                         year,                         //
                                                          diff_shift);
 
             auto [jets, bjets] = ObjectFactories::make_jets(unwrap(Jet_pt),                 //
@@ -1055,7 +1056,7 @@ auto main(int argc, char *argv[]) -> int
                     // }
 
                     // Gamma Plus Jets
-                    if (photons.size() > 0)
+                    if (photons.size() > 0 and jets.size() > 0)
                     {
                         auto gamma = photons.p4[0];
 
