@@ -39,6 +39,8 @@ class ZToLepLepX
     TH1F h_bjet_multiplicity;
     TH2F h_lepton_1_pt_eta;
     TH2F h_lepton_1_pt_phi;
+    TH1F h_leptons_all;
+    TH1F h_leptons_matched;
 
     double min_bin_width;
     std::map<std::string, int> countMap;
