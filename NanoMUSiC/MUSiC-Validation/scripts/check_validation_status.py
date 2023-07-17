@@ -84,7 +84,7 @@ def resubmit(job, always_resubmit=False):
     else:
         print("Error file not found.")
 
-    if not (always_resubmit):
+    if not (always_resubmit) and os.path.isfile(f"{job}/condor.jdl"):
         resubmit = input(f"Resubmit {job}: [r - resubmit / <ENTER> - skip] ")
         if resubmit == "y":
             os.system(f"rm {job}/*.root")

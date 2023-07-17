@@ -247,4 +247,185 @@ inline auto get_output_file_path(const std::string &prefix,
                        suffix);
 }
 
+inline auto starts_with(const std::string &str, const std::string &prefix) -> bool
+{
+    return str.compare(0, prefix.length(), prefix) == 0;
+}
+
+// check if an event pass any trigger
+inline auto trigger_filter(const std::string &process,
+                           bool is_data,
+                           bool pass_low_pt_muon_trigger,
+                           bool pass_high_pt_muon_trigger,
+                           bool pass_low_pt_electron_trigger,
+                           bool pass_high_pt_electron_trigger) -> std::optional<std::map<std::string, bool>>
+{
+    std::optional<std::map<std::string, bool>> trigger_filter_res = std::nullopt;
+
+    // Data
+    if (is_data)
+    {
+
+        // Muon dataset
+        if (process.find("Muon") != std::string::npos)
+        {
+            if (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger)
+            {
+                trigger_filter_res = {
+                    //
+                    {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},          //
+                    {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},        //
+                    {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},  //
+                    {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger} //
+                };
+            }
+
+            return trigger_filter_res;
+        }
+
+        // Electron/Photon/EGamma dataset
+        if (                                                 //
+            process.find("EGamma") != std::string::npos      //
+            or process.find("Electron") != std::string::npos //
+            or process.find("Photon") != std::string::npos   //
+        )
+        {
+            if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) and
+                (pass_low_pt_electron_trigger or pass_high_pt_electron_trigger))
+            {
+                trigger_filter_res = {
+                    //
+                    {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},          //
+                    {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},        //
+                    {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},  //
+                    {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger} //
+                };
+            }
+
+            return trigger_filter_res;
+        }
+
+        throw std::runtime_error(
+            fmt::format("ERROR: Could not check trigger filter for Data file. The requested process ({}) does not "
+                        "match any dataset pattern.",
+                        process));
+    }
+
+    // MC
+    if (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger or pass_low_pt_electron_trigger or
+        pass_high_pt_electron_trigger)
+    {
+        trigger_filter_res = {
+            //
+            {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},          //
+            {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},        //
+            {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},  //
+            {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger} //
+        };
+    }
+
+    return trigger_filter_res;
+};
+
+// inline auto jets_trigger_filter(bool pass_jet_ht_trigger, bool pass_jet_pt_trigger) -> bool
+// {
+//     return pass_jet_ht_trigger or pass_jet_pt_trigger;
+// };
+
+/// find trigger matching
+
+class TriggerMatch
+{
+  public:
+    std::string matched_trigger;
+    float matched_pt;
+    float matched_eta;
+
+    TriggerMatch(const std::string &_matched_trigger, float _matched_pt, float _matched_eta)
+        : matched_trigger(_matched_trigger),
+          matched_pt(_matched_pt),
+          matched_eta(_matched_eta)
+    {
+    }
+};
+
+inline auto get_trigger_matching(const std::optional<std::map<std::string, bool>> is_good_trigger_map,
+                                 const MUSiCObjects &muons,
+                                 const MUSiCObjects &electrons,
+                                 const MUSiCObjects &photons,
+                                 Year year) -> std::optional<TriggerMatch>
+{
+    std::optional<TriggerMatch> has_trigger_match = std::nullopt;
+
+    // Low pT muon trigger
+    if (not(has_trigger_match)                                  //
+        and is_good_trigger_map->at("pass_low_pt_muon_trigger") //
+        and muons.size() >= 1)
+    {
+        auto good_muons = VecOps::Filter(muons.p4,
+                                         [year](const auto &muon)
+                                         {
+                                             if (year == Year::Run2017)
+                                             {
+                                                 return muon.pt() > 29.;
+                                             }
+                                             return muon.pt() > 26.;
+                                         });
+        if (good_muons.size() >= 1)
+        {
+            has_trigger_match = TriggerMatch("match_low_pt_muon", good_muons[0].pt(), good_muons[0].eta());
+        }
+    }
+
+    // High pT muon trigger
+    if (not(has_trigger_match)                                   //
+        and is_good_trigger_map->at("pass_high_pt_muon_trigger") //
+        and muons.size() >= 1)
+    {
+        auto good_muons = VecOps::Filter(muons.p4,
+                                         [](const auto &muon)
+                                         {
+                                             return muon.pt() > 52.;
+                                         });
+        if (good_muons.size() >= 1)
+        {
+            has_trigger_match = TriggerMatch("match_high_pt_muon", good_muons[0].pt(), good_muons[0].eta());
+        }
+    }
+
+    // Low pT electron trigger
+    if (not(has_trigger_match)                                      //
+        and is_good_trigger_map->at("pass_low_pt_electron_trigger") //
+        and electrons.size() >= 1)
+    {
+        auto good_electrons = VecOps::Filter(electrons.p4,
+                                             [](const auto &electron)
+                                             {
+                                                 return electron.pt() > 38.;
+                                             });
+        if (good_electrons.size() >= 1)
+        {
+            has_trigger_match = TriggerMatch("match_low_pt_electron", good_electrons[0].pt(), good_electrons[0].eta());
+        }
+    }
+
+    // High pT electron trigger
+    if (not(has_trigger_match)                                       //
+        and is_good_trigger_map->at("pass_high_pt_electron_trigger") //
+        and electrons.size() >= 1)
+    {
+        auto good_electrons = VecOps::Filter(electrons.p4,
+                                             [](const auto &electron)
+                                             {
+                                                 return electron.pt() > 118.;
+                                             });
+        if (good_electrons.size() >= 1)
+        {
+            has_trigger_match = TriggerMatch("match_high_pt_electron", good_electrons[0].pt(), good_electrons[0].eta());
+        }
+    }
+
+    return has_trigger_match;
+}
+
 #endif // VALIDATION
