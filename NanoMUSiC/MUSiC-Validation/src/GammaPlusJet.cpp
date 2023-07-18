@@ -59,10 +59,12 @@ GammaPlusJet::GammaPlusJet(const std::string &_analysis_name,
 
 auto GammaPlusJet::fill(Math::PtEtaPhiMVector gamma, float weight) -> void
 {
-
-    h_gamma_pt.Fill(gamma.pt(), weight);
-    h_gamma_eta.Fill(gamma.eta(), weight);
-    h_gamma_phi.Fill(gamma.phi(), weight);
+    if (gamma.pt() > 200)
+    {
+        h_gamma_pt.Fill(gamma.pt(), weight);
+        h_gamma_eta.Fill(gamma.eta(), weight);
+        h_gamma_phi.Fill(gamma.phi(), weight);
+    }
 }
 
 auto GammaPlusJet::dump_outputs() -> void

@@ -31,19 +31,9 @@ TTBarTo1Lep2Bjet2JetMET::TTBarTo1Lep2Bjet2JetMET(const std::string &_analysis_na
                                                           _sample,        //
                                                           _year,          //
                                                           _shift,         //
-                                                          "h_invariant_mass_jet0");
-    h_invariant_mass_jet0 = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
-    h_invariant_mass_jet0.Sumw2();
-
-    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
-                                                          _process_group, //
-                                                          _xs_order,      //
-                                                          _sample,        //
-                                                          _year,          //
-                                                          _shift,         //
-                                                          "h_invariant_mass_jet1");
-    h_invariant_mass_jet1 = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
-    h_invariant_mass_jet1.Sumw2();
+                                                          "h_invariant_mass_jet0_jet1");
+    h_invariant_mass_jet0_jet1 = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
+    h_invariant_mass_jet0_jet1.Sumw2();
 
     histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
                                                           _process_group, //
@@ -75,10 +65,21 @@ auto TTBarTo1Lep2Bjet2JetMET::fill(Math::PtEtaPhiMVector lep,
                                    float weight) -> void
 {
 
-    h_invariant_mass_jet0.Fill(jet0.mass(), weight);
-    h_invariant_mass_jet1.Fill(jet1.mass(), weight);
-    h_transverse_mass_lep_MET.Fill((lep + met).Mt(), weight);
-    h_ht_had_lep.Fill((jet0 + jet1 + bjet0 + bjet1).mass());
+    if ((lep.Mt() + met.Pt()) == 60)
+    {
+        h_invariant_mass_jet0_jet1.Fill((jet0 + jet1).mass(), weight);
+    }
+
+    if (((jet0 + jet1).mass() < (PDG::W::Mass + 30)) and ((jet0 + jet1).mass() > (PDG::W::Mass - 30)))
+    {
+        h_transverse_mass_lep_MET.Fill((lep + met).Mt(), weight);
+    }
+
+    if (((lep.Mt() + met.Pt()) == 60) and ((jet0 + jet1).mass() < (PDG::W::Mass + 30)) and
+        ((jet0 + jet1).mass() > (PDG::W::Mass - 30)))
+    {
+        h_ht_had_lep.Fill((jet0 + jet1 + bjet0 + bjet1).mass());
+    }
 }
 
 auto TTBarTo1Lep2Bjet2JetMET::dump_outputs() -> void
@@ -86,13 +87,9 @@ auto TTBarTo1Lep2Bjet2JetMET::dump_outputs() -> void
     auto output_file = std::unique_ptr<TFile>(TFile::Open(output_path.c_str(), "RECREATE"));
     output_file->cd();
 
-    h_invariant_mass_jet0.Scale(min_bin_width, "width");
-    h_invariant_mass_jet0.SetDirectory(output_file.get());
-    h_invariant_mass_jet0.Write();
-
-    h_invariant_mass_jet1.Scale(min_bin_width, "width");
-    h_invariant_mass_jet1.SetDirectory(output_file.get());
-    h_invariant_mass_jet1.Write();
+    h_invariant_mass_jet0_jet1.Scale(min_bin_width, "width");
+    h_invariant_mass_jet0_jet1.SetDirectory(output_file.get());
+    h_invariant_mass_jet0_jet1.Write();
 
     h_transverse_mass_lep_MET.Scale(min_bin_width, "width");
     h_transverse_mass_lep_MET.SetDirectory(output_file.get());

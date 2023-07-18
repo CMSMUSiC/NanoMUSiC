@@ -1012,10 +1012,10 @@ auto main(int argc, char *argv[]) -> int
                     // }
 
                     // Gamma Plus Jets
-                    if (photons.size() > 0 and jets.size() > 0)
+                    unsigned int n_lepton = electrons.size() + muons.size() + taus.size();
+                    if (photons.size() == 1 and jets.size() == 1 and n_lepton == 0 and met.size() == 0)
                     {
                         auto gamma = photons.p4[0];
-
                         gamma_plus_jet[shift].fill(
                             gamma,
                             weight * Shifts::get_scale_factor(
@@ -1023,7 +1023,7 @@ auto main(int argc, char *argv[]) -> int
                     }
 
                     // ttbar to mu
-                    if (muons.size() > 0)
+                    if (muons.size() > 0 and jets.size() >= 2 and bjets.size() >= 2)
                     {
                         auto muon = muons.p4[0];
                         auto jet_1 = jets.p4[0];
@@ -1044,7 +1044,7 @@ auto main(int argc, char *argv[]) -> int
                     }
 
                     // ttbar to ele
-                    if (electrons.size() > 0)
+                    if (electrons.size() > 0 and jets.size() >= 2 and bjets.size() >= 2)
                     {
                         auto electron = electrons.p4[0];
                         auto jet_1 = jets.p4[0];
