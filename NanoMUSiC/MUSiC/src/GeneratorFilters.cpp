@@ -27,7 +27,7 @@ auto wlnujets_filter(const NanoObjects::LHEParticles &lhe_particles,
     float mass = -999.;
     float pt = -999.;
 
-    // filter Lep+Lep- pair
+    // filter Lep+Nu pair
     std::optional<std::size_t> idx_lepton = std::nullopt;
     std::optional<std::size_t> idx_neutrino = std::nullopt;
 
@@ -104,13 +104,16 @@ auto wlnujets_mass_binned_filter(const NanoObjects::LHEParticles &lhe_particles,
                                  const Year &year,
                                  const float &mass_min,
                                  const float &mass_max,
+                                 const float &pt_min,
+                                 const float &pt_max,
                                  debugger_t &h_debug) -> bool
 {
     bool filter_result = false;
 
     float mass = -999.;
+    float pt = -999.;
 
-    // filter Lep+Lep- pair
+    // filter Lep+Nu pair
     std::optional<std::size_t> idx_lepton = std::nullopt;
     std::optional<std::size_t> idx_neutrino = std::nullopt;
 
@@ -174,7 +177,12 @@ auto wlnujets_mass_binned_filter(const NanoObjects::LHEParticles &lhe_particles,
                                                  gen_particles.phi[*idx_neutrino],
                                                  PDG::get_mass_by_id(gen_particles.pdgId[*idx_neutrino]));
 
-                if (mass_min - .5 <= mass and mass <= mass_max + .5)
+                pt = LorentzVectorHelper::pt(gen_particles.pt[*idx_lepton],
+                                             gen_particles.phi[*idx_lepton],
+                                             gen_particles.pt[*idx_neutrino],
+                                             gen_particles.phi[*idx_neutrino]);
+
+                if ((pt_min - .5 <= pt and pt <= pt_max + .5) and (mass_min - .5 <= mass and mass <= mass_max + .5))
                 {
                     filter_result = true;
                 }
@@ -190,23 +198,6 @@ auto wlnujets_mass_binned_filter(const NanoObjects::LHEParticles &lhe_particles,
             h_debug->h_pass.Fill(mass);
         }
     }
-
-    // h_debug->event_counter++;
-    // if (h_debug->event_counter > 1000)
-    // {
-    //     throw std::runtime_error("max events");
-    // }
-    // if (mass < 1000.)
-    // {
-    //     fmt::print("$$$$$$$$$$$$$$$$$$$$$\n");
-    //     fmt::print("mass: {}\n", mass);
-    //     fmt::print("status: {}\n", gen_particles.status);
-    //     fmt::print("Id: {}\n", gen_particles.pdgId);
-    //     fmt::print("pt: {}\n", gen_particles.pt);
-    //     fmt::print("eta: {}\n", gen_particles.eta);
-    //     fmt::print("phi: {}\n", gen_particles.phi);
-    // }
-    // fmt::print("MAX_MASS: {} - MASS: {} - RESULT: {}\n", mass_max, mass, filter_result);
 
     return filter_result;
 }
@@ -286,14 +277,15 @@ auto dy_filter(const NanoObjects::LHEParticles &lhe_particles,
                 // this covers the high mass phase-space,
                 // since we do no include tau simulation in the POWHEG samples
                 float actual_max_mass = mass_max;
+
                 // skip this for now ... will be re-evaluated after presentation at 22/02/2023.
                 // if (lhe_particles.pdgId[*idx_lepton_minus] == PDG::Tau::Id)
                 // {
                 //     actual_max_mass = max_float;
                 // }
 
-                if ((mass >= mass_min - .5 and mass <= actual_max_mass + .5) and
-                    (pt >= pt_min - .5 and pt <= pt_max + .5))
+                if ((mass >= mass_min - .5 and mass <= actual_max_mass + .5) //
+                    and (pt >= pt_min - .5 and pt <= pt_max + .5))
                 {
                     filter_result = true;
                 }

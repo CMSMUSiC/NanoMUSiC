@@ -1221,13 +1221,13 @@ ProcessGroup = "W"
 generator_filter_key = "w_plus_jets_mass_less_200"
 
 [WJetsToLNu_Pt-100To250_MatchEWPDG20_13TeV_AM]
-XSec = 677.82
+# XSec = 677.82
+XSec = 731.0 # XSDB
 FilterEff = 1.0
 kFactor = 1.02
 XSecOrder = "NNLO"
 ProcessGroup = "W"
 generator_filter_key = "w_plus_jets_mass_less_200"
-
 
 [WJetsToLNu_Pt-250To400_13TeV_AM]
 XSec = 24.083
@@ -1238,7 +1238,8 @@ ProcessGroup = "W"
 generator_filter_key = "w_plus_jets_mass_less_200"
 
 [WJetsToLNu_Pt-250To400_MatchEWPDG20_13TeV_AM]
-XSec = 24.083
+# XSec = 24.083
+XSec = 28.5 # XSDB
 FilterEff = 1.0
 kFactor = 1.02
 XSecOrder = "NNLO"
@@ -1254,7 +1255,8 @@ ProcessGroup = "W"
 generator_filter_key = "w_plus_jets_mass_less_200"
 
 [WJetsToLNu_Pt-400To600_MatchEWPDG20_13TeV_AM]
-XSec = 3.0563
+# XSec = 3.0563
+XSec = 5.03 # XSDB
 FilterEff = 1.0
 kFactor = 1.02
 XSecOrder = "NNLO"
@@ -1270,7 +1272,8 @@ ProcessGroup = "W"
 generator_filter_key = "w_plus_jets_mass_less_200"
 
 [WJetsToLNu_Pt-600ToInf_MatchEWPDG20_13TeV_AM]
-XSec = 0.4602
+# XSec = 0.4602
+XSec = 0.55 # XSDB
 FilterEff = 1.0
 kFactor = 1.02
 XSecOrder = "NNLO"
@@ -1468,6 +1471,7 @@ FilterEff = 1.0
 kFactor = 1.162
 XSecOrder = "NNLO"
 ProcessGroup = "WW"
+generator_filter_key = "ww_mLL_less_200"
 
 [WWTo2L2Nu_DoubleScattering_13TeV_P8]
 XSec = 10.48
@@ -1475,6 +1479,7 @@ FilterEff = 1.0
 kFactor = 1.162
 XSecOrder = "NNLO"
 ProcessGroup = "WW"
+generator_filter_key = "ww_mLL_less_200"
 
 [WWTo2L2Nu_MLL_1200To2500_13TeV_PH]
 XSec = 10.4814
@@ -1482,12 +1487,12 @@ FilterEff = 0.00029203
 kFactor = 1.162
 XSecOrder = "NNLO"
 ProcessGroup = "WW"
-# generator_filter_key = "ww_mLL_less_1800"
+generator_filter_key = "ww_mLL_less_1800"
 
 [WWTo2L2Nu_MLL_1800ToInf_13TeV_PH]
-XSec = 11.09 # this xSec is completely off !!!
+XSec = 10.4814 # this xSec is completely off !!!
 FilterEff = 1.0
-kFactor = 1.0
+kFactor = 1.162
 XSecOrder = "NNLO"
 ProcessGroup = "WW"
 
@@ -1795,7 +1800,8 @@ XSecOrder = "NLO"
 ProcessGroup = "ZG"
 
 [ZGToLLG_01J_5f_13TeV_AM]
-XSec = 123.8
+# XSec = 123.8
+XSec = 51.53	# XSDB
 FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"
