@@ -18,8 +18,7 @@ class TTBarTo1Lep2Bjet2JetMET
   public:
     const std::string output_path;
 
-    TH1F h_invariant_mass_jet0;
-    TH1F h_invariant_mass_jet1;
+    TH1F h_invariant_mass_jet0_jet1;
     TH1F h_transverse_mass_lep_MET;
     TH1F h_ht_had_lep;
 
