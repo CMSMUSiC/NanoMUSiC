@@ -13,7 +13,6 @@ import math
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import matplotlib.patheffects as pe
-import matplotlib.patches as mpatches
 import uproot
 import toml
 import argparse
@@ -117,11 +116,6 @@ def parse_args():
         "-ylim",
         "--ylimit",
         help="Optional: Override ylim in plot config. Pass in the format 'min,max'.",
-    )
-    parser.add_argument(
-        "-ylim2",
-        "--ylimit2",
-        help="Optional: Override ylim2 (y limits of data/mc ratio plot) in plot config. Pass in the format 'min,max'.",
     )
     parser.add_argument(
         "-ns",
@@ -303,7 +297,6 @@ def display_classname(classname):
 def create_arguments(
     xlimit,
     ylimit,
-    ylimit2,
     jetclass,
     title,
     savepath,
@@ -325,7 +318,6 @@ def create_arguments(
         {
             "xlimit": xlimit,
             "ylimit": ylimit,
-            "ylimit2": ylimit2,
             "jetclass": jetclass,
             "title": title,
             "savepath": savepath,
@@ -598,9 +590,7 @@ def stacker(
         # ------ read in normalization ------
         # apply previously calculated normalization factors
         printdebug(f"Apply the QCD normalization stored in the given file.")
-        norm_filepath = (
-            validation_path + "/" + str(year) + "/" + normalizethis + "/plots/"
-        )
+        norm_filepath = validation_path + "/" + str(year) + "/" + normalizethis + "/plots/"
         norm_filepath += f"QCD_normalization.toml"
         norm_dict: dict[str, Any] = toml.load(norm_filepath)
         norm_fac = float(norm_dict["normalization"])
@@ -622,9 +612,7 @@ def stacker(
             mcnominal[sample] *= norm_fac  # rescale nominal
             for syst in systematics:
                 if syst != "norm":
-                    mcsystematics[syst][
-                        sample
-                    ] *= norm_fac  # rescale all other syst shifts
+                    mcsystematics[syst][sample] *= norm_fac  # rescale all other syst shifts
     # ----------------------------------
 
     # stack all samples for each category for the nominal values
@@ -738,8 +726,8 @@ def stacker(
             # error only for LO order, others have error 0 currently, therefore this code does not differentiate between different orders
             for category in categories_samples.keys():
                 if (addqcduncertainty == True) or (
-                    addqcduncertainty == False and category != "QCD"
-                ):  # only apply XSec error to non-QCD since QCD is normalized and the large XSec error is not used anymore
+                        addqcduncertainty == False and category != "QCD"
+                    ):  # only apply XSec error to non-QCD since QCD is normalized and the large XSec error is not used anymore
                     # QCD does not get an xSec uncertainty anymore
                     temp = np.zeros(nbins)
                     for sample in categories_samples[category]:
@@ -809,7 +797,6 @@ def plotter(args):
     (
         xlimit,
         ylimit,
-        ylimit2,
         jetclass,
         title,
         savepath,
@@ -870,7 +857,7 @@ def plotter(args):
     wspace = 0
     if histproperties["wspace"] != "":
         wspace = float(histproperties["wspace"])
-    hspace = 0.05
+    hspace = 0
     if histproperties["hspace"] != "":
         hspace = float(histproperties["hspace"])
     fig, ax = plt.subplots(
@@ -913,7 +900,7 @@ def plotter(args):
         width=barwidth,
         bottom=(mcsum - error_mc),
         fill=False,
-        hatch="xxx",
+        hatch="xxxxx",
         linewidth=0,
         edgecolor="tab:gray",
         label="MC uncertainty",
@@ -933,7 +920,7 @@ def plotter(args):
         linestyle="",
         elinewidth=0.8,
         capsize=1,
-        markersize=5,
+        markersize=3,
         label=datalabel,
     )
 
@@ -1081,7 +1068,7 @@ def plotter(args):
             linestyle="",
             elinewidth=0.8,
             capsize=1,
-            markersize=5,
+            markersize=3,
         )
         ax[1].bar(
             bins_overmc,
@@ -1089,13 +1076,13 @@ def plotter(args):
             width=barwidth_overmc,
             bottom=1 - mcerr_overmc,
             fill=False,
-            hatch="xxx",
+            hatch="xxxxx",
             linewidth=0,
             edgecolor="tab:gray",
         )
         ax[1].axhline(1, linewidth=0.4, color="black")
 
-        # ----------------- set axis limits -----------------
+        # ----------------- set axis limits and legends -----------------
 
         # set all axis limits (this is a bit ugly but it works..)
         printdebug("Setting axis limits...")
@@ -1181,7 +1168,7 @@ def plotter(args):
             exit(0)
         ax[0].set_ylim(ylim)
 
-        # find y limits for data/mc plot (for auto set)
+        # find y limits for data/mc plot
         if len(xlim) == 0 or len(bins_overmc) == 0:  # avoid bugs
             printdebug(
                 f"{classname}, {histname}: Skip plotting... [len(xlim) == 0 or len(bins_overmc) == 0]"
@@ -1206,19 +1193,19 @@ def plotter(args):
         ylim2 = (
             np.amax(
                 [
-                    np.amin(
-                        [
-                            np.amin(
-                                [
-                                    data_overmc[i] - dataerr_overmc[i] - whitespace2
-                                    for i in indices
-                                ]
-                            ),
-                            # np.amin(
-                            #    [1 - mcerr_overmc[0, i] - whitespace2 for i in indices]
-                            # ),
-                        ]
-                    ),
+                    # np.amin(
+                    #    [
+                    #        np.amin(
+                    #            [
+                    #                data_overmc[i] - dataerr_overmc[i] - whitespace2
+                    #                for i in indices
+                    #            ]
+                    #        ),
+                    #        # np.amin(
+                    #        #    [1 - mcerr_overmc[0, i] - whitespace2 for i in indices]
+                    #        # ),
+                    #    ]
+                    # ),
                     0,
                 ]
             ),
@@ -1230,125 +1217,17 @@ def plotter(args):
                             for i in indices
                         ]
                     ),
-                    # 1 + whitespace2,
+                    1 + whitespace2,
                     # np.amax([1 + mcerr_overmc[i] + whitespace2 for i in indices]),
                 ]
             ),
         )
-        # check for manual override over the ylimit of the data/mc plot (plot config option "ratiolim")
-        ylim2_string = ["", ""]
-        try:
-            if histproperties["ratiolim"] != "":
-                ylim2_string = histproperties["ratiolim"].split(",")
-            if ylimit2:  # for ylim2 argument override the limit in the file
-                ylim2_string = ylimit2.split(",")
-            if ylim2_string[0] != "" and ylim2_string[1] != "":
-                ylim2 = (float(ylim2_string[0]), float(ylim2_string[1]))
-            elif ylim2_string[0] != "" and ylim2_string[1] == "":
-                ylim2 = (float(ylim2_string[0]), ylim2[1])
-            elif ylim2_string[0] == "" and ylim2_string[1] != "":
-                ylim2 = (ylim2[0], float(ylim2_string[1]))
-        except:
-            raise RuntimeError("Invalid y limit for data/mc ratio plot given.")
-            exit(0)
-        # apply determined ylimit to data/mc plot
         ax[1].set_ylim(ylim2)
 
         """
         # add grid into plot
         ax[0].grid(which='both', linewidth=0.4, alpha=0.7)
         """
-
-        # optional: add arrows in data/mc plot
-        # watch out: if ylim2 has been set manually, it is possible that the data points of the data/mc plot lie out of the selected plotting range
-        # arrows should be plotted in the cases where the data points lie out of range
-        dataovermc_height = ylim2[1] - ylim2[0]
-        maxarrowwidth = (xlim[1] - xlim[0])/110
-        for i in range(len(data_overmc)):
-            if (
-                data_overmc[i] + 0.1 * dataovermc_height > ylim2[1]
-            ):  # if overflow of data, add big up arrow
-                if data_overmc[i] + 0.03 * dataovermc_height > ylim2[1]:
-                    ax[1].arrow(
-                        bins_overmc[i],
-                        ylim2[1] - 0.2 * dataovermc_height,
-                        0,
-                        0.2 * dataovermc_height,
-                        color="black",
-                        width=min([barwidth_overmc[i] * 1.5, maxarrowwidth]) * 0.3,
-                        head_width=min([barwidth_overmc[i] * 1.5, maxarrowwidth]),
-                        head_length=0.1 * dataovermc_height,
-                        length_includes_head=True,
-                    )
-                else:
-                    ax[1].arrow(
-                    bins_overmc[i],
-                    ylim2[1] - 0.1 * dataovermc_height,
-                    0,
-                    0.1 * dataovermc_height,
-                    color="black",
-                    width=0,
-                    head_width=min([barwidth_overmc[i] * 1.5, maxarrowwidth]),
-                    head_length=abs(ylim2[1] - data_overmc[i]),
-                    length_includes_head=True,
-                )
-            elif (
-                data_overmc[i] + dataerr_overmc[i] > ylim2[1]
-            ):  # if overflow of data errorbar, add up arrow
-                ax[1].arrow(
-                    bins_overmc[i],
-                    ylim2[1] - 0.1 * dataovermc_height,
-                    0,
-                    0.1 * dataovermc_height,
-                    color="black",
-                    width=0,
-                    head_width=min([barwidth_overmc[i] * 1.5, maxarrowwidth]),
-                    head_length=0.1 * dataovermc_height,
-                    length_includes_head=True,
-                )
-            if (
-                data_overmc[i] - 0.1 * dataovermc_height < ylim2[0]
-            ):  # if underflow of data, add big up arrow
-                if data_overmc[i] < ylim2[0]:
-                    ax[1].arrow(
-                        bins_overmc[i],
-                        ylim2[0] + 0.2 * dataovermc_height,
-                        0,
-                        -0.2 * dataovermc_height,
-                        color="black",
-                        width=min([barwidth_overmc[i] * 1.5, maxarrowwidth]) * 0.3,
-                        head_width=min([barwidth_overmc[i] * 1.5, maxarrowwidth]),
-                        head_length=0.1 * dataovermc_height,
-                        length_includes_head=True,
-                    )
-                else:
-                    ax[1].arrow(
-                    bins_overmc[i],
-                    ylim2[0] + 0.1 * dataovermc_height,
-                    0,
-                    -0.1 * dataovermc_height,
-                    color="black",
-                    width=0,
-                    head_width=min([barwidth_overmc[i] * 1.5, maxarrowwidth]),
-                    head_length=abs(ylim2[0] - data_overmc[i]),
-                    length_includes_head=True,
-                )
-            elif (
-                data_overmc[i] - dataerr_overmc[i] < ylim2[0] and ylim2[0] > 0
-            ):  # if underflow of data errorbar, add up arrow (if above 0 since below 0 does not make sense)
-                ax[1].arrow(
-                    bins_overmc[i],
-                    ylim2[0] + 0.1 * dataovermc_height,
-                    0,
-                    -0.1 * dataovermc_height,
-                    color="black",
-                    width=0.8,
-                    head_width=min([barwidth_overmc[i] * 1.5, maxarrowwidth]),
-                    head_length=0.1 * dataovermc_height,
-                    length_includes_head=True,
-                )
-
-        # ----------------- add legend and plot cosmetics -----------------
 
         # plot cosmetics and legend
         printdebug("Exporting plot...")
@@ -1373,7 +1252,9 @@ def plotter(args):
 
         # add text in plot with class name
         if title != "":  # optional custom title
-            plt.figtext(0.3, 0.958, title, fontsize=19, ha="left")
+            plt.figtext(
+                0.3, 0.958, title, fontsize=19, ha="left"
+            )
         elif classname != "":
             plt.figtext(
                 0.3, 0.958, display_classname(classname), fontsize=19, ha="left"
@@ -1590,9 +1471,6 @@ def main():
     ylimit = ""
     if args.ylimit:
         ylimit = args.ylimit
-    ylimit2 = ""
-    if args.ylimit2:
-        ylimit = args.ylimit2
     title = ""
     if args.title:
         title = args.title
@@ -1622,7 +1500,6 @@ def main():
             plotting_arguments = create_arguments(
                 xlimit,
                 ylimit,
-                ylimit2,
                 jetclass,
                 title,
                 savepath,
@@ -1645,7 +1522,6 @@ def main():
                 plotting_arguments = create_arguments(
                     xlimit,
                     ylimit,
-                    ylimit2,
                     jetclass,
                     title,
                     savepath,

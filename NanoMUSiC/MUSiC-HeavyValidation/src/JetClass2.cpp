@@ -128,7 +128,7 @@ auto JetClass2::fill(RVec<Math::PtEtaPhiMVector> jets,
     {
         sumpt += bjets.at(i).pt();
     }
-    if(c_nMET == 1)
+    if (c_nMET == 1)
     {
         sumpt += met.at(0).pt();
     }
@@ -153,7 +153,7 @@ auto JetClass2::fill(RVec<Math::PtEtaPhiMVector> jets,
             h_m_inv.Fill(vecsum.mass(), weight);
         }
     }
-    // if met only m_t is filled, add met to the vecsum if it is considered 
+    // if met only m_t is filled, add met to the vecsum if it is considered
     if (c_nMET == 1)
     {
         vecsum += met.at(0);
@@ -194,20 +194,20 @@ auto JetClass2::fill(RVec<Math::PtEtaPhiMVector> jets,
     // deltar, deltaphi, deltaeta
     if (c_nJet >= 2)
     {
-        h_deltar_jetjet.Fill(Math::VectorUtil::DeltaR(jets.at(0), jets.at(1)), weight);
-        h_deltaphi_jetjet.Fill(std::abs(jets.at(0).phi() - jets.at(1).phi()), weight);
+        h_deltar_jetjet.Fill(std::abs(Math::VectorUtil::DeltaR(jets.at(0), jets.at(1))), weight);
+        h_deltaphi_jetjet.Fill(std::abs(Math::VectorUtil::DeltaPhi(jets.at(0), jets.at(1))), weight);
         h_deltaeta_jetjet.Fill(std::abs(jets.at(0).eta() - jets.at(1).eta()), weight);
     }
     if (c_nBJet >= 2)
     {
-        h_deltar_bjetbjet.Fill(Math::VectorUtil::DeltaR(bjets.at(0), bjets.at(1)), weight);
-        h_deltaphi_bjetbjet.Fill(std::abs(bjets.at(0).phi() - bjets.at(1).phi()), weight);
+        h_deltar_bjetbjet.Fill(std::abs(Math::VectorUtil::DeltaR(bjets.at(0), bjets.at(1))), weight);
+        h_deltaphi_bjetbjet.Fill(std::abs(Math::VectorUtil::DeltaPhi(bjets.at(0), bjets.at(1))), weight);
         h_deltaeta_bjetbjet.Fill(std::abs(bjets.at(0).eta() - bjets.at(1).eta()), weight);
     }
     if (c_nJet >= 1 and c_nBJet >= 1)
     {
-        h_deltar_jetbjet.Fill(Math::VectorUtil::DeltaR(jets.at(0), bjets.at(0)), weight);
-        h_deltaphi_jetbjet.Fill(std::abs(bjets.at(0).phi() - jets.at(0).phi()), weight);
+        h_deltar_jetbjet.Fill(std::abs(Math::VectorUtil::DeltaR(jets.at(0), bjets.at(0))), weight);
+        h_deltaphi_jetbjet.Fill(std::abs(Math::VectorUtil::DeltaPhi(jets.at(0), bjets.at(0))), weight);
         h_deltaeta_jetbjet.Fill(std::abs(bjets.at(0).eta() - jets.at(0).eta()), weight);
     }
     // multiplicities
@@ -221,7 +221,7 @@ auto JetClass2::fill(RVec<Math::PtEtaPhiMVector> jets,
 // save histograms
 auto JetClass2::save_histo(TH1F &histo) -> void
 {
-    histo.Scale(10, "width"); // FIXES STEPS IN DISTRIBUTIONS
+    histo.Scale(1, "width"); // FIXES STEPS IN DISTRIBUTIONS // CHANGED FROM 10 TO 1
     histo.SetDirectory(output_file.get());
     histo.Write();
 }

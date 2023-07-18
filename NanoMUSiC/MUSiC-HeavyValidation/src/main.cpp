@@ -6,9 +6,7 @@
 #include "HeavyValidation.hpp"
 
 #include "Configs.hpp"
-#include "Math/Vector4D.h"
 #include "Math/Vector4Dfwd.h"
-#include "Math/VectorUtil.h"
 #include "Outputs.hpp"
 #include "ROOT/RVec.hxx"
 #include "RtypesCore.h"
@@ -33,29 +31,6 @@
 
 // for isnan
 #include <math.h>
-
-// update class count
-inline auto update_class(std::set<std::string> &eventclass,
-                         std::map<std::string, float> &classes,
-                         std::map<std::string, float> &classes_stat,
-                         const std::string &c_name,
-                         const bool countclasses,
-                         float &weight) -> void
-{
-    eventclass.insert(c_name); // log class name for this event (for plotting)
-    if (countclasses)          // update class count map if classes should be counted
-    {
-        // create class counter if not there
-        if (classes.find(c_name) == classes.end()) // it not in map, create new entry with counts 0
-        {
-            classes.insert({c_name, 0.f});
-            classes_stat.insert({c_name, 0.f});
-        }
-        // add weight to class
-        classes[c_name] += weight;               // add weight to class count
-        classes_stat[c_name] += weight * weight; // add weight^2 to syst_err^2
-    }
-}
 
 // string parser (separate string to set/vector of substrings)
 auto parsestring_set(const std::string &input, const char &separator) -> std::set<std::string>
@@ -369,9 +344,9 @@ auto main(int argc, char *argv[]) -> int
     // definition of cross section uncertainties
     std::map<std::string, float> x_sec_uncertainty{
         {"LO", 0.5},
-        {"NLO", 0},
-        {"NNLO", 0},
-        {"N3LO", 0},
+        {"NLO", 0.0},
+        {"NNLO", 0.0},
+        {"N3LO", 0.0},
     };
 
     // file where the class counts are stored
@@ -528,7 +503,7 @@ auto main(int argc, char *argv[]) -> int
         /* EVENT BREAK IF NECESSARY
         if (event > 10000)
         {
-            throw std::runtime_error("finished after given event break");
+            //throw std::runtime_error("finished after given event break");
             break;
         }
         */
@@ -655,46 +630,6 @@ auto main(int argc, char *argv[]) -> int
                                              is_data,                     //
                                              year,                        //
                                              shift);
-
-        //////////////////////////
-        // experimental new MET calculation for testing
-        auto met_p4 = RVec<Math::PtEtaPhiMVector>{};
-        auto scale_factors = RVec<double>{};
-        auto scale_factor_up = RVec<double>{};
-        auto scale_factor_down = RVec<double>{};
-        auto delta_met_x = RVec<double>{};
-        auto delta_met_y = RVec<double>{};
-        auto is_fake = RVec<bool>{};
-        // calculate met
-        std::set<MUSiCObjects *> music_objects = {&muons, &electrons, &photons, &jets, &bjets};
-        auto temp_met = Math::PtEtaPhiMVector(0, 0, 0, 0);
-        for (auto &obj : music_objects)
-        {
-            for (size_t i = 0; i < obj->size(); i++)
-            {
-                temp_met -= obj->p4.at(i);
-            }
-        }
-        // check for good met
-        bool is_good_met = temp_met.pt() >= 100;
-        if (is_good_met)
-        {
-            scale_factors.push_back(1.);
-            scale_factor_up.push_back(1.);
-            scale_factor_down.push_back(1.);
-            met_p4.push_back(temp_met);
-            delta_met_x.push_back(0.);
-            delta_met_y.push_back(0.);
-            is_fake.push_back(false);
-        }
-        met = MUSiCObjects(met_p4,            //
-                           scale_factors,     //
-                           scale_factor_up,   //
-                           scale_factor_down, //
-                           delta_met_x,       //
-                           delta_met_y,       //
-                           is_fake);
-        //////////////////////////
 
         // Type counts
         unsigned int nelectron = electrons.size();
@@ -823,11 +758,11 @@ auto main(int argc, char *argv[]) -> int
             // xSecOrder uncertainty for LO
             if (shift == "xSecOrder_Up")
             {
-                weight = weight * (1 + x_sec_uncertainty[process_order]);
+                weight = weight * (1.0 + x_sec_uncertainty[process_order]);
             }
             else if (shift == "xSecOrder_Down")
             {
-                weight = weight * (1 - x_sec_uncertainty[process_order]);
+                weight = weight * (1.0 - x_sec_uncertainty[process_order]);
             }
         }
 
@@ -875,12 +810,7 @@ auto main(int argc, char *argv[]) -> int
                         {
                             c_name = fmt::format("{}J+{}BJ+1MET", c_njet, c_nbjet);
                         }
-                        update_class(eventclass,
-                                     classes,
-                                     classes_stat,
-                                     c_name,
-                                     countclasses,
-                                     weight);                          // log class name and update class count
+                        eventclass.insert(c_name); // log class name
                     }
                     if (c_njet <= (int)njet and c_nbjet <= (int)nbjet) // jet- and bjet-inclusive class (+XJ)
                     {
@@ -890,31 +820,36 @@ auto main(int argc, char *argv[]) -> int
                         {
                             c_name = fmt::format("{}J+{}BJ+1MET+XJ", c_njet, c_nbjet);
                         }
-                        update_class(eventclass,
-                                     classes,
-                                     classes_stat,
-                                     c_name,
-                                     countclasses,
-                                     weight); // log class name and update class count
+                        eventclass.insert(c_name); // log class name
                     }
                     // note: inclusive classes can be XJ = 0, so the exclusive classes are
                     // included in the inclusive classes
                 }
             }
         }
-        // fill histograms for all event classes that should be validated and that the current event is
-        // a member of
-        if (plotclasses)
+
+        // fill histograms and weight sum
+        for (const auto &c_name : eventclass)
         {
-            for (const auto &c_name : eventclass)
+            if (plotclasses) // fill histograms
             {
                 for (const auto &c_name_toval : to_validate)
                 {
-                    if (c_name == c_name_toval)
-                    { // fill the event in the class
+                    if (c_name == c_name_toval) // check whether one of the classes to plot is in this event
+                    {
                         validation_classes[c_name]->fill(jets_4vec, bjets_4vec, nelectron, nmuon, met_4vec, weight);
                     }
                 }
+            }
+            if (countclasses) // fill global weight sum for each class
+                {
+                    if (classes.find(c_name) == classes.end() and classes_stat.find(c_name) == classes_stat.end()) // it not in map, create new entry with counts 0
+                    {
+                        classes.insert({c_name, 0.f});
+                        classes_stat.insert({c_name, 0.f});
+                    }
+                    classes[c_name] += weight;               // add weight to class count
+                    classes_stat[c_name] += weight * weight; // add weight^2 to syst_err^2
             }
         }
         // std::cout << "Finished event classification." << std::endl;
@@ -946,7 +881,7 @@ auto main(int argc, char *argv[]) -> int
                 c_count = 0;
             }
             */
-            classfile << "\"" << c_name << "\" = " << c_count << "\n";
+            classfile << "\"" << c_name << "\" = " << std::to_string(c_count) << "\n";
         }
         // fill stat err
         classfile << "\n\n["
@@ -954,7 +889,7 @@ auto main(int argc, char *argv[]) -> int
                   << "]\n";
         for (auto &[c_name, c_stat] : classes_stat)
         {
-            classfile << "\"" << c_name << "\" = " << c_stat << "\n";
+            classfile << "\"" << c_name << "\" = " << std::to_string(c_stat) << "\n";
         }
         classfile.close();
     }

@@ -129,6 +129,10 @@ def parse_args():
         help="Optional: Print relative errors.",
         action="store_true",
     )
+    parser.add_argument(
+        "--labelsize",
+        help="Optional: Customize xlabel size.",
+    )
     args = parser.parse_args()
     return args
 
@@ -856,7 +860,7 @@ def countplotter(
 
     # --- printerrors of classes to plot if needed ---
     if printerrors:
-        for classname in classnames:
+        for classname in classnames_selected:
             print(f"################## {classname} ##################")
             for syst in systematics:
                 if syst != "Nominal":
@@ -872,7 +876,7 @@ def countplotter(
     wspace = 0
     if histproperties["wspace"] != "":
         wspace = float(histproperties["wspace"])
-    hspace = 0
+    hspace = 0.05
     if histproperties["hspace"] != "":
         hspace = float(histproperties["hspace"])
     fig, ax = plt.subplots(
@@ -940,7 +944,7 @@ def countplotter(
         width=1,
         bottom=(mcsum - mcerr),
         fill=False,
-        hatch="xxxxx",
+        hatch="xxx",
         linewidth=0,
         edgecolor="tab:gray",
     )
@@ -965,7 +969,7 @@ def countplotter(
                 linestyle="",
                 elinewidth=0.8,
                 capsize=1,
-                markersize=3,
+                markersize=5,
             )
             dataerr += [total_data_errors[classname]]
         else:
@@ -979,7 +983,7 @@ def countplotter(
                 linestyle="",
                 elinewidth=0.8,
                 capsize=1,
-                markersize=3,
+                markersize=5,
             )
             dataerr += [total_data_errors[classname]]
         x += 1
@@ -1007,7 +1011,7 @@ def countplotter(
         linestyle="",
         elinewidth=0.8,
         capsize=1,
-        markersize=3,
+        markersize=5,
     )
     ax[1].bar(
         bins_overmc,
@@ -1015,7 +1019,7 @@ def countplotter(
         width=barwidth_overmc,
         bottom=1 - mcerr_overmc,
         fill=False,
-        hatch="xxxxx",
+        hatch="xxx",
         linewidth=0,
         edgecolor="tab:gray",
     )
@@ -1053,7 +1057,7 @@ def countplotter(
     )
     ax[1].set_xticklabels(
         [display_classname(name) + " " for name in list(classes_data_toplot.keys())],
-        fontsize="12.5",
+        fontsize=labelsize,
         rotation="vertical",
         color="black",
         ha="center",
@@ -1090,20 +1094,19 @@ def countplotter(
     ylim2 = (
         np.amax(
             [
-                # np.amin(
-                #    [
-                #        np.amin(
-                #            [
-                #                data_overmc[i] - dataerr_overmc[i] - whitespace2
-                #                for i in divisionidx
-                #            ]
-                #        ),
-                #        np.amin(
-                #            [1 - mcerr_overmc[i] - whitespace2 for i in divisionidx]
-                #        ),
-                #    ]
-                # ),
-                0,
+                np.amin(
+                    [
+                        np.amin(
+                            [
+                                data_overmc[i] - dataerr_overmc[i] - whitespace2
+                                for i in divisionidx
+                            ]
+                        ),
+                        #        np.amin(
+                        #            [1 - mcerr_overmc[i] - whitespace2 for i in divisionidx]
+                        #        ),
+                    ]
+                ),
             ]
         ),
         np.amax(
@@ -1118,7 +1121,111 @@ def countplotter(
             ]
         ),
     )
+    # check for override over the ylimit of the data/mc plot (plot config option "ratiolim")
+    ylim2_string = ["", ""]
+    try:
+        if histproperties["ratiolim"] != "":
+            ylim2_string = histproperties["ratiolim"].split(",")
+        if ylim2_string[0] != "" and ylim2_string[1] != "":
+            ylim2 = (float(ylim2_string[0]), float(ylim2_string[1]))
+        elif ylim2_string[0] != "" and ylim2_string[1] == "":
+            ylim2 = (float(ylim2_string[0]), ylim2[1])
+        elif ylim2_string[0] == "" and ylim2_string[1] != "":
+            ylim2 = (ylim2[0], float(ylim2_string[1]))
+    except:
+        raise RuntimeError("Invalid y limit for data/mc ratio plot given.")
+        exit(0)
+    # apply determined ylimit to data/mc plot
     ax[1].set_ylim(ylim2)
+
+    # optional: add arrows in data/mc plot
+    # watch out: if ylim2 has been set manually, it is possible that the data points of the data/mc plot lie out of the selected plotting range
+    # arrows should be plotted in the cases where the data points lie out of range
+    dataovermc_height = ylim2[1] - ylim2[0]
+    maxarrowwidth = len(bins) / 110
+    for i in range(len(data_overmc)):
+        if (
+            data_overmc[i] + 0.1 * dataovermc_height > ylim2[1]
+        ):  # if overflow of data, add big up arrow
+            if data_overmc[i] + 0.03 * dataovermc_height > ylim2[1]:
+                ax[1].arrow(
+                    bins_overmc[i],
+                    ylim2[1] - 0.2 * dataovermc_height,
+                    0,
+                    0.2 * dataovermc_height,
+                    color="black",
+                    width=min([barwidth_overmc[i] * 1.5, maxarrowwidth]) * 0.3,
+                    head_width=min([barwidth_overmc[i] * 1.5, maxarrowwidth]),
+                    head_length=0.1 * dataovermc_height,
+                    length_includes_head=True,
+                )
+            else:
+                ax[1].arrow(
+                    bins_overmc[i],
+                    ylim2[1] - 0.1 * dataovermc_height,
+                    0,
+                    0.1 * dataovermc_height,
+                    color="black",
+                    width=0,
+                    head_width=min([barwidth_overmc[i] * 1.5, maxarrowwidth]),
+                    head_length=abs(ylim2[1] - data_overmc[i]),
+                    length_includes_head=True,
+                )
+        elif (
+            data_overmc[i] + dataerr_overmc[i] > ylim2[1]
+        ):  # if overflow of data errorbar, add up arrow
+            ax[1].arrow(
+                bins_overmc[i],
+                ylim2[1] - 0.1 * dataovermc_height,
+                0,
+                0.1 * dataovermc_height,
+                color="black",
+                width=0,
+                head_width=min([barwidth_overmc[i] * 1.5, maxarrowwidth]),
+                head_length=0.1 * dataovermc_height,
+                length_includes_head=True,
+            )
+        if (
+            data_overmc[i] - 0.1 * dataovermc_height < ylim2[0]
+        ):  # if underflow of data, add big up arrow
+            if data_overmc[i] < ylim2[0]:
+                ax[1].arrow(
+                    bins_overmc[i],
+                    ylim2[0] + 0.2 * dataovermc_height,
+                    0,
+                    -0.2 * dataovermc_height,
+                    color="black",
+                    width=min([barwidth_overmc[i] * 1.5, maxarrowwidth]) * 0.3,
+                    head_width=min([barwidth_overmc[i] * 1.5, maxarrowwidth]),
+                    head_length=0.1 * dataovermc_height,
+                    length_includes_head=True,
+                )
+            else:
+                ax[1].arrow(
+                    bins_overmc[i],
+                    ylim2[0] + 0.1 * dataovermc_height,
+                    0,
+                    -0.1 * dataovermc_height,
+                    color="black",
+                    width=0,
+                    head_width=min([barwidth_overmc[i] * 1.5, maxarrowwidth]),
+                    head_length=abs(ylim2[0] - data_overmc[i]),
+                    length_includes_head=True,
+                )
+        elif (
+            data_overmc[i] - dataerr_overmc[i] < ylim2[0] and ylim2[0] > 0
+        ):  # if underflow of data errorbar, add up arrow (if above 0 since below 0 does not make sense)
+            ax[1].arrow(
+                bins_overmc[i],
+                ylim2[0] + 0.1 * dataovermc_height,
+                0,
+                -0.1 * dataovermc_height,
+                color="black",
+                width=0.8,
+                head_width=min([barwidth_overmc[i] * 1.5, maxarrowwidth]),
+                head_length=0.1 * dataovermc_height,
+                length_includes_head=True,
+            )
 
     # plot cosmetics and legend
     printdebug("Exporting plot...")
@@ -1281,6 +1388,12 @@ def main():
     printerrors = False
     if args.printerrors:
         printerrors = True
+
+    # labelsize
+    global labelsize
+    labelsize = "12.5"
+    if args.labelsize:
+        labelsize = args.labelsize
 
     # import class type(s)
     classtypes = args.classtype.split(",")
