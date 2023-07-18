@@ -181,6 +181,9 @@ def check_voms():
 
 def main():
     global_now = datetime.now().strftime(r"date_%Y_%m_%d_time_%H_%M_%S")
+    os.system("rm -rf last_CRAB_submition_{global_now}.txt")
+    os.system(f"touch last_CRAB_submition_{global_now}.txt")
+    os.system(f"echo {global_now} > last_CRAB_submition_{global_now}.txt")
 
     # check for VOMS proxy
     if not (check_voms()):

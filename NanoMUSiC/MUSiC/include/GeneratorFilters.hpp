@@ -49,6 +49,8 @@ auto wlnujets_filter(const NanoObjects::LHEParticles &lhe_particles,
 auto wlnujets_mass_binned_filter(const NanoObjects::LHEParticles &lhe_particles,
                                  const NanoObjects::GenParticles &gen_particles,
                                  const Year &year,
+                                 const float &pt_min,
+                                 const float &pt_max,
                                  const float &mass_min,
                                  const float &mass_max,
                                  debugger_t &h_debug) -> bool;
@@ -107,7 +109,16 @@ const std::map<std::string,
              return dy_filter(lhe_particles, 0., 120., 0., 50, h_debug);
          }},
 
-        // WW full-leptonic sample
+        // WW full-leptonic sample - inclusive
+        {"ww_mLL_less_200"s,
+         [](const NanoObjects::LHEParticles &lhe_particles,
+            const NanoObjects::GenParticles &gen_particles,
+            Year &year,
+            debugger_t &h_debug) -> bool
+         {
+             return ww_2l2v_filter(lhe_particles, 200., h_debug);
+         }},
+        // WW full-leptonic sample - mass binned
         {"ww_mLL_less_1800"s,
          [](const NanoObjects::LHEParticles &lhe_particles,
             const NanoObjects::GenParticles &gen_particles,
@@ -153,7 +164,7 @@ const std::map<std::string,
              return gamma_jet_cleanner_filter(lhe_particles, 0.4, h_debug);
          }},
 
-        //  W Jets - Inclusive
+        //  W Jets - Inclusive - amc@nlo
         {"w_plus_jets_pt_less_100_mass_less_200"s,
          [](const NanoObjects::LHEParticles &lhe_particles,
             const NanoObjects::GenParticles &gen_particles,
@@ -161,6 +172,16 @@ const std::map<std::string,
             debugger_t &h_debug) -> bool
          {
              return wlnujets_filter(lhe_particles, 0., 200., 0., 100., h_debug);
+         }},
+
+        // WJets - Inclusive - SHERPA
+        {"wjets_mass_less_200_pt_less_100_sherpa"s,
+         [](const NanoObjects::LHEParticles &lhe_particles,
+            const NanoObjects::GenParticles &gen_particles,
+            Year &year,
+            debugger_t &h_debug) -> bool
+         {
+             return wlnujets_mass_binned_filter(lhe_particles, gen_particles, year, 0, 100., 0., 200., h_debug);
          }},
 
         //  W Jets - pT binned
@@ -184,7 +205,7 @@ const std::map<std::string,
              {
                  return true;
              }
-             return wlnujets_mass_binned_filter(lhe_particles, gen_particles, year, 0., 500., h_debug);
+             return wlnujets_mass_binned_filter(lhe_particles, gen_particles, year, 0, MAX_FLOAT, 0., 500., h_debug);
          }},
         {"wjets_mass_less_1000"s,
          [](const NanoObjects::LHEParticles &lhe_particles,
@@ -192,7 +213,7 @@ const std::map<std::string,
             Year &year,
             debugger_t &h_debug) -> bool
          {
-             return wlnujets_mass_binned_filter(lhe_particles, gen_particles, year, 0., 1000., h_debug);
+             return wlnujets_mass_binned_filter(lhe_particles, gen_particles, year, 0, MAX_FLOAT, 0., 1000., h_debug);
          }},
         {"wjets_mass_less_2000"s,
          [](const NanoObjects::LHEParticles &lhe_particles,
@@ -200,7 +221,7 @@ const std::map<std::string,
             Year &year,
             debugger_t &h_debug) -> bool
          {
-             return wlnujets_mass_binned_filter(lhe_particles, gen_particles, year, 0., 2000., h_debug);
+             return wlnujets_mass_binned_filter(lhe_particles, gen_particles, year, 0, MAX_FLOAT, 0., 2000., h_debug);
          }},
         {"wjets_mass_less_3000"s,
          [](const NanoObjects::LHEParticles &lhe_particles,
@@ -208,7 +229,7 @@ const std::map<std::string,
             Year &year,
             debugger_t &h_debug) -> bool
          {
-             return wlnujets_mass_binned_filter(lhe_particles, gen_particles, year, 0., 3000., h_debug);
+             return wlnujets_mass_binned_filter(lhe_particles, gen_particles, year, 0, MAX_FLOAT, 0., 3000., h_debug);
          }},
         {"wjets_mass_less_4000"s,
          [](const NanoObjects::LHEParticles &lhe_particles,
@@ -216,7 +237,7 @@ const std::map<std::string,
             Year &year,
             debugger_t &h_debug) -> bool
          {
-             return wlnujets_mass_binned_filter(lhe_particles, gen_particles, year, 0., 4000., h_debug);
+             return wlnujets_mass_binned_filter(lhe_particles, gen_particles, year, 0, MAX_FLOAT, 0., 4000., h_debug);
          }},
         // {"DYJetsToLL_M-10To50_13TeV_AM"s,
         //  // {"DoLL_M-10To50_13TeV_AM"s,
