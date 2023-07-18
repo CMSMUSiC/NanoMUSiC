@@ -43,7 +43,13 @@ def parse_args():
         default="h_invariant_mass",
     )
 
-    parser.add_argument("--debug", help="print debugging info", action="store_true")
+    parser.add_argument(
+        "--debug", help="Will print debugging info", action="store_true"
+    )
+
+    parser.add_argument(
+        "--no-data", help="Will not plot data.", action="store_true", default=False
+    )
 
     parser.add_argument(
         "-o",
@@ -286,7 +292,7 @@ def main():
             1 - root.gPad.GetRightMargin() - 0.03,
             1 - root.gPad.GetTopMargin() - 0.03,
         ),
-        textsize=10,
+        textsize=6,
     )
 
     bkg_stack = root.THStack("bkg", "")
@@ -315,7 +321,8 @@ def main():
     # Plot the data as a graph
     data_graph = aplt.root_helpers.hist_to_graph(data_hist)
     legend.AddEntry(data_graph, "Data", "EP")
-    ax1.plot(data_graph, "P")
+    if not (args.no_data):
+        ax1.plot(data_graph, "P")
     ax1.set_xlim(x_min, x_max)
 
     # Use same x-range in lower axes as upper axes

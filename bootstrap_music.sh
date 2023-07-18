@@ -33,5 +33,4 @@ cd $SCRIPT_DIR
 pip install --user poxy
 
 # install atlasplot
-# clould be usefull in the future, for debugging or even, ploting itself
-# pip install --user atlasplots
+pip install --user atlasplots
