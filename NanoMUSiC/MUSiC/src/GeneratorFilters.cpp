@@ -116,11 +116,32 @@ auto wlnujets_mass_binned_filter(const NanoObjects::LHEParticles &lhe_particles,
     // filter Lep+Nu pair
     std::optional<std::size_t> idx_lepton = std::nullopt;
     std::optional<std::size_t> idx_neutrino = std::nullopt;
-
+    std::cout << "_______________________\n";
     for (std::size_t i = 0; i < gen_particles.nGenParticles; i++)
     {
-        auto mother_pdg_id = gen_particles.genPartIdxMother.at(i);
-        if (mother_pdg_id >= 0)
+        if (std::abs(gen_particles.pdgId.at(i)) == PDG::Electron::Id or
+            std::abs(gen_particles.pdgId.at(i)) == PDG::Muon::Id or
+            std::abs(gen_particles.pdgId.at(i)) == PDG::Tau::Id or
+            std::abs(gen_particles.pdgId.at(i)) == PDG::ElectronNeutrino::Id or
+            std::abs(gen_particles.pdgId.at(i)) == PDG::MuonNeutrino::Id or
+            std::abs(gen_particles.pdgId.at(i)) == PDG::TauNeutrino::Id or
+            std::abs(gen_particles.pdgId.at(i)) == PDG::W::Id)
+        {
+            if (gen_particles.genPartIdxMother.at(i) >= 0)
+            {
+                fmt::print("Mother_PDG_id:{} at index:{}\n",
+                           gen_particles.pdgId.at(gen_particles.genPartIdxMother.at(i)),
+                           gen_particles.genPartIdxMother.at(i));
+            }
+            else
+            {
+                fmt::print("No mother found\n");
+            }
+
+            fmt::print("PDG_id:{} at index:{}\n\n", gen_particles.pdgId.at(i), i);
+        }
+        auto mother_idx = gen_particles.genPartIdxMother.at(i);
+        if (mother_idx >= 0)
         {
             if (not(idx_lepton) and not(idx_neutrino))
             {
@@ -163,6 +184,97 @@ auto wlnujets_mass_binned_filter(const NanoObjects::LHEParticles &lhe_particles,
                     {
                         idx_lepton = i;
                     }
+                }
+            }
+
+            if (idx_lepton and idx_neutrino)
+            {
+                mass = LorentzVectorHelper::mass(gen_particles.pt[*idx_lepton],
+                                                 gen_particles.eta[*idx_lepton],
+                                                 gen_particles.phi[*idx_lepton],
+                                                 PDG::get_mass_by_id(gen_particles.pdgId[*idx_lepton]),
+                                                 gen_particles.pt[*idx_neutrino],
+                                                 gen_particles.eta[*idx_neutrino],
+                                                 gen_particles.phi[*idx_neutrino],
+                                                 PDG::get_mass_by_id(gen_particles.pdgId[*idx_neutrino]));
+
+                pt = LorentzVectorHelper::pt(gen_particles.pt[*idx_lepton],
+                                             gen_particles.phi[*idx_lepton],
+                                             gen_particles.pt[*idx_neutrino],
+                                             gen_particles.phi[*idx_neutrino]);
+                fmt::print("Mass:{} pT:{}\n", mass, pt);
+
+                if ((pt_min - .5 <= pt and pt <= pt_max + .5) and (mass_min - .5 <= mass and mass <= mass_max + .5))
+                {
+                    filter_result = true;
+                }
+            }
+        }
+    }
+
+    if (h_debug)
+    {
+        h_debug->h_total.Fill(mass);
+        if (filter_result)
+        {
+            h_debug->h_pass.Fill(mass);
+        }
+    }
+
+    return filter_result;
+}
+
+auto wlnujets_mass_binned_sherpa_filter(const NanoObjects::LHEParticles &lhe_particles,
+                                        const NanoObjects::GenParticles &gen_particles,
+                                        const Year &year,
+                                        const float &mass_min,
+                                        const float &mass_max,
+                                        const float &pt_min,
+                                        const float &pt_max,
+                                        debugger_t &h_debug) -> bool
+{
+    bool filter_result = false;
+
+    float mass = -999.;
+    float pt = -999.;
+
+    // filter Lep+Nu pair
+    std::optional<std::size_t> idx_lepton = std::nullopt;
+    std::optional<std::size_t> idx_neutrino = std::nullopt;
+    for (std::size_t i = 0; i < gen_particles.nGenParticles; i++)
+    {
+        auto mother_idx = gen_particles.genPartIdxMother.at(i);
+        if (mother_idx < 0)
+        {
+            if (not(idx_lepton) and not(idx_neutrino))
+            {
+                if (std::abs(gen_particles.pdgId.at(i)) == PDG::Electron::Id //
+                    or std::abs(gen_particles.pdgId.at(i)) == PDG::Muon::Id  //
+                    or std::abs(gen_particles.pdgId.at(i)) == PDG::Tau::Id)
+                {
+                    idx_lepton = i;
+                }
+                if (std::abs(gen_particles.pdgId.at(i)) == PDG::ElectronNeutrino::Id //
+                    or std::abs(gen_particles.pdgId.at(i)) == PDG::MuonNeutrino::Id  //
+                    or std::abs(gen_particles.pdgId.at(i)) == PDG::TauNeutrino::Id)
+                {
+                    idx_neutrino = i;
+                }
+            }
+
+            if (idx_lepton and not(idx_neutrino))
+            {
+                if (std::abs(gen_particles.pdgId.at(i)) == std::abs(gen_particles.pdgId.at(*idx_lepton)) + 1)
+                {
+                    idx_neutrino = i;
+                }
+            }
+
+            if (not(idx_lepton) and idx_neutrino)
+            {
+                if (std::abs(gen_particles.pdgId.at(i)) == std::abs(gen_particles.pdgId.at(*idx_neutrino)) - 1)
+                {
+                    idx_lepton = i;
                 }
             }
 

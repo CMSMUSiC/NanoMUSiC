@@ -1139,6 +1139,14 @@ kFactor = 1.0
 XSecOrder = "NLO"
 ProcessGroup = "WG"
 
+[WJetsToLNu_012JetsNLO_34JetsLO_EWNLOcorr_13TeV_SP]
+XSec = 60290.0
+FilterEff = 1.0
+kFactor = 1.02
+XSecOrder = "NNLO"
+ProcessGroup = "W"
+generator_filter_key = "wjets_mass_less_200_pt_less_100_sherpa"
+
 [WJetsToLNu_13TeV_AM]
 XSec = 60290.0
 FilterEff = 1.0

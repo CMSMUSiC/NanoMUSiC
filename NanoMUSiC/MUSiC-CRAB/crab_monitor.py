@@ -92,51 +92,59 @@ def print_colored(status):
 
 
 def monitor(dir):
-    with suppress_stdout():
-        res = crabCommand("status", dir=dir)
+    try:
+        with suppress_stdout():
+            res = crabCommand("status", dir=dir)
 
-    inputDataset = res["inputDataset"]
-    jobsPerStatus = res["jobsPerStatus"]
-    proxiedWebDir = res["proxiedWebDir"].split("/")[-1]
-    task_status = res["status"]
-    monitoring_url = f"https://cmsweb.cern.ch/crabserver/ui/task/{proxiedWebDir}"
+        inputDataset = res["inputDataset"]
+        jobsPerStatus = res["jobsPerStatus"]
+        proxiedWebDir = res["proxiedWebDir"].split("/")[-1]
+        task_status = res["status"]
+        monitoring_url = f"https://cmsweb.cern.ch/crabserver/ui/task/{proxiedWebDir}"
 
-    status = ""
-    if "failed" in jobsPerStatus:
-        status = "failed"
-    elif task_status == "COMPLETED":
-        status = "completed"
-    else:
-        status = "other"
+        status = ""
+        if "failed" in jobsPerStatus:
+            status = "failed"
+        elif task_status == "COMPLETED":
+            status = "completed"
+        else:
+            status = "other"
 
-    report = ""
-    kill_command = ""
-    retry_command = ""
+        report = ""
+        kill_command = ""
+        retry_command = ""
 
-    report += f"Task directory: {bcolors.BOLD}{dir}{bcolors.ENDC}\n"
-    report += f"Input Dataset: {bcolors.BOLD}{inputDataset}{bcolors.ENDC}\n"
-    report += f"Task status: {print_colored(task_status)}\n"
-    report += f"Monitoring URL: {bcolors.BOLD}{monitoring_url}{bcolors.ENDC}\n"
-    report += f"Jobs per status:\n"
-    for _status in jobsPerStatus:
-        report += f"{print_colored(_status)} : {jobsPerStatus[_status]} {get_emojis(_status)}\n"
+        report += f"Task directory: {bcolors.BOLD}{dir}{bcolors.ENDC}\n"
+        report += f"Input Dataset: {bcolors.BOLD}{inputDataset}{bcolors.ENDC}\n"
+        report += f"Task status: {print_colored(task_status)}\n"
+        report += f"Monitoring URL: {bcolors.BOLD}{monitoring_url}{bcolors.ENDC}\n"
+        report += f"Jobs per status:\n"
+        for _status in jobsPerStatus:
+            report += f"{print_colored(_status)} : {jobsPerStatus[_status]} {get_emojis(_status)}\n"
 
-    if "failed" in jobsPerStatus:
-        report += f"{bcolors.WARNING}Resubmit command:{bcolors.ENDC}\n"
-        report += f"crab resubmit -d {dir}\n"
-        retry_command = f"crab resubmit -d {dir}"
-    report += f"{bcolors.WARNING}Kill command:{bcolors.ENDC}\n"
-    report += f"crab kill -d {dir}\n"
-    kill_command = f"crab kill -d {dir}"
+        if "failed" in jobsPerStatus:
+            report += f"{bcolors.WARNING}Resubmit command:{bcolors.ENDC}\n"
+            report += f"crab resubmit -d {dir}\n"
+            retry_command = f"crab resubmit -d {dir}"
+        report += f"{bcolors.WARNING}Kill command:{bcolors.ENDC}\n"
+        report += f"crab kill -d {dir}\n"
+        kill_command = f"crab kill -d {dir}"
 
-    return status, report, kill_command, retry_command
+        return status, report, kill_command, retry_command
+
+    except:
+        status = "task_not_submitted"
+        report = dir
+        kill_command = ""
+        retry_command = ""
+        return status, report, kill_command, retry_command
 
 
 def next_command():
     next_cmd = "invalid"
     while next_cmd == "invalid":
         cmd = input(
-            f"{bcolors.BOLD}\nCommand: [q | quit] quit CRAB monitor - [k | kill] kill all tasks - [r | retry] retry all failed tasks - [<ENTER>] reload:{bcolors.ENDC} "
+            f"{bcolors.BOLD}\nCommand: [q | quit] quit CRAB monitor - [k | kill] kill all tasks - [r | retry] retry all failed tasks - [d | del] delete directories of non-submitted jobs - [<ENTER>] reload:{bcolors.ENDC} "
         )
         if cmd == "q" or cmd == "quit":
             return "quit"
@@ -144,6 +152,8 @@ def next_command():
             return "retry"
         elif cmd == "k" or cmd == "kill":
             return "kill"
+        elif cmd == "del" or cmd == "d":
+            return "delete"
         elif cmd == "":
             return "reload"
         else:
@@ -162,6 +172,7 @@ def main():
         kill_commands = []
         retry_commands = []
         args = []
+        non_submitted_jobs = []
         with Pool(jobs) as p:
             # submit monitoring tasks
             monitoring_results = list(
@@ -175,10 +186,14 @@ def main():
 
             total_tasks = len(monitoring_results)
 
+
             # loop over monitroting results
             for idx, (status, report, kill_command, retry_command) in enumerate(
                 monitoring_results
             ):
+                if status == "task_not_submitted":
+                    non_submitted_jobs.append(report)
+
                 if not (exclude_completed and status == "completed"):
                     # clear screen for first task report
                     if idx == 0:
@@ -218,10 +233,25 @@ def main():
                 f"{bcolors.ENDC}Others{bcolors.ENDC}: {others}/{len(get_crab_dirs())} tasks{bcolors.ENDC}"
             )
 
+            # print("Following files were not submitted:")
+            # for job in non_submitted_jobs:
+            #     print(job)
+
+
             # read next command
             cmd = next_command()
             if cmd == "quit":
                 exit(0)
+            if cmd == "delete":
+                if(len(non_submitted_jobs) != 0):
+                    directories = len(non_submitted_jobs)
+                    print(f"Deleting {directories} directories")
+                    all_jobs = " ".join(non_submitted_jobs)
+                    del_command = "rm -rf " + all_jobs
+                    print("Deleting directories for non-submitted tasks")
+                    os.system(del_command)
+                else:
+                    print("No directories to delete")
             if cmd == "retry":
                 print("Resubminting all failed tasks ...")
                 for command in retry_commands:
