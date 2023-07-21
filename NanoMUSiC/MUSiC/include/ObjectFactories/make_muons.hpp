@@ -18,6 +18,7 @@ using namespace ROOT::VecOps;
 namespace ObjectFactories
 {
 
+// TODO implement muon corrections
 inline auto get_muon_energy_corrections(const std::string &shift) -> double
 {
     return 1.;
@@ -51,6 +52,7 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
                        const RVec<float> &Muon_pfRelIso04_all,       //
                        const RVec<float> &Muon_tkRelIso,             //
                        const RVec<float> &Muon_tunepRelPt,           //
+                       const RVec<float> &Muon_highPurity,           //
                        const RVec<int> &Muon_genPartIdx,             //
                        const CorrectionlibRef_t &muon_sf_reco,       //
                        const CorrectionlibRef_t &muon_sf_id_low_pt,  //
@@ -80,7 +82,8 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
 
         bool is_good_high_pt_muon_pre_filter = (std::fabs(Muon_eta.at(i)) <= ObjConfig::Muons[year].MaxAbsEta) //
                                                and (Muon_highPtId.at(i) >= 2)                                  //
-                                               and (Muon_tkRelIso.at(i) < ObjConfig::Muons[year].TkRelIso_WP);
+                                               and (Muon_tkRelIso.at(i) < ObjConfig::Muons[year].TkRelIso_WP   //
+                                                    and Muon_highPurity.at(i));
 
         float pt_correction_factor = 1.f;
         if (Muon_pt.at(i) >= ObjConfig::Muons[year].MaxLowPt)
@@ -109,7 +112,6 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
                 (muon_p4.pt() >= ObjConfig::Muons[year].MaxLowPt) and is_good_low_pt_muon_pre_filter;
 
             // calculate scale factors per object (particle)
-            // follow the preicous MUSiC analysis, the SFs are set before the energy scale and resolution
             if (is_good_low_pt_muon)
             {
                 scale_factors.push_back(

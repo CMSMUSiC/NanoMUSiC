@@ -113,6 +113,7 @@ auto main(int argc, char *argv[]) -> int
     ADD_ARRAY_READER(Muon_pfRelIso04_all, float);
     ADD_ARRAY_READER(Muon_tkRelIso, float);
     ADD_ARRAY_READER(Muon_tunepRelPt, float);
+    ADD_ARRAY_READER(Muon_highPurity, bool);
     ADD_ARRAY_READER(Muon_genPartIdx, int);
 
     ADD_ARRAY_READER(Electron_pt, float);
@@ -746,6 +747,7 @@ auto main(int argc, char *argv[]) -> int
                                                      unwrap(Muon_pfRelIso04_all), //
                                                      unwrap(Muon_tkRelIso),       //
                                                      unwrap(Muon_tunepRelPt),     //
+                                                     unwrap(Muon_highPurity),     //
                                                      unwrap(Muon_genPartIdx),     //
                                                      muon_sf_reco,                //
                                                      muon_sf_id_low_pt,           //
@@ -787,22 +789,22 @@ auto main(int argc, char *argv[]) -> int
                                                    year,                               //
                                                    shift);                             //
 
-            auto photons = ObjectFactories::make_photons(unwrap(Photon_pt),            //
-                                                         unwrap(Photon_eta),           //
-                                                         unwrap(Photon_phi),           //
-                                                         unwrap(Photon_isScEtaEB),     //
-                                                         unwrap(Photon_isScEtaEE),     //
-                                                         unwrap(Photon_cutBased),      //
-                                                         unwrap(Photon_pixelSeed),     //
-                                                         unwrap(Photon_dEscaleUp),     //
-                                                         unwrap(Photon_dEscaleDown),   //
-                                                         unwrap(Photon_dEsigmaUp),     //
-                                                         unwrap(Photon_dEsigmaDown),   //
-                                                         unwrap(Photon_genPartIdx),    //
-                                                         photon_sf,                    //
-                                                         pixel_veto_sf,                //
-                                                         is_data,                      //
-                                                         year,                         //
+            auto photons = ObjectFactories::make_photons(unwrap(Photon_pt),          //
+                                                         unwrap(Photon_eta),         //
+                                                         unwrap(Photon_phi),         //
+                                                         unwrap(Photon_isScEtaEB),   //
+                                                         unwrap(Photon_isScEtaEE),   //
+                                                         unwrap(Photon_cutBased),    //
+                                                         unwrap(Photon_pixelSeed),   //
+                                                         unwrap(Photon_dEscaleUp),   //
+                                                         unwrap(Photon_dEscaleDown), //
+                                                         unwrap(Photon_dEsigmaUp),   //
+                                                         unwrap(Photon_dEsigmaDown), //
+                                                         unwrap(Photon_genPartIdx),  //
+                                                         photon_sf,                  //
+                                                         pixel_veto_sf,              //
+                                                         is_data,                    //
+                                                         year,                       //
                                                          diff_shift);
 
             auto [jets, bjets] = ObjectFactories::make_jets(unwrap(Jet_pt),                 //
@@ -828,17 +830,17 @@ auto main(int argc, char *argv[]) -> int
             electrons.clear(muons, 0.4);
             taus.clear(electrons, 0.4);
             taus.clear(muons, 0.4);
+            photons.clear(taus, 0.4);
             photons.clear(electrons, 0.4);
             photons.clear(muons, 0.4);
-            photons.clear(taus, 0.4);
             jets.clear(photons, 0.5);
             bjets.clear(photons, 0.5);
+            jets.clear(taus, 0.5);
+            bjets.clear(taus, 0.5);
             jets.clear(electrons, 0.5);
             bjets.clear(electrons, 0.5);
             jets.clear(muons, 0.5);
             bjets.clear(muons, 0.5);
-            jets.clear(taus, 0.5);
-            bjets.clear(taus, 0.5);
 
             auto met = ObjectFactories::make_met(unwrap(MET_pt),              //
                                                  unwrap(MET_phi),             //
