@@ -200,6 +200,67 @@ class CorrectionLibUtils
         {{"PixelVetoSF"sv, Year::Run2018},
          {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2018_UL/photon.json.gz",
           "UL-Photon-PixVeto-SF"}},
+
+      // Tau Corrections
+        // DeepTau ID VS Electron
+        // {{TYPE, YEAR}, {JSON, CORRECTION_KEY}},
+        {{"TauVSe"sv, Year::Run2016APV},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/TAU/2016preVFP_UL/tau.json.gz",
+          "DeepTau2017v2p1VSe"}},
+        {{"TauVSe"sv, Year::Run2016},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/TAU/2016postVFP_UL/tau.json.gz",
+          "DeepTau2017v2p1VSe"}},
+        {{"TauVSe"sv, Year::Run2017},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/TAU/2017_UL/tau.json.gz",
+          "DeepTau2017v2p1VSe"}},
+        {{"TauVSe"sv, Year::Run2018},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/TAU/2018_UL/tau.json.gz",
+          "DeepTau2017v2p1VSe"}},
+
+        // DeepTau ID VS Jet
+        // {{TYPE, YEAR}, {JSON, CORRECTION_KEY}},
+        {{"TauVSjet"sv, Year::Run2016APV},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/TAU/2016preVFP_UL/tau.json.gz",
+          "DeepTau2017v2p1VSjet"}},
+        {{"TauVSjet"sv, Year::Run2016},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/TAU/2016postVFP_UL/tau.json.gz",
+          "DeepTau2017v2p1VSjet"}},
+        {{"TauVSjet"sv, Year::Run2017},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/TAU/2017_UL/tau.json.gz",
+          "DeepTau2017v2p1VSjet"}},
+        {{"TauVSjet"sv, Year::Run2018},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/TAU/2018_UL/tau.json.gz",
+          "DeepTau2017v2p1VSjet"}},
+
+        // DeepTau ID VS Muon
+        // {{TYPE, YEAR}, {JSON, CORRECTION_KEY}},
+        {{"TauVSmu"sv, Year::Run2016APV},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/TAU/2016preVFP_UL/tau.json.gz",
+          "DeepTau2017v2p1VSmu"}},
+        {{"TauVSmu"sv, Year::Run2016},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/TAU/2016postVFP_UL/tau.json.gz",
+          "DeepTau2017v2p1VSmu"}},
+        {{"TauVSmu"sv, Year::Run2017},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/TAU/2017_UL/tau.json.gz",
+          "DeepTau2017v2p1VSmu"}},
+        {{"TauVSmu"sv, Year::Run2018},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/TAU/2018_UL/tau.json.gz",
+          "DeepTau2017v2p1VSmu"}},
+
+        // Tau Energy Scale
+        // {{TYPE, YEAR}, {JSON, CORRECTION_KEY}},
+        {{"TauEnergyScale"sv, Year::Run2016APV},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/TAU/2016preVFP_UL/tau.json.gz",
+          "tau_energy_scale"}},
+        {{"TauEnergyScale"sv, Year::Run2016},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/TAU/2016postVFP_UL/tau.json.gz",
+          "tau_energy_scale"}},
+        {{"TauEnergyScale"sv, Year::Run2017},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/TAU/2017_UL/tau.json.gz",
+          "tau_energy_scale"}},
+        {{"TauEnergyScale"sv, Year::Run2018},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/TAU/2018_UL/tau.json.gz",
+          "tau_energy_scale"}},
     };
 
     auto make_correctionlib_ref(const std::string &key, const std::string &year) -> const CorrectionlibRef_t

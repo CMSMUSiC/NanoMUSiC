@@ -5,8 +5,11 @@
 // #include "Dijets.hpp"
 #include "GammaPlusJet.hpp"
 #include "TTBarTo1Lep2Bjet2JetMET.hpp"
-#include "WToLepNu.hpp"
+#include "WToLepNuX.hpp"
+#include "WToLepNu_eff.hpp"
 #include "ZToLepLepX.hpp"
+#include "ZToTauTauLepX.hpp"
+#include "Tau_efficiency.hpp"
 
 #include <optional>
 #include <stdexcept>
@@ -47,6 +50,7 @@
 #include "ObjectFactories/make_muons.hpp"
 #include "ObjectFactories/make_photons.hpp"
 #include "ObjectFactories/make_taus.hpp"
+#include "ObjectFactories/make_taus_eff.hpp"
 
 #include "CorrectionLibUtils.hpp"
 
