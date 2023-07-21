@@ -5,9 +5,10 @@
 // #include "Dijets.hpp"
 #include "GammaPlusJet.hpp"
 #include "TTBarTo1Lep2Bjet2JetMET.hpp"
-#include "WToLepNu.hpp"
+#include "WToLepNuX.hpp"
 #include "WToLepNu_eff.hpp"
 #include "ZToLepLepX.hpp"
+#include "ZToTauTauLepX.hpp"
 #include "Tau_efficiency.hpp"
 
 #include <optional>

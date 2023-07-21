@@ -72,23 +72,23 @@ inline auto get_tau_energy_corrections_eff(const std::string &shift,
 /// bin choices: ['EBInc','EBHighR9','EBLowR9','EEInc','EEHighR9','EELowR9']
 ///////////////////////////////////////////////////////////////
 /// For some reason, the Official Muon SFs requires a field of the requested year, with proper formating.
-inline auto get_year_for_tau_sf_eff(Year year) -> std::string
-{
-    switch (year)
-    {
-    case Year::Run2016APV:
-        return "2016preVFP"s;
-    case Year::Run2016:
-        return "2016postVFP"s;
-    case Year::Run2017:
-        return "2017"s;
-    case Year::Run2018:
-        return "2018"s;
-    default:
-        throw std::runtime_error("Year (" + std::to_string(year) +
-                                 ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
-    }
-}
+// inline auto get_year_for_tau_sf_eff(Year year) -> std::string
+// {
+//     switch (year)
+//     {
+//     case Year::Run2016APV:
+//         return "2016preVFP"s;
+//     case Year::Run2016:
+//         return "2016postVFP"s;
+//     case Year::Run2017:
+//         return "2017"s;
+//     case Year::Run2018:
+//         return "2018"s;
+//     default:
+//         throw std::runtime_error("Year (" + std::to_string(year) +
+//                                  ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
+//     }
+// }
 
 inline auto make_taus_eff(const RVec<float> &Tau_pt,  //
                       const RVec<float> &Tau_eta, //
@@ -104,7 +104,7 @@ inline auto make_taus_eff(const RVec<float> &Tau_pt,  //
                       const std::string &_year,                         //
                       const std::string &shift) -> MUSiCObjects
 {
-    auto year = get_runyear(_year);
+    //auto year = get_runyear(_year);
 
     auto taus_p4 = RVec<Math::PtEtaPhiMVector>{};
     auto scale_factors = RVec<double>{};

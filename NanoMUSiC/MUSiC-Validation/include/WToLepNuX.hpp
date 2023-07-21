@@ -1,5 +1,5 @@
-#ifndef WTOLEPNU
-#define WTOLEPNU
+#ifndef WTOLEPNUX
+#define WTOLEPNUX
 
 #include "Histograms.hpp"
 #include "Math/Vector4D.h"
@@ -18,7 +18,7 @@ using namespace ROOT;
 using namespace ROOT::Math;
 using namespace ROOT::VecOps;
 
-class WToLepNu
+class WToLepNuX
 {
   private:
   public:
@@ -47,9 +47,9 @@ class WToLepNu
     bool is_Z_mass_validation;
     std::string shift;
 
-    WToLepNu() = default;
+    WToLepNuX() = default;
 
-    WToLepNu(const std::string &_analysis_name,
+    WToLepNuX(const std::string &_analysis_name,
              const std::string &_output_path,
              const std::map<std::string, int> &_countMap,
              bool _is_Z_mass_validation,
@@ -69,4 +69,4 @@ class WToLepNu
     auto dump_outputs() -> void;
 };
 
-#endif // !WTOLEPNU
+#endif // !WTOLEPNUX

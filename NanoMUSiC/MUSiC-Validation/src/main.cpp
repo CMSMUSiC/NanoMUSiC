@@ -138,6 +138,8 @@ auto main(int argc, char *argv[]) -> int
     ADD_ARRAY_READER(Tau_idDeepTau2017v2p1VSmu, UChar_t);
     ADD_ARRAY_READER(Tau_decayMode, int);
     ADD_ARRAY_READER(Tau_genPartIdx, int);
+    ADD_ARRAY_READER(Tau_genPartFlav, UChar_t);
+
 
     ADD_ARRAY_READER(Photon_pt, float);
     ADD_ARRAY_READER(Photon_eta, float);
@@ -190,6 +192,11 @@ auto main(int argc, char *argv[]) -> int
     auto photon_sf = correctionlib_utils.make_correctionlib_ref("PhotonSF", year);
     auto pixel_veto_sf = correctionlib_utils.make_correctionlib_ref("PixelVetoSF", year);
 
+    auto deep_tau_2017_v2_p1_vs_e = correctionlib_utils.make_correctionlib_ref("TauVSe", year);
+    auto deep_tau_2017_v2_p1_vs_mu = correctionlib_utils.make_correctionlib_ref("TauVSmu", year);
+    auto deep_tau_2017_v2_p1_vs_jet = correctionlib_utils.make_correctionlib_ref("TauVSjet", year);
+    auto tau_energy_scale = correctionlib_utils.make_correctionlib_ref("TauEnergyScale", year); 
+
     /////////////////////////////////////////////
     /////////////////////////////////////////////
     // [ BEGIN ]  LHAPDF
@@ -230,91 +237,91 @@ auto main(int argc, char *argv[]) -> int
     /////////////////////////////////////////////
     /////////////////////////////////////////////
 
-    const std::map<std::string, int> z_to_mu_mu_x_count_map = {{"Ele", 0},
-                                                               {"EleEE", 0},
-                                                               {"EleEB", 0},
-                                                               {"Muon", 2},
-                                                               {"Gamma", 0},
-                                                               {"GammaEB", 0},
-                                                               {"GammaEE", 0},
-                                                               {"Tau", 0},
-                                                               {"Jet", 0},
-                                                               {"bJet", 0},
-                                                               {"MET", 0}};
+    // const std::map<std::string, int> z_to_mu_mu_x_count_map = {{"Ele", 0},
+    //                                                            {"EleEE", 0},
+    //                                                            {"EleEB", 0},
+    //                                                            {"Muon", 2},
+    //                                                            {"Gamma", 0},
+    //                                                            {"GammaEB", 0},
+    //                                                            {"GammaEE", 0},
+    //                                                            {"Tau", 0},
+    //                                                            {"Jet", 0},
+    //                                                            {"bJet", 0},
+    //                                                            {"MET", 0}};
 
-    const std::map<std::string, int> z_to_ele_ele_x_count_map = {{"Ele", 2},
-                                                                 {"EleEE", 0},
-                                                                 {"EleEB", 0},
-                                                                 {"Muon", 0},
-                                                                 {"Gamma", 0},
-                                                                 {"GammaEB", 0},
-                                                                 {"GammaEE", 0},
-                                                                 {"Tau", 0},
-                                                                 {"Jet", 0},
-                                                                 {"bJet", 0},
-                                                                 {"MET", 0}};
+    // const std::map<std::string, int> z_to_ele_ele_x_count_map = {{"Ele", 2},
+    //                                                              {"EleEE", 0},
+    //                                                              {"EleEB", 0},
+    //                                                              {"Muon", 0},
+    //                                                              {"Gamma", 0},
+    //                                                              {"GammaEB", 0},
+    //                                                              {"GammaEE", 0},
+    //                                                              {"Tau", 0},
+    //                                                              {"Jet", 0},
+    //                                                              {"bJet", 0},
+    //                                                              {"MET", 0}};
 
-    const std::map<std::string, int> dijets_count_map = {{"Ele", 0},
-                                                         {"EleEE", 0},
-                                                         {"EleEB", 0},
-                                                         {"Muon", 0},
-                                                         {"Gamma", 0},
-                                                         {"GammaEB", 0},
-                                                         {"GammaEE", 0},
-                                                         {"Tau", 0},
-                                                         {"Jet", 2},
-                                                         {"bJet", 0},
-                                                         {"MET", 0}};
+    // const std::map<std::string, int> dijets_count_map = {{"Ele", 0},
+    //                                                      {"EleEE", 0},
+    //                                                      {"EleEB", 0},
+    //                                                      {"Muon", 0},
+    //                                                      {"Gamma", 0},
+    //                                                      {"GammaEB", 0},
+    //                                                      {"GammaEE", 0},
+    //                                                      {"Tau", 0},
+    //                                                      {"Jet", 2},
+    //                                                      {"bJet", 0},
+    //                                                      {"MET", 0}};
 
-    const std::map<std::string, int> gamma_plus_jet_count_map = {{"Ele", 0},
-                                                                 {"EleEE", 0},
-                                                                 {"EleEB", 0},
-                                                                 {"Muon", 0},
-                                                                 {"Gamma", 0},
-                                                                 {"GammaEB", 1},
-                                                                 {"GammaEE", 0},
-                                                                 {"Tau", 0},
-                                                                 {"Jet", 1},
-                                                                 {"bJet", 0},
-                                                                 {"MET", 0}};
+    // const std::map<std::string, int> gamma_plus_jet_count_map = {{"Ele", 0},
+    //                                                              {"EleEE", 0},
+    //                                                              {"EleEB", 0},
+    //                                                              {"Muon", 0},
+    //                                                              {"Gamma", 0},
+    //                                                              {"GammaEB", 1},
+    //                                                              {"GammaEE", 0},
+    //                                                              {"Tau", 0},
+    //                                                              {"Jet", 1},
+    //                                                              {"bJet", 0},
+    //                                                              {"MET", 0}};
 
-    const std::map<std::string, int> ttbar_to_1ele_2bjet_2jet_met_count_map = {{"Ele", 1},
-                                                                               {"EleEE", 0},
-                                                                               {"EleEB", 0},
-                                                                               {"Muon", 0},
-                                                                               {"Gamma", 0},
-                                                                               {"GammaEB", 0},
-                                                                               {"GammaEE", 0},
-                                                                               {"Tau", 0},
-                                                                               {"Jet", 2},
-                                                                               {"bJet", 2},
-                                                                               {"MET", 1}};
+    // const std::map<std::string, int> ttbar_to_1ele_2bjet_2jet_met_count_map = {{"Ele", 1},
+    //                                                                            {"EleEE", 0},
+    //                                                                            {"EleEB", 0},
+    //                                                                            {"Muon", 0},
+    //                                                                            {"Gamma", 0},
+    //                                                                            {"GammaEB", 0},
+    //                                                                            {"GammaEE", 0},
+    //                                                                            {"Tau", 0},
+    //                                                                            {"Jet", 2},
+    //                                                                            {"bJet", 2},
+    //                                                                            {"MET", 1}};
 
-    const std::map<std::string, int> ttbar_to_1mu_2bjet_2jet_met_count_map = {{"Ele", 0},
-                                                                              {"EleEE", 0},
-                                                                              {"EleEB", 0},
-                                                                              {"Muon", 1},
-                                                                              {"Gamma", 0},
-                                                                              {"GammaEB", 0},
-                                                                              {"GammaEE", 0},
-                                                                              {"Tau", 0},
-                                                                              {"Jet", 2},
-                                                                              {"bJet", 1},
-                                                                              {"MET", 1}};
+    // const std::map<std::string, int> ttbar_to_1mu_2bjet_2jet_met_count_map = {{"Ele", 0},
+    //                                                                           {"EleEE", 0},
+    //                                                                           {"EleEB", 0},
+    //                                                                           {"Muon", 1},
+    //                                                                           {"Gamma", 0},
+    //                                                                           {"GammaEB", 0},
+    //                                                                           {"GammaEE", 0},
+    //                                                                           {"Tau", 0},
+    //                                                                           {"Jet", 2},
+    //                                                                           {"bJet", 1},
+    //                                                                           {"MET", 1}};
+    //
+    // const std::map<std::string, int> z_to_tau_tau_x_count_map = {{"Ele", 0},
+    //                                                              {"EleEE", 0},
+    //                                                              {"EleEB", 0},
+    //                                                              {"Muon", 0},
+    //                                                              {"Gamma", 0},
+    //                                                              {"GammaEB", 0},
+    //                                                              {"GammaEE", 0},
+    //                                                              {"Tau", 2},
+    //                                                              {"Jet", 0},
+    //                                                              {"bJet", 0},
+    //                                                              {"MET", 0}};
 
-    const std::map<std::string, int> z_to_tau_tau_x_count_map = {{"Ele", 0},
-                                                                 {"EleEE", 0},
-                                                                 {"EleEB", 0},
-                                                                 {"Muon", 0},
-                                                                 {"Gamma", 0},
-                                                                 {"GammaEB", 0},
-                                                                 {"GammaEE", 0},
-                                                                 {"Tau", 2},
-                                                                 {"Jet", 0},
-                                                                 {"bJet", 0},
-                                                                 {"MET", 0}};
-
-    const std::map<std::string, int> w_to_tau_nu_count_map = {{"Ele", 0},
+    const std::map<std::string, int> w_to_tau_nu_x_count_map = {{"Ele", 0},
                                                               {"EleEE", 0},
                                                               {"EleEB", 0},
                                                               {"Muon", 0},
@@ -325,6 +332,30 @@ auto main(int argc, char *argv[]) -> int
                                                               {"Jet", 0},
                                                               {"bJet", 0},
                                                               {"MET", 1}};
+
+    const std::map<std::string, int> z_to_tau_tau_ele_x_count_map = {{"Ele", 1},
+                                                                     {"EleEE", 0},
+                                                                     {"EleEB", 0},
+                                                                     {"Muon", 0},
+                                                                     {"Gamma", 0},
+                                                                     {"GammaEB", 0},
+                                                                     {"GammaEE", 0},
+                                                                     {"Tau", 2},
+                                                                     {"Jet", 0},
+                                                                     {"bJet", 0},
+                                                                     {"MET", 0}};
+
+    const std::map<std::string, int> z_to_tau_tau_mu_x_count_map = {{"Ele", 0},
+                                                                    {"EleEE", 0},
+                                                                    {"EleEB", 0},
+                                                                    {"Muon", 1},
+                                                                    {"Gamma", 0},
+                                                                    {"GammaEB", 0},
+                                                                    {"GammaEE", 0},
+                                                                    {"Tau", 2},
+                                                                    {"Jet", 0},
+                                                                    {"bJet", 0},
+                                                                    {"MET", 0}};
 
     // const std::map<std::string, int> one_tau_at_least_count_map = {{"Ele", 0},
     //                                                                {"EleEE", 0},
@@ -340,17 +371,21 @@ auto main(int argc, char *argv[]) -> int
 
     // build validation factories
     // map each shift to one analysis factory
-    std::unordered_map<std::string, ZToLepLepX> z_to_mu_mu_x;
-    std::unordered_map<std::string, ZToLepLepX> z_to_mu_mu_x_Z_mass;
-    std::unordered_map<std::string, ZToLepLepX> z_to_ele_ele_x;
-    std::unordered_map<std::string, ZToLepLepX> z_to_ele_ele_x_Z_mass;
-    std::unordered_map<std::string, GammaPlusJet> gamma_plus_jet;
-    std::unordered_map<std::string, TTBarTo1Lep2Bjet2JetMET> ttbar_to_1mu_2bjet_2jet_MET;
-    std::unordered_map<std::string, TTBarTo1Lep2Bjet2JetMET> ttbar_to_1ele_2bjet_2jet_MET;
-    std::unordered_map<std::string, ZToLepLepX> z_to_tau_tau_x;
-    std::unordered_map<std::string, ZToLepLepX> z_to_tau_tau_x_Z_mass;
-    std::unordered_map<std::string, WToLepNu> w_to_tau_nu;
-    std::unordered_map<std::string, WToLepNu> w_to_tau_nu_Z_mass;
+    // std::unordered_map<std::string, ZToLepLepX> z_to_mu_mu_x;
+    // std::unordered_map<std::string, ZToLepLepX> z_to_mu_mu_x_Z_mass;
+    // std::unordered_map<std::string, ZToLepLepX> z_to_ele_ele_x;
+    // std::unordered_map<std::string, ZToLepLepX> z_to_ele_ele_x_Z_mass;
+    // std::unordered_map<std::string, GammaPlusJet> gamma_plus_jet;
+    // std::unordered_map<std::string, TTBarTo1Lep2Bjet2JetMET> ttbar_to_1mu_2bjet_2jet_MET;
+    // std::unordered_map<std::string, TTBarTo1Lep2Bjet2JetMET> ttbar_to_1ele_2bjet_2jet_MET;
+    // std::unordered_map<std::string, ZToLepLepX> z_to_tau_tau_x;
+    // std::unordered_map<std::string, ZToLepLepX> z_to_tau_tau_x_Z_mass;
+    std::unordered_map<std::string, WToLepNuX> w_to_tau_nu_x;
+    std::unordered_map<std::string, WToLepNuX> w_to_tau_nu_x_Z_mass;
+    std::unordered_map<std::string, ZToTauTauLepX> z_to_tau_tau_ele_x;
+    std::unordered_map<std::string, ZToTauTauLepX> z_to_tau_tau_ele_x_Z_mass;
+    std::unordered_map<std::string, ZToTauTauLepX> z_to_tau_tau_mu_x;
+    std::unordered_map<std::string, ZToTauTauLepX> z_to_tau_tau_mu_x_Z_mass;
     // std::unordered_map<std::string, WToLepNu_eff> w_to_tau_nu_eff;
     // std::unordered_map<std::string, Tau_efficiency> one_tau_at_least;
 
@@ -458,49 +493,105 @@ auto main(int argc, char *argv[]) -> int
         //                              process_group,
         //                              xs_order)});
 
-         z_to_tau_tau_x.insert(
+        //  z_to_tau_tau_x.insert(
+        //      {shift,
+        //       ZToLepLepX("z_to_tau_tau_x",
+        //                  get_output_file_path(
+        //                      "z_to_tau_tau_x", output_path, process, year, process_group, xs_order, is_data, shift),
+        //                  z_to_tau_tau_x_count_map,
+        //                  false,
+        //                  shift,
+        //                  process,
+        //                  year,
+        //                  process_group,
+        //                  xs_order)});
+
+        //  z_to_tau_tau_x_Z_mass.insert(
+        //      {shift,
+        //       ZToLepLepX(
+        //           "z_to_tau_tau_x_Z_mass",
+        //           get_output_file_path(
+        //               "z_to_tau_tau_x_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
+        //           z_to_tau_tau_x_count_map,
+        //           true,
+        //           shift,
+        //           process,
+        //           year,
+        //           process_group,
+        //           xs_order)});
+
+        z_to_tau_tau_ele_x.insert(
              {shift,
-              ZToLepLepX("z_to_tau_tau_x",
+              ZToTauTauLepX("z_to_tau_tau_ele_x",
                          get_output_file_path(
-                             "z_to_tau_tau_x", output_path, process, year, process_group, xs_order, is_data, shift),
-                         z_to_tau_tau_x_count_map,
+                             "z_to_tau_tau_ele_x", output_path, process, year, process_group, xs_order, is_data, shift),
+                         z_to_tau_tau_ele_x_count_map,
                          false,
                          shift,
                          process,
                          year,
                          process_group,
                          xs_order)});
-         z_to_tau_tau_x_Z_mass.insert(
+
+         z_to_tau_tau_ele_x_Z_mass.insert(
              {shift,
-              ZToLepLepX(
-                  "z_to_tau_tau_x_Z_mass",
+              ZToTauTauLepX(
+                  "z_to_tau_tau_ele_x_Z_mass",
                   get_output_file_path(
-                      "z_to_tau_tau_x_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
-                  z_to_tau_tau_x_count_map,
+                      "z_to_tau_tau_ele_x_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
+                  z_to_tau_tau_ele_x_count_map,
                   true,
                   shift,
                   process,
                   year,
                   process_group,
                   xs_order)});
-         w_to_tau_nu.insert(
+
+        z_to_tau_tau_mu_x.insert(
              {shift,
-              WToLepNu("w_to_tau_nu",
+              ZToTauTauLepX("z_to_tau_tau_mu_x",
+                         get_output_file_path(
+                             "z_to_tau_tau_mu_x", output_path, process, year, process_group, xs_order, is_data, shift),
+                         z_to_tau_tau_mu_x_count_map,
+                         false,
+                         shift,
+                         process,
+                         year,
+                         process_group,
+                         xs_order)});
+
+         z_to_tau_tau_mu_x_Z_mass.insert(
+             {shift,
+              ZToTauTauLepX(
+                  "z_to_tau_tau_mu_x_Z_mass",
+                  get_output_file_path(
+                      "z_to_tau_tau_mu_x_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
+                  z_to_tau_tau_mu_x_count_map,
+                  true,
+                  shift,
+                  process,
+                  year,
+                  process_group,
+                  xs_order)});
+
+         w_to_tau_nu_x.insert(
+             {shift,
+              WToLepNuX("w_to_tau_nu_x",
                        get_output_file_path(
-                           "w_to_tau_nu", output_path, process, year, process_group, xs_order, is_data, shift),
-                       w_to_tau_nu_count_map,
+                           "w_to_tau_nu_x", output_path, process, year, process_group, xs_order, is_data, shift),
+                       w_to_tau_nu_x_count_map,
                        false,
                        shift,
                        process,
                        year,
                        process_group,
                        xs_order)});
-         w_to_tau_nu_Z_mass.insert(
+         w_to_tau_nu_x_Z_mass.insert(
              {shift,
-              WToLepNu("w_to_tau_nu_Z_mass",
+              WToLepNuX("w_to_tau_nu_x_Z_mass",
                        get_output_file_path(
-                           "w_to_tau_nu_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
-                       w_to_tau_nu_count_map,
+                           "w_to_tau_nu_x_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
+                       w_to_tau_nu_x_count_map,
                        true,
                        shift,
                        process,
@@ -642,56 +733,114 @@ auto main(int argc, char *argv[]) -> int
             //                              process_group,
             //                              xs_order)});
 
-             z_to_tau_tau_x.insert(
+            // z_to_tau_tau_x.insert(
+            //     {shift,
+            //      ZToLepLepX("z_to_tau_tau_x",
+            //                 get_output_file_path(
+            //                     "z_to_tau_tau_x", output_path, process, year, process_group, xs_order, is_data, shift),
+            //                 z_to_tau_tau_x_count_map,
+            //                 false,
+            //                 shift,
+            //                 process,
+            //                 year,
+            //                 process_group,
+            //                 xs_order)});
+
+            // z_to_tau_tau_x_Z_mass.insert(
+            //     {shift,
+            //      ZToLepLepX(
+            //          "z_to_tau_tau_x_Z_mass",
+            //          get_output_file_path(
+            //              "z_to_tau_tau_x_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
+            //          z_to_tau_tau_x_count_map,
+            //          true,
+            //          shift,
+            //          process,
+            //          year,
+            //          process_group,
+            //          xs_order)});
+
+            z_to_tau_tau_ele_x.insert(
+             {shift,
+              ZToTauTauLepX("z_to_tau_tau_ele_x",
+                         get_output_file_path(
+                             "z_to_tau_tau_ele_x", output_path, process, year, process_group, xs_order, is_data, shift),
+                         z_to_tau_tau_ele_x_count_map,
+                         false,
+                         shift,
+                         process,
+                         year,
+                         process_group,
+                         xs_order)});
+
+            z_to_tau_tau_ele_x_Z_mass.insert(
+                {shift,
+                 ZToTauTauLepX(
+                     "z_to_tau_tau_ele_x_Z_mass",
+                     get_output_file_path(
+                         "z_to_tau_tau_ele_x_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
+                     z_to_tau_tau_ele_x_count_map,
+                     true,
+                     shift,
+                     process,
+                     year,
+                     process_group,
+                     xs_order)});
+
+            z_to_tau_tau_mu_x.insert(
                  {shift,
-                  ZToLepLepX("z_to_tau_tau_x",
+                  ZToTauTauLepX("z_to_tau_tau_mu_x",
                              get_output_file_path(
-                                 "z_to_tau_tau_x", output_path, process, year, process_group, xs_order, is_data, shift),
-                             z_to_tau_tau_x_count_map,
+                                 "z_to_tau_tau_mu_x", output_path, process, year, process_group, xs_order, is_data, shift),
+                             z_to_tau_tau_mu_x_count_map,
                              false,
                              shift,
                              process,
                              year,
                              process_group,
                              xs_order)});
-             z_to_tau_tau_x_Z_mass.insert(
-                 {shift,
-                  ZToLepLepX(
-                      "z_to_tau_tau_x_Z_mass",
-                      get_output_file_path(
-                          "z_to_tau_tau_x_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
-                      z_to_tau_tau_x_count_map,
-                      true,
-                      shift,
-                      process,
-                      year,
-                      process_group,
-                      xs_order)});
-             w_to_tau_nu.insert(
-                 {shift,
-                  WToLepNu("w_to_tau_nu",
-                           get_output_file_path(
-                               "w_to_tau_nu", output_path, process, year, process_group, xs_order, is_data, shift),
-                           w_to_tau_nu_count_map,
-                           false,
-                           shift,
-                           process,
-                           year,
-                           process_group,
-                           xs_order)});
-             w_to_tau_nu_Z_mass.insert(
-                 {shift,
-                  WToLepNu(
-                      "w_to_tau_nu_Z_mass",
-                      get_output_file_path(
-                          "w_to_tau_nu_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
-                      w_to_tau_nu_count_map,
-                      false,
-                      shift,
-                      process,
-                      year,
-                      process_group,
-                      xs_order)});
+
+            z_to_tau_tau_mu_x_Z_mass.insert(
+                {shift,
+                 ZToTauTauLepX(
+                     "z_to_tau_tau_mu_x_Z_mass",
+                     get_output_file_path(
+                         "z_to_tau_tau_mu_x_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
+                     z_to_tau_tau_mu_x_count_map,
+                     true,
+                     shift,
+                     process,
+                     year,
+                     process_group,
+                     xs_order)});
+
+            w_to_tau_nu_x.insert(
+                {shift,
+                 WToLepNuX("w_to_tau_nu_x",
+                          get_output_file_path(
+                              "w_to_tau_nu_x", output_path, process, year, process_group, xs_order, is_data, shift),
+                          w_to_tau_nu_x_count_map,
+                          false,
+                          shift,
+                          process,
+                          year,
+                          process_group,
+                          xs_order)});
+
+            w_to_tau_nu_x_Z_mass.insert(
+                {shift,
+                 WToLepNuX(
+                     "w_to_tau_nu_x_Z_mass",
+                     get_output_file_path(
+                         "w_to_tau_nu_x_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
+                     w_to_tau_nu_x_count_map,
+                     false,
+                     shift,
+                     process,
+                     year,
+                     process_group,
+                     xs_order)});
+
             // w_to_tau_nu_eff.insert(
             //     {shift,
             //      WToLepNu_eff("w_to_tau_nu_eff",
@@ -837,16 +986,21 @@ auto main(int argc, char *argv[]) -> int
                                                    unwrap(Tau_phi),                    //
                                                    unwrap(Tau_dz),                     //
                                                    unwrap(Tau_mass),                   //
+                                                   unwrap(Tau_genPartFlav),            //
                                                    unwrap(Tau_genPartIdx),             //
                                                    unwrap(Tau_decayMode),              //
                                                    unwrap(Tau_idDeepTau2017v2p1VSe),   //
                                                    unwrap(Tau_idDeepTau2017v2p1VSmu),  //
                                                    unwrap(Tau_idDeepTau2017v2p1VSjet), //
+                                                   deep_tau_2017_v2_p1_vs_e,           //
+                                                   deep_tau_2017_v2_p1_vs_mu,          //
+                                                   deep_tau_2017_v2_p1_vs_jet,         //
+                                                   tau_energy_scale,                   //
                                                    is_data,                            //
                                                    year,                               //
                                                    shift);                             //
 
-            // auto taus_eff = ObjectFactories::make_taus_eff(unwrap(Tau_pt),                     //
+            // auto taus_eff = ObjectFactories::make_taus_eff(unwrap(Tau_pt),             //
             //                                        unwrap(Tau_eta),                    //
             //                                        unwrap(Tau_phi),                    //
             //                                        unwrap(Tau_dz),                     //
@@ -1142,15 +1296,46 @@ auto main(int argc, char *argv[]) -> int
 
                     // Tau analysis
                     // TauTau + X
-                    unsigned int n_taus = 2;
-                    if (taus.size() >= n_taus)
+                    // unsigned int n_taus = 2;
+                    // if (taus.size() >= n_taus)
+                    // {
+                    //     auto tau_1 = taus.p4[0];
+                    //     auto tau_2 = taus.p4[1];
+
+                    //     // wide mass range
+                    //     z_to_tau_tau_x[shift].fill(tau_1,
+                    //                                tau_2,
+                    //                                bjets.p4,
+                    //                                jets.p4,
+                    //                                met.p4,
+                    //                                weight); // * Shifts::get_scale_factor(shift, n_muons, 0, 0, 0, 0, 0,
+                    //                                         // muons, electrons, photons, bjets, jets, met));
+
+                    //     // Z mass range
+                    //     if (PDG::Z::Mass - 20. < (tau_1 + tau_2).mass() and (tau_1 + tau_2).mass() < PDG::Z::Mass + 20.)
+                    //     {
+                    //         z_to_tau_tau_x_Z_mass[shift].fill(
+                    //             tau_1,
+                    //             tau_2,
+                    //             bjets.p4,
+                    //             jets.p4,
+                    //             met.p4,
+                    //             weight); // * Shifts::get_scale_factor(shift, n_muons, 0, 0, 0, 0, 0, muons, electrons,
+                    //                      // photons, bjets, jets, met));
+                    //     }
+                    // }
+
+                    // TauTau + Ele + X
+                    if (taus.size() >= 2 and electrons.size() >= 1)
                     {
                         auto tau_1 = taus.p4[0];
                         auto tau_2 = taus.p4[1];
+                        auto electron = electrons.p4[0];
 
                         // wide mass range
-                        z_to_tau_tau_x[shift].fill(tau_1,
+                        z_to_tau_tau_ele_x[shift].fill(tau_1,
                                                    tau_2,
+                                                   electron,
                                                    bjets.p4,
                                                    jets.p4,
                                                    met.p4,
@@ -1160,9 +1345,42 @@ auto main(int argc, char *argv[]) -> int
                         // Z mass range
                         if (PDG::Z::Mass - 20. < (tau_1 + tau_2).mass() and (tau_1 + tau_2).mass() < PDG::Z::Mass + 20.)
                         {
-                            z_to_tau_tau_x_Z_mass[shift].fill(
+                            z_to_tau_tau_ele_x_Z_mass[shift].fill(
                                 tau_1,
                                 tau_2,
+                                electron,
+                                bjets.p4,
+                                jets.p4,
+                                met.p4,
+                                weight); // * Shifts::get_scale_factor(shift, n_muons, 0, 0, 0, 0, 0, muons, electrons,
+                                         // photons, bjets, jets, met));
+                        }
+                    }
+
+                    // TauTau + Mu + X
+                    if (taus.size() >= 2 and muons.size() >= 1)
+                    {
+                        auto tau_1 = taus.p4[0];
+                        auto tau_2 = taus.p4[1];
+                        auto muon = muons.p4[0];
+
+                        // wide mass range
+                        z_to_tau_tau_mu_x[shift].fill(tau_1,
+                                                   tau_2,
+                                                   muon,
+                                                   bjets.p4,
+                                                   jets.p4,
+                                                   met.p4,
+                                                   weight); // * Shifts::get_scale_factor(shift, n_muons, 0, 0, 0, 0, 0,
+                                                            // muons, electrons, photons, bjets, jets, met));
+
+                        // Z mass range
+                        if (PDG::Z::Mass - 20. < (tau_1 + tau_2).mass() and (tau_1 + tau_2).mass() < PDG::Z::Mass + 20.)
+                        {
+                            z_to_tau_tau_mu_x_Z_mass[shift].fill(
+                                tau_1,
+                                tau_2,
+                                muon,
                                 bjets.p4,
                                 jets.p4,
                                 met.p4,
@@ -1179,7 +1397,7 @@ auto main(int argc, char *argv[]) -> int
                         auto tau_1 = taus.p4[0];
                         
                         // wide mass range
-                        w_to_tau_nu[shift].fill(tau_1,
+                        w_to_tau_nu_x[shift].fill(tau_1,
                                                 // bjets.p4,
                                                 // jets.p4,
                                                 met.p4,
@@ -1189,7 +1407,7 @@ auto main(int argc, char *argv[]) -> int
                         // Z mass range
                         if (PDG::Z::Mass - 20. < (tau_1).mass() and (tau_1).mass() < PDG::Z::Mass + 20.)
                         {
-                            w_to_tau_nu_Z_mass[shift].fill(
+                            w_to_tau_nu_x_Z_mass[shift].fill(
                                 tau_1,
                                 // bjets.p4,
                                 // jets.p4,
@@ -1269,10 +1487,14 @@ auto main(int argc, char *argv[]) -> int
         // gamma_plus_jet[shift].dump_outputs();
         // ttbar_to_1mu_2bjet_2jet_MET[shift].dump_outputs();
         // ttbar_to_1ele_2bjet_2jet_MET[shift].dump_outputs();
-        z_to_tau_tau_x[shift].dump_outputs();
-        z_to_tau_tau_x_Z_mass[shift].dump_outputs();
-        w_to_tau_nu[shift].dump_outputs();
-        w_to_tau_nu_Z_mass[shift].dump_outputs();
+        // z_to_tau_tau_x[shift].dump_outputs();
+        // z_to_tau_tau_x_Z_mass[shift].dump_outputs();
+        z_to_tau_tau_ele_x[shift].dump_outputs();
+        z_to_tau_tau_ele_x_Z_mass[shift].dump_outputs();
+        z_to_tau_tau_mu_x[shift].dump_outputs();
+        z_to_tau_tau_mu_x_Z_mass[shift].dump_outputs();
+        w_to_tau_nu_x[shift].dump_outputs();
+        w_to_tau_nu_x_Z_mass[shift].dump_outputs();
         // w_to_tau_nu_eff[shift].dump_outputs_eff();
         // one_tau_at_least[shift].dump_outputs_eff();
         // dijets.dump_outputs();
@@ -1289,10 +1511,14 @@ auto main(int argc, char *argv[]) -> int
             // gamma_plus_jet[shift].dump_outputs();
             // ttbar_to_1mu_2bjet_2jet_MET[shift].dump_outputs();
             // ttbar_to_1ele_2bjet_2jet_MET[shift].dump_outputs();
-            z_to_tau_tau_x[shift].dump_outputs();
-            z_to_tau_tau_x_Z_mass[shift].dump_outputs();
-            w_to_tau_nu[shift].dump_outputs();
-            w_to_tau_nu_Z_mass[shift].dump_outputs();
+            // z_to_tau_tau_x[shift].dump_outputs();
+            // z_to_tau_tau_x_Z_mass[shift].dump_outputs();
+            z_to_tau_tau_ele_x[shift].dump_outputs();
+            z_to_tau_tau_ele_x_Z_mass[shift].dump_outputs();
+            z_to_tau_tau_mu_x[shift].dump_outputs();
+            z_to_tau_tau_mu_x_Z_mass[shift].dump_outputs();
+            w_to_tau_nu_x[shift].dump_outputs();
+            w_to_tau_nu_x_Z_mass[shift].dump_outputs();
             // w_to_tau_nu_eff[shift].dump_outputs_eff();
             // one_tau_at_least[shift].dump_outputs_eff();
             // dijets.dump_outputs();

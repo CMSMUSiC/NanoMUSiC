@@ -1,4 +1,4 @@
-#include "../include/WToLepNu.hpp"
+#include "../include/WToLepNuX.hpp"
 #include "Configs.hpp"
 #include "Histograms.hpp"
 #include "Math/GenVector/VectorUtil.h"
@@ -10,7 +10,7 @@
 
 #include "NanoEventClass.hpp"
 
-WToLepNu::WToLepNu(const std::string &_analysis_name,
+WToLepNuX::WToLepNuX(const std::string &_analysis_name,
                    const std::string &_output_path,
                    const std::map<std::string, int> &_countMap,
                    bool _is_Z_mass_validation,
@@ -210,7 +210,7 @@ WToLepNu::WToLepNu(const std::string &_analysis_name,
     h_lepton_1_pt_phi.Sumw2();
 }
 
-auto WToLepNu::fill(const Math::PtEtaPhiMVector &lepton_1,
+auto WToLepNuX::fill(const Math::PtEtaPhiMVector &lepton_1,
                     const RVec<Math::PtEtaPhiMVector> &met,
                     float weight) -> void
 {
@@ -259,7 +259,7 @@ auto WToLepNu::fill(const Math::PtEtaPhiMVector &lepton_1,
     h_lepton_1_pt_phi.Fill(lepton_1.pt(), lepton_1.phi(), weight);
 }
 
-auto WToLepNu::dump_outputs() -> void
+auto WToLepNuX::dump_outputs() -> void
 {
 
     auto output_file = std::unique_ptr<TFile>(TFile::Open(output_path.c_str(), "RECREATE"));
