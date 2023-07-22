@@ -20,6 +20,7 @@ import matplotlib.gridspec as gridspec
 from typing import Any
 import numpy as np
 import mplhep as hep
+import os
 
 try:
     from scipy import stats
@@ -327,6 +328,14 @@ def countplotter(
     # fill classname set
     for sample in mcsamples:
         for classname in mcsamples_classes[sample]["Nominal"]["counts"].keys():
+            # selection by name
+            if cincludes != "":
+                if not (cincludes in classname):
+                    continue
+            if cexcludes != "":
+                if cexcludes in classname:
+                    continue
+            # add to analysis
             mcclassnames.add(classname)
     # fill mcclassdict
     for classname in mcclassnames:
@@ -362,6 +371,14 @@ def countplotter(
     # fill classname set
     for sample in datasamples:
         for classname in datasamples_classes[sample]["Nominal"]["counts"].keys():
+            # selection by name
+            if cincludes != "":
+                if not (cincludes in classname):
+                    continue
+            if cexcludes != "":
+                if cexcludes in classname:
+                    continue
+            # add to analysis
             dataclassnames.add(classname)
     # fill dataclassdict
     for classname in dataclassnames:
@@ -402,6 +419,15 @@ def countplotter(
         f"There are {len(dataclassdict)} event classes for data and {len(mcclassdict)} event classes for mc in total (no differentiation between inclusive/exclusive)."
     )
 
+    """# testing
+    listtoprint = []
+    for classname in mcclassdict:
+        if "0MET" in classname:
+            if (classsuffix == "+0" and (not "+XJ" in classname)) or (classsuffix == "+XJ" and "+XJ" in classname):
+                listtoprint += [classname]
+    print(listtoprint)
+    """
+
     # analyze only one category of {jet-/bjet-inclusive, exclusive} in the following steps
     # this is specified by the classsuffix
     # discard any classes that should not be analyzed
@@ -438,7 +464,6 @@ def countplotter(
         dataclasstypedict["+0"] = dataclassdict.copy()
         nclass["data"]["+0"] = len(dataclasstypedict["+0"])
         # fill mc classes with data > 0
-
         zerocounts = {}
         for sample in mcsamples:
             for syst in systematics:
@@ -460,7 +485,7 @@ def countplotter(
                         mcclasstypedict["+XJ"].update(
                             {classname: mcclassdict[classname].copy()}
                         )
-                    toremove.add(classname)
+                toremove.add(classname)
         for classname in toremove:
             mcclassdict.pop(classname)
         # remaining classes are exclusive
@@ -647,6 +672,18 @@ def countplotter(
                         mcclasstypedict_syst[classname].update({sample: {syst: temp}})
                 else:
                     mcclasstypedict_syst.update({classname: {sample: {syst: temp}}})
+
+    """ # TEST SPECIFIC SYSTEMATICS
+    for classname in classnames:
+        for sample in mcsamples:
+            tempshift = "xSecOrder_Up"
+            temperr = mcclasstypedict_syst[classname][sample][tempshift]
+            tempsum = mcclasstypedict[classsuffix][classname][sample]["Nominal"]
+            if tempsum > 0:
+                temprelerr = temperr / tempsum
+                if (temprelerr > 0.51 or temprelerr < 0.49) and temprelerr > 0:
+                    print(classname, sample, temprelerr)
+    """
 
     # stat errors are already read in as a systematic
 
@@ -862,10 +899,20 @@ def countplotter(
     if printerrors:
         for classname in classnames_selected:
             print(f"################## {classname} ##################")
+            print(f"data sum: {classes_data[classname]}")
+            print(f"mc sum: {total_mc[classname]}")
+            if total_mc[classname] > 0:
+                print(f"data/mc: {classes_data[classname]/total_mc[classname]}")
+            else:
+                print(f"data/mc: -")
             for syst in systematics:
                 if syst != "Nominal":
-                    print(f"{syst}: {mc_errors[classname][syst]/total_mc[classname]}")
-            print(f"Combined: {total_mc_errors[classname]/total_mc[classname]}")
+                    print(
+                        f"    {syst}: {mc_errors[classname][syst]/total_mc[classname]}"
+                    )
+            print(
+                f"combined uncertainty: {total_mc_errors[classname]/total_mc[classname]}"
+            )
         print(f"###################################################")
 
     # ---------------------- start plotting the class counts ----------------------
@@ -1065,6 +1112,9 @@ def countplotter(
         minor=True,
     )
 
+    if len(mcsum) == 0: # avoid bugs
+        return
+
     # set y ticks
     ymax = 3 * np.amax(
         [
@@ -1186,7 +1236,7 @@ def countplotter(
                 length_includes_head=True,
             )
         if (
-            data_overmc[i] - 0.1 * dataovermc_height < ylim2[0]
+            data_overmc[i] - 0.1 * dataovermc_height < ylim2[0] and ylim2[0] > 0
         ):  # if underflow of data, add big up arrow
             if data_overmc[i] < ylim2[0]:
                 ax[1].arrow(
@@ -1231,7 +1281,7 @@ def countplotter(
     printdebug("Exporting plot...")
     plots = barplot[::-1] + [mcerrorplot] + [dataplot]
     labels = barlabel[::-1] + ["MC uncertainty"] + ["Data"]
-    ax[0].legend(
+    legend = ax[0].legend(
         plots,
         labels,
         loc="upper right",
@@ -1243,7 +1293,10 @@ def countplotter(
         edgecolor="white",
         fancybox=False,
         ncol=2,
+        title=f"Normalized with $\\alpha_{{QCD}} = {np.array(float(norm_fac)).round(decimals=2)}\\pm{np.array(float(err_norm_fac)).round(decimals=2)}$",
     )
+    plt.setp(legend.get_title(),fontsize='14') # legend title size
+    plt.setp(legend.get_texts(),fontsize='14') # legend text size
 
     # add CMS text
     plt.figtext(0.11, 0.958, "CMS", fontsize=19, ha="left", fontweight="bold")
@@ -1272,7 +1325,7 @@ def countplotter(
         plottitle = histproperties["title"]
     ax[0].set_title(plottitle, fontsize=19)
     """
-
+    """
     # add normalized text
     if normalizethis != "":
         plt.figtext(
@@ -1282,6 +1335,7 @@ def countplotter(
             fontsize=12,
             ha="left",
         )
+    """
 
     # set plot axis labels
     xlabel = ""
@@ -1451,6 +1505,13 @@ def main():
     histograms.pop(
         "aggregation_dict"
     )  # histograms is a dict {histname: {properties: values}}
+
+    # check output path
+    outputpath = validation_path + "/" + str(args.year) + "/plots/"
+    if savepath != "":
+        outputpath = validation_path + "/" + str(args.year) + "/" + savepath + "/plots/"
+    if not (os.path.isdir(f"{outputpath}")):
+        os.system(f"mkdir -p {outputpath}")
 
     # run plotting task
     print(f"Start {len(classsuffixes)} class event count validation jobs.")

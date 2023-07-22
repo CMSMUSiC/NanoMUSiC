@@ -154,8 +154,8 @@ def normfacplotter(
     classes_names = [ref_class] + compare_classes
 
     # specify hist to take normalization from
-    distribution = "$S_{T}$"
-    histname = "h_sum_pt"
+    distribution = "$m_{inv}$"
+    histname = "h_m_inv"
 
     # read in normalization factors
     print("Read in the normalization factors.")
@@ -181,7 +181,7 @@ def normfacplotter(
     # calculate error: propagated error on ref_class factor
     # + uncertainty from comparing with ref_classes (use maximum deviation to other norm factor as error)
     err_norm_fac_merged = np.sqrt(
-        (err_norm_fac[ref_class]) ** 2 + (np.amax(difference)) ** 2
+        (err_norm_fac[ref_class]) ** 2 #+ (np.amax(difference)) ** 2
     )
 
     # ------ save the merged normalization ------
@@ -215,7 +215,7 @@ def normfacplotter(
         x,
         np.array([norm_fac[k] for k in classes_names]),
         width=1,
-        color="steelblue",
+        color="lightblue",  # "steelblue",
         label="Normalization factors",
     )
     # plot errors
@@ -225,7 +225,7 @@ def normfacplotter(
         width=1,
         bottom=np.array([norm_fac[k] - err_norm_fac[k] for k in classes_names]),
         fill=False,
-        hatch="xxxxx",
+        hatch="xx",
         linewidth=0,
         edgecolor="tab:gray",
         label="Propagated uncertainty\nfor each factor",
@@ -331,7 +331,7 @@ def normfacplotter(
     )
     ax.set_xticklabels(
         [display_classname(classname) + " " for classname in classes_names],
-        fontsize="18",
+        fontsize="19",
         rotation="vertical",
         color="black",
         ha="center",

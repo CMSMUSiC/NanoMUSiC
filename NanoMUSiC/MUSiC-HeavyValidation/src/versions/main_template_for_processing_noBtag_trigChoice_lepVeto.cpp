@@ -170,10 +170,10 @@ auto main(int argc, char *argv[]) -> int
         exit(-1);
     }
     // read in constants from argument (convert to float)
-    const float x_section = std::stof(x_section_str);
-    const float filter_eff = std::stof(filter_eff_str);
-    const float k_factor = std::stof(k_factor_str);
-    const float luminosity = std::stof(luminosity_str);
+    const double x_section = std::stod(x_section_str);
+    const double filter_eff = std::stod(filter_eff_str);
+    const double k_factor = std::stod(k_factor_str);
+    const double luminosity = std::stod(luminosity_str);
 
     if (debugprint)
     {
@@ -331,9 +331,9 @@ auto main(int argc, char *argv[]) -> int
     }
 
     // classes event counts map: {classname: counts}
-    std::map<std::string, float> classes;
+    std::map<std::string, double> classes;
     // classes event counts systematic errors map: {classname: squared syst error}
-    std::map<std::string, float> classes_stat;
+    std::map<std::string, double> classes_stat;
 
     // quality control to order argument
     const std::set<std::string> allowed_orders{"LO", "NLO", "NNLO", "N3LO"};
@@ -342,7 +342,7 @@ auto main(int argc, char *argv[]) -> int
         throw std::runtime_error(fmt::format("Invalid order given: {}", process_order));
     }
     // definition of cross section uncertainties
-    std::map<std::string, float> x_sec_uncertainty{
+    std::map<std::string, double> x_sec_uncertainty{
         {"LO", 0.5},
         {"NLO", 0.0},
         {"NNLO", 0.0},
@@ -500,13 +500,13 @@ auto main(int argc, char *argv[]) -> int
             std::cout << std::endl;
         }
 
-        ///* EVENT BREAK IF NECESSARY
+        /* EVENT BREAK IF NECESSARY
         if (event > 10000)
         {
             //throw std::runtime_error("finished after given event break");
             break;
         }
-        //*/
+        */
         // std::cout << "****************\nEvent No. " << event << std::endl;
 
         // JET TRIGGER
@@ -710,7 +710,7 @@ auto main(int argc, char *argv[]) -> int
         // CALCULATE EVENT WEIGHT
         // Here goes the real analysis...
         // get effective event weight
-        float weight = 1.;
+        double weight = 1.;
 
         if (not(is_data))
         {
@@ -735,17 +735,27 @@ auto main(int argc, char *argv[]) -> int
                                                                  unwrap(Generator_id2));
             // unwrap(_LHEWeight_originalXWGTUP, 1.f),);
 
+            // xSecOrder uncertainty for LO
+            double scalingfactor_xsec = 1.0;
+            if (shift == "xSecOrder_Up")
+            {
+                scalingfactor_xsec = (1.0 + x_sec_uncertainty[process_order]);
+            }
+            else if (shift == "xSecOrder_Down")
+            {
+                scalingfactor_xsec = (1.0 - x_sec_uncertainty[process_order]);
+            }
+
             weight = unwrap(gen_weight, 1.) //
                      * pu_weight            //
                      * prefiring_weight     //
-                     * generator_filter     //
-                     / no_cuts              //
-                     / generator_filter     //
                      * x_section            //
+                     * scalingfactor_xsec   //
                      * filter_eff           //
                      * k_factor             //
                      * scaled_luminosity    //
-                     * pdf_as_weight;
+                     * pdf_as_weight        //
+                     / no_cuts;
 
             /*/
             // bug search: check for nan
@@ -754,16 +764,6 @@ auto main(int argc, char *argv[]) -> int
                 throw std::runtime_error(fmt::format("not normal weight: {}, {}", weight, pdf_as_weight));
             }
             */
-
-            // xSecOrder uncertainty for LO
-            if (shift == "xSecOrder_Up")
-            {
-                weight = weight * (1.0 + x_sec_uncertainty[process_order]);
-            }
-            else if (shift == "xSecOrder_Down")
-            {
-                weight = weight * (1.0 - x_sec_uncertainty[process_order]);
-            }
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////

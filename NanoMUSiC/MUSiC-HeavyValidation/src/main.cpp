@@ -170,10 +170,10 @@ auto main(int argc, char *argv[]) -> int
         exit(-1);
     }
     // read in constants from argument (convert to float)
-    const float x_section = std::stof(x_section_str);
-    const float filter_eff = std::stof(filter_eff_str);
-    const float k_factor = std::stof(k_factor_str);
-    const float luminosity = std::stof(luminosity_str);
+    const double x_section = std::stod(x_section_str);
+    const double filter_eff = std::stod(filter_eff_str);
+    const double k_factor = std::stod(k_factor_str);
+    const double luminosity = std::stod(luminosity_str);
 
     if (debugprint)
     {
@@ -331,9 +331,9 @@ auto main(int argc, char *argv[]) -> int
     }
 
     // classes event counts map: {classname: counts}
-    std::map<std::string, float> classes;
+    std::map<std::string, double> classes;
     // classes event counts systematic errors map: {classname: squared syst error}
-    std::map<std::string, float> classes_stat;
+    std::map<std::string, double> classes_stat;
 
     // quality control to order argument
     const std::set<std::string> allowed_orders{"LO", "NLO", "NNLO", "N3LO"};
@@ -342,7 +342,7 @@ auto main(int argc, char *argv[]) -> int
         throw std::runtime_error(fmt::format("Invalid order given: {}", process_order));
     }
     // definition of cross section uncertainties
-    std::map<std::string, float> x_sec_uncertainty{
+    std::map<std::string, double> x_sec_uncertainty{
         {"LO", 0.5},
         {"NLO", 0.0},
         {"NNLO", 0.0},
@@ -658,7 +658,8 @@ auto main(int argc, char *argv[]) -> int
         // if (not(nelectron >= 1 or nmuon >= 1)) // at least one lepton
         // if (not(nelectron == 0 and nmuon == 0 and (not is_met) and nphoton == 0)) // veto all leptons, photons and
         // met
-        if (not(nelectron == 0 and nmuon == 0 and nphoton == 0)) // veto all leptons, photons
+        //if (not(nelectron == 0 and nmuon == 0 and nphoton == 0)) // veto all leptons, photons
+        if(not((nelectron >= 1 or nmuon >= 1) and nphoton == 0))
         {
             continue;                                            // veto is condition is not satisfied
         }
@@ -710,7 +711,7 @@ auto main(int argc, char *argv[]) -> int
         // CALCULATE EVENT WEIGHT
         // Here goes the real analysis...
         // get effective event weight
-        float weight = 1.;
+        double weight = 1.;
 
         if (not(is_data))
         {
@@ -735,17 +736,27 @@ auto main(int argc, char *argv[]) -> int
                                                                  unwrap(Generator_id2));
             // unwrap(_LHEWeight_originalXWGTUP, 1.f),);
 
+            // xSecOrder uncertainty for LO
+            double scalingfactor_xsec = 1.0;
+            if (shift == "xSecOrder_Up")
+            {
+                scalingfactor_xsec = (1.0 + x_sec_uncertainty[process_order]);
+            }
+            else if (shift == "xSecOrder_Down")
+            {
+                scalingfactor_xsec = (1.0 - x_sec_uncertainty[process_order]);
+            }
+
             weight = unwrap(gen_weight, 1.) //
                      * pu_weight            //
                      * prefiring_weight     //
-                     * generator_filter     //
-                     / no_cuts              //
-                     / generator_filter     //
                      * x_section            //
+                     * scalingfactor_xsec   //
                      * filter_eff           //
                      * k_factor             //
                      * scaled_luminosity    //
-                     * pdf_as_weight;
+                     * pdf_as_weight        //
+                     / no_cuts;
 
             /*/
             // bug search: check for nan
@@ -754,16 +765,6 @@ auto main(int argc, char *argv[]) -> int
                 throw std::runtime_error(fmt::format("not normal weight: {}, {}", weight, pdf_as_weight));
             }
             */
-
-            // xSecOrder uncertainty for LO
-            if (shift == "xSecOrder_Up")
-            {
-                weight = weight * (1.0 + x_sec_uncertainty[process_order]);
-            }
-            else if (shift == "xSecOrder_Down")
-            {
-                weight = weight * (1.0 - x_sec_uncertainty[process_order]);
-            }
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -776,6 +777,101 @@ auto main(int argc, char *argv[]) -> int
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////    Specific processing name:   //////      ???????????????           /////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        // NAME: MUSIC WIDE JETS
+
+        // configuration of parameters
+        const float seed_threshold = 250.0;        // select seeds // determined best value: 250.0
+        const float delta_r_threshold = 1.1;       // merge non seeds // fixed
+        const float delta_eta_max_threshold = 1.4; // delta eta max cut // determined best value: 1.4
+
+        // SELECT SEED JETS
+        auto seed_jets = RVec<Math::PtEtaPhiMVector>{};   // jet seeds
+        auto noseed_jets = RVec<Math::PtEtaPhiMVector>{}; // jets that are no seeds
+        for (size_t i = 0; i < jets_4vec.size(); i++)
+        {
+            if (jets_4vec.at(i).pt() > seed_threshold) // select as seed
+            {
+                seed_jets.push_back(jets_4vec.at(i));
+            }
+            else // don't select as seed
+            {
+                noseed_jets.push_back(jets_4vec.at(i));
+            }
+        }
+
+        // JET MERGING TO WIDE JETS
+        auto widejets = seed_jets;                           // wide jets
+        if (noseed_jets.size() > 0 and seed_jets.size() > 0) // only try to merge if seed and noseed jets were found
+        {
+            for (size_t i = 0; i < noseed_jets.size(); i++)  // try to merge for each noseed jet
+            {
+                auto cur_jet = noseed_jets.at(i);
+                auto all_delta_r = RVec<float>{};
+                for (size_t j = 0; j < seed_jets.size(); j++) // try to merge to every seed jet
+                {
+                    // calculate distances to wide jets
+                    all_delta_r.push_back(std::abs(Math::VectorUtil::DeltaR(seed_jets.at(j), cur_jet)));
+                }
+                // sort after shortest distance
+                auto sortidx_delta_r = VecOps::Argsort(all_delta_r, // sort, smallest element first
+                                                       [](auto p1, auto p2) -> bool
+                                                       {
+                                                           return p1 < p2;
+                                                       });
+                // std::cout << "WJ MERGING: DeltaR=" << all_delta_r << ", DeltaRMin=" <<
+                // all_delta_r.at(sortidx_delta_r.at(0)) << ", Merge=" << (all_delta_r.at(sortidx_delta_r.at(0)) < 1.1)
+                // << ", MergeIdx=" << sortidx_delta_r.at(0) << std::endl;
+                if (all_delta_r.at(sortidx_delta_r.at(0)) < delta_r_threshold) // check if smallest deltar is < 1.1
+                {
+                    widejets.at(sortidx_delta_r.at(0)) += cur_jet; // if so, add the current jet to the closest widejet
+                }
+            }
+        }
+
+        // DO DELTA ETA MAX CUT
+        if (widejets.size() > 1) // only try delta eta max cut if at least two wide jets exist
+        {
+            auto all_widejet_delta_eta = RVec<float>{};
+            for (size_t i = 0; i < widejets.size(); i++)     // try to merge to every seed jet
+            {
+                for (size_t j = 0; j < widejets.size(); j++) // try to merge to every seed jet
+                {
+                    // calculate delta eta between all wide jets
+                    if (i < j) // exclude double calculations and exclude two same jets
+                    {
+                        all_widejet_delta_eta.push_back(std::abs(widejets.at(i).eta() - widejets.at(j).eta()));
+                    }
+                }
+            }
+            auto sortidx_delta_eta = VecOps::Argsort(all_widejet_delta_eta, // sort, largest element first
+                                                     [](auto p1, auto p2) -> bool
+                                                     {
+                                                         return p1 > p2;
+                                                     });
+            // std::cout << "WJ DEL ETA: DeltaEta=" << all_widejet_delta_eta << ", DeltaEtaMax=" <<
+            // all_widejet_delta_eta.at(sortidx_delta_eta.at(0)) << ", Accept=" <<
+            // (all_widejet_delta_eta.at(sortidx_delta_eta.at(0)) < 1.8) << std::endl;
+            if (not(all_widejet_delta_eta.at(sortidx_delta_eta.at(0)) <
+                    delta_eta_max_threshold)) // check if largest delta eta is below threshold
+            {
+                continue;                     // if not, reject event
+            }
+        }
+
+        // REORDER WIDEJETS AFTER PT
+        const auto wjets_reordering_mask = VecOps::Argsort(widejets,
+                                                           [](auto wjet_1, auto wjet_2) -> bool
+                                                           {
+                                                               return wjet_1.pt() > wjet_2.pt();
+                                                           });
+        auto widejets_sorted = VecOps::Take(widejets, wjets_reordering_mask);
+
+        // refer to wide jets as jets (formal change for plotting and classification)
+        njet = widejets_sorted.size();
+        jets_4vec = widejets_sorted;
+
+        // effectively all other jets that are not merged are rejected
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -810,7 +906,7 @@ auto main(int argc, char *argv[]) -> int
                         {
                             c_name = fmt::format("{}J+{}BJ+1MET", c_njet, c_nbjet);
                         }
-                        eventclass.insert(c_name); // log class name
+                        eventclass.insert(c_name);                     // log class name
                     }
                     if (c_njet <= (int)njet and c_nbjet <= (int)nbjet) // jet- and bjet-inclusive class (+XJ)
                     {
@@ -842,14 +938,15 @@ auto main(int argc, char *argv[]) -> int
                 }
             }
             if (countclasses) // fill global weight sum for each class
+            {
+                if (classes.find(c_name) == classes.end() and
+                    classes_stat.find(c_name) == classes_stat.end()) // it not in map, create new entry with counts 0
                 {
-                    if (classes.find(c_name) == classes.end() and classes_stat.find(c_name) == classes_stat.end()) // it not in map, create new entry with counts 0
-                    {
-                        classes.insert({c_name, 0.f});
-                        classes_stat.insert({c_name, 0.f});
-                    }
-                    classes[c_name] += weight;               // add weight to class count
-                    classes_stat[c_name] += weight * weight; // add weight^2 to syst_err^2
+                    classes.insert({c_name, 0.f});
+                    classes_stat.insert({c_name, 0.f});
+                }
+                classes[c_name] += weight;               // add weight to class count
+                classes_stat[c_name] += weight * weight; // add weight^2 to syst_err^2
             }
         }
         // std::cout << "Finished event classification." << std::endl;

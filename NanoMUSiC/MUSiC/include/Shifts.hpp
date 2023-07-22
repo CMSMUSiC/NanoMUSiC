@@ -127,15 +127,17 @@ class Shifts
         return L1PreFiringWeight_Nom;
     }
 
-    static auto scale_luminosity(const float luminosity, const std::string &shift) -> float
+    static auto scale_luminosity(const double luminosity, const std::string &shift) -> double
     {
         if (shift == "Luminosity_Up")
         {
-            return luminosity * (1 + 2.5 / 100.);
+            double scalingfactor = (1 + 2.5 / 100.);
+            return luminosity * scalingfactor;
         }
         if (shift == "Luminosity_Down")
         {
-            return luminosity * (1 - 2.5 / 100.);
+            double scalingfactor = (1 - 2.5 / 100.);
+            return luminosity * scalingfactor;
         }
 
         return luminosity;

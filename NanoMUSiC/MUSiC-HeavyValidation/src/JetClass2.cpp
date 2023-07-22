@@ -221,7 +221,7 @@ auto JetClass2::fill(RVec<Math::PtEtaPhiMVector> jets,
 // save histograms
 auto JetClass2::save_histo(TH1F &histo) -> void
 {
-    histo.Scale(1, "width"); // FIXES STEPS IN DISTRIBUTIONS // CHANGED FROM 10 TO 1
+    histo.Scale(10., "width"); // FIXES STEPS IN DISTRIBUTIONS // CHANGED FROM 10 TO 1
     histo.SetDirectory(output_file.get());
     histo.Write();
 }

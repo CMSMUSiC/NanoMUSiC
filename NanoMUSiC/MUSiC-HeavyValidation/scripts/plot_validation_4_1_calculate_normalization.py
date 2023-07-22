@@ -129,6 +129,16 @@ def parse_args():
         "--injectsignal",
         help="Optional: Inject signal from separate task config (TOML) file given in the argument.",
     )
+    parser.add_argument(
+        "-addtt",
+        "--addtitletext",
+        help="Optional: Add something to the title text. Underscores '_' are converted to spaces ' '.",
+    )
+    parser.add_argument(
+        "-ylim2",
+        "--ylimit2",
+        help="Optional: Override ylim2 (y limits of data/mc ratio plot) in plot config. Pass in the format 'min,max'.",
+    )
     args = parser.parse_args()
     if (args.fileprefix and args.jetclass) or (
         not args.fileprefix and not args.jetclass
@@ -282,6 +292,7 @@ def display_classname(classname):
 def create_arguments(
     xlimit,
     ylimit,
+    ylimit2,
     jetclass,
     title,
     savepath,
@@ -303,6 +314,7 @@ def create_arguments(
         {
             "xlimit": xlimit,
             "ylimit": ylimit,
+            "ylimit2": ylimit2,
             "jetclass": jetclass,
             "title": title,
             "title": title,
@@ -332,6 +344,7 @@ def create_arguments(
 def stacker(
     xlimit,
     ylimit,
+    ylimit2,
     jetclass,
     title,
     savepath,
@@ -782,7 +795,7 @@ def stacker(
 
     # ------ find normalization interval ------
     # uncertianty threshold for region finder
-    uncert_threshold = 0.2
+    uncert_threshold = 0.15
     len_check_interval = 3
     # left edge, start at first data bin and look forward
     norm_left = first_data
@@ -791,10 +804,10 @@ def stacker(
             norm_left = first_data
             break
         # relative total error requirement
-        i = norm_left + 1
+        i = norm_left #+ 1
         counter_checked = 0
         counter_true_condition = 0
-        while counter_checked < len_check_interval:  # check next five bins with mc
+        while counter_checked < len_check_interval:  # check next three bins with mc
             if i > last_data:
                 break
             if mcsum[i] > 0:
@@ -819,7 +832,7 @@ def stacker(
         i = norm_right
         counter_checked = 0
         counter_true_condition = 0
-        while counter_checked < len_check_interval:  # check next five bins with mc
+        while counter_checked < len_check_interval:  # check next 3 bins with mc
             if i < first_data:
                 break
             if mcsum[i] > 0:
@@ -832,7 +845,14 @@ def stacker(
         if (
             counter_checked > counter_true_condition
         ):  # check whether all checked bins fulfill requirement, if not break
-            norm_right -= 1
+            if norm_right < last_data:  # skip outlier if next datapoint again satisfies criteria
+                if total_mc_errors[norm_right + 1] / mcsum[norm_right + 1] < uncert_threshold:
+                    norm_right += 1
+                    continue
+                else:
+                    norm_right -= 1
+            else:
+                norm_right -= 1
             if norm_right < norm_left:
                 norm_right = norm_left
             break
@@ -1005,6 +1025,7 @@ def plotter(args):
     (
         xlimit,
         ylimit,
+        ylimit2,
         jetclass,
         title,
         savepath,
@@ -1042,6 +1063,7 @@ def plotter(args):
     ) = stacker(
         xlimit,
         ylimit,
+        ylimit2,
         jetclass,
         title,
         savepath,
@@ -1109,7 +1131,7 @@ def plotter(args):
         width=barwidth,
         bottom=(mcsum - error_mc),
         fill=False,
-        hatch="xxxxx",
+        hatch="xxx",
         linewidth=0,
         edgecolor="tab:gray",
         label="MC uncertainty",
@@ -1285,7 +1307,7 @@ def plotter(args):
             width=barwidth_overmc,
             bottom=1 - mcerr_overmc,
             fill=False,
-            hatch="xxxxx",
+            hatch="xxx",
             linewidth=0,
             edgecolor="tab:gray",
         )
@@ -1298,7 +1320,7 @@ def plotter(args):
                 linewidth=2,
                 color="red",
                 linestyle=(0, (5, 3)),
-                label=f"Normalization interval:\n$[{np.array(edges[norm_idx[0]]).round(decimals=2)},\\;{np.array(edges[norm_idx[-1]+1]).round(decimals=2)}]$",
+                label=f"Normalization interval:\n$[{np.array(edges[norm_idx[0]]).round(decimals=2)},\\;{np.array(edges[norm_idx[-1]+1]).round(decimals=2)}]$ GeV",
             )
             ax[1].axvline(
                 edges[norm_idx[0]],
@@ -1459,7 +1481,113 @@ def plotter(args):
                 ]
             ),
         )
+        # check for manual override over the ylimit of the data/mc plot (plot config option "ratiolim")
+        ylim2_string = ["", ""]
+        try:
+            if histproperties["ratiolim"] != "":
+                ylim2_string = histproperties["ratiolim"].split(",")
+            if ylimit2:  # for ylim2 argument override the limit in the file
+                ylim2_string = ylimit2.split(",")
+            if ylim2_string[0] != "" and ylim2_string[1] != "":
+                ylim2 = (float(ylim2_string[0]), float(ylim2_string[1]))
+            elif ylim2_string[0] != "" and ylim2_string[1] == "":
+                ylim2 = (float(ylim2_string[0]), ylim2[1])
+            elif ylim2_string[0] == "" and ylim2_string[1] != "":
+                ylim2 = (ylim2[0], float(ylim2_string[1]))
+        except:
+            raise RuntimeError("Invalid y limit for data/mc ratio plot given.")
+            exit(0)
+        # apply determined ylimit to data/mc plot
         ax[1].set_ylim(ylim2)
+
+        # optional: add arrows in data/mc plot
+        # watch out: if ylim2 has been set manually, it is possible that the data points of the data/mc plot lie out of the selected plotting range
+        # arrows should be plotted in the cases where the data points lie out of range
+        dataovermc_height = ylim2[1] - ylim2[0]
+        maxarrowwidth = (xlim[1] - xlim[0]) / 110
+        for i in range(len(data_overmc)):
+            if (
+                data_overmc[i] + 0.1 * dataovermc_height > ylim2[1]
+            ):  # if overflow of data, add big up arrow
+                if data_overmc[i] + 0.03 * dataovermc_height > ylim2[1]:
+                    ax[1].arrow(
+                        bins_overmc[i],
+                        ylim2[1] - 0.2 * dataovermc_height,
+                        0,
+                        0.2 * dataovermc_height,
+                        color="black",
+                        width=min([barwidth_overmc[i] * 1.5, maxarrowwidth]) * 0.3,
+                        head_width=min([barwidth_overmc[i] * 1.5, maxarrowwidth]),
+                        head_length=0.1 * dataovermc_height,
+                        length_includes_head=True,
+                    )
+                else:
+                    ax[1].arrow(
+                        bins_overmc[i],
+                        ylim2[1] - 0.1 * dataovermc_height,
+                        0,
+                        0.1 * dataovermc_height,
+                        color="black",
+                        width=0,
+                        head_width=min([barwidth_overmc[i] * 1.5, maxarrowwidth]),
+                        head_length=abs(ylim2[1] - data_overmc[i]),
+                        length_includes_head=True,
+                    )
+            elif (
+                data_overmc[i] + dataerr_overmc[i] > ylim2[1]
+            ):  # if overflow of data errorbar, add up arrow
+                ax[1].arrow(
+                    bins_overmc[i],
+                    ylim2[1] - 0.1 * dataovermc_height,
+                    0,
+                    0.1 * dataovermc_height,
+                    color="black",
+                    width=0,
+                    head_width=min([barwidth_overmc[i] * 1.5, maxarrowwidth]),
+                    head_length=0.1 * dataovermc_height,
+                    length_includes_head=True,
+                )
+            if (
+                data_overmc[i] - 0.1 * dataovermc_height < ylim2[0] and ylim2[0] > 0
+            ):  # if underflow of data, add big up arrow
+                if data_overmc[i] < ylim2[0]:
+                    ax[1].arrow(
+                        bins_overmc[i],
+                        ylim2[0] + 0.2 * dataovermc_height,
+                        0,
+                        -0.2 * dataovermc_height,
+                        color="black",
+                        width=min([barwidth_overmc[i] * 1.5, maxarrowwidth]) * 0.3,
+                        head_width=min([barwidth_overmc[i] * 1.5, maxarrowwidth]),
+                        head_length=0.1 * dataovermc_height,
+                        length_includes_head=True,
+                    )
+                else:
+                    ax[1].arrow(
+                        bins_overmc[i],
+                        ylim2[0] + 0.1 * dataovermc_height,
+                        0,
+                        -0.1 * dataovermc_height,
+                        color="black",
+                        width=0,
+                        head_width=min([barwidth_overmc[i] * 1.5, maxarrowwidth]),
+                        head_length=abs(ylim2[0] - data_overmc[i]),
+                        length_includes_head=True,
+                    )
+            elif (
+                data_overmc[i] - dataerr_overmc[i] < ylim2[0] and ylim2[0] > 0
+            ):  # if underflow of data errorbar, add up arrow (if above 0 since below 0 does not make sense)
+                ax[1].arrow(
+                    bins_overmc[i],
+                    ylim2[0] + 0.1 * dataovermc_height,
+                    0,
+                    -0.1 * dataovermc_height,
+                    color="black",
+                    width=0.8,
+                    head_width=min([barwidth_overmc[i] * 1.5, maxarrowwidth]),
+                    head_length=0.1 * dataovermc_height,
+                    length_includes_head=True,
+                )
 
         """
         # add grid into plot
@@ -1468,7 +1596,7 @@ def plotter(args):
 
         # plot cosmetics and legend
         printdebug("Exporting plot...")
-        ax[0].legend(
+        legend = ax[0].legend(
             loc="upper right",
             prop={"size": 14},
             bbox_to_anchor=(0.99, 0.98),
@@ -1477,7 +1605,10 @@ def plotter(args):
             framealpha=0.5,
             edgecolor="white",
             fancybox=False,
+            title=f"Obtained normalization\n$\\alpha_{{QCD}} = {np.array(float(print_norm_fac)).round(decimals=2)}\\pm{np.array(float(print_norm_fac_err)).round(decimals=2)}$",
         )
+        plt.setp(legend.get_title(),fontsize='14') # legend title size
+        plt.setp(legend.get_texts(),fontsize='14') # legend text size
 
         # ax[0].legend(loc="center", prop={"size": 12}, bbox_to_anchor=(0.9, 0.84), frameon=True)
 
@@ -1490,18 +1621,23 @@ def plotter(args):
         # add text in plot with class name
         if classname != "":
             plt.figtext(
-                0.3, 0.958, display_classname(classname), fontsize=19, ha="left"
+                0.3,
+                0.958,
+                display_classname(classname) + addtitletext,
+                fontsize=19,
+                ha="left",
             )
-
+        """
         if normalizewiththis:
             plt.figtext(
                 0.3,
                 0.983,
-                f"Obtained QCD normalization: $\\alpha_{{QCD}} = {np.array(float(print_norm_fac)).round(decimals=2)}\\pm{np.array(float(print_norm_fac_err)).round(decimals=2)}$",
+                f"Obtained QCD normalization: $\\alpha_{{QCD}} = {np.array(float(print_norm_fac)).round(decimals=2)}\\pm {np.array(float(print_norm_fac_err)).round(decimals=2)}$",
                 fontsize=12,
                 ha="left",
             )
-
+        """
+            
         # add text with lumi info
         int_lumi = 59.8  # hardcoded for 2018 for now
         com_energy = 13
@@ -1580,6 +1716,13 @@ def main():
     nosyst = False
     if args.nosyst:
         nosyst = True
+
+    # addtitletext
+    global addtitletext
+    addtitletext = ""
+    if args.addtitletext:
+        addtitletext = args.addtitletext
+    addtitletext = addtitletext.replace("_", " ")
 
     # import task config file that includes references to all files that should be validated
     print(f"Importing task config...")
@@ -1688,6 +1831,9 @@ def main():
     ylimit = ""
     if args.ylimit:
         ylimit = args.ylimit
+    ylimit2 = ""
+    if args.ylimit2:
+        ylimit = args.ylimit2
     title = ""
     if args.title:
         title = args.title
@@ -1717,6 +1863,7 @@ def main():
             plotting_arguments = create_arguments(
                 xlimit,
                 ylimit,
+                ylimit2,
                 jetclass,
                 title,
                 savepath,
@@ -1739,6 +1886,7 @@ def main():
                 plotting_arguments = create_arguments(
                     xlimit,
                     ylimit,
+                    ylimit2,
                     jetclass,
                     title,
                     savepath,

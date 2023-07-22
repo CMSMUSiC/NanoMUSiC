@@ -150,6 +150,11 @@ def parse_args():
         help="Optional: Include the 50% QCD uncertainty.",
         action="store_true",
     )
+    parser.add_argument(
+        "-addtt",
+        "--addtitletext",
+        help="Optional: Add something to the title text. Underscores '_' are converted to spaces ' '.",
+    )
     args = parser.parse_args()
     if (args.fileprefix and args.jetclass) or (
         not args.fileprefix and not args.jetclass
@@ -1307,7 +1312,7 @@ def plotter(args):
                     length_includes_head=True,
                 )
             if (
-                data_overmc[i] - 0.1 * dataovermc_height < ylim2[0]
+                data_overmc[i] - 0.1 * dataovermc_height < ylim2[0] and ylim2[0] > 0
             ):  # if underflow of data, add big up arrow
                 if data_overmc[i] < ylim2[0]:
                     ax[1].arrow(
@@ -1352,7 +1357,7 @@ def plotter(args):
 
         # plot cosmetics and legend
         printdebug("Exporting plot...")
-        ax[0].legend(
+        legend = ax[0].legend(
             loc="upper right",
             prop={"size": 14},
             bbox_to_anchor=(0.99, 0.98),
@@ -1361,7 +1366,10 @@ def plotter(args):
             framealpha=0.5,
             edgecolor="white",
             fancybox=False,
+            title=f"Normalized with\n$\\alpha_{{QCD}} = {np.array(float(print_norm_fac)).round(decimals=2)}\\pm{np.array(float(print_norm_fac_err)).round(decimals=2)}$",
         )
+        plt.setp(legend.get_title(),fontsize='14') # legend title size
+        plt.setp(legend.get_texts(),fontsize='14') # legend text size
 
         # ax[0].legend(loc="center", prop={"size": 12}, bbox_to_anchor=(0.9, 0.84), frameon=True)
 
@@ -1376,7 +1384,7 @@ def plotter(args):
             plt.figtext(0.3, 0.958, title, fontsize=19, ha="left")
         elif classname != "":
             plt.figtext(
-                0.3, 0.958, display_classname(classname), fontsize=19, ha="left"
+                0.3, 0.958, display_classname(classname) + addtitletext, fontsize=19, ha="left"
             )
 
         # add text with lumi info
@@ -1397,7 +1405,7 @@ def plotter(args):
             plottitle = histproperties["title"]
         ax[0].set_title(plottitle, fontsize=19)
         """
-
+        """
         # add normalized text
         if normalizethis != "":
             plt.figtext(
@@ -1407,6 +1415,7 @@ def plotter(args):
                 fontsize=12,
                 ha="left",
             )
+        """
 
         # set plot axis labels
         xlabel = ""
@@ -1482,6 +1491,13 @@ def main():
     addqcduncertainty = False
     if args.addqcduncertainty:
         addqcduncertainty = True
+
+    # addtitletext
+    global addtitletext
+    addtitletext = ""
+    if args.addtitletext:
+        addtitletext = args.addtitletext
+    addtitletext = addtitletext.replace("_", " ")
 
     # import task config file that includes references to all files that should be validated
     print(f"Importing task config...")
