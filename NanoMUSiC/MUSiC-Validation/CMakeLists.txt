@@ -50,7 +50,6 @@ add_executable(
     src/TTBarTo1Lep2Bjet2JetMET.cpp //
     src/WToLepNuX.cpp //
     src/WToLepNu_eff.cpp //
-    src/Tau_efficiency.cpp //
     src/ZToTauTauLepX.cpp //
 
     # src/Dijets.cpp //

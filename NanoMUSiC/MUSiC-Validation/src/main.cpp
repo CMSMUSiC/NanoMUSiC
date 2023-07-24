@@ -956,28 +956,37 @@ auto main(int argc, char *argv[]) -> int
                         auto muon_2 = muons.p4[1];
 
                         // wide mass range
-                        z_to_mu_mu_x[shift].fill(
-                            muon_1,
-                            muon_2,
-                            bjets.p4,
-                            jets.p4,
-                            met.p4,
-                            weight * Shifts::get_scale_factor(
-                                         shift, n_muons, 0, 0, 0, 0, 0, muons, electrons, photons, bjets, jets, met));
+                        z_to_mu_mu_x[shift].fill(muon_1,
+                                                 muon_2,
+                                                 bjets.p4,
+                                                 jets.p4,
+                                                 met.p4,
+                                                 weight * Shifts::get_scale_factor(shift,
+                                                                                   {n_muons, muons},
+                                                                                   {0, electrons},
+                                                                                   {0, taus},
+                                                                                   {0, photons},
+                                                                                   {0, bjets},
+                                                                                   {0, jets},
+                                                                                   {0, met}));
 
                         // Z mass range
                         if (PDG::Z::Mass - 20. < (muon_1 + muon_2).mass() and
                             (muon_1 + muon_2).mass() < PDG::Z::Mass + 20.)
                         {
-                            z_to_mu_mu_x_Z_mass[shift].fill(
-                                muon_1,
-                                muon_2,
-                                bjets.p4,
-                                jets.p4,
-                                met.p4,
-                                weight *
-                                    Shifts::get_scale_factor(
-                                        shift, n_muons, 0, 0, 0, 0, 0, muons, electrons, photons, bjets, jets, met));
+                            z_to_mu_mu_x_Z_mass[shift].fill(muon_1,
+                                                            muon_2,
+                                                            bjets.p4,
+                                                            jets.p4,
+                                                            met.p4,
+                                                            weight * Shifts::get_scale_factor(shift,
+                                                                                              {n_muons, muons},
+                                                                                              {0, electrons},
+                                                                                              {0, taus},
+                                                                                              {0, photons},
+                                                                                              {0, bjets},
+                                                                                              {0, jets},
+                                                                                              {0, met}));
                         }
                     }
 
@@ -989,28 +998,37 @@ auto main(int argc, char *argv[]) -> int
                         auto electron_2 = electrons.p4[1];
 
                         // wide mass range
-                        z_to_ele_ele_x[shift].fill(
-                            electron_1,
-                            electron_2,
-                            bjets.p4,
-                            jets.p4,
-                            met.p4,
-                            weight * Shifts::get_scale_factor(
-                                         shift, n_muons, 0, 0, 0, 0, 0, muons, electrons, photons, bjets, jets, met));
+                        z_to_ele_ele_x[shift].fill(electron_1,
+                                                   electron_2,
+                                                   bjets.p4,
+                                                   jets.p4,
+                                                   met.p4,
+                                                   weight * Shifts::get_scale_factor(shift,
+                                                                                     {n_muons, muons},
+                                                                                     {0, electrons},
+                                                                                     {0, taus},
+                                                                                     {0, photons},
+                                                                                     {0, bjets},
+                                                                                     {0, jets},
+                                                                                     {0, met}));
 
                         // Z mass range
                         if (PDG::Z::Mass - 20. < (electron_1 + electron_2).mass() and
                             (electron_1 + electron_2).mass() < PDG::Z::Mass + 20.)
                         {
-                            z_to_ele_ele_x_Z_mass[shift].fill(
-                                electron_1,
-                                electron_2,
-                                bjets.p4,
-                                jets.p4,
-                                met.p4,
-                                weight *
-                                    Shifts::get_scale_factor(
-                                        shift, n_muons, 0, 0, 0, 0, 0, muons, electrons, photons, bjets, jets, met));
+                            z_to_ele_ele_x_Z_mass[shift].fill(electron_1,
+                                                              electron_2,
+                                                              bjets.p4,
+                                                              jets.p4,
+                                                              met.p4,
+                                                              weight * Shifts::get_scale_factor(shift,
+                                                                                                {n_muons, muons},
+                                                                                                {0, electrons},
+                                                                                                {0, taus},
+                                                                                                {0, photons},
+                                                                                                {0, bjets},
+                                                                                                {0, jets},
+                                                                                                {0, met}));
                         }
                     }
 
@@ -1031,10 +1049,15 @@ auto main(int argc, char *argv[]) -> int
                     if (photons.size() == 1 and jets.size() == 1 and n_lepton == 0 and met.size() == 0)
                     {
                         auto gamma = photons.p4[0];
-                        gamma_plus_jet[shift].fill(
-                            gamma,
-                            weight * Shifts::get_scale_factor(
-                                         shift, 0, 0, 1, 0, 1, 0, muons, electrons, photons, bjets, jets, met));
+                        gamma_plus_jet[shift].fill(gamma,
+                                                   weight * Shifts::get_scale_factor(shift,
+                                                                                     {0, muons},
+                                                                                     {0, electrons},
+                                                                                     {0, taus},
+                                                                                     {1, photons},
+                                                                                     {0, bjets},
+                                                                                     {1, jets},
+                                                                                     {0, met}));
                     }
 
                     // ttbar to mu
@@ -1047,15 +1070,20 @@ auto main(int argc, char *argv[]) -> int
                         auto bjet_2 = bjets.p4[1];
                         auto MET = met.p4[0];
 
-                        ttbar_to_1ele_2bjet_2jet_MET[shift].fill(
-                            muon,
-                            jet_1,
-                            jet_2,
-                            bjet_1,
-                            bjet_2,
-                            MET,
-                            weight * Shifts::get_scale_factor(
-                                         shift, 1, 0, 0, 2, 2, 1, muons, electrons, photons, bjets, jets, met));
+                        ttbar_to_1ele_2bjet_2jet_MET[shift].fill(muon,
+                                                                 jet_1,
+                                                                 jet_2,
+                                                                 bjet_1,
+                                                                 bjet_2,
+                                                                 MET,
+                                                                 weight * Shifts::get_scale_factor(shift,
+                                                                                                   {1, muons},
+                                                                                                   {0, electrons},
+                                                                                                   {0, taus},
+                                                                                                   {0, photons},
+                                                                                                   {2, bjets},
+                                                                                                   {2, jets},
+                                                                                                   {1, met}));
                     }
 
                     // ttbar to ele
@@ -1068,15 +1096,20 @@ auto main(int argc, char *argv[]) -> int
                         auto bjet_2 = bjets.p4[1];
                         auto MET = met.p4[0];
 
-                        ttbar_to_1ele_2bjet_2jet_MET[shift].fill(
-                            electron,
-                            jet_1,
-                            jet_2,
-                            bjet_1,
-                            bjet_2,
-                            MET,
-                            weight * Shifts::get_scale_factor(
-                                         shift, 0, 1, 0, 2, 2, 1, muons, electrons, photons, bjets, jets, met));
+                        ttbar_to_1ele_2bjet_2jet_MET[shift].fill(electron,
+                                                                 jet_1,
+                                                                 jet_2,
+                                                                 bjet_1,
+                                                                 bjet_2,
+                                                                 MET,
+                                                                 weight * Shifts::get_scale_factor(shift,
+                                                                                                   {0, muons},
+                                                                                                   {1, electrons},
+                                                                                                   {0, taus},
+                                                                                                   {0, photons},
+                                                                                                   {2, bjets},
+                                                                                                   {2, jets},
+                                                                                                   {1, met}));
                     }
 
                     // Tau analysis
@@ -1093,20 +1126,31 @@ auto main(int argc, char *argv[]) -> int
                                                    bjets.p4,
                                                    jets.p4,
                                                    met.p4,
-                                                   weight); // * Shifts::get_scale_factor(shift, n_muons, 0, 0, 0, 0, 0,
-                                                            // muons, electrons, photons, bjets, jets, met));
+                                                   weight * Shifts::get_scale_factor(shift,
+                                                                                     {0, muons},
+                                                                                     {0, electrons},
+                                                                                     {n_taus, taus},
+                                                                                     {0, photons},
+                                                                                     {0, bjets},
+                                                                                     {0, jets},
+                                                                                     {0, met}));
 
                         // Z mass range
                         if (PDG::Z::Mass - 20. < (tau_1 + tau_2).mass() and (tau_1 + tau_2).mass() < PDG::Z::Mass + 20.)
                         {
-                            z_to_tau_tau_x_Z_mass[shift].fill(
-                                tau_1,
-                                tau_2,
-                                bjets.p4,
-                                jets.p4,
-                                met.p4,
-                                weight); // * Shifts::get_scale_factor(shift, n_muons, 0, 0, 0, 0, 0, muons, electrons,
-                                         // photons, bjets, jets, met));
+                            z_to_tau_tau_x_Z_mass[shift].fill(tau_1,
+                                                              tau_2,
+                                                              bjets.p4,
+                                                              jets.p4,
+                                                              met.p4,
+                                                              weight * Shifts::get_scale_factor(shift,
+                                                                                                {0, muons},
+                                                                                                {0, electrons},
+                                                                                                {n_taus, taus},
+                                                                                                {0, photons},
+                                                                                                {0, bjets},
+                                                                                                {0, jets},
+                                                                                                {0, met}));
                         }
                     }
 
@@ -1121,19 +1165,30 @@ auto main(int argc, char *argv[]) -> int
                                                 // bjets.p4,
                                                 // jets.p4,
                                                 met.p4,
-                                                weight); // * Shifts::get_scale_factor(shift, n_muons, 0, 0, 0, 0, 0,
-                                                         // muons, electrons, photons, bjets, jets, met));
+                                                weight * Shifts::get_scale_factor(shift,
+                                                                                  {0, muons},
+                                                                                  {0, electrons},
+                                                                                  {1, taus},
+                                                                                  {0, photons},
+                                                                                  {0, bjets},
+                                                                                  {0, jets},
+                                                                                  {1, met}));
 
                         // Z mass range
                         if (PDG::Z::Mass - 20. < (tau_1).mass() and (tau_1).mass() < PDG::Z::Mass + 20.)
                         {
-                            w_to_tau_nu_Z_mass[shift].fill(
-                                tau_1,
-                                // bjets.p4,
-                                // jets.p4,
-                                met.p4,
-                                weight); // * Shifts::get_scale_factor(shift, n_muons, 0, 0, 0, 0, 0, muons, electrons,
-                                         // photons, bjets, jets, met));
+                            w_to_tau_nu_Z_mass[shift].fill(tau_1,
+                                                           // bjets.p4,
+                                                           // jets.p4,
+                                                           met.p4,
+                                                           weight * Shifts::get_scale_factor(shift,
+                                                                                             {0, muons},
+                                                                                             {0, electrons},
+                                                                                             {1, taus},
+                                                                                             {0, photons},
+                                                                                             {0, bjets},
+                                                                                             {0, jets},
+                                                                                             {1, met}));
                         }
                     }
                 }

@@ -251,91 +251,115 @@ class Shifts
     }
 
     static auto get_scale_factor(const std::string &shift,
-                                 unsigned int n_muons,
-                                 unsigned int n_electrons,
-                                 unsigned int n_photons,
-                                 unsigned int n_bjets,
-                                 unsigned int n_jets,
-                                 unsigned int n_met,
-                                 const MUSiCObjects &muons,
-                                 const MUSiCObjects &electrons,
-                                 const MUSiCObjects &photons,
-                                 const MUSiCObjects &bjets,
-                                 const MUSiCObjects &jets,
-                                 const MUSiCObjects &met) -> double
+                                 std::pair<unsigned int, const MUSiCObjects &> muons,
+                                 std::pair<unsigned int, const MUSiCObjects &> electrons,
+                                 std::pair<unsigned int, const MUSiCObjects &> taus,
+                                 std::pair<unsigned int, const MUSiCObjects &> photons,
+                                 std::pair<unsigned int, const MUSiCObjects &> bjets,
+                                 std::pair<unsigned int, const MUSiCObjects &> jets,
+                                 std::pair<unsigned int, const MUSiCObjects &> met) -> double
     {
+        auto [n_muons, this_muons] = muons;
+        auto [n_electrons, this_electrons] = electrons;
+        auto [n_taus, this_taus] = taus;
+        auto [n_photons, this_photons] = photons;
+        auto [n_bjets, this_bjets] = bjets;
+        auto [n_jets, this_jets] = jets;
+        auto [n_met, this_met] = met;
+
         if (shift == "ScaleFactor_Up")
         {
-            return std::reduce(muons.scale_factor_up.begin(),
-                               muons.scale_factor_up.begin() + n_muons,
+            return std::reduce(this_muons.scale_factor_up.begin(),
+                               this_muons.scale_factor_up.begin() + n_muons,
                                1.,
                                std::multiplies<double>()) //
-                   * std::reduce(electrons.scale_factor_up.begin(),
-                                 electrons.scale_factor_up.begin() + n_electrons,
+                   * std::reduce(this_electrons.scale_factor_up.begin(),
+                                 this_electrons.scale_factor_up.begin() + n_electrons,
                                  1.,
                                  std::multiplies<double>()) //
-                   * std::reduce(photons.scale_factor_up.begin(),
-                                 photons.scale_factor_up.begin() + n_photons,
+                   * std::reduce(this_taus.scale_factor_up.begin(),
+                                 this_taus.scale_factor_up.begin() + n_taus,
                                  1.,
                                  std::multiplies<double>()) //
-                   * std::reduce(bjets.scale_factor_up.begin(),
-                                 bjets.scale_factor_up.begin() + n_bjets,
+                   * std::reduce(this_photons.scale_factor_up.begin(),
+                                 this_photons.scale_factor_up.begin() + n_photons,
                                  1.,
                                  std::multiplies<double>()) //
-                   * std::reduce(jets.scale_factor_up.begin(),
-                                 jets.scale_factor_up.begin() + n_jets,
+                   * std::reduce(this_bjets.scale_factor_up.begin(),
+                                 this_bjets.scale_factor_up.begin() + n_bjets,
                                  1.,
                                  std::multiplies<double>()) //
-                   *
-                   std::reduce(
-                       met.scale_factor_up.begin(), met.scale_factor_up.begin() + n_met, 1., std::multiplies<double>());
-        }
-
-        if (shift == "ScaleFactor_Down")
-        {
-            return std::reduce(muons.scale_factor_down.begin(),
-                               muons.scale_factor_down.begin() + n_muons,
-                               1.,
-                               std::multiplies<double>()) //
-                   * std::reduce(electrons.scale_factor_down.begin(),
-                                 electrons.scale_factor_down.begin() + n_electrons,
+                   * std::reduce(this_jets.scale_factor_up.begin(),
+                                 this_jets.scale_factor_up.begin() + n_jets,
                                  1.,
                                  std::multiplies<double>()) //
-                   * std::reduce(photons.scale_factor_down.begin(),
-                                 photons.scale_factor_down.begin() + n_photons,
-                                 1.,
-                                 std::multiplies<double>()) //
-                   * std::reduce(bjets.scale_factor_down.begin(),
-                                 bjets.scale_factor_down.begin() + n_bjets,
-                                 1.,
-                                 std::multiplies<double>()) //
-                   * std::reduce(jets.scale_factor_down.begin(),
-                                 jets.scale_factor_down.begin() + n_jets,
-                                 1.,
-                                 std::multiplies<double>()) //
-                   * std::reduce(met.scale_factor_down.begin(),
-                                 met.scale_factor_down.begin() + n_met,
+                   * std::reduce(this_met.scale_factor_up.begin(),
+                                 this_met.scale_factor_up.begin() + n_met,
                                  1.,
                                  std::multiplies<double>());
         }
 
-        return std::reduce(
-                   muons.scale_factor.begin(), muons.scale_factor.begin() + n_muons, 1., std::multiplies<double>())
+        if (shift == "ScaleFactor_Down")
+        {
+            return std::reduce(this_muons.scale_factor_down.begin(),
+                               this_muons.scale_factor_down.begin() + n_muons,
+                               1.,
+                               std::multiplies<double>()) //
+                   * std::reduce(this_electrons.scale_factor_down.begin(),
+                                 this_electrons.scale_factor_down.begin() + n_electrons,
+                                 1.,
+                                 std::multiplies<double>()) //
+                   * std::reduce(this_taus.scale_factor_down.begin(),
+                                 this_taus.scale_factor_down.begin() + n_taus,
+                                 1.,
+                                 std::multiplies<double>()) //
+                   * std::reduce(this_photons.scale_factor_down.begin(),
+                                 this_photons.scale_factor_down.begin() + n_photons,
+                                 1.,
+                                 std::multiplies<double>()) //
+                   * std::reduce(this_bjets.scale_factor_down.begin(),
+                                 this_bjets.scale_factor_down.begin() + n_bjets,
+                                 1.,
+                                 std::multiplies<double>()) //
+                   * std::reduce(this_jets.scale_factor_down.begin(),
+                                 this_jets.scale_factor_down.begin() + n_jets,
+                                 1.,
+                                 std::multiplies<double>()) //
+                   * std::reduce(this_met.scale_factor_down.begin(),
+                                 this_met.scale_factor_down.begin() + n_met,
+                                 1.,
+                                 std::multiplies<double>());
+        }
+
+        return std::reduce(this_muons.scale_factor.begin(),
+                           this_muons.scale_factor.begin() + n_muons,
+                           1.,
+                           std::multiplies<double>())
                //
-               * std::reduce(electrons.scale_factor.begin(),
-                             electrons.scale_factor.begin() + n_electrons,
+               * std::reduce(this_electrons.scale_factor.begin(),
+                             this_electrons.scale_factor.begin() + n_electrons,
                              1.,
                              std::multiplies<double>()) //
-               * std::reduce(photons.scale_factor.begin(),
-                             photons.scale_factor.begin() + n_photons,
+               * std::reduce(this_taus.scale_factor.begin(),
+                             this_taus.scale_factor.begin() + n_taus,
                              1.,
                              std::multiplies<double>()) //
-               * std::reduce(
-                     bjets.scale_factor.begin(), bjets.scale_factor.begin() + n_bjets, 1., std::multiplies<double>())
+               * std::reduce(this_photons.scale_factor.begin(),
+                             this_photons.scale_factor.begin() + n_photons,
+                             1.,
+                             std::multiplies<double>()) //
+               * std::reduce(this_bjets.scale_factor.begin(),
+                             this_bjets.scale_factor.begin() + n_bjets,
+                             1.,
+                             std::multiplies<double>())
                //
-               * std::reduce(
-                     jets.scale_factor.begin(), jets.scale_factor.begin() + n_jets, 1., std::multiplies<double>()) //
-               * std::reduce(met.scale_factor.begin(), met.scale_factor.begin() + n_met, 1., std::multiplies<double>());
+               * std::reduce(this_jets.scale_factor.begin(),
+                             this_jets.scale_factor.begin() + n_jets,
+                             1.,
+                             std::multiplies<double>()) //
+               *
+               std::reduce(
+                   this_met.scale_factor.begin(), this_met.scale_factor.begin() + n_met, 1., std::multiplies<double>());
     }
 
     static auto get_xsec_order_modifier(const std::string &shift, const std::string &xs_order) -> double
