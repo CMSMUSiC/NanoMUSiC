@@ -69,8 +69,8 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
     auto scale_factors = RVec<double>{};
     auto scale_factor_up = RVec<double>{};
     auto scale_factor_down = RVec<double>{};
-    auto delta_met_x = RVec<double>{};
-    auto delta_met_y = RVec<double>{};
+    auto delta_met_x = 0.;
+    auto delta_met_y = 0.;
     auto is_fake = RVec<bool>{};
 
     for (std::size_t i = 0; i < Muon_pt.size(); i++)
@@ -206,8 +206,8 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
             {
                 muons_p4.push_back(muon_p4);
 
-                delta_met_x.push_back((muon_p4.pt() - Muon_pt[i]) * std::cos(Muon_phi[i]));
-                delta_met_y.push_back((muon_p4.pt() - Muon_pt[i]) * std::sin(Muon_phi[i]));
+                delta_met_x += (muon_p4.pt() - Muon_pt[i]) * std::cos(Muon_phi[i]);
+                delta_met_y += (muon_p4.pt() - Muon_pt[i]) * std::sin(Muon_phi[i]);
 
                 is_fake.push_back(is_data ? false : Muon_genPartIdx[i] == -1);
             }

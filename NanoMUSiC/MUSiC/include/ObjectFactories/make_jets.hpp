@@ -108,10 +108,10 @@ inline auto make_jets(const RVec<float> &Jet_pt,            //
     auto bjets_scale_factor_up = RVec<double>{};
     auto jets_scale_factor_down = RVec<double>{};
     auto bjets_scale_factor_down = RVec<double>{};
-    auto jets_delta_met_x = RVec<double>{};
-    auto bjets_delta_met_x = RVec<double>{};
-    auto jets_delta_met_y = RVec<double>{};
-    auto bjets_delta_met_y = RVec<double>{};
+    auto jets_delta_met_x = 0.;
+    auto bjets_delta_met_x = 0.;
+    auto jets_delta_met_y = 0.;
+    auto bjets_delta_met_y = 0.;
     auto jets_is_fake = RVec<bool>{};
     auto bjets_is_fake = RVec<bool>{};
 
@@ -151,8 +151,8 @@ inline auto make_jets(const RVec<float> &Jet_pt,            //
 
                 jets_p4.push_back(jet_p4);
 
-                jets_delta_met_x.push_back((jet_p4.pt() - Jet_pt[i]) * std::cos(Jet_phi[i]));
-                jets_delta_met_y.push_back((jet_p4.pt() - Jet_pt[i]) * std::sin(Jet_phi[i]));
+                jets_delta_met_x += (jet_p4.pt() - Jet_pt[i]) * std::cos(Jet_phi[i]);
+                jets_delta_met_y += (jet_p4.pt() - Jet_pt[i]) * std::sin(Jet_phi[i]);
 
                 jets_is_fake.push_back(is_data ? false : Jet_genJetIdx[i] == -1);
             }
@@ -167,8 +167,8 @@ inline auto make_jets(const RVec<float> &Jet_pt,            //
 
                 bjets_p4.push_back(jet_p4);
 
-                bjets_delta_met_x.push_back((jet_p4.pt() - Jet_pt[i]) * std::cos(Jet_phi[i]));
-                bjets_delta_met_y.push_back((jet_p4.pt() - Jet_pt[i]) * std::sin(Jet_phi[i]));
+                bjets_delta_met_x += (jet_p4.pt() - Jet_pt[i]) * std::cos(Jet_phi[i]);
+                bjets_delta_met_y += (jet_p4.pt() - Jet_pt[i]) * std::sin(Jet_phi[i]);
 
                 bjets_is_fake.push_back(is_data ? false : Jet_genJetIdx[i] == -1);
             }

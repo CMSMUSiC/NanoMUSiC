@@ -106,8 +106,8 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
     auto scale_factors = RVec<double>{};
     auto scale_factor_up = RVec<double>{};
     auto scale_factor_down = RVec<double>{};
-    auto delta_met_x = RVec<double>{};
-    auto delta_met_y = RVec<double>{};
+    auto delta_met_x = 0.;
+    auto delta_met_y = 0.;
     auto is_fake = RVec<bool>{};
 
     for (std::size_t i = 0; i < Tau_pt.size(); i++)
@@ -183,8 +183,8 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
 
                 taus_p4.push_back(tau_p4);
 
-                delta_met_x.push_back((tau_p4.pt() - Tau_pt[i]) * std::cos(Tau_phi[i]));
-                delta_met_y.push_back((tau_p4.pt() - Tau_pt[i]) * std::sin(Tau_phi[i]));
+                delta_met_x += (tau_p4.pt() - Tau_pt[i]) * std::cos(Tau_phi[i]);
+                delta_met_y += (tau_p4.pt() - Tau_pt[i]) * std::sin(Tau_phi[i]);
 
                 is_fake.push_back(is_data ? false : Tau_genPartIdx[i] < 0);
             }

@@ -17,22 +17,22 @@ using namespace ROOT::VecOps;
 namespace ObjectFactories
 {
 
-inline auto make_met(const float met_pt,                      //
-                     const float met_phi,                     //
-                     const float delta_met_px_from_muons,     //
-                     const float delta_met_py_from_muons,     //
-                     const float delta_met_px_from_electrons, //
-                     const float delta_met_py_from_electrons, //
-                     const float delta_met_px_from_taus,      //
-                     const float delta_met_py_from_taus,      //
-                     const float delta_met_px_from_photons,   //
-                     const float delta_met_py_from_photons,   //
-                     const float delta_met_px_from_jets,      //
-                     const float delta_met_py_from_jets,      //
-                     const float delta_met_px_from_bjets,     //
-                     const float delta_met_py_from_bjets,     //
-                     bool is_data,                            //
-                     const std::string &_year,                //
+inline auto make_met(const double met_pt,                      //
+                     const double met_phi,                     //
+                     const double delta_met_px_from_muons,     //
+                     const double delta_met_py_from_muons,     //
+                     const double delta_met_px_from_electrons, //
+                     const double delta_met_py_from_electrons, //
+                     const double delta_met_px_from_taus,      //
+                     const double delta_met_py_from_taus,      //
+                     const double delta_met_px_from_photons,   //
+                     const double delta_met_py_from_photons,   //
+                     const double delta_met_px_from_jets,      //
+                     const double delta_met_py_from_jets,      //
+                     const double delta_met_px_from_bjets,     //
+                     const double delta_met_py_from_bjets,     //
+                     bool is_data,                             //
+                     const std::string &_year,                 //
                      const std::string &shift) -> MUSiCObjects
 {
 
@@ -41,8 +41,8 @@ inline auto make_met(const float met_pt,                      //
     auto scale_factors = RVec<double>{};
     auto scale_factor_up = RVec<double>{};
     auto scale_factor_down = RVec<double>{};
-    auto delta_met_x = RVec<double>{};
-    auto delta_met_y = RVec<double>{};
+    auto delta_met_x = 0.;
+    auto delta_met_y = 0.;
     auto is_fake = RVec<bool>{};
 
     auto met_px = met_pt * std::cos(met_phi)    //
@@ -73,9 +73,6 @@ inline auto make_met(const float met_pt,                      //
         scale_factor_up.push_back(1.);
         scale_factor_down.push_back(1.);
         met_p4.push_back(Math::PtEtaPhiMVector(this_met));
-
-        delta_met_x.push_back(0.);
-        delta_met_y.push_back(0.);
 
         is_fake.push_back(false);
     }
