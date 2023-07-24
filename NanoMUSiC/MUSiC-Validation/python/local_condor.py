@@ -59,6 +59,8 @@ def make_condor_executable(
 
 def cluster_block_list() -> str:
     block_list = [
+        "lx3agpu1.physik.rwth-aachen.de",
+        "lx3agpu2.physik.rwth-aachen.de",
         "lx3bgpu2.physik.rwth-aachen.de",
         "lx3bgpu1.physik.rwth-aachen.de",
         "lx1b24.physik.RWTH-Aachen.de",
