@@ -66,20 +66,32 @@ def check_file_for_string(file_path, target_string):
 
 def resubmit(job, always_resubmit=False):
     print(f"\n\n----- {job}")
-    print(f"Log:")
+    print(
+        f"\n\n \033[1m*************************** Log ***************************\033[0m"
+    )
     if os.path.isfile(f"{job}/condor.log"):
+        os.system(f"head {job}/condor.log")
+        print("\n[...]\n")
         os.system(f"tail -10 {job}/condor.log")
     else:
         print("Log file not found.")
 
-    print(f"Out:")
+    print(
+        f"\n\n \033[1m*************************** Out ***************************\033[0m"
+    )
     if os.path.isfile(f"{job}/condor.out"):
+        os.system(f"head {job}/condor.out")
+        print("\n[...]\n")
         os.system(f"tail -10 {job}/condor.out")
     else:
         print("Out file not found.")
 
-    print(f"Error:")
+    print(
+        f"\n\n \033[1m*************************** Error ***************************\033[0m"
+    )
     if os.path.isfile(f"{job}/condor.err"):
+        os.system(f"head {job}/condor.err")
+        print("\n[...]\n")
         os.system(f"tail -10 {job}/condor.err")
     else:
         print("Error file not found.")
@@ -128,10 +140,14 @@ def main():
             os.system("condor_q | tail -5")
             break
         else:
-            print("Running jobs:")
-            for job in job_status:
-                if job_status[job] == False:
-                    print(job)
+            num_running_jobs = len(
+                list(filter(lambda job: job_status[job] == False, job_status))
+            )
+            if num_running_jobs < 12:
+                print("Running jobs:")
+                for job in job_status:
+                    if job_status[job] == False:
+                        print(job)
             print("")
             print(f"Done: {list(job_status.values()).count(True)}")
             print(f"Other: {list(job_status.values()).count(False)}")

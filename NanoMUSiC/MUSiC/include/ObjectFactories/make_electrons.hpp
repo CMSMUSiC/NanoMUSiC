@@ -218,8 +218,8 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
     auto scale_factors = RVec<double>{};
     auto scale_factor_up = RVec<double>{};
     auto scale_factor_down = RVec<double>{};
-    auto delta_met_x = RVec<double>{};
-    auto delta_met_y = RVec<double>{};
+    auto delta_met_x = 0.;
+    auto delta_met_y = 0.;
     auto is_fake = RVec<bool>{};
 
     for (std::size_t i = 0; i < Electron_pt.size(); i++)
@@ -246,20 +246,24 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
             eta_correction_factor = Electron_deltaEtaSC[i];
         }
 
+        // define a new lorentz vector for a electron and apply the energy correction
+        auto electron_p4 =
+            Math::PtEtaPhiMVector(std::max(Electron_pt[i] * pt_correction_factor, ObjConfig::Electrons[year].MinLowPt),
+                                  Electron_eta[i] + eta_correction_factor,
+                                  Electron_phi[i],
+                                  PDG::Electron::Mass);
+        electron_p4 = electron_p4 * get_electron_energy_corrections(shift,
+                                                                    Electron_dEscaleUp[i],
+                                                                    Electron_dEscaleDown[i],
+                                                                    Electron_dEsigmaUp[i],
+                                                                    Electron_dEsigmaDown[i],
+                                                                    electron_p4.energy());
+
+        delta_met_x += (electron_p4.pt() - Electron_pt[i]) * std::cos(Electron_phi[i]);
+        delta_met_y += (electron_p4.pt() - Electron_pt[i]) * std::sin(Electron_phi[i]);
+
         if (is_good_low_pt_electron_pre_filter or is_good_high_pt_electron_pre_filter)
         {
-            auto electron_p4 = Math::PtEtaPhiMVector(
-                std::max(Electron_pt[i] * pt_correction_factor, ObjConfig::Electrons[year].MinLowPt),
-                Electron_eta[i] + eta_correction_factor,
-                Electron_phi[i],
-                PDG::Electron::Mass);
-
-            electron_p4 = electron_p4 * get_electron_energy_corrections(shift,
-                                                                        Electron_dEscaleUp[i],
-                                                                        Electron_dEscaleDown[i],
-                                                                        Electron_dEsigmaUp[i],
-                                                                        Electron_dEsigmaDown[i],
-                                                                        electron_p4.energy());
 
             // Low pT Electrons
             bool is_good_low_pt_electron = ((electron_p4.pt() >= ObjConfig::Electrons[year].MinLowPt) and
@@ -352,9 +356,6 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
             if (is_good_low_pt_electron or is_good_high_pt_electron)
             {
                 electrons_p4.push_back(electron_p4);
-
-                delta_met_x.push_back((electron_p4.pt() - Electron_pt[i]) * std::cos(Electron_phi[i]));
-                delta_met_y.push_back((electron_p4.pt() - Electron_pt[i]) * std::sin(Electron_phi[i]));
 
                 is_fake.push_back(is_data ? false : Electron_genPartIdx[i] == -1);
             }

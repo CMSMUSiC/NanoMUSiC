@@ -18,6 +18,7 @@ using namespace ROOT::VecOps;
 namespace ObjectFactories
 {
 
+// TODO implement muon corrections
 inline auto get_muon_energy_corrections(const std::string &shift) -> double
 {
     return 1.;
@@ -51,6 +52,7 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
                        const RVec<float> &Muon_pfRelIso04_all,       //
                        const RVec<float> &Muon_tkRelIso,             //
                        const RVec<float> &Muon_tunepRelPt,           //
+                       const RVec<float> &Muon_highPurity,           //
                        const RVec<int> &Muon_genPartIdx,             //
                        const CorrectionlibRef_t &muon_sf_reco,       //
                        const CorrectionlibRef_t &muon_sf_id_low_pt,  //
@@ -67,8 +69,8 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
     auto scale_factors = RVec<double>{};
     auto scale_factor_up = RVec<double>{};
     auto scale_factor_down = RVec<double>{};
-    auto delta_met_x = RVec<double>{};
-    auto delta_met_y = RVec<double>{};
+    auto delta_met_x = 0.;
+    auto delta_met_y = 0.;
     auto is_fake = RVec<bool>{};
 
     for (std::size_t i = 0; i < Muon_pt.size(); i++)
@@ -80,7 +82,8 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
 
         bool is_good_high_pt_muon_pre_filter = (std::fabs(Muon_eta.at(i)) <= ObjConfig::Muons[year].MaxAbsEta) //
                                                and (Muon_highPtId.at(i) >= 2)                                  //
-                                               and (Muon_tkRelIso.at(i) < ObjConfig::Muons[year].TkRelIso_WP);
+                                               and (Muon_tkRelIso.at(i) < ObjConfig::Muons[year].TkRelIso_WP   //
+                                                    and Muon_highPurity.at(i));
 
         float pt_correction_factor = 1.f;
         if (Muon_pt.at(i) >= ObjConfig::Muons[year].MaxLowPt)
@@ -92,16 +95,19 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
             pt_correction_factor = Muon_tunepRelPt.at(i);
         }
 
+        // build a muon and apply energy corrections
+        auto muon_p4 =
+            Math::PtEtaPhiMVector(std::max(Muon_pt[i] * pt_correction_factor, ObjConfig::Muons[year].MinLowPt),
+                                  Muon_eta[i],
+                                  Muon_phi[i],
+                                  PDG::Muon::Mass) *
+            get_muon_energy_corrections(shift);
+
+        delta_met_x += (muon_p4.pt() - Muon_pt[i]) * std::cos(Muon_phi[i]);
+        delta_met_y += (muon_p4.pt() - Muon_pt[i]) * std::sin(Muon_phi[i]);
+
         if (is_good_low_pt_muon_pre_filter or is_good_high_pt_muon_pre_filter)
         {
-            // build a muon and apply energy corrections
-            auto muon_p4 =
-                Math::PtEtaPhiMVector(std::max(Muon_pt[i] * pt_correction_factor, ObjConfig::Muons[year].MinLowPt),
-                                      Muon_eta[i],
-                                      Muon_phi[i],
-                                      PDG::Muon::Mass) *
-                get_muon_energy_corrections(shift);
-
             auto is_good_low_pt_muon = (muon_p4.pt() >= ObjConfig::Muons[year].MinLowPt) and
                                        (muon_p4.pt() < ObjConfig::Muons[year].MaxLowPt) and
                                        is_good_low_pt_muon_pre_filter;
@@ -109,7 +115,6 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
                 (muon_p4.pt() >= ObjConfig::Muons[year].MaxLowPt) and is_good_low_pt_muon_pre_filter;
 
             // calculate scale factors per object (particle)
-            // follow the preicous MUSiC analysis, the SFs are set before the energy scale and resolution
             if (is_good_low_pt_muon)
             {
                 scale_factors.push_back(
@@ -203,9 +208,6 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
             if (is_good_low_pt_muon or is_good_high_pt_muon)
             {
                 muons_p4.push_back(muon_p4);
-
-                delta_met_x.push_back((muon_p4.pt() - Muon_pt[i]) * std::cos(Muon_phi[i]));
-                delta_met_y.push_back((muon_p4.pt() - Muon_pt[i]) * std::sin(Muon_phi[i]));
 
                 is_fake.push_back(is_data ? false : Muon_genPartIdx[i] == -1);
             }

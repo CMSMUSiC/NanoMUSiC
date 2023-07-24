@@ -114,8 +114,8 @@ inline auto make_photons(const RVec<float> &Photon_pt,  //
     auto scale_factors = RVec<double>{};
     auto scale_factor_up = RVec<double>{};
     auto scale_factor_down = RVec<double>{};
-    auto delta_met_x = RVec<double>{};
-    auto delta_met_y = RVec<double>{};
+    auto delta_met_x = 0.;
+    auto delta_met_y = 0.;
     auto is_fake = RVec<bool>{};
 
     for (std::size_t i = 0; i < Photon_pt.size(); i++)
@@ -125,15 +125,18 @@ inline auto make_photons(const RVec<float> &Photon_pt,  //
                                          and (Photon_cutBased[i] >= ObjConfig::Photons[year].cutBasedId) //
                                          and (Photon_pixelSeed[i] == false);
 
+        auto photon_p4 = Math::PtEtaPhiMVector(Photon_pt[i], Photon_eta[i], Photon_phi[i], PDG::Photon::Mass);
+        photon_p4 = photon_p4 * get_photon_energy_corrections(shift,
+                                                              Photon_dEscaleUp[i],
+                                                              Photon_dEscaleDown[i],
+                                                              Photon_dEsigmaUp[i],
+                                                              Photon_dEsigmaDown[i],
+                                                              photon_p4.energy());
+        delta_met_x += (photon_p4.pt() - Photon_pt[i]) * std::cos(Photon_phi[i]);
+        delta_met_y += (photon_p4.pt() - Photon_pt[i]) * std::sin(Photon_phi[i]);
+
         if (is_good_photon_pre_filter)
         {
-            auto photon_p4 = Math::PtEtaPhiMVector(Photon_pt[i], Photon_eta[i], Photon_phi[i], PDG::Photon::Mass);
-            photon_p4 = photon_p4 * get_photon_energy_corrections(shift,
-                                                                  Photon_dEscaleUp[i],
-                                                                  Photon_dEscaleDown[i],
-                                                                  Photon_dEsigmaUp[i],
-                                                                  Photon_dEsigmaDown[i],
-                                                                  photon_p4.energy());
 
             bool is_good_photon = (photon_p4.pt() >= ObjConfig::Photons[year].MinPt) and is_good_photon_pre_filter;
 
@@ -165,9 +168,6 @@ inline auto make_photons(const RVec<float> &Photon_pt,  //
                         photon_pixel_veto_sf, is_data, {get_year_for_photon_sf(year), "sfdown", "Tight", "EBInc"}));
 
                 photons_p4.push_back(photon_p4);
-
-                delta_met_x.push_back((photon_p4.pt() - Photon_pt[i]) * std::cos(Photon_phi[i]));
-                delta_met_y.push_back((photon_p4.pt() - Photon_pt[i]) * std::sin(Photon_phi[i]));
 
                 is_fake.push_back(is_data ? false : Photon_genPartIdx[i] == -1);
             }
