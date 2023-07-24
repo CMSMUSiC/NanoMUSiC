@@ -122,12 +122,16 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
             Tau_eta[i],
             Tau_phi[i],
             Tau_mass[i]); // regard Tau_mass right here ("PDG::Tau::Mass" is only literature value)
-        tau_p4 =
-            tau_p4 *
-            MUSiCObjects::get_scale_factor(
+
+        auto energy_correction = 1.;
+        if (Tau_decayMode[i] != 5 and Tau_decayMode[i] != 6)
+        {
+            energy_correction = MUSiCObjects::get_scale_factor(
                 tau_energy_scale,
                 is_data,
                 {tau_p4.pt(), std::fabs(tau_p4.eta()), Tau_decayMode[i], Tau_genPartFlav[i], "DeepTau2017v2p1", "nom"});
+            tau_p4 = tau_p4 * energy_correction;
+        }
 
         delta_met_x += (tau_p4.pt() - Tau_pt[i]) * std::cos(Tau_phi[i]);
         delta_met_y += (tau_p4.pt() - Tau_pt[i]) * std::sin(Tau_phi[i]);

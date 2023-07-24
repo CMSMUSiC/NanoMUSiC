@@ -255,12 +255,15 @@ inline auto starts_with(const std::string &str, const std::string &prefix) -> bo
 }
 
 // check if an event pass any trigger
-inline auto trigger_filter(const std::string &process,
+inline auto trigger_filter(const std::string &process, //
                            bool is_data,
-                           bool pass_low_pt_muon_trigger,
-                           bool pass_high_pt_muon_trigger,
-                           bool pass_low_pt_electron_trigger,
-                           bool pass_high_pt_electron_trigger) -> std::optional<std::map<std::string, bool>>
+                           Year year,                          //
+                           bool pass_low_pt_muon_trigger,      //
+                           bool pass_high_pt_muon_trigger,     //
+                           bool pass_double_muon_trigger,      //
+                           bool pass_low_pt_electron_trigger,  //
+                           bool pass_high_pt_electron_trigger, //
+                           bool pass_double_electron_trigger) -> std::optional<std::map<std::string, bool>>
 {
     std::optional<std::map<std::string, bool>> trigger_filter_res = std::nullopt;
 
@@ -268,17 +271,36 @@ inline auto trigger_filter(const std::string &process,
     if (is_data)
     {
 
-        // Muon dataset
-        if (process.find("Muon") != std::string::npos)
+        // SingleMuon dataset
+        if (process.find("SingleMuon") != std::string::npos)
         {
             if (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger)
             {
                 trigger_filter_res = {
-                    //
-                    {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},          //
-                    {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},        //
-                    {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},  //
-                    {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger} //
+                    {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},           //
+                    {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},         //
+                    {"pass_double_muon_trigger", pass_double_muon_trigger},           //
+                    {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},   //
+                    {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger}, //
+                    {"pass_double_electron_trigger", pass_double_electron_trigger}    //
+                };
+            }
+
+            return trigger_filter_res;
+        }
+
+        // DoubleMuon dataset
+        if (process.find("DoubleMuon") != std::string::npos)
+        {
+            if (pass_double_muon_trigger and not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger))
+            {
+                trigger_filter_res = {
+                    {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},           //
+                    {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},         //
+                    {"pass_double_muon_trigger", pass_double_muon_trigger},           //
+                    {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},   //
+                    {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger}, //
+                    {"pass_double_electron_trigger", pass_double_electron_trigger}    //
                 };
             }
 
@@ -286,25 +308,63 @@ inline auto trigger_filter(const std::string &process,
         }
 
         // Electron/Photon/EGamma dataset
-        if (                                                 //
-            process.find("EGamma") != std::string::npos      //
-            or process.find("Electron") != std::string::npos //
-            or process.find("Photon") != std::string::npos   //
-        )
+        if (year == Year::Run2018)
         {
-            if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) and
-                (pass_low_pt_electron_trigger or pass_high_pt_electron_trigger))
+            if (process.find("SingleElectron") != std::string::npos or process.find("Photon") != std::string::npos)
             {
-                trigger_filter_res = {
-                    //
-                    {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},          //
-                    {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},        //
-                    {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},  //
-                    {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger} //
-                };
+                if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) and not(pass_double_muon_trigger) and
+                    (pass_low_pt_electron_trigger or pass_high_pt_electron_trigger))
+                {
+                    trigger_filter_res = {
+                        {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},           //
+                        {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},         //
+                        {"pass_double_muon_trigger", pass_double_muon_trigger},           //
+                        {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},   //
+                        {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger}, //
+                        {"pass_double_electron_trigger", pass_double_electron_trigger}    //
+                    };
+                }
+
+                return trigger_filter_res;
             }
 
-            return trigger_filter_res;
+            if (process.find("DoubleEG") != std::string::npos)
+            {
+                if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) and not(pass_double_muon_trigger) and
+                    not(pass_low_pt_electron_trigger or pass_high_pt_electron_trigger) and pass_double_electron_trigger)
+                {
+                    trigger_filter_res = {
+                        {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},           //
+                        {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},         //
+                        {"pass_double_muon_trigger", pass_double_muon_trigger},           //
+                        {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},   //
+                        {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger}, //
+                        {"pass_double_electron_trigger", pass_double_electron_trigger}    //
+                    };
+                }
+
+                return trigger_filter_res;
+            }
+        }
+        else
+        {
+            if (process.find("EGamma") != std::string::npos)
+            {
+                if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) and not(pass_double_muon_trigger) and
+                    (pass_low_pt_electron_trigger or pass_high_pt_electron_trigger or pass_double_electron_trigger))
+                {
+                    trigger_filter_res = {
+                        {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},           //
+                        {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},         //
+                        {"pass_double_muon_trigger", pass_double_muon_trigger},           //
+                        {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},   //
+                        {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger}, //
+                        {"pass_double_electron_trigger", pass_double_electron_trigger}    //
+                    };
+                }
+
+                return trigger_filter_res;
+            }
         }
 
         throw std::runtime_error(
@@ -319,10 +379,12 @@ inline auto trigger_filter(const std::string &process,
     {
         trigger_filter_res = {
             //
-            {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},          //
-            {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},        //
-            {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},  //
-            {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger} //
+            {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},           //
+            {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},         //
+            {"pass_double_muon_trigger", pass_double_muon_trigger},           //
+            {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},   //
+            {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger}, //
+            {"pass_double_electron_trigger", pass_double_electron_trigger}    //
         };
     }
 

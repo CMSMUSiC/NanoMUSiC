@@ -112,7 +112,7 @@ Error        = $(LogDirectory)/condor.err
 Stream_Output = true
 Stream_Error = true
 
-requirements = ___BLOCKLIST___
+requirements = ___BLOCKLIST___ && OpSysAndVer == "SL7"
 
 request_memory = 3072
 

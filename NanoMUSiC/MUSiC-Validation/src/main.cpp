@@ -86,8 +86,10 @@ auto main(int argc, char *argv[]) -> int
 
     ADD_VALUE_READER(pass_low_pt_muon_trigger, bool);
     ADD_VALUE_READER(pass_high_pt_muon_trigger, bool);
+    ADD_VALUE_READER(pass_double_muon_trigger, bool);
     ADD_VALUE_READER(pass_low_pt_electron_trigger, bool);
     ADD_VALUE_READER(pass_high_pt_electron_trigger, bool);
+    ADD_VALUE_READER(pass_double_electron_trigger, bool);
     ADD_VALUE_READER(pass_jet_ht_trigger, bool);
     ADD_VALUE_READER(pass_jet_pt_trigger, bool);
 
@@ -700,7 +702,7 @@ auto main(int argc, char *argv[]) -> int
         // // remove the "unused variable" warning during compilation
         static_cast<void>(event);
 
-        // if (event > 3000)
+        // if (event > 30)
         // {
         //     break;
         // }
@@ -730,10 +732,13 @@ auto main(int argc, char *argv[]) -> int
         // pass_jet_pt_trigger
         auto is_good_trigger = trigger_filter(process,
                                               is_data,
+                                              get_runyear(year),
                                               unwrap(pass_low_pt_muon_trigger),
                                               unwrap(pass_high_pt_muon_trigger),
+                                              unwrap(pass_double_muon_trigger, false),
                                               unwrap(pass_low_pt_electron_trigger),
-                                              unwrap(pass_high_pt_electron_trigger));
+                                              unwrap(pass_high_pt_electron_trigger),
+                                              unwrap(pass_double_electron_trigger, false));
 
         // bool is_good_trigger = jets_trigger_filter(unwrap(pass_jet_ht_trigger), //
         //                                            unwrap(pass_jet_pt_trigger));
