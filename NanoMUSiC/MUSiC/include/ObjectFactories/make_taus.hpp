@@ -117,24 +117,26 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
             ((Tau_idDeepTau2017v2p1VSmu[i] & 8) == 8) and (Tau_decayMode[i] != 5) and (Tau_decayMode[i] != 6) and
             (std::fabs(Tau_eta[i]) <= 2.1) and (std::fabs(Tau_dz[i]) < 0.2);
 
+        auto tau_p4 = Math::PtEtaPhiMVector(
+            Tau_pt[i],
+            Tau_eta[i],
+            Tau_phi[i],
+            Tau_mass[i]); // regard Tau_mass right here ("PDG::Tau::Mass" is only literature value)
+        tau_p4 =
+            tau_p4 *
+            MUSiCObjects::get_scale_factor(
+                tau_energy_scale,
+                is_data,
+                {tau_p4.pt(), std::fabs(tau_p4.eta()), Tau_decayMode[i], Tau_genPartFlav[i], "DeepTau2017v2p1", "nom"});
+
+        delta_met_x += (tau_p4.pt() - Tau_pt[i]) * std::cos(Tau_phi[i]);
+        delta_met_y += (tau_p4.pt() - Tau_pt[i]) * std::sin(Tau_phi[i]);
+
         if (is_good_tau_pre_filter)
         {
-            auto tau_p4 = Math::PtEtaPhiMVector(
-                Tau_pt[i],
-                Tau_eta[i],
-                Tau_phi[i],
-                Tau_mass[i]); // regard Tau_mass right here ("PDG::Tau::Mass" is only literature value)
-            tau_p4 = tau_p4 * MUSiCObjects::get_scale_factor(tau_energy_scale,
-                                                             is_data,
-                                                             {tau_p4.pt(),
-                                                              std::fabs(tau_p4.eta()),
-                                                              Tau_decayMode[i],
-                                                              Tau_genPartFlav[i],
-                                                              "DeepTau2017v2p1",
-                                                              "nom"});
 
             bool is_good_tau =
-                (tau_p4.pt() >= 20.) and is_good_tau_pre_filter; // 25 our studies 20 official recommondation
+                (tau_p4.pt() >= 25.) and is_good_tau_pre_filter; // 25 our studies 20 official recommondation
 
             if (is_good_tau)
             {
@@ -182,9 +184,6 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
                         {tau_p4.pt(), Tau_decayMode[i], Tau_genPartFlav[i], "Tight", "Tight", "down", "pt"}));
 
                 taus_p4.push_back(tau_p4);
-
-                delta_met_x += (tau_p4.pt() - Tau_pt[i]) * std::cos(Tau_phi[i]);
-                delta_met_y += (tau_p4.pt() - Tau_pt[i]) * std::sin(Tau_phi[i]);
 
                 is_fake.push_back(is_data ? false : Tau_genPartIdx[i] < 0);
             }
