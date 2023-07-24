@@ -139,6 +139,7 @@ auto main(int argc, char *argv[]) -> int
     ADD_ARRAY_READER(Tau_idDeepTau2017v2p1VSmu, UChar_t);
     ADD_ARRAY_READER(Tau_decayMode, int);
     ADD_ARRAY_READER(Tau_genPartIdx, int);
+    ADD_ARRAY_READER(Tau_genPartFlav, UChar_t);
 
     ADD_ARRAY_READER(Photon_pt, float);
     ADD_ARRAY_READER(Photon_eta, float);
@@ -178,18 +179,25 @@ auto main(int argc, char *argv[]) -> int
     auto correctionlib_utils = CorrectionLibUtils();
     auto jet_corrections = JetCorrector(get_runyear(year), get_era_from_process_name(process, is_data), is_data);
     auto pu_corrector = correctionlib_utils.make_correctionlib_ref("PU", year);
-    auto muon_sf_reco = correctionlib_utils.make_correctionlib_ref("MuonReco", year);
 
     auto low_pt_muon_trigger_sf = correctionlib_utils.make_correctionlib_ref("SingleMuonLowPt", year);
     auto high_pt_muon_trigger_sf = correctionlib_utils.make_correctionlib_ref("SingleMuonHighPt", year);
 
+    auto muon_sf_reco = correctionlib_utils.make_correctionlib_ref("MuonReco", year);
     auto muon_sf_id_low_pt = correctionlib_utils.make_correctionlib_ref("MuonIdLowPt", year);
     auto muon_sf_id_high_pt = correctionlib_utils.make_correctionlib_ref("MuonIdHighPt", year);
     auto muon_sf_iso_low_pt = correctionlib_utils.make_correctionlib_ref("MuonIsoLowPt", year);
     auto muon_sf_iso_high_pt = correctionlib_utils.make_correctionlib_ref("MuonIsoHighPt", year);
+
     auto electron_sf = correctionlib_utils.make_correctionlib_ref("ElectronSF", year);
+
     auto photon_sf = correctionlib_utils.make_correctionlib_ref("PhotonSF", year);
     auto pixel_veto_sf = correctionlib_utils.make_correctionlib_ref("PixelVetoSF", year);
+
+    auto deep_tau_2017_v2_p1_vs_e = correctionlib_utils.make_correctionlib_ref("TauVSe", year);
+    auto deep_tau_2017_v2_p1_vs_mu = correctionlib_utils.make_correctionlib_ref("TauVSmu", year);
+    auto deep_tau_2017_v2_p1_vs_jet = correctionlib_utils.make_correctionlib_ref("TauVSjet", year);
+    auto tau_energy_scale = correctionlib_utils.make_correctionlib_ref("TauEnergyScale", year);
 
     /////////////////////////////////////////////
     /////////////////////////////////////////////
@@ -775,16 +783,21 @@ auto main(int argc, char *argv[]) -> int
                                                              year,                           //
                                                              diff_shift);
 
-            auto taus = ObjectFactories::make_taus(unwrap(Tau_pt),                     //
-                                                   unwrap(Tau_eta),                    //
-                                                   unwrap(Tau_phi),                    //
-                                                   unwrap(Tau_dz),                     //
-                                                   unwrap(Tau_mass),                   //
+            auto taus = ObjectFactories::make_taus(unwrap(Tau_pt),   //
+                                                   unwrap(Tau_eta),  //
+                                                   unwrap(Tau_phi),  //
+                                                   unwrap(Tau_dz),   //
+                                                   unwrap(Tau_mass), //
+                                                   unwrap(Tau_genPartFlav),
                                                    unwrap(Tau_genPartIdx),             //
                                                    unwrap(Tau_decayMode),              //
                                                    unwrap(Tau_idDeepTau2017v2p1VSe),   //
                                                    unwrap(Tau_idDeepTau2017v2p1VSmu),  //
                                                    unwrap(Tau_idDeepTau2017v2p1VSjet), //
+                                                   deep_tau_2017_v2_p1_vs_e,           //
+                                                   deep_tau_2017_v2_p1_vs_mu,          //
+                                                   deep_tau_2017_v2_p1_vs_jet,         //
+                                                   tau_energy_scale,                   //
                                                    is_data,                            //
                                                    year,                               //
                                                    shift);                             //
