@@ -303,6 +303,7 @@ inline auto get_output_branches(const TaskConfiguration &configuration) -> std::
         "pass_low_pt_electron_trigger",
         "pass_high_pt_electron_trigger",
         "pass_double_electron_trigger",
+        "pass_photon_trigger",
         "pass_jet_ht_trigger",
         "pass_jet_pt_trigger",
         "run",
@@ -318,6 +319,7 @@ inline auto get_output_branches(const TaskConfiguration &configuration) -> std::
         "Muon_tkRelIso",
         "Muon_highPurity",
         "Muon_tunepRelPt",
+        "Muon_jetIdx",
         "Electron_pt",
         "Electron_eta",
         "Electron_phi",
@@ -330,6 +332,7 @@ inline auto get_output_branches(const TaskConfiguration &configuration) -> std::
         "Electron_dEsigmaUp",
         "Electron_eCorr",
         "Electron_scEtOverPt",
+        "Electron_jetIdx",
         "Photon_pt",
         "Photon_eta",
         "Photon_phi",
@@ -341,6 +344,7 @@ inline auto get_output_branches(const TaskConfiguration &configuration) -> std::
         "Photon_dEscaleDown",
         "Photon_dEsigmaUp",
         "Photon_dEsigmaDown",
+        "Photon_jetIdx",
         "Tau_decayMode",
         "Tau_dz",
         "Tau_idDeepTau2017v2p1VSe",
@@ -353,6 +357,7 @@ inline auto get_output_branches(const TaskConfiguration &configuration) -> std::
         "Tau_eta",
         "Tau_phi",
         "Tau_mass",
+        "Tau_jetIdx",
         "Jet_pt",
         "Jet_eta",
         "Jet_phi",
@@ -428,6 +433,5 @@ inline auto get_hash(const std::string &str) -> std::string
 
     return std::to_string(hasher(str));
 }
-
 
 #endif /*SKIMMER_HPP*/

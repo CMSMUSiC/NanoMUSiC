@@ -148,6 +148,7 @@ def main():
             subprocess.run(shlex.split(f"rm -rf {f.name}"))
         else:
             print(f"Command: {str_command}")
+            raise Exception("ERROR: Could not validate sample.")
 
     else:
         raise RuntimeError("ERROR: Task configuration not built.")

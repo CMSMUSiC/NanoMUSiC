@@ -507,6 +507,18 @@ auto main(int argc, char *argv[]) -> int
                             {
                                 double_muon_triggers.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ");
                             }
+                            if (pre_skimmed_dataframe.HasColumn("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL"))
+                            {
+                                double_muon_triggers.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL");
+                            }
+                            if (pre_skimmed_dataframe.HasColumn("HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL"))
+                            {
+                                double_muon_triggers.push_back("HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL");
+                            }
+                            if (pre_skimmed_dataframe.HasColumn("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL"))
+                            {
+                                double_muon_triggers.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL");
+                            }
                             if (double_muon_triggers.size() == 0)
                             {
                                 throw std::invalid_argument(fmt::format(
@@ -547,22 +559,22 @@ auto main(int argc, char *argv[]) -> int
                         {
                             if (configuration.year == Year::Run2016APV)
                             {
-                                return "HLT_Ele27_WPTight_Gsf or HLT_Photon175"sv;
+                                return "HLT_Ele27_WPTight_Gsf"sv;
                             }
 
                             if (configuration.year == Year::Run2016)
                             {
-                                return "HLT_Ele27_WPTight_Gsf or HLT_Photon175"sv;
+                                return "HLT_Ele27_WPTight_Gsf"sv;
                             }
 
                             if (configuration.year == Year::Run2017)
                             {
-                                return "HLT_Ele35_WPTight_Gsf or HLT_Photon200"sv;
+                                return "HLT_Ele35_WPTight_Gsf"sv;
                             }
 
                             if (configuration.year == Year::Run2018)
                             {
-                                return "HLT_Ele35_WPTight_Gsf or HLT_Photon200"sv;
+                                return "HLT_Ele32_WPTight_Gsf"sv;
                             }
 
                             throw std::invalid_argument(
@@ -574,25 +586,37 @@ auto main(int argc, char *argv[]) -> int
                         {
                             if (configuration.year == Year::Run2016APV)
                             {
-                                return "HLT_Ele27_WPTight_Gsf or HLT_Photon175 or HLT_Ele115_CaloIdVT_GsfTrkIdT"sv;
+                                if (pre_skimmed_dataframe.HasColumn("HLT_Ele115_CaloIdVT_GsfTrkIdT"))
+                                {
+                                    return "HLT_Photon175 or HLT_Ele115_CaloIdVT_GsfTrkIdT or HLT_Ele27_WPTight_Gsf"sv;
+                                }
+                                return "HLT_Photon175 or HLT_Ele27_WPTight_Gsf"sv;
                             }
 
                             if (configuration.year == Year::Run2016)
                             {
-                                return "HLT_Ele27_WPTight_Gsf or HLT_Photon175 or HLT_Ele115_CaloIdVT_GsfTrkIdT"sv;
+                                if (pre_skimmed_dataframe.HasColumn("HLT_Ele115_CaloIdVT_GsfTrkIdT"))
+                                {
+                                    return "HLT_Photon175 or HLT_Ele115_CaloIdVT_GsfTrkIdT or HLT_Ele27_WPTight_Gsf"sv;
+                                }
+                                return "HLT_Photon175 or HLT_Ele27_WPTight_Gsf"sv;
                             }
 
                             if (configuration.year == Year::Run2017)
                             {
                                 if (pre_skimmed_dataframe.HasColumn("HLT_Ele115_CaloIdVT_GsfTrkIdT"))
                                 {
-                                    return "HLT_Ele35_WPTight_Gsf or HLT_Photon200 or HLT_Ele115_CaloIdVT_GsfTrkIdT"sv;
+                                    return "HLT_Photon200 or HLT_Ele115_CaloIdVT_GsfTrkIdT or HLT_Ele35_WPTight_Gsf"sv;
                                 }
-                                return "HLT_Ele35_WPTight_Gsf or HLT_Photon200"sv;
+                                return "HLT_Photon200 or HLT_Ele35_WPTight_Gsf"sv;
                             }
                             if (configuration.year == Year::Run2018)
                             {
-                                return "HLT_Ele32_WPTight_Gsf or HLT_Photon200 or HLT_Ele115_CaloIdVT_GsfTrkIdT"sv;
+                                if (pre_skimmed_dataframe.HasColumn("HLT_Ele115_CaloIdVT_GsfTrkIdT"))
+                                {
+                                    return "HLT_Ele32_WPTight_Gsf or HLT_Photon200 or HLT_Ele115_CaloIdVT_GsfTrkIdT"sv;
+                                }
+                                return "HLT_Ele32_WPTight_Gsf or HLT_Photon200"sv;
                             }
 
                             throw std::invalid_argument(
@@ -626,18 +650,6 @@ auto main(int argc, char *argv[]) -> int
 
                         if (configuration.year == Year::Run2017)
                         {
-                            if (pre_skimmed_dataframe.HasColumn("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ"))
-                            {
-                                double_electron_triggers.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ");
-                            }
-                            if (pre_skimmed_dataframe.HasColumn("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL"))
-                            {
-                                double_electron_triggers.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL");
-                            }
-                            if (pre_skimmed_dataframe.HasColumn("HLT_DiEle27_WPTightCaloOnly_L1DoubleEG"))
-                            {
-                                double_electron_triggers.push_back("HLT_DiEle27_WPTightCaloOnly_L1DoubleEG");
-                            }
                             if (pre_skimmed_dataframe.HasColumn("HLT_DoubleEle33_CaloIdL_MW"))
                             {
                                 double_electron_triggers.push_back("HLT_DoubleEle33_CaloIdL_MW");
@@ -645,10 +657,6 @@ auto main(int argc, char *argv[]) -> int
                             if (pre_skimmed_dataframe.HasColumn("HLT_DoubleEle25_CaloIdL_MW"))
                             {
                                 double_electron_triggers.push_back("HLT_DoubleEle25_CaloIdL_MW");
-                            }
-                            if (pre_skimmed_dataframe.HasColumn("HLT_DoublePhoton70"))
-                            {
-                                double_electron_triggers.push_back("HLT_DoublePhoton70");
                             }
                             if (double_electron_triggers.size() == 0)
                             {
@@ -659,33 +667,9 @@ auto main(int argc, char *argv[]) -> int
                         }
                         if (configuration.year == Year::Run2018)
                         {
-                            if (pre_skimmed_dataframe.HasColumn("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ"))
-                            {
-                                double_electron_triggers.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ");
-                            }
-                            if (pre_skimmed_dataframe.HasColumn("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL"))
-                            {
-                                double_electron_triggers.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL");
-                            }
-                            if (pre_skimmed_dataframe.HasColumn("HLT_DiEle27_WPTightCaloOnly_L1DoubleEG"))
-                            {
-                                double_electron_triggers.push_back("HLT_DiEle27_WPTightCaloOnly_L1DoubleEG");
-                            }
-                            if (pre_skimmed_dataframe.HasColumn("HLT_DoubleEle33_CaloIdL_MW"))
-                            {
-                                double_electron_triggers.push_back("HLT_DoubleEle33_CaloIdL_MW");
-                            }
                             if (pre_skimmed_dataframe.HasColumn("HLT_DoubleEle25_CaloIdL_MW"))
                             {
                                 double_electron_triggers.push_back("HLT_DoubleEle25_CaloIdL_MW");
-                            }
-                            if (pre_skimmed_dataframe.HasColumn("HLT_DoubleEle27_CaloIdL_MW"))
-                            {
-                                double_electron_triggers.push_back("HLT_DoubleEle27_CaloIdL_MW");
-                            }
-                            if (pre_skimmed_dataframe.HasColumn("HLT_DoublePhoton70"))
-                            {
-                                double_electron_triggers.push_back("HLT_DoublePhoton70");
                             }
                             if (double_electron_triggers.size() == 0)
                             {
@@ -703,6 +687,30 @@ auto main(int argc, char *argv[]) -> int
                             fmt::format("ERROR: Could not define trigger bits. The requested year ({}) is invalid.",
                                         configuration.year_str));
                     }())
+                .Define("pass_photon_trigger",
+                        [&configuration, &pre_skimmed_dataframe]() -> std::string
+                        {
+                            std::vector<std::string> double_electron_triggers = {};
+
+                            if (configuration.year == Year::Run2016APV or configuration.year == Year::Run2016)
+                            {
+
+                                return "HLT_Photon175";
+                            }
+
+                            if (configuration.year == Year::Run2017)
+                            {
+                                return "HLT_Photon200";
+                            }
+                            if (configuration.year == Year::Run2018)
+                            {
+                                return "HLT_Photon200";
+                            }
+
+                            throw std::invalid_argument(
+                                fmt::format("ERROR: Could not define trigger bits. The requested year ({}) is invalid.",
+                                            configuration.year_str));
+                        }())
                 .Define("pass_jet_ht_trigger",
                         // [](bool HLT_PFHT1050) -> bool
                         []() -> bool
@@ -732,15 +740,17 @@ auto main(int argc, char *argv[]) -> int
                                             bool pass_high_pt_muon_trigger,
                                             bool pass_double_muon_trigger,
                                             bool pass_low_pt_electron_trigger,
-                                            bool pass_double_electron_trigger,
                                             bool pass_high_pt_electron_trigger,
+                                            bool pass_double_electron_trigger,
+                                            bool pass_photon_trigger,
                                             bool pass_jet_ht_trigger,
                                             bool pass_jet_pt_trigger,
                                             float mc_weight) -> bool
                     {
                         if (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger or pass_double_muon_trigger or
                             pass_low_pt_electron_trigger or pass_high_pt_electron_trigger or
-                            pass_double_electron_trigger or pass_jet_ht_trigger or pass_jet_pt_trigger)
+                            pass_double_electron_trigger or pass_photon_trigger or pass_jet_ht_trigger or
+                            pass_jet_pt_trigger)
                         {
                             cutflow_histo.Fill(Cuts.index_of("TriggerCut"), mc_weight);
                             return true;
@@ -751,8 +761,9 @@ auto main(int argc, char *argv[]) -> int
                      "pass_high_pt_muon_trigger",
                      "pass_double_muon_trigger",
                      "pass_low_pt_electron_trigger",
-                     "pass_double_electron_trigger",
                      "pass_high_pt_electron_trigger",
+                     "pass_double_electron_trigger",
+                     "pass_photon_trigger",
                      "pass_jet_ht_trigger",
                      "pass_jet_pt_trigger",
                      "mc_weight"})
