@@ -735,10 +735,12 @@ auto main(int argc, char *argv[]) -> int
                                               get_runyear(year),
                                               unwrap(pass_low_pt_muon_trigger),
                                               unwrap(pass_high_pt_muon_trigger),
-                                              unwrap(pass_double_muon_trigger, false),
+                                              //   unwrap(pass_double_muon_trigger),
+                                              false,
                                               unwrap(pass_low_pt_electron_trigger),
                                               unwrap(pass_high_pt_electron_trigger),
-                                              unwrap(pass_double_electron_trigger, false));
+                                              //   unwrap(pass_double_electron_trigger)
+                                              false);
 
         // bool is_good_trigger = jets_trigger_filter(unwrap(pass_jet_ht_trigger), //
         //                                            unwrap(pass_jet_pt_trigger));
@@ -787,6 +789,30 @@ auto main(int argc, char *argv[]) -> int
                                                              is_data,                        //
                                                              year,                           //
                                                              diff_shift);
+
+            // fmt::print("*********************************\n");
+            // if (is_good_trigger)
+            // {
+            //     if (is_good_trigger->at("pass_low_pt_muon_trigger") or
+            //     is_good_trigger->at("pass_high_pt_muon_trigger"))
+            //     {
+            //         // fmt::print("pass_low_pt_muon_trigger: {}\n", is_good_trigger->at("pass_low_pt_muon_trigger"));
+            //         // fmt::print("pass_high_pt_muon_trigger: {}\n",
+            //         is_good_trigger->at("pass_high_pt_muon_trigger"));
+            //         // fmt::print("pass_low_pt_electron_trigger: {}\n",
+            //         // is_good_trigger->at("pass_low_pt_electron_trigger"));
+            //         fmt::print("pass_low_pt_electron_trigger:
+            //         // {}\n", is_good_trigger->at("pass_high_pt_electron_trigger"));
+            //         fmt::print("{} - {} - {} - {}\n",
+            //                    is_good_trigger->at("pass_low_pt_muon_trigger"),
+            //                    is_good_trigger->at("pass_high_pt_muon_trigger"),
+            //                    is_good_trigger->at("pass_low_pt_electron_trigger"),
+            //                    is_good_trigger->at("pass_high_pt_electron_trigger"));
+            //         // fmt::print("#Muons: {}\n", muons.size());
+            //         // fmt::print("#Electrons: {}\n", electrons.size());
+            //         fmt::print("{} - {}\n", muons.size(), electrons.size());
+            //     }
+            // }
 
             auto taus = ObjectFactories::make_taus(unwrap(Tau_pt),   //
                                                    unwrap(Tau_eta),  //
@@ -898,7 +924,7 @@ auto main(int argc, char *argv[]) -> int
 
                     if (not(is_data))
                     {
-                        // get trigger sf
+                        // get trigger SF
                         auto trigger_sf = 1.;
                         if ((*trigger_match).matched_trigger == "match_low_pt_muon")
                         {

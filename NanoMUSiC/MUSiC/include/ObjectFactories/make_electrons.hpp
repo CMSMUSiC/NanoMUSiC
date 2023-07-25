@@ -224,18 +224,16 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
 
     for (std::size_t i = 0; i < Electron_pt.size(); i++)
     {
+        auto eta_SC = Electron_eta.at(i) + Electron_deltaEtaSC.at(i);
+
         // Low pT Electrons
         bool is_good_low_pt_electron_pre_filter =
-            ((std::fabs(Electron_eta.at(i) + Electron_deltaEtaSC.at(i)) <= 1.442) or
-             ((std::fabs(Electron_eta.at(i) + Electron_deltaEtaSC.at(i)) >= 1.566) and
-              (std::fabs(Electron_eta.at(i) + Electron_deltaEtaSC.at(i)) <= 2.5))) //
+            ((std::fabs(eta_SC) <= 1.442) or ((std::fabs(eta_SC) >= 1.566) and (std::fabs(eta_SC) <= 2.5))) //
             and (Electron_cutBased.at(i) >= ObjConfig::Electrons[year].cutBasedId);
 
         // High pT Electrons
         bool is_good_high_pt_electron_pre_filter =
-            ((std::fabs(Electron_eta.at(i) + Electron_deltaEtaSC.at(i)) <= 1.442) or
-             ((std::fabs(Electron_eta.at(i) + Electron_deltaEtaSC.at(i)) >= 1.566) and
-              (std::fabs(Electron_eta.at(i) + Electron_deltaEtaSC.at(i)) <= 2.5))) //
+            ((std::fabs(eta_SC) <= 1.442) or ((std::fabs(eta_SC) >= 1.566) and (std::fabs(eta_SC) <= 2.5))) //
             and (Electron_cutBased_HEEP.at(i));
 
         float pt_correction_factor = 1.f;

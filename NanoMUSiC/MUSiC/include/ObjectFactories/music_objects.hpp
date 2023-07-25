@@ -127,7 +127,6 @@ class MUSiCObjects
 
     auto size() const -> std::size_t
     {
-
         return p4.size();
     }
 
