@@ -40,6 +40,9 @@ NanoMUSiC/MUSiC-CRAB/last_CRAB_submition_date_2023_07_17_time_17_05_54.txt
 NanoMUSiC/MUSiC-CRAB/last_CRAB_submition_date_2023_07_17_time_18_01_06.txt
 NanoMUSiC/MUSiC-CRAB/sample_list_ww.txt
 
+NanoMUSiC/MUSiC-CRAB/*.txt
+NanoMUSiC/MUSiC-CRAB/*.toml
+
 
 ##### PYTHON #####
 # Byte-compiled / optimized / DLL files

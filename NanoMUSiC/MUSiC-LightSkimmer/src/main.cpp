@@ -2,8 +2,6 @@
 #include "Skimmer.hpp"
 
 #include <cmath>
-#include <fmt/core.h>
-#include <fmt/ranges.h>
 #include <limits>
 #include <optional>
 #include <stdexcept>
