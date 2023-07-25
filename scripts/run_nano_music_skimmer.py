@@ -142,7 +142,8 @@ def main():
             f.write(task_config)
         str_command = f"{args.executable} --run-config {f.name}"
         print(f"Will exectute: {str_command}")
-        music_process = subprocess.run(shlex.split(str_command))
+        music_process = subprocess.run(shlex.split(str_command), stderr=subprocess.PIPE)
+        print(music_process.stderr)
         if music_process.returncode == 0:
             subprocess.run(shlex.split(f"rm -rf {f.name}"))
         else:

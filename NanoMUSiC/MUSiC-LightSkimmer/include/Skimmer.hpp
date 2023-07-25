@@ -299,8 +299,10 @@ inline auto get_output_branches(const TaskConfiguration &configuration) -> std::
     std::vector<std::string> output_branches = {
         "pass_low_pt_muon_trigger",
         "pass_high_pt_muon_trigger",
+        "pass_double_muon_trigger",
         "pass_low_pt_electron_trigger",
         "pass_high_pt_electron_trigger",
+        "pass_double_electron_trigger",
         "pass_jet_ht_trigger",
         "pass_jet_pt_trigger",
         "run",
@@ -426,5 +428,6 @@ inline auto get_hash(const std::string &str) -> std::string
 
     return std::to_string(hasher(str));
 }
+
 
 #endif /*SKIMMER_HPP*/
