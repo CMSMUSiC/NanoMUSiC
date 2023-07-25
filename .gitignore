@@ -253,3 +253,4 @@ NanoMUSiC/MUSiC-CRAB/check_samples.py
 NanoMUSiC/MUSiC-CRAB/*.toml
 .vscode
 NanoMUSiC/MUSiC-CRAB/last_CRAB_submition_
+NanoMUSiC/MUSiC-CRAB/last_CRAB_submition_date*
