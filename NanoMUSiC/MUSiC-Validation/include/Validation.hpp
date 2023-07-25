@@ -308,7 +308,7 @@ inline auto trigger_filter(const std::string &process, //
         }
 
         // Electron/Photon/EGamma dataset
-        if (year == Year::Run2018)
+        if (year != Year::Run2018)
         {
             if (process.find("SingleElectron") != std::string::npos or process.find("Photon") != std::string::npos)
             {
@@ -346,10 +346,12 @@ inline auto trigger_filter(const std::string &process, //
                 return trigger_filter_res;
             }
         }
-        else
+
+        if (year == Year::Run2018)
         {
             if (process.find("EGamma") != std::string::npos)
             {
+                fmt::print("Passei por aqui!\n");
                 if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) and not(pass_double_muon_trigger) and
                     (pass_low_pt_electron_trigger or pass_high_pt_electron_trigger or pass_double_electron_trigger))
                 {
@@ -374,8 +376,8 @@ inline auto trigger_filter(const std::string &process, //
     }
 
     // MC
-    if (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger or pass_low_pt_electron_trigger or
-        pass_high_pt_electron_trigger)
+    if (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger or pass_double_muon_trigger or
+        pass_low_pt_electron_trigger or pass_high_pt_electron_trigger or pass_double_electron_trigger)
     {
         trigger_filter_res = {
             //

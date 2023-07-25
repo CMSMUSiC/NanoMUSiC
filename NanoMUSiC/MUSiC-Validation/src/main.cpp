@@ -793,16 +793,16 @@ auto main(int argc, char *argv[]) -> int
             // fmt::print("*********************************\n");
             // if (is_good_trigger)
             // {
-            //     if (is_good_trigger->at("pass_low_pt_muon_trigger") or
-            //     is_good_trigger->at("pass_high_pt_muon_trigger"))
+            //     if (is_good_trigger->at("pass_low_pt_electron_trigger") or
+            //         is_good_trigger->at("pass_high_pt_electron_trigger"))
             //     {
             //         // fmt::print("pass_low_pt_muon_trigger: {}\n", is_good_trigger->at("pass_low_pt_muon_trigger"));
             //         // fmt::print("pass_high_pt_muon_trigger: {}\n",
-            //         is_good_trigger->at("pass_high_pt_muon_trigger"));
+            //         // is_good_trigger->at("pass_high_pt_muon_trigger"));
             //         // fmt::print("pass_low_pt_electron_trigger: {}\n",
             //         // is_good_trigger->at("pass_low_pt_electron_trigger"));
-            //         fmt::print("pass_low_pt_electron_trigger:
-            //         // {}\n", is_good_trigger->at("pass_high_pt_electron_trigger"));
+            //         // fmt::print("pass_low_pt_electron_trigger: {}\n",
+            //         //            is_good_trigger->at("pass_high_pt_electron_trigger"));
             //         fmt::print("{} - {} - {} - {}\n",
             //                    is_good_trigger->at("pass_low_pt_muon_trigger"),
             //                    is_good_trigger->at("pass_high_pt_muon_trigger"),
@@ -871,12 +871,12 @@ auto main(int argc, char *argv[]) -> int
                                                             diff_shift);
 
             // clear objects
-            electrons.clear(muons, 0.4);
-            taus.clear(electrons, 0.4);
-            taus.clear(muons, 0.4);
-            photons.clear(taus, 0.4);
-            photons.clear(electrons, 0.4);
-            photons.clear(muons, 0.4);
+            // electrons.clear(muons, 0.4, true);
+            // taus.clear(electrons, 0.4);
+            // taus.clear(muons, 0.4);
+            // photons.clear(taus, 0.4);
+            // photons.clear(electrons, 0.4);
+            // photons.clear(muons, 0.4);
             jets.clear(photons, 0.5);
             bjets.clear(photons, 0.5);
             jets.clear(taus, 0.5);
