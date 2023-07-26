@@ -26,6 +26,11 @@ parser.add_argument(
     help="Give path to the toml file containing cross-sections per sample",
 )
 parser.add_argument(
+    "--date-and-time",
+    help="Overwrites the global date and time",
+    default="",
+)
+parser.add_argument(
     "-btg",
     "--btageff",
     action="store_true",
@@ -94,7 +99,6 @@ def build_crab_config(process_name, das_name, year, is_data, global_now):
     this_config = config()
 
     process_name = f"{process_name}_{year}"
-    # now = datetime.now().strftime(r"date_%Y_%m_%d_time_%H_%M_%S")
 
     this_config.General.requestName = process_name
     this_config.General.workArea = f"crab_nano_music_{process_name}"
@@ -181,6 +185,9 @@ def check_voms():
 
 def main():
     global_now = datetime.now().strftime(r"date_%Y_%m_%d_time_%H_%M_%S")
+    if args.date_and_time != "":
+        global_now = args.date_and_time
+
     os.system("rm -rf last_CRAB_submition_{global_now}.txt")
     os.system(f"touch last_CRAB_submition_{global_now}.txt")
     os.system(f"echo {global_now} > last_CRAB_submition_{global_now}.txt")

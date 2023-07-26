@@ -675,10 +675,6 @@ auto main(int argc, char *argv[]) -> int
                                     "ERROR: Could not define trigger bits. The requested trigger(s) is/are invalid."));
                             }
                             return fmt::format("{}", fmt::join(double_electron_triggers, " or "));
-
-                            // return "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ or
-                            // HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL or HLT_DiEle27_WPTightCaloOnly_L1DoubleEG or
-                            // HLT_DoubleEle33_CaloIdL_MW or HLT_DoubleEle25_CaloIdL_MW or HLT_DoublePhoton70"sv;
                         }
 
                         throw std::invalid_argument(
@@ -686,13 +682,12 @@ auto main(int argc, char *argv[]) -> int
                                         configuration.year_str));
                     }())
                 .Define("pass_photon_trigger",
-                        [&configuration, &pre_skimmed_dataframe]() -> std::string
+                        [&configuration]() -> std::string
                         {
                             std::vector<std::string> double_electron_triggers = {};
 
                             if (configuration.year == Year::Run2016APV or configuration.year == Year::Run2016)
                             {
-
                                 return "HLT_Photon175";
                             }
 
@@ -700,6 +695,7 @@ auto main(int argc, char *argv[]) -> int
                             {
                                 return "HLT_Photon200";
                             }
+
                             if (configuration.year == Year::Run2018)
                             {
                                 return "HLT_Photon200";

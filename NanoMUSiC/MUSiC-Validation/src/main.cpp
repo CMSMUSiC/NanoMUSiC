@@ -90,6 +90,7 @@ auto main(int argc, char *argv[]) -> int
     ADD_VALUE_READER(pass_low_pt_electron_trigger, bool);
     ADD_VALUE_READER(pass_high_pt_electron_trigger, bool);
     ADD_VALUE_READER(pass_double_electron_trigger, bool);
+    ADD_VALUE_READER(pass_photon_trigger, bool);
     ADD_VALUE_READER(pass_jet_ht_trigger, bool);
     ADD_VALUE_READER(pass_jet_pt_trigger, bool);
 
@@ -740,6 +741,8 @@ auto main(int argc, char *argv[]) -> int
                                               unwrap(pass_low_pt_electron_trigger),
                                               unwrap(pass_high_pt_electron_trigger),
                                               //   unwrap(pass_double_electron_trigger)
+                                              false,
+                                              //   unwrap(pass_photon_trigger)
                                               false);
 
         // bool is_good_trigger = jets_trigger_filter(unwrap(pass_jet_ht_trigger), //
@@ -906,7 +909,8 @@ auto main(int argc, char *argv[]) -> int
 
             // check for trigger matching
             const auto trigger_match =
-                get_trigger_matching(is_good_trigger, muons, electrons, photons, get_runyear(year));
+                make_trigger_matching(is_good_trigger, muons, electrons, photons, get_runyear(year));
+
             if (not(trigger_match))
             {
                 continue;
@@ -930,16 +934,16 @@ auto main(int argc, char *argv[]) -> int
                         {
                             trigger_sf = low_pt_muon_trigger_sf->evaluate(
                                 {ObjectFactories::get_year_for_muon_sf(get_runyear(year)),
-                                 std::fabs((*trigger_match).matched_eta),
-                                 (*trigger_match).matched_pt,
+                                 std::fabs(trigger_match->get_matched_eta(0)),
+                                 trigger_match->get_matched_pt(0),
                                  "sf"});
                         }
                         if ((*trigger_match).matched_trigger == "match_high_pt_muon")
                         {
                             trigger_sf = high_pt_muon_trigger_sf->evaluate(
                                 {ObjectFactories::get_year_for_muon_sf(get_runyear(year)),
-                                 std::fabs((*trigger_match).matched_eta),
-                                 (*trigger_match).matched_pt,
+                                 std::fabs(trigger_match->get_matched_eta(0)),
+                                 trigger_match->get_matched_pt(0),
                                  "sf"});
                         }
 

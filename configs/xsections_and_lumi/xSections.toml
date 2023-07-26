@@ -78,7 +78,7 @@ ProcessGroup = "DrellYan"
 
 [DYJetsToLL_LHEFilterPtZ-0To50_MatchEWPDG20_13TeV_AM]
 XSec = 1437
-FilterEff = 0.254
+FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"
 ProcessGroup = "DrellYan"
@@ -86,7 +86,7 @@ generator_filter_key = "dyjets_mass_less_120_mass_greater_50"
 
 [DYJetsToLL_LHEFilterPtZ-100To250_MatchEWPDG20_13TeV_AM]
 XSec = 84.97
-FilterEff = 0.3386
+FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"
 ProcessGroup = "DrellYan"
@@ -94,7 +94,7 @@ generator_filter_key = "dyjets_mass_less_120_mass_greater_50"
 
 [DYJetsToLL_LHEFilterPtZ-250To400_MatchEWPDG20_13TeV_AM]
 XSec = 2.906
-FilterEff = 0.4402
+FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"
 ProcessGroup = "DrellYan"
@@ -102,7 +102,7 @@ generator_filter_key = "dyjets_mass_less_120_mass_greater_50"
 
 [DYJetsToLL_LHEFilterPtZ-400To650_MatchEWPDG20_13TeV_AM]
 XSec = 0.4352
-FilterEff = 0.5951
+FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"
 ProcessGroup = "DrellYan"
@@ -110,7 +110,7 @@ generator_filter_key = "dyjets_mass_less_120_mass_greater_50"
 
 [DYJetsToLL_LHEFilterPtZ-50To100_MatchEWPDG20_13TeV_AM]
 XSec = 361.7
-FilterEff = 0.2254
+FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"
 ProcessGroup = "DrellYan"
@@ -118,7 +118,7 @@ generator_filter_key = "dyjets_mass_less_120_mass_greater_50"
 
 [DYJetsToLL_LHEFilterPtZ-650ToInf_MatchEWPDG20_13TeV_AM]
 XSec = 0.05448
-FilterEff = 0.6898
+FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"
 ProcessGroup = "DrellYan"
@@ -871,7 +871,7 @@ FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NNLO"
 ProcessGroup = "TTbar"
-generator_filter_key="ttbar_mass_less_700"
+generator_filter_key = "ttbar_mass_less_700"
 
 [TTToHadronic_13TeV_PH]
 XSec = 367.825
@@ -879,7 +879,7 @@ FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NNLO"
 ProcessGroup = "TTbar"
-generator_filter_key="ttbar_mass_less_700"
+generator_filter_key = "ttbar_mass_less_700"
 
 [TTToSemiLeptonic_13TeV_PH]
 XSec = 370.59
@@ -887,8 +887,8 @@ FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NNLO"
 ProcessGroup = "TTbar"
-generator_filter_key="ttbar_mass_less_700"
-debug=true
+generator_filter_key = "ttbar_mass_less_700"
+debug = true
 
 [TTWJetsToLNu_13TeV_AM]
 XSec = 0.2043
@@ -1007,7 +1007,6 @@ FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NNLO"
 ProcessGroup = "HIG"
-
 
 
 [VBFHToWWTo2L2Nu_M-125-jhugen727_13TeV_PH]
@@ -1230,7 +1229,7 @@ generator_filter_key = "w_plus_jets_mass_less_200"
 
 [WJetsToLNu_Pt-100To250_MatchEWPDG20_13TeV_AM]
 # XSec = 677.82
-XSec = 731.0 # XSDB
+XSec = 731.0                                       # XSDB
 FilterEff = 1.0
 kFactor = 1.02
 XSecOrder = "NNLO"
@@ -1247,7 +1246,7 @@ generator_filter_key = "w_plus_jets_mass_less_200"
 
 [WJetsToLNu_Pt-250To400_MatchEWPDG20_13TeV_AM]
 # XSec = 24.083
-XSec = 28.5 # XSDB
+XSec = 28.5                                        # XSDB
 FilterEff = 1.0
 kFactor = 1.02
 XSecOrder = "NNLO"
@@ -1264,7 +1263,7 @@ generator_filter_key = "w_plus_jets_mass_less_200"
 
 [WJetsToLNu_Pt-400To600_MatchEWPDG20_13TeV_AM]
 # XSec = 3.0563
-XSec = 5.03 # XSDB
+XSec = 5.03                                        # XSDB
 FilterEff = 1.0
 kFactor = 1.02
 XSecOrder = "NNLO"
@@ -1281,7 +1280,7 @@ generator_filter_key = "w_plus_jets_mass_less_200"
 
 [WJetsToLNu_Pt-600ToInf_MatchEWPDG20_13TeV_AM]
 # XSec = 0.4602
-XSec = 0.55 # XSDB
+XSec = 0.55                                        # XSDB
 FilterEff = 1.0
 kFactor = 1.02
 XSecOrder = "NNLO"
@@ -1498,7 +1497,7 @@ ProcessGroup = "WW"
 generator_filter_key = "ww_mLL_less_1800"
 
 [WWTo2L2Nu_MLL_1800ToInf_13TeV_PH]
-XSec = 10.4814 # this xSec is completely off !!!
+XSec = 10.4814      # this xSec is completely off !!!
 FilterEff = 1.0
 kFactor = 1.162
 XSecOrder = "NNLO"
@@ -1809,7 +1808,7 @@ ProcessGroup = "ZG"
 
 [ZGToLLG_01J_5f_13TeV_AM]
 # XSec = 123.8
-XSec = 51.53	# XSDB
+XSec = 51.53        # XSDB
 FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"
@@ -2497,4 +2496,3 @@ FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "N3LO"
 ProcessGroup = "HIG"
-
