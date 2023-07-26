@@ -108,46 +108,40 @@ inline auto make_jets(const RVec<float> &Jet_pt,            //
     auto bjets_scale_factor_up = RVec<double>{};
     auto jets_scale_factor_down = RVec<double>{};
     auto bjets_scale_factor_down = RVec<double>{};
-    auto jets_delta_met_x = 0.;
-    auto bjets_delta_met_x = 0.;
-    auto jets_delta_met_y = 0.;
-    auto bjets_delta_met_y = 0.;
+    auto jets_delta_met_x = RVec<double>{};
+    auto bjets_delta_met_x = RVec<double>{};
+    auto jets_delta_met_y = RVec<double>{};
+    auto bjets_delta_met_y = RVec<double>{};
     auto jets_is_fake = RVec<bool>{};
     auto bjets_is_fake = RVec<bool>{};
 
     for (std::size_t i = 0; i < Jet_pt.size(); i++)
     {
+        // dont do b-tagging
 
-        auto is_good_jet_pre_filter = (std::fabs(Jet_eta[i]) <= ObjConfig::Jets[year].MaxAbsEta) //
-                                      and (Jet_jetId[i] >= ObjConfig::Jets[year].MinJetID);       //
-                                      //and (Jet_btagDeepFlavB[i] < ObjConfig::Jets[year].MaxBTagWPTight);
+        auto is_good_jet_pre_filter =
+            (std::fabs(Jet_eta[i]) <= ObjConfig::Jets[year].MaxAbsEta) //
+            and (Jet_jetId[i] >= ObjConfig::Jets[year].MinJetID); //
+        // and (Jet_btagDeepFlavB[i] < ObjConfig::Jets[year].MaxBTagWPTight); // DONT B TAG ANYMORE
 
-        //auto is_good_bjet_pre_filter = (std::fabs(Jet_eta[i]) <= ObjConfig::Jets[year].MaxAbsEta) //
-        //                               and (Jet_jetId[i] >= ObjConfig::Jets[year].MinJetID)       //
-        //                               and (Jet_btagDeepFlavB[i] >= ObjConfig::Jets[year].MaxBTagWPTight);
         auto is_good_bjet_pre_filter = false;
-
-        auto jet_p4 = Math::PtEtaPhiMVector(Jet_pt[i], Jet_eta[i], Jet_phi[i], Jet_mass[i]);
-        jet_p4 = jet_p4 * get_jet_energy_corrections(shift,
-                                                     Jet_pt[i],
-                                                     Jet_eta[i],
-                                                     Jet_phi[i],
-                                                     Jet_rawFactor[i],
-                                                     Jet_area[i],
-                                                     Jet_genJetIdx[i],
-                                                     fixedGridRhoFastjetAll,
-                                                     jet_corrections,
-                                                     gen_jets);
-
-        jets_delta_met_x += (jet_p4.pt() - Jet_pt[i]) * std::cos(Jet_phi[i]);
-        jets_delta_met_y += (jet_p4.pt() - Jet_pt[i]) * std::sin(Jet_phi[i]);
-
-        // lets define that BJets never correct MET...
-        // bjets_delta_met_x += (jet_p4.pt() - Jet_pt[i]) * std::cos(Jet_phi[i]);
-        // bjets_delta_met_y += (jet_p4.pt() - Jet_pt[i]) * std::sin(Jet_phi[i]);
+        //(std::fabs(Jet_eta[i]) <= ObjConfig::Jets[year].MaxAbsEta) //
+        // and (Jet_jetId[i] >= ObjConfig::Jets[year].MinJetID)       //
+        // and (Jet_btagDeepFlavB[i] >= ObjConfig::Jets[year].MaxBTagWPTight);
 
         if (is_good_jet_pre_filter or is_good_bjet_pre_filter)
         {
+            auto jet_p4 = Math::PtEtaPhiMVector(Jet_pt[i], Jet_eta[i], Jet_phi[i], Jet_mass[i]);
+            jet_p4 = jet_p4 * get_jet_energy_corrections(shift,
+                                                         Jet_pt[i],
+                                                         Jet_eta[i],
+                                                         Jet_phi[i],
+                                                         Jet_rawFactor[i],
+                                                         Jet_area[i],
+                                                         Jet_genJetIdx[i],
+                                                         fixedGridRhoFastjetAll,
+                                                         jet_corrections,
+                                                         gen_jets);
 
             auto is_good_jet = (jet_p4.pt() >= ObjConfig::Jets[year].MinPt) and is_good_jet_pre_filter;
             auto is_good_bjet = (jet_p4.pt() >= ObjConfig::Jets[year].MinPt) and is_good_bjet_pre_filter;
@@ -159,6 +153,9 @@ inline auto make_jets(const RVec<float> &Jet_pt,            //
                 jets_scale_factor_down.push_back(1.);
 
                 jets_p4.push_back(jet_p4);
+
+                jets_delta_met_x.push_back((jet_p4.pt() - Jet_pt[i]) * std::cos(Jet_phi[i]));
+                jets_delta_met_y.push_back((jet_p4.pt() - Jet_pt[i]) * std::sin(Jet_phi[i]));
 
                 jets_is_fake.push_back(is_data ? false : Jet_genJetIdx[i] == -1);
             }
@@ -172,6 +169,9 @@ inline auto make_jets(const RVec<float> &Jet_pt,            //
                 bjets_scale_factor_down.push_back(1.);
 
                 bjets_p4.push_back(jet_p4);
+
+                bjets_delta_met_x.push_back((jet_p4.pt() - Jet_pt[i]) * std::cos(Jet_phi[i]));
+                bjets_delta_met_y.push_back((jet_p4.pt() - Jet_pt[i]) * std::sin(Jet_phi[i]));
 
                 bjets_is_fake.push_back(is_data ? false : Jet_genJetIdx[i] == -1);
             }

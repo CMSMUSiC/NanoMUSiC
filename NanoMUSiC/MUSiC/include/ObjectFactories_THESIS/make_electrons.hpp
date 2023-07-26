@@ -119,8 +119,7 @@ inline auto get_high_pt_sf(bool is_data, const Year &year, const std::string &va
     }
     else
     {
-        eta = std::min(std::fabs(eta), 2.5f) * eta / eta;
-        // throw std::runtime_error(fmt::format("Eta SC value ({}) is out of range.", eta));
+        throw std::runtime_error(fmt::format("The Eta SC ({}) value is out of range.", eta));
     }
 
     auto syst_multiplier = [&variation]() -> float
@@ -218,22 +217,24 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
     auto scale_factors = RVec<double>{};
     auto scale_factor_up = RVec<double>{};
     auto scale_factor_down = RVec<double>{};
-    auto delta_met_x = 0.;
-    auto delta_met_y = 0.;
+    auto delta_met_x = RVec<double>{};
+    auto delta_met_y = RVec<double>{};
     auto is_fake = RVec<bool>{};
 
     for (std::size_t i = 0; i < Electron_pt.size(); i++)
     {
-        auto eta_SC = Electron_eta.at(i) + Electron_deltaEtaSC.at(i);
-
         // Low pT Electrons
         bool is_good_low_pt_electron_pre_filter =
-            ((std::fabs(eta_SC) <= 1.442) or ((std::fabs(eta_SC) >= 1.566) and (std::fabs(eta_SC) <= 2.5))) //
+            ((std::fabs(Electron_eta.at(i) + Electron_deltaEtaSC.at(i)) <= 1.442) or
+             ((std::fabs(Electron_eta.at(i) + Electron_deltaEtaSC.at(i)) >= 1.566) and
+              (std::fabs(Electron_eta.at(i) + Electron_deltaEtaSC.at(i)) <= 2.5))) //
             and (Electron_cutBased.at(i) >= ObjConfig::Electrons[year].cutBasedId);
 
         // High pT Electrons
         bool is_good_high_pt_electron_pre_filter =
-            ((std::fabs(eta_SC) <= 1.442) or ((std::fabs(eta_SC) >= 1.566) and (std::fabs(eta_SC) <= 2.5))) //
+            ((std::fabs(Electron_eta.at(i) + Electron_deltaEtaSC.at(i)) <= 1.442) or
+             ((std::fabs(Electron_eta.at(i) + Electron_deltaEtaSC.at(i)) >= 1.566) and
+              (std::fabs(Electron_eta.at(i) + Electron_deltaEtaSC.at(i)) <= 2.5))) //
             and (Electron_cutBased_HEEP.at(i));
 
         float pt_correction_factor = 1.f;
@@ -244,24 +245,20 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
             eta_correction_factor = Electron_deltaEtaSC[i];
         }
 
-        // define a new lorentz vector for a electron and apply the energy correction
-        auto electron_p4 =
-            Math::PtEtaPhiMVector(std::max(Electron_pt[i] * pt_correction_factor, ObjConfig::Electrons[year].MinLowPt),
-                                  Electron_eta[i] + eta_correction_factor,
-                                  Electron_phi[i],
-                                  PDG::Electron::Mass);
-        electron_p4 = electron_p4 * get_electron_energy_corrections(shift,
-                                                                    Electron_dEscaleUp[i],
-                                                                    Electron_dEscaleDown[i],
-                                                                    Electron_dEsigmaUp[i],
-                                                                    Electron_dEsigmaDown[i],
-                                                                    electron_p4.energy());
-
-        delta_met_x += (electron_p4.pt() - Electron_pt[i]) * std::cos(Electron_phi[i]);
-        delta_met_y += (electron_p4.pt() - Electron_pt[i]) * std::sin(Electron_phi[i]);
-
         if (is_good_low_pt_electron_pre_filter or is_good_high_pt_electron_pre_filter)
         {
+            auto electron_p4 = Math::PtEtaPhiMVector(
+                std::max(Electron_pt[i] * pt_correction_factor, ObjConfig::Electrons[year].MinLowPt),
+                Electron_eta[i] + eta_correction_factor,
+                Electron_phi[i],
+                PDG::Electron::Mass);
+
+            electron_p4 = electron_p4 * get_electron_energy_corrections(shift,
+                                                                        Electron_dEscaleUp[i],
+                                                                        Electron_dEscaleDown[i],
+                                                                        Electron_dEsigmaUp[i],
+                                                                        Electron_dEsigmaDown[i],
+                                                                        electron_p4.energy());
 
             // Low pT Electrons
             bool is_good_low_pt_electron = ((electron_p4.pt() >= ObjConfig::Electrons[year].MinLowPt) and
@@ -354,6 +351,9 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
             if (is_good_low_pt_electron or is_good_high_pt_electron)
             {
                 electrons_p4.push_back(electron_p4);
+
+                delta_met_x.push_back((electron_p4.pt() - Electron_pt[i]) * std::cos(Electron_phi[i]));
+                delta_met_y.push_back((electron_p4.pt() - Electron_pt[i]) * std::sin(Electron_phi[i]));
 
                 is_fake.push_back(is_data ? false : Electron_genPartIdx[i] == -1);
             }

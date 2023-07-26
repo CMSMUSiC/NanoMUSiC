@@ -1357,17 +1357,30 @@ def plotter(args):
 
         # plot cosmetics and legend
         printdebug("Exporting plot...")
-        legend = ax[0].legend(
-            loc="upper right",
-            prop={"size": 14},
-            bbox_to_anchor=(0.99, 0.98),
-            frameon=True,
-            facecolor="white",
-            framealpha=0.5,
-            edgecolor="white",
-            fancybox=False,
-            title=f"Normalized with\n$\\alpha_{{QCD}} = {np.array(float(print_norm_fac)).round(decimals=2)}\\pm{np.array(float(print_norm_fac_err)).round(decimals=2)}$",
-        )
+        legend = 0
+        if normalizethis != "":
+            legend = ax[0].legend(
+                loc="upper right",
+                prop={"size": 14},
+                bbox_to_anchor=(0.99, 0.98),
+                frameon=True,
+                facecolor="white",
+                framealpha=0.5,
+                edgecolor="white",
+                fancybox=False,
+                title=f"Normalized with\n$\\alpha_{{QCD}} = {np.array(float(print_norm_fac)).round(decimals=2)}\\pm{np.array(float(print_norm_fac_err)).round(decimals=2)}$",
+            )
+        else:
+            legend = ax[0].legend(
+                loc="upper right",
+                prop={"size": 14},
+                bbox_to_anchor=(0.99, 0.98),
+                frameon=True,
+                facecolor="white",
+                framealpha=0.5,
+                edgecolor="white",
+                fancybox=False,
+            )
         plt.setp(legend.get_title(),fontsize='14') # legend title size
         plt.setp(legend.get_texts(),fontsize='14') # legend text size
 

@@ -233,7 +233,6 @@ auto main(int argc, char *argv[]) -> int
     ADD_ARRAY_READER(Muon_pfRelIso04_all, float);
     ADD_ARRAY_READER(Muon_tkRelIso, float);
     ADD_ARRAY_READER(Muon_tunepRelPt, float);
-    ADD_ARRAY_READER(Muon_highPurity, bool);
     ADD_ARRAY_READER(Muon_genPartIdx, int);
 
     ADD_ARRAY_READER(Electron_pt, float);
@@ -541,7 +540,6 @@ auto main(int argc, char *argv[]) -> int
                                                  unwrap(Muon_pfRelIso04_all), //
                                                  unwrap(Muon_tkRelIso),       //
                                                  unwrap(Muon_tunepRelPt),     //
-                                                 unwrap(Muon_highPurity),           //
                                                  unwrap(Muon_genPartIdx),     //
                                                  muon_sf_reco,                //
                                                  muon_sf_id_low_pt,           //

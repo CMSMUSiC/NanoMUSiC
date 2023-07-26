@@ -1281,20 +1281,36 @@ def countplotter(
     printdebug("Exporting plot...")
     plots = barplot[::-1] + [mcerrorplot] + [dataplot]
     labels = barlabel[::-1] + ["MC uncertainty"] + ["Data"]
-    legend = ax[0].legend(
-        plots,
-        labels,
-        loc="upper right",
-        prop={"size": 14},
-        bbox_to_anchor=(0.99, 0.985),
-        frameon=True,
-        facecolor="white",
-        framealpha=0.5,
-        edgecolor="white",
-        fancybox=False,
-        ncol=2,
-        title=f"Normalized with $\\alpha_{{QCD}} = {np.array(float(norm_fac)).round(decimals=2)}\\pm{np.array(float(err_norm_fac)).round(decimals=2)}$",
-    )
+    legend = 0
+    if normalizethis != "":
+        legend = ax[0].legend(
+            plots,
+            labels,
+            loc="upper right",
+            prop={"size": 14},
+            bbox_to_anchor=(0.99, 0.985),
+            frameon=True,
+            facecolor="white",
+            framealpha=0.5,
+            edgecolor="white",
+            fancybox=False,
+            ncol=2,
+            title=f"Normalized with $\\alpha_{{QCD}} = {np.array(float(norm_fac)).round(decimals=2)}\\pm{np.array(float(err_norm_fac)).round(decimals=2)}$",
+        )
+    else:
+        legend = ax[0].legend(
+            plots,
+            labels,
+            loc="upper right",
+            prop={"size": 14},
+            bbox_to_anchor=(0.99, 0.985),
+            frameon=True,
+            facecolor="white",
+            framealpha=0.5,
+            edgecolor="white",
+            fancybox=False,
+            ncol=2,
+        )
     plt.setp(legend.get_title(),fontsize='14') # legend title size
     plt.setp(legend.get_texts(),fontsize='14') # legend text size
 

@@ -36,8 +36,8 @@ class MUSiCObjects
     RVec<double> scale_factor;
     RVec<double> scale_factor_up;
     RVec<double> scale_factor_down;
-    double delta_met_x;
-    double delta_met_y;
+    RVec<float> delta_met_x;
+    RVec<float> delta_met_y;
     RVec<bool> is_fake;
 
     MUSiCObjects()
@@ -45,8 +45,8 @@ class MUSiCObjects
           scale_factor({}),
           scale_factor_up({}),
           scale_factor_down({}),
-          delta_met_x(0.),
-          delta_met_y(0.),
+          delta_met_x({}),
+          delta_met_y({}),
           is_fake({})
     {
     }
@@ -55,8 +55,8 @@ class MUSiCObjects
                  const RVec<double> &_scale_factor,
                  const RVec<double> &_scale_factor_up,
                  const RVec<double> &_scale_factor_down,
-                 double _delta_met_x,
-                 double _delta_met_y,
+                 const RVec<float> _delta_met_x,
+                 const RVec<float> _delta_met_y,
                  const RVec<bool> &_is_fake)
         : p4(_p4),
           scale_factor(_scale_factor),
@@ -70,6 +70,8 @@ class MUSiCObjects
         if (not(                                          //
                 p4.size() == scale_factor.size()          //
                 and p4.size() == scale_factor_up.size()   //
+                and p4.size() == delta_met_x.size()       //
+                and p4.size() == delta_met_y.size()       //
                 and p4.size() == scale_factor_down.size() //
                 and p4.size() == is_fake.size()           //
                 ))
@@ -80,6 +82,8 @@ class MUSiCObjects
                 scale_factor.size(),
                 scale_factor_up.size(),
                 scale_factor_down.size(),
+                delta_met_x.size(),
+                delta_met_y.size(),
                 is_fake.size()));
         }
 
@@ -88,12 +92,12 @@ class MUSiCObjects
 
     auto get_delta_met_x() const -> double
     {
-        return delta_met_x;
+        return VecOps::Sum(delta_met_x);
     }
 
     auto get_delta_met_y() const -> double
     {
-        return delta_met_y;
+        return VecOps::Sum(delta_met_y);
     }
 
     auto take(const RVec<int> &indexes) -> void
@@ -102,6 +106,8 @@ class MUSiCObjects
         scale_factor = VecOps::Take(scale_factor, indexes);
         scale_factor_up = VecOps::Take(scale_factor_up, indexes);
         scale_factor_down = VecOps::Take(scale_factor_down, indexes);
+        delta_met_x = VecOps::Take(delta_met_x, indexes);
+        delta_met_y = VecOps::Take(delta_met_y, indexes);
         is_fake = VecOps::Take(is_fake, indexes);
     }
 
@@ -127,6 +133,7 @@ class MUSiCObjects
 
     auto size() const -> std::size_t
     {
+
         return p4.size();
     }
 
