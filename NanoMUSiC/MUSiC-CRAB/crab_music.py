@@ -202,7 +202,7 @@ def main():
     os.system("rm -rf raw_configs")
     os.system("mkdir raw_configs")
     sample_list = make_sample_list(args.xsection_file_path, global_now)
-    with Pool(max(30), len(sample_list)) as pool:
+    with Pool(30) as pool:
         list(
             tqdm(
                 pool.imap_unordered(submit, sample_list),

@@ -1112,7 +1112,7 @@ auto main(int argc, char *argv[]) -> int
                                                                                      {0, met}));
                     }
 
-                    // ttbar to mu
+                    // ttbar -> (mu+nu) + (qq)
                     if (muons.size() > 0 and jets.size() >= 2 and bjets.size() >= 2)
                     {
                         auto muon = muons.p4[0];
