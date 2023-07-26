@@ -11,6 +11,7 @@
 #include "TTreeReader.h"
 #include "TTreeReaderValue.h"
 #include "fmt/core.h"
+#include <cstdint>
 #include <cstdlib>
 #include <filesystem>
 #include <memory>
@@ -350,8 +351,18 @@ auto main(int argc, char *argv[]) -> int
     std::unordered_map<std::string, ZToLepLepX> z_to_tau_tau_x;
     std::unordered_map<std::string, ZToLepLepX> z_to_tau_tau_x_Z_mass;
     std::unordered_map<std::string, WToLepNuX> w_to_tau_nu;
-    std::unordered_map<std::string, WToLepNuX> w_to_tau_nu_Z_mass;
 
+    // unsigned long pass_electron_triggers = 0;
+    // unsigned long pass_muon_triggers = 0;
+    // unsigned long total_triggers = 0;
+
+    // unsigned long pass_electron_count = 0;
+    // unsigned long pass_muon_count = 0;
+    // unsigned long pass_total_count = 0;
+
+    // unsigned long enter_electron_analysis = 0;
+
+    // Initiale analyses
     for (auto &&shift : shifts.get_constant_shifts())
     {
         z_to_mu_mu_x.insert(
@@ -490,19 +501,6 @@ auto main(int argc, char *argv[]) -> int
                            "w_to_tau_nu", output_path, process, year, process_group, xs_order, is_data, shift),
                        w_to_tau_nu_count_map,
                        false,
-                       shift,
-                       process,
-                       year,
-                       process_group,
-                       xs_order)});
-
-        w_to_tau_nu_Z_mass.insert(
-            {shift,
-             WToLepNuX("w_to_tau_nu_Z_mass",
-                       get_output_file_path(
-                           "w_to_tau_nu_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
-                       w_to_tau_nu_count_map,
-                       true,
                        shift,
                        process,
                        year,
@@ -656,20 +654,6 @@ auto main(int argc, char *argv[]) -> int
                            year,
                            process_group,
                            xs_order)});
-
-            w_to_tau_nu_Z_mass.insert(
-                {shift,
-                 WToLepNuX(
-                     "w_to_tau_nu_Z_mass",
-                     get_output_file_path(
-                         "w_to_tau_nu_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
-                     w_to_tau_nu_count_map,
-                     false,
-                     shift,
-                     process,
-                     year,
-                     process_group,
-                     xs_order)});
         }
     }
 
@@ -752,6 +736,24 @@ auto main(int argc, char *argv[]) -> int
         {
             continue;
         }
+
+        // ////////////////////////////////////////////////////
+        // total_triggers++;
+        // if (is_good_trigger->at("pass_low_pt_muon_trigger") or is_good_trigger->at("pass_high_pt_muon_trigger"))
+        // {
+        //     pass_muon_triggers++;
+        // }
+        // if (is_good_trigger->at("pass_low_pt_electron_trigger") or
+        // is_good_trigger->at("pass_high_pt_electron_trigger"))
+        // {
+        //     pass_electron_triggers++;
+        // }
+
+        // // pass_total_count++;
+        // // pass_electron_count++;
+        // // pass_muon_count++;
+
+        // ////////////////////////////////////////////////////
 
         for (auto &&diff_shift : shifts.get_differential_shifts())
         {
@@ -874,12 +876,12 @@ auto main(int argc, char *argv[]) -> int
                                                             diff_shift);
 
             // clear objects
-            // electrons.clear(muons, 0.4, true);
-            // taus.clear(electrons, 0.4);
-            // taus.clear(muons, 0.4);
-            // photons.clear(taus, 0.4);
-            // photons.clear(electrons, 0.4);
-            // photons.clear(muons, 0.4);
+            electrons.clear(muons, 0.4);
+            taus.clear(electrons, 0.4);
+            taus.clear(muons, 0.4);
+            photons.clear(taus, 0.4);
+            photons.clear(electrons, 0.4);
+            photons.clear(muons, 0.4);
             jets.clear(photons, 0.5);
             bjets.clear(photons, 0.5);
             jets.clear(taus, 0.5);
@@ -906,6 +908,19 @@ auto main(int argc, char *argv[]) -> int
                                                  is_data,                     //
                                                  year,                        //
                                                  diff_shift);
+
+            // ////////////////////////////////////////////////////
+            // pass_total_count++;
+            // if (muons.size() >= 2)
+            // {
+            //     pass_muon_count++;
+            // }
+            // if (electrons.size() >= 2)
+            // {
+            //     pass_electron_count++;
+            // }
+
+            // ////////////////////////////////////////////////////
 
             // check for trigger matching
             const auto trigger_match =
@@ -1029,6 +1044,7 @@ auto main(int argc, char *argv[]) -> int
                     unsigned int n_electrons = 2;
                     if (electrons.size() >= n_electrons)
                     {
+                        // enter_electron_analysis++;
                         auto electron_1 = electrons.p4[0];
                         auto electron_2 = electrons.p4[1];
 
@@ -1039,8 +1055,8 @@ auto main(int argc, char *argv[]) -> int
                                                    jets.p4,
                                                    met.p4,
                                                    weight * Shifts::get_scale_factor(shift,
-                                                                                     {n_muons, muons},
-                                                                                     {0, electrons},
+                                                                                     {0, muons},
+                                                                                     {n_electrons, electrons},
                                                                                      {0, taus},
                                                                                      {0, photons},
                                                                                      {0, bjets},
@@ -1056,14 +1072,15 @@ auto main(int argc, char *argv[]) -> int
                                                               bjets.p4,
                                                               jets.p4,
                                                               met.p4,
-                                                              weight * Shifts::get_scale_factor(shift,
-                                                                                                {n_muons, muons},
-                                                                                                {0, electrons},
-                                                                                                {0, taus},
-                                                                                                {0, photons},
-                                                                                                {0, bjets},
-                                                                                                {0, jets},
-                                                                                                {0, met}));
+                                                              weight *
+                                                                  Shifts::get_scale_factor(shift,
+                                                                                           {0, muons},
+                                                                                           {n_electrons, electrons},
+                                                                                           {0, taus},
+                                                                                           {0, photons},
+                                                                                           {0, bjets},
+                                                                                           {0, jets},
+                                                                                           {0, met}));
                         }
                     }
 
@@ -1190,8 +1207,7 @@ auto main(int argc, char *argv[]) -> int
                     }
 
                     // TauNu
-                    unsigned int n_taus2 = 1;
-                    if (taus.size() >= n_taus2 and met.size() >= 1)
+                    if (taus.size() >= 1 and met.size() >= 1)
                     {
                         auto tau_1 = taus.p4[0];
 
@@ -1208,23 +1224,6 @@ auto main(int argc, char *argv[]) -> int
                                                                                   {0, bjets},
                                                                                   {0, jets},
                                                                                   {1, met}));
-
-                        // Z mass range
-                        if (PDG::Z::Mass - 20. < (tau_1).mass() and (tau_1).mass() < PDG::Z::Mass + 20.)
-                        {
-                            w_to_tau_nu_Z_mass[shift].fill(tau_1,
-                                                           // bjets.p4,
-                                                           // jets.p4,
-                                                           met.p4,
-                                                           weight * Shifts::get_scale_factor(shift,
-                                                                                             {0, muons},
-                                                                                             {0, electrons},
-                                                                                             {1, taus},
-                                                                                             {0, photons},
-                                                                                             {0, bjets},
-                                                                                             {0, jets},
-                                                                                             {1, met}));
-                        }
                     }
                 }
             }
@@ -1268,7 +1267,6 @@ auto main(int argc, char *argv[]) -> int
         z_to_tau_tau_x[shift].dump_outputs();
         z_to_tau_tau_x_Z_mass[shift].dump_outputs();
         w_to_tau_nu[shift].dump_outputs();
-        w_to_tau_nu_Z_mass[shift].dump_outputs();
         // dijets.dump_outputs();
     }
 
@@ -1286,13 +1284,26 @@ auto main(int argc, char *argv[]) -> int
             z_to_tau_tau_x[shift].dump_outputs();
             z_to_tau_tau_x_Z_mass[shift].dump_outputs();
             w_to_tau_nu[shift].dump_outputs();
-            w_to_tau_nu_Z_mass[shift].dump_outputs();
             // dijets.dump_outputs();
         }
     }
 
     fmt::print("\n[MUSiC Validation] Done ...\n");
     PrintProcessInfo();
+
+    // ////////////////////////////////////////////////////
+    // fmt::print("*****************************************************\n");
+    // fmt::print("Total trigger: {} - Muon triggers: {} - Electron triggers: {}\n",
+    //            total_triggers,
+    //            pass_muon_triggers,
+    //            pass_electron_triggers);
+    // fmt::print("Total counts {} - Muon counts: {} - Electron counts: {}\n",
+    //            pass_total_count,
+    //            pass_muon_count,
+    //            pass_electron_count);
+
+    // fmt::print("Enter electron analysis: {}\n", enter_electron_analysis);
+    // ////////////////////////////////////////////////////
 
     return EXIT_SUCCESS;
 }
