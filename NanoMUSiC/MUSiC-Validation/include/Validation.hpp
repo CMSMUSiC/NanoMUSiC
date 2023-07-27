@@ -444,15 +444,11 @@ inline auto trigger_filter(const std::string &process, //
 class TriggerMatch
 {
   public:
-    std::string matched_trigger;
     std::vector<double> matched_pt;
     std::vector<double> matched_eta;
 
-    TriggerMatch(const std::string &_matched_trigger,
-                 std::vector<double> &&_matched_pt,
-                 std::vector<double> &&_matched_eta)
-        : matched_trigger(_matched_trigger),
-          matched_pt(_matched_pt),
+    TriggerMatch(std::vector<double> &&_matched_pt, std::vector<double> &&_matched_eta)
+        : matched_pt(_matched_pt),
           matched_eta(_matched_eta)
     {
     }
@@ -468,13 +464,13 @@ class TriggerMatch
     }
 };
 
-inline auto make_trigger_matching(const std::optional<std::unordered_map<std::string, bool>> &is_good_trigger_map,
-                                  const MUSiCObjects &muons,
-                                  const MUSiCObjects &electrons,
-                                  const MUSiCObjects &photons,
-                                  Year year) -> std::optional<TriggerMatch>
+inline auto make_trigger_matches(const std::optional<std::unordered_map<std::string, bool>> &is_good_trigger_map,
+                                 const MUSiCObjects &muons,
+                                 const MUSiCObjects &electrons,
+                                 const MUSiCObjects &photons,
+                                 Year year) -> std::unordered_map<std::string, std::optional<TriggerMatch>>
 {
-    std::optional<TriggerMatch> has_trigger_match = std::nullopt;
+    auto matches = std::unordered_map<std::string, std::optional<TriggerMatch>>();
 
     // Low pT muon trigger
     if (is_good_trigger_map->at("pass_low_pt_muon_trigger") //
@@ -491,7 +487,11 @@ inline auto make_trigger_matching(const std::optional<std::unordered_map<std::st
                                          });
         if (good_muons.size() >= 1)
         {
-            return TriggerMatch("match_low_pt_muon", {good_muons[0].pt()}, {good_muons[0].eta()});
+            matches.insert({"pass_low_pt_muon_trigger", TriggerMatch({good_muons[0].pt()}, {good_muons[0].eta()})});
+        }
+        else
+        {
+            matches.insert({"pass_low_pt_muon_trigger", std::nullopt});
         }
     }
 
@@ -506,7 +506,11 @@ inline auto make_trigger_matching(const std::optional<std::unordered_map<std::st
                                          });
         if (good_muons.size() >= 1)
         {
-            return TriggerMatch("match_high_pt_muon", {good_muons[0].pt()}, {good_muons[0].eta()});
+            matches.insert({"pass_high_pt_muon_trigger", TriggerMatch({good_muons[0].pt()}, {good_muons[0].eta()})});
+        }
+        else
+        {
+            matches.insert({"pass_high_pt_muon_trigger", std::nullopt});
         }
     }
 
@@ -521,9 +525,13 @@ inline auto make_trigger_matching(const std::optional<std::unordered_map<std::st
                                          });
         if (good_muons.size() >= 2)
         {
-            return TriggerMatch("match_double_muon",
-                                {good_muons[0].pt(), good_muons[1].pt()},
-                                {good_muons[0].eta(), good_muons[1].eta()});
+            matches.insert(
+                {"pass_double_muon_trigger",
+                 TriggerMatch({good_muons[0].pt(), good_muons[1].pt()}, {good_muons[0].eta(), good_muons[1].eta()})});
+        }
+        else
+        {
+            matches.insert({"pass_double_muon_trigger", std::nullopt});
         }
     }
 
@@ -546,7 +554,12 @@ inline auto make_trigger_matching(const std::optional<std::unordered_map<std::st
                                              });
         if (good_electrons.size() >= 1)
         {
-            return TriggerMatch("match_low_pt_electron", {good_electrons[0].pt()}, {good_electrons[0].eta()});
+            matches.insert(
+                {"pass_low_pt_electron_trigger", TriggerMatch({good_electrons[0].pt()}, {good_electrons[0].eta()})});
+        }
+        else
+        {
+            matches.insert({"pass_low_pt_electron_trigger", std::nullopt});
         }
     }
 
@@ -561,7 +574,12 @@ inline auto make_trigger_matching(const std::optional<std::unordered_map<std::st
                                              });
         if (good_electrons.size() >= 1)
         {
-            return TriggerMatch("match_high_pt_electron", {good_electrons[0].pt()}, {good_electrons[0].eta()});
+            matches.insert(
+                {"pass_high_pt_electron_trigger", TriggerMatch({good_electrons[0].pt()}, {good_electrons[0].eta()})});
+        }
+        else
+        {
+            matches.insert({"pass_high_pt_electron_trigger", std::nullopt});
         }
     }
 
@@ -581,9 +599,13 @@ inline auto make_trigger_matching(const std::optional<std::unordered_map<std::st
                                              });
         if (good_electrons.size() >= 2)
         {
-            return TriggerMatch("match_double_electron",
-                                {good_electrons[0].pt(), good_electrons[1].pt()},
-                                {good_electrons[0].eta(), good_electrons[1].eta()});
+            matches.insert({"pass_double_electron_trigger",
+                            TriggerMatch({good_electrons[0].pt(), good_electrons[1].pt()},
+                                         {good_electrons[0].eta(), good_electrons[1].eta()})});
+        }
+        else
+        {
+            matches.insert({"pass_double_electron_trigger", std::nullopt});
         }
     }
 
@@ -602,11 +624,15 @@ inline auto make_trigger_matching(const std::optional<std::unordered_map<std::st
                                            });
         if (good_photons.size() >= 1)
         {
-            return TriggerMatch("match_photon", {good_photons[0].pt()}, {good_photons[0].eta()});
+            matches.insert({"pass_photon_trigger", TriggerMatch({good_photons[0].pt()}, {good_photons[0].eta()})});
+        }
+        else
+        {
+            matches.insert({"pass_photon_trigger", std::nullopt});
         }
     }
 
-    return has_trigger_match;
+    return matches;
 }
 
 #endif // VALIDATION
