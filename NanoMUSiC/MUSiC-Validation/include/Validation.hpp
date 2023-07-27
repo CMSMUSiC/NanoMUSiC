@@ -6,6 +6,7 @@
 #include "GammaPlusJet.hpp"
 #include "TTBarTo1Lep2Bjet2JetMET.hpp"
 #include "WToLepNuX.hpp"
+#include "WToTauNuLepX.hpp"
 #include "WToLepNu_eff.hpp"
 #include "ZToLepLepX.hpp"
 #include "ZToTauTauLepX.hpp"
@@ -308,7 +309,7 @@ inline auto trigger_filter(const std::string &process, //
         }
 
         // Electron/Photon/EGamma dataset
-        if (year == Year::Run2018)
+        if (year != Year::Run2018)
         {
             if (process.find("SingleElectron") != std::string::npos or process.find("Photon") != std::string::npos)
             {
