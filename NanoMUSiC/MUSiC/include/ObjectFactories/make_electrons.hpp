@@ -34,12 +34,12 @@ inline auto get_electron_energy_corrections(const std::string &shift,
         return (1.f - dEscaleDown / energy);
     }
 
-    if (shift == "PhotonResolution_Up")
+    if (shift == "ElectronResolution_Up")
     {
         return (1.f - dEsigmaUp / energy);
     }
 
-    if (shift == "PhotonResolution_Down")
+    if (shift == "ElectronResolution_Down")
     {
         return (1.f - dEsigmaDown / energy);
     }
@@ -270,7 +270,7 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
 
             // High pT Electrons
             bool is_good_high_pt_electron =
-                (electron_p4.pt() >= ObjConfig::Electrons[year].MaxLowPt) and is_good_low_pt_electron_pre_filter;
+                (electron_p4.pt() >= ObjConfig::Electrons[year].MaxLowPt) and is_good_high_pt_electron_pre_filter;
 
             // calculate scale factors per object (particle)
             // follow the previous MUSiC analysis, the SFs are set before the energy scale and resolution
@@ -351,6 +351,7 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
                                                     electron_p4.pt()}) *
                     get_high_pt_sf(is_data, year, "sfdown", electron_p4.pt(), electron_p4.eta()));
             }
+
             if (is_good_low_pt_electron or is_good_high_pt_electron)
             {
                 electrons_p4.push_back(electron_p4);

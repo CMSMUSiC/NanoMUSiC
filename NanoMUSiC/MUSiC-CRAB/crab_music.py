@@ -23,14 +23,40 @@ from pygments.formatters import Terminal256Formatter
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "xsection_file_path",
-    help="Give path to the toml file containing cross-sections per sample",
+    help="Give path to the toml file containing cross-sections per sample.",
+)
+parser.add_argument(
+    "--date-and-time",
+    help="Overwrites the global date and time.",
+    default="",
 )
 parser.add_argument(
     "-btg",
     "--btageff",
     action="store_true",
-    help="Set true to run the b-tag efficiency code",
+    help="Set true to run the b-tag efficiency code.",
 )
+
+parser.add_argument(
+    "--skip-tarball",
+    action="store_true",
+    help="Will skip the tarball creation. Assumes there is already one available.",
+)
+
+parser.add_argument(
+    "--sample",
+    help="If defined, will submit jobs only for this sample. Could be provided together with the expected year, otherwise will submit to all year.",
+    required=False,
+    default="",
+)
+
+parser.add_argument(
+    "--year",
+    help="If defined, will submit of to a specific year.",
+    required=False,
+    default="",
+)
+
 args = parser.parse_args()
 
 
@@ -94,7 +120,6 @@ def build_crab_config(process_name, das_name, year, is_data, global_now):
     this_config = config()
 
     process_name = f"{process_name}_{year}"
-    # now = datetime.now().strftime(r"date_%Y_%m_%d_time_%H_%M_%S")
 
     this_config.General.requestName = process_name
     this_config.General.workArea = f"crab_nano_music_{process_name}"
@@ -135,7 +160,7 @@ def build_crab_config(process_name, das_name, year, is_data, global_now):
         this_config.JobType.outputFiles = [r"efficiency_hist.root"]
     this_config.User.voGroup = "dcms"
     this_config.Site.storageSite = "T2_DE_RWTH"
-    this_config.Site.blacklist = ["T2_BR_*", "T2_US_*", "T2_CH_CSCS"]
+    this_config.Site.blacklist = ["T2_BR_*", "T2_CH_CSCS"]
 
     return this_config
 
@@ -181,6 +206,9 @@ def check_voms():
 
 def main():
     global_now = datetime.now().strftime(r"date_%Y_%m_%d_time_%H_%M_%S")
+    if args.date_and_time != "":
+        global_now = args.date_and_time
+
     os.system("rm -rf last_CRAB_submition_{global_now}.txt")
     os.system(f"touch last_CRAB_submition_{global_now}.txt")
     os.system(f"echo {global_now} > last_CRAB_submition_{global_now}.txt")
@@ -190,12 +218,18 @@ def main():
         raise RuntimeError("ERROR: Could not find valid VOMS proxy.")
 
     # create the task tarball and submit the jobs
-    build_task_tarball()
+    if not args.skip_tarball:
+        build_task_tarball()
 
     os.system("rm -rf raw_configs")
     os.system("mkdir raw_configs")
-    sample_list = make_sample_list(args.xsection_file_path, global_now)
-    with Pool(30) as pool:
+    sample_list = make_sample_list(
+        args.xsection_file_path,
+        global_now,
+        args.sample,
+        args.year,
+    )
+    with Pool(min(30, len(sample_list))) as pool:
         list(
             tqdm(
                 pool.imap_unordered(submit, sample_list),

@@ -54,6 +54,14 @@ auto wlnujets_mass_binned_filter(const NanoObjects::LHEParticles &lhe_particles,
                                  const float &mass_min,
                                  const float &mass_max,
                                  debugger_t &h_debug) -> bool;
+auto wlnujets_mass_binned_sherpa_filter(const NanoObjects::LHEParticles &lhe_particles,
+                                        const NanoObjects::GenParticles &gen_particles,
+                                        const Year &year,
+                                        const float &pt_min,
+                                        const float &pt_max,
+                                        const float &mass_min,
+                                        const float &mass_max,
+                                        debugger_t &h_debug) -> bool;
 auto ww_2l2v_filter(const NanoObjects::LHEParticles &lhe_particles, const float &mass_max, debugger_t &h_debug) -> bool;
 auto gamma_jet_cleanner_filter(const NanoObjects::LHEParticles &lhe_particles, float dr_max, debugger_t &h_debug)
     -> bool;
@@ -181,7 +189,7 @@ const std::map<std::string,
             Year &year,
             debugger_t &h_debug) -> bool
          {
-             return wlnujets_mass_binned_filter(lhe_particles, gen_particles, year, 0, 100., 0., 200., h_debug);
+             return wlnujets_mass_binned_sherpa_filter(lhe_particles, gen_particles, year, 0, 100., 0., 200., h_debug);
          }},
 
         //  W Jets - pT binned

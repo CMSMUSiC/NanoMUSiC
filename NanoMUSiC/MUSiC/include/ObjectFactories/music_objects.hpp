@@ -130,7 +130,7 @@ class MUSiCObjects
         return p4.size();
     }
 
-    auto clear(const MUSiCObjects &other, double max_dr = 0.4) -> void
+    auto clear(const MUSiCObjects &other, double max_dr = 0.4, bool debug = false) -> void
     {
         auto clear_mask = RVec<int>();
 
@@ -150,6 +150,11 @@ class MUSiCObjects
             {
                 clear_mask.push_back(i);
             }
+        }
+
+        if (debug)
+        {
+            fmt::print("Cleanning mask: [{}]\n", fmt::join(clear_mask, ", "));
         }
 
         this->take(clear_mask);

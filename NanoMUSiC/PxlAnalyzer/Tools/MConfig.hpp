@@ -30,13 +30,13 @@
 #include <string>
 
 // GCC_DIAG_OFF(unused - local - typedefs);
-#include <boost/algorithm/string.hpp>
+#include "boost/algorithm/string.hpp"
 // GCC_DIAG_ON(unused - local - typedefs);
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-local-typedefs"
-#include <boost/filesystem.hpp>
-#include <boost/lexical_cast.hpp>
+#include "boost/filesystem.hpp"
+#include "boost/lexical_cast.hpp"
 #pragma GCC diagnostic pop
 
 #include "Tools.hpp"

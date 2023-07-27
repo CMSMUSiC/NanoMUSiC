@@ -5,15 +5,17 @@
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-local-typedefs"
-#include <boost/algorithm/string.hpp>
-#include <boost/lexical_cast.hpp>
+#include "boost/algorithm/string.hpp"
+#include "boost/lexical_cast.hpp"
 #pragma GCC diagnostic pop
 
 #include "Tools/MConfig.hpp"
 #include "Tools/Tools.hpp"
 
 SkipEvents::SkipEvents(Tools::MConfig const &cfg)
-    : m_fileList(initFilePaths(cfg)), m_skipRunsLumisEvents(initRunsLumisEvents()), m_dontSkip(std::make_pair(0, 0))
+    : m_fileList(initFilePaths(cfg)),
+      m_skipRunsLumisEvents(initRunsLumisEvents()),
+      m_dontSkip(std::make_pair(0, 0))
 {
 }
 

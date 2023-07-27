@@ -8,6 +8,7 @@ import os
 import glob
 import subprocess
 import argparse
+import time
 
 from CRABClient.UserUtilities import config
 from CRABAPI.RawCommand import crabCommand
@@ -15,6 +16,7 @@ from CRABAPI.RawCommand import crabCommand
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Monitor CRAB MUSiC jobs.")
+
     parser.add_argument(
         "-ec",
         "--exclude-completed",
@@ -22,15 +24,34 @@ def parse_args():
         help="will not report COMPLETED taks.",
         required=False,
     )
+
+    parser.add_argument(
+        "-l",
+        "--loop",
+        action="store_true",
+        help="Will automaticaly resubmit failed tasks.",
+        required=False,
+    )
+
     parser.add_argument(
         "-j",
         "--jobs",
         type=int,
-        default=10,
+        default=30,
         help="number of parallel monitoring jobs.",
         required=False,
     )
+
     return vars(parser.parse_args())
+
+
+def countdown(t):
+    while t:
+        mins, secs = divmod(t, 60)
+        timer = "{:02d}:{:02d}".format(mins, secs)
+        print(timer, end="\r")
+        time.sleep(1)
+        t -= 1
 
 
 def get_crab_dirs():
@@ -38,12 +59,12 @@ def get_crab_dirs():
 
 
 # define clear function
-def clear():
-    # check and make call for specific operating system
-    _ = subprocess.run(
-        "clear ; clear ; clear ; clear ; clear " if os.name == "posix" else "cls",
-        shell=True,
-    )
+def clear(loop: bool):
+    if not loop:
+        subprocess.run(
+            "clear ; clear ; clear ; clear ; clear " if os.name == "posix" else "cls",
+            shell=True,
+        )
 
 
 @contextmanager
@@ -92,51 +113,59 @@ def print_colored(status):
 
 
 def monitor(dir):
-    with suppress_stdout():
-        res = crabCommand("status", dir=dir)
+    try:
+        with suppress_stdout():
+            res = crabCommand("status", dir=dir)
 
-    inputDataset = res["inputDataset"]
-    jobsPerStatus = res["jobsPerStatus"]
-    proxiedWebDir = res["proxiedWebDir"].split("/")[-1]
-    task_status = res["status"]
-    monitoring_url = f"https://cmsweb.cern.ch/crabserver/ui/task/{proxiedWebDir}"
+        inputDataset = res["inputDataset"]
+        jobsPerStatus = res["jobsPerStatus"]
+        proxiedWebDir = res["proxiedWebDir"].split("/")[-1]
+        task_status = res["status"]
+        monitoring_url = f"https://cmsweb.cern.ch/crabserver/ui/task/{proxiedWebDir}"
 
-    status = ""
-    if "failed" in jobsPerStatus:
-        status = "failed"
-    elif task_status == "COMPLETED":
-        status = "completed"
-    else:
-        status = "other"
+        status = ""
+        if "failed" in jobsPerStatus:
+            status = "failed"
+        elif task_status == "COMPLETED":
+            status = "completed"
+        else:
+            status = "other"
 
-    report = ""
-    kill_command = ""
-    retry_command = ""
+        report = ""
+        kill_command = ""
+        retry_command = ""
 
-    report += f"Task directory: {bcolors.BOLD}{dir}{bcolors.ENDC}\n"
-    report += f"Input Dataset: {bcolors.BOLD}{inputDataset}{bcolors.ENDC}\n"
-    report += f"Task status: {print_colored(task_status)}\n"
-    report += f"Monitoring URL: {bcolors.BOLD}{monitoring_url}{bcolors.ENDC}\n"
-    report += f"Jobs per status:\n"
-    for _status in jobsPerStatus:
-        report += f"{print_colored(_status)} : {jobsPerStatus[_status]} {get_emojis(_status)}\n"
+        report += f"Task directory: {bcolors.BOLD}{dir}{bcolors.ENDC}\n"
+        report += f"Input Dataset: {bcolors.BOLD}{inputDataset}{bcolors.ENDC}\n"
+        report += f"Task status: {print_colored(task_status)}\n"
+        report += f"Monitoring URL: {bcolors.BOLD}{monitoring_url}{bcolors.ENDC}\n"
+        report += f"Jobs per status:\n"
+        for _status in jobsPerStatus:
+            report += f"{print_colored(_status)} : {jobsPerStatus[_status]} {get_emojis(_status)}\n"
 
-    if "failed" in jobsPerStatus:
-        report += f"{bcolors.WARNING}Resubmit command:{bcolors.ENDC}\n"
-        report += f"crab resubmit -d {dir}\n"
-        retry_command = f"crab resubmit -d {dir}"
-    report += f"{bcolors.WARNING}Kill command:{bcolors.ENDC}\n"
-    report += f"crab kill -d {dir}\n"
-    kill_command = f"crab kill -d {dir}"
+        if "failed" in jobsPerStatus:
+            report += f"{bcolors.WARNING}Resubmit command:{bcolors.ENDC}\n"
+            report += f"crab resubmit -d {dir}\n"
+            retry_command = f"crab resubmit -d {dir}"
+        report += f"{bcolors.WARNING}Kill command:{bcolors.ENDC}\n"
+        report += f"crab kill -d {dir}\n"
+        kill_command = f"crab kill -d {dir}"
 
-    return status, report, kill_command, retry_command
+        return status, report, kill_command, retry_command
+
+    except:
+        status = "task_not_submitted"
+        report = dir
+        kill_command = ""
+        retry_command = ""
+        return status, report, kill_command, retry_command
 
 
 def next_command():
     next_cmd = "invalid"
     while next_cmd == "invalid":
         cmd = input(
-            f"{bcolors.BOLD}\nCommand: [q | quit] quit CRAB monitor - [k | kill] kill all tasks - [r | retry] retry all failed tasks - [<ENTER>] reload:{bcolors.ENDC} "
+            f"{bcolors.BOLD}\nCommand: [q | quit] quit CRAB monitor - [k | kill] kill all tasks - [r | retry] retry all failed tasks - [d | del] delete directories of non-submitted jobs - [<ENTER>] reload:{bcolors.ENDC} "
         )
         if cmd == "q" or cmd == "quit":
             return "quit"
@@ -144,6 +173,8 @@ def next_command():
             return "retry"
         elif cmd == "k" or cmd == "kill":
             return "kill"
+        elif cmd == "del" or cmd == "d":
+            return "delete"
         elif cmd == "":
             return "reload"
         else:
@@ -152,6 +183,7 @@ def next_command():
 
 def main():
     args = parse_args()
+    loop = args["loop"]
     exclude_completed = args["exclude_completed"]
     jobs = min(args["jobs"], len(get_crab_dirs()))
     while True:
@@ -162,6 +194,7 @@ def main():
         kill_commands = []
         retry_commands = []
         args = []
+        non_submitted_jobs = []
         with Pool(jobs) as p:
             # submit monitoring tasks
             monitoring_results = list(
@@ -179,10 +212,13 @@ def main():
             for idx, (status, report, kill_command, retry_command) in enumerate(
                 monitoring_results
             ):
+                if status == "task_not_submitted":
+                    non_submitted_jobs.append(report)
+
                 if not (exclude_completed and status == "completed"):
                     # clear screen for first task report
                     if idx == 0:
-                        clear()
+                        clear(loop)
 
                     # report header
                     print(
@@ -218,19 +254,46 @@ def main():
                 f"{bcolors.ENDC}Others{bcolors.ENDC}: {others}/{len(get_crab_dirs())} tasks{bcolors.ENDC}"
             )
 
-            # read next command
-            cmd = next_command()
-            if cmd == "quit":
-                exit(0)
-            if cmd == "retry":
-                print("Resubminting all failed tasks ...")
-                for command in retry_commands:
-                    os.system(command)
-            if cmd == "kill":
-                print("Killing all tasks ...")
-                for command in kill_commands:
-                    os.system(command)
-                exit(0)
+            # print("Following files were not submitted:")
+            # for job in non_submitted_jobs:
+            #     print(job)
+
+            if not loop:
+                # read next command
+                cmd = next_command()
+                if cmd == "quit":
+                    exit(0)
+                if cmd == "delete":
+                    if len(non_submitted_jobs) != 0:
+                        directories = len(non_submitted_jobs)
+                        print(f"Deleting {directories} directories")
+                        all_jobs = " ".join(non_submitted_jobs)
+                        del_command = "rm -rf " + all_jobs
+                        print("Deleting directories for non-submitted tasks")
+                        os.system(del_command)
+                    else:
+                        print("No directories to delete")
+                if cmd == "retry":
+                    print("Resubminting all failed tasks ...")
+                    for command in retry_commands:
+                        os.system(command)
+                if cmd == "kill":
+                    print("Killing all tasks ...")
+                    for command in kill_commands:
+                        os.system(command)
+                    exit(0)
+            else:
+                if len(retry_commands) > 0:
+                    print("Resubminting all failed tasks ...")
+                    for command in retry_commands:
+                        os.system(command)
+
+                if completed == len(get_crab_dirs()):
+                    exit(0)
+
+        # wait 30 seconds until next monitoring cycle
+        print("Next monitoring cycle in ...")
+        countdown(60)
 
 
 if __name__ == "__main__":
