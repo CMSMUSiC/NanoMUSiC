@@ -6,7 +6,7 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-local-typedefs"
 #pragma GCC diagnostic ignored "-Wattributes"
-#include <boost/filesystem/path.hpp>
+#include "boost/filesystem/path.hpp"
 #pragma GCC diagnostic pop
 #include "boost/program_options.hpp"
 
@@ -45,12 +45,13 @@ int main(int argc, char *argv[])
     po::options_description genericOptions("Generic options");
     genericOptions.add_options()("help", "produce help message");
     genericOptions.add_options()(
-        "particle", po::value<std::string>(&particle),
+        "particle",
+        po::value<std::string>(&particle),
         "Get a template of how to get information on a given particle. Example: \"--particle Tau_\"");
-    genericOptions.add_options()("output", po::value<std::string>(&outputFile),
-                                 "Path to output file, in order to save contents.");
-    genericOptions.add_options()("input", po::value<std::string>(&input_file)->required(),
-                                 "A NanoAOD file to print content.");
+    genericOptions.add_options()(
+        "output", po::value<std::string>(&outputFile), "Path to output file, in order to save contents.");
+    genericOptions.add_options()(
+        "input", po::value<std::string>(&input_file)->required(), "A NanoAOD file to print content.");
 
     // add positional arguments
     po::positional_options_description pos;

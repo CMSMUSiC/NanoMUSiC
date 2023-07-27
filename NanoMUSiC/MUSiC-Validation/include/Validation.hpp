@@ -464,7 +464,7 @@ class TriggerMatch
     }
 };
 
-inline auto make_trigger_matches(const std::optional<std::unordered_map<std::string, bool>> &is_good_trigger_map,
+inline auto make_trigger_matches(const std::unordered_map<std::string, bool> &is_good_trigger_map,
                                  const MUSiCObjects &muons,
                                  const MUSiCObjects &electrons,
                                  const MUSiCObjects &photons,
@@ -473,7 +473,7 @@ inline auto make_trigger_matches(const std::optional<std::unordered_map<std::str
     auto matches = std::unordered_map<std::string, std::optional<TriggerMatch>>();
 
     // Low pT muon trigger
-    if (is_good_trigger_map->at("pass_low_pt_muon_trigger") //
+    if (is_good_trigger_map.at("pass_low_pt_muon_trigger") //
         and muons.size() >= 1)
     {
         auto good_muons = VecOps::Filter(muons.p4,
@@ -494,9 +494,13 @@ inline auto make_trigger_matches(const std::optional<std::unordered_map<std::str
             matches.insert({"pass_low_pt_muon_trigger", std::nullopt});
         }
     }
+    else
+    {
+        matches.insert({"pass_low_pt_muon_trigger", std::nullopt});
+    }
 
     // High pT muon trigger
-    if (is_good_trigger_map->at("pass_high_pt_muon_trigger") //
+    if (is_good_trigger_map.at("pass_high_pt_muon_trigger") //
         and muons.size() >= 1)
     {
         auto good_muons = VecOps::Filter(muons.p4,
@@ -513,9 +517,13 @@ inline auto make_trigger_matches(const std::optional<std::unordered_map<std::str
             matches.insert({"pass_high_pt_muon_trigger", std::nullopt});
         }
     }
+    else
+    {
+        matches.insert({"pass_high_pt_muon_trigger", std::nullopt});
+    }
 
     // double muon trigger
-    if (is_good_trigger_map->at("pass_double_muon_trigger") //
+    if (is_good_trigger_map.at("pass_double_muon_trigger") //
         and muons.size() >= 2)
     {
         auto good_muons = VecOps::Filter(muons.p4,
@@ -534,9 +542,13 @@ inline auto make_trigger_matches(const std::optional<std::unordered_map<std::str
             matches.insert({"pass_double_muon_trigger", std::nullopt});
         }
     }
+    else
+    {
+        matches.insert({"pass_double_muon_trigger", std::nullopt});
+    }
 
     // Low pT electron trigger
-    if (is_good_trigger_map->at("pass_low_pt_electron_trigger") //
+    if (is_good_trigger_map.at("pass_low_pt_electron_trigger") //
         and electrons.size() >= 1)
     {
         auto good_electrons = VecOps::Filter(electrons.p4,
@@ -562,9 +574,13 @@ inline auto make_trigger_matches(const std::optional<std::unordered_map<std::str
             matches.insert({"pass_low_pt_electron_trigger", std::nullopt});
         }
     }
+    else
+    {
+        matches.insert({"pass_low_pt_electron_trigger", std::nullopt});
+    }
 
     // High pT electron trigger
-    if (is_good_trigger_map->at("pass_high_pt_electron_trigger") //
+    if (is_good_trigger_map.at("pass_high_pt_electron_trigger") //
         and electrons.size() >= 1)
     {
         auto good_electrons = VecOps::Filter(electrons.p4,
@@ -582,9 +598,13 @@ inline auto make_trigger_matches(const std::optional<std::unordered_map<std::str
             matches.insert({"pass_high_pt_electron_trigger", std::nullopt});
         }
     }
+    else
+    {
+        matches.insert({"pass_high_pt_electron_trigger", std::nullopt});
+    }
 
     // double electron trigger
-    if (is_good_trigger_map->at("pass_double_electron_trigger") //
+    if (is_good_trigger_map.at("pass_double_electron_trigger") //
         and electrons.size() >= 2)
     {
         auto good_electrons = VecOps::Filter(electrons.p4,
@@ -608,9 +628,13 @@ inline auto make_trigger_matches(const std::optional<std::unordered_map<std::str
             matches.insert({"pass_double_electron_trigger", std::nullopt});
         }
     }
+    else
+    {
+        matches.insert({"pass_double_electron_trigger", std::nullopt});
+    }
 
     // photon trigger
-    if (is_good_trigger_map->at("pass_photon_trigger") //
+    if (is_good_trigger_map.at("pass_photon_trigger") //
         and photons.size() >= 1)
     {
         auto good_photons = VecOps::Filter(photons.p4,
@@ -630,6 +654,10 @@ inline auto make_trigger_matches(const std::optional<std::unordered_map<std::str
         {
             matches.insert({"pass_photon_trigger", std::nullopt});
         }
+    }
+    else
+    {
+        matches.insert({"pass_photon_trigger", std::nullopt});
     }
 
     return matches;

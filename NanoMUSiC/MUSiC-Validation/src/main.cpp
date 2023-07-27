@@ -312,7 +312,7 @@ auto main(int argc, char *argv[]) -> int
                                                                               {"GammaEE", 0},
                                                                               {"Tau", 0},
                                                                               {"Jet", 2},
-                                                                              {"bJet", 1},
+                                                                              {"bJet", 2},
                                                                               {"MET", 1}};
 
     const std::map<std::string, int> z_to_tau_tau_x_count_map = {{"Ele", 0},
@@ -708,29 +708,17 @@ auto main(int argc, char *argv[]) -> int
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        //
-        // pass_low_pt_muon_trigger
-        // pass_high_pt_muon_trigger
-        // pass_low_pt_electron_trigger
-        // pass_high_pt_electron_trigger
-        // pass_jet_ht_trigger
-        // pass_jet_pt_trigger
+
         auto is_good_trigger = trigger_filter(process,
                                               is_data,
                                               get_runyear(year),
                                               unwrap(pass_low_pt_muon_trigger),
                                               unwrap(pass_high_pt_muon_trigger),
-                                              //   unwrap(pass_double_muon_trigger),
-                                              false,
+                                              unwrap(pass_double_muon_trigger),
                                               unwrap(pass_low_pt_electron_trigger),
                                               unwrap(pass_high_pt_electron_trigger),
-                                              //   unwrap(pass_double_electron_trigger)
-                                              false,
-                                              //   unwrap(pass_photon_trigger)
-                                              false);
-
-        // bool is_good_trigger = jets_trigger_filter(unwrap(pass_jet_ht_trigger), //
-        //                                            unwrap(pass_jet_pt_trigger));
+                                              unwrap(pass_double_electron_trigger),
+                                              unwrap(pass_photon_trigger));
 
         if (is_good_trigger)
         {
@@ -865,8 +853,9 @@ auto main(int argc, char *argv[]) -> int
                                                      diff_shift);
 
                 // check for trigger matching
+                // is_good_trigger is garantied to be filled by the if statement above
                 const auto trigger_matches =
-                    make_trigger_matches(is_good_trigger, muons, electrons, photons, get_runyear(year));
+                    make_trigger_matches(*is_good_trigger, muons, electrons, photons, get_runyear(year));
 
                 bool has_trigger_match = false;
                 for (auto &&[trigger_path, trigger_match] : trigger_matches)
@@ -895,6 +884,7 @@ auto main(int argc, char *argv[]) -> int
                             {
                                 // get trigger SF
                                 auto trigger_sf = 1.;
+
                                 if (trigger_matches.at("pass_low_pt_muon_trigger"))
                                 {
                                     trigger_sf = low_pt_muon_trigger_sf->evaluate(
@@ -1073,21 +1063,21 @@ auto main(int argc, char *argv[]) -> int
                                 auto bjet_2 = bjets.p4[1];
                                 auto MET = met.p4[0];
 
-                                ttbar_to_1ele_2bjet_2jet_MET[shift].fill(muon,
-                                                                         jet_1,
-                                                                         jet_2,
-                                                                         bjet_1,
-                                                                         bjet_2,
-                                                                         MET,
-                                                                         weight *
-                                                                             Shifts::get_scale_factor(shift,
-                                                                                                      {1, muons},
-                                                                                                      {0, electrons},
-                                                                                                      {0, taus},
-                                                                                                      {0, photons},
-                                                                                                      {2, bjets},
-                                                                                                      {2, jets},
-                                                                                                      {1, met}));
+                                ttbar_to_1mu_2bjet_2jet_MET[shift].fill(muon,
+                                                                        jet_1,
+                                                                        jet_2,
+                                                                        bjet_1,
+                                                                        bjet_2,
+                                                                        MET,
+                                                                        weight *
+                                                                            Shifts::get_scale_factor(shift,
+                                                                                                     {1, muons},
+                                                                                                     {0, electrons},
+                                                                                                     {0, taus},
+                                                                                                     {0, photons},
+                                                                                                     {2, bjets},
+                                                                                                     {2, jets},
+                                                                                                     {1, met}));
                             }
 
                             // ttbar to ele
@@ -1246,20 +1236,6 @@ auto main(int argc, char *argv[]) -> int
 
     fmt::print("\n[MUSiC Validation] Done ...\n");
     PrintProcessInfo();
-
-    // ////////////////////////////////////////////////////
-    // fmt::print("*****************************************************\n");
-    // fmt::print("Total trigger: {} - Muon triggers: {} - Electron triggers: {}\n",
-    //            total_triggers,
-    //            pass_muon_triggers,
-    //            pass_electron_triggers);
-    // fmt::print("Total counts {} - Muon counts: {} - Electron counts: {}\n",
-    //            pass_total_count,
-    //            pass_muon_count,
-    //            pass_electron_count);
-
-    // fmt::print("Enter electron analysis: {}\n", enter_electron_analysis);
-    // ////////////////////////////////////////////////////
 
     return EXIT_SUCCESS;
 }
