@@ -119,20 +119,24 @@ def main():
     # Call the recursive function to find matching directories
     matching_directories = find_directories_with_prefix(args.buffer_dir, "buffer_")
 
+    completed_jobs = []
     while True:
         # True == Done
         job_status = {}
-        for directory in tqdm(matching_directories, unit=" job"):
-            job_status[directory] = False
-            if os.path.isfile(f"{directory}/condor.out"):
-                if check_file_for_string(f"{directory}/condor.out", "YAY!"):
-                    job_status[directory] = True
-            if (
-                check_file_for_string(f"{directory}/condor.log", "return value")
-                or check_file_for_string(f"{directory}/condor.log", r"borted")
-            ) and not job_status[directory]:
-                if not args.no_resubmit:
-                    resubmit(directory, args.always_resubmit)
+        for idx in tqdm(range(len(matching_directories)), unit=" job"):
+            if idx not in completed_jobs:
+                directory = matching_directories[idx]
+                job_status[directory] = False
+                if os.path.isfile(f"{directory}/condor.out"):
+                    if check_file_for_string(f"{directory}/condor.out", "YAY!"):
+                        job_status[directory] = True
+                        completed_jobs.append(idx)
+                if (
+                    check_file_for_string(f"{directory}/condor.log", "return value")
+                    or check_file_for_string(f"{directory}/condor.log", r"borted")
+                ) and not job_status[directory]:
+                    if not args.no_resubmit:
+                        resubmit(directory, args.always_resubmit)
 
         print("")
         if all(job_status.values()):
@@ -143,7 +147,7 @@ def main():
             num_running_jobs = len(
                 list(filter(lambda job: job_status[job] == False, job_status))
             )
-            if num_running_jobs < 12:
+            if num_running_jobs <= 12:
                 print("Running jobs:")
                 for job in job_status:
                     if job_status[job] == False:

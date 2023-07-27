@@ -383,7 +383,6 @@ inline auto trigger_filter(const std::string &process, //
         {
             if (starts_with(process, "EGamma"))
             {
-                fmt::print("Passei por aqui!\n");
                 if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) //
                     and not(pass_double_muon_trigger)                          //
                     and (pass_low_pt_electron_trigger or pass_high_pt_electron_trigger or

@@ -35,7 +35,7 @@ def parse_args():
         "-a", "--analysis", help="Which analysis to plot", required=True
     )
 
-    parser.add_argument("-y", "--year", help="Year to be processed.", default="")
+    parser.add_argument("-y", "--year", help="Year to be processed.", default="all")
 
     parser.add_argument(
         "--histogram",
@@ -97,11 +97,6 @@ def parse_args():
 
     args = parser.parse_args()
 
-    if not (args.year):
-        raise Exception(
-            'ERROR: Could not start plotter. For now, "--year" is required.'
-        )
-
     return args
 
 
@@ -131,8 +126,9 @@ def get_histogram(args, root_file, sample, year, process_group, xsec_order):
     # [ttbar_to_1mu_2bjet_2jet_MET]_[DrellYan]_[NLO]_[DYJetsToLL_M-50_13TeV_AM]_[2018]_[JetScale_Down]_[h_ht_had_lep]
     if args.debug:
         print(
-            f"Getting histogram for: {(args.analysis, sample, year, process_group, xsec_order)}"
+            f"Getting histogram for: {(args.analysis, sample, year, process_group, xsec_order)} : [{args.analysis}]_[{process_group}]_[{xsec_order}]_[{sample}]_[{year}]_[Nominal]_[{args.histogram}]"
         )
+        root_file.Print("all")
     return root_file.Get(
         f"[{args.analysis}]_[{process_group}]_[{xsec_order}]_[{sample}]_[{year}]_[Nominal]_[{args.histogram}]"
     )
@@ -158,7 +154,7 @@ def main():
         if sample != "Lumi" and sample != "Global":
             for year in years:
                 if f"das_name_{year}" in task_config[sample].keys():
-                    if year == args.year:
+                    if year == args.year or args.year == "all":
                         if not (
                             os.path.isdir(f"{args.output}/validation_plots/{year}")
                         ):
@@ -193,13 +189,13 @@ def main():
 
     input_files_data = {}
     for s in plotter_arguments_data:
-        input_files_data[s["sample"]] = root.TFile.Open(
+        input_files_data[f"{s['sample']}_{s['year']}"] = root.TFile.Open(
             f"{args.input}/{s['year']}/{s['sample']}/{s['sample']}_{s['year']}.root"
         )
 
     input_files_mc = {}
     for s in plotter_arguments_mc:
-        input_files_mc[s["sample"]] = root.TFile.Open(
+        input_files_mc[f"{s['sample']}_{s['year']}"] = root.TFile.Open(
             f"{args.input}/{s['year']}/{s['sample']}/{s['sample']}_{s['year']}.root"
         )
 
@@ -218,7 +214,9 @@ def main():
     # add all Data histograms
     data_hist = get_histogram(
         args,
-        input_files_data[plotter_arguments_data[0]["sample"]],
+        input_files_data[
+            f"{plotter_arguments_data[0]['sample']}_{plotter_arguments_data[0]['year']}"
+        ],
         plotter_arguments_data[0]["sample"],
         plotter_arguments_data[0]["year"],
         plotter_arguments_data[0]["process_group"],
@@ -228,7 +226,9 @@ def main():
         data_hist.Add(
             get_histogram(
                 args,
-                input_files_data[plotter_arguments_data[i]["sample"]],
+                input_files_data[
+                    f"{plotter_arguments_data[i]['sample']}_{plotter_arguments_data[i]['year']}"
+                ],
                 plotter_arguments_data[i]["sample"],
                 plotter_arguments_data[i]["year"],
                 plotter_arguments_data[i]["process_group"],
@@ -249,7 +249,9 @@ def main():
         if plotter_arguments_mc[i]["process_group"] not in mc_hists:
             this_histogram = get_histogram(
                 args,
-                input_files_mc[plotter_arguments_mc[i]["sample"]],
+                input_files_mc[
+                    f"{plotter_arguments_mc[i]['sample']}_{plotter_arguments_mc[i]['year']}"
+                ],
                 plotter_arguments_mc[i]["sample"],
                 plotter_arguments_mc[i]["year"],
                 plotter_arguments_mc[i]["process_group"],
@@ -270,7 +272,9 @@ def main():
         else:
             this_histogram = get_histogram(
                 args,
-                input_files_mc[plotter_arguments_mc[i]["sample"]],
+                input_files_mc[
+                    f"{plotter_arguments_mc[i]['sample']}_{plotter_arguments_mc[i]['year']}"
+                ],
                 plotter_arguments_mc[i]["sample"],
                 plotter_arguments_mc[i]["year"],
                 plotter_arguments_mc[i]["process_group"],
