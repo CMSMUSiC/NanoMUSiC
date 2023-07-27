@@ -586,6 +586,24 @@ class Shifts
 
         return 1.;
     }
+
+    ///
+    /// Will loop and map opver all shifts
+    template <typename F>
+    auto for_each(F &&f) const -> void
+    {
+        for (auto &&shift : this->get_constant_shifts())
+        {
+            f(shift);
+        }
+        for (auto &&shift : this->get_differential_shifts())
+        {
+            if (shift != "Nominal")
+            {
+                f(shift);
+            }
+        }
+    }
 };
 
 #endif /*SHIFTS*/

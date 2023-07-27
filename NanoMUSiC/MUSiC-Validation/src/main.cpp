@@ -352,165 +352,9 @@ auto main(int argc, char *argv[]) -> int
     std::unordered_map<std::string, ZToLepLepX> z_to_tau_tau_x_Z_mass;
     std::unordered_map<std::string, WToLepNuX> w_to_tau_nu;
 
-    // unsigned long pass_electron_triggers = 0;
-    // unsigned long pass_muon_triggers = 0;
-    // unsigned long total_triggers = 0;
-
-    // unsigned long pass_electron_count = 0;
-    // unsigned long pass_muon_count = 0;
-    // unsigned long pass_total_count = 0;
-
-    // unsigned long enter_electron_analysis = 0;
-
     // Initiale analyses
-    for (auto &&shift : shifts.get_constant_shifts())
-    {
-        z_to_mu_mu_x.insert(
-            {shift,
-             ZToLepLepX("z_to_mu_mu_x",
-                        get_output_file_path(
-                            "z_to_mu_mu_x", output_path, process, year, process_group, xs_order, is_data, shift),
-                        z_to_mu_mu_x_count_map,
-                        false,
-                        shift,
-                        process,
-                        year,
-                        process_group,
-                        xs_order)});
-
-        z_to_mu_mu_x_Z_mass.insert(
-            {shift,
-             ZToLepLepX("z_to_mu_mu_x_Z_mass",
-                        get_output_file_path(
-                            "z_to_mu_mu_x_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
-                        z_to_mu_mu_x_count_map,
-                        true,
-                        shift,
-                        process,
-                        year,
-                        process_group,
-                        xs_order)});
-
-        z_to_ele_ele_x.insert(
-            {shift,
-             ZToLepLepX("z_to_ele_ele_x",
-                        get_output_file_path(
-                            "z_to_ele_ele_x", output_path, process, year, process_group, xs_order, is_data, shift),
-                        z_to_ele_ele_x_count_map,
-                        false,
-                        shift,
-                        process,
-                        year,
-                        process_group,
-                        xs_order)});
-
-        z_to_ele_ele_x_Z_mass.insert(
-            {shift,
-             ZToLepLepX(
-                 "z_to_ele_ele_x_Z_mass",
-                 get_output_file_path(
-                     "z_to_ele_ele_x_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
-                 z_to_ele_ele_x_count_map,
-                 true,
-                 shift,
-                 process,
-                 year,
-                 process_group,
-                 xs_order)});
-
-        gamma_plus_jet.insert(
-            {shift,
-             GammaPlusJet("gamma_plus_jet",
-                          get_output_file_path(
-                              "gamma_plus_jet", output_path, process, year, process_group, xs_order, is_data, shift),
-                          gamma_plus_jet_count_map,
-                          shift,
-                          process,
-                          year,
-                          process_group,
-                          xs_order)});
-
-        ttbar_to_1mu_2bjet_2jet_MET.insert({shift,
-                                            TTBarTo1Lep2Bjet2JetMET("ttbar_to_1mu_2bjet_2jet_MET",
-                                                                    get_output_file_path("ttbar_to_1mu_2bjet_2jet_MET",
-                                                                                         output_path,
-                                                                                         process,
-                                                                                         year,
-                                                                                         process_group,
-                                                                                         xs_order,
-                                                                                         is_data,
-                                                                                         shift),
-
-                                                                    ttbar_to_1mu_2bjet_2jet_met_count_map,
-                                                                    shift,
-                                                                    process,
-                                                                    year,
-                                                                    process_group,
-                                                                    xs_order)});
-
-        ttbar_to_1ele_2bjet_2jet_MET.insert(
-            {shift,
-             TTBarTo1Lep2Bjet2JetMET("ttbar_to_1ele_2bjet_2jet_MET",
-                                     get_output_file_path("ttbar_to_1ele_2bjet_2jet_MET",
-                                                          output_path,
-                                                          process,
-                                                          year,
-                                                          process_group,
-                                                          xs_order,
-                                                          is_data,
-                                                          shift),
-
-                                     ttbar_to_1ele_2bjet_2jet_met_count_map,
-                                     shift,
-                                     process,
-                                     year,
-                                     process_group,
-                                     xs_order)});
-
-        z_to_tau_tau_x.insert(
-            {shift,
-             ZToLepLepX("z_to_tau_tau_x",
-                        get_output_file_path(
-                            "z_to_tau_tau_x", output_path, process, year, process_group, xs_order, is_data, shift),
-                        z_to_tau_tau_x_count_map,
-                        false,
-                        shift,
-                        process,
-                        year,
-                        process_group,
-                        xs_order)});
-
-        z_to_tau_tau_x_Z_mass.insert(
-            {shift,
-             ZToLepLepX(
-                 "z_to_tau_tau_x_Z_mass",
-                 get_output_file_path(
-                     "z_to_tau_tau_x_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
-                 z_to_tau_tau_x_count_map,
-                 true,
-                 shift,
-                 process,
-                 year,
-                 process_group,
-                 xs_order)});
-
-        w_to_tau_nu.insert(
-            {shift,
-             WToLepNuX("w_to_tau_nu",
-                       get_output_file_path(
-                           "w_to_tau_nu", output_path, process, year, process_group, xs_order, is_data, shift),
-                       w_to_tau_nu_count_map,
-                       false,
-                       shift,
-                       process,
-                       year,
-                       process_group,
-                       xs_order)});
-    }
-
-    for (auto &&shift : shifts.get_differential_shifts())
-    {
-        if (shift != "Nominal")
+    shifts.for_each(
+        [&](const std::string &shift) -> void
         {
             z_to_mu_mu_x.insert(
                 {shift,
@@ -590,6 +434,7 @@ auto main(int argc, char *argv[]) -> int
                                                               xs_order,
                                                               is_data,
                                                               shift),
+
                                          ttbar_to_1mu_2bjet_2jet_met_count_map,
                                          shift,
                                          process,
@@ -608,6 +453,7 @@ auto main(int argc, char *argv[]) -> int
                                                               xs_order,
                                                               is_data,
                                                               shift),
+
                                          ttbar_to_1ele_2bjet_2jet_met_count_map,
                                          shift,
                                          process,
@@ -654,11 +500,7 @@ auto main(int argc, char *argv[]) -> int
                            year,
                            process_group,
                            xs_order)});
-        }
-    }
-
-    // build Dijets
-    // auto dijets = Dijets(fmt::format("{}/dijets_{}_{}.root", output_path, process, year), dijets_count_map);
+        });
 
     auto cutflow_file = std::unique_ptr<TFile>(
         TFile::Open(fmt::format("{}/../../cutflow_{}_{}.root", output_path, process, year).c_str()));
@@ -693,29 +535,15 @@ auto main(int argc, char *argv[]) -> int
         // }
 
         // Trigger
-        //
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        //
-        // ATTENTION:The function "trigger_filter" should be modified
-        // for the JetHT data set!!!!!!
-        //
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
         auto is_good_trigger = trigger_filter(process,
                                               is_data,
                                               get_runyear(year),
-                                              unwrap(pass_low_pt_muon_trigger),
+                                              //   unwrap(pass_low_pt_muon_trigger),
+                                              false,
                                               unwrap(pass_high_pt_muon_trigger),
                                               unwrap(pass_double_muon_trigger),
-                                              unwrap(pass_low_pt_electron_trigger),
+                                              //   unwrap(pass_low_pt_electron_trigger),
+                                              false,
                                               unwrap(pass_high_pt_electron_trigger),
                                               unwrap(pass_double_electron_trigger),
                                               unwrap(pass_photon_trigger));
@@ -1201,24 +1029,8 @@ auto main(int argc, char *argv[]) -> int
     }
 
     fmt::print("\n[MUSiC Validation] Saving outputs ({} - {} - {} - {}) ...\n", output_path, process, year, shift);
-    for (auto &&shift : shifts.get_constant_shifts())
-    {
-        z_to_mu_mu_x[shift].dump_outputs();
-        z_to_mu_mu_x_Z_mass[shift].dump_outputs();
-        z_to_ele_ele_x[shift].dump_outputs();
-        z_to_ele_ele_x_Z_mass[shift].dump_outputs();
-        gamma_plus_jet[shift].dump_outputs();
-        ttbar_to_1mu_2bjet_2jet_MET[shift].dump_outputs();
-        ttbar_to_1ele_2bjet_2jet_MET[shift].dump_outputs();
-        z_to_tau_tau_x[shift].dump_outputs();
-        z_to_tau_tau_x_Z_mass[shift].dump_outputs();
-        w_to_tau_nu[shift].dump_outputs();
-        // dijets.dump_outputs();
-    }
-
-    for (auto &&shift : shifts.get_differential_shifts())
-    {
-        if (shift != "Nominal")
+    shifts.for_each(
+        [&](const std::string &shift) -> void
         {
             z_to_mu_mu_x[shift].dump_outputs();
             z_to_mu_mu_x_Z_mass[shift].dump_outputs();
@@ -1231,8 +1043,7 @@ auto main(int argc, char *argv[]) -> int
             z_to_tau_tau_x_Z_mass[shift].dump_outputs();
             w_to_tau_nu[shift].dump_outputs();
             // dijets.dump_outputs();
-        }
-    }
+        });
 
     fmt::print("\n[MUSiC Validation] Done ...\n");
     PrintProcessInfo();
