@@ -475,7 +475,6 @@ def main():
                                         "file_index": idx,
                                         "input_files": f,
                                         "executable": args.executable,
-                                        # "shift": "Nominal",
                                         "output_base": args.output,
                                         "debug": args.debug,
                                     }
