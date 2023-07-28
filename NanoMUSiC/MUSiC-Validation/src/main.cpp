@@ -92,6 +92,8 @@ auto main(int argc, char *argv[]) -> int
     ADD_VALUE_READER(pass_high_pt_electron_trigger, bool);
     ADD_VALUE_READER(pass_double_electron_trigger, bool);
     ADD_VALUE_READER(pass_photon_trigger, bool);
+    ADD_VALUE_READER(pass_high_pt_tau_trigger, bool);
+    ADD_VALUE_READER(pass_double_tau_trigger, bool);
     ADD_VALUE_READER(pass_jet_ht_trigger, bool);
     ADD_VALUE_READER(pass_jet_pt_trigger, bool);
 
@@ -327,30 +329,17 @@ auto main(int argc, char *argv[]) -> int
                                                                  {"bJet", 0},
                                                                  {"MET", 0}};
 
-    const std::map<std::string, int> w_to_tau_nu_count_map = {{"Ele", 0},
-                                                              {"EleEE", 0},
-                                                              {"EleEB", 0},
-                                                              {"Muon", 0},
-                                                              {"Gamma", 0},
-                                                              {"GammaEB", 0},
-                                                              {"GammaEE", 0},
-                                                              {"Tau", 1},
-                                                              {"Jet", 0},
-                                                              {"bJet", 0},
-                                                              {"MET", 1}};
-
     // build validation factories
     // map each shift to one analysis factory
     std::unordered_map<std::string, ZToLepLepX> z_to_mu_mu_x;
     std::unordered_map<std::string, ZToLepLepX> z_to_mu_mu_x_Z_mass;
     std::unordered_map<std::string, ZToLepLepX> z_to_ele_ele_x;
     std::unordered_map<std::string, ZToLepLepX> z_to_ele_ele_x_Z_mass;
+    std::unordered_map<std::string, ZToLepLepX> z_to_tau_tau_x;
+    std::unordered_map<std::string, ZToLepLepX> z_to_tau_tau_x_Z_mass;
     std::unordered_map<std::string, GammaPlusJet> gamma_plus_jet;
     std::unordered_map<std::string, TTBarTo1Lep2Bjet2JetMET> ttbar_to_1mu_2bjet_2jet_MET;
     std::unordered_map<std::string, TTBarTo1Lep2Bjet2JetMET> ttbar_to_1ele_2bjet_2jet_MET;
-    std::unordered_map<std::string, ZToLepLepX> z_to_tau_tau_x;
-    std::unordered_map<std::string, ZToLepLepX> z_to_tau_tau_x_Z_mass;
-    std::unordered_map<std::string, WToLepNuX> w_to_tau_nu;
 
     // Initiale analyses
     shifts.for_each(
@@ -410,6 +399,33 @@ auto main(int argc, char *argv[]) -> int
                      process_group,
                      xs_order)});
 
+            z_to_tau_tau_x.insert(
+                {shift,
+                 ZToLepLepX("z_to_tau_tau_x",
+                            get_output_file_path(
+                                "z_to_tau_tau_x", output_path, process, year, process_group, xs_order, is_data, shift),
+                            z_to_tau_tau_x_count_map,
+                            false,
+                            shift,
+                            process,
+                            year,
+                            process_group,
+                            xs_order)});
+
+            z_to_tau_tau_x_Z_mass.insert(
+                {shift,
+                 ZToLepLepX(
+                     "z_to_tau_tau_x_Z_mass",
+                     get_output_file_path(
+                         "z_to_tau_tau_x_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
+                     z_to_ele_ele_x_count_map,
+                     true,
+                     shift,
+                     process,
+                     year,
+                     process_group,
+                     xs_order)});
+
             gamma_plus_jet.insert(
                 {shift,
                  GammaPlusJet(
@@ -460,46 +476,6 @@ auto main(int argc, char *argv[]) -> int
                                          year,
                                          process_group,
                                          xs_order)});
-
-            z_to_tau_tau_x.insert(
-                {shift,
-                 ZToLepLepX("z_to_tau_tau_x",
-                            get_output_file_path(
-                                "z_to_tau_tau_x", output_path, process, year, process_group, xs_order, is_data, shift),
-                            z_to_tau_tau_x_count_map,
-                            false,
-                            shift,
-                            process,
-                            year,
-                            process_group,
-                            xs_order)});
-
-            z_to_tau_tau_x_Z_mass.insert(
-                {shift,
-                 ZToLepLepX(
-                     "z_to_tau_tau_x_Z_mass",
-                     get_output_file_path(
-                         "z_to_tau_tau_x_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
-                     z_to_tau_tau_x_count_map,
-                     true,
-                     shift,
-                     process,
-                     year,
-                     process_group,
-                     xs_order)});
-
-            w_to_tau_nu.insert(
-                {shift,
-                 WToLepNuX("w_to_tau_nu",
-                           get_output_file_path(
-                               "w_to_tau_nu", output_path, process, year, process_group, xs_order, is_data, shift),
-                           w_to_tau_nu_count_map,
-                           false,
-                           shift,
-                           process,
-                           year,
-                           process_group,
-                           xs_order)});
         });
 
     auto cutflow_file = std::unique_ptr<TFile>(
@@ -538,14 +514,16 @@ auto main(int argc, char *argv[]) -> int
         auto is_good_trigger = trigger_filter(process,
                                               is_data,
                                               get_runyear(year),
-                                              //   unwrap(pass_low_pt_muon_trigger),
-                                              false,
+                                              unwrap(pass_low_pt_muon_trigger),
                                               unwrap(pass_high_pt_muon_trigger),
                                               unwrap(pass_double_muon_trigger),
-                                              //   unwrap(pass_low_pt_electron_trigger),
-                                              false,
+                                              unwrap(pass_low_pt_electron_trigger),
                                               unwrap(pass_high_pt_electron_trigger),
                                               unwrap(pass_double_electron_trigger),
+                                              //   unwrap(pass_high_pt_tau_trigger),
+                                              false,
+                                              //   unwrap(pass_double_tau_trigger),
+                                              false,
                                               unwrap(pass_photon_trigger));
 
         if (is_good_trigger)
@@ -769,7 +747,9 @@ auto main(int argc, char *argv[]) -> int
 
                             // MuMu + X
                             unsigned int n_muons = 2;
-                            if (muons.size() >= n_muons)
+                            if (muons.size() >= n_muons and (trigger_matches.at("pass_low_pt_muon_trigger") or
+                                                             trigger_matches.at("pass_high_pt_muon_trigger") or
+                                                             trigger_matches.at("pass_double_muon_trigger")))
                             {
                                 auto muon_1 = muons.p4[0];
                                 auto muon_2 = muons.p4[1];
@@ -811,7 +791,10 @@ auto main(int argc, char *argv[]) -> int
 
                             // EleEle + X
                             unsigned int n_electrons = 2;
-                            if (electrons.size() >= n_electrons)
+                            if (electrons.size() >= n_electrons and
+                                (trigger_matches.at("pass_low_pt_electron_trigger") or
+                                 trigger_matches.at("pass_high_pt_electron_trigger") or
+                                 trigger_matches.at("pass_double_electron_trigger")))
                             {
                                 // enter_electron_analysis++;
                                 auto electron_1 = electrons.p4[0];
@@ -853,6 +836,51 @@ auto main(int argc, char *argv[]) -> int
                                 }
                             }
 
+                            // TauTau + X
+                            unsigned int n_taus = 2;
+                            if (taus.size() >= n_taus and (trigger_matches.at("pass_high_pt_tau_trigger") or
+                                                           trigger_matches.at("pass_double_tau_trigger")))
+                            {
+                                // enter_electron_analysis++;
+                                auto tau_1 = electrons.p4[0];
+                                auto tau_2 = taus.p4[1];
+
+                                // wide mass range
+                                z_to_tau_tau_x[shift].fill(tau_1,
+                                                           tau_2,
+                                                           bjets.p4,
+                                                           jets.p4,
+                                                           met.p4,
+                                                           weight * Shifts::get_scale_factor(shift,
+                                                                                             {0, muons},
+                                                                                             {n_taus, electrons},
+                                                                                             {0, taus},
+                                                                                             {0, photons},
+                                                                                             {0, bjets},
+                                                                                             {0, jets},
+                                                                                             {0, met}));
+
+                                // Z mass range
+                                if (PDG::Z::Mass - 20. < (tau_1 + tau_2).mass() and
+                                    (tau_1 + tau_2).mass() < PDG::Z::Mass + 20.)
+                                {
+                                    z_to_tau_tau_x_Z_mass[shift].fill(tau_1,
+                                                                      tau_2,
+                                                                      bjets.p4,
+                                                                      jets.p4,
+                                                                      met.p4,
+                                                                      weight *
+                                                                          Shifts::get_scale_factor(shift,
+                                                                                                   {0, muons},
+                                                                                                   {n_taus, electrons},
+                                                                                                   {0, taus},
+                                                                                                   {0, photons},
+                                                                                                   {0, bjets},
+                                                                                                   {0, jets},
+                                                                                                   {0, met}));
+                                }
+                            }
+
                             // // Dijets
                             // if (jets.size() >= 2)
                             // {
@@ -867,7 +895,8 @@ auto main(int argc, char *argv[]) -> int
 
                             // Gamma Plus Jets
                             unsigned int n_lepton = electrons.size() + muons.size() + taus.size();
-                            if (photons.size() == 1 and jets.size() == 1 and n_lepton == 0 and met.size() == 0)
+                            if (photons.size() == 1 and jets.size() == 1 and n_lepton == 0 and met.size() == 0 and
+                                (trigger_matches.at("pass_photon_trigger")))
                             {
                                 auto gamma = photons.p4[0];
                                 gamma_plus_jet[shift].fill(gamma,
@@ -882,7 +911,9 @@ auto main(int argc, char *argv[]) -> int
                             }
 
                             // ttbar -> (mu+nu) + (qq)
-                            if (muons.size() > 0 and jets.size() >= 2 and bjets.size() >= 2)
+                            if (muons.size() > 0 and jets.size() >= 2 and bjets.size() >= 2 and
+                                (trigger_matches.at("pass_low_pt_muon_trigger") or
+                                 trigger_matches.at("pass_high_pt_muon_trigger")))
                             {
                                 auto muon = muons.p4[0];
                                 auto jet_1 = jets.p4[0];
@@ -909,7 +940,9 @@ auto main(int argc, char *argv[]) -> int
                             }
 
                             // ttbar to ele
-                            if (electrons.size() > 0 and jets.size() >= 2 and bjets.size() >= 2)
+                            if (electrons.size() > 0 and jets.size() >= 2 and bjets.size() >= 2 and
+                                (trigger_matches.at("pass_low_pt_electron_trigger") or
+                                 trigger_matches.at("pass_high_pt_electron_trigger")))
                             {
                                 auto electron = electrons.p4[0];
                                 auto jet_1 = jets.p4[0];
@@ -933,69 +966,6 @@ auto main(int argc, char *argv[]) -> int
                                                                                                       {2, bjets},
                                                                                                       {2, jets},
                                                                                                       {1, met}));
-                            }
-
-                            // Tau analysis
-                            // TauTau + X
-                            unsigned int n_taus = 2;
-                            if (taus.size() >= n_taus)
-                            {
-                                auto tau_1 = taus.p4[0];
-                                auto tau_2 = taus.p4[1];
-
-                                // wide mass range
-                                z_to_tau_tau_x[shift].fill(tau_1,
-                                                           tau_2,
-                                                           bjets.p4,
-                                                           jets.p4,
-                                                           met.p4,
-                                                           weight * Shifts::get_scale_factor(shift,
-                                                                                             {0, muons},
-                                                                                             {0, electrons},
-                                                                                             {n_taus, taus},
-                                                                                             {0, photons},
-                                                                                             {0, bjets},
-                                                                                             {0, jets},
-                                                                                             {0, met}));
-
-                                // Z mass range
-                                if (PDG::Z::Mass - 20. < (tau_1 + tau_2).mass() and
-                                    (tau_1 + tau_2).mass() < PDG::Z::Mass + 20.)
-                                {
-                                    z_to_tau_tau_x_Z_mass[shift].fill(tau_1,
-                                                                      tau_2,
-                                                                      bjets.p4,
-                                                                      jets.p4,
-                                                                      met.p4,
-                                                                      weight * Shifts::get_scale_factor(shift,
-                                                                                                        {0, muons},
-                                                                                                        {0, electrons},
-                                                                                                        {n_taus, taus},
-                                                                                                        {0, photons},
-                                                                                                        {0, bjets},
-                                                                                                        {0, jets},
-                                                                                                        {0, met}));
-                                }
-                            }
-
-                            // TauNu
-                            if (taus.size() >= 1 and met.size() >= 1)
-                            {
-                                auto tau_1 = taus.p4[0];
-
-                                // wide mass range
-                                w_to_tau_nu[shift].fill(tau_1,
-                                                        // bjets.p4,
-                                                        // jets.p4,
-                                                        met.p4,
-                                                        weight * Shifts::get_scale_factor(shift,
-                                                                                          {0, muons},
-                                                                                          {0, electrons},
-                                                                                          {1, taus},
-                                                                                          {0, photons},
-                                                                                          {0, bjets},
-                                                                                          {0, jets},
-                                                                                          {1, met}));
                             }
                         }
                     }
@@ -1039,9 +1009,6 @@ auto main(int argc, char *argv[]) -> int
             gamma_plus_jet[shift].dump_outputs();
             ttbar_to_1mu_2bjet_2jet_MET[shift].dump_outputs();
             ttbar_to_1ele_2bjet_2jet_MET[shift].dump_outputs();
-            z_to_tau_tau_x[shift].dump_outputs();
-            z_to_tau_tau_x_Z_mass[shift].dump_outputs();
-            w_to_tau_nu[shift].dump_outputs();
             // dijets.dump_outputs();
         });
 

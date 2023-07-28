@@ -357,8 +357,8 @@ def main():
     ax1.set_ylabel("Events / 10 GeV")
     ax2.set_ylabel("Obs./Pred.", loc="centre")
 
-    # ax2.set_ylim(0, 2)
-    ax2.set_ylim(0, 3)
+    ax2.set_ylim(0, 2)
+    # ax2.set_ylim(0, 3)
 
     ax2.draw_arrows_outside_range(ratio_graph)
 

@@ -137,6 +137,8 @@ def main():
                 ) and not job_status[directory]:
                     if not args.no_resubmit:
                         resubmit(directory, args.always_resubmit)
+            else:
+                job_status[directory] = True
 
         print("")
         if all(job_status.values()):

@@ -698,8 +698,6 @@ auto main(int argc, char *argv[]) -> int
                     .Define("pass_photon_trigger",
                             [&configuration]() -> std::string
                             {
-                                std::vector<std::string> double_electron_triggers = {};
-
                                 if (configuration.year == Year::Run2016APV or configuration.year == Year::Run2016)
                                 {
                                     return "HLT_Photon175";
@@ -719,6 +717,118 @@ auto main(int argc, char *argv[]) -> int
                                     "ERROR: Could not define trigger bits. The requested year ({}) is invalid.",
                                     configuration.year_str));
                             }())
+                    .Define("pass_high_pt_tau_trigger",
+                            [&configuration]() -> std::string
+                            {
+                                if (configuration.year == Year::Run2016APV or configuration.year == Year::Run2016)
+                                {
+                                    return "HLT_VLooseIsoPFTau120_Trk50_eta2p1 OR HLT_VLooseIsoPFTau140_Trk50_eta2p1";
+                                }
+
+                                if (configuration.year == Year::Run2017)
+                                {
+                                    return "HLT_MediumChargedIsoPFTau180HighPtRelaxedIso_Trk50_eta2p1";
+                                }
+
+                                if (configuration.year == Year::Run2018)
+                                {
+                                    return "HLT_MediumChargedIsoPFTau180HighPtRelaxedIso_Trk50_eta2p1";
+                                }
+
+                                throw std::invalid_argument(fmt::format(
+                                    "ERROR: Could not define trigger bits. The requested year ({}) is invalid.",
+                                    configuration.year_str));
+                            }())
+                    .Define(
+                        "pass_double_tau_trigger",
+                        [&configuration, &pre_skimmed_dataframe]() -> std::string
+                        {
+                            std::vector<std::string> double_tau_triggers = {};
+
+                            if (configuration.year == Year::Run2016APV or configuration.year == Year::Run2016)
+                            {
+                                if (pre_skimmed_dataframe.HasColumn("HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg"))
+                                {
+                                    double_tau_triggers.push_back("HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg");
+                                }
+                                if (pre_skimmed_dataframe.HasColumn(
+                                        "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg"))
+                                {
+                                    double_tau_triggers.push_back("HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg");
+                                }
+
+                                if (double_tau_triggers.size() == 0)
+                                {
+                                    throw std::invalid_argument(
+                                        fmt::format("ERROR: Could not define double tau trigger bits. The requested "
+                                                    "trigger(s) is/are invalid."));
+                                }
+                                return fmt::format("{}", fmt::join(double_tau_triggers, " or "));
+                            }
+
+                            if (configuration.year == Year::Run2017)
+                            {
+                                if (pre_skimmed_dataframe.HasColumn(
+                                        "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg"))
+                                {
+                                    double_tau_triggers.push_back(
+                                        "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg");
+                                }
+                                if (pre_skimmed_dataframe.HasColumn(
+                                        "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg"))
+                                {
+                                    double_tau_triggers.push_back(
+                                        "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg");
+                                }
+                                if (pre_skimmed_dataframe.HasColumn("HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg"))
+                                {
+                                    double_tau_triggers.push_back("HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg");
+                                }
+                                if (double_tau_triggers.size() == 0)
+                                {
+                                    throw std::invalid_argument(
+                                        fmt::format("ERROR: Could not define double tau trigger bits. The requested "
+                                                    "trigger(s) is/are invalid."));
+                                }
+                                return fmt::format("{}", fmt::join(double_tau_triggers, " or "));
+                            }
+                            if (configuration.year == Year::Run2018)
+                            {
+                                if (pre_skimmed_dataframe.HasColumn(
+                                        "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg"))
+                                {
+                                    double_tau_triggers.push_back(
+                                        "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg");
+                                }
+                                if (pre_skimmed_dataframe.HasColumn(
+                                        "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg"))
+                                {
+                                    double_tau_triggers.push_back(
+                                        "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg");
+                                }
+                                if (pre_skimmed_dataframe.HasColumn("HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg"))
+                                {
+                                    double_tau_triggers.push_back("HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg");
+                                }
+                                if (pre_skimmed_dataframe.HasColumn(
+                                        "HLT_DoubleMediumChargedIsoPFTauHPS35_Trk1_eta2p1_Reg"))
+                                {
+                                    double_tau_triggers.push_back(
+                                        "HLT_DoubleMediumChargedIsoPFTauHPS35_Trk1_eta2p1_Reg");
+                                }
+                                if (double_tau_triggers.size() == 0)
+                                {
+                                    throw std::invalid_argument(
+                                        fmt::format("ERROR: Could not define double tau trigger bits. The requested "
+                                                    "trigger(s) is/are invalid."));
+                                }
+                                return fmt::format("{}", fmt::join(double_tau_triggers, " or "));
+                            }
+
+                            throw std::invalid_argument(fmt::format(
+                                "ERROR: Could not define double tau trigger bits. The requested year ({}) is invalid.",
+                                configuration.year_str));
+                        }())
                     .Define("pass_jet_ht_trigger",
                             // [](bool HLT_PFHT1050) -> bool
                             []() -> bool
@@ -751,14 +861,25 @@ auto main(int argc, char *argv[]) -> int
                                                 bool pass_high_pt_electron_trigger,
                                                 bool pass_double_electron_trigger,
                                                 bool pass_photon_trigger,
+                                                bool pass_high_pt_tau_trigger,
+                                                bool pass_double_tau_trigger,
                                                 bool pass_jet_ht_trigger,
                                                 bool pass_jet_pt_trigger,
                                                 float mc_weight) -> bool
                         {
-                            if (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger or pass_double_muon_trigger or
-                                pass_low_pt_electron_trigger or pass_high_pt_electron_trigger or
-                                pass_double_electron_trigger or pass_photon_trigger or pass_jet_ht_trigger or
-                                pass_jet_pt_trigger)
+                            if (                                 //
+                                pass_low_pt_muon_trigger         //
+                                or pass_high_pt_muon_trigger     //
+                                or pass_double_muon_trigger      //
+                                or pass_low_pt_electron_trigger  //
+                                or pass_high_pt_electron_trigger //
+                                or pass_double_electron_trigger  //
+                                or pass_photon_trigger           //
+                                or pass_high_pt_tau_trigger      //
+                                or pass_double_tau_trigger       //
+                                or pass_jet_ht_trigger           //
+                                or pass_jet_pt_trigger           //
+                            )
                             {
                                 cutflow_histo.Fill(Cuts.index_of("TriggerCut"), mc_weight);
                                 return true;
@@ -772,6 +893,8 @@ auto main(int argc, char *argv[]) -> int
                          "pass_high_pt_electron_trigger",
                          "pass_double_electron_trigger",
                          "pass_photon_trigger",
+                         "pass_high_pt_tau_trigger",
+                         "pass_double_tau_trigger",
                          "pass_jet_ht_trigger",
                          "pass_jet_pt_trigger",
                          "mc_weight"})

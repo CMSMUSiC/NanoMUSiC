@@ -546,9 +546,8 @@ auto gamma_jet_cleanner_filter(const NanoObjects::LHEParticles &lhe_particles, f
         auto delta_phi = VecOps::DeltaPhi((lhe_particles.phi[gamma_idx]).at(0), lhe_particles.phi[jets_idx]);
         auto delta_eta = ((lhe_particles.eta[gamma_idx]).at(0) - (lhe_particles.eta[jets_idx]));
         auto delta_r = VecOps::sqrt(delta_eta * delta_eta + delta_phi * delta_phi);
-        dr = VecOps::Min(delta_r);
 
-        // fmt::print("Gamma IDX: {} - Jet IDX: {} - DeltaR: {}\n", gamma_idx, jets_idx, deltaRs);
+        dr = VecOps::Min(delta_r);
     }
 
     if (dr < dr_max)
