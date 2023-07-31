@@ -52,6 +52,7 @@ add_executable(
     src/WToTauNuLepX.cpp //
     src/WToLepNu_eff.cpp //
     src/ZToTauTauLepX.cpp //
+    src/class_builder.cpp //
 
     # src/Dijets.cpp //
 )

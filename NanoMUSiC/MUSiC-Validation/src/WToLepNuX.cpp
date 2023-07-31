@@ -139,48 +139,6 @@ WToLepNuX::WToLepNuX(const std::string &_analysis_name,
     h_met_phi = TH1F(histo_name.c_str(), histo_name.c_str(), n_phi_bins, min_phi, max_phi);
     h_met_phi.Sumw2();
 
-    // histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
-    //                                                       _process_group, //
-    //                                                       _xs_order,      //
-    //                                                       _sample,        //
-    //                                                       _year,          //
-    //                                                       _shift,         //
-    //                                                       "h_lepton_1_jet_1_dPhi");
-    // h_lepton_1_jet_1_dPhi = TH1F(histo_name.c_str(), histo_name.c_str(), n_phi_bins, min_phi, max_phi);
-    // h_lepton_1_jet_1_dPhi.Sumw2();
-
-    // histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
-    //                                                       _process_group, //
-    //                                                       _xs_order,      //
-    //                                                       _sample,        //
-    //                                                       _year,          //
-    //                                                       _shift,         //
-    //                                                       "h_lepton_1_jet_1_dR");
-    // h_lepton_1_jet_1_dR = TH1F(histo_name.c_str(), histo_name.c_str(), n_dR_bins, min_dR, max_dR);
-    // h_lepton_1_jet_1_dR.Sumw2();
-
-    // histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
-    //                                                       _process_group, //
-    //                                                       _xs_order,      //
-    //                                                       _sample,        //
-    //                                                       _year,          //
-    //                                                       _shift,         //
-    //                                                       "h_jet_multiplicity");
-    // h_jet_multiplicity =
-    //     TH1F(histo_name.c_str(), histo_name.c_str(), n_multiplicity_bins, min_multiplicity, max_multiplicity);
-    // h_jet_multiplicity.Sumw2();
-
-    // histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
-    //                                                       _process_group, //
-    //                                                       _xs_order,      //
-    //                                                       _sample,        //
-    //                                                       _year,          //
-    //                                                       _shift,         //
-    //                                                       "h_bjet_multiplicity");
-    // h_bjet_multiplicity =
-    //     TH1F(histo_name.c_str(), histo_name.c_str(), n_multiplicity_bins, min_multiplicity, max_multiplicity);
-    // h_bjet_multiplicity.Sumw2();
-
     histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
                                                           _process_group, //
                                                           _xs_order,      //
@@ -229,31 +187,6 @@ auto WToLepNuX::fill(const Math::PtEtaPhiMVector &lepton_1,
     h_lepton_1_phi.Fill(lepton_1.phi(), weight);
     h_met_phi.Fill(met[0].phi(), weight);
 
-    // if (jets.size() > 0 or bjets.size() > 0)
-    // {
-    //     Math::PtEtaPhiMVector leading_jet = [&]() -> Math::PtEtaPhiMVector
-    //     {
-    //         if (jets.size() > 0 and not(bjets.size() > 0))
-    //         {
-    //             return jets[0];
-    //         }
-    //         if (not(jets.size() > 0) and bjets.size() > 0)
-    //         {
-    //             return bjets[0];
-    //         }
-    //         if ((jets[0]).pt() > (bjets[0]).pt())
-    //         {
-    //             return jets[0];
-    //         }
-    //         return bjets[0];
-    //     }();
-
-    //     h_lepton_1_jet_1_dPhi.Fill(VectorUtil::DeltaPhi(lepton_1, leading_jet), weight);
-    //     h_lepton_1_jet_1_dR.Fill(VectorUtil::DeltaR(lepton_1, leading_jet), weight);
-    // }
-
-    // h_jet_multiplicity.Fill(jets.size(), weight);
-    // h_bjet_multiplicity.Fill(bjets.size(), weight);
 
     h_lepton_1_pt_eta.Fill(lepton_1.pt(), lepton_1.eta(), weight);
     h_lepton_1_pt_phi.Fill(lepton_1.pt(), lepton_1.phi(), weight);
@@ -306,18 +239,6 @@ auto WToLepNuX::dump_outputs() -> void
 
     h_met_phi.SetDirectory(output_file.get());
     h_met_phi.Write();
-
-    // h_lepton_1_jet_1_dPhi.SetDirectory(output_file.get());
-    // h_lepton_1_jet_1_dPhi.Write();
-
-    // h_lepton_1_jet_1_dR.SetDirectory(output_file.get());
-    // h_lepton_1_jet_1_dR.Write();
-
-    // h_jet_multiplicity.SetDirectory(output_file.get());
-    // h_jet_multiplicity.Write();
-
-    // h_bjet_multiplicity.SetDirectory(output_file.get());
-    // h_bjet_multiplicity.Write();
 
     h_lepton_1_pt_eta.SetDirectory(output_file.get());
     h_lepton_1_pt_eta.Write();

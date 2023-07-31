@@ -243,6 +243,18 @@ auto main(int argc, char *argv[]) -> int
     /////////////////////////////////////////////
     /////////////////////////////////////////////
 
+    const std::map<std::string, int> w_to_tau_nu_x_count_map = {{"Ele", 0},
+                                                                {"EleEE", 0},
+                                                                {"EleEB", 0},
+                                                                {"Muon", 0},
+                                                                {"Gamma", 0},
+                                                                {"GammaEB", 0},
+                                                                {"GammaEE", 0},
+                                                                {"Tau", 1},
+                                                                {"Jet", 0},
+                                                                {"bJet", 0},
+                                                                {"MET", 1}};
+
     const std::map<std::string, int> w_to_tau_nu_ele_x_count_map = {{"Ele", 1},
                                                                     {"EleEE", 0},
                                                                     {"EleEB", 0},
@@ -266,6 +278,18 @@ auto main(int argc, char *argv[]) -> int
                                                                    {"Jet", 0},
                                                                    {"bJet", 0},
                                                                    {"MET", 1}};
+
+    const std::map<std::string, int> z_to_tau_tau_x_count_map = {{"Ele", 0},
+                                                                 {"EleEE", 0},
+                                                                 {"EleEB", 0},
+                                                                 {"Muon", 0},
+                                                                 {"Gamma", 0},
+                                                                 {"GammaEB", 0},
+                                                                 {"GammaEE", 0},
+                                                                 {"Tau", 2},
+                                                                 {"Jet", 0},
+                                                                 {"bJet", 0},
+                                                                 {"MET", 0}};
 
     const std::map<std::string, int> z_to_tau_tau_ele_x_count_map = {{"Ele", 1},
                                                                      {"EleEE", 0},
@@ -293,8 +317,10 @@ auto main(int argc, char *argv[]) -> int
 
     // build validation factories
     // map each shift to one analysis factory
+    std::unordered_map<std::string, WToLepNuX> w_to_tau_nu_x;
     std::unordered_map<std::string, WToTauNuLepX> w_to_tau_nu_ele_x;
     std::unordered_map<std::string, WToTauNuLepX> w_to_tau_nu_mu_x;
+    std::unordered_map<std::string, ZToLepLepX> z_to_tau_tau_x;
     std::unordered_map<std::string, ZToTauTauLepX> z_to_tau_tau_ele_x;
     std::unordered_map<std::string, ZToTauTauLepX> z_to_tau_tau_mu_x;
 
@@ -311,6 +337,20 @@ auto main(int argc, char *argv[]) -> int
     // Initiale analyses
     for (auto &&shift : shifts.get_constant_shifts())
     {
+
+        z_to_tau_tau_x.insert(
+            {shift,
+             ZToLepLepX(
+                 "z_to_tau_tau_x",
+                 get_output_file_path(
+                     "z_to_tau_tau_x", output_path, process, year, process_group, xs_order, is_data, shift),
+                 z_to_tau_tau_x_count_map,
+                 false,
+                 shift,
+                 process,
+                 year,
+                 process_group,
+                 xs_order)});
 
         z_to_tau_tau_ele_x.insert(
             {shift,
@@ -340,6 +380,19 @@ auto main(int argc, char *argv[]) -> int
                  process_group,
                  xs_order)});
 
+        w_to_tau_nu_x.insert(
+            {shift,
+             WToLepNuX("w_to_tau_nu_x",
+                          get_output_file_path(
+                              "w_to_tau_nu_x", output_path, process, year, process_group, xs_order, is_data, shift),
+                          w_to_tau_nu_x_count_map,
+                          false,
+                          shift,
+                          process,
+                          year,
+                          process_group,
+                          xs_order)});
+        
         w_to_tau_nu_ele_x.insert(
             {shift,
              WToTauNuLepX("w_to_tau_nu_ele_x",
@@ -371,6 +424,20 @@ auto main(int argc, char *argv[]) -> int
     {
         if (shift != "Nominal")
         {
+            z_to_tau_tau_x.insert(
+            {shift,
+             ZToLepLepX(
+                 "z_to_tau_tau_x",
+                 get_output_file_path(
+                     "z_to_tau_tau_x", output_path, process, year, process_group, xs_order, is_data, shift),
+                 z_to_tau_tau_x_count_map,
+                 false,
+                 shift,
+                 process,
+                 year,
+                 process_group,
+                 xs_order)});
+
             z_to_tau_tau_ele_x.insert(
                 {shift,
                  ZToTauTauLepX(
@@ -399,6 +466,19 @@ auto main(int argc, char *argv[]) -> int
                      process_group,
                      xs_order)});
 
+            w_to_tau_nu_x.insert(
+            {shift,
+             WToLepNuX("w_to_tau_nu_x",
+                          get_output_file_path(
+                              "w_to_tau_nu_x", output_path, process, year, process_group, xs_order, is_data, shift),
+                          w_to_tau_nu_x_count_map,
+                          false,
+                          shift,
+                          process,
+                          year,
+                          process_group,
+                          xs_order)});
+            
             w_to_tau_nu_ele_x.insert(
                 {shift,
                  WToTauNuLepX(
@@ -711,13 +791,41 @@ auto main(int argc, char *argv[]) -> int
                                          * pdf_as_weight;
                             }
 
+                            // TauTau + X
+                            if (taus.size() >= 2) // and
+                                // (trigger_matches.at("pass_low_pt_electron_trigger") or
+                                //  trigger_matches.at("pass_high_pt_electron_trigger") or
+                                //  trigger_matches.at("pass_double_electron_trigger")))
+                                // TAU TRIGGER ??
+                            {
+                                auto tau_1 = taus.p4[0];
+                                auto tau_2 = taus.p4[1];
+
+                                z_to_tau_tau_x[shift].fill(tau_1,
+                                                           tau_2,
+                                                           bjets.p4,
+                                                           jets.p4,
+                                                           met.p4,
+                                                           weight * Shifts::get_scale_factor(shift,
+                                                                                             {0, muons},
+                                                                                             {0, electrons},
+                                                                                             {2, taus},
+                                                                                             {0, photons},
+                                                                                             {0, bjets},
+                                                                                             {0, jets},
+                                                                                             {0, met}));
+                            }
+                            
                             // TauTau + Ele + X
-                            if (taus.size() >= 2 and electrons.size() >= 1)
+                            if (taus.size() >= 2 and electrons.size() >= 1 and
+                                (trigger_matches.at("pass_low_pt_electron_trigger") or
+                                 trigger_matches.at("pass_high_pt_electron_trigger") or
+                                 trigger_matches.at("pass_double_electron_trigger")))
                             {
                                 auto tau_1 = taus.p4[0];
                                 auto tau_2 = taus.p4[1];
                                 auto electron = electrons.p4[0];
-                                // wide mass range
+
                                 z_to_tau_tau_ele_x[shift].fill(tau_1,
                                                                tau_2,
                                                                electron,
@@ -735,13 +843,15 @@ auto main(int argc, char *argv[]) -> int
                             }
 
                             // TauTau + Mu + X
-                            if (taus.size() >= 2 and muons.size() >= 1)
+                            if (taus.size() >= 2 and muons.size() >= 1 and
+                                (trigger_matches.at("pass_low_pt_muon_trigger") or
+                                 trigger_matches.at("pass_high_pt_muon_trigger") or
+                                 trigger_matches.at("pass_double_muon_trigger")))
                             {
                                 auto tau_1 = taus.p4[0];
                                 auto tau_2 = taus.p4[1];
                                 auto muon = muons.p4[0];
 
-                                // wide mass range
                                 z_to_tau_tau_mu_x[shift].fill(tau_1,
                                                               tau_2,
                                                               muon,
@@ -758,13 +868,38 @@ auto main(int argc, char *argv[]) -> int
                                                                                                 {0, met}));
                             }
 
+                            // Tau + Nu + X
+                            if (taus.size() >= 1 and met.size() >= 1 )// and
+                                //(trigger_matches.at("pass_low_pt_electron_trigger") or
+                                // trigger_matches.at("pass_high_pt_electron_trigger") or
+                                // trigger_matches.at("pass_double_electron_trigger")))
+                                // TAU TRIGGER ?
+                            {
+                                auto tau = taus.p4[0];
+
+                                w_to_tau_nu_x[shift].fill(tau,
+                                                              // bjets.p4,
+                                                              // jets.p4,
+                                                              met.p4,
+                                                              weight * Shifts::get_scale_factor(shift,
+                                                                                                {0, muons},
+                                                                                                {0, electrons},
+                                                                                                {1, taus},
+                                                                                                {0, photons},
+                                                                                                {0, bjets},
+                                                                                                {0, jets},
+                                                                                                {1, met}));
+                            }
+                            
                             // Tau + Nu + Ele + X
-                            if (taus.size() >= 1 and met.size() >= 1 and electrons.size() >= 1)
+                            if (taus.size() >= 1 and met.size() >= 1 and electrons.size() >= 1 and
+                                (trigger_matches.at("pass_low_pt_electron_trigger") or
+                                 trigger_matches.at("pass_high_pt_electron_trigger") or
+                                 trigger_matches.at("pass_double_electron_trigger")))
                             {
                                 auto tau = taus.p4[0];
                                 auto electron = electrons.p4[0];
 
-                                // wide mass range
                                 w_to_tau_nu_ele_x[shift].fill(tau,
                                                               // bjets.p4,
                                                               // jets.p4,
@@ -781,12 +916,14 @@ auto main(int argc, char *argv[]) -> int
                             }
 
                             // Tau + Nu + Mu + X
-                            if (taus.size() >= 1 and met.size() >= 1 and muons.size() >= 1)
+                            if (taus.size() >= 1 and met.size() >= 1 and muons.size() >= 1 and
+                                (trigger_matches.at("pass_low_pt_muon_trigger") or
+                                 trigger_matches.at("pass_high_pt_muon_trigger") or
+                                 trigger_matches.at("pass_double_muon_trigger")))
                             {
                                 auto tau = taus.p4[0];
                                 auto muon = muons.p4[0];
 
-                                // wide mass range
                                 w_to_tau_nu_mu_x[shift].fill(tau,
                                                              // bjets.p4,
                                                              // jets.p4,
@@ -801,6 +938,16 @@ auto main(int argc, char *argv[]) -> int
                                                                                                {0, jets},
                                                                                                {1, met}));
                             }
+
+                            // auto classes = make_class(muons.size(),
+                            //                           electrons.size(),
+                            //                           taus.size(),
+                            //                           photons.size(),
+                            //                           bjets.size(),
+                            //                           jets.size(),
+                            //                           met.size());
+
+                            // auto number_of_classes = classes.size();
                         }
                     }
 
@@ -835,8 +982,10 @@ auto main(int argc, char *argv[]) -> int
     fmt::print("\n[MUSiC Validation] Saving outputs ({} - {} - {} - {}) ...\n", output_path, process, year, shift);
     for (auto &&shift : shifts.get_constant_shifts())
     {
+        z_to_tau_tau_x[shift].dump_outputs();
         z_to_tau_tau_ele_x[shift].dump_outputs();
         z_to_tau_tau_mu_x[shift].dump_outputs();
+        w_to_tau_nu_x[shift].dump_outputs();
         w_to_tau_nu_ele_x[shift].dump_outputs();
         w_to_tau_nu_mu_x[shift].dump_outputs();
     }
@@ -845,8 +994,10 @@ auto main(int argc, char *argv[]) -> int
     {
         if (shift != "Nominal")
         {
+            z_to_tau_tau_x[shift].dump_outputs();
             z_to_tau_tau_ele_x[shift].dump_outputs();
             z_to_tau_tau_mu_x[shift].dump_outputs();
+            w_to_tau_nu_x[shift].dump_outputs();
             w_to_tau_nu_ele_x[shift].dump_outputs();
             w_to_tau_nu_mu_x[shift].dump_outputs();
         }
