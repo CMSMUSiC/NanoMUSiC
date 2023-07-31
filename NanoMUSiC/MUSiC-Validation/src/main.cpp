@@ -520,10 +520,8 @@ auto main(int argc, char *argv[]) -> int
                                               unwrap(pass_low_pt_electron_trigger),
                                               unwrap(pass_high_pt_electron_trigger),
                                               unwrap(pass_double_electron_trigger),
-                                              //   unwrap(pass_high_pt_tau_trigger),
-                                              false,
-                                              //   unwrap(pass_double_tau_trigger),
-                                              false,
+                                              unwrap(pass_high_pt_tau_trigger),
+                                              unwrap(pass_double_tau_trigger),
                                               unwrap(pass_photon_trigger));
 
         if (is_good_trigger)
@@ -661,7 +659,7 @@ auto main(int argc, char *argv[]) -> int
                 // check for trigger matching
                 // is_good_trigger is garantied to be filled by the if statement above
                 const auto trigger_matches =
-                    make_trigger_matches(*is_good_trigger, muons, electrons, photons, get_runyear(year));
+                    make_trigger_matches(*is_good_trigger, muons, electrons, taus, photons, get_runyear(year));
 
                 bool has_trigger_match = false;
                 for (auto &&[trigger_path, trigger_match] : trigger_matches)

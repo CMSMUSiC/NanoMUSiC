@@ -504,6 +504,7 @@ class TriggerMatch
 inline auto make_trigger_matches(const std::unordered_map<std::string, bool> &is_good_trigger_map,
                                  const MUSiCObjects &muons,
                                  const MUSiCObjects &electrons,
+                                 const MUSiCObjects &taus,
                                  const MUSiCObjects &photons,
                                  Year year) -> std::unordered_map<std::string, std::optional<TriggerMatch>>
 {
@@ -695,6 +696,66 @@ inline auto make_trigger_matches(const std::unordered_map<std::string, bool> &is
     else
     {
         matches.insert({"pass_photon_trigger", std::nullopt});
+    }
+
+    // tau trigger
+    if (is_good_trigger_map.at("pass_high_pt_tau_trigger") //
+        and taus.size() >= 1)
+    {
+        auto good_taus = VecOps::Filter(taus.p4,
+                                        [year](const auto &tau)
+                                        {
+                                            if (year == Year::Run2016APV or year == Year::Run2016)
+                                            {
+                                                return tau.pt() > 160.;
+                                            }
+                                            return tau.pt() > 200.;
+                                        });
+        if (good_taus.size() >= 1)
+        {
+            matches.insert({"pass_high_pt_tau_trigger", TriggerMatch({good_taus[0].pt()}, {good_taus[0].eta()})});
+        }
+        else
+        {
+            matches.insert({"pass_high_pt_tau_trigger", std::nullopt});
+        }
+    }
+    else
+    {
+        matches.insert({"pass_high_pt_tau_trigger", std::nullopt});
+    }
+
+    if (is_good_trigger_map.at("pass_double_tau_trigger") //
+        and taus.size() >= 2)
+    {
+        auto good_taus = VecOps::Filter(taus.p4,
+                                        [year](const auto &tau)
+                                        {
+                                            if (year == Year::Run2016APV or year == Year::Run2016)
+                                            {
+                                                return tau.pt() > 45.;
+                                            }
+
+                                            if (year == Year::Run2017)
+                                            {
+                                                return tau.pt() > 50.;
+                                            }
+                                            return tau.pt() > 50.;
+                                        });
+        if (good_taus.size() >= 2)
+        {
+            matches.insert(
+                {"pass_double_tau_trigger",
+                 TriggerMatch({good_taus[0].pt(), good_taus[1].pt()}, {good_taus[0].eta(), good_taus[1].eta()})});
+        }
+        else
+        {
+            matches.insert({"pass_double_tau_trigger", std::nullopt});
+        }
+    }
+    else
+    {
+        matches.insert({"pass_double_tau_trigger", std::nullopt});
     }
 
     return matches;

@@ -334,8 +334,6 @@ def validation_merger(args):
         error = validation_merge_result.stderr.decode("utf-8")
         raise RuntimeError(f"ERROR: could not merge cutflow files.\n{error}")
 
-    # os.system(f"rm -rf {output_base}/validation_outputs/{year}/{process}/buffer")
-
 
 def process_filter(args, is_data: bool, process: str, year: str) -> bool:
     if (

@@ -5,8 +5,9 @@ import subprocess
 import os
 import argparse
 import shlex
-from multiprocessing import Pool
+from multiprocessing import Pool, cpu_count
 from tqdm import tqdm
+import json
 
 from CRABClient.UserUtilities import config
 from CRABAPI.RawCommand import crabCommand
@@ -57,6 +58,13 @@ parser.add_argument(
     default="",
 )
 
+parser.add_argument(
+    "--jobs",
+    help="Pool size.",
+    required=False,
+    default=min(cpu_count(), 12),
+)
+
 args = parser.parse_args()
 
 
@@ -85,15 +93,15 @@ def make_task_config_file(
     task_config["dataset"] = das_name
 
     new_config = to_toml_dumps(task_config)
-    print("\n*************** Modified task config file: ******************\n")
-    print(
-        highlight(
-            new_config,
-            lexer=get_lexer_by_name("toml"),
-            formatter=Terminal256Formatter(style="monokai"),
-        )
-    )
-    print("\n" + "*" * 56)
+    # print("\n*************** Modified task config file: ******************\n")
+    # print(
+    #     highlight(
+    #         new_config,
+    #         lexer=get_lexer_by_name("toml"),
+    #         formatter=Terminal256Formatter(style="monokai"),
+    #     )
+    # )
+    # print("\n" + "*" * 56)
 
     # dump new config to file
     # os.system("rm raw_config.toml > /dev/null 2>&1")
@@ -146,11 +154,11 @@ def build_crab_config(process_name, das_name, year, is_data, global_now):
     this_config.Data.inputDataset = das_name
     this_config.Data.inputDBS = "global"
     this_config.Data.splitting = "FileBased"
-    this_config.Data.unitsPerJob = 3
-    # if is_data:
-    #     this_config.Data.unitsPerJob = 10
-    # else:
-    #     this_config.Data.unitsPerJob = 5
+    if is_data:
+        this_config.Data.unitsPerJob = 3
+    else:
+        this_config.Data.unitsPerJob = 3
+
     this_config.Data.totalUnits = -1
     this_config.Data.publication = False
     this_config.Data.outputDatasetTag = process_name
@@ -160,7 +168,7 @@ def build_crab_config(process_name, das_name, year, is_data, global_now):
         this_config.JobType.outputFiles = [r"efficiency_hist.root"]
     this_config.User.voGroup = "dcms"
     this_config.Site.storageSite = "T2_DE_RWTH"
-    this_config.Site.blacklist = ["T2_BR_*", "T2_CH_CSCS"]
+    this_config.Site.blacklist = ["T2_BR_*", "T2_US_*", "T2_CH_CSCS"]
 
     return this_config
 
@@ -183,6 +191,7 @@ def submit(sample):
         config=build_crab_config(process_name, das_name, year, is_data, global_now),
     )
     print(sub_res)
+    return {"process_name": process_name, "year": year}
 
 
 def build_task_tarball():
@@ -229,14 +238,28 @@ def main():
         args.sample,
         args.year,
     )
-    with Pool(min(30, len(sample_list))) as pool:
-        list(
+
+    with Pool(min(args.jobs, len(sample_list))) as pool:
+        submited_samples = list(
             tqdm(
                 pool.imap_unordered(submit, sample_list),
                 total=len(sample_list),
                 unit="sample",
             )
         )
+
+    # Writing to sample.json
+    json_object = []
+    if os.path.isfile(f"submited_samples_{global_now}.json"):
+        with open(f"submited_samples_{global_now}.json", "r") as f:
+            json_object = json.load(f) + submited_samples
+
+        with open(f"submited_samples_{global_now}.json", "w") as f:
+            f.write(json.dumps(json_object))
+
+    else:
+        with open(f"submited_samples_{global_now}.json", "a") as f:
+            f.write(json.dumps(submited_samples))
 
 
 if __name__ == "__main__":

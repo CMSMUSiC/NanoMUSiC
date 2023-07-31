@@ -718,11 +718,26 @@ auto main(int argc, char *argv[]) -> int
                                     configuration.year_str));
                             }())
                     .Define("pass_high_pt_tau_trigger",
-                            [&configuration]() -> std::string
+                            [&configuration, &pre_skimmed_dataframe]() -> std::string
                             {
+                                std::vector<std::string> high_pt_tau_triggers = {};
                                 if (configuration.year == Year::Run2016APV or configuration.year == Year::Run2016)
                                 {
-                                    return "HLT_VLooseIsoPFTau120_Trk50_eta2p1 OR HLT_VLooseIsoPFTau140_Trk50_eta2p1";
+                                    if (pre_skimmed_dataframe.HasColumn("HLT_VLooseIsoPFTau120_Trk50_eta2p1"))
+                                    {
+                                        high_pt_tau_triggers.push_back("HLT_VLooseIsoPFTau120_Trk50_eta2p1");
+                                    }
+                                    if (pre_skimmed_dataframe.HasColumn("HLT_VLooseIsoPFTau140_Trk50_eta2p1"))
+                                    {
+                                        high_pt_tau_triggers.push_back("HLT_VLooseIsoPFTau140_Trk50_eta2p1");
+                                    }
+
+                                    if (high_pt_tau_triggers.size() == 0)
+                                    {
+                                        return "false";
+                                    }
+
+                                    return fmt::format("{}", fmt::join(high_pt_tau_triggers, " or "));
                                 }
 
                                 if (configuration.year == Year::Run2017)
@@ -763,6 +778,12 @@ auto main(int argc, char *argv[]) -> int
                                         fmt::format("ERROR: Could not define double tau trigger bits. The requested "
                                                     "trigger(s) is/are invalid."));
                                 }
+
+                                if (double_tau_triggers.size() == 0)
+                                {
+                                    return "false";
+                                }
+
                                 return fmt::format("{}", fmt::join(double_tau_triggers, " or "));
                             }
 

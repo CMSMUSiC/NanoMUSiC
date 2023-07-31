@@ -1,10 +1,6 @@
 #ifndef ENUMERATE_H
 #define ENUMERATE_H
 
-#include <fmt/core.h>
-#include <fmt/ostream.h>
-#include <fmt/ranges.h>
-
 #include <algorithm>
 #include <array>
 #include <iostream>
@@ -13,10 +9,9 @@
 #include <tuple>
 #include <type_traits>
 
-
 namespace Enumerate
 {
-    
+
 template <typename T>
 constexpr int _imp2_number_of_duplicates(T &&t1, T &&t2)
 {
@@ -152,5 +147,5 @@ constexpr auto make_enumerate(Ts &&...args)
     }
 }
 
-}
+} // namespace Enumerate
 #endif /*ENUMERATE_H*/
