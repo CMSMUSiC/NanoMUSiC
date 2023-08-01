@@ -121,7 +121,6 @@ def main():
 
     completed_jobs = []
     while True:
-        # True == Done
         job_status = {}
         for idx in tqdm(range(len(matching_directories)), unit=" job"):
             if idx not in completed_jobs:
@@ -138,7 +137,7 @@ def main():
                     if not args.no_resubmit:
                         resubmit(directory, args.always_resubmit)
             else:
-                job_status[directory] = True
+                job_status[matching_directories[idx]] = True
 
         print("")
         if all(job_status.values()):
