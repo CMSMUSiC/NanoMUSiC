@@ -67,6 +67,12 @@ JetClass2::JetClass2(const std::string &output_path, const std::string c_name)
     h_deltaeta_jetjet.Sumw2();
     h_deltaeta_jetbjet.Sumw2();
     h_deltaeta_bjetbjet.Sumw2();
+    // weight histograms
+    h_gen_weight.Sumw2();
+    h_pu_weight.Sumw2();
+    h_pdf_weight.Sumw2();
+    h_prefiring_weight.Sumw2();
+    h_total_weight.Sumw2();
 }
 
 // fill histogram for an event in the class
@@ -218,10 +224,32 @@ auto JetClass2::fill(RVec<Math::PtEtaPhiMVector> jets,
     h_nemu.Fill(nElectron + nMuon, weight);
 }
 
+// fill weights
+auto JetClass2::fill_weights(double weight,
+                             double gen_weight,
+                             double pu_weight,
+                             double pdf_weight,
+                             double prefiring_weight) -> void
+{
+    // fill weight histograms
+    h_gen_weight.Fill(gen_weight, 1.);
+    h_pu_weight.Fill(pu_weight, 1.);
+    h_pdf_weight.Fill(pdf_weight, 1.);
+    h_prefiring_weight.Fill(prefiring_weight, 1.);
+    h_total_weight.Fill(weight, 1.);
+}
+
 // save histograms
 auto JetClass2::save_histo(TH1F &histo) -> void
 {
-    histo.Scale(10., "width"); // FIXES STEPS IN DISTRIBUTIONS // CHANGED FROM 10 TO 1
+    histo.Scale(10., "width"); // FIXES STEPS IN DISTRIBUTIONS
+    histo.SetDirectory(output_file.get());
+    histo.Write();
+}
+
+// save weight histograms
+auto JetClass2::save_histo_weight(TH1F &histo) -> void
+{
     histo.SetDirectory(output_file.get());
     histo.Write();
 }
@@ -262,5 +290,12 @@ auto JetClass2::dump_outputs() -> void
     save_histo(h_deltaeta_jetjet);
     save_histo(h_deltaeta_jetbjet);
     save_histo(h_deltaeta_bjetbjet);
+    // weight histograms
+    save_histo_weight(h_gen_weight);
+    save_histo_weight(h_pu_weight);
+    save_histo_weight(h_pdf_weight);
+    save_histo_weight(h_prefiring_weight);
+    save_histo_weight(h_total_weight);
+
     output_file->Close();
 }

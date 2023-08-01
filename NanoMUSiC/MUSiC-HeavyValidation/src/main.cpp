@@ -541,7 +541,7 @@ auto main(int argc, char *argv[]) -> int
                                                  unwrap(Muon_pfRelIso04_all), //
                                                  unwrap(Muon_tkRelIso),       //
                                                  unwrap(Muon_tunepRelPt),     //
-                                                 unwrap(Muon_highPurity),           //
+                                                 unwrap(Muon_highPurity),     //
                                                  unwrap(Muon_genPartIdx),     //
                                                  muon_sf_reco,                //
                                                  muon_sf_id_low_pt,           //
@@ -715,28 +715,32 @@ auto main(int argc, char *argv[]) -> int
         // Here goes the real analysis...
         // get effective event weight
         double weight = 1.;
+        double gen_weight_mc = unwrap(gen_weight, 1.);
+        double pdf_as_weight = 1.;
+        double prefiring_weight = 1.;
+        double pu_weight = 1.;
 
         if (not(is_data))
         {
-            auto pu_weight = pu_corrector->evaluate({unwrap(Pileup_nTrueInt), Shifts::get_pu_variation(shift)});
+            pu_weight = pu_corrector->evaluate({unwrap(Pileup_nTrueInt), Shifts::get_pu_variation(shift)});
 
-            auto prefiring_weight = Shifts::get_prefiring_weight( //
-                unwrap(L1PreFiringWeight_Nom, 1.),                //
-                unwrap(L1PreFiringWeight_Up, 1.),                 //
-                unwrap(L1PreFiringWeight_Dn, 1.),                 //
+            prefiring_weight = Shifts::get_prefiring_weight( //
+                unwrap(L1PreFiringWeight_Nom, 1.),           //
+                unwrap(L1PreFiringWeight_Up, 1.),            //
+                unwrap(L1PreFiringWeight_Dn, 1.),            //
                 shift);
 
             auto scaled_luminosity = Shifts::scale_luminosity(luminosity, shift);
 
-            auto pdf_as_weight = Shifts::get_pdf_alpha_s_weights(shift,
-                                                                 lha_indexes,
-                                                                 default_pdf_sets,           //
-                                                                 unwrap(_LHEPdfWeight),      //
-                                                                 unwrap(Generator_scalePDF), //
-                                                                 unwrap(Generator_x1),       //
-                                                                 unwrap(Generator_x2),       //
-                                                                 unwrap(Generator_id1),      //
-                                                                 unwrap(Generator_id2));
+            pdf_as_weight = Shifts::get_pdf_alpha_s_weights(shift,
+                                                            lha_indexes,
+                                                            default_pdf_sets,           //
+                                                            unwrap(_LHEPdfWeight),      //
+                                                            unwrap(Generator_scalePDF), //
+                                                            unwrap(Generator_x1),       //
+                                                            unwrap(Generator_x2),       //
+                                                            unwrap(Generator_id1),      //
+                                                            unwrap(Generator_id2));
             // unwrap(_LHEWeight_originalXWGTUP, 1.f),);
 
             // xSecOrder uncertainty for LO
@@ -750,15 +754,15 @@ auto main(int argc, char *argv[]) -> int
                 scalingfactor_xsec = (1.0 - x_sec_uncertainty[process_order]);
             }
 
-            weight = unwrap(gen_weight, 1.) //
-                     * pu_weight            //
-                     * prefiring_weight     //
-                     * x_section            //
-                     * scalingfactor_xsec   //
-                     * filter_eff           //
-                     * k_factor             //
-                     * scaled_luminosity    //
-                     * pdf_as_weight        //
+            weight = gen_weight_mc        //
+                     * pu_weight          //
+                     * prefiring_weight   //
+                     * x_section          //
+                     * scalingfactor_xsec //
+                     * filter_eff         //
+                     * k_factor           //
+                     * scaled_luminosity  //
+                     * pdf_as_weight      //
                      / no_cuts;
 
             /*/
@@ -936,7 +940,13 @@ auto main(int argc, char *argv[]) -> int
                 {
                     if (c_name == c_name_toval) // check whether one of the classes to plot is in this event
                     {
-                        validation_classes[c_name]->fill(jets_4vec, bjets_4vec, nelectron, nmuon, met_4vec, weight);
+                        validation_classes[c_name]->fill(
+                            jets_4vec, bjets_4vec, nelectron, nmuon, met_4vec, weight); // fill normal histograms
+                        validation_classes[c_name]->fill_weights(weight,
+                                                                 gen_weight_mc,
+                                                                 pu_weight,
+                                                                 pdf_as_weight,
+                                                                 prefiring_weight); // fill with weight histograms
                     }
                 }
             }

@@ -59,6 +59,12 @@ class JetClass2
     ADD_TH1F(h_deltaeta_jetjet, n_eta_bins, min_eta, max_eta);
     ADD_TH1F(h_deltaeta_jetbjet, n_eta_bins, min_eta, max_eta);
     ADD_TH1F(h_deltaeta_bjetbjet, n_eta_bins, min_eta, max_eta);
+    // weight histograms
+    ADD_TH1F(h_gen_weight, 1000, 0, 100);
+    ADD_TH1F(h_pu_weight, 1000, 0, 100);
+    ADD_TH1F(h_pdf_weight, 1000, 0, 100);
+    ADD_TH1F(h_prefiring_weight, 1000, 0, 100);
+    ADD_TH1F(h_total_weight, 1000, 0, 100);
 
     // constructor
     JetClass2(const std::string &output_path, const std::string c_name);
@@ -71,8 +77,15 @@ class JetClass2
               RVec<Math::PtEtaPhiMVector> met,
               float weight) -> void;
 
+    // fill weight histograms
+    auto fill_weights(double weight, double gen_weight, double pu_weight, double pdf_weight, double prefiring_weight)
+        -> void;
+
     // save histograms
     auto save_histo(TH1F &histo) -> void;
+
+    // save weight histograms
+    auto save_histo_weight(TH1F &histo) -> void;
 
     // dump outputs
     auto dump_outputs() -> void;
