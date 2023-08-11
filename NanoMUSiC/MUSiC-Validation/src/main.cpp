@@ -22,8 +22,8 @@
 #include <unordered_map>
 
 auto main(int argc, char *argv[]) -> int
-{
 
+{
     // set SumW2 as default
     TH1::SetDefaultSumw2(true);
 
@@ -92,6 +92,8 @@ auto main(int argc, char *argv[]) -> int
     ADD_VALUE_READER(pass_high_pt_electron_trigger, bool);
     ADD_VALUE_READER(pass_double_electron_trigger, bool);
     ADD_VALUE_READER(pass_photon_trigger, bool);
+    ADD_VALUE_READER(pass_high_pt_tau_trigger, bool);
+    ADD_VALUE_READER(pass_double_tau_trigger, bool);
     ADD_VALUE_READER(pass_jet_ht_trigger, bool);
     ADD_VALUE_READER(pass_jet_pt_trigger, bool);
 
@@ -243,86 +245,160 @@ auto main(int argc, char *argv[]) -> int
     /////////////////////////////////////////////
     /////////////////////////////////////////////
 
-    const std::map<std::string, int> w_to_tau_nu_x_count_map = {{"Ele", 0},
-                                                                {"EleEE", 0},
-                                                                {"EleEB", 0},
-                                                                {"Muon", 0},
-                                                                {"Gamma", 0},
-                                                                {"GammaEB", 0},
-                                                                {"GammaEE", 0},
-                                                                {"Tau", 1},
-                                                                {"Jet", 0},
-                                                                {"bJet", 0},
-                                                                {"MET", 1}};
 
-    const std::map<std::string, int> w_to_tau_nu_ele_x_count_map = {{"Ele", 1},
-                                                                    {"EleEE", 0},
-                                                                    {"EleEB", 0},
-                                                                    {"Muon", 0},
-                                                                    {"Gamma", 0},
-                                                                    {"GammaEB", 0},
-                                                                    {"GammaEE", 0},
-                                                                    {"Tau", 1},
-                                                                    {"Jet", 0},
-                                                                    {"bJet", 0},
-                                                                    {"MET", 1}};
 
-    const std::map<std::string, int> w_to_tau_nu_mu_x_count_map = {{"Ele", 0},
-                                                                   {"EleEE", 0},
-                                                                   {"EleEB", 0},
-                                                                   {"Muon", 1},
-                                                                   {"Gamma", 0},
-                                                                   {"GammaEB", 0},
-                                                                   {"GammaEE", 0},
-                                                                   {"Tau", 1},
-                                                                   {"Jet", 0},
-                                                                   {"bJet", 0},
-                                                                   {"MET", 1}};
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    // ANALYSIS WITH SOME TAU TRIGGERS  COUNT MAPS                                              //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    // const std::map<std::string, int> w_to_tau_nu_x_count_map = {{"Ele", 0},
+    //                                                             {"EleEE", 0},
+    //                                                             {"EleEB", 0},
+    //                                                             {"Muon", 0},
+    //                                                             {"Gamma", 0},
+    //                                                             {"GammaEB", 0},
+    //                                                             {"GammaEE", 0},
+    //                                                             {"Tau", 1},
+    //                                                             {"Jet", 0},
+    //                                                             {"bJet", 0},
+    //                                                             {"MET", 1}};
 
-    const std::map<std::string, int> z_to_tau_tau_x_count_map = {{"Ele", 0},
-                                                                 {"EleEE", 0},
-                                                                 {"EleEB", 0},
-                                                                 {"Muon", 0},
-                                                                 {"Gamma", 0},
-                                                                 {"GammaEB", 0},
-                                                                 {"GammaEE", 0},
-                                                                 {"Tau", 2},
-                                                                 {"Jet", 0},
-                                                                 {"bJet", 0},
-                                                                 {"MET", 0}};
+    // const std::map<std::string, int> w_to_tau_nu_ele_x_count_map = {{"Ele", 1},
+    //                                                                 {"EleEE", 0},
+    //                                                                 {"EleEB", 0},
+    //                                                                 {"Muon", 0},
+    //                                                                 {"Gamma", 0},
+    //                                                                 {"GammaEB", 0},
+    //                                                                 {"GammaEE", 0},
+    //                                                                 {"Tau", 1},
+    //                                                                 {"Jet", 0},
+    //                                                                 {"bJet", 0},
+    //                                                                 {"MET", 1}};
 
-    const std::map<std::string, int> z_to_tau_tau_ele_x_count_map = {{"Ele", 1},
-                                                                     {"EleEE", 0},
-                                                                     {"EleEB", 0},
-                                                                     {"Muon", 0},
-                                                                     {"Gamma", 0},
-                                                                     {"GammaEB", 0},
-                                                                     {"GammaEE", 0},
-                                                                     {"Tau", 2},
-                                                                     {"Jet", 0},
-                                                                     {"bJet", 0},
-                                                                     {"MET", 0}};
+    // const std::map<std::string, int> w_to_tau_nu_mu_x_count_map = {{"Ele", 0},
+    //                                                                {"EleEE", 0},
+    //                                                                {"EleEB", 0},
+    //                                                                {"Muon", 1},
+    //                                                                {"Gamma", 0},
+    //                                                                {"GammaEB", 0},
+    //                                                                {"GammaEE", 0},
+    //                                                                {"Tau", 1},
+    //                                                                {"Jet", 0},
+    //                                                                {"bJet", 0},
+    //                                                                {"MET", 1}};
 
-    const std::map<std::string, int> z_to_tau_tau_mu_x_count_map = {{"Ele", 0},
-                                                                    {"EleEE", 0},
-                                                                    {"EleEB", 0},
-                                                                    {"Muon", 1},
-                                                                    {"Gamma", 0},
-                                                                    {"GammaEB", 0},
-                                                                    {"GammaEE", 0},
-                                                                    {"Tau", 2},
-                                                                    {"Jet", 0},
-                                                                    {"bJet", 0},
-                                                                    {"MET", 0}};
+    // const std::map<std::string, int> z_to_tau_tau_x_count_map = {{"Ele", 0},
+    //                                                              {"EleEE", 0},
+    //                                                              {"EleEB", 0},
+    //                                                              {"Muon", 0},
+    //                                                              {"Gamma", 0},
+    //                                                              {"GammaEB", 0},
+    //                                                              {"GammaEE", 0},
+    //                                                              {"Tau", 2},
+    //                                                              {"Jet", 0},
+    //                                                              {"bJet", 0},
+    //                                                              {"MET", 0}};
+
+    // const std::map<std::string, int> z_to_tau_tau_ele_x_count_map = {{"Ele", 1},
+    //                                                                  {"EleEE", 0},
+    //                                                                  {"EleEB", 0},
+    //                                                                  {"Muon", 0},
+    //                                                                  {"Gamma", 0},
+    //                                                                  {"GammaEB", 0},
+    //                                                                  {"GammaEE", 0},
+    //                                                                  {"Tau", 2},
+    //                                                                  {"Jet", 0},
+    //                                                                  {"bJet", 0},
+    //                                                                  {"MET", 0}};
+
+    // const std::map<std::string, int> z_to_tau_tau_mu_x_count_map = {{"Ele", 0},
+    //                                                                 {"EleEE", 0},
+    //                                                                 {"EleEB", 0},
+    //                                                                 {"Muon", 1},
+    //                                                                 {"Gamma", 0},
+    //                                                                 {"GammaEB", 0},
+    //                                                                 {"GammaEE", 0},
+    //                                                                 {"Tau", 2},
+    //                                                                 {"Jet", 0},
+    //                                                                 {"bJet", 0},
+    //                                                                 {"MET", 0}};
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    // ANALYSIS WITH SOME TAU TRIGGERS END COUNT MAPS                                           //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////  NEW  //////////////////////////
+    const std::map<std::string, int> tau_mu_x_count_map = {{"Ele", 0},
+                                                           {"EleEE", 0},
+                                                           {"EleEB", 0},
+                                                           {"Muon", 1},
+                                                           {"Gamma", 0},
+                                                           {"GammaEB", 0},
+                                                           {"GammaEE", 0},
+                                                           {"Tau", 1},
+                                                           {"Jet", 0},
+                                                           {"bJet", 0},
+                                                           {"MET", 0}};
+
+    const std::map<std::string, int> tau_mu_nu_x_count_map = {{"Ele", 0},
+                                                              {"EleEE", 0},
+                                                              {"EleEB", 0},
+                                                              {"Muon", 1},
+                                                              {"Gamma", 0},
+                                                              {"GammaEB", 0},
+                                                              {"GammaEE", 0},
+                                                              {"Tau", 1},
+                                                              {"Jet", 0},
+                                                              {"bJet", 0},
+                                                              {"MET", 1}};
+
+    const std::map<std::string, int> tau_ele_x_count_map = {{"Ele", 1},
+                                                            {"EleEE", 0},
+                                                            {"EleEB", 0},
+                                                            {"Muon", 0},
+                                                            {"Gamma", 0},
+                                                            {"GammaEB", 0},
+                                                            {"GammaEE", 0},
+                                                            {"Tau", 1},
+                                                            {"Jet", 0},
+                                                            {"bJet", 0},
+                                                            {"MET", 0}};
+
+    const std::map<std::string, int> tau_ele_nu_x_count_map = {{"Ele", 1},
+                                                               {"EleEE", 0},
+                                                               {"EleEB", 0},
+                                                               {"Muon", 0},
+                                                               {"Gamma", 0},
+                                                               {"GammaEB", 0},
+                                                               {"GammaEE", 0},
+                                                               {"Tau", 1},
+                                                               {"Jet", 0},
+                                                               {"bJet", 0},
+                                                               {"MET", 1}};
+    //////////////////////////  NEW  //////////////////////////
 
     // build validation factories
     // map each shift to one analysis factory
-    std::unordered_map<std::string, WToLepNuX> w_to_tau_nu_x;
-    std::unordered_map<std::string, WToTauNuLepX> w_to_tau_nu_ele_x;
-    std::unordered_map<std::string, WToTauNuLepX> w_to_tau_nu_mu_x;
-    std::unordered_map<std::string, ZToLepLepX> z_to_tau_tau_x;
-    std::unordered_map<std::string, ZToTauTauLepX> z_to_tau_tau_ele_x;
-    std::unordered_map<std::string, ZToTauTauLepX> z_to_tau_tau_mu_x;
+
+    ////////////////////////////////////////////////////////////////////////
+    // std::unordered_map<std::string, WToLepNuX> w_to_tau_nu_x;          //
+    // std::unordered_map<std::string, WToTauNuLepX> w_to_tau_nu_ele_x;   //
+    // std::unordered_map<std::string, WToTauNuLepX> w_to_tau_nu_mu_x;    //
+    // std::unordered_map<std::string, ZToLepLepX> z_to_tau_tau_x;        //
+    // std::unordered_map<std::string, ZToLepLepX> z_to_tau_tau_x_Z_mass; //        
+    // std::unordered_map<std::string, ZToTauTauLepX> z_to_tau_tau_ele_x; //        
+    // std::unordered_map<std::string, ZToTauTauLepX> z_to_tau_tau_mu_x;  //        
+    ////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////  NEW  //////////////////////////
+    std::unordered_map<std::string, TauLepX> tau_mu;
+    std::unordered_map<std::string, TauLepX> tau_mu_x;  
+    std::unordered_map<std::string, TauLepNuX> tau_mu_nu;
+    std::unordered_map<std::string, TauLepNuX> tau_mu_nu_x;
+    std::unordered_map<std::string, TauLepX> tau_ele;
+    std::unordered_map<std::string, TauLepX> tau_ele_x;
+    std::unordered_map<std::string, TauLepNuX> tau_ele_nu;
+    std::unordered_map<std::string, TauLepNuX> tau_ele_nu_x;
+    //////////////////////////  NEW  //////////////////////////
+    
 
     // unsigned long pass_electron_triggers = 0;
     // unsigned long pass_muon_triggers = 0;
@@ -335,182 +411,220 @@ auto main(int argc, char *argv[]) -> int
     // unsigned long enter_electron_analysis = 0;
 
     // Initiale analyses
-    for (auto &&shift : shifts.get_constant_shifts())
-    {
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    // ANALYSIS WITH SOME TAU TRIGGERS                                                          //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    // shifts.for_each(
+    //     [&](const std::string &shift) -> void
+    //     {
+    //     z_to_tau_tau_x.insert(
+    //         {shift,
+    //          ZToLepLepX(
+    //              "z_to_tau_tau_x",
+    //              get_output_file_path(
+    //                  "z_to_tau_tau_x", output_path, process, year, process_group, xs_order, is_data, shift),
+    //              z_to_tau_tau_x_count_map,
+    //              false,
+    //              shift,
+    //              process,
+    //              year,
+    //              process_group,
+    //              xs_order)});
 
-        z_to_tau_tau_x.insert(
-            {shift,
-             ZToLepLepX(
-                 "z_to_tau_tau_x",
-                 get_output_file_path(
-                     "z_to_tau_tau_x", output_path, process, year, process_group, xs_order, is_data, shift),
-                 z_to_tau_tau_x_count_map,
-                 false,
-                 shift,
-                 process,
-                 year,
-                 process_group,
-                 xs_order)});
+    //     z_to_tau_tau_x_Z_mass.insert(
+    //         {shift,
+    //          ZToLepLepX(
+    //              "z_to_tau_tau_x_Z_mass",
+    //              get_output_file_path(
+    //                  "z_to_tau_tau_x_Z_mass", output_path, process, year, process_group, xs_order, is_data, shift),
+    //              z_to_tau_tau_x_count_map,
+    //              true,
+    //              shift,
+    //              process,
+    //              year,
+    //              process_group,
+    //              xs_order)});
 
-        z_to_tau_tau_ele_x.insert(
-            {shift,
-             ZToTauTauLepX(
-                 "z_to_tau_tau_ele_x",
-                 get_output_file_path(
-                     "z_to_tau_tau_ele_x", output_path, process, year, process_group, xs_order, is_data, shift),
-                 z_to_tau_tau_ele_x_count_map,
-                 false,
-                 shift,
-                 process,
-                 year,
-                 process_group,
-                 xs_order)});
+    //     z_to_tau_tau_ele_x.insert(
+    //         {shift,
+    //          ZToTauTauLepX(
+    //              "z_to_tau_tau_ele_x",
+    //              get_output_file_path(
+    //                  "z_to_tau_tau_ele_x", output_path, process, year, process_group, xs_order, is_data, shift),
+    //              z_to_tau_tau_ele_x_count_map,
+    //              false,
+    //              shift,
+    //              process,
+    //              year,
+    //              process_group,
+    //              xs_order)});
 
-        z_to_tau_tau_mu_x.insert(
-            {shift,
-             ZToTauTauLepX(
-                 "z_to_tau_tau_mu_x",
-                 get_output_file_path(
-                     "z_to_tau_tau_mu_x", output_path, process, year, process_group, xs_order, is_data, shift),
-                 z_to_tau_tau_mu_x_count_map,
-                 false,
-                 shift,
-                 process,
-                 year,
-                 process_group,
-                 xs_order)});
+    //     z_to_tau_tau_mu_x.insert(
+    //         {shift,
+    //          ZToTauTauLepX(
+    //              "z_to_tau_tau_mu_x",
+    //              get_output_file_path(
+    //                  "z_to_tau_tau_mu_x", output_path, process, year, process_group, xs_order, is_data, shift),
+    //              z_to_tau_tau_mu_x_count_map,
+    //              false,
+    //              shift,
+    //              process,
+    //              year,
+    //              process_group,
+    //              xs_order)});
 
-        w_to_tau_nu_x.insert(
-            {shift,
-             WToLepNuX("w_to_tau_nu_x",
-                          get_output_file_path(
-                              "w_to_tau_nu_x", output_path, process, year, process_group, xs_order, is_data, shift),
-                          w_to_tau_nu_x_count_map,
-                          false,
-                          shift,
-                          process,
-                          year,
-                          process_group,
-                          xs_order)});
+    //     w_to_tau_nu_x.insert(
+    //         {shift,
+    //          WToLepNuX("w_to_tau_nu_x",
+    //                       get_output_file_path(
+    //                           "w_to_tau_nu_x", output_path, process, year, process_group, xs_order, is_data, shift),
+    //                       w_to_tau_nu_x_count_map,
+    //                       false,
+    //                       shift,
+    //                       process,
+    //                       year,
+    //                       process_group,
+    //                       xs_order)});
         
-        w_to_tau_nu_ele_x.insert(
-            {shift,
-             WToTauNuLepX("w_to_tau_nu_ele_x",
-                          get_output_file_path(
-                              "w_to_tau_nu_ele_x", output_path, process, year, process_group, xs_order, is_data, shift),
-                          w_to_tau_nu_ele_x_count_map,
-                          false,
-                          shift,
-                          process,
-                          year,
-                          process_group,
-                          xs_order)});
+    //     w_to_tau_nu_ele_x.insert(
+    //         {shift,
+    //          WToTauNuLepX("w_to_tau_nu_ele_x",
+    //                       get_output_file_path(
+    //                           "w_to_tau_nu_ele_x", output_path, process, year, process_group, xs_order, is_data, shift),
+    //                       w_to_tau_nu_ele_x_count_map,
+    //                       false,
+    //                       shift,
+    //                       process,
+    //                       year,
+    //                       process_group,
+    //                       xs_order)});
 
-        w_to_tau_nu_mu_x.insert(
-            {shift,
-             WToTauNuLepX("w_to_tau_nu_mu_x",
-                          get_output_file_path(
-                              "w_to_tau_nu_mu_x", output_path, process, year, process_group, xs_order, is_data, shift),
-                          w_to_tau_nu_mu_x_count_map,
-                          false,
-                          shift,
-                          process,
-                          year,
-                          process_group,
-                          xs_order)});
-    }
+    //     w_to_tau_nu_mu_x.insert(
+    //         {shift,
+    //          WToTauNuLepX("w_to_tau_nu_mu_x",
+    //                       get_output_file_path(
+    //                           "w_to_tau_nu_mu_x", output_path, process, year, process_group, xs_order, is_data, shift),
+    //                       w_to_tau_nu_mu_x_count_map,
+    //                       false,
+    //                       shift,
+    //                       process,
+    //                       year,
+    //                       process_group,
+    //                       xs_order)});
+    // });
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    // ANALYSIS WITH SOME TAU TRIGGERS END                                                      //
+    //////////////////////////////////////////////////////////////////////////////////////////////
 
-    for (auto &&shift : shifts.get_differential_shifts())
-    {
-        if (shift != "Nominal")
-        {
-            z_to_tau_tau_x.insert(
-            {shift,
-             ZToLepLepX(
-                 "z_to_tau_tau_x",
-                 get_output_file_path(
-                     "z_to_tau_tau_x", output_path, process, year, process_group, xs_order, is_data, shift),
-                 z_to_tau_tau_x_count_map,
-                 false,
-                 shift,
-                 process,
-                 year,
-                 process_group,
-                 xs_order)});
+    //////////////////////////  NEW  //////////////////////////
+    shifts.for_each(
+    [&](const std::string &shift) -> void
+    { 
+    tau_ele.insert(
+        {shift,
+         TauLepX("tau_ele",
+                      get_output_file_path(
+                          "tau_ele", output_path, process, year, process_group, xs_order, is_data, shift),
+                      tau_ele_x_count_map,
+                      false,
+                      shift,
+                      process,
+                      year,
+                      process_group,
+                      xs_order)});
 
-            z_to_tau_tau_ele_x.insert(
-                {shift,
-                 ZToTauTauLepX(
-                     "z_to_tau_tau_ele_x",
-                     get_output_file_path(
-                         "z_to_tau_tau_ele_x", output_path, process, year, process_group, xs_order, is_data, shift),
-                     z_to_tau_tau_ele_x_count_map,
-                     false,
-                     shift,
-                     process,
-                     year,
-                     process_group,
-                     xs_order)});
+    tau_ele_x.insert(
+        {shift,
+         TauLepX("tau_ele_x",
+                      get_output_file_path(
+                          "tau_ele_x", output_path, process, year, process_group, xs_order, is_data, shift),
+                      tau_ele_x_count_map,
+                      false,
+                      shift,
+                      process,
+                      year,
+                      process_group,
+                      xs_order)});
 
-            z_to_tau_tau_mu_x.insert(
-                {shift,
-                 ZToTauTauLepX(
-                     "z_to_tau_tau_mu_x",
-                     get_output_file_path(
-                         "z_to_tau_tau_mu_x", output_path, process, year, process_group, xs_order, is_data, shift),
-                     z_to_tau_tau_mu_x_count_map,
-                     false,
-                     shift,
-                     process,
-                     year,
-                     process_group,
-                     xs_order)});
+    tau_ele_nu.insert(
+        {shift,
+         TauLepNuX("tau_ele_nu",
+                      get_output_file_path(
+                          "tau_ele_nu", output_path, process, year, process_group, xs_order, is_data, shift),
+                      tau_ele_nu_x_count_map,
+                      false,
+                      shift,
+                      process,
+                      year,
+                      process_group,
+                      xs_order)});
 
-            w_to_tau_nu_x.insert(
-            {shift,
-             WToLepNuX("w_to_tau_nu_x",
-                          get_output_file_path(
-                              "w_to_tau_nu_x", output_path, process, year, process_group, xs_order, is_data, shift),
-                          w_to_tau_nu_x_count_map,
-                          false,
-                          shift,
-                          process,
-                          year,
-                          process_group,
-                          xs_order)});
-            
-            w_to_tau_nu_ele_x.insert(
-                {shift,
-                 WToTauNuLepX(
-                     "w_to_tau_nu_ele_x",
-                     get_output_file_path(
-                         "w_to_tau_nu_ele_x", output_path, process, year, process_group, xs_order, is_data, shift),
-                     w_to_tau_nu_ele_x_count_map,
-                     false,
-                     shift,
-                     process,
-                     year,
-                     process_group,
-                     xs_order)});
+    tau_ele_nu_x.insert(
+        {shift,
+         TauLepNuX("tau_ele_nu_x",
+                      get_output_file_path(
+                          "tau_ele_nu_x", output_path, process, year, process_group, xs_order, is_data, shift),
+                      tau_ele_nu_x_count_map,
+                      false,
+                      shift,
+                      process,
+                      year,
+                      process_group,
+                      xs_order)});
 
-            w_to_tau_nu_mu_x.insert(
-                {shift,
-                 WToTauNuLepX(
-                     "w_to_tau_nu_mu_x",
-                     get_output_file_path(
-                         "w_to_tau_nu_mu_x", output_path, process, year, process_group, xs_order, is_data, shift),
-                     w_to_tau_nu_mu_x_count_map,
-                     false,
-                     shift,
-                     process,
-                     year,
-                     process_group,
-                     xs_order)});
-        }
-    }
+    tau_mu.insert(
+        {shift,
+         TauLepX("tau_mu",
+                      get_output_file_path(
+                          "tau_mu", output_path, process, year, process_group, xs_order, is_data, shift),
+                      tau_mu_x_count_map,
+                      false,
+                      shift,
+                      process,
+                      year,
+                      process_group,
+                      xs_order)});
 
-    // build Dijets
-    // auto dijets = Dijets(fmt::format("{}/dijets_{}_{}.root", output_path, process, year), dijets_count_map);
+    tau_mu_x.insert(
+        {shift,
+         TauLepX("tau_mu_x",
+                      get_output_file_path(
+                          "tau_mu_x", output_path, process, year, process_group, xs_order, is_data, shift),
+                      tau_mu_x_count_map,
+                      false,
+                      shift,
+                      process,
+                      year,
+                      process_group,
+                      xs_order)});
+
+    tau_mu_nu.insert(
+        {shift,
+         TauLepNuX("tau_mu_nu",
+                      get_output_file_path(
+                          "tau_mu_nu", output_path, process, year, process_group, xs_order, is_data, shift),
+                      tau_mu_nu_x_count_map,
+                      false,
+                      shift,
+                      process,
+                      year,
+                      process_group,
+                      xs_order)});
+
+    tau_mu_nu_x.insert(
+        {shift,
+         TauLepNuX("tau_mu_nu_x",
+                      get_output_file_path(
+                          "tau_mu_nu_x", output_path, process, year, process_group, xs_order, is_data, shift),
+                      tau_mu_nu_x_count_map,
+                      false,
+                      shift,
+                      process,
+                      year,
+                      process_group,
+                      xs_order)});
+    });
+    //////////////////////////  NEW  //////////////////////////
 
     auto cutflow_file = std::unique_ptr<TFile>(
         TFile::Open(fmt::format("{}/../../cutflow_{}_{}.root", output_path, process, year).c_str()));
@@ -545,22 +659,6 @@ auto main(int argc, char *argv[]) -> int
         // }
 
         // Trigger
-        //
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        //
-        // ATTENTION:The function "trigger_filter" should be modified
-        // for the JetHT data set!!!!!!
-        //
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
         auto is_good_trigger = trigger_filter(process,
                                               is_data,
                                               get_runyear(year),
@@ -570,6 +668,10 @@ auto main(int argc, char *argv[]) -> int
                                               unwrap(pass_low_pt_electron_trigger),
                                               unwrap(pass_high_pt_electron_trigger),
                                               unwrap(pass_double_electron_trigger),
+                                              //unwrap(pass_high_pt_tau_trigger),
+                                              false,
+                                              //unwrap(pass_double_tau_trigger),
+                                              false, 
                                               unwrap(pass_photon_trigger));
 
         if (is_good_trigger)
@@ -707,7 +809,7 @@ auto main(int argc, char *argv[]) -> int
                 // check for trigger matching
                 // is_good_trigger is garantied to be filled by the if statement above
                 const auto trigger_matches =
-                    make_trigger_matches(*is_good_trigger, muons, electrons, photons, get_runyear(year));
+                    make_trigger_matches(*is_good_trigger, muons, electrons, taus, photons, get_runyear(year));
 
                 bool has_trigger_match = false;
                 for (auto &&[trigger_path, trigger_match] : trigger_matches)
@@ -791,163 +893,347 @@ auto main(int argc, char *argv[]) -> int
                                          * pdf_as_weight;
                             }
 
-                            // TauTau + X
-                            if (taus.size() >= 2) // and
-                                // (trigger_matches.at("pass_low_pt_electron_trigger") or
-                                //  trigger_matches.at("pass_high_pt_electron_trigger") or
-                                //  trigger_matches.at("pass_double_electron_trigger")))
-                                // TAU TRIGGER ??
-                            {
-                                auto tau_1 = taus.p4[0];
-                                auto tau_2 = taus.p4[1];
+                            //////////////////////////////////////////////////////////////////////////////////////////////
+                            // ANALYSIS WITH SOME TAU TRIGGERS                                                          //
+                            //////////////////////////////////////////////////////////////////////////////////////////////
+                            // // TauTau + X
+                            // if (taus.size() >= 2 and trigger_matches.at("pass_high_pt_tau_trigger") )
+                            //                        // or trigger_matches.at("pass_double_tau_trigger")))
+                            // {
+                            //     auto tau_1 = taus.p4[0];
+                            //     auto tau_2 = taus.p4[1];
 
-                                z_to_tau_tau_x[shift].fill(tau_1,
-                                                           tau_2,
-                                                           bjets.p4,
-                                                           jets.p4,
-                                                           met.p4,
-                                                           weight * Shifts::get_scale_factor(shift,
-                                                                                             {0, muons},
-                                                                                             {0, electrons},
-                                                                                             {2, taus},
-                                                                                             {0, photons},
-                                                                                             {0, bjets},
-                                                                                             {0, jets},
-                                                                                             {0, met}));
-                            }
-                            
-                            // TauTau + Ele + X
-                            if (taus.size() >= 2 and electrons.size() >= 1 and
+                            //     z_to_tau_tau_x[shift].fill(tau_1,
+                            //                                tau_2,
+                            //                                bjets.p4,
+                            //                                jets.p4,
+                            //                                met.p4,
+                            //                                weight * Shifts::get_scale_factor(shift,
+                            //                                                                  {0, muons},
+                            //                                                                  {0, electrons},
+                            //                                                                  {2, taus},
+                            //                                                                  {0, photons},
+                            //                                                                  {0, bjets},
+                            //                                                                  {0, jets},
+                            //                                                                  {0, met}));
+
+                            //     // Z mass range
+                            //     if (PDG::Z::Mass - 20. < (tau_1 + tau_2).mass() and
+                            //         (tau_1 + tau_2).mass() < PDG::Z::Mass + 20.)
+                            //     {
+                            //         z_to_tau_tau_x_Z_mass[shift].fill(tau_1,
+                            //                                           tau_2,
+                            //                                           bjets.p4,
+                            //                                           jets.p4,
+                            //                                           met.p4,
+                            //                                           weight *
+                            //                                               Shifts::get_scale_factor(shift,
+                            //                                                                        {0, muons},
+                            //                                                                        {0, electrons},
+                            //                                                                        {2, taus},
+                            //                                                                        {0, photons},
+                            //                                                                        {0, bjets},
+                            //                                                                        {0, jets},
+                            //                                                                        {0, met}));
+                            //     }
+                            // }
+              
+                            // // TauTau + Ele + X
+                            // if (taus.size() >= 2 and electrons.size() >= 1 and
+                            //     (trigger_matches.at("pass_low_pt_electron_trigger") or
+                            //      trigger_matches.at("pass_high_pt_electron_trigger")))
+                            //     // (trigger_matches.at("pass_high_pt_tau_trigger") or
+                            //     //  trigger_matches.at("pass_double_tau_trigger")))
+                            // {
+                            //     auto tau_1 = taus.p4[0];
+                            //     auto tau_2 = taus.p4[1];
+                            //     auto electron = electrons.p4[0];
+
+                            //     z_to_tau_tau_ele_x[shift].fill(tau_1,
+                            //                                    tau_2,
+                            //                                    electron,
+                            //                                    bjets.p4,
+                            //                                    jets.p4,
+                            //                                    met.p4,
+                            //                                    weight * Shifts::get_scale_factor(shift,
+                            //                                                                      {0, muons},
+                            //                                                                      {1, electrons},
+                            //                                                                      {2, taus},
+                            //                                                                      {0, photons},
+                            //                                                                      {0, bjets},
+                            //                                                                      {0, jets},
+                            //                                                                      {0, met}));
+                            // }
+                            // // TauTau + Mu + X
+                            // if (taus.size() >= 2 and muons.size() >= 1 and
+                            //     (trigger_matches.at("pass_low_pt_muon_trigger") or
+                            //      trigger_matches.at("pass_high_pt_muon_trigger")))
+                            //      //trigger_matches.at("pass_double_muon_trigger"))) // and
+                            //     // (trigger_matches.at("pass_high_pt_tau_trigger") or
+                            //     //  trigger_matches.at("pass_double_tau_trigger")))
+                            // {
+                            //     auto tau_1 = taus.p4[0];
+                            //     auto tau_2 = taus.p4[1];
+                            //     auto muon = muons.p4[0];
+
+                            //     z_to_tau_tau_mu_x[shift].fill(tau_1,
+                            //                                   tau_2,
+                            //                                   muon,
+                            //                                   bjets.p4,
+                            //                                   jets.p4,
+                            //                                   met.p4,
+                            //                                   weight * Shifts::get_scale_factor(shift,
+                            //                                                                     {1, muons},
+                            //                                                                     {0, electrons},
+                            //                                                                     {2, taus},
+                            //                                                                     {0, photons},
+                            //                                                                     {0, bjets},
+                            //                                                                     {0, jets},
+                            //                                                                     {0, met}));
+                            // }
+
+                            // // Tau + Nu + X
+                            // if (taus.size() >= 1 and met.size() >= 1 and (trigger_matches.at("pass_high_pt_tau_trigger")))
+                            // {
+                            //     auto tau = taus.p4[0];
+
+                            //     w_to_tau_nu_x[shift].fill(tau,
+                            //                                   // bjets.p4,
+                            //                                   // jets.p4,
+                            //                                   met.p4,
+                            //                                   weight * Shifts::get_scale_factor(shift,
+                            //                                                                     {0, muons},
+                            //                                                                     {0, electrons},
+                            //                                                                     {1, taus},
+                            //                                                                     {0, photons},
+                            //                                                                     {0, bjets},
+                            //                                                                     {0, jets},
+                            //                                                                     {1, met}));
+                            // }
+                  
+                            // // Tau + Nu + Ele + X
+                            // if (taus.size() >= 1 and met.size() >= 1 and electrons.size() >= 1 and
+                            //     (trigger_matches.at("pass_low_pt_electron_trigger") or
+                            //      trigger_matches.at("pass_high_pt_electron_trigger"))) 
+                                
+                            // {
+                            //     auto tau = taus.p4[0];
+                            //     auto electron = electrons.p4[0];
+
+                            //     w_to_tau_nu_ele_x[shift].fill(tau,
+                            //                                   // bjets.p4,
+                            //                                   // jets.p4,
+                            //                                   met.p4,
+                            //                                   electron,
+                            //                                   weight * Shifts::get_scale_factor(shift,
+                            //                                                                     {0, muons},
+                            //                                                                     {1, electrons},
+                            //                                                                     {1, taus},
+                            //                                                                     {0, photons},
+                            //                                                                     {0, bjets},
+                            //                                                                     {0, jets},
+                            //                                                                     {1, met}));
+                            // }
+
+                            // // Tau + Nu + Mu + X
+                            // if (taus.size() >= 1 and met.size() >= 1 and muons.size() >= 1 and
+                            //     (trigger_matches.at("pass_low_pt_muon_trigger") or
+                            //      trigger_matches.at("pass_high_pt_muon_trigger")))
+                            // {
+                            //     auto tau = taus.p4[0];
+                            //     auto muon = muons.p4[0];
+
+                            //     w_to_tau_nu_mu_x[shift].fill(tau,
+                            //                                  // bjets.p4,
+                            //                                  // jets.p4,
+                            //                                  met.p4,
+                            //                                  muon,
+                            //                                  weight * Shifts::get_scale_factor(shift,
+                            //                                                                    {1, muons},
+                            //                                                                    {0, electrons},
+                            //                                                                    {1, taus},
+                            //                                                                    {0, photons},
+                            //                                                                    {0, bjets},
+                            //                                                                    {0, jets},
+                            //                                                                    {1, met}));
+                            // }
+                            //////////////////////////////////////////////////////////////////////////////////////////////
+                            // ANALYSIS WITH SOME TAU TRIGGERS END                                                      //
+                            //////////////////////////////////////////////////////////////////////////////////////////////
+
+                            //////////////////////////  NEW  //////////////////////////
+                            // Tau + Ele
+                            if (taus.size() == 1 and electrons.size() == 1 and 
+                                muons.size() == 0 and photons.size() == 0 and bjets.size() == 0 and jets.size() == 0 and met.size() == 0 and
                                 (trigger_matches.at("pass_low_pt_electron_trigger") or
-                                 trigger_matches.at("pass_high_pt_electron_trigger") or
-                                 trigger_matches.at("pass_double_electron_trigger")))
+                                 trigger_matches.at("pass_high_pt_electron_trigger")))   
                             {
-                                auto tau_1 = taus.p4[0];
-                                auto tau_2 = taus.p4[1];
+                                auto tau = taus.p4[0];
                                 auto electron = electrons.p4[0];
 
-                                z_to_tau_tau_ele_x[shift].fill(tau_1,
-                                                               tau_2,
-                                                               electron,
-                                                               bjets.p4,
-                                                               jets.p4,
-                                                               met.p4,
-                                                               weight * Shifts::get_scale_factor(shift,
-                                                                                                 {0, muons},
-                                                                                                 {1, electrons},
-                                                                                                 {2, taus},
-                                                                                                 {0, photons},
-                                                                                                 {0, bjets},
-                                                                                                 {0, jets},
-                                                                                                 {0, met}));
-                            }
-
-                            // TauTau + Mu + X
-                            if (taus.size() >= 2 and muons.size() >= 1 and
-                                (trigger_matches.at("pass_low_pt_muon_trigger") or
-                                 trigger_matches.at("pass_high_pt_muon_trigger") or
-                                 trigger_matches.at("pass_double_muon_trigger")))
-                            {
-                                auto tau_1 = taus.p4[0];
-                                auto tau_2 = taus.p4[1];
-                                auto muon = muons.p4[0];
-
-                                z_to_tau_tau_mu_x[shift].fill(tau_1,
-                                                              tau_2,
-                                                              muon,
-                                                              bjets.p4,
-                                                              jets.p4,
-                                                              met.p4,
-                                                              weight * Shifts::get_scale_factor(shift,
-                                                                                                {1, muons},
-                                                                                                {0, electrons},
-                                                                                                {2, taus},
-                                                                                                {0, photons},
-                                                                                                {0, bjets},
-                                                                                                {0, jets},
-                                                                                                {0, met}));
-                            }
-
-                            // Tau + Nu + X
-                            if (taus.size() >= 1 and met.size() >= 1 )// and
-                                //(trigger_matches.at("pass_low_pt_electron_trigger") or
-                                // trigger_matches.at("pass_high_pt_electron_trigger") or
-                                // trigger_matches.at("pass_double_electron_trigger")))
-                                // TAU TRIGGER ?
-                            {
-                                auto tau = taus.p4[0];
-
-                                w_to_tau_nu_x[shift].fill(tau,
-                                                              // bjets.p4,
-                                                              // jets.p4,
-                                                              met.p4,
-                                                              weight * Shifts::get_scale_factor(shift,
-                                                                                                {0, muons},
-                                                                                                {0, electrons},
-                                                                                                {1, taus},
-                                                                                                {0, photons},
-                                                                                                {0, bjets},
-                                                                                                {0, jets},
-                                                                                                {1, met}));
+                                tau_ele[shift].fill(tau,
+                                                    met.p4,
+                                                    electron,
+                                                    weight * Shifts::get_scale_factor(shift,
+                                                                                      {0, muons},
+                                                                                      {1, electrons},
+                                                                                      {1, taus},
+                                                                                      {0, photons},
+                                                                                      {0, bjets},
+                                                                                      {0, jets},
+                                                                                      {0, met}));
                             }
                             
-                            // Tau + Nu + Ele + X
-                            if (taus.size() >= 1 and met.size() >= 1 and electrons.size() >= 1 and
+                            // Tau + Ele + X
+                            if (taus.size() >= 1 and electrons.size() >= 1 and
                                 (trigger_matches.at("pass_low_pt_electron_trigger") or
-                                 trigger_matches.at("pass_high_pt_electron_trigger") or
-                                 trigger_matches.at("pass_double_electron_trigger")))
+                                 trigger_matches.at("pass_high_pt_electron_trigger")))   
                             {
                                 auto tau = taus.p4[0];
                                 auto electron = electrons.p4[0];
 
-                                w_to_tau_nu_ele_x[shift].fill(tau,
-                                                              // bjets.p4,
-                                                              // jets.p4,
-                                                              met.p4,
-                                                              electron,
-                                                              weight * Shifts::get_scale_factor(shift,
-                                                                                                {0, muons},
-                                                                                                {1, electrons},
-                                                                                                {1, taus},
-                                                                                                {0, photons},
-                                                                                                {0, bjets},
-                                                                                                {0, jets},
-                                                                                                {1, met}));
+                                tau_ele_x[shift].fill(tau,
+                                                      met.p4,
+                                                      electron,
+                                                      weight * Shifts::get_scale_factor(shift,
+                                                                                        {0, muons},
+                                                                                        {1, electrons},
+                                                                                        {1, taus},
+                                                                                        {0, photons},
+                                                                                        {0, bjets},
+                                                                                        {0, jets},
+                                                                                        {0, met}));
                             }
 
-                            // Tau + Nu + Mu + X
-                            if (taus.size() >= 1 and met.size() >= 1 and muons.size() >= 1 and
+                            // Tau + Ele + Nu
+                            if (taus.size() == 1 and electrons.size() == 1 and met.size() == 1 and
+                                muons.size() == 0 and photons.size() == 0 and bjets.size() == 0 and jets.size() == 0 and
+                                (trigger_matches.at("pass_low_pt_electron_trigger") or
+                                 trigger_matches.at("pass_high_pt_electron_trigger")))   
+                            {
+                                auto tau = taus.p4[0];
+                                auto electron = electrons.p4[0];
+
+                                tau_ele_nu[shift].fill(tau,
+                                                       met.p4,
+                                                       electron,
+                                                       weight * Shifts::get_scale_factor(shift,
+                                                                                         {0, muons},
+                                                                                         {1, electrons},
+                                                                                         {1, taus},
+                                                                                         {0, photons},
+                                                                                         {0, bjets},
+                                                                                         {0, jets},
+                                                                                         {1, met}));
+                            }
+
+                            // Tau + Ele + Nu + X
+                            if (taus.size() >= 1 and electrons.size() >= 1 and met.size() >= 1 and 
+                                (trigger_matches.at("pass_low_pt_electron_trigger") or
+                                 trigger_matches.at("pass_high_pt_electron_trigger")))   
+                            {
+                                auto tau = taus.p4[0];
+                                auto electron = electrons.p4[0];
+
+                                tau_ele_nu_x[shift].fill(tau,
+                                                         met.p4,
+                                                         electron,
+                                                         weight * Shifts::get_scale_factor(shift,
+                                                                                           {0, muons},
+                                                                                           {1, electrons},
+                                                                                           {1, taus},
+                                                                                           {0, photons},
+                                                                                           {0, bjets},
+                                                                                           {0, jets},
+                                                                                           {1, met}));
+                            }
+                            // Tau + Mu
+                            if (taus.size() == 1 and muons.size() == 1 and
+                                electrons.size() == 0 and photons.size() == 0 and bjets.size() == 0 and jets.size() == 0 and met.size() == 0 and
                                 (trigger_matches.at("pass_low_pt_muon_trigger") or
-                                 trigger_matches.at("pass_high_pt_muon_trigger") or
-                                 trigger_matches.at("pass_double_muon_trigger")))
+                                 trigger_matches.at("pass_high_pt_muon_trigger")))   
                             {
                                 auto tau = taus.p4[0];
                                 auto muon = muons.p4[0];
 
-                                w_to_tau_nu_mu_x[shift].fill(tau,
-                                                             // bjets.p4,
-                                                             // jets.p4,
-                                                             met.p4,
-                                                             muon,
-                                                             weight * Shifts::get_scale_factor(shift,
-                                                                                               {1, muons},
-                                                                                               {0, electrons},
-                                                                                               {1, taus},
-                                                                                               {0, photons},
-                                                                                               {0, bjets},
-                                                                                               {0, jets},
-                                                                                               {1, met}));
+                                tau_mu[shift].fill(tau,
+                                                   met.p4,
+                                                   muon,
+                                                   weight * Shifts::get_scale_factor(shift,
+                                                                                     {1, muons},
+                                                                                     {0, electrons},
+                                                                                     {1, taus},
+                                                                                     {0, photons},
+                                                                                     {0, bjets},
+                                                                                     {0, jets},
+                                                                                     {0, met}));
+                            }
+                            
+                            // Tau + Mu + X
+                            if (taus.size() >= 1 and muons.size() >= 1 and
+                                (trigger_matches.at("pass_low_pt_muon_trigger") or
+                                 trigger_matches.at("pass_high_pt_muon_trigger")))   
+                            {
+                                auto tau = taus.p4[0];
+                                auto muon = muons.p4[0];
+
+                                tau_mu_x[shift].fill(tau,
+                                                      met.p4,
+                                                      muon,
+                                                      weight * Shifts::get_scale_factor(shift,
+                                                                                        {1, muons},
+                                                                                        {0, electrons},
+                                                                                        {1, taus},
+                                                                                        {0, photons},
+                                                                                        {0, bjets},
+                                                                                        {0, jets},
+                                                                                        {0, met}));
                             }
 
-                            // auto classes = make_class(muons.size(),
-                            //                           electrons.size(),
-                            //                           taus.size(),
-                            //                           photons.size(),
-                            //                           bjets.size(),
-                            //                           jets.size(),
-                            //                           met.size());
+                            // Tau + Mu + Nu
+                            if (taus.size() == 1 and muons.size() == 1 and met.size() == 1 and
+                                electrons.size() == 0 and photons.size() == 0 and bjets.size() == 0 and jets.size() == 0 and
+                                (trigger_matches.at("pass_low_pt_muon_trigger") or
+                                 trigger_matches.at("pass_high_pt_muon_trigger")))   
+                            {
+                                auto tau = taus.p4[0];
+                                auto muon = muons.p4[0];
 
-                            // auto number_of_classes = classes.size();
+                                tau_mu_nu[shift].fill(tau,
+                                                      met.p4,
+                                                      muon,
+                                                      weight * Shifts::get_scale_factor(shift,
+                                                                                        {1, muons},
+                                                                                        {0, electrons},
+                                                                                        {1, taus},
+                                                                                        {0, photons},
+                                                                                        {0, bjets},
+                                                                                        {0, jets},
+                                                                                        {1, met}));
+                            }
+
+                            // Tau + Mu + Nu + X
+                            if (taus.size() >= 1 and muons.size() >= 1 and met.size() >= 1 and 
+                                (trigger_matches.at("pass_low_pt_muon_trigger") or
+                                 trigger_matches.at("pass_high_pt_muon_trigger")))   
+                            {
+                                auto tau = taus.p4[0];
+                                auto muon = muons.p4[0];
+
+                                tau_mu_nu_x[shift].fill(tau,
+                                                        met.p4,
+                                                        muon,
+                                                        weight * Shifts::get_scale_factor(shift,
+                                                                                          {1, muons},
+                                                                                          {0, electrons},
+                                                                                          {1, taus},
+                                                                                          {0, photons},
+                                                                                          {0, bjets},
+                                                                                          {0, jets},
+                                                                                          {1, met}));
+                            }
+                            //////////////////////////  NEW  //////////////////////////
+
                         }
                     }
 
@@ -980,31 +1266,36 @@ auto main(int argc, char *argv[]) -> int
     }
 
     fmt::print("\n[MUSiC Validation] Saving outputs ({} - {} - {} - {}) ...\n", output_path, process, year, shift);
-    for (auto &&shift : shifts.get_constant_shifts())
-    {
-        z_to_tau_tau_x[shift].dump_outputs();
-        z_to_tau_tau_ele_x[shift].dump_outputs();
-        z_to_tau_tau_mu_x[shift].dump_outputs();
-        w_to_tau_nu_x[shift].dump_outputs();
-        w_to_tau_nu_ele_x[shift].dump_outputs();
-        w_to_tau_nu_mu_x[shift].dump_outputs();
-    }
 
-    for (auto &&shift : shifts.get_differential_shifts())
-    {
-        if (shift != "Nominal")
-        {
-            z_to_tau_tau_x[shift].dump_outputs();
-            z_to_tau_tau_ele_x[shift].dump_outputs();
-            z_to_tau_tau_mu_x[shift].dump_outputs();
-            w_to_tau_nu_x[shift].dump_outputs();
-            w_to_tau_nu_ele_x[shift].dump_outputs();
-            w_to_tau_nu_mu_x[shift].dump_outputs();
-        }
-    }
+ shifts.for_each(
+         [&](const std::string &shift) -> void
+         {
+            ///////////////////////////////////////////////////
+            //  z_to_tau_tau_x[shift].dump_outputs();        //
+            //  z_to_tau_tau_x_Z_mass[shift].dump_outputs(); //
+            //  z_to_tau_tau_ele_x[shift].dump_outputs();    //
+            //  z_to_tau_tau_mu_x[shift].dump_outputs();     //
+            //  w_to_tau_nu_x[shift].dump_outputs();         //
+            //  w_to_tau_nu_ele_x[shift].dump_outputs();     //
+            //  w_to_tau_nu_mu_x[shift].dump_outputs();      //
+            ///////////////////////////////////////////////////
+
+            //////////////////////////  NEW  //////////////////////////
+            tau_mu[shift].dump_outputs();
+            tau_mu_x[shift].dump_outputs();
+            tau_mu_nu[shift].dump_outputs();
+            tau_mu_nu_x[shift].dump_outputs();
+            tau_ele[shift].dump_outputs();
+            tau_ele_x[shift].dump_outputs();
+            tau_ele_nu[shift].dump_outputs();
+            tau_ele_nu_x[shift].dump_outputs();
+            //////////////////////////  NEW  //////////////////////////
+
+         });
 
     fmt::print("\n[MUSiC Validation] Done ...\n");
     PrintProcessInfo();
 
     return EXIT_SUCCESS;
 }
+

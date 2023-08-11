@@ -304,6 +304,8 @@ inline auto get_output_branches(const TaskConfiguration &configuration) -> std::
         "pass_high_pt_electron_trigger",
         "pass_double_electron_trigger",
         "pass_photon_trigger",
+        "pass_high_pt_tau_trigger",
+        "pass_double_tau_trigger",
         "pass_jet_ht_trigger",
         "pass_jet_pt_trigger",
         "run",

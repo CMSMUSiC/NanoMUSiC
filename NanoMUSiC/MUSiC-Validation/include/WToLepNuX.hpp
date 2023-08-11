@@ -27,18 +27,17 @@ class WToLepNuX
     TH1F h_invariant_mass;
     TH1F h_sum_pt;
     TH1F h_met;
-    TH1F h_lepton_1_pt;
-    TH1F h_met_pt;
-    TH1F h_lepton_1_eta;
+    TH1F h_lepton_pt;
+    TH1F h_lepton_eta;
     TH1F h_met_eta;
-    TH1F h_lepton_1_phi;
+    TH1F h_lepton_phi;
     TH1F h_met_phi;
     //TH1F h_lepton_1_jet_1_dPhi;
     //TH1F h_lepton_1_jet_1_dR;
     //TH1F h_jet_multiplicity;
     //TH1F h_bjet_multiplicity;
-    TH2F h_lepton_1_pt_eta;
-    TH2F h_lepton_1_pt_phi;
+    TH2F h_lepton_pt_eta;
+    TH2F h_lepton_pt_phi;
     TH1F h_leptons_all;
     TH1F h_leptons_matched;
 

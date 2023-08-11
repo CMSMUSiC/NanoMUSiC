@@ -208,7 +208,7 @@ def main():
 
             total_tasks = len(monitoring_results)
 
-            # loop over monitroting results
+            # loop over monitoring results
             for idx, (status, report, kill_command, retry_command) in enumerate(
                 monitoring_results
             ):
@@ -278,9 +278,10 @@ def main():
                     for command in retry_commands:
                         os.system(command)
                 if cmd == "kill":
-                    print("Killing all tasks ...")
+                    print("Killing all tasks (in background)...")
                     for command in kill_commands:
-                        os.system(command)
+                        os.system(f"{command} &")
+                    print("Done")
                     exit(0)
             else:
                 if len(retry_commands) > 0:
@@ -292,8 +293,9 @@ def main():
                     exit(0)
 
         # wait 30 seconds until next monitoring cycle
-        print("Next monitoring cycle in ...")
-        countdown(60)
+        if loop:
+            print("Next monitoring cycle in ...")
+            countdown(60)
 
 
 if __name__ == "__main__":

@@ -114,7 +114,7 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
                                                    {std::fabs(tau_p4.eta()), Tau_genPartFlav[i], "Tight", "nom"}) *
                     MUSiCObjects::get_scale_factor(
                         deep_tau_2017_v2_p1_vs_jet,
-                        is_data,
+                        is_data,                                            // WP of VSJet here considered 
                         {tau_p4.pt(), Tau_decayMode[i], Tau_genPartFlav[i], "Tight", "Tight", "default", "pt"}));
 
                 scale_factor_up.push_back(
@@ -126,7 +126,7 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
                                                    {std::fabs(tau_p4.eta()), Tau_genPartFlav[i], "Tight", "up"}) *
                     MUSiCObjects::get_scale_factor(
                         deep_tau_2017_v2_p1_vs_jet,
-                        is_data,
+                        is_data,                                            // WP of VSJet here considered
                         {tau_p4.pt(), Tau_decayMode[i], Tau_genPartFlav[i], "Tight", "Tight", "up", "pt"}));
 
                 scale_factor_down.push_back(
@@ -138,7 +138,7 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
                                                    {std::fabs(tau_p4.eta()), Tau_genPartFlav[i], "Tight", "down"}) *
                     MUSiCObjects::get_scale_factor(
                         deep_tau_2017_v2_p1_vs_jet,
-                        is_data,
+                        is_data,                                            // WP of VSJet here considered
                         {tau_p4.pt(), Tau_decayMode[i], Tau_genPartFlav[i], "Tight", "Tight", "down", "pt"}));
 
                 taus_p4.push_back(tau_p4);

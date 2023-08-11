@@ -1,5 +1,5 @@
-#ifndef WTOTAUNULEPX
-#define WTOTAUNULEPX
+#ifndef TAULEPX
+#define TAULEPX
 
 #include "Histograms.hpp"
 #include "Math/Vector4D.h"
@@ -18,7 +18,7 @@ using namespace ROOT;
 using namespace ROOT::Math;
 using namespace ROOT::VecOps;
 
-class WToTauNuLepX
+class TauLepX
 {
   private:
   public:
@@ -26,14 +26,11 @@ class WToTauNuLepX
 
     TH1F h_invariant_mass;
     TH1F h_sum_pt;
-    TH1F h_met;
     TH1F h_tau_pt;
     TH1F h_lepton_pt;
     TH1F h_tau_eta;
-    TH1F h_met_eta;
     TH1F h_lepton_eta;
     TH1F h_tau_phi;
-    TH1F h_met_phi;
     TH1F h_lepton_phi;
     //TH1F h_lepton_1_jet_1_dPhi;
     //TH1F h_lepton_1_jet_1_dR;
@@ -49,9 +46,9 @@ class WToTauNuLepX
     bool is_Z_mass_validation;
     std::string shift;
 
-    WToTauNuLepX() = default;
+    TauLepX() = default;
 
-    WToTauNuLepX(const std::string &_analysis_name,
+    TauLepX(const std::string &_analysis_name,
              const std::string &_output_path,
              const std::map<std::string, int> &_countMap,
              bool _is_Z_mass_validation,
@@ -72,4 +69,4 @@ class WToTauNuLepX
     auto dump_outputs() -> void;
 };
 
-#endif // !WTOTAUNULEPX
+#endif // !TAULEPX

@@ -95,16 +95,6 @@ WToTauNuLepX::WToTauNuLepX(const std::string &_analysis_name,
                                                           _sample,        //
                                                           _year,          //
                                                           _shift,         //
-                                                          "h_met_pt");
-    h_met_pt = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
-    h_met_pt.Sumw2();
-
-    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
-                                                          _process_group, //
-                                                          _xs_order,      //
-                                                          _sample,        //
-                                                          _year,          //
-                                                          _shift,         //
                                                           "h_lepton_pt");
     h_lepton_pt = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
     h_lepton_pt.Sumw2();
@@ -212,7 +202,6 @@ auto WToTauNuLepX::fill(const Math::PtEtaPhiMVector &tau,
     }
 
     h_tau_pt.Fill(tau.pt(), weight);
-    h_met_pt.Fill(met[0].pt(), weight);
     h_lepton_pt.Fill(lepton.pt(), weight);
     h_tau_eta.Fill(tau.eta(), weight);
     h_met_eta.Fill(met[0].eta(), weight);
@@ -256,10 +245,6 @@ auto WToTauNuLepX::dump_outputs() -> void
     h_tau_pt.Scale(min_bin_width, "width");
     h_tau_pt.SetDirectory(output_file.get());
     h_tau_pt.Write();
-
-    h_met_pt.Scale(min_bin_width, "width");
-    h_met_pt.SetDirectory(output_file.get());
-    h_met_pt.Write();
 
     h_lepton_pt.Scale(min_bin_width, "width");
     h_lepton_pt.SetDirectory(output_file.get());
