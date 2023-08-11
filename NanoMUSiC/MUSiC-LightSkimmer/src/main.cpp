@@ -132,7 +132,7 @@ auto main(int argc, char *argv[]) -> int
 
     //////// DEBUG /////////////////
     debugger_t h_debug = configuration.is_crab_job ? std::nullopt : make_debugger();
-    h_debug = std::nullopt;
+    // h_debug = std::nullopt;
     ////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -978,24 +978,7 @@ auto main(int argc, char *argv[]) -> int
     /////////////////// DEBUG //////////////////////
     if (h_debug)
     {
-        fmt::print("\nSaving DEBUG Histogram ...\n");
-        auto c = TCanvas("c");
-        c.SetLogy();
-        // c.SetLogx();
-        h_debug->h_total.SetLineColor(kBlue);
-        h_debug->h_pass.SetLineColor(kRed);
-        h_debug->h_total.Draw("hist");
-        h_debug->h_pass.Draw("same hist");
-
-        auto legend = TLegend(0.1, .9, 0.3, 1.);
-        legend.AddEntry(&h_debug->h_pass, "Pass", "l");
-        legend.AddEntry(&h_debug->h_total, "Total", "l");
-        legend.Draw();
-
-        c.SaveAs("h_debug.png");
-        h_debug->h_pass.Print();
-        h_debug->h_total.Print();
-        fmt::print("... done.\n");
+        h_debug->dump();
     }
     ////////////////////////////////////////////////
 

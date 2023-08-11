@@ -90,11 +90,7 @@ auto wlnujets_filter(const NanoObjects::LHEParticles &lhe_particles,
 
     if (h_debug)
     {
-        h_debug->h_total.Fill(mass);
-        if (filter_result)
-        {
-            h_debug->h_pass.Fill(mass);
-        }
+        h_debug->fill(pt, filter_result);
     }
 
     return filter_result;
@@ -116,30 +112,8 @@ auto wlnujets_mass_binned_filter(const NanoObjects::LHEParticles &lhe_particles,
     // filter Lep+Nu pair
     std::optional<std::size_t> idx_lepton = std::nullopt;
     std::optional<std::size_t> idx_neutrino = std::nullopt;
-    std::cout << "_______________________\n";
     for (std::size_t i = 0; i < gen_particles.nGenParticles; i++)
     {
-        if (std::abs(gen_particles.pdgId.at(i)) == PDG::Electron::Id or
-            std::abs(gen_particles.pdgId.at(i)) == PDG::Muon::Id or
-            std::abs(gen_particles.pdgId.at(i)) == PDG::Tau::Id or
-            std::abs(gen_particles.pdgId.at(i)) == PDG::ElectronNeutrino::Id or
-            std::abs(gen_particles.pdgId.at(i)) == PDG::MuonNeutrino::Id or
-            std::abs(gen_particles.pdgId.at(i)) == PDG::TauNeutrino::Id or
-            std::abs(gen_particles.pdgId.at(i)) == PDG::W::Id)
-        {
-            if (gen_particles.genPartIdxMother.at(i) >= 0)
-            {
-                fmt::print("Mother_PDG_id:{} at index:{}\n",
-                           gen_particles.pdgId.at(gen_particles.genPartIdxMother.at(i)),
-                           gen_particles.genPartIdxMother.at(i));
-            }
-            else
-            {
-                fmt::print("No mother found\n");
-            }
-
-            fmt::print("PDG_id:{} at index:{}\n\n", gen_particles.pdgId.at(i), i);
-        }
         auto mother_idx = gen_particles.genPartIdxMother.at(i);
         if (mother_idx >= 0)
         {
@@ -202,7 +176,6 @@ auto wlnujets_mass_binned_filter(const NanoObjects::LHEParticles &lhe_particles,
                                              gen_particles.phi[*idx_lepton],
                                              gen_particles.pt[*idx_neutrino],
                                              gen_particles.phi[*idx_neutrino]);
-                fmt::print("Mass:{} pT:{}\n", mass, pt);
 
                 if ((pt_min - .5 <= pt and pt <= pt_max + .5) and (mass_min - .5 <= mass and mass <= mass_max + .5))
                 {
@@ -214,11 +187,7 @@ auto wlnujets_mass_binned_filter(const NanoObjects::LHEParticles &lhe_particles,
 
     if (h_debug)
     {
-        h_debug->h_total.Fill(mass);
-        if (filter_result)
-        {
-            h_debug->h_pass.Fill(mass);
-        }
+        h_debug->fill(pt, filter_result);
     }
 
     return filter_result;
@@ -304,11 +273,7 @@ auto wlnujets_mass_binned_sherpa_filter(const NanoObjects::LHEParticles &lhe_par
 
     if (h_debug)
     {
-        h_debug->h_total.Fill(mass);
-        if (filter_result)
-        {
-            h_debug->h_pass.Fill(mass);
-        }
+        h_debug->fill(pt, filter_result);
     }
 
     return filter_result;
