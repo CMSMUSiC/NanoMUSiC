@@ -2536,3 +2536,67 @@ FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "N3LO"
 ProcessGroup = "HIG"
+
+[BFF_ZprimeToTauTau_M200_EmuFilterPt15_13TeV_MG]
+XSec = 0.1252
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "ZprimeToTauTau"
+is_signal = true
+
+[BFF_ZprimeToTauTau_M500_EmuFilterPt15_13TeV_MG]
+XSec = 0.003657
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "ZprimeToTauTau"
+is_signal = true
+
+[ChargedHiggsToHW_HToTauTau_M-2000_MH1_M-125_1L_13TeV_AM]
+XSec = 0.0001539
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "NLO"
+ProcessGroup = "ChargedHiggsToHW"
+is_signal = true
+
+[ChargedHiggsToHW_HToTauTau_M-1250_MH1_M-125_1L_13TeV_AM]
+XSec = 0.002816
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "NLO"
+ProcessGroup = "ChargedHiggsToHW"
+is_signal = true
+
+[ChargedHiggsToHW_HToTauTau_M-300_MH1_M-125_1L_13TeV_AM]
+XSec = 0.01622
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "NLO"
+ProcessGroup = "ChargedHiggsToHW"
+is_signal = true
+
+[ChargedHiggsToTauNu_Heavy_M200_13TeV_AM]
+XSec = 0.006096
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "NLO"
+ProcessGroup = "ChargedHiggsToTauNu"
+is_signal = true
+
+[ChargedHiggsToTauNu_Heavy_M500_13TeV_AM]
+XSec = 0.1913
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "NLO"
+ProcessGroup = "ChargedHiggsToTauNu"
+is_signal = true
+
+[ChargedHiggsToTauNu_Heavy_M2500_13TeV_AM]
+XSec = 0.00003437
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "NLO"
+ProcessGroup = "ChargedHiggsToTauNu"
+is_signal = true

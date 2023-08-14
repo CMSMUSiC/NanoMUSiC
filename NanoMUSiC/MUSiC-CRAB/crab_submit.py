@@ -168,7 +168,7 @@ def build_crab_config(process_name, das_name, year, is_data, global_now):
         this_config.JobType.outputFiles = [r"efficiency_hist.root"]
     this_config.User.voGroup = "dcms"
     this_config.Site.storageSite = "T2_DE_RWTH"
-    this_config.Site.blacklist = ["T2_BR_*", "T2_US_*", "T2_CH_CSCS"]
+    this_config.Site.blacklist = ["T2_BR_*", "T2_US_*"]
 
     return this_config
 
@@ -239,7 +239,7 @@ def main():
         args.year,
     )
 
-    with Pool(min(args.jobs, len(sample_list))) as pool:
+    with Pool(min(int(args.jobs), len(sample_list))) as pool:
         submited_samples = list(
             tqdm(
                 pool.imap_unordered(submit, sample_list),

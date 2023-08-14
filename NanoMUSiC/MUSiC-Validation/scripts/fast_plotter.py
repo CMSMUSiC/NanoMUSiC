@@ -324,7 +324,7 @@ def main():
 
     # Plot the data as a graph
     data_graph = aplt.root_helpers.hist_to_graph(data_hist)
-    legend.AddEntry(data_graph, "Data", "EP")
+    legend.AddEntry(data_graph, f"Data ({Decimal(data_hist.Integral()):.2E})", "EP")
     if not (args.no_data):
         ax1.plot(data_graph, "P")
     ax1.set_xlim(x_min, x_max)

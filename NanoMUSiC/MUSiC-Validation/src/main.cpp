@@ -514,14 +514,18 @@ auto main(int argc, char *argv[]) -> int
         auto is_good_trigger = trigger_filter(process,
                                               is_data,
                                               get_runyear(year),
-                                              unwrap(pass_low_pt_muon_trigger),
+                                              //   unwrap(pass_low_pt_muon_trigger),
+                                              false,
                                               unwrap(pass_high_pt_muon_trigger),
                                               unwrap(pass_double_muon_trigger),
-                                              unwrap(pass_low_pt_electron_trigger),
+                                              //   unwrap(pass_low_pt_electron_trigger),
+                                              false,
                                               unwrap(pass_high_pt_electron_trigger),
                                               unwrap(pass_double_electron_trigger),
-                                              unwrap(pass_high_pt_tau_trigger),
-                                              unwrap(pass_double_tau_trigger),
+                                              //   unwrap(pass_high_pt_tau_trigger),
+                                              false,
+                                              //   unwrap(pass_double_tau_trigger),
+                                              false,
                                               unwrap(pass_photon_trigger));
 
         if (is_good_trigger)
