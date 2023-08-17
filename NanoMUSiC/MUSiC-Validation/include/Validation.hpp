@@ -3,6 +3,7 @@
 
 // analysis classes
 // #include "Dijets.hpp"
+#include "EventClassFactory.hpp"
 #include "GammaPlusJet.hpp"
 #include "TTBarTo1Lep2Bjet2JetMET.hpp"
 #include "WToLepNuX.hpp"
@@ -544,7 +545,8 @@ inline auto make_trigger_matches(const std::unordered_map<std::string, bool> &is
         auto good_muons = VecOps::Filter(muons.p4,
                                          [](const auto &muon)
                                          {
-                                             return muon.pt() > 53.;
+                                             //  return muon.pt() > 53.;
+                                             return muon.pt() > 205.;
                                          });
         if (good_muons.size() >= 1)
         {

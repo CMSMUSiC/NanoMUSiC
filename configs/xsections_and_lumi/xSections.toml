@@ -2600,3 +2600,27 @@ kFactor = 1.0
 XSecOrder = "NLO"
 ProcessGroup = "ChargedHiggsToTauNu"
 is_signal = true
+
+[Taustar_TauG_L10000_m175_CP5_13TeV_P8]
+XSec = 0.028988
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "Taustar"
+is_signal = true
+
+[Taustar_TauG_L10000_m1500_CP5_13TeV_P8]
+XSec = 0.0015285
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "Taustar"
+is_signal = true
+
+[Taustar_TauG_L10000_m5000_13TeV_P8]
+XSec = 0.0000013593
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "Taustar"
+is_signal = true

@@ -341,6 +341,10 @@ auto main(int argc, char *argv[]) -> int
     std::unordered_map<std::string, TTBarTo1Lep2Bjet2JetMET> ttbar_to_1mu_2bjet_2jet_MET;
     std::unordered_map<std::string, TTBarTo1Lep2Bjet2JetMET> ttbar_to_1ele_2bjet_2jet_MET;
 
+    // [EVENT_CLASS_NAME, [SHIFT, EVENT_CLASS] ]
+    using ClassCollection_t = std::unordered_map<std::string, EventClass>;
+    std::unordered_map<std::string, ClassCollection_t> event_classes;
+
     // Initiale analyses
     shifts.for_each(
         [&](const std::string &shift) -> void
@@ -505,10 +509,10 @@ auto main(int argc, char *argv[]) -> int
         // // remove the "unused variable" warning during compilation
         static_cast<void>(event);
 
-        // if (event > 30)
-        // {
-        //     break;
-        // }
+        if (event > 30)
+        {
+            break;
+        }
 
         // Trigger
         auto is_good_trigger = trigger_filter(process,
@@ -746,6 +750,107 @@ auto main(int argc, char *argv[]) -> int
                                          * scaled_luminosity                                            //
                                          * pdf_as_weight;
                             }
+
+                            ////////////////////////////
+                            ////////////////////////////
+                            // Fill Event Classes
+                            for (std::size_t idx_muon = 0; idx_muon <= muons.size(); idx_muon++)
+                            {
+                                for (std::size_t idx_electron = 0; idx_electron <= electrons.size(); idx_electron++)
+                                {
+                                    for (std::size_t idx_tau = 0; idx_tau <= taus.size(); idx_tau++)
+                                    {
+                                        for (std::size_t idx_photon = 0; idx_photon <= photons.size(); idx_photon++)
+                                        {
+                                            for (std::size_t idx_bjet = 0; idx_bjet <= bjets.size(); idx_bjet++)
+                                            {
+                                                for (std::size_t idx_jet = 0; idx_jet <= jets.size(); idx_jet++)
+                                                {
+                                                    for (std::size_t idx_met = 0; idx_met <= met.size(); idx_met++)
+                                                    {
+                                                        auto [event_class_name_exclusive,
+                                                              event_class_name_inclusive,
+                                                              event_class_name_jetinclusive] =
+                                                            make_event_class_name({idx_muon, muons.size()},
+                                                                                  {idx_electron, electrons.size()},
+                                                                                  {idx_tau, taus.size()},
+                                                                                  {idx_photon, photons.size()},
+                                                                                  {idx_jet, jets.size()},
+                                                                                  {idx_bjet, bjets.size()},
+                                                                                  {idx_met, met.size()});
+
+                                                        for (auto &&class_name : {event_class_name_exclusive,
+                                                                                  event_class_name_inclusive,
+                                                                                  event_class_name_jetinclusive})
+                                                        {
+                                                            if (class_name)
+                                                            {
+                                                                // create, if does not exists
+                                                                if (shift == "Nominal" and
+                                                                    event_classes.find(*class_name) ==
+                                                                        event_classes.end())
+                                                                {
+                                                                    event_classes.insert(
+                                                                        {*class_name, ClassCollection_t()});
+
+                                                                    shifts.for_each(
+                                                                        [&](const std::string &shift) -> void
+                                                                        {
+                                                                            event_classes.at(*class_name)
+                                                                                .insert({shift,
+                                                                                         EventClass(
+                                                                                             *class_name,
+                                                                                             get_output_file_path(
+                                                                                                 *class_name,
+                                                                                                 output_path,
+                                                                                                 process,
+                                                                                                 year,
+                                                                                                 process_group,
+                                                                                                 xs_order,
+                                                                                                 is_data,
+                                                                                                 shift),
+                                                                                             {{"Ele", idx_electron},
+                                                                                              {"EleEE", 0},
+                                                                                              {"EleEB", 0},
+                                                                                              {"Muon", idx_muon},
+                                                                                              {"Gamma", 0},
+                                                                                              {"GammaEB", idx_photon},
+                                                                                              {"GammaEE", 0},
+                                                                                              {"Tau", idx_tau},
+                                                                                              {"Jet", idx_jet},
+                                                                                              {"bJet", idx_bjet},
+                                                                                              {"MET", idx_met}},
+                                                                                             shift,
+                                                                                             process,
+                                                                                             year,
+                                                                                             process_group,
+                                                                                             xs_order)});
+                                                                        });
+                                                                }
+
+                                                                // fill class
+                                                                event_classes.at(*class_name)[shift].fill(
+                                                                    weight *
+                                                                    Shifts::get_scale_factor(shift,
+                                                                                             {idx_muon, muons},
+                                                                                             {idx_electron, electrons},
+                                                                                             {idx_tau, taus},
+                                                                                             {idx_photon, photons},
+                                                                                             {idx_bjet, bjets},
+                                                                                             {idx_jet, jets},
+                                                                                             {idx_met, met}));
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            ////////////////////////////
+                            ////////////////////////////
 
                             // MuMu + X
                             unsigned int n_muons = 2;
@@ -1012,6 +1117,11 @@ auto main(int argc, char *argv[]) -> int
             ttbar_to_1mu_2bjet_2jet_MET[shift].dump_outputs();
             ttbar_to_1ele_2bjet_2jet_MET[shift].dump_outputs();
             // dijets.dump_outputs();
+
+            for (auto &&[class_name, class_collection] : event_classes)
+            {
+                class_collection[shift].dump_outputs();
+            }
         });
 
     fmt::print("\n[MUSiC Validation] Done ...\n");

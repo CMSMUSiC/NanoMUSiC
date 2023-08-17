@@ -51,6 +51,7 @@ add_executable(
     src/WToLepNuX.cpp //
     src/WToLepNu_eff.cpp //
     src/ZToTauTauLepX.cpp //
+    src/EventClassFactory.cpp //
 
     # src/Dijets.cpp //
 )
