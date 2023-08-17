@@ -1,4 +1,4 @@
-#include "../include/TauLepX.hpp"
+#include "../include/TauLepGammaX.hpp"
 #include "Configs.hpp"
 #include "Histograms.hpp"
 #include "Math/GenVector/VectorUtil.h"
@@ -10,7 +10,7 @@
 
 #include "NanoEventClass.hpp"
 
-TauLepX::TauLepX(const std::string &_analysis_name,
+TauLepGammaX::TauLepGammaX(const std::string &_analysis_name,
                    const std::string &_output_path,
                    const std::map<std::string, int> &_countMap,
                    bool _is_Z_mass_validation,
@@ -105,6 +105,16 @@ TauLepX::TauLepX(const std::string &_analysis_name,
                                                           _sample,        //
                                                           _year,          //
                                                           _shift,         //
+                                                          "h_gamma_pt");
+    h_gamma_pt = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
+    h_gamma_pt.Sumw2();
+
+    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+                                                          _process_group, //
+                                                          _xs_order,      //
+                                                          _sample,        //
+                                                          _year,          //
+                                                          _shift,         //
                                                           "h_tau_eta");
     h_tau_eta = TH1F(histo_name.c_str(), histo_name.c_str(), n_eta_bins, min_eta, max_eta);
     h_tau_eta.Sumw2();
@@ -125,6 +135,16 @@ TauLepX::TauLepX(const std::string &_analysis_name,
                                                           _sample,        //
                                                           _year,          //
                                                           _shift,         //
+                                                          "h_gamma_eta");
+    h_gamma_eta = TH1F(histo_name.c_str(), histo_name.c_str(), n_eta_bins, min_eta, max_eta);
+    h_gamma_eta.Sumw2();
+
+    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+                                                          _process_group, //
+                                                          _xs_order,      //
+                                                          _sample,        //
+                                                          _year,          //
+                                                          _shift,         //
                                                           "h_tau_phi");
     h_tau_phi = TH1F(histo_name.c_str(), histo_name.c_str(), n_phi_bins, min_phi, max_phi);
     h_tau_phi.Sumw2();
@@ -138,6 +158,16 @@ TauLepX::TauLepX(const std::string &_analysis_name,
                                                           "h_lepton_phi");
     h_lepton_phi = TH1F(histo_name.c_str(), histo_name.c_str(), n_phi_bins, min_phi, max_phi);
     h_lepton_phi.Sumw2();
+
+    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+                                                          _process_group, //
+                                                          _xs_order,      //
+                                                          _sample,        //
+                                                          _year,          //
+                                                          _shift,         //
+                                                          "h_gamma_phi");
+    h_gamma_phi = TH1F(histo_name.c_str(), histo_name.c_str(), n_phi_bins, min_phi, max_phi);
+    h_gamma_phi.Sumw2();
 
     histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
                                                           _process_group, //
@@ -168,13 +198,14 @@ TauLepX::TauLepX(const std::string &_analysis_name,
     h_tau_pt_phi.Sumw2();
 }
 
-auto TauLepX::fill(const Math::PtEtaPhiMVector &tau,
+auto TauLepGammaX::fill(const Math::PtEtaPhiMVector &tau,
                     const RVec<Math::PtEtaPhiMVector> &met,
                     const Math::PtEtaPhiMVector &lepton,
+                    const Math::PtEtaPhiMVector &photon,
                     float weight) -> void
 {
-    h_invariant_mass.Fill((tau + lepton).mass(), weight);
-    h_sum_pt.Fill(tau.pt() + lepton.pt(), weight);
+    h_invariant_mass.Fill((tau + lepton + photon).mass(), weight);
+    h_sum_pt.Fill(tau.pt() + lepton.pt() + photon.pt(), weight);
 
     if (met.size() > 0)
     {
@@ -183,16 +214,19 @@ auto TauLepX::fill(const Math::PtEtaPhiMVector &tau,
 
     h_tau_pt.Fill(tau.pt(), weight);
     h_lepton_pt.Fill(lepton.pt(), weight);
+    h_gamma_pt.Fill(photon.pt(), weight);
     h_tau_eta.Fill(tau.eta(), weight);
     h_lepton_eta.Fill(lepton.eta(), weight);
+    h_gamma_eta.Fill(photon.eta(), weight);
     h_tau_phi.Fill(tau.phi(), weight);
     h_lepton_phi.Fill(lepton.phi(), weight);
+    h_gamma_phi.Fill(photon.phi(), weight);
 
     h_tau_pt_eta.Fill(tau.pt(), tau.eta(), weight);
     h_tau_pt_phi.Fill(tau.pt(), tau.phi(), weight);
 }
 
-auto TauLepX::dump_outputs() -> void
+auto TauLepGammaX::dump_outputs() -> void
 {
 
     auto output_file = std::unique_ptr<TFile>(TFile::Open(output_path.c_str(), "RECREATE"));
@@ -228,17 +262,27 @@ auto TauLepX::dump_outputs() -> void
     h_lepton_pt.SetDirectory(output_file.get());
     h_lepton_pt.Write();
 
+    h_gamma_pt.Scale(min_bin_width, "width");
+    h_gamma_pt.SetDirectory(output_file.get());
+    h_gamma_pt.Write();
+
     h_tau_eta.SetDirectory(output_file.get());
     h_tau_eta.Write();
 
     h_lepton_eta.SetDirectory(output_file.get());
     h_lepton_eta.Write();
 
+    h_gamma_eta.SetDirectory(output_file.get());
+    h_gamma_eta.Write();
+
     h_tau_phi.SetDirectory(output_file.get());
     h_tau_phi.Write();
 
     h_lepton_phi.SetDirectory(output_file.get());
     h_lepton_phi.Write();
+
+    h_gamma_phi.SetDirectory(output_file.get());
+    h_gamma_phi.Write();
 
     h_tau_pt_eta.SetDirectory(output_file.get());
     h_tau_pt_eta.Write();

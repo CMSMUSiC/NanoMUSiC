@@ -1,5 +1,5 @@
-#ifndef TAULEPX
-#define TAULEPX
+#ifndef TAULEPNUGAMMAX
+#define TAULEPNUGAMMAX
 
 #include "Histograms.hpp"
 #include "Math/Vector4D.h"
@@ -18,7 +18,7 @@ using namespace ROOT;
 using namespace ROOT::Math;
 using namespace ROOT::VecOps;
 
-class TauLepX
+class TauLepNuGammaX
 {
   private:
   public:
@@ -29,10 +29,15 @@ class TauLepX
     TH1F h_met;
     TH1F h_tau_pt;
     TH1F h_lepton_pt;
+    TH1F h_gamma_pt;
     TH1F h_tau_eta;
+    TH1F h_met_eta;
     TH1F h_lepton_eta;
+    TH1F h_gamma_eta;
     TH1F h_tau_phi;
+    TH1F h_met_phi;
     TH1F h_lepton_phi;
+    TH1F h_gamma_phi;
     //TH1F h_lepton_1_jet_1_dPhi;
     //TH1F h_lepton_1_jet_1_dR;
     //TH1F h_jet_multiplicity;
@@ -47,9 +52,9 @@ class TauLepX
     bool is_Z_mass_validation;
     std::string shift;
 
-    TauLepX() = default;
+    TauLepNuGammaX() = default;
 
-    TauLepX(const std::string &_analysis_name,
+    TauLepNuGammaX(const std::string &_analysis_name,
              const std::string &_output_path,
              const std::map<std::string, int> &_countMap,
              bool _is_Z_mass_validation,
@@ -62,6 +67,7 @@ class TauLepX
     auto fill(const Math::PtEtaPhiMVector &tau,
               const RVec<Math::PtEtaPhiMVector> &met,
               const Math::PtEtaPhiMVector &lepton,
+              const Math::PtEtaPhiMVector &photon,
               float weight) -> void;
 
     auto save_histo(TH1 histo) -> void;
@@ -70,4 +76,4 @@ class TauLepX
     auto dump_outputs() -> void;
 };
 
-#endif // !TAULEPX
+#endif // !TAULEPNUGAMMAX

@@ -54,6 +54,8 @@ add_executable(
     src/ZToTauTauLepX.cpp //
     src/TauLepNuX.cpp //
     src/TauLepX.cpp //
+    src/TauLepNuGammaX.cpp //
+    src/TauLepGammaX.cpp //
 
     # src/Dijets.cpp //
 )

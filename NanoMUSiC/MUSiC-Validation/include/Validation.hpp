@@ -12,6 +12,8 @@
 #include "ZToTauTauLepX.hpp"
 #include "TauLepNuX.hpp"
 #include "TauLepX.hpp"
+#include "TauLepNuGammaX.hpp"
+#include "TauLepGammaX.hpp"
 
 #include <functional>
 #include <optional>
