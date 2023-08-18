@@ -31,6 +31,7 @@ class GammaPlusJet
     GammaPlusJet(const std::string &_analysis_name,
                  const std::string &_output_path,
                  const std::map<std::string, int> &_countMap,
+                 bool dummy,
                  const std::string _shift,
                  const std::string &_sample,
                  const std::string &_year,
@@ -39,7 +40,7 @@ class GammaPlusJet
 
     auto fill(Math::PtEtaPhiMVector gamma, float weight = 1.) -> void;
 
-    auto dump_outputs() -> void;
+    auto dump_outputs(std::unique_ptr<TFile> &output_file) -> void;
 };
 
 #endif

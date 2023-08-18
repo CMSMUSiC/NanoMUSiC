@@ -11,14 +11,14 @@
 #include "NanoEventClass.hpp"
 
 WToLepNuX::WToLepNuX(const std::string &_analysis_name,
-                   const std::string &_output_path,
-                   const std::map<std::string, int> &_countMap,
-                   bool _is_Z_mass_validation,
-                   const std::string _shift,
-                   const std::string &_sample,
-                   const std::string &_year,
-                   const std::string &_process_group,
-                   const std::string &_xs_order)
+                     const std::string &_output_path,
+                     const std::map<std::string, int> &_countMap,
+                     bool _is_Z_mass_validation,
+                     const std::string _shift,
+                     const std::string &_sample,
+                     const std::string &_year,
+                     const std::string &_process_group,
+                     const std::string &_xs_order)
     : output_path(_output_path),
       min_bin_width(10.),
       countMap(_countMap),
@@ -210,13 +210,12 @@ WToLepNuX::WToLepNuX(const std::string &_analysis_name,
     h_lepton_1_pt_phi.Sumw2();
 }
 
-auto WToLepNuX::fill(const Math::PtEtaPhiMVector &lepton_1,
-                    const RVec<Math::PtEtaPhiMVector> &met,
-                    float weight) -> void
+auto WToLepNuX::fill(const Math::PtEtaPhiMVector &lepton_1, const RVec<Math::PtEtaPhiMVector> &met, float weight)
+    -> void
 {
     h_invariant_mass.Fill((lepton_1 + met[0]).Mt(), weight);
     h_sum_pt.Fill(lepton_1.pt() + met[0].pt(), weight);
-    
+
     if (met.size() > 0)
     {
         h_met.Fill(met[0].pt(), weight);
@@ -268,30 +267,30 @@ auto WToLepNuX::dump_outputs() -> void
     // rebin energy-like histograms
     if (not(is_Z_mass_validation))
     {
-        h_invariant_mass.Scale(10., "width");
+        // h_invariant_mass.Scale(10., "width");
         h_invariant_mass.SetDirectory(output_file.get());
         h_invariant_mass.Write();
     }
     else
     {
-        h_invariant_mass.Scale(10., "width");
+        // h_invariant_mass.Scale(10., "width");
         h_invariant_mass.SetDirectory(output_file.get());
         h_invariant_mass.Write();
     }
 
-    h_sum_pt.Scale(min_bin_width, "width");
+    // h_sum_pt.Scale(min_bin_width, "width");
     h_sum_pt.SetDirectory(output_file.get());
     h_sum_pt.Write();
 
-    h_met.Scale(min_bin_width, "width");
+    // h_met.Scale(min_bin_width, "width");
     h_met.SetDirectory(output_file.get());
     h_met.Write();
 
-    h_lepton_1_pt.Scale(min_bin_width, "width");
+    // h_lepton_1_pt.Scale(min_bin_width, "width");
     h_lepton_1_pt.SetDirectory(output_file.get());
     h_lepton_1_pt.Write();
 
-    h_met_pt.Scale(min_bin_width, "width");
+    // h_met_pt.Scale(min_bin_width, "width");
     h_met_pt.SetDirectory(output_file.get());
     h_met_pt.Write();
 

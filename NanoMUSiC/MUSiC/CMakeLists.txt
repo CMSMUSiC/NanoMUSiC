@@ -54,26 +54,26 @@ add_link_options(
     -L/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/lib64
 )
 
-add_executable(nano_music src/main.cpp /
-    src/GeneratorFilters.cpp /
-    src/EventAnalyzer/generator.cpp /
-    src/EventAnalyzer/event_filters.cpp /
-    src/EventAnalyzer/trigger.cpp /
-    src/EventAnalyzer/scale_factors.cpp /
-    src/EventAnalyzer/scale_factors_muons.cpp /
-    src/JetCorrector.cpp /
-    src/EventAnalyzer/scale_factors_egamma.cpp /
-    src/EventAnalyzer/scale_factors_bjets.cpp /
-    src/EventAnalyzer/transformations.cpp /
-    src/EventAnalyzer/object_selection.cpp /
-    src/EventAnalyzer/set_objects.cpp /
-    src/EventAnalyzer/EventAnalyzer.cpp /
-    src/TaskConfiguration.cpp src/NanoObjects.cpp /
-    src/TOMLConfig.cpp src/CorrectionSets.cpp /
-    external/roccor/RoccoR.cc /
-    src/BinLimits.cpp)
-target_link_libraries(nano_music LINK_PUBLIC ROOT::RIO ROOT::Net)
-install(TARGETS nano_music DESTINATION ${CMAKE_SOURCE_DIR}/bin)
+# add_executable(nano_music src/main.cpp /
+# src/GeneratorFilters.cpp /
+# src/EventAnalyzer/generator.cpp /
+# src/EventAnalyzer/event_filters.cpp /
+# src/EventAnalyzer/trigger.cpp /
+# src/EventAnalyzer/scale_factors.cpp /
+# src/EventAnalyzer/scale_factors_muons.cpp /
+# src/JetCorrector.cpp /
+# src/EventAnalyzer/scale_factors_egamma.cpp /
+# src/EventAnalyzer/scale_factors_bjets.cpp /
+# src/EventAnalyzer/transformations.cpp /
+# src/EventAnalyzer/object_selection.cpp /
+# src/EventAnalyzer/set_objects.cpp /
+# src/EventAnalyzer/EventAnalyzer.cpp /
+# src/TaskConfiguration.cpp src/NanoObjects.cpp /
+# src/TOMLConfig.cpp src/CorrectionSets.cpp /
+# external/roccor/RoccoR.cc /
+# src/BinLimits.cpp)
+# target_link_libraries(nano_music LINK_PUBLIC ROOT::RIO ROOT::Net)
+# install(TARGETS nano_music DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 
 # # #####################################################
 # # #####################################################

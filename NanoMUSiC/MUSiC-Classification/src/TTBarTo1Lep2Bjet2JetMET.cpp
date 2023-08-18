@@ -11,6 +11,7 @@
 TTBarTo1Lep2Bjet2JetMET::TTBarTo1Lep2Bjet2JetMET(const std::string &_analysis_name,
                                                  const std::string &_output_path,
                                                  const std::map<std::string, int> &_countMap,
+                                                 bool dummy,
                                                  const std::string _shift,
                                                  const std::string &_sample,
                                                  const std::string &_year,
@@ -82,22 +83,22 @@ auto TTBarTo1Lep2Bjet2JetMET::fill(Math::PtEtaPhiMVector lep,
     }
 }
 
-auto TTBarTo1Lep2Bjet2JetMET::dump_outputs() -> void
+auto TTBarTo1Lep2Bjet2JetMET::dump_outputs(std::unique_ptr<TFile> &output_file) -> void
 {
-    auto output_file = std::unique_ptr<TFile>(TFile::Open(output_path.c_str(), "RECREATE"));
+    // auto output_file = std::unique_ptr<TFile>(TFile::Open(output_path.c_str(), "RECREATE"));
     output_file->cd();
 
-    h_invariant_mass_jet0_jet1.Scale(min_bin_width, "width");
+    // h_invariant_mass_jet0_jet1.Scale(min_bin_width, "width");
     h_invariant_mass_jet0_jet1.SetDirectory(output_file.get());
     h_invariant_mass_jet0_jet1.Write();
 
-    h_transverse_mass_lep_MET.Scale(min_bin_width, "width");
+    // h_transverse_mass_lep_MET.Scale(min_bin_width, "width");
     h_transverse_mass_lep_MET.SetDirectory(output_file.get());
     h_transverse_mass_lep_MET.Write();
 
-    h_ht_had_lep.Scale(min_bin_width, "width");
+    // h_ht_had_lep.Scale(min_bin_width, "width");
     h_ht_had_lep.SetDirectory(output_file.get());
     h_ht_had_lep.Write();
 
-    output_file->Close();
+    // output_file->Close();
 }

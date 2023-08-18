@@ -67,7 +67,7 @@ class ZToLepLepX
     auto save_histo(TH1 histo) -> void;
     auto save_histo(TH2 histo) -> void;
 
-    auto dump_outputs() -> void;
+    auto dump_outputs(std::unique_ptr<TFile> &output_file) -> void;
 };
 
 #endif // !ZTOLEPLEPX

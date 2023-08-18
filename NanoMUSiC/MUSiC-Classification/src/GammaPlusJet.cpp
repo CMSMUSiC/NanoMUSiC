@@ -11,6 +11,7 @@
 GammaPlusJet::GammaPlusJet(const std::string &_analysis_name,
                            const std::string &_output_path,
                            const std::map<std::string, int> &_countMap,
+                           bool dummy,
                            const std::string _shift,
                            const std::string &_sample,
                            const std::string &_year,
@@ -67,22 +68,22 @@ auto GammaPlusJet::fill(Math::PtEtaPhiMVector gamma, float weight) -> void
     }
 }
 
-auto GammaPlusJet::dump_outputs() -> void
+auto GammaPlusJet::dump_outputs(std::unique_ptr<TFile> &output_file) -> void
 {
-    auto output_file = std::unique_ptr<TFile>(TFile::Open(output_path.c_str(), "RECREATE"));
+    // auto output_file = std::unique_ptr<TFile>(TFile::Open(output_path.c_str(), "RECREATE"));
     output_file->cd();
 
-    h_gamma_pt.Scale(min_bin_width, "width");
+    // h_gamma_pt.Scale(min_bin_width, "width");
     h_gamma_pt.SetDirectory(output_file.get());
     h_gamma_pt.Write();
 
-    h_gamma_eta.Scale(min_bin_width, "width");
+    // h_gamma_eta.Scale(min_bin_width, "width");
     h_gamma_eta.SetDirectory(output_file.get());
     h_gamma_eta.Write();
 
-    h_gamma_phi.Scale(min_bin_width, "width");
+    // h_gamma_phi.Scale(min_bin_width, "width");
     h_gamma_phi.SetDirectory(output_file.get());
     h_gamma_phi.Write();
 
-    output_file->Close();
+    // output_file->Close();
 }

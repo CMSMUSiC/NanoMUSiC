@@ -31,29 +31,8 @@ add_link_options(
     -lfmt
     -lz
     -lstdc++fs
-    -L/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/lib
-    -L/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/lib64
-
-    # -lboost
 )
 
-add_executable(
-    validation //
-    src/main.cpp //
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/TOMLConfig.cpp //
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/BinLimits.cpp //
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/NanoObjects.cpp //
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/JetCorrector.cpp //
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/NanoEventClass/src/NanoEventClass.cpp //
-    src/ZToLepLepX.cpp //
-    src/GammaPlusJet.cpp //
-    src/TTBarTo1Lep2Bjet2JetMET.cpp //
-    src/WToLepNuX.cpp //
-    src/WToLepNu_eff.cpp //
-    src/ZToTauTauLepX.cpp //
-    src/EventClassFactory.cpp //
-
-    # src/Dijets.cpp //
+include_directories(
+    ${CMAKE_SOURCE_DIR}/NanoMUSiC/TEventClass/include/
 )
-target_link_libraries(validation LINK_PUBLIC ROOT::RIO ROOT::Net)
-install(TARGETS validation DESTINATION ${CMAKE_SOURCE_DIR}/bin)

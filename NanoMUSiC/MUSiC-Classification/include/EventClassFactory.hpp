@@ -14,6 +14,8 @@
 #include <optional>
 #include <string_view>
 
+#include "ObjectFactories/music_objects.hpp"
+
 using namespace ROOT;
 using namespace ROOT::Math;
 using namespace ROOT::VecOps;
@@ -25,6 +27,13 @@ class EventClass
     std::string output_path;
 
     TH1F h_counts;
+    TH1F h_invariant_mass;
+    TH1F h_sum_pt;
+    TH1F h_met;
+
+    bool has_met;
+
+    static constexpr float count_bin_center = 0.5;
 
     double min_bin_width;
     std::map<std::string, int> countMap;
@@ -41,7 +50,14 @@ class EventClass
                const std::string &_process_group,
                const std::string &_xs_order);
 
-    auto fill(double weight) -> void;
+    auto fill(std::pair<std::size_t, const MUSiCObjects &> this_muons,
+              std::pair<std::size_t, const MUSiCObjects &> this_electrons,
+              std::pair<std::size_t, const MUSiCObjects &> this_taus,
+              std::pair<std::size_t, const MUSiCObjects &> this_photons,
+              std::pair<std::size_t, const MUSiCObjects &> this_bjets,
+              std::pair<std::size_t, const MUSiCObjects &> this_jets,
+              std::pair<std::size_t, const MUSiCObjects &> this_met,
+              double weight) -> void;
 
     auto save_histo(TH1 histo) -> void;
     auto save_histo(TH2 histo) -> void;
@@ -57,5 +73,10 @@ auto make_event_class_name(std::pair<std::size_t, std::size_t> muon_counts,
                            std::pair<std::size_t, std::size_t> bjet_counts,
                            std::pair<std::size_t, std::size_t> met_counts)
     -> std::tuple<std::optional<std::string>, std::optional<std::string>, std::optional<std::string>>;
+
+inline auto get_pt(Math::PtEtaPhiMVector obj) -> float
+{
+    return obj.pt();
+};
 
 #endif // !EVENT_CLASS_FACTORY_HPP

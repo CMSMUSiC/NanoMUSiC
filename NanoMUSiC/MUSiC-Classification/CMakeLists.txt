@@ -31,22 +31,29 @@ add_link_options(
     -lfmt
     -lz
     -lstdc++fs
-)
+    -L/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/lib
+    -L/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/lib64
 
-include_directories(
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/TEventClass/include/
+    # -lboost
 )
 
 add_executable(
     classification //
     src/main.cpp //
-    src/ClassFactory.cpp //
-    src/ParticleMap.cpp //
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/TOMLConfig.cpp //
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/BinLimits.cpp //
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/NanoObjects.cpp //
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/JetCorrector.cpp //
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/TEventClass/src/TEventClass.cpp //
+    ${CMAKE_SOURCE_DIR}/NanoMUSiC/NanoEventClass/src/NanoEventClass.cpp //
+    src/ZToLepLepX.cpp //
+    src/GammaPlusJet.cpp //
+    src/TTBarTo1Lep2Bjet2JetMET.cpp //
+    src/WToLepNuX.cpp //
+    src/WToLepNu_eff.cpp //
+    src/ZToTauTauLepX.cpp //
+    src/EventClassFactory.cpp //
+
+    # src/Dijets.cpp //
 )
-target_link_libraries(classification LINK_PUBLIC ROOT::RIO ROOT::Net TEventClass)
+target_link_libraries(classification LINK_PUBLIC ROOT::RIO ROOT::Net)
 install(TARGETS classification DESTINATION ${CMAKE_SOURCE_DIR}/bin)

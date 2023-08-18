@@ -100,7 +100,7 @@ auto Dijets::fill(const Math::PtEtaPhiMVector &jet_1,
 
 auto Dijets::save_histo(TH1F &histo) -> void
 {
-    histo.Scale(min_bin_width, "width");
+    // histo.Scale(min_bin_width, "width");
     histo.SetDirectory(output_file.get());
     histo.Write();
 }

@@ -1,9 +1,15 @@
-#ifndef CLASSIFICATION_HPP
-#define CLASSIFICATION_HPP
+#ifndef CLASSIFICATION
+#define CLASSIFICATION
 
+// analysis classes
+#include "Validation.hpp"
+
+#include <cstddef>
+#include <functional>
 #include <optional>
 #include <stdexcept>
 #include <sys/time.h>
+#include <unordered_map>
 
 // ROOT Stuff
 #include "Math/Vector4D.h"
@@ -22,14 +28,8 @@
 #include "TTreeReaderArray.h"
 #include "TTreeReaderValue.h"
 
-// correctionlib
-// More info: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BTagCalibration
-// More info: https://github.com/cms-nanoAOD/correctionlib
-// More info: https://cms-nanoaod.github.io/correctionlib/index.html
-// Instructions:
-// https://indico.cern.ch/event/1096988/contributions/4615134/attachments/2346047/4000529/Nov21_btaggingSFjsons.pdf
-#include "correction.h"
-
+#include "Configs.hpp"
+#include "JetCorrector.hpp"
 #include "MUSiCTools.hpp"
 #include "TOMLConfig.hpp"
 
@@ -38,50 +38,69 @@
 #include "argh.h"
 #include "emoji.hpp"
 #include "fmt/format.h"
+#include "processed_data_events.hpp"
 
-#include "CrossSectionOrderErrorMap.hpp"
 #include "ObjectFactories/make_electrons.hpp"
 #include "ObjectFactories/make_jets.hpp"
 #include "ObjectFactories/make_met.hpp"
 #include "ObjectFactories/make_muons.hpp"
 #include "ObjectFactories/make_photons.hpp"
-#include "ParticleMap.hpp"
-
-#include "ClassFactory.hpp"
+#include "ObjectFactories/make_taus.hpp"
 
 #include "CorrectionLibUtils.hpp"
 
-#include "Event.hpp"
-
-#include "Enumerate.hpp"
+#include "Shifts.hpp"
 
 using namespace ROOT;
 using namespace ROOT::Math;
 using namespace ROOT::VecOps;
 
 template <typename T>
-auto make_value_reader(TTreeReader &tree_reader, const std::string &leaf) -> std::optional<TTreeReaderValue<T>>
+using OptValueReader_t = std::optional<TTreeReaderValue<T>>;
+
+template <typename T>
+using OptArrayReader_t = std::optional<TTreeReaderArray<T>>;
+
+template <typename T>
+auto make_value_reader(TTreeReader &tree_reader, const std::string &leaf) -> OptValueReader_t<T>
 {
     if (tree_reader.GetTree()->GetLeaf(leaf.c_str()) != nullptr)
     {
         return std::make_optional<TTreeReaderValue<T>>(tree_reader, leaf.c_str());
     }
+
+    fmt::print("WARNING: Could not read branch: {}\n", leaf);
     return std::nullopt;
 }
 
 template <typename T>
-auto make_array_reader(TTreeReader &tree_reader, const std::string &leaf) -> std::optional<TTreeReaderArray<T>>
+auto make_array_reader(TTreeReader &tree_reader, const std::string &leaf) -> OptArrayReader_t<T>
 {
     if (tree_reader.GetTree()->GetLeaf(leaf.c_str()) != nullptr)
     {
         return std::make_optional<TTreeReaderArray<T>>(tree_reader, leaf.c_str());
     }
+
+    fmt::print("WARNING: Could not read branch: {}\n", leaf);
     return std::nullopt;
 }
 
 // helper macros
 #define ADD_VALUE_READER(VAR, TYPE) auto VAR = make_value_reader<TYPE>(tree_reader, #VAR)
 #define ADD_ARRAY_READER(VAR, TYPE) auto VAR = make_array_reader<TYPE>(tree_reader, #VAR)
+
+#define INITIALIZE_ANALYSIS(TYPE, ANALYSIS, COUNT_MAP)                                                                 \
+    ANALYSIS.insert(                                                                                                   \
+        {shift,                                                                                                        \
+         TYPE(#ANALYSIS,                                                                                               \
+              get_output_file_path(#ANALYSIS, output_path, process, year, process_group, xs_order, is_data, shift),    \
+              COUNT_MAP,                                                                                               \
+              false,                                                                                                   \
+              shift,                                                                                                   \
+              process,                                                                                                 \
+              year,                                                                                                    \
+              process_group,                                                                                           \
+              xs_order)})
 
 template <typename T>
 auto unwrap(std::optional<TTreeReaderValue<T>> &value) -> T
@@ -115,6 +134,16 @@ auto unwrap(std::optional<TTreeReaderArray<T>> &array) -> RVec<T>
     return RVec<T>();
 }
 
+template <typename T, typename Q, typename R>
+auto unwrap(std::optional<TTreeReaderArray<T>> &array, Q &&default_value, R &&default_size) -> T
+{
+    if (array)
+    {
+        return RVec<T>(static_cast<T *>((*array).GetAddress()), (*array).GetSize());
+    }
+    return RVec<T>(default_size, default_value);
+}
+
 inline auto PrintProcessInfo() -> void
 {
     auto info = ProcInfo_t();
@@ -140,6 +169,18 @@ inline auto getCpuTime() -> double
 inline auto load_input_files(const std::string &filename) -> std::vector<std::string>
 {
     std::vector<std::string> input_files;
+
+    // check if input is a single file
+    // const std::string suffix = ".root";
+    // if (filename.length() > suffix.length())
+    // {
+    //     if (filename.substr(filename.length() - suffix.length()) == suffix)
+    //     {
+    //         input_files.push_back(filename);
+    //         return input_files;
+    //     }
+    // }
+
     std::ifstream file(filename);
 
     if (!file.is_open())
@@ -157,6 +198,23 @@ inline auto load_input_files(const std::string &filename) -> std::vector<std::st
     return input_files;
 }
 
+template <typename T>
+inline auto save_as(T &histo, std::string &&filename) -> void
+{
+    system(fmt::format("rm {}.png", filename).c_str());
+    system(fmt::format("rm {}.pdf", filename).c_str());
+
+    auto c = TCanvas();
+
+    // Set logarithmic scale on the y-axis
+    c.SetLogy();
+
+    histo.Draw("ep1");
+
+    c.SaveAs((filename + ".png").c_str());
+    c.SaveAs((filename + ".pdf").c_str());
+}
+
 inline auto get_era_from_process_name(const std::string &process, bool is_data) -> std::string
 {
     if (is_data)
@@ -170,4 +228,583 @@ inline auto get_era_from_process_name(const std::string &process, bool is_data) 
     return "_";
 }
 
-#endif // CLASSIFICATION_HPP
+inline auto is_data_to_string(bool is_data) -> std::string
+{
+    if (is_data)
+    {
+        return "Data";
+    }
+    return "MC";
+}
+
+inline auto get_output_file_path(const std::string &prefix,
+                                 const std::string &output_path,
+                                 const std::string &process,
+                                 const std::string &year,
+                                 const std::string &process_group,
+                                 const std::string &xs_order,
+                                 bool is_data,
+                                 const std::string &shift,
+                                 const std::string &suffix = ".root") -> std::string
+{
+    return fmt::format("{}/{}_{}_{}_{}_{}_{}_{}{}",
+                       output_path,
+                       prefix,
+                       process,
+                       year,
+                       process_group,
+                       xs_order,
+                       is_data_to_string(is_data),
+                       shift,
+                       suffix);
+}
+
+inline auto starts_with(const std::string &str, std::string &&prefix) -> bool
+{
+    return (str.rfind(prefix, 0) == 0);
+}
+
+// check if an event pass any trigger
+inline auto trigger_filter(const std::string &process, //
+                           bool is_data,
+                           Year year,                          //
+                           bool pass_low_pt_muon_trigger,      //
+                           bool pass_high_pt_muon_trigger,     //
+                           bool pass_double_muon_trigger,      //
+                           bool pass_low_pt_electron_trigger,  //
+                           bool pass_high_pt_electron_trigger, //
+                           bool pass_double_electron_trigger,  //
+                           bool pass_high_pt_tau_trigger,      //
+                           bool pass_double_tau_trigger,       //
+                           bool pass_photon_trigger) -> std::optional<std::unordered_map<std::string, bool>>
+{
+    std::optional<std::unordered_map<std::string, bool>> trigger_filter_res = std::nullopt;
+
+    // Data
+    if (is_data)
+    {
+        // SingleMuon dataset
+        if (starts_with(process, "SingleMuon"))
+        {
+            if (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger)
+            {
+                trigger_filter_res = {
+                    {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},           //
+                    {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},         //
+                    {"pass_double_muon_trigger", pass_double_muon_trigger},           //
+                    {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},   //
+                    {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger}, //
+                    {"pass_double_electron_trigger", pass_double_electron_trigger},   //
+                    {"pass_high_pt_tau_trigger", pass_high_pt_tau_trigger},           //
+                    {"pass_double_tau_trigger", pass_double_tau_trigger},             //
+                    {"pass_photon_trigger", pass_photon_trigger}                      //
+                };
+            }
+
+            return trigger_filter_res;
+        }
+
+        // DoubleMuon dataset
+        if (starts_with(process, "DoubleMuon"))
+        {
+            if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) //
+                and pass_double_muon_trigger)
+            {
+                trigger_filter_res = {
+                    {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},           //
+                    {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},         //
+                    {"pass_double_muon_trigger", pass_double_muon_trigger},           //
+                    {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},   //
+                    {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger}, //
+                    {"pass_double_electron_trigger", pass_double_electron_trigger},   //
+                    {"pass_high_pt_tau_trigger", pass_high_pt_tau_trigger},           //
+                    {"pass_double_tau_trigger", pass_double_tau_trigger},             //
+                    {"pass_photon_trigger", pass_photon_trigger}                      //
+                };
+            }
+
+            return trigger_filter_res;
+        }
+
+        // Electron/Photon/EGamma dataset
+        if (year != Year::Run2018)
+        {
+            if (starts_with(process, "SingleElectron"))
+            {
+                if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) //
+                    and not(pass_double_muon_trigger)                          //
+                    and (pass_low_pt_electron_trigger or pass_high_pt_electron_trigger))
+                {
+                    trigger_filter_res = {
+                        {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},           //
+                        {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},         //
+                        {"pass_double_muon_trigger", pass_double_muon_trigger},           //
+                        {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},   //
+                        {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger}, //
+                        {"pass_double_electron_trigger", pass_double_electron_trigger},   //
+                        {"pass_high_pt_tau_trigger", pass_high_pt_tau_trigger},           //
+                        {"pass_double_tau_trigger", pass_double_tau_trigger},             //
+                        {"pass_photon_trigger", pass_photon_trigger}                      //
+                    };
+                }
+
+                return trigger_filter_res;
+            }
+
+            if (starts_with(process, "DoubleEG"))
+            {
+                if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger)             //
+                    and not(pass_double_muon_trigger)                                      //
+                    and not(pass_low_pt_electron_trigger or pass_high_pt_electron_trigger) //
+                    and pass_double_electron_trigger)
+                {
+                    trigger_filter_res = {
+                        {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},           //
+                        {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},         //
+                        {"pass_double_muon_trigger", pass_double_muon_trigger},           //
+                        {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},   //
+                        {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger}, //
+                        {"pass_double_electron_trigger", pass_double_electron_trigger},   //
+                        {"pass_high_pt_tau_trigger", pass_high_pt_tau_trigger},           //
+                        {"pass_double_tau_trigger", pass_double_tau_trigger},             //
+                        {"pass_photon_trigger", pass_photon_trigger}                      //
+                    };
+                }
+
+                return trigger_filter_res;
+            }
+
+            if (starts_with(process, "SinglePhoton"))
+            {
+                if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger)             //
+                    and not(pass_double_muon_trigger)                                      //
+                    and not(pass_low_pt_electron_trigger or pass_high_pt_electron_trigger) //
+                    and not(pass_double_electron_trigger)                                  //
+                    and pass_photon_trigger)
+                {
+                    trigger_filter_res = {
+                        {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},           //
+                        {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},         //
+                        {"pass_double_muon_trigger", pass_double_muon_trigger},           //
+                        {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},   //
+                        {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger}, //
+                        {"pass_double_electron_trigger", pass_double_electron_trigger},   //
+                        {"pass_high_pt_tau_trigger", pass_high_pt_tau_trigger},           //
+                        {"pass_double_tau_trigger", pass_double_tau_trigger},             //
+                        {"pass_photon_trigger", pass_photon_trigger}                      //
+                    };
+                }
+
+                return trigger_filter_res;
+            }
+        }
+
+        if (year == Year::Run2018)
+        {
+            if (starts_with(process, "EGamma"))
+            {
+                if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) //
+                    and not(pass_double_muon_trigger)                          //
+                    and (pass_low_pt_electron_trigger or pass_high_pt_electron_trigger or
+                         pass_double_electron_trigger or pass_photon_trigger))
+                {
+                    trigger_filter_res = {
+                        {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},           //
+                        {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},         //
+                        {"pass_double_muon_trigger", pass_double_muon_trigger},           //
+                        {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},   //
+                        {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger}, //
+                        {"pass_double_electron_trigger", pass_double_electron_trigger},   //
+                        {"pass_high_pt_tau_trigger", pass_high_pt_tau_trigger},           //
+                        {"pass_double_tau_trigger", pass_double_tau_trigger},             //
+                        {"pass_photon_trigger", pass_photon_trigger}                      //
+                    };
+                }
+
+                return trigger_filter_res;
+            }
+        }
+
+        if (starts_with(process, "Tau"))
+        {
+            if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger)             //
+                and not(pass_double_muon_trigger)                                      //
+                and not(pass_low_pt_electron_trigger or pass_high_pt_electron_trigger) //
+                and not(pass_double_electron_trigger)                                  //
+                and not(pass_photon_trigger)                                           //
+                and (pass_high_pt_tau_trigger or pass_double_tau_trigger))
+            {
+                trigger_filter_res = {
+                    {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},           //
+                    {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},         //
+                    {"pass_double_muon_trigger", pass_double_muon_trigger},           //
+                    {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},   //
+                    {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger}, //
+                    {"pass_double_electron_trigger", pass_double_electron_trigger},   //
+                    {"pass_high_pt_tau_trigger", pass_high_pt_tau_trigger},           //
+                    {"pass_double_tau_trigger", pass_double_tau_trigger},             //
+                    {"pass_photon_trigger", pass_photon_trigger}                      //
+                };
+            }
+
+            return trigger_filter_res;
+        }
+
+        throw std::runtime_error(
+            fmt::format("ERROR: Could not check trigger filter for Data file. The requested process ({}) does not "
+                        "match any dataset pattern.",
+                        process));
+    }
+
+    // MC
+    if (                                 //
+        pass_low_pt_muon_trigger         //
+        or pass_high_pt_muon_trigger     //
+        or pass_double_muon_trigger      //
+        or pass_low_pt_electron_trigger  //
+        or pass_high_pt_electron_trigger //
+        or pass_double_electron_trigger  //
+        or pass_high_pt_tau_trigger      //
+        or pass_double_tau_trigger       //
+        or pass_photon_trigger           //
+    )
+    {
+        trigger_filter_res = {
+            {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},           //
+            {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},         //
+            {"pass_double_muon_trigger", pass_double_muon_trigger},           //
+            {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},   //
+            {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger}, //
+            {"pass_double_electron_trigger", pass_double_electron_trigger},   //
+            {"pass_high_pt_tau_trigger", pass_high_pt_tau_trigger},           //
+            {"pass_double_tau_trigger", pass_double_tau_trigger},             //
+            {"pass_photon_trigger", pass_photon_trigger}                      //
+        };
+    }
+
+    return trigger_filter_res;
+};
+
+/// find trigger matching
+class TriggerMatch
+{
+  public:
+    std::vector<double> matched_pt;
+    std::vector<double> matched_eta;
+
+    TriggerMatch(std::vector<double> &&_matched_pt, std::vector<double> &&_matched_eta)
+        : matched_pt(_matched_pt),
+          matched_eta(_matched_eta)
+    {
+    }
+
+    auto get_matched_pt(std::size_t index) const -> double
+    {
+        return matched_pt.at(index);
+    }
+
+    auto get_matched_eta(std::size_t index) const -> double
+    {
+        return matched_eta.at(index);
+    }
+};
+
+inline auto make_trigger_matches(const std::unordered_map<std::string, bool> &is_good_trigger_map,
+                                 const MUSiCObjects &muons,
+                                 const MUSiCObjects &electrons,
+                                 const MUSiCObjects &taus,
+                                 const MUSiCObjects &photons,
+                                 Year year) -> std::unordered_map<std::string, std::optional<TriggerMatch>>
+{
+    auto matches = std::unordered_map<std::string, std::optional<TriggerMatch>>();
+
+    // Low pT muon trigger
+    if (is_good_trigger_map.at("pass_low_pt_muon_trigger") //
+        and muons.size() >= 1)
+    {
+        auto good_muons = VecOps::Filter(muons.p4,
+                                         [year](const auto &muon)
+                                         {
+                                             if (year == Year::Run2017)
+                                             {
+                                                 return muon.pt() > 29.;
+                                             }
+                                             return muon.pt() > 26.;
+                                         });
+        if (good_muons.size() >= 1)
+        {
+            matches.insert({"pass_low_pt_muon_trigger", TriggerMatch({good_muons[0].pt()}, {good_muons[0].eta()})});
+        }
+        else
+        {
+            matches.insert({"pass_low_pt_muon_trigger", std::nullopt});
+        }
+    }
+    else
+    {
+        matches.insert({"pass_low_pt_muon_trigger", std::nullopt});
+    }
+
+    // High pT muon trigger
+    if (is_good_trigger_map.at("pass_high_pt_muon_trigger") //
+        and muons.size() >= 1)
+    {
+        auto good_muons = VecOps::Filter(muons.p4,
+                                         [](const auto &muon)
+                                         {
+                                             //  return muon.pt() > 53.;
+                                             return muon.pt() > 205.;
+                                         });
+        if (good_muons.size() >= 1)
+        {
+            matches.insert({"pass_high_pt_muon_trigger", TriggerMatch({good_muons[0].pt()}, {good_muons[0].eta()})});
+        }
+        else
+        {
+            matches.insert({"pass_high_pt_muon_trigger", std::nullopt});
+        }
+    }
+    else
+    {
+        matches.insert({"pass_high_pt_muon_trigger", std::nullopt});
+    }
+
+    // double muon trigger
+    if (is_good_trigger_map.at("pass_double_muon_trigger") //
+        and muons.size() >= 2)
+    {
+        auto good_muons = VecOps::Filter(muons.p4,
+                                         [](const auto &muon)
+                                         {
+                                             return muon.pt() > 21.;
+                                         });
+        if (good_muons.size() >= 2)
+        {
+            matches.insert(
+                {"pass_double_muon_trigger",
+                 TriggerMatch({good_muons[0].pt(), good_muons[1].pt()}, {good_muons[0].eta(), good_muons[1].eta()})});
+        }
+        else
+        {
+            matches.insert({"pass_double_muon_trigger", std::nullopt});
+        }
+    }
+    else
+    {
+        matches.insert({"pass_double_muon_trigger", std::nullopt});
+    }
+
+    // Low pT electron trigger
+    if (is_good_trigger_map.at("pass_low_pt_electron_trigger") //
+        and electrons.size() >= 1)
+    {
+        auto good_electrons = VecOps::Filter(electrons.p4,
+                                             [year](const auto &electron)
+                                             {
+                                                 if (year == Year::Run2016APV or year == Year::Run2016)
+                                                 {
+                                                     return electron.pt() > 35.;
+                                                 }
+                                                 if (year == Year::Run2017)
+                                                 {
+                                                     return electron.pt() > 42.;
+                                                 }
+                                                 return electron.pt() > 40.;
+                                             });
+        if (good_electrons.size() >= 1)
+        {
+            matches.insert(
+                {"pass_low_pt_electron_trigger", TriggerMatch({good_electrons[0].pt()}, {good_electrons[0].eta()})});
+        }
+        else
+        {
+            matches.insert({"pass_low_pt_electron_trigger", std::nullopt});
+        }
+    }
+    else
+    {
+        matches.insert({"pass_low_pt_electron_trigger", std::nullopt});
+    }
+
+    // High pT electron trigger
+    if (is_good_trigger_map.at("pass_high_pt_electron_trigger") //
+        and electrons.size() >= 1)
+    {
+        auto good_electrons = VecOps::Filter(electrons.p4,
+                                             [](const auto &electron)
+                                             {
+                                                 return electron.pt() > 120.;
+                                             });
+        if (good_electrons.size() >= 1)
+        {
+            matches.insert(
+                {"pass_high_pt_electron_trigger", TriggerMatch({good_electrons[0].pt()}, {good_electrons[0].eta()})});
+        }
+        else
+        {
+            matches.insert({"pass_high_pt_electron_trigger", std::nullopt});
+        }
+    }
+    else
+    {
+        matches.insert({"pass_high_pt_electron_trigger", std::nullopt});
+    }
+
+    // double electron trigger
+    if (is_good_trigger_map.at("pass_double_electron_trigger") //
+        and electrons.size() >= 2)
+    {
+        auto good_electrons = VecOps::Filter(electrons.p4,
+                                             [year](const auto &electron)
+                                             {
+                                                 if (year == Year::Run2018)
+                                                 {
+                                                     return electron.pt() > 32.;
+                                                 }
+
+                                                 return electron.pt() > 40.;
+                                             });
+        if (good_electrons.size() >= 2)
+        {
+            matches.insert({"pass_double_electron_trigger",
+                            TriggerMatch({good_electrons[0].pt(), good_electrons[1].pt()},
+                                         {good_electrons[0].eta(), good_electrons[1].eta()})});
+        }
+        else
+        {
+            matches.insert({"pass_double_electron_trigger", std::nullopt});
+        }
+    }
+    else
+    {
+        matches.insert({"pass_double_electron_trigger", std::nullopt});
+    }
+
+    // photon trigger
+    if (is_good_trigger_map.at("pass_photon_trigger") //
+        and photons.size() >= 1)
+    {
+        auto good_photons = VecOps::Filter(photons.p4,
+                                           [year](const auto &photon)
+                                           {
+                                               if (year == Year::Run2016APV or year == Year::Run2016)
+                                               {
+                                                   return photon.pt() > 200.;
+                                               }
+                                               return photon.pt() > 225.;
+                                           });
+        if (good_photons.size() >= 1)
+        {
+            matches.insert({"pass_photon_trigger", TriggerMatch({good_photons[0].pt()}, {good_photons[0].eta()})});
+        }
+        else
+        {
+            matches.insert({"pass_photon_trigger", std::nullopt});
+        }
+    }
+    else
+    {
+        matches.insert({"pass_photon_trigger", std::nullopt});
+    }
+
+    // tau trigger
+    if (is_good_trigger_map.at("pass_high_pt_tau_trigger") //
+        and taus.size() >= 1)
+    {
+        auto good_taus = VecOps::Filter(taus.p4,
+                                        [year](const auto &tau)
+                                        {
+                                            if (year == Year::Run2016APV or year == Year::Run2016)
+                                            {
+                                                return tau.pt() > 160.;
+                                            }
+                                            return tau.pt() > 200.;
+                                        });
+        if (good_taus.size() >= 1)
+        {
+            matches.insert({"pass_high_pt_tau_trigger", TriggerMatch({good_taus[0].pt()}, {good_taus[0].eta()})});
+        }
+        else
+        {
+            matches.insert({"pass_high_pt_tau_trigger", std::nullopt});
+        }
+    }
+    else
+    {
+        matches.insert({"pass_high_pt_tau_trigger", std::nullopt});
+    }
+
+    if (is_good_trigger_map.at("pass_double_tau_trigger") //
+        and taus.size() >= 2)
+    {
+        auto good_taus = VecOps::Filter(taus.p4,
+                                        [year](const auto &tau)
+                                        {
+                                            if (year == Year::Run2016APV or year == Year::Run2016)
+                                            {
+                                                return tau.pt() > 45.;
+                                            }
+
+                                            if (year == Year::Run2017)
+                                            {
+                                                return tau.pt() > 50.;
+                                            }
+                                            return tau.pt() > 50.;
+                                        });
+        if (good_taus.size() >= 2)
+        {
+            matches.insert(
+                {"pass_double_tau_trigger",
+                 TriggerMatch({good_taus[0].pt(), good_taus[1].pt()}, {good_taus[0].eta(), good_taus[1].eta()})});
+        }
+        else
+        {
+            matches.insert({"pass_double_tau_trigger", std::nullopt});
+        }
+    }
+    else
+    {
+        matches.insert({"pass_double_tau_trigger", std::nullopt});
+    }
+
+    return matches;
+}
+
+inline auto has_good_match(const std::unordered_map<std::string, std::optional<TriggerMatch>> &trigger_matches,
+                           std::size_t n_muons,
+                           std::size_t n_electrons,
+                           std::size_t n_photons) -> bool
+{
+    if (n_muons == 1)
+    {
+        return (trigger_matches.at("pass_low_pt_muon_trigger") or trigger_matches.at("pass_high_pt_muon_trigger"));
+    }
+
+    if (n_muons >= 2)
+    {
+        return (trigger_matches.at("pass_low_pt_muon_trigger") or trigger_matches.at("pass_high_pt_muon_trigger") or
+                trigger_matches.at("pass_double_muon_trigger"));
+    }
+
+    if (n_electrons == 1)
+    {
+        return (trigger_matches.at("pass_low_pt_electron_trigger") or
+                trigger_matches.at("pass_high_pt_electron_trigger"));
+    }
+
+    if (n_electrons >= 2)
+    {
+        return (trigger_matches.at("pass_low_pt_electron_trigger") or
+                trigger_matches.at("pass_high_pt_electron_trigger") or
+                trigger_matches.at("pass_double_electron_trigger"));
+    }
+
+    if (n_photons >= 1)
+    {
+        return trigger_matches.at("pass_photon_trigger").has_value();
+    }
+
+    return false;
+}
+
+#endif // CLASSIFICATION
