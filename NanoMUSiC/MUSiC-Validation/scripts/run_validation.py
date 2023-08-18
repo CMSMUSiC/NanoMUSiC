@@ -9,7 +9,7 @@ import argparse
 import os
 import subprocess
 import shlex
-import pprint
+from pprint import pprint
 
 from local_condor import submit_condor_task
 
@@ -113,14 +113,21 @@ def parse_args():
     )
 
     parser.add_argument(
-        "--harvest-only",
+        "--harvest",
         help="Will only harvest results, after condor execution is complete.",
         action="store_true",
         default=False,
     )
 
     parser.add_argument(
-        "--clear-buffers",
+        "--merge",
+        help="Will merge all outputs.",
+        action="store_true",
+        default=False,
+    )
+
+    parser.add_argument(
+        "--clear",
         help="Will only clear buffer areas.",
         action="store_true",
         default=False,
@@ -309,7 +316,7 @@ def get_file_paths(root_dir, extension=".root"):
     return file_paths
 
 
-def validation_merger(args):
+def validation_merger_per_sample(args):
     process, year, output_base, debug = args
 
     output_file_path: str = (
@@ -332,7 +339,56 @@ def validation_merger(args):
 
     if validation_merge_result.returncode != 0:
         error = validation_merge_result.stderr.decode("utf-8")
-        raise RuntimeError(f"ERROR: could not merge cutflow files.\n{error}")
+        raise RuntimeError(f"ERROR: could not merge output files, per sample.\n{error}")
+
+
+def validation_merger(samples_to_merge, output_base, debug):
+    # process, year, is_data, is_signal, output_base, debug = args
+
+    hadd_inputs = {
+        "data": [],
+        "mc": [],
+        "signal": [],
+    }
+
+    for sample_type in hadd_inputs:
+        output_file_path: str = (
+            f"{output_base}/validation_outputs/ec_{sample_type}.root"
+        )
+        for sample in samples_to_merge:
+            process, year, is_data, is_signal = sample
+            if sample_type == "data" and is_data:
+                hadd_inputs[sample_type].append(
+                    f"{output_base}/validation_outputs/{year}/{process}/{process}_{year}.root"
+                )
+            if sample_type == "is_signal" and not is_data and is_signal:
+                hadd_inputs[sample_type].append(
+                    f"{output_base}/validation_outputs/{year}/{process}/{process}_{year}.root"
+                )
+            if sample_type == "mc" and not is_data and not is_signal:
+                hadd_inputs[sample_type].append(
+                    f"{output_base}/validation_outputs/{year}/{process}/{process}_{year}.root"
+                )
+
+        print(f"{sample_type} ...")
+        if len(hadd_inputs[sample_type]) > 0:
+            merge_result = subprocess.run(
+                [
+                    "hadd",
+                    "-f",
+                    output_file_path,
+                    *(hadd_inputs[sample_type]),
+                ],
+                capture_output=True,
+            )
+            if debug:
+                print(merge_result.stdout.decode("utf-8"))
+
+            if merge_result.returncode != 0:
+                error = merge_result.stderr.decode("utf-8")
+                raise RuntimeError(
+                    f"ERROR: could not merge outputs files.\n{error}"
+                )
 
 
 def process_filter(args, is_data: bool, process: str, year: str) -> bool:
@@ -392,8 +448,16 @@ def main():
     if args.debug:
         print("Will run in DEBUG mode ...")
 
+    if args.condor and (args.harvest or args.merge):
+        print("ERROR: Option --condor is not compatible with --harvest or --merge.")
+        exit(-1)
+
+    if args.harvest and args.merge:
+        print("ERROR: Option --harvest is not compatible with --merge.")
+        exit(-1)
+
     # cleanning job
-    if args.clear_buffers:
+    if args.clear:
         os.system(
             f"rm -rf {args.output}/validation_outputs/*/*/buffer/buffer_*/*.root > /dev/null 2>&1"
         )
@@ -412,6 +476,7 @@ def main():
     print("Building jobs ...")
     merge_cutflow_arguments = []
     validation_arguments = []
+    merge_per_sample_arguments = []
     merge_arguments = []
 
     for sample in tqdm(task_config, unit=" tasks"):
@@ -421,7 +486,7 @@ def main():
                     if process_filter(
                         args, task_config[sample]["is_data"], sample, year
                     ):
-                        if not args.harvest_only:
+                        if not args.harvest:
                             if not (
                                 os.path.isdir(
                                     f"{args.output}/validation_outputs/{year}/{sample}"
@@ -505,9 +570,25 @@ def main():
                                     )
 
                         # prepare merge jobs
-                        merge_arguments.append((sample, year, args.output, args.debug))
+                        merge_per_sample_arguments.append(
+                            (sample, year, args.output, args.debug)
+                        )
 
-    if not args.harvest_only:
+                        if args.merge:
+                            try:
+                                is_signal = task_config[sample]["is_signal"]
+                            except:
+                                is_signal = False
+                            merge_arguments.append(
+                                (
+                                    sample,
+                                    year,
+                                    task_config[sample]["is_data"],
+                                    is_signal,
+                                )
+                            )
+
+    if not args.harvest and not args.merge:
         if len(validation_arguments) == 0:
             raise Exception(
                 "ERROR: Could not start validation with the provided arguments. Not enough files to validate."
@@ -564,17 +645,24 @@ def main():
                     )
                 )
 
-    if not args.condor:
-        # merge outputs
-        print("\nMerging outputs ...")
-        with Pool(min(args.jobs, len(merge_arguments))) as pool:
+    if not args.condor and args.harvest:
+        # merge outputs per sample
+        print("\nMerging outputs per sample ...")
+        with Pool(min(args.jobs, len(merge_per_sample_arguments))) as pool:
             list(
                 tqdm(
-                    pool.imap_unordered(validation_merger, merge_arguments),
-                    total=len(merge_arguments),
+                    pool.imap_unordered(
+                        validation_merger_per_sample, merge_per_sample_arguments
+                    ),
+                    total=len(merge_per_sample_arguments),
                     unit=" samples",
                 )
             )
+
+    if args.merge:
+        # merge outputs
+        print("\nMerging outputs ...")
+        validation_merger(merge_arguments, args.output, args.debug)
 
 
 if __name__ == "__main__":

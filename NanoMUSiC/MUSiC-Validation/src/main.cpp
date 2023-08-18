@@ -705,6 +705,7 @@ auto main(int argc, char *argv[]) -> int
                                          trigger_matches.at("pass_low_pt_muon_trigger")->get_matched_pt(0),
                                          "sf"});
                                 }
+
                                 if (trigger_matches.at("pass_high_pt_muon_trigger"))
                                 {
                                     trigger_sf = high_pt_muon_trigger_sf->evaluate(

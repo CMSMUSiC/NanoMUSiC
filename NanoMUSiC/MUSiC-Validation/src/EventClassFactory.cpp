@@ -75,35 +75,35 @@ auto make_event_class_name(std::pair<std::size_t, std::size_t> muon_counts,
         return std::make_tuple(std::nullopt, std::nullopt, std::nullopt);
     }
 
-    std::string class_name = "EC_";
+    std::string class_name = "EC";
 
-    if (n_muons > 0)
-    {
-        class_name += fmt::format("{}_{}Ele", class_name, n_muons);
-    }
     if (n_electrons > 0)
     {
-        class_name += fmt::format("{}_{}Muon", class_name, n_electrons);
+        class_name = fmt::format("{}_{}Ele", class_name, n_electrons);
+    }
+    if (n_muons > 0)
+    {
+        class_name = fmt::format("{}_{}Muon", class_name, n_muons);
     }
     if (n_photons > 0)
     {
-        class_name += fmt::format("{}_{}Gamma", class_name, n_photons);
+        class_name = fmt::format("{}_{}Gamma", class_name, n_photons);
     }
     if (n_taus > 0)
     {
-        class_name += fmt::format("{}_{}Tau", class_name, n_taus);
+        class_name = fmt::format("{}_{}Tau", class_name, n_taus);
     }
     if (n_jets > 0)
     {
-        class_name += fmt::format("{}_{}Jet", class_name, n_jets);
+        class_name = fmt::format("{}_{}Jet", class_name, n_jets);
     }
     if (n_bjets > 0)
     {
-        class_name += fmt::format("{}_{}bJet", class_name, n_bjets);
+        class_name = fmt::format("{}_{}bJet", class_name, n_bjets);
     }
     if (n_met > 0)
     {
-        class_name += fmt::format("{}_{}MET", class_name, n_met);
+        class_name = fmt::format("{}_{}MET", class_name, n_met);
     }
 
     if (n_muons == 0         //
