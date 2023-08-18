@@ -46,7 +46,7 @@ class EventClass
     auto save_histo(TH1 histo) -> void;
     auto save_histo(TH2 histo) -> void;
 
-    auto dump_outputs() -> void;
+    auto dump_outputs(std::unique_ptr<TFile> &output_file) -> void;
 };
 
 auto make_event_class_name(std::pair<std::size_t, std::size_t> muon_counts,

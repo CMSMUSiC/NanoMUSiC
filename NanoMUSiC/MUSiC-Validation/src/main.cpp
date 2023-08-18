@@ -1107,6 +1107,9 @@ auto main(int argc, char *argv[]) -> int
     }
 
     fmt::print("\n[MUSiC Validation] Saving outputs ({} - {} - {} - {}) ...\n", output_path, process, year, shift);
+    auto ec_output_file = std::unique_ptr<TFile>(TFile::Open(
+        get_output_file_path("ec_classes", output_path, process, year, process_group, xs_order, is_data, shift).c_str(),
+        "RECREATE"));
     shifts.for_each(
         [&](const std::string &shift) -> void
         {
@@ -1121,9 +1124,11 @@ auto main(int argc, char *argv[]) -> int
 
             for (auto &&[class_name, class_collection] : event_classes)
             {
-                class_collection[shift].dump_outputs();
+                class_collection[shift].dump_outputs(ec_output_file);
             }
         });
+
+    ec_output_file->Close();
 
     fmt::print("\n[MUSiC Validation] Done ...\n");
     PrintProcessInfo();

@@ -41,15 +41,15 @@ auto EventClass::fill(double weight) -> void
     h_counts.Fill(0.5, weight);
 }
 
-auto EventClass::dump_outputs() -> void
+auto EventClass::dump_outputs(std::unique_ptr<TFile> &output_file) -> void
 {
-    auto output_file = std::unique_ptr<TFile>(TFile::Open(output_path.c_str(), "RECREATE"));
+    // auto output_file = std::unique_ptr<TFile>(TFile::Open(output_path.c_str(), "RECREATE"));
     output_file->cd();
 
     h_counts.SetDirectory(output_file.get());
     h_counts.Write();
 
-    output_file->Close();
+    // output_file->Close();
 }
 
 auto make_event_class_name(std::pair<std::size_t, std::size_t> muon_counts,
