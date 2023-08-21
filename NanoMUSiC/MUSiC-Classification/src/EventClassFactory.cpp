@@ -107,6 +107,7 @@ auto EventClass::fill(std::pair<std::size_t, const MUSiCObjects &> this_muons,
     lorentz_vec += std::reduce(bjets.p4.cbegin(), bjets.p4.cbegin() + n_bjets, Math::PtEtaPhiMVector(), std::plus{});
     lorentz_vec += std::reduce(jets.p4.cbegin(), jets.p4.cbegin() + n_jets, Math::PtEtaPhiMVector(), std::plus{});
     lorentz_vec += std::reduce(met.p4.cbegin(), met.p4.cbegin() + n_met, Math::PtEtaPhiMVector(), std::plus{});
+
     if (has_met)
     {
         h_invariant_mass.Fill(lorentz_vec.mt(), weight);
@@ -120,7 +121,7 @@ auto EventClass::fill(std::pair<std::size_t, const MUSiCObjects &> this_muons,
     sum_pt += std::transform_reduce(muons.p4.cbegin(), muons.p4.cbegin() + n_muons, 0.f, std::plus{}, get_pt);
     sum_pt +=
         std::transform_reduce(electrons.p4.cbegin(), electrons.p4.cbegin() + n_electrons, 0.f, std::plus{}, get_pt);
-    sum_pt += std::transform_reduce(taus.p4.cbegin(), muons.p4.cbegin() + n_muons, 0.f, std::plus{}, get_pt);
+    sum_pt += std::transform_reduce(taus.p4.cbegin(), taus.p4.cbegin() + n_taus, 0.f, std::plus{}, get_pt);
     sum_pt += std::transform_reduce(photons.p4.cbegin(), photons.p4.cbegin() + n_photons, 0.f, std::plus{}, get_pt);
     sum_pt += std::transform_reduce(bjets.p4.cbegin(), bjets.p4.cbegin() + n_bjets, 0.f, std::plus{}, get_pt);
     sum_pt += std::transform_reduce(jets.p4.cbegin(), jets.p4.cbegin() + n_jets, 0.f, std::plus{}, get_pt);

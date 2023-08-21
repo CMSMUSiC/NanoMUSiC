@@ -74,7 +74,7 @@ auto make_event_class_name(std::pair<std::size_t, std::size_t> muon_counts,
                            std::pair<std::size_t, std::size_t> met_counts)
     -> std::tuple<std::optional<std::string>, std::optional<std::string>, std::optional<std::string>>;
 
-inline auto get_pt(Math::PtEtaPhiMVector obj) -> float
+inline auto get_pt(const Math::PtEtaPhiMVector& obj) -> float
 {
     return obj.pt();
 };

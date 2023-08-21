@@ -23,7 +23,7 @@ def parse_args():
         required=False,
         type=str,
         help="Condor buffer directory.",
-        default="validation_outputs",
+        default="classification_outputs",
     )
 
     parser.add_argument(
@@ -116,10 +116,16 @@ def main():
     # parse arguments
     args = parse_args()
 
+    sleep_time = 5
+    start_time = time.time()
+
     # Call the recursive function to find matching directories
     matching_directories = find_directories_with_prefix(args.buffer_dir, "buffer_")
 
     completed_jobs = []
+    last_done = 0
+    loop_counter = 0
+    initial_done_jobs = 0
     while True:
         job_status = {}
         for idx in tqdm(range(len(matching_directories)), unit=" job"):
@@ -143,7 +149,7 @@ def main():
         if all(job_status.values()):
             print(f"All done ({list(job_status.values()).count(True)} jobs)!")
             os.system("condor_q | tail -5")
-            break
+            exit(0)
         else:
             num_running_jobs = len(
                 list(filter(lambda job: job_status[job] == False, job_status))
@@ -154,10 +160,22 @@ def main():
                     if job_status[job] == False:
                         print(job)
             print("")
-            print(f"Done: {list(job_status.values()).count(True)}")
-            print(f"Other: {list(job_status.values()).count(False)}")
+            done_jobs = list(job_status.values()).count(True)
+            jobs_todo = list(job_status.values()).count(False)
+            processing_speed = 9999.0
+            if loop_counter > 0:
+                processing_speed = (done_jobs - initial_done_jobs) / (
+                    (time.time() - start_time) / 60
+                )
+            else:
+                initial_done_jobs = done_jobs
+            print(f"Done: {done_jobs} [{processing_speed} jobs/min]")
+            print(f"Other: {jobs_todo}")
+            print(f"Estimated time remaining: {jobs_todo/(processing_speed+1e-6)} min")
             os.system("condor_q | tail -5")
-        time.sleep(5)
+
+        time.sleep(sleep_time)
+        loop_counter += 1
 
 
 if __name__ == "__main__":

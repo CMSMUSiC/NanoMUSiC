@@ -46,7 +46,7 @@ auto main(int argc, char *argv[]) -> int
     if (show_help or process == "" or year == "" or output_path == "" or input_file == "" or x_section_str == "" or
         filter_eff_str == "" or k_factor_str == "" or luminosity_str == "" or xs_order == "" or process_group == "")
     {
-        fmt::print("Usage: validation [OPTIONS]\n");
+        fmt::print("Usage: classification [OPTIONS]\n");
         fmt::print("          -h|--help: Shows this message.\n");
         fmt::print("          -p|--process: Process (aka sample).\n");
         fmt::print("          -y|--year: Year.\n");
@@ -244,7 +244,7 @@ auto main(int argc, char *argv[]) -> int
     /////////////////////////////////////////////
     /////////////////////////////////////////////
 
-    // build validation factories
+    // build classification factories
     // map each shift to one analysis
     std::unordered_map<std::string, ZToLepLepX> z_to_mu_mu_x;
     std::unordered_map<std::string, ZToLepLepX> z_to_mu_mu_x_Z_mass;
@@ -300,10 +300,10 @@ auto main(int argc, char *argv[]) -> int
         // // remove the "unused variable" warning during compilation
         static_cast<void>(event);
 
-        if (event > 30)
-        {
-            break;
-        }
+        // if (event > 30)
+        // {
+        //     break;
+        // }
 
         // Trigger
         auto is_good_trigger = trigger_filter(process,
@@ -844,7 +844,7 @@ auto main(int argc, char *argv[]) -> int
         }
     }
 
-    fmt::print("\n[MUSiC Validation] Saving outputs ({} - {} - {} - {}) ...\n", output_path, process, year, shift);
+    fmt::print("\n[MUSiC Classification] Saving outputs ({} - {} - {} - {}) ...\n", output_path, process, year, shift);
     auto ec_output_file = std::unique_ptr<TFile>(TFile::Open(
         get_output_file_path("ec_classes", output_path, process, year, process_group, xs_order, is_data, shift).c_str(),
         "RECREATE"));
@@ -868,7 +868,7 @@ auto main(int argc, char *argv[]) -> int
 
     ec_output_file->Close();
 
-    fmt::print("\n[MUSiC Validation] Done ...\n");
+    fmt::print("\n[MUSiC Classification] Done ...\n");
     PrintProcessInfo();
 
     return EXIT_SUCCESS;

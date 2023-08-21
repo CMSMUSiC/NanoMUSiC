@@ -52,8 +52,8 @@ add_executable(
     src/WToLepNu_eff.cpp //
     src/ZToTauTauLepX.cpp //
     src/EventClassFactory.cpp //
-
-    # src/Dijets.cpp //
 )
+
 target_link_libraries(classification LINK_PUBLIC ROOT::RIO ROOT::Net)
+
 install(TARGETS classification DESTINATION ${CMAKE_SOURCE_DIR}/bin)

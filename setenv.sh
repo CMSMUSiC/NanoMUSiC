@@ -31,8 +31,8 @@ export SCRAM_ARCH=slc7_amd64_gcc11
 export LD_LIBRARY_PATH=$SCRIPTDIR/lib:$LD_LIBRARY_PATH
 export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/lib/python:$PYTHONPATH
 export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/MUSiC-CRAB:$PYTHONPATH
-export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/MUSiC-Validation:$PYTHONPATH
-export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/MUSiC-Validation/python:$PYTHONPATH
+export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/MUSiC-Classification:$PYTHONPATH
+export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/MUSiC-Classification/python:$PYTHONPATH
 export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/CondorScheduler:$PYTHONPATH
 
 export MYPXLANA=EventClassFactory
@@ -65,12 +65,15 @@ cd $SCRIPTDIR
 # set PATH
 export PATH=$PATH:$SCRIPTDIR/bin;
 export PATH=$PATH:$SCRIPTDIR/scripts;
-export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-Validation/scripts;
-export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-Validation/scripts;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-Classification/scripts;
+export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-Classification/scripts;
+export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-ClassificationUtils/scripts;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-BTagEff;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-CRAB;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/special_studies/jet_sf;
+
+#setup go env
+export GOPATH="$SCRIPTDIR/cache/classification_cli:$GOPATH"
 
 
 
