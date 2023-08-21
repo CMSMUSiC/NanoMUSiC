@@ -187,8 +187,17 @@ def main():
                                     }
                                 )
 
-    input_files_data = root.TFile.Open(f"{args.input}/ec_data.root")
-    input_files_mc = root.TFile.Open(f"{args.input}/ec_mc.root")
+    input_files_data = {}
+    for s in plotter_arguments_data:
+        input_files_data[f"{s['sample']}_{s['year']}"] = root.TFile.Open(
+            f"{args.input}/{s['year']}/{s['sample']}/{s['sample']}_{s['year']}.root"
+        )
+
+    input_files_mc = {}
+    for s in plotter_arguments_mc:
+        input_files_mc[f"{s['sample']}_{s['year']}"] = root.TFile.Open(
+            f"{args.input}/{s['year']}/{s['sample']}/{s['sample']}_{s['year']}.root"
+        )
 
     # [ttbar_to_1ele_2bjet_2jet_MET]_[DrellYan]_[NLO]_[DYJetsToLL_M-50_13TeV_AM]_[2018]_[JetScale_Down]_[h_ht_had_lep]
     # z_to_mu_mu_x_Z_mass
@@ -205,18 +214,21 @@ def main():
     # add all Data histograms
     data_hist = get_histogram(
         args,
-        input_files_data,
+        input_files_data[
+            f"{plotter_arguments_data[0]['sample']}_{plotter_arguments_data[0]['year']}"
+        ],
         plotter_arguments_data[0]["sample"],
         plotter_arguments_data[0]["year"],
         plotter_arguments_data[0]["process_group"],
         plotter_arguments_data[0]["xsec_order"],
     ).Clone()
-
     for i in range(1, len(plotter_arguments_data)):
         data_hist.Add(
             get_histogram(
                 args,
-                input_files_data,
+                input_files_data[
+                    f"{plotter_arguments_data[i]['sample']}_{plotter_arguments_data[i]['year']}"
+                ],
                 plotter_arguments_data[i]["sample"],
                 plotter_arguments_data[i]["year"],
                 plotter_arguments_data[i]["process_group"],
@@ -237,7 +249,9 @@ def main():
         if plotter_arguments_mc[i]["process_group"] not in mc_hists:
             this_histogram = get_histogram(
                 args,
-                input_files_mc,
+                input_files_mc[
+                    f"{plotter_arguments_mc[i]['sample']}_{plotter_arguments_mc[i]['year']}"
+                ],
                 plotter_arguments_mc[i]["sample"],
                 plotter_arguments_mc[i]["year"],
                 plotter_arguments_mc[i]["process_group"],
@@ -258,7 +272,9 @@ def main():
         else:
             this_histogram = get_histogram(
                 args,
-                input_files_mc,
+                input_files_mc[
+                    f"{plotter_arguments_mc[i]['sample']}_{plotter_arguments_mc[i]['year']}"
+                ],
                 plotter_arguments_mc[i]["sample"],
                 plotter_arguments_mc[i]["year"],
                 plotter_arguments_mc[i]["process_group"],
