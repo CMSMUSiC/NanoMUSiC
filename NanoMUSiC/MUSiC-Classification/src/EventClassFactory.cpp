@@ -143,6 +143,9 @@ auto EventClass::dump_outputs(std::unique_ptr<TFile> &output_file) -> void
 
     h_sum_pt.SetDirectory(output_file.get());
     h_sum_pt.Write();
+
+    h_met.SetDirectory(output_file.get());
+    h_met.Write();
 }
 
 constexpr std::size_t max_allowed_jets_per_class = 6;
