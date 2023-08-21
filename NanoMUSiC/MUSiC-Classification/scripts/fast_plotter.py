@@ -90,9 +90,9 @@ def parse_args():
     parser.add_argument(
         "-i",
         "--input",
-        help="Path to the results of validation_outputs.",
+        help="Path to the results of classification_outputs.",
         type=str,
-        default="validation_outputs",
+        default="classification_outputs",
     )
 
     args = parser.parse_args()
@@ -129,13 +129,19 @@ def get_histogram(args, root_file, sample, year, process_group, xsec_order):
             f"Getting histogram for: {(args.analysis, sample, year, process_group, xsec_order)} : [{args.analysis}]_[{process_group}]_[{xsec_order}]_[{sample}]_[{year}]_[Nominal]_[{args.histogram}]"
         )
         root_file.Print("all")
-    return root_file.Get(
-        f"[{args.analysis}]_[{process_group}]_[{xsec_order}]_[{sample}]_[{year}]_[Nominal]_[{args.histogram}]"
-    )
+
+    available_objects = [key.GetName() for key in root_file.GetListOfKeys()]
+    requested_key = f"[{args.analysis}]_[{process_group}]_[{xsec_order}]_[{sample}]_[{year}]_[Nominal]_[{args.histogram}]"
+    if requested_key in available_objects:
+        return root_file.Get(
+            f"[{args.analysis}]_[{process_group}]_[{xsec_order}]_[{sample}]_[{year}]_[Nominal]_[{args.histogram}]"
+        )
+    else:
+        return None
 
 
 def main():
-    print("\n\n📶 [ MUSiC Validation - Fast Plotter ] 📶\n")
+    print("\n\n📶 [ MUSiC classification - Fast Plotter ] 📶\n")
 
     # parse arguments
     args = parse_args()
@@ -156,9 +162,11 @@ def main():
                 if f"das_name_{year}" in task_config[sample].keys():
                     if year == args.year or args.year == "all":
                         if not (
-                            os.path.isdir(f"{args.output}/validation_plots/{year}")
+                            os.path.isdir(f"{args.output}/classification_plots/{year}")
                         ):
-                            os.system(f"mkdir -p {args.output}/validation_plots/{year}")
+                            os.system(
+                                f"mkdir -p {args.output}/classification_plots/{year}"
+                            )
                         if task_config[sample]["is_data"]:
                             plotter_arguments_data.append(
                                 {
@@ -212,29 +220,30 @@ def main():
     x_max = args.xmax
 
     # add all Data histograms
-    data_hist = get_histogram(
-        args,
-        input_files_data[
-            f"{plotter_arguments_data[0]['sample']}_{plotter_arguments_data[0]['year']}"
-        ],
-        plotter_arguments_data[0]["sample"],
-        plotter_arguments_data[0]["year"],
-        plotter_arguments_data[0]["process_group"],
-        plotter_arguments_data[0]["xsec_order"],
-    ).Clone()
-    for i in range(1, len(plotter_arguments_data)):
-        data_hist.Add(
-            get_histogram(
-                args,
-                input_files_data[
-                    f"{plotter_arguments_data[i]['sample']}_{plotter_arguments_data[i]['year']}"
-                ],
-                plotter_arguments_data[i]["sample"],
-                plotter_arguments_data[i]["year"],
-                plotter_arguments_data[i]["process_group"],
-                plotter_arguments_data[i]["xsec_order"],
-            )
+    data_histograms = []
+    for i in range(len(plotter_arguments_data)):
+        hist_ptr = get_histogram(
+            args,
+            input_files_data[
+                f"{plotter_arguments_data[i]['sample']}_{plotter_arguments_data[i]['year']}"
+            ],
+            plotter_arguments_data[i]["sample"],
+            plotter_arguments_data[i]["year"],
+            plotter_arguments_data[i]["process_group"],
+            plotter_arguments_data[i]["xsec_order"],
         )
+        if hist_ptr != None:
+            data_histograms.append(hist_ptr)
+
+    if len(data_histograms) == 0:
+        print(
+            f"ERROR: Could not get any Data histogram ({args.analysis} - {args.histogram})."
+        )
+
+    data_hist = data_histograms[0].Clone()
+    for i in range(1, len(data_histograms)):
+        data_hist.Add(data_histograms[i])
+    data_hist.Scale(10.0, "width")
 
     if args.debug:
         print("data_hist:")
@@ -245,7 +254,6 @@ def main():
     # Stack the background
     mc_hists = {}
     for i in range(0, len(plotter_arguments_mc)):
-        print(f"Adding to stack: {plotter_arguments_mc[i]['sample']}")
         if plotter_arguments_mc[i]["process_group"] not in mc_hists:
             this_histogram = get_histogram(
                 args,
@@ -256,19 +264,17 @@ def main():
                 plotter_arguments_mc[i]["year"],
                 plotter_arguments_mc[i]["process_group"],
                 plotter_arguments_mc[i]["xsec_order"],
-            ).Clone()
-
-            this_histogram.Scale(plotter_arguments_mc[i]["reweighting_factor"])
-
-            mc_hists[plotter_arguments_mc[i]["process_group"]] = this_histogram
-
-            mc_hists[plotter_arguments_mc[i]["process_group"]].SetFillColor(
-                PROCESS_GROUP_STYLES[plotter_arguments_mc[i]["process_group"]].color
-                # root.TColor.GetColor("#4daf4a")
             )
-            mc_hists[plotter_arguments_mc[i]["process_group"]].SetLineWidth(0)
-            # reweight
+            if this_histogram != None:
+                this_histogram = this_histogram.Clone()
+                this_histogram.Scale(plotter_arguments_mc[i]["reweighting_factor"])
+                this_histogram.Scale(10.0, "width")
+                this_histogram.SetFillColor(
+                    PROCESS_GROUP_STYLES[plotter_arguments_mc[i]["process_group"]].color
+                )
+                this_histogram.SetLineWidth(0)
 
+                mc_hists[plotter_arguments_mc[i]["process_group"]] = this_histogram
         else:
             this_histogram = get_histogram(
                 args,
@@ -279,14 +285,15 @@ def main():
                 plotter_arguments_mc[i]["year"],
                 plotter_arguments_mc[i]["process_group"],
                 plotter_arguments_mc[i]["xsec_order"],
-            ).Clone()
-            this_histogram.Scale(plotter_arguments_mc[i]["reweighting_factor"])
+            )
+            if this_histogram != None:
+                this_histogram = this_histogram.Clone()
+                this_histogram.Scale(plotter_arguments_mc[i]["reweighting_factor"])
+                this_histogram.Scale(10.0, "width")
 
-            mc_hists[plotter_arguments_mc[i]["process_group"]].Add(this_histogram)
+                mc_hists[plotter_arguments_mc[i]["process_group"]].Add(this_histogram)
 
     mc_hists_keys_sorted = sorted(mc_hists, key=lambda x: mc_hists[x].Integral())
-
-    print(mc_hists_keys_sorted)
 
     # Add legend
     legend = ax1.legend(
@@ -357,9 +364,9 @@ def main():
     ax1.set_ylabel("Events / 10 GeV")
     ax2.set_ylabel("Obs./Pred.", loc="centre")
 
-    # ax2.set_ylim(0, 2)
+    ax2.set_ylim(0, 2)
     # ax2.set_ylim(0, 3)
-    ax2.set_ylim(1e-4, 3.5)
+    # ax2.set_ylim(1e-4, 3.5)
 
     ax2.draw_arrows_outside_range(ratio_graph)
 
