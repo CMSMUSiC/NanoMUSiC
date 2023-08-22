@@ -66,17 +66,17 @@ auto TTBarTo1Lep2Bjet2JetMET::fill(Math::PtEtaPhiMVector lep,
                                    float weight) -> void
 {
 
-    if ((lep.Mt() + met.Pt()) == 60)
+    if ((MUSiCObjects::transverse_mass(lep) + met.Pt()) == 60)
     {
         h_invariant_mass_jet0_jet1.Fill((jet0 + jet1).mass(), weight);
     }
 
     if (((jet0 + jet1).mass() < (PDG::W::Mass + 30)) and ((jet0 + jet1).mass() > (PDG::W::Mass - 30)))
     {
-        h_transverse_mass_lep_MET.Fill((lep + met).Mt(), weight);
+        h_transverse_mass_lep_MET.Fill(MUSiCObjects::transverse_mass(lep + met), weight);
     }
 
-    if (((lep.Mt() + met.Pt()) == 60) and ((jet0 + jet1).mass() < (PDG::W::Mass + 30)) and
+    if (((MUSiCObjects::transverse_mass(lep) + met.Pt()) == 60) and ((jet0 + jet1).mass() < (PDG::W::Mass + 30)) and
         ((jet0 + jet1).mass() > (PDG::W::Mass - 30)))
     {
         h_ht_had_lep.Fill((jet0 + jet1 + bjet0 + bjet1).mass());

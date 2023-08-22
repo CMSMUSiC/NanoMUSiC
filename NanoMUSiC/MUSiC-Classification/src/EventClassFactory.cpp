@@ -83,7 +83,6 @@ auto EventClass::fill(std::pair<std::size_t, const MUSiCObjects &> this_muons,
                       std::pair<std::size_t, const MUSiCObjects &> this_met,
                       double weight) -> void
 {
-
     auto [n_muons, muons] = this_muons;
     auto [n_electrons, electrons] = this_electrons;
     auto [n_taus, taus] = this_taus;
@@ -110,7 +109,7 @@ auto EventClass::fill(std::pair<std::size_t, const MUSiCObjects &> this_muons,
 
     if (has_met)
     {
-        h_invariant_mass.Fill(lorentz_vec.mt(), weight);
+        h_invariant_mass.Fill(MUSiCObjects::transverse_mass(lorentz_vec), weight);
     }
     else
     {

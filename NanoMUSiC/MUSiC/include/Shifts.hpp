@@ -269,13 +269,13 @@ class Shifts
     }
 
     static auto get_scale_factor(const std::string &shift,
-                                 std::pair<unsigned int, const MUSiCObjects &> muons,
-                                 std::pair<unsigned int, const MUSiCObjects &> electrons,
-                                 std::pair<unsigned int, const MUSiCObjects &> taus,
-                                 std::pair<unsigned int, const MUSiCObjects &> photons,
-                                 std::pair<unsigned int, const MUSiCObjects &> bjets,
-                                 std::pair<unsigned int, const MUSiCObjects &> jets,
-                                 std::pair<unsigned int, const MUSiCObjects &> met) -> double
+                                 std::pair<std::size_t, const MUSiCObjects &> muons,
+                                 std::pair<std::size_t, const MUSiCObjects &> electrons,
+                                 std::pair<std::size_t, const MUSiCObjects &> taus,
+                                 std::pair<std::size_t, const MUSiCObjects &> photons,
+                                 std::pair<std::size_t, const MUSiCObjects &> bjets,
+                                 std::pair<std::size_t, const MUSiCObjects &> jets,
+                                 std::pair<std::size_t, const MUSiCObjects &> met) -> double
     {
         auto [n_muons, this_muons] = muons;
         auto [n_electrons, this_electrons] = electrons;

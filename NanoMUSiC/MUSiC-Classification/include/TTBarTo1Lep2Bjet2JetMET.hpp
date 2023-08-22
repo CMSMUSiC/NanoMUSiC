@@ -9,6 +9,8 @@
 #include <optional>
 #include <string_view>
 
+#include "ObjectFactories/music_objects.hpp"
+
 using namespace ROOT;
 using namespace ROOT::Math;
 

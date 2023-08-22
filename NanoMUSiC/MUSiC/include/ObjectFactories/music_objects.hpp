@@ -164,6 +164,11 @@ class MUSiCObjects
     {
         clear(*other, max_dr);
     }
+
+    auto static transverse_mass(const Math::PtEtaPhiMVector &vec) -> double
+    {
+        return std::sqrt(std::pow(vec.e(), 2) - std::pow(vec.px(), 2) - std::pow(vec.py(), 2));
+    }
 };
 
 #endif // !MUSIC_OBJECTS_HPP

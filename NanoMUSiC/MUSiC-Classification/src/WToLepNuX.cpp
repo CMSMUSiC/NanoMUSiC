@@ -213,7 +213,7 @@ WToLepNuX::WToLepNuX(const std::string &_analysis_name,
 auto WToLepNuX::fill(const Math::PtEtaPhiMVector &lepton_1, const RVec<Math::PtEtaPhiMVector> &met, float weight)
     -> void
 {
-    h_invariant_mass.Fill((lepton_1 + met[0]).Mt(), weight);
+    h_invariant_mass.Fill(MUSiCObjects::transverse_mass(lepton_1 + met[0]), weight);
     h_sum_pt.Fill(lepton_1.pt() + met[0].pt(), weight);
 
     if (met.size() > 0)
