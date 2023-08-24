@@ -13,47 +13,25 @@
 
 using namespace ROOT;
 
-class NanoEventClass
+class NanoEventHisto
 {
-  private:
+  public:
+    const std::string class_name = "";
+    const std::string process_group = "";
+    const std::string xs_order = "";
+    const std::string sample = "";
+    const std::string year = "";
+    const std::string shift = "";
+    const std::string histo_name = "";
+    TH1F *histogram = nullptr;
+    const bool is_data = false;
+
     static constexpr unsigned int num_histo_name_parts = 7;
-    struct NanoEventHisto
-    {
-        const std::string process_group;
-        const std::string xs_order;
-        const std::string sample;
-        const std::string year;
-        const std::string shift;
-        const std::string histo_name;
-        TH1F *histogram;
-        const bool is_data;
-    };
 
-    const std::string m_class_name;
-    std::vector<NanoEventHisto> m_histograms;
-
-    const std::string m_file_path;
-    std::unique_ptr<TFile> m_file;
-    bool m_is_data;
-    bool m_debug;
-
-    auto make_nano_event_histo(const std::string &histo_full_name) -> NanoEventHisto;
-
-    auto split_histo_name(std::string histo_full_name, const std::string delimiter = "]_[")
+    static auto split_histo_name(std::string histo_full_name, const std::string delimiter = "]_[")
         -> std::tuple<std::string, std::string, std::string, std::string, std::string, std::string, std::string>;
 
-    // Function to check if a string matches a pattern with *
-    static auto match_pattern(const std::string &str, const std::string &pattern) -> bool;
-
-  public:
-    NanoEventClass(const std::string &class_name, const std::string &file_path, bool is_data, bool debug = false);
-
-    auto filter_histos(const std::string &process_group,
-                       const std::string &xs_order,
-                       const std::string &sample,
-                       const std::string &year,
-                       const std::string &shift,
-                       const std::string &histo_name) -> std::vector<NanoEventHisto>;
+    static auto make_nano_event_histo(const std::string &histo_full_name, TFile *source_file) -> NanoEventHisto;
 
     static auto make_histogram_full_name(const std::string &class_name,
                                          const std::string &process_group,
@@ -62,6 +40,55 @@ class NanoEventClass
                                          const std::string &year,
                                          const std::string &shift,
                                          const std::string &histo_name) -> std::string;
+};
+
+class NanoEventClass
+{
+  public:
+    const std::string m_class_name = "";
+    std::vector<NanoEventHisto> m_counts = {};
+    std::vector<NanoEventHisto> m_invariant_mass = {};
+    std::vector<NanoEventHisto> m_sum_pt = {};
+    std::vector<NanoEventHisto> m_met = {};
+    double m_data_count = 0.;
+    double m_mc_count = 0.;
+    bool m_is_valid = false;
+
+    static constexpr double min_mc_count = 0.1;
+    static constexpr double min_data_count = 1.;
+
+    // Function to check if a string matches a pattern with *
+    // static auto match_pattern(const std::string &str, const std::string &pattern) -> bool;
+
+    NanoEventClass();
+
+    NanoEventClass(const std::string &class_name,
+                   const std::vector<NanoEventHisto> &counts,
+                   const std::vector<NanoEventHisto> &invariant_mass,
+                   const std::vector<NanoEventHisto> &sum_pt,
+                   const std::vector<NanoEventHisto> &met);
+
+    auto to_string() const -> std::string;
+
+    // auto filter_histos(const std::string &process_group,
+    //                    const std::string &xs_order,
+    //                    const std::string &sample,
+    //                    const std::string &year,
+    //                    const std::string &shift,
+    //                    const std::string &histo_name) -> std::vector<NanoEventHisto>;
+};
+
+class NanoEventClassCollection
+{
+  public:
+    std::unordered_map<std::string, NanoEventClass> m_classes = {};
+    std::vector<TFile *> m_root_files = {};
+
+    NanoEventClassCollection(const std::vector<std::string> &root_file_paths);
+
+    auto get_classes() const -> std::vector<std::string>;
+
+    ~NanoEventClassCollection();
 };
 
 #endif // NANOEVENTCLASS_HPP

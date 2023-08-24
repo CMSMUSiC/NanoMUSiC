@@ -101,14 +101,14 @@ def parse_args():
         "--split-data",
         help="Limit the number of Data files to be processed, per job.",
         type=int,
-        default=1,
+        default=3,
     )
 
     parser.add_argument(
         "--split-mc",
         help="Limit the number of MC files to be processed, per job.",
         type=int,
-        default=1,
+        default=5,
     )
 
     parser.add_argument(

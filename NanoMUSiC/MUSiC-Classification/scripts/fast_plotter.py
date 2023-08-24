@@ -161,12 +161,12 @@ def main():
             for year in years:
                 if f"das_name_{year}" in task_config[sample].keys():
                     if year == args.year or args.year == "all":
-                        if not (
-                            os.path.isdir(f"{args.output}/classification_plots/{year}")
-                        ):
-                            os.system(
-                                f"mkdir -p {args.output}/classification_plots/{year}"
-                            )
+                        # if not (
+                        #     os.path.isdir(f"{args.output}/classification_plots/{year}")
+                        # ):
+                        # os.system(
+                        #     # f"mkdir -p {args.output}/classification_plots/{year}"
+                        # )
                         if task_config[sample]["is_data"]:
                             plotter_arguments_data.append(
                                 {

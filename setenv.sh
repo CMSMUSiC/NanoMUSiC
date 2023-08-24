@@ -33,6 +33,7 @@ export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/lib/python:$PYTHONPATH
 export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/MUSiC-CRAB:$PYTHONPATH
 export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/MUSiC-Classification:$PYTHONPATH
 export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/MUSiC-Classification/python:$PYTHONPATH
+export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/NanoEventClass/python:$PYTHONPATH
 export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/CondorScheduler:$PYTHONPATH
 
 export MYPXLANA=EventClassFactory
@@ -68,9 +69,12 @@ export PATH=$PATH:$SCRIPTDIR/scripts;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-Classification/scripts;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-Classification/scripts;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-ClassificationUtils/scripts;
+export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/NanoEventClass/scripts;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-BTagEff;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-CRAB;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/special_studies/jet_sf;
+
+
 
 #setup go env
 export GOPATH="$SCRIPTDIR/cache/classification_cli:$GOPATH"

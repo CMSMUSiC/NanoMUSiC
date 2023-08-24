@@ -272,7 +272,7 @@ class ECDistributionPlot(GeneralPlots):
         # error band
         # optional rebinning
         if self.config.ratio_rebin:
-            # find bin borders where cobined numer of mc adds up to one event
+            # find bin borders where combined number of mc adds up to one event
             bin_borders = array.array("d")
             bin_borders.append(self.total_mc_hist.GetXaxis().GetBinLowEdge(1))
             local_bin_sum = 0.0
@@ -384,7 +384,7 @@ class ECDistributionPlot(GeneralPlots):
             for ibin in range(1, self.ratio_den.GetNbinsX() + 1):
                 ratio_syst.SetBinError(ibin, shift_hist.GetBinError(ibin))
             self.ratio_error_total.Divide(self.ratio, ratio_syst, "pois midp")
-            #ratio_syst.Delete()
+            # ratio_syst.Delete()
 
         # find y plotting range
         y_min = 999.0
@@ -456,7 +456,7 @@ class ECDistributionPlot(GeneralPlots):
         self.line = ro.TLine(linemin, 1, linemax, 1)
         self.line.Draw()
 
-        #shift_hist.Delete()
+        # shift_hist.Delete()
 
     def create_input_layers(self):
         self.skip = True
