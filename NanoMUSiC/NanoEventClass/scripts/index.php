@@ -5,7 +5,7 @@
   body
   {
   font-family: "Candara", sans-serif;
-  font-size: 9pt;
+  font-size: 12pt;
   line-height: 10.5pt;
   }
 
@@ -33,7 +33,8 @@ if ($_GET['noplots']) {
 } else {
   //$other_exts = array('.pdf', '.cxx', '.eps');
   foreach (glob("*") as $filename) {
-    if (!preg_match('/.*\.png$/', $filename) && !preg_match('/.*\.gif.*$/', $filename)) {
+    // if (!preg_match('/.*\.png$/', $filename) && !preg_match('/.*\.gif.*$/', $filename)) {
+      if (!preg_match('/.*\.svg$/', $filename)) {
       if (!preg_match('/.*\.php.*$/', $filename)) {
 	array_push($remainder, $filename);
       }
@@ -41,8 +42,9 @@ if ($_GET['noplots']) {
     }
     if (isset($_GET['match']) && !fnmatch('*'.$_GET['match'].'*', $filename)) continue;
     print "<div class='pic'>\n";
-    print "<h3><a href=\"$filename\">$filename</a></h3>";
-    print "<a href=\"$filename\"><img src=\"$filename\" style=\"border: none; width: 300px; \" target=\"_blank\"></a>";
+    print "<h3><a href=\"$filename\" target=\"_blank\">$filename</a></h3>";
+    // print "<a href=\"$filename\" target=\"_blank\"><img src=\"$filename\" style=\"border: none; width: 300px; \" target=\"_blank\"></a>";
+    print "<a href=\"$filename\" target=\"_blank\"><object data=\"$filename\" width=\"300\"> </object></a>";
     // print "<a href=\"$filename\"><img src=\"$filename\" style=\"border: none; width: 300px; \"></a>";
     //$others = array();
     //foreach ($other_exts as $ex) {
@@ -62,7 +64,7 @@ if ($_GET['noplots']) {
 <?
 foreach ($remainder as $filename) {
   // print "<li><a href=\"$filename\" target=\"_blank\">$filename</a></li>";
-  print "<li><a href=\"$filename\">$filename</a></li>";
+  print "<li><a href=\"$filename\" target=\"_blank\">$filename</a></li>";
 }
 ?>
 </ul>

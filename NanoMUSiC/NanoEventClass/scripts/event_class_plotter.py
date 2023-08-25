@@ -57,6 +57,7 @@ def get_source_files(path):
 
 
 def plot_event_class(ec):
+    # print(ec)
     for histogram_name in ["invariant_mass", "sum_pt", "counts", "met"]:
         # skip MET histogram for non-MET classes
         if histogram_name == "met" and not ec.has_met:
@@ -70,22 +71,22 @@ def plot_event_class(ec):
         )
 
         # Set axis titles
-        ax2.set_xlabel("XXXXX", loc="right", titlesize=25)
-        ax1.set_ylabel("Events / 10 GeV", titlesize=25)
+        ax2.set_xlabel("XXXXX", loc="right", titlesize=30)
+        ax1.set_ylabel("Events / 10 GeV", titlesize=30)
         if histogram_name == "counts":
-            ax1.set_ylabel("Events", titlesize=25)
+            ax1.set_ylabel("Events", titlesize=30)
 
-        ax2.set_ylabel("Obs./Pred.", loc="centre", titlesize=25)
+        ax2.set_ylabel("", loc="centre", titlesize=30)
         x_label_text = ""
         if histogram_name == "invariant_mass":
             if "MET" in ec.name:
-                x_label_text = r"m_{T} (GeV)"
+                x_label_text = r"M_{T} [GeV]"
             else:
-                x_label_text = r"m_{inv} (GeV)"
+                x_label_text = r"M [GeV]"
         elif histogram_name == "sum_pt":
-            x_label_text = r"#Sigma p_{T} (GeV)"
+            x_label_text = r"S_{T} [GeV]"
         elif histogram_name == "met":
-            x_label_text = r"MET (GeV)"
+            x_label_text = r"p_{T}^{miss} [GeV]"
         elif histogram_name == "counts":
             x_label_text = r""
         else:
@@ -98,11 +99,21 @@ def plot_event_class(ec):
             0.85,
             0.15,
             x_label_text,
-            size=25,
+            size=30,
+        )
+
+        y_label_text = r"#frac{Data}{Simulation}"
+        ax2.text(
+            0.1,
+            0.47,
+            y_label_text,
+            size=30,
+            angle=90,
         )
 
         data_hist = ec.get_data_histogram(histogram_name)
-        data_hist.scale_for_plot()
+        if histogram_name != "counts":
+            data_hist.scale_for_plot()
         limits = data_hist.get_limits()
 
         if limits == None:
@@ -112,6 +123,7 @@ def plot_event_class(ec):
                 continue
         x_min, x_max = limits
         x_min = x_min - (x_max - x_min) * 0.05
+        x_max = x_max + (x_max - x_min) * 0.05
 
         # build the data as a graph
         data_graph = aplt.root_helpers.hist_to_graph(data_hist.histo)
@@ -119,32 +131,11 @@ def plot_event_class(ec):
         mc_hists = ec.get_mc_histograms_per_process_group(histogram_name)
         mc_hists_keys_sorted = sorted(mc_hists, key=lambda x: mc_hists[x].integral())
 
-        # Add legend
-        if histogram_name == "counts":
-            legend = ax1.legend(
-                loc=(
-                    0.55,
-                    0.15,
-                    1 - ROOT.gPad.GetRightMargin(),
-                    1 - ROOT.gPad.GetTopMargin() - 0.05,
-                ),
-                textsize=6,
-            )
-            legend.AddEntry(
-                data_graph, f"Data ({Decimal(data_hist.integral()):.2E})", "EP"
-            )
-
-            for hist in reversed(mc_hists_keys_sorted):
-                legend.AddEntry(
-                    mc_hists[hist].histo,
-                    f"{hist} ({Decimal(mc_hists[hist].integral()):.2E})",
-                    "F",
-                )
-
         total_mc_histo = None
         bkg_stack = ROOT.THStack("bkg", "")
         for hist in mc_hists_keys_sorted:
-            mc_hists[hist].scale_for_plot()
+            if histogram_name != "counts":
+                mc_hists[hist].scale_for_plot()
             mc_hists[hist].histo.SetFillColor(
                 PROCESS_GROUP_STYLES[mc_hists[hist].process_group].color
             )
@@ -164,11 +155,10 @@ def plot_event_class(ec):
             total_mc_histo,
             show_bin_width=True,
         )
-        ax1.plot(err_band, "2", fillcolor=1, fillstyle=3254, linewidth=0)
+        ax1.plot(err_band, "2", fillcolor=12, fillstyle=3254, linewidth=0)
 
-        # ax1.set_ylim(1e-9)
         if histogram_name != "counts":
-            ax1.set_ylim(ec.get_y_low(histogram_name) * 0.1)
+            ax1.set_ylim(ec.get_y_low(histogram_name) * 1e-2)
         ax1.set_yscale("log")  # uncomment to use log scale for y axis
 
         ax1.plot(data_graph, "P")
@@ -197,7 +187,7 @@ def plot_event_class(ec):
             norm=True,
         )
 
-        ax2.plot(err_band_ratio, "2", fillcolor=1, fillstyle=3254)
+        ax2.plot(err_band_ratio, "2", fillcolor=12, fillstyle=3254)
 
         # Calculate and draw the ratio
         # ratio_hist = data_hist.histo.Clone("ratio_hist")
@@ -225,6 +215,30 @@ def plot_event_class(ec):
         # Go back to top axes to add labels
         ax1.cd()
 
+        # Add legend
+        if histogram_name == "counts":
+            legend = ax1.legend(
+                loc=(
+                    0.6,
+                    0.15,
+                    1 - ROOT.gPad.GetRightMargin(),
+                    1 - ROOT.gPad.GetTopMargin() - 0.05,
+                ),
+                textsize=14,
+            )
+            legend.AddEntry(
+                data_graph, f"Data ({Decimal(data_hist.integral()):.2E})", "EP"
+            )
+
+            for hist in reversed(mc_hists_keys_sorted):
+                legend.AddEntry(
+                    mc_hists[hist].histo,
+                    f"{hist} ({Decimal(mc_hists[hist].integral()):.2E})",
+                    "F",
+                )
+
+            legend.AddEntry(err_band, f"Stat. Uncert.", "F")
+
         # Add the ATLAS Label
         # aplt.atlas_label(text="Not ATLAS! CMS...", loc="upper left", size=0)
         # ax1.text(0.2, 0.84, "#sqrt{s} = 13 TeV, 137 fb^{-1}", size=22, align=13)
@@ -240,6 +254,9 @@ def plot_event_class(ec):
         )
         fig.savefig(
             f"classification_plots/{ec_nice_name}/{ec_nice_name}_{histogram_name}.pdf"
+        )
+        fig.savefig(
+            f"classification_plots/{ec_nice_name}/{ec_nice_name}_{histogram_name}.svg"
         )
 
         os.system(

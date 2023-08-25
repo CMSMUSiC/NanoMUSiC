@@ -109,7 +109,7 @@ class Histogram:
         assert min_bin <= max_bin
 
         if min_bin == max_bin:
-            return None
+            max_bin += 1
 
         return min_bin, max_bin
 
