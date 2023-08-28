@@ -101,14 +101,14 @@ def parse_args():
         "--split-data",
         help="Limit the number of Data files to be processed, per job.",
         type=int,
-        default=3,
+        default=10,
     )
 
     parser.add_argument(
         "--split-mc",
         help="Limit the number of MC files to be processed, per job.",
         type=int,
-        default=5,
+        default=10,
     )
 
     parser.add_argument(
@@ -458,7 +458,7 @@ def main():
                 f"ERROR: Could not start classification. Requested sample ({args.sample}) not found in analysis config.\n Available samples are: {list(task_config.keys())}"
             )
 
-    print("Building jobs ...")
+    print("Building tasks ...")
     merge_cutflow_arguments = []
     classification_arguments = []
     merge_per_sample_arguments = []

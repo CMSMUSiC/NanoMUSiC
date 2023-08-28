@@ -168,11 +168,11 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
                         is_data,
                         {get_year_for_muon_sf(year), std::fabs(muon_p4.eta()), muon_p4.pt(), "sf"}) *
                     MUSiCObjects::get_scale_factor(
-                        muon_sf_id_low_pt,
+                        muon_sf_id_high_pt,
                         is_data,
                         {get_year_for_muon_sf(year), std::fabs(muon_p4.eta()), muon_p4.pt(), "sf"}) *
                     MUSiCObjects::get_scale_factor(
-                        muon_sf_iso_low_pt,
+                        muon_sf_iso_high_pt,
                         is_data,
                         {get_year_for_muon_sf(year), std::fabs(muon_p4.eta()), muon_p4.pt(), "sf"}));
 
