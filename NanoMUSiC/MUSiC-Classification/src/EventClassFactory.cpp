@@ -33,7 +33,7 @@ EventClass::EventClass(const std::string &_class_name,
 
     std::string histo_name = "";
 
-    histo_name = NanoEventClass::make_histogram_full_name(_class_name,    //
+    histo_name = NanoEventHisto::make_histogram_full_name(_class_name,    //
                                                           _process_group, //
                                                           _xs_order,      //
                                                           _sample,        //
@@ -43,7 +43,7 @@ EventClass::EventClass(const std::string &_class_name,
     h_counts = TH1F(histo_name.c_str(), histo_name.c_str(), 1, 0., 1.);
     h_counts.Sumw2();
 
-    histo_name = NanoEventClass::make_histogram_full_name(_class_name,    //
+    histo_name = NanoEventHisto::make_histogram_full_name(_class_name,    //
                                                           _process_group, //
                                                           _xs_order,      //
                                                           _sample,        //
@@ -53,7 +53,7 @@ EventClass::EventClass(const std::string &_class_name,
     h_invariant_mass = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
     h_invariant_mass.Sumw2();
 
-    histo_name = NanoEventClass::make_histogram_full_name(_class_name,    //
+    histo_name = NanoEventHisto::make_histogram_full_name(_class_name,    //
                                                           _process_group, //
                                                           _xs_order,      //
                                                           _sample,        //
@@ -63,7 +63,7 @@ EventClass::EventClass(const std::string &_class_name,
     h_sum_pt = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
     h_sum_pt.Sumw2();
 
-    histo_name = NanoEventClass::make_histogram_full_name(_class_name,    //
+    histo_name = NanoEventHisto::make_histogram_full_name(_class_name,    //
                                                           _process_group, //
                                                           _xs_order,      //
                                                           _sample,        //
@@ -155,7 +155,8 @@ auto make_event_class_name(std::pair<std::size_t, std::size_t> muon_counts,
                            std::pair<std::size_t, std::size_t> photon_counts,
                            std::pair<std::size_t, std::size_t> jet_counts,
                            std::pair<std::size_t, std::size_t> bjet_counts,
-                           std::pair<std::size_t, std::size_t> met_counts)
+                           std::pair<std::size_t, std::size_t> met_counts,
+                           const std::unordered_map<std::string, std::optional<TriggerMatch>> &trigger_matches)
     -> std::tuple<std::optional<std::string>, std::optional<std::string>, std::optional<std::string>>
 {
 
@@ -173,6 +174,11 @@ auto make_event_class_name(std::pair<std::size_t, std::size_t> muon_counts,
     }
 
     if (n_bjets + n_jets > max_allowed_jets_per_class)
+    {
+        return std::make_tuple(std::nullopt, std::nullopt, std::nullopt);
+    }
+
+    if (not(has_good_match(trigger_matches, n_muons, n_electrons, n_photons)))
     {
         return std::make_tuple(std::nullopt, std::nullopt, std::nullopt);
     }

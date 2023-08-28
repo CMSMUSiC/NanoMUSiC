@@ -306,22 +306,23 @@ auto main(int argc, char *argv[]) -> int
         // }
 
         // Trigger
-        auto is_good_trigger = trigger_filter(process,
-                                              is_data,
-                                              get_runyear(year),
-                                              //   unwrap(pass_low_pt_muon_trigger),
+        auto is_good_trigger = trigger_filter(process,           //
+                                              is_data,           //
+                                              get_runyear(year), //
+                                              //   unwrap(pass_low_pt_muon_trigger),      //
                                               false,
-                                              unwrap(pass_high_pt_muon_trigger),
-                                              unwrap(pass_double_muon_trigger),
-                                              //   unwrap(pass_low_pt_electron_trigger),
+                                              unwrap(pass_high_pt_muon_trigger), //
+                                              unwrap(pass_double_muon_trigger),  //
+                                              //   unwrap(pass_low_pt_electron_trigger),  //
                                               false,
-                                              unwrap(pass_high_pt_electron_trigger),
-                                              unwrap(pass_double_electron_trigger),
-                                              //   unwrap(pass_high_pt_tau_trigger),
-                                              false,
-                                              //   unwrap(pass_double_tau_trigger),
-                                              false,
-                                              unwrap(pass_photon_trigger));
+                                              unwrap(pass_high_pt_electron_trigger), //
+                                              unwrap(pass_double_electron_trigger),  //
+                                              //   unwrap(pass_high_pt_tau_trigger),//
+                                              false, //
+                                              //   unwrap(pass_double_tau_trigger),//
+                                              false,                      //
+                                              unwrap(pass_photon_trigger) //
+        );
 
         if (is_good_trigger)
         {
@@ -382,7 +383,7 @@ auto main(int argc, char *argv[]) -> int
                                                        tau_energy_scale,                   //
                                                        is_data,                            //
                                                        year,                               //
-                                                       shift);                             //
+                                                       shift);
 
                 auto photons = ObjectFactories::make_photons(unwrap(Photon_pt),          //
                                                              unwrap(Photon_eta),         //
@@ -567,7 +568,8 @@ auto main(int argc, char *argv[]) -> int
                                                                                   {idx_photon, photons.size()},
                                                                                   {idx_jet, jets.size()},
                                                                                   {idx_bjet, bjets.size()},
-                                                                                  {idx_met, met.size()});
+                                                                                  {idx_met, met.size()},
+                                                                                  trigger_matches);
 
                                                         for (auto &&class_name : {event_class_name_exclusive,
                                                                                   event_class_name_inclusive,

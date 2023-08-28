@@ -34,7 +34,7 @@ WToLepNu_eff::WToLepNu_eff(const std::string &_analysis_name,
 
     std::string histo_name = "";
 
-    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
                                                           _process_group, //
                                                           _xs_order,      //
                                                           _sample,        //
@@ -44,7 +44,7 @@ WToLepNu_eff::WToLepNu_eff(const std::string &_analysis_name,
     h_leptons_all = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
     h_leptons_all.Sumw2();
 
-    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
                                                           _process_group, //
                                                           _xs_order,      //
                                                           _sample,        //

@@ -172,7 +172,11 @@ relExtraDY = 1.2
 
 extraOverCmsTextSize = 0.76
 
-lumi_13TeV = "137 fb^{-1}"
+
+def lumi_13TeV(lumi):
+    return f"{lumi} fb^{{-1}}"
+
+
 lumi_8TeV = "19.7 fb^{-1}"
 lumi_7TeV = "5.1 fb^{-1}"
 lumi_sqrtS = ""
@@ -180,7 +184,7 @@ lumi_sqrtS = ""
 drawLogo = False
 
 
-def CMS_lumi(pad, iPeriod, iPosX, event_class_name=""):
+def CMS_lumi(pad, iPeriod, iPosX, event_class_name="", lumi="138", year_name=""):
     outOfFrame = False
     if iPosX / 10 == 0:
         outOfFrame = True
@@ -224,15 +228,23 @@ def CMS_lumi(pad, iPeriod, iPosX, event_class_name=""):
         lumiText += lumi_7TeV
         lumiText += " (7 TeV)"
     elif iPeriod == 4:
-        lumiText += lumi_13TeV
-        lumiText += " (13 TeV)"
+        lumiText += lumi_13TeV(lumi)
+        if year_name != "":
+            lumiText += f" (Run{year_name} - 13 TeV)"
+        else:
+            lumiText += " (13 TeV)"
+
         if event_class_name != "":
             lumiText += f" [{event_class_name}]"
     elif iPeriod == 7:
         if outOfFrame:
             lumiText += "#scale[0.85]{"
-        lumiText += lumi_13TeV
-        lumiText += " (13 TeV)"
+        lumiText += lumi_13TeV(lumi)
+        if year_name != "":
+            lumiText += f" (Run{year_name} - 13 TeV)"
+        else:
+            lumiText += " (13 TeV)"
+
         lumiText += " + "
         lumiText += lumi_8TeV
         lumiText += " (8 TeV)"

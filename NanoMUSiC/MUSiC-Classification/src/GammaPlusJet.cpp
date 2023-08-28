@@ -27,7 +27,7 @@ GammaPlusJet::GammaPlusJet(const std::string &_analysis_name,
 
     std::string histo_name = "";
 
-    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
                                                           _process_group, //
                                                           _xs_order,      //
                                                           _sample,        //
@@ -37,7 +37,7 @@ GammaPlusJet::GammaPlusJet(const std::string &_analysis_name,
     h_gamma_pt = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
     h_gamma_pt.Sumw2();
 
-    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
                                                           _process_group, //
                                                           _xs_order,      //
                                                           _sample,        //
@@ -47,7 +47,7 @@ GammaPlusJet::GammaPlusJet(const std::string &_analysis_name,
     h_gamma_eta = TH1F(histo_name.c_str(), histo_name.c_str(), n_eta_bins, min_eta, max_eta);
     h_gamma_eta.Sumw2();
 
-    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
                                                           _process_group, //
                                                           _xs_order,      //
                                                           _sample,        //

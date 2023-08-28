@@ -26,7 +26,7 @@ TTBarTo1Lep2Bjet2JetMET::TTBarTo1Lep2Bjet2JetMET(const std::string &_analysis_na
         BinLimits::get_bin_limits("validation_plot", countMap, min_energy, max_energy, min_bin_width, 1);
 
     std::string histo_name = "";
-    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
                                                           _process_group, //
                                                           _xs_order,      //
                                                           _sample,        //
@@ -36,7 +36,7 @@ TTBarTo1Lep2Bjet2JetMET::TTBarTo1Lep2Bjet2JetMET(const std::string &_analysis_na
     h_invariant_mass_jet0_jet1 = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
     h_invariant_mass_jet0_jet1.Sumw2();
 
-    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
                                                           _process_group, //
                                                           _xs_order,      //
                                                           _sample,        //
@@ -46,7 +46,7 @@ TTBarTo1Lep2Bjet2JetMET::TTBarTo1Lep2Bjet2JetMET(const std::string &_analysis_na
     h_transverse_mass_lep_MET = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
     h_transverse_mass_lep_MET.Sumw2();
 
-    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
                                                           _process_group, //
                                                           _xs_order,      //
                                                           _sample,        //

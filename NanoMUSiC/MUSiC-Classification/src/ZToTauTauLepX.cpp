@@ -36,7 +36,7 @@ ZToTauTauLepX::ZToTauTauLepX(const std::string &_analysis_name,
     if (is_Z_mass_validation)
     {
 
-        histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+        histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
                                                               _process_group, //
                                                               _xs_order,      //
                                                               _sample,        //
@@ -48,7 +48,7 @@ ZToTauTauLepX::ZToTauTauLepX(const std::string &_analysis_name,
     }
     else
     {
-        histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+        histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
                                                               _process_group, //
                                                               _xs_order,      //
                                                               _sample,        //
@@ -59,7 +59,7 @@ ZToTauTauLepX::ZToTauTauLepX(const std::string &_analysis_name,
         h_invariant_mass.Sumw2();
     }
 
-    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
                                                           _process_group, //
                                                           _xs_order,      //
                                                           _sample,        //
@@ -69,7 +69,7 @@ ZToTauTauLepX::ZToTauTauLepX(const std::string &_analysis_name,
     h_sum_pt = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
     h_sum_pt.Sumw2();
 
-    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
                                                           _process_group, //
                                                           _xs_order,      //
                                                           _sample,        //
@@ -79,7 +79,7 @@ ZToTauTauLepX::ZToTauTauLepX(const std::string &_analysis_name,
     h_met = TH1F(histo_name.c_str(), histo_name.c_str(), limits_met.size() - 1, limits_met.data());
     h_met.Sumw2();
 
-    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
                                                           _process_group, //
                                                           _xs_order,      //
                                                           _sample,        //
@@ -89,7 +89,7 @@ ZToTauTauLepX::ZToTauTauLepX(const std::string &_analysis_name,
     h_tau_1_pt = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
     h_tau_1_pt.Sumw2();
 
-    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
                                                           _process_group, //
                                                           _xs_order,      //
                                                           _sample,        //
@@ -99,7 +99,7 @@ ZToTauTauLepX::ZToTauTauLepX(const std::string &_analysis_name,
     h_tau_2_pt = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
     h_tau_2_pt.Sumw2();
 
-    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
                                                           _process_group, //
                                                           _xs_order,      //
                                                           _sample,        //
@@ -109,7 +109,7 @@ ZToTauTauLepX::ZToTauTauLepX(const std::string &_analysis_name,
     h_lepton_pt = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
     h_lepton_pt.Sumw2();
 
-    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
                                                           _process_group, //
                                                           _xs_order,      //
                                                           _sample,        //
@@ -119,7 +119,7 @@ ZToTauTauLepX::ZToTauTauLepX(const std::string &_analysis_name,
     h_tau_1_eta = TH1F(histo_name.c_str(), histo_name.c_str(), n_eta_bins, min_eta, max_eta);
     h_tau_1_eta.Sumw2();
 
-    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
                                                           _process_group, //
                                                           _xs_order,      //
                                                           _sample,        //
@@ -129,7 +129,7 @@ ZToTauTauLepX::ZToTauTauLepX(const std::string &_analysis_name,
     h_tau_2_eta = TH1F(histo_name.c_str(), histo_name.c_str(), n_eta_bins, min_eta, max_eta);
     h_tau_2_eta.Sumw2();
 
-    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
                                                           _process_group, //
                                                           _xs_order,      //
                                                           _sample,        //
@@ -139,7 +139,7 @@ ZToTauTauLepX::ZToTauTauLepX(const std::string &_analysis_name,
     h_lepton_eta = TH1F(histo_name.c_str(), histo_name.c_str(), n_eta_bins, min_eta, max_eta);
     h_lepton_eta.Sumw2();
 
-    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
                                                           _process_group, //
                                                           _xs_order,      //
                                                           _sample,        //
@@ -149,7 +149,7 @@ ZToTauTauLepX::ZToTauTauLepX(const std::string &_analysis_name,
     h_tau_1_phi = TH1F(histo_name.c_str(), histo_name.c_str(), n_phi_bins, min_phi, max_phi);
     h_tau_1_phi.Sumw2();
 
-    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
                                                           _process_group, //
                                                           _xs_order,      //
                                                           _sample,        //
@@ -159,7 +159,7 @@ ZToTauTauLepX::ZToTauTauLepX(const std::string &_analysis_name,
     h_tau_2_phi = TH1F(histo_name.c_str(), histo_name.c_str(), n_phi_bins, min_phi, max_phi);
     h_tau_2_phi.Sumw2();
 
-    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
                                                           _process_group, //
                                                           _xs_order,      //
                                                           _sample,        //
@@ -169,7 +169,7 @@ ZToTauTauLepX::ZToTauTauLepX(const std::string &_analysis_name,
     h_lepton_phi = TH1F(histo_name.c_str(), histo_name.c_str(), n_phi_bins, min_phi, max_phi);
     h_lepton_phi.Sumw2();
 
-    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
                                                           _process_group, //
                                                           _xs_order,      //
                                                           _sample,        //
@@ -179,7 +179,7 @@ ZToTauTauLepX::ZToTauTauLepX(const std::string &_analysis_name,
     h_tau_1_jet_1_dPhi = TH1F(histo_name.c_str(), histo_name.c_str(), n_phi_bins, min_phi, max_phi);
     h_tau_1_jet_1_dPhi.Sumw2();
 
-    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
                                                           _process_group, //
                                                           _xs_order,      //
                                                           _sample,        //
@@ -189,7 +189,7 @@ ZToTauTauLepX::ZToTauTauLepX(const std::string &_analysis_name,
     h_tau_1_jet_1_dR = TH1F(histo_name.c_str(), histo_name.c_str(), n_dR_bins, min_dR, max_dR);
     h_tau_1_jet_1_dR.Sumw2();
 
-    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
                                                           _process_group, //
                                                           _xs_order,      //
                                                           _sample,        //
@@ -200,7 +200,7 @@ ZToTauTauLepX::ZToTauTauLepX(const std::string &_analysis_name,
         TH1F(histo_name.c_str(), histo_name.c_str(), n_multiplicity_bins, min_multiplicity, max_multiplicity);
     h_jet_multiplicity.Sumw2();
 
-    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
                                                           _process_group, //
                                                           _xs_order,      //
                                                           _sample,        //
@@ -211,7 +211,7 @@ ZToTauTauLepX::ZToTauTauLepX(const std::string &_analysis_name,
         TH1F(histo_name.c_str(), histo_name.c_str(), n_multiplicity_bins, min_multiplicity, max_multiplicity);
     h_bjet_multiplicity.Sumw2();
 
-    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
                                                           _process_group, //
                                                           _xs_order,      //
                                                           _sample,        //
@@ -228,7 +228,7 @@ ZToTauTauLepX::ZToTauTauLepX(const std::string &_analysis_name,
                           max_multiplicity);
     h_tau_1_pt_eta.Sumw2();
 
-    histo_name = NanoEventClass::make_histogram_full_name(_analysis_name, //
+    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
                                                           _process_group, //
                                                           _xs_order,      //
                                                           _sample,        //

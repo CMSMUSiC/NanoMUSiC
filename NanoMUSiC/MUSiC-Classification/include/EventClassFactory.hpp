@@ -15,6 +15,7 @@
 #include <string_view>
 
 #include "ObjectFactories/music_objects.hpp"
+#include "TriggerMatch.hpp"
 
 using namespace ROOT;
 using namespace ROOT::Math;
@@ -71,7 +72,8 @@ auto make_event_class_name(std::pair<std::size_t, std::size_t> muon_counts,
                            std::pair<std::size_t, std::size_t> photon_counts,
                            std::pair<std::size_t, std::size_t> jet_counts,
                            std::pair<std::size_t, std::size_t> bjet_counts,
-                           std::pair<std::size_t, std::size_t> met_counts)
+                           std::pair<std::size_t, std::size_t> met_counts,
+                           const std::unordered_map<std::string, std::optional<TriggerMatch>> &trigger_matches)
     -> std::tuple<std::optional<std::string>, std::optional<std::string>, std::optional<std::string>>;
 
 inline auto get_pt(const Math::PtEtaPhiMVector &obj) -> float

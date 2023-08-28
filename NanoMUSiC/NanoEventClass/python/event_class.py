@@ -1,7 +1,6 @@
 from typing import Union
 from collections import defaultdict
 from tqdm import tqdm
-import os
 import sys
 import copy
 from fnmatch import fnmatch
@@ -115,7 +114,7 @@ class Histogram:
 
     def get_limits(self):
         limits = self.get_limits_bins()
-        if limits == None:
+        if limits is None:
             return None
         min_bin, max_bin = limits
         return self.histo.GetBinLowEdge(min_bin), self.histo.GetBinLowEdge(max_bin + 1)
@@ -220,7 +219,7 @@ class EventClass:
         data_hist = None
         for h in self.histos[histo_name]:
             if h.is_data:
-                if data_hist == None:
+                if data_hist is None:
                     data_hist = h.clone()
                 else:
                     data_hist.add(h)
@@ -248,7 +247,7 @@ class EventClass:
 
         total_mc_hist = None
         for h in self.histos[histo_name]:
-            if total_mc_hist == None:
+            if total_mc_hist is None:
                 total_mc_hist = h.clone()
             else:
                 total_mc_hist.add(h)
@@ -301,12 +300,12 @@ class EventClass:
         total_mc_hist = None
         for h in self.histos[histo_name]:
             if h.is_data:
-                if data_hist == None:
+                if data_hist is None:
                     data_hist = h.clone()
                 else:
                     data_hist.add(h)
             else:
-                if total_mc_hist == None:
+                if total_mc_hist is None:
                     total_mc_hist = h.clone()
                 else:
                     total_mc_hist.add(h)
@@ -365,7 +364,7 @@ class EventClassCollection:
             root_file = ROOT.TFile.Open(f)
             self.root_files.append(root_file)
             for key in root_file.GetListOfKeys():
-                if key.GetName().startswith(f"[EC_"):
+                if key.GetName().startswith("[EC_"):
                     class_name = Histogram.parse_histo_name(key.GetName())[0]
                     does_match = False
                     for p in event_class_pattern:
@@ -388,7 +387,7 @@ class EventClassCollection:
 
         if len(h_counts_per_class) == 0:
             print(
-                f"ERROR: Could not build Event Class collection. No matches were found."
+                "ERROR: Could not build Event Class collection. No matches were found."
             )
             sys.exit(-1)
         for event_class in h_counts_per_class:
@@ -425,15 +424,6 @@ class EventClassCollection:
 
     def __len__(self):
         return len(list(self.classes.keys()))
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        if exc_type is not None:
-            print(f"An exception of type {exc_type} occurred with value {exc_value}")
-
-        # os._exit(os.EX_OK)
 
     def add(self, event_class: EventClass):
         self.classes[event_class.name] = event_class
