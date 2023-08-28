@@ -162,16 +162,8 @@ def main():
             print("")
             done_jobs = list(job_status.values()).count(True)
             jobs_todo = list(job_status.values()).count(False)
-            processing_speed = 9999.0
-            if loop_counter > 0:
-                processing_speed = (done_jobs - initial_done_jobs) / (
-                    (time.time() - start_time) / 60
-                )
-            else:
-                initial_done_jobs = done_jobs
-            print(f"Done: {done_jobs} [{processing_speed} jobs/min]")
-            print(f"Other: {jobs_todo}")
-            print(f"Estimated time remaining: {jobs_todo/(processing_speed+1e-6)} min")
+            print(f"Done: {done_jobs} / {len(list(job_status.values()))}")
+            print(f"Other: {jobs_todo} / {len(list(job_status.values()))}")
             os.system("condor_q | tail -5")
 
         time.sleep(sleep_time)
