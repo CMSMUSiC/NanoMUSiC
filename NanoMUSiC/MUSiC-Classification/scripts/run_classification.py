@@ -496,6 +496,11 @@ def main():
 
                             # get splitting for Data/MC
                             splitting = args.split_mc
+
+                            # TTZToLL samples take the longest to run
+                            if sample.startswith("TTZToLL"):
+                                splitting = max(int(args.split_mc / 3), 1)
+
                             if task_config[sample]["is_data"]:
                                 splitting = args.split_data
 
