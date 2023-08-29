@@ -75,7 +75,7 @@ class MUSiCObjects
                 ))
         {
             throw std::runtime_error(fmt::format(
-                "ERROR: Could not create MUSiCObjects. Input vector have different sizes. \n{} - {} - {} - {}",
+                "ERROR: Could not create MUSiCObjects. Input vectors have different sizes. \n{} - {} - {} - {}",
                 p4.size(),
                 scale_factor.size(),
                 scale_factor_up.size(),

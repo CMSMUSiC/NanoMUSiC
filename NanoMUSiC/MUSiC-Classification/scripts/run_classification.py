@@ -34,6 +34,27 @@ def dump_list_to_file(lst, file_path):
             file.write(item + "\n")
 
 
+def get_splitting_factor(
+    sample, is_data, default_splitting_data=10, default_splitting_mc=10
+):
+    # get splitting for Data/MC
+    splitting = default_splitting_mc
+
+    # TTZToLL samples take the longest to run
+    if sample.startswith("TTZToLL"):
+        splitting = 1
+
+    if is_data:
+        splitting = default_splitting_data
+
+        if sample.startswith("EGamma"):
+            splitting = 3
+        if sample.startswith("SingleMuon"):
+            splitting = 3
+
+    return splitting
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -95,20 +116,6 @@ def parse_args():
         help="Output base path.",
         type=str,
         default=".",
-    )
-
-    parser.add_argument(
-        "--split-data",
-        help="Limit the number of Data files to be processed, per job.",
-        type=int,
-        default=10,
-    )
-
-    parser.add_argument(
-        "--split-mc",
-        help="Limit the number of MC files to be processed, per job.",
-        type=int,
-        default=10,
     )
 
     parser.add_argument(
@@ -495,14 +502,9 @@ def main():
                             )
 
                             # get splitting for Data/MC
-                            splitting = args.split_mc
-
-                            # TTZToLL samples take the longest to run
-                            if sample.startswith("TTZToLL"):
-                                splitting = 1
-
-                            if task_config[sample]["is_data"]:
-                                splitting = args.split_data
+                            splitting = get_splitting_factor(
+                                sample, task_config[sample]["is_data"]
+                            )
 
                             for idx, f in enumerate(
                                 split_list(

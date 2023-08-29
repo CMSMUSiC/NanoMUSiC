@@ -208,7 +208,6 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
             if (is_good_low_pt_muon or is_good_high_pt_muon)
             {
                 muons_p4.push_back(muon_p4);
-
                 is_fake.push_back(is_data ? false : Muon_genPartIdx[i] == -1);
             }
         }

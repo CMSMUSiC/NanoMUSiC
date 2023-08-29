@@ -326,7 +326,7 @@ def main():
     )
     ax1.plot(err_band, "2", fillcolor=1, fillstyle=3254, linewidth=0)
 
-    # ax1.set_ylim(1e-9)
+    ax1.set_ylim(1e-6)
     ax1.set_yscale("log")  # uncomment to use log scale for y axis
 
     # Plot the data as a graph
@@ -364,7 +364,7 @@ def main():
     ax1.set_ylabel("Events / 10 GeV")
     ax2.set_ylabel("Obs./Pred.", loc="centre")
 
-    ax2.set_ylim(0, 2)
+    ax2.set_ylim(0, 2.5)
     # ax2.set_ylim(0, 3)
     # ax2.set_ylim(1e-4, 3.5)
 

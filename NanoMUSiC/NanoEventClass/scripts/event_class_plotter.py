@@ -50,8 +50,9 @@ def parse_args():
 
     parser.add_argument(
         "--year",
-        help="Will merge and plot all years.",
+        help="Will merge and plot for a given year.",
         choices=list(years_glob.keys()),
+        required=True,
     )
 
     parser.add_argument(
@@ -243,12 +244,14 @@ def plot_event_class(ec, histogram_name, year, output_path):
             ),
             textsize=14,
         )
-        legend.AddEntry(data_graph, f"Data ({Decimal(data_hist.integral()):.2E})", "EP")
+        legend.AddEntry(
+            data_graph, f"Data ({Decimal(data_hist.histo.GetBinContent(1)):.2E})", "EP"
+        )
 
         for hist in reversed(mc_hists_keys_sorted):
             legend.AddEntry(
                 mc_hists[hist].histo,
-                f"{hist} ({Decimal(mc_hists[hist].integral()):.2E})",
+                f"{hist} ({Decimal(mc_hists[hist].histo.GetBinContent(1)):.2E})",
                 "F",
             )
 
@@ -325,6 +328,6 @@ if __name__ == "__main__":
             )
 
     os.system(
-        "cp $MUSIC_BASE/NanoMUSiC/NanoEventClass/scripts/index.php classification_plots/index.php"
+        f"cp $MUSIC_BASE/NanoMUSiC/NanoEventClass/scripts/index.php {args.output}/index.php"
     )
     os._exit(os.EX_OK)
