@@ -50,12 +50,16 @@ add_executable(
     src/TTBarTo1Lep2Bjet2JetMET.cpp //
     src/WToLepNuX.cpp //
     src/WToTauNuLepX.cpp //
-    src/WToLepNu_eff.cpp //
+    #src/WToLepNu_eff.cpp //
     src/ZToTauTauLepX.cpp //
     src/TauLepNuX.cpp //
     src/TauLepX.cpp //
-    src/TauLepNuGammaX.cpp //
-    src/TauLepGammaX.cpp //
+    #src/TauLepNuGammaX.cpp //
+    #src/TauLepGammaX.cpp //
+    src/EventClassFactory.cpp //
+    src/TauGammaX.cpp //
+    src/TauGammaNuX.cpp //
+
 
     # src/Dijets.cpp //
 )

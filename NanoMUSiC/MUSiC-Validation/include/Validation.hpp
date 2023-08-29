@@ -3,17 +3,22 @@
 
 // analysis classes
 // #include "Dijets.hpp"
+#include "EventClassFactory.hpp"
 #include "GammaPlusJet.hpp"
 #include "TTBarTo1Lep2Bjet2JetMET.hpp"
 #include "WToLepNuX.hpp"
 #include "WToTauNuLepX.hpp"
-#include "WToLepNu_eff.hpp"
+//#include "WToLepNu_eff.hpp"
 #include "ZToLepLepX.hpp"
 #include "ZToTauTauLepX.hpp"
 #include "TauLepNuX.hpp"
 #include "TauLepX.hpp"
-#include "TauLepNuGammaX.hpp"
-#include "TauLepGammaX.hpp"
+//#include "TauLepNuGammaX.hpp"
+//#include "TauLepGammaX.hpp"
+#include "TauGammaX.hpp"
+#include "TauGammaNuX.hpp"
+
+
 
 #include <functional>
 #include <optional>
