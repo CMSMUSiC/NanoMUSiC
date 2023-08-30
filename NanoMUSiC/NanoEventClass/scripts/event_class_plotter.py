@@ -56,6 +56,10 @@ def parse_args():
     )
 
     parser.add_argument(
+        "--histogram", help="Histogram to plot.", type=str, default="all"
+    )
+
+    parser.add_argument(
         "-p",
         "--patterns",
         required=True,
@@ -308,7 +312,11 @@ if __name__ == "__main__":
         args.patterns,
     )
 
-    for histogram_name in ["invariant_mass", "sum_pt", "counts", "met"]:
+    histograms_to_plot = ["invariant_mass", "sum_pt", "counts", "met"]
+    if args.histogram != "all":
+        histograms_to_plot = [args.histogram]
+
+    for histogram_name in histograms_to_plot:
         print(f"\n---- Plotting {histogram_name}...")
 
         with Pool(min(len(event_classes), 100)) as p:

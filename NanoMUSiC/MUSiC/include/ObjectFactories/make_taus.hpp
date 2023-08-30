@@ -117,11 +117,8 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
             ((Tau_idDeepTau2017v2p1VSmu[i] & 8) == 8) and (Tau_decayMode[i] != 5) and (Tau_decayMode[i] != 6) and
             (std::fabs(Tau_eta[i]) <= 2.1) and (std::fabs(Tau_dz[i]) < 0.2);
 
-        auto tau_p4 = Math::PtEtaPhiMVector(
-            Tau_pt[i],
-            Tau_eta[i],
-            Tau_phi[i],
-            Tau_mass[i]); // regard Tau_mass right here ("PDG::Tau::Mass" is only literature value)
+        // regard Tau_mass right here ("PDG::Tau::Mass" is only literature value)
+        auto tau_p4 = Math::PtEtaPhiMVector(Tau_pt[i], Tau_eta[i], Tau_phi[i], Tau_mass[i]);
 
         auto energy_correction = 1.;
         if (Tau_decayMode[i] != 5 and Tau_decayMode[i] != 6)

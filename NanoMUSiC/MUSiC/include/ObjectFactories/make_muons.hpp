@@ -91,16 +91,18 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
             // For some reason, the Relative pT Tune can yield very low corrected pT. Because of this,
             // they will be caped to 25., in order to not break the JSON SFs bound checks.
             // https://cms-nanoaod-integration.web.cern.ch/commonJSONSFs/summaries/MUO_2016postVFP_UL_muon_Z.html
-            // leading_muon.SetP t(std::max(Muon_tunepRelPt[0] * leading_muon.pt(), 25.));
+            // leading_muon.SetPt(std::max(Muon_tunepRelPt[0] * leading_muon.pt(), 25.));
             pt_correction_factor = Muon_tunepRelPt.at(i);
         }
 
         // build a muon and apply energy corrections
+        // auto muon_p4 =
+        // Math::PtEtaPhiMVector(std::max(Muon_pt[i] * pt_correction_factor, ObjConfig::Muons[year].MinLowPt),
+        //                       Muon_eta[i],
+        //                       Muon_phi[i],
+        //                       PDG::Muon::Mass) *
         auto muon_p4 =
-            Math::PtEtaPhiMVector(std::max(Muon_pt[i] * pt_correction_factor, ObjConfig::Muons[year].MinLowPt),
-                                  Muon_eta[i],
-                                  Muon_phi[i],
-                                  PDG::Muon::Mass) *
+            Math::PtEtaPhiMVector(Muon_pt[i] * pt_correction_factor, Muon_eta[i], Muon_phi[i], PDG::Muon::Mass) *
             get_muon_energy_corrections(shift);
 
         delta_met_x += (muon_p4.pt() - Muon_pt[i]) * std::cos(Muon_phi[i]);
@@ -112,7 +114,7 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
                                        (muon_p4.pt() < ObjConfig::Muons[year].MaxLowPt) and
                                        is_good_low_pt_muon_pre_filter;
             auto is_good_high_pt_muon =
-                (muon_p4.pt() >= ObjConfig::Muons[year].MaxLowPt) and is_good_low_pt_muon_pre_filter;
+                (muon_p4.pt() >= ObjConfig::Muons[year].MaxLowPt) and is_good_high_pt_muon_pre_filter;
 
             // calculate scale factors per object (particle)
             if (is_good_low_pt_muon)

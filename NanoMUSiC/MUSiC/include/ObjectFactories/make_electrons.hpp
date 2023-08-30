@@ -246,7 +246,9 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
 
         // define a new lorentz vector for a electron and apply the energy correction
         auto electron_p4 =
-            Math::PtEtaPhiMVector(std::max(Electron_pt[i] * pt_correction_factor, ObjConfig::Electrons[year].MinLowPt),
+            // Math::PtEtaPhiMVector(std::max(Electron_pt[i] * pt_correction_factor,
+            // ObjConfig::Electrons[year].MinLowPt),
+            Math::PtEtaPhiMVector(Electron_pt[i] * pt_correction_factor,
                                   Electron_eta[i] + eta_correction_factor,
                                   Electron_phi[i],
                                   PDG::Electron::Mass);
