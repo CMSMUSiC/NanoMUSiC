@@ -52,6 +52,10 @@ add_executable(
     src/WToLepNu_eff.cpp //
     src/ZToTauTauLepX.cpp //
     src/EventClassFactory.cpp //
+    src/TauLepNuX.cpp //    
+    src/TauLepX.cpp //
+    src/TauGammaNuX.cpp //
+    src/TauGammaX.cpp //
 )
 
 target_link_libraries(classification LINK_PUBLIC ROOT::RIO ROOT::Net)

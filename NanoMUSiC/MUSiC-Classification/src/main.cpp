@@ -254,6 +254,22 @@ auto main(int argc, char *argv[]) -> int
     std::unordered_map<std::string, TTBarTo1Lep2Bjet2JetMET> ttbar_to_1mu_2bjet_2jet_MET;
     std::unordered_map<std::string, TTBarTo1Lep2Bjet2JetMET> ttbar_to_1ele_2bjet_2jet_MET;
 
+    //////////////////////////  NEW  //////////////////////////
+    std::unordered_map<std::string, TauLepX> tau_mu;
+    std::unordered_map<std::string, TauLepX> tau_mu_x;  
+    std::unordered_map<std::string, TauLepNuX> tau_mu_nu;
+    std::unordered_map<std::string, TauLepNuX> tau_mu_nu_x;
+    std::unordered_map<std::string, TauLepX> tau_ele;
+    std::unordered_map<std::string, TauLepX> tau_ele_x;
+    std::unordered_map<std::string, TauLepNuX> tau_ele_nu;
+    std::unordered_map<std::string, TauLepNuX> tau_ele_nu_x;
+
+    std::unordered_map<std::string, TauGammaX> tau_gamma;
+    std::unordered_map<std::string, TauGammaX> tau_gamma_x;
+    std::unordered_map<std::string, TauGammaNuX> tau_gamma_nu;
+    std::unordered_map<std::string, TauGammaNuX> tau_gamma_nu_x;
+    //////////////////////////  NEW  //////////////////////////
+
     // Initialize analyses
     shifts.for_each(
         [&](const std::string &shift) -> void
@@ -267,6 +283,19 @@ auto main(int argc, char *argv[]) -> int
                 TTBarTo1Lep2Bjet2JetMET, ttbar_to_1mu_2bjet_2jet_MET, ttbar_to_1mu_2bjet_2jet_met_count_map);
             INITIALIZE_ANALYSIS(
                 TTBarTo1Lep2Bjet2JetMET, ttbar_to_1ele_2bjet_2jet_MET, ttbar_to_1ele_2bjet_2jet_met_count_map);
+
+            INITIALIZE_ANALYSIS(TauLepX, tau_mu, tau_mu_x_count_map);            
+            INITIALIZE_ANALYSIS(TauLepX, tau_mu_x, tau_mu_x_count_map);
+            INITIALIZE_ANALYSIS(TauLepNuX, tau_mu_nu, tau_mu_nu_x_count_map);
+            INITIALIZE_ANALYSIS(TauLepNuX, tau_mu_nu_x, tau_mu_nu_x_count_map);
+            INITIALIZE_ANALYSIS(TauLepX, tau_ele, tau_ele_x_count_map);            
+            INITIALIZE_ANALYSIS(TauLepX, tau_ele_x, tau_ele_x_count_map);
+            INITIALIZE_ANALYSIS(TauLepNuX, tau_ele_nu, tau_ele_nu_x_count_map);
+            INITIALIZE_ANALYSIS(TauLepNuX, tau_ele_nu_x, tau_ele_nu_x_count_map);
+            INITIALIZE_ANALYSIS(TauGammaX, tau_gamma, tau_gamma_x_count_map);            
+            INITIALIZE_ANALYSIS(TauGammaX, tau_gamma_x, tau_gamma_x_count_map);
+            INITIALIZE_ANALYSIS(TauGammaNuX, tau_gamma_nu, tau_gamma_nu_x_count_map);
+            INITIALIZE_ANALYSIS(TauGammaNuX, tau_gamma_nu_x, tau_gamma_nu_x_count_map);            
         });
 
     // [EVENT_CLASS_NAME, [SHIFT, EVENT_CLASS] ]
@@ -650,171 +679,437 @@ auto main(int argc, char *argv[]) -> int
                             ////////////////////////////
                             ////////////////////////////
 
-                            // MuMu + X
-                            unsigned int n_muons = 2;
-                            if (muons.size() >= n_muons and (trigger_matches.at("pass_low_pt_muon_trigger") or
-                                                             trigger_matches.at("pass_high_pt_muon_trigger") or
-                                                             trigger_matches.at("pass_double_muon_trigger")))
-                            {
-                                auto muon_1 = muons.p4[0];
-                                auto muon_2 = muons.p4[1];
+                            // // MuMu + X
+                            // unsigned int n_muons = 2;
+                            // if (muons.size() >= n_muons and (trigger_matches.at("pass_low_pt_muon_trigger") or
+                            //                                  trigger_matches.at("pass_high_pt_muon_trigger") or
+                            //                                  trigger_matches.at("pass_double_muon_trigger")))
+                            // {
+                            //     auto muon_1 = muons.p4[0];
+                            //     auto muon_2 = muons.p4[1];
 
-                                // wide mass range
-                                z_to_mu_mu_x[shift].fill(muon_1,
-                                                         muon_2,
-                                                         bjets.p4,
-                                                         jets.p4,
+                            //     // wide mass range
+                            //     z_to_mu_mu_x[shift].fill(muon_1,
+                            //                              muon_2,
+                            //                              bjets.p4,
+                            //                              jets.p4,
+                            //                              met.p4,
+                            //                              weight * Shifts::get_scale_factor(shift,
+                            //                                                                {n_muons, muons},
+                            //                                                                {0, electrons},
+                            //                                                                {0, taus},
+                            //                                                                {0, photons},
+                            //                                                                {0, bjets},
+                            //                                                                {0, jets},
+                            //                                                                {0, met}));
+
+                            //     // Z mass range
+                            //     if (PDG::Z::Mass - 20. < (muon_1 + muon_2).mass() and
+                            //         (muon_1 + muon_2).mass() < PDG::Z::Mass + 20.)
+                            //     {
+                            //         z_to_mu_mu_x_Z_mass[shift].fill(muon_1,
+                            //                                         muon_2,
+                            //                                         bjets.p4,
+                            //                                         jets.p4,
+                            //                                         met.p4,
+                            //                                         weight * Shifts::get_scale_factor(shift,
+                            //                                                                           {n_muons, muons},
+                            //                                                                           {0, electrons},
+                            //                                                                           {0, taus},
+                            //                                                                           {0, photons},
+                            //                                                                           {0, bjets},
+                            //                                                                           {0, jets},
+                            //                                                                           {0, met}));
+                            //     }
+                            // }
+
+                            // // EleEle + X
+                            // unsigned int n_electrons = 2;
+                            // if (electrons.size() >= n_electrons and
+                            //     (trigger_matches.at("pass_low_pt_electron_trigger") or
+                            //      trigger_matches.at("pass_high_pt_electron_trigger") or
+                            //      trigger_matches.at("pass_double_electron_trigger")))
+                            // {
+                            //     // enter_electron_analysis++;
+                            //     auto electron_1 = electrons.p4[0];
+                            //     auto electron_2 = electrons.p4[1];
+
+                            //     // wide mass range
+                            //     z_to_ele_ele_x[shift].fill(electron_1,
+                            //                                electron_2,
+                            //                                bjets.p4,
+                            //                                jets.p4,
+                            //                                met.p4,
+                            //                                weight * Shifts::get_scale_factor(shift,
+                            //                                                                  {0, muons},
+                            //                                                                  {n_electrons, electrons},
+                            //                                                                  {0, taus},
+                            //                                                                  {0, photons},
+                            //                                                                  {0, bjets},
+                            //                                                                  {0, jets},
+                            //                                                                  {0, met}));
+
+                            //     // Z mass range
+                            //     if (PDG::Z::Mass - 20. < (electron_1 + electron_2).mass() and
+                            //         (electron_1 + electron_2).mass() < PDG::Z::Mass + 20.)
+                            //     {
+                            //         z_to_ele_ele_x_Z_mass[shift].fill(
+                            //             electron_1,
+                            //             electron_2,
+                            //             bjets.p4,
+                            //             jets.p4,
+                            //             met.p4,
+                            //             weight * Shifts::get_scale_factor(shift,
+                            //                                               {0, muons},
+                            //                                               {n_electrons, electrons},
+                            //                                               {0, taus},
+                            //                                               {0, photons},
+                            //                                               {0, bjets},
+                            //                                               {0, jets},
+                            //                                               {0, met}));
+                            //     }
+                            // }
+
+                            // // Gamma Plus Jets
+                            // unsigned int n_lepton = electrons.size() + muons.size() + taus.size();
+                            // if (photons.size() == 1 and jets.size() == 1 and n_lepton == 0 and met.size() == 0 and
+                            //     (trigger_matches.at("pass_photon_trigger")))
+                            // {
+                            //     auto gamma = photons.p4[0];
+                            //     gamma_plus_jet[shift].fill(gamma,
+                            //                                weight * Shifts::get_scale_factor(shift,
+                            //                                                                  {0, muons},
+                            //                                                                  {0, electrons},
+                            //                                                                  {0, taus},
+                            //                                                                  {1, photons},
+                            //                                                                  {0, bjets},
+                            //                                                                  {1, jets},
+                            //                                                                  {0, met}));
+                            // }
+
+                            // // ttbar -> (mu+nu) + (qq)
+                            // if (muons.size() > 0 and jets.size() >= 2 and bjets.size() >= 2 and
+                            //     (trigger_matches.at("pass_low_pt_muon_trigger") or
+                            //      trigger_matches.at("pass_high_pt_muon_trigger")))
+                            // {
+                            //     auto muon = muons.p4[0];
+                            //     auto jet_1 = jets.p4[0];
+                            //     auto jet_2 = jets.p4[1];
+                            //     auto bjet_1 = bjets.p4[0];
+                            //     auto bjet_2 = bjets.p4[1];
+                            //     auto MET = met.p4[0];
+
+                            //     ttbar_to_1mu_2bjet_2jet_MET[shift].fill(muon,
+                            //                                             jet_1,
+                            //                                             jet_2,
+                            //                                             bjet_1,
+                            //                                             bjet_2,
+                            //                                             MET,
+                            //                                             weight *
+                            //                                                 Shifts::get_scale_factor(shift,
+                            //                                                                          {1, muons},
+                            //                                                                          {0, electrons},
+                            //                                                                          {0, taus},
+                            //                                                                          {0, photons},
+                            //                                                                          {2, bjets},
+                            //                                                                          {2, jets},
+                            //                                                                          {1, met}));
+                            // }
+
+                            // // ttbar to ele
+                            // if (electrons.size() > 0 and jets.size() >= 2 and bjets.size() >= 2 and
+                            //     (trigger_matches.at("pass_low_pt_electron_trigger") or
+                            //      trigger_matches.at("pass_high_pt_electron_trigger")))
+                            // {
+                            //     auto electron = electrons.p4[0];
+                            //     auto jet_1 = jets.p4[0];
+                            //     auto jet_2 = jets.p4[1];
+                            //     auto bjet_1 = bjets.p4[0];
+                            //     auto bjet_2 = bjets.p4[1];
+                            //     auto MET = met.p4[0];
+
+                            //     ttbar_to_1ele_2bjet_2jet_MET[shift].fill(electron,
+                            //                                              jet_1,
+                            //                                              jet_2,
+                            //                                              bjet_1,
+                            //                                              bjet_2,
+                            //                                              MET,
+                            //                                              weight *
+                            //                                                  Shifts::get_scale_factor(shift,
+                            //                                                                           {0, muons},
+                            //                                                                           {1, electrons},
+                            //                                                                           {0, taus},
+                            //                                                                           {0, photons},
+                            //                                                                           {2, bjets},
+                            //                                                                           {2, jets},
+                            //                                                                           {1, met}));
+                            // }
+                            // Tau + Ele
+                            if (taus.size() == 1 and electrons.size() == 1 and 
+                                muons.size() == 0 and photons.size() == 0 and bjets.size() == 0 and jets.size() == 0 and met.size() == 0 and
+                                //(trigger_matches.at("pass_low_pt_electron_trigger") or
+                                 (trigger_matches.at("pass_high_pt_electron_trigger")))   
+                            {
+                                auto tau = taus.p4[0];
+                                auto electron = electrons.p4[0];
+
+                                tau_ele[shift].fill(tau,
+                                                    met.p4,
+                                                    electron,
+                                                    weight * Shifts::get_scale_factor(shift,
+                                                                                      {0, muons},
+                                                                                      {1, electrons},
+                                                                                      {1, taus},
+                                                                                      {0, photons},
+                                                                                      {0, bjets},
+                                                                                      {0, jets},
+                                                                                      {0, met}));
+                            }
+                            
+                            // Tau + Ele + X
+                            if (taus.size() >= 1 and electrons.size() >= 1 and
+                                //(trigger_matches.at("pass_low_pt_electron_trigger") or
+                                 (trigger_matches.at("pass_high_pt_electron_trigger")))   
+                            {
+                                auto tau = taus.p4[0];
+                                auto electron = electrons.p4[0];
+                                if (electrons.p4[0].pt() < 120)
+                                {
+                                    fmt::print("\n pt of electron < 120 \n");
+                                    for (std::size_t i=0; i<electrons.size(); i++)
+                                    {
+                                        fmt::print("\n Pt is: {}\n", electrons.p4[i].pt());
+                                    }
+                                    
+                                }
+
+                                tau_ele_x[shift].fill(tau,
+                                                      met.p4,
+                                                      electron,
+                                                      weight * Shifts::get_scale_factor(shift,
+                                                                                        {0, muons},
+                                                                                        {1, electrons},
+                                                                                        {1, taus},
+                                                                                        {0, photons},
+                                                                                        {0, bjets},
+                                                                                        {0, jets},
+                                                                                        {0, met}));
+                            }
+
+                            // Tau + Ele + Nu
+                            if (taus.size() == 1 and electrons.size() == 1 and met.size() == 1 and
+                                muons.size() == 0 and photons.size() == 0 and bjets.size() == 0 and jets.size() == 0 and
+                                //(trigger_matches.at("pass_low_pt_electron_trigger") or
+                                 (trigger_matches.at("pass_high_pt_electron_trigger")))   
+                            {
+                                auto tau = taus.p4[0];
+                                auto electron = electrons.p4[0];
+
+                                tau_ele_nu[shift].fill(tau,
+                                                       met.p4,
+                                                       electron,
+                                                       weight * Shifts::get_scale_factor(shift,
+                                                                                         {0, muons},
+                                                                                         {1, electrons},
+                                                                                         {1, taus},
+                                                                                         {0, photons},
+                                                                                         {0, bjets},
+                                                                                         {0, jets},
+                                                                                         {1, met}));
+                            }
+
+                            // Tau + Ele + Nu + X
+                            if (taus.size() >= 1 and electrons.size() >= 1 and met.size() >= 1 and 
+                                //(trigger_matches.at("pass_low_pt_electron_trigger") or
+                                 (trigger_matches.at("pass_high_pt_electron_trigger")))   
+                            {
+                                auto tau = taus.p4[0];
+                                auto electron = electrons.p4[0];
+
+                                tau_ele_nu_x[shift].fill(tau,
                                                          met.p4,
+                                                         electron,
                                                          weight * Shifts::get_scale_factor(shift,
-                                                                                           {n_muons, muons},
-                                                                                           {0, electrons},
-                                                                                           {0, taus},
+                                                                                           {0, muons},
+                                                                                           {1, electrons},
+                                                                                           {1, taus},
                                                                                            {0, photons},
                                                                                            {0, bjets},
                                                                                            {0, jets},
-                                                                                           {0, met}));
-
-                                // Z mass range
-                                if (PDG::Z::Mass - 20. < (muon_1 + muon_2).mass() and
-                                    (muon_1 + muon_2).mass() < PDG::Z::Mass + 20.)
-                                {
-                                    z_to_mu_mu_x_Z_mass[shift].fill(muon_1,
-                                                                    muon_2,
-                                                                    bjets.p4,
-                                                                    jets.p4,
-                                                                    met.p4,
-                                                                    weight * Shifts::get_scale_factor(shift,
-                                                                                                      {n_muons, muons},
-                                                                                                      {0, electrons},
-                                                                                                      {0, taus},
-                                                                                                      {0, photons},
-                                                                                                      {0, bjets},
-                                                                                                      {0, jets},
-                                                                                                      {0, met}));
-                                }
+                                                                                           {1, met}));
                             }
-
-                            // EleEle + X
-                            unsigned int n_electrons = 2;
-                            if (electrons.size() >= n_electrons and
-                                (trigger_matches.at("pass_low_pt_electron_trigger") or
-                                 trigger_matches.at("pass_high_pt_electron_trigger") or
-                                 trigger_matches.at("pass_double_electron_trigger")))
+                            // Tau + Mu
+                            if (taus.size() == 1 and muons.size() == 1 and
+                                electrons.size() == 0 and photons.size() == 0 and bjets.size() == 0 and jets.size() == 0 and met.size() == 0 and
+                                //(trigger_matches.at("pass_low_pt_muon_trigger") or
+                                 (trigger_matches.at("pass_high_pt_muon_trigger")))   
                             {
-                                // enter_electron_analysis++;
-                                auto electron_1 = electrons.p4[0];
-                                auto electron_2 = electrons.p4[1];
-
-                                // wide mass range
-                                z_to_ele_ele_x[shift].fill(electron_1,
-                                                           electron_2,
-                                                           bjets.p4,
-                                                           jets.p4,
-                                                           met.p4,
-                                                           weight * Shifts::get_scale_factor(shift,
-                                                                                             {0, muons},
-                                                                                             {n_electrons, electrons},
-                                                                                             {0, taus},
-                                                                                             {0, photons},
-                                                                                             {0, bjets},
-                                                                                             {0, jets},
-                                                                                             {0, met}));
-
-                                // Z mass range
-                                if (PDG::Z::Mass - 20. < (electron_1 + electron_2).mass() and
-                                    (electron_1 + electron_2).mass() < PDG::Z::Mass + 20.)
-                                {
-                                    z_to_ele_ele_x_Z_mass[shift].fill(
-                                        electron_1,
-                                        electron_2,
-                                        bjets.p4,
-                                        jets.p4,
-                                        met.p4,
-                                        weight * Shifts::get_scale_factor(shift,
-                                                                          {0, muons},
-                                                                          {n_electrons, electrons},
-                                                                          {0, taus},
-                                                                          {0, photons},
-                                                                          {0, bjets},
-                                                                          {0, jets},
-                                                                          {0, met}));
-                                }
-                            }
-
-                            // Gamma Plus Jets
-                            unsigned int n_lepton = electrons.size() + muons.size() + taus.size();
-                            if (photons.size() == 1 and jets.size() == 1 and n_lepton == 0 and met.size() == 0 and
-                                (trigger_matches.at("pass_photon_trigger")))
-                            {
-                                auto gamma = photons.p4[0];
-                                gamma_plus_jet[shift].fill(gamma,
-                                                           weight * Shifts::get_scale_factor(shift,
-                                                                                             {0, muons},
-                                                                                             {0, electrons},
-                                                                                             {0, taus},
-                                                                                             {1, photons},
-                                                                                             {0, bjets},
-                                                                                             {1, jets},
-                                                                                             {0, met}));
-                            }
-
-                            // ttbar -> (mu+nu) + (qq)
-                            if (muons.size() > 0 and jets.size() >= 2 and bjets.size() >= 2 and
-                                (trigger_matches.at("pass_low_pt_muon_trigger") or
-                                 trigger_matches.at("pass_high_pt_muon_trigger")))
-                            {
+                                auto tau = taus.p4[0];
                                 auto muon = muons.p4[0];
-                                auto jet_1 = jets.p4[0];
-                                auto jet_2 = jets.p4[1];
-                                auto bjet_1 = bjets.p4[0];
-                                auto bjet_2 = bjets.p4[1];
-                                auto MET = met.p4[0];
 
-                                ttbar_to_1mu_2bjet_2jet_MET[shift].fill(muon,
-                                                                        jet_1,
-                                                                        jet_2,
-                                                                        bjet_1,
-                                                                        bjet_2,
-                                                                        MET,
-                                                                        weight *
-                                                                            Shifts::get_scale_factor(shift,
-                                                                                                     {1, muons},
-                                                                                                     {0, electrons},
-                                                                                                     {0, taus},
-                                                                                                     {0, photons},
-                                                                                                     {2, bjets},
-                                                                                                     {2, jets},
-                                                                                                     {1, met}));
+                                tau_mu[shift].fill(tau,
+                                                   met.p4,
+                                                   muon,
+                                                   weight * Shifts::get_scale_factor(shift,
+                                                                                     {1, muons},
+                                                                                     {0, electrons},
+                                                                                     {1, taus},
+                                                                                     {0, photons},
+                                                                                     {0, bjets},
+                                                                                     {0, jets},
+                                                                                     {0, met}));
                             }
-
-                            // ttbar to ele
-                            if (electrons.size() > 0 and jets.size() >= 2 and bjets.size() >= 2 and
-                                (trigger_matches.at("pass_low_pt_electron_trigger") or
-                                 trigger_matches.at("pass_high_pt_electron_trigger")))
+                            
+                            // Tau + Mu + X
+                            if (taus.size() >= 1 and muons.size() >= 1 and
+                                //(trigger_matches.at("pass_low_pt_muon_trigger") or
+                                 (trigger_matches.at("pass_high_pt_muon_trigger")))   
                             {
-                                auto electron = electrons.p4[0];
-                                auto jet_1 = jets.p4[0];
-                                auto jet_2 = jets.p4[1];
-                                auto bjet_1 = bjets.p4[0];
-                                auto bjet_2 = bjets.p4[1];
-                                auto MET = met.p4[0];
+                                auto tau = taus.p4[0];
+                                auto muon = muons.p4[0];
 
-                                ttbar_to_1ele_2bjet_2jet_MET[shift].fill(electron,
-                                                                         jet_1,
-                                                                         jet_2,
-                                                                         bjet_1,
-                                                                         bjet_2,
-                                                                         MET,
-                                                                         weight *
-                                                                             Shifts::get_scale_factor(shift,
-                                                                                                      {0, muons},
-                                                                                                      {1, electrons},
-                                                                                                      {0, taus},
-                                                                                                      {0, photons},
-                                                                                                      {2, bjets},
-                                                                                                      {2, jets},
-                                                                                                      {1, met}));
+                                tau_mu_x[shift].fill(tau,
+                                                      met.p4,
+                                                      muon,
+                                                      weight * Shifts::get_scale_factor(shift,
+                                                                                        {1, muons},
+                                                                                        {0, electrons},
+                                                                                        {1, taus},
+                                                                                        {0, photons},
+                                                                                        {0, bjets},
+                                                                                        {0, jets},
+                                                                                        {0, met}));
                             }
+
+                            // Tau + Mu + Nu
+                            if (taus.size() == 1 and muons.size() == 1 and met.size() == 1 and
+                                electrons.size() == 0 and photons.size() == 0 and bjets.size() == 0 and jets.size() == 0 and
+                                //(trigger_matches.at("pass_low_pt_muon_trigger") or
+                                 (trigger_matches.at("pass_high_pt_muon_trigger")))   
+                            {
+                                auto tau = taus.p4[0];
+                                auto muon = muons.p4[0];
+
+                                tau_mu_nu[shift].fill(tau,
+                                                      met.p4,
+                                                      muon,
+                                                      weight * Shifts::get_scale_factor(shift,
+                                                                                        {1, muons},
+                                                                                        {0, electrons},
+                                                                                        {1, taus},
+                                                                                        {0, photons},
+                                                                                        {0, bjets},
+                                                                                        {0, jets},
+                                                                                        {1, met}));
+                            }
+
+                            // Tau + Mu + Nu + X
+                            if (taus.size() >= 1 and muons.size() >= 1 and met.size() >= 1 and 
+                                //(trigger_matches.at("pass_low_pt_muon_trigger") or
+                                 (trigger_matches.at("pass_high_pt_muon_trigger")))   
+                            {
+                                auto tau = taus.p4[0];
+                                auto muon = muons.p4[0];
+
+                                tau_mu_nu_x[shift].fill(tau,
+                                                        met.p4,
+                                                        muon,
+                                                        weight * Shifts::get_scale_factor(shift,
+                                                                                          {1, muons},
+                                                                                          {0, electrons},
+                                                                                          {1, taus},
+                                                                                          {0, photons},
+                                                                                          {0, bjets},
+                                                                                          {0, jets},
+                                                                                          {1, met}));
+                            }
+
+
+                            // Tau + Gamma
+                            if (taus.size() == 1 and photons.size() == 1 and 
+                                muons.size() == 0 and bjets.size() == 0 and jets.size() == 0 and met.size() == 0 and electrons.size() == 0 and
+                                trigger_matches.at("pass_photon_trigger"))   
+                            {
+                                auto tau = taus.p4[0];
+                                auto photon = photons.p4[0];
+
+                                tau_gamma[shift].fill(tau,
+                                                    met.p4,
+                                                    photon,
+                                                    weight * Shifts::get_scale_factor(shift,
+                                                                                      {0, muons},
+                                                                                      {0, electrons},
+                                                                                      {1, taus},
+                                                                                      {1, photons},
+                                                                                      {0, bjets},
+                                                                                      {0, jets},
+                                                                                      {0, met}));
+                            }
+                            
+                            // Tau + Gamma + X
+                            if (taus.size() >= 1 and photons.size() >= 1 and trigger_matches.at("pass_photon_trigger"))   
+                            {
+                                auto tau = taus.p4[0];
+                                auto photon = photons.p4[0];
+                               
+
+                                tau_gamma_x[shift].fill(tau,
+                                                      met.p4,
+                                                      photon,
+                                                      weight * Shifts::get_scale_factor(shift,
+                                                                                        {0, muons},
+                                                                                        {0, electrons},
+                                                                                        {1, taus},
+                                                                                        {1, photons},
+                                                                                        {0, bjets},
+                                                                                        {0, jets},
+                                                                                        {0, met}));
+                            }
+
+                            // Tau + Gamma + Nu
+                            if (taus.size() == 1 and photons.size() == 1 and  met.size() == 1 and
+                                muons.size() == 0 and bjets.size() == 0 and jets.size() == 0 and electrons.size() == 0 and
+                                trigger_matches.at("pass_photon_trigger"))   
+                            {
+                                auto tau = taus.p4[0];
+                                auto photon = photons.p4[0];
+
+                                tau_gamma_nu[shift].fill(tau,
+                                                    met.p4,
+                                                    photon,
+                                                    weight * Shifts::get_scale_factor(shift,
+                                                                                      {0, muons},
+                                                                                      {0, electrons},
+                                                                                      {1, taus},
+                                                                                      {1, photons},
+                                                                                      {0, bjets},
+                                                                                      {0, jets},
+                                                                                      {1, met}));
+                            }
+                            
+                            // Tau + Gamma + Nu + X
+                            if (taus.size() >= 1 and photons.size() >= 1 and met.size() >= 1 
+                                and trigger_matches.at("pass_photon_trigger"))   
+                            {
+                                auto tau = taus.p4[0];
+                                auto photon = photons.p4[0];
+                               
+
+                                tau_gamma_nu_x[shift].fill(tau,
+                                                      met.p4,
+                                                      photon,
+                                                      weight * Shifts::get_scale_factor(shift,
+                                                                                        {0, muons},
+                                                                                        {0, electrons},
+                                                                                        {1, taus},
+                                                                                        {1, photons},
+                                                                                        {0, bjets},
+                                                                                        {0, jets},
+                                                                                        {1, met}));
+                            }
+
+                            //////////////////////////  NEW  //////////////////////////
+
                         }
                     }
                 }
@@ -853,14 +1148,29 @@ auto main(int argc, char *argv[]) -> int
     shifts.for_each(
         [&](const std::string &shift) -> void
         {
-            z_to_mu_mu_x[shift].dump_outputs(ec_output_file);
-            z_to_mu_mu_x_Z_mass[shift].dump_outputs(ec_output_file);
-            z_to_ele_ele_x[shift].dump_outputs(ec_output_file);
-            z_to_ele_ele_x_Z_mass[shift].dump_outputs(ec_output_file);
-            gamma_plus_jet[shift].dump_outputs(ec_output_file);
-            ttbar_to_1mu_2bjet_2jet_MET[shift].dump_outputs(ec_output_file);
-            ttbar_to_1ele_2bjet_2jet_MET[shift].dump_outputs(ec_output_file);
+            // z_to_mu_mu_x[shift].dump_outputs(ec_output_file);
+            // z_to_mu_mu_x_Z_mass[shift].dump_outputs(ec_output_file);
+            // z_to_ele_ele_x[shift].dump_outputs(ec_output_file);
+            // z_to_ele_ele_x_Z_mass[shift].dump_outputs(ec_output_file);
+            // gamma_plus_jet[shift].dump_outputs(ec_output_file);
+            // ttbar_to_1mu_2bjet_2jet_MET[shift].dump_outputs(ec_output_file);
+            // ttbar_to_1ele_2bjet_2jet_MET[shift].dump_outputs(ec_output_file);
             // dijets.dump_outputs(ec_output_file);
+
+            //////////////////////////  NEW  //////////////////////////
+            tau_mu[shift].dump_outputs();
+            tau_mu_x[shift].dump_outputs();
+            tau_mu_nu[shift].dump_outputs();
+            tau_mu_nu_x[shift].dump_outputs();
+            tau_ele[shift].dump_outputs();
+            tau_ele_x[shift].dump_outputs();
+            tau_ele_nu[shift].dump_outputs();
+            tau_ele_nu_x[shift].dump_outputs();
+            tau_gamma[shift].dump_outputs();
+            tau_gamma_x[shift].dump_outputs();
+            tau_gamma_nu[shift].dump_outputs();
+            tau_gamma_nu_x[shift].dump_outputs();
+            //////////////////////////  NEW  //////////////////////////
 
             for (auto &&[class_name, class_collection] : event_classes)
             {

@@ -12,6 +12,10 @@
 #include "WToLepNu_eff.hpp"
 #include "ZToLepLepX.hpp"
 #include "ZToTauTauLepX.hpp"
+#include "TauGammaX.hpp"
+#include "TauGammaNuX.hpp"
+#include "TauLepX.hpp"
+#include "TauLepNuX.hpp"
 
 const std::map<std::string, int> z_to_mu_mu_x_count_map = {{"Ele", 0},
                                                            {"EleEE", 0},
@@ -96,4 +100,78 @@ const std::map<std::string, int> z_to_tau_tau_x_count_map = {{"Ele", 0},
                                                              {"Jet", 0},
                                                              {"bJet", 0},
                                                              {"MET", 0}};
+
+    //////////////////////////  NEW  //////////////////////////
+const std::map<std::string, int> tau_mu_x_count_map = {{"Ele", 0},
+                                                       {"EleEE", 0},
+                                                       {"EleEB", 0},
+                                                       {"Muon", 1},
+                                                       {"Gamma", 0},
+                                                       {"GammaEB", 0},
+                                                       {"GammaEE", 0},
+                                                       {"Tau", 1},
+                                                       {"Jet", 0},
+                                                       {"bJet", 0},
+                                                       {"MET", 0}};
+
+const std::map<std::string, int> tau_mu_nu_x_count_map = {{"Ele", 0},
+                                                          {"EleEE", 0},
+                                                          {"EleEB", 0},
+                                                          {"Muon", 1},
+                                                          {"Gamma", 0},
+                                                          {"GammaEB", 0},
+                                                          {"GammaEE", 0},
+                                                          {"Tau", 1},
+                                                          {"Jet", 0},
+                                                          {"bJet", 0},
+                                                          {"MET", 1}};
+
+const std::map<std::string, int> tau_ele_x_count_map = {{"Ele", 1},
+                                                        {"EleEE", 0},
+                                                        {"EleEB", 0},
+                                                        {"Muon", 0},
+                                                        {"Gamma", 0},
+                                                        {"GammaEB", 0},
+                                                        {"GammaEE", 0},
+                                                        {"Tau", 1},
+                                                        {"Jet", 0},
+                                                        {"bJet", 0},
+                                                        {"MET", 0}};
+
+const std::map<std::string, int> tau_ele_nu_x_count_map = {{"Ele", 1},
+                                                           {"EleEE", 0},
+                                                           {"EleEB", 0},
+                                                           {"Muon", 0},
+                                                           {"Gamma", 0},
+                                                           {"GammaEB", 0},
+                                                           {"GammaEE", 0},
+                                                           {"Tau", 1},
+                                                           {"Jet", 0},
+                                                           {"bJet", 0},
+                                                           {"MET", 1}};
+
+    //better gammas i think?
+const std::map<std::string, int> tau_gamma_x_count_map = {{"Ele", 0},
+                                                          {"EleEE", 0},
+                                                          {"EleEB", 0},
+                                                          {"Muon", 0},
+                                                          {"Gamma", 0},
+                                                          {"GammaEB", 1},
+                                                          {"GammaEE", 0},
+                                                          {"Tau", 1},
+                                                          {"Jet", 0},
+                                                          {"bJet", 0},
+                                                          {"MET", 0}};
+
+const std::map<std::string, int> tau_gamma_nu_x_count_map = {{"Ele", 0},
+                                                             {"EleEE", 0},
+                                                             {"EleEB", 0},
+                                                             {"Muon", 0},
+                                                             {"Gamma", 0},
+                                                             {"GammaEB", 1},
+                                                             {"GammaEE", 0},
+                                                             {"Tau", 1},
+                                                             {"Jet", 0},
+                                                             {"bJet", 0},
+                                                             {"MET", 1}};                                                             
 #endif // !VALIDATION
