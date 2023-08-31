@@ -371,7 +371,10 @@ inline auto get_output_branches(const TaskConfiguration &configuration) -> std::
         "MET_pt",
         "MET_phi",
         "MET_MetUnclustEnUpDeltaX",
-        "MET_MetUnclustEnUpDeltaY" //
+        "MET_MetUnclustEnUpDeltaY",
+        "RawMET_pt",
+        "RawMET_phi",
+        "RawMET_sumEt" //
     };
     const std::vector<std::string> output_branches_mc_only = {
         "mc_weight",

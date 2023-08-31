@@ -17,8 +17,8 @@ using namespace ROOT::VecOps;
 namespace ObjectFactories
 {
 
-inline auto make_met(const double met_pt,                      //
-                     const double met_phi,                     //
+inline auto make_met(const double raw_met_pt,                  //
+                     const double raw_met_phi,                 //
                      const double delta_met_px_from_muons,     //
                      const double delta_met_py_from_muons,     //
                      const double delta_met_px_from_electrons, //
@@ -45,21 +45,21 @@ inline auto make_met(const double met_pt,                      //
     auto delta_met_y = 0.;
     auto is_fake = RVec<bool>{};
 
-    auto met_px = met_pt * std::cos(met_phi)    //
-                  + delta_met_px_from_muons     //
-                  + delta_met_px_from_electrons //
-                  + delta_met_px_from_taus      //
-                  + delta_met_px_from_photons   //
-                  + delta_met_px_from_jets      //
-                  + delta_met_px_from_bjets;
+    auto met_px = raw_met_pt * std::cos(raw_met_phi) //
+                  - delta_met_px_from_muons          //
+                  - delta_met_px_from_electrons      //
+                  - delta_met_px_from_taus           //
+                  - delta_met_px_from_photons        //
+                  - delta_met_px_from_jets           //
+                  - delta_met_px_from_bjets;
 
-    auto met_py = met_pt * std::sin(met_phi)    //
-                  + delta_met_py_from_muons     //
-                  + delta_met_py_from_electrons //
-                  + delta_met_py_from_taus      //
-                  + delta_met_py_from_photons   //
-                  + delta_met_py_from_jets      //
-                  + delta_met_py_from_bjets;
+    auto met_py = raw_met_pt * std::sin(raw_met_phi) //
+                  - delta_met_py_from_muons          //
+                  - delta_met_py_from_electrons      //
+                  - delta_met_py_from_taus           //
+                  - delta_met_py_from_photons        //
+                  - delta_met_py_from_jets           //
+                  - delta_met_py_from_bjets;
 
     auto this_met = Math::PxPyPzMVector(met_px, met_py, 0., 0.);
 

@@ -28,26 +28,26 @@ class JetCorrector
     // correction::Correction::Ref scale_correction_ref;
     correction::CompoundCorrection::Ref scale_correction_ref;
     correction::Correction::Ref scale_uncertainty_correction_ref;
-    constexpr static double min_correction_factor = 1E-9;
+    constexpr static double min_correction_factor = 0.;
 
   public:
     JetCorrector(const Year &_year, const std::string &_era, const bool _is_data);
-    auto get_resolution(float pt, float eta, float rho) const -> float;
-    auto get_resolution_scale_factor(float eta, const std::string &variation = "Nominal") const -> float;
+    auto get_resolution(float pt, float eta, float rho) const -> double;
+    auto get_resolution_scale_factor(float eta, const std::string &variation = "Nominal") const -> double;
     auto get_resolution_correction(float pt,
                                    float eta,
                                    float phi,
                                    float rho,
                                    int genjet_idx,
                                    const NanoObjects::GenJets &gen_jets,
-                                   const std::string &variation = "Nominal") -> float;
+                                   const std::string &variation = "Nominal") -> double;
     auto get_scale_correction(float pt,
                               float eta,
                               float phi,
                               float raw_factor,
                               float rho,
                               float area,
-                              const std::string &variation = "Nominal") const -> float;
+                              const std::string &variation = "Nominal") const -> double;
 };
 
 #endif // !JETCORRECTOR_HPP

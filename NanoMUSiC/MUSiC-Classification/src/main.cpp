@@ -175,8 +175,11 @@ auto main(int argc, char *argv[]) -> int
     ADD_ARRAY_READER(Jet_area, float);
     ADD_ARRAY_READER(Jet_genJetIdx, Int_t);
 
-    ADD_VALUE_READER(MET_pt, float);
-    ADD_VALUE_READER(MET_phi, float);
+    // ADD_VALUE_READER(MET_pt, float);
+    // ADD_VALUE_READER(MET_phi, float);
+
+    ADD_VALUE_READER(RawMET_pt, float);
+    ADD_VALUE_READER(RawMET_phi, float);
 
     const auto shifts = Shifts(is_data);
 
@@ -383,7 +386,7 @@ auto main(int argc, char *argv[]) -> int
                                                        tau_energy_scale,                   //
                                                        is_data,                            //
                                                        year,                               //
-                                                       shift);
+                                                       diff_shift);
 
                 auto photons = ObjectFactories::make_photons(unwrap(Photon_pt),          //
                                                              unwrap(Photon_eta),         //
@@ -438,23 +441,26 @@ auto main(int argc, char *argv[]) -> int
                 jets.clear(muons, 0.5);
                 bjets.clear(muons, 0.5);
 
-                auto met = ObjectFactories::make_met(unwrap(MET_pt),              //
-                                                     unwrap(MET_phi),             //
-                                                     muons.get_delta_met_x(),     //
-                                                     muons.get_delta_met_y(),     //
-                                                     electrons.get_delta_met_x(), //
-                                                     electrons.get_delta_met_y(), //
-                                                     taus.get_delta_met_x(),      //
-                                                     taus.get_delta_met_y(),      //
-                                                     photons.get_delta_met_x(),   //
-                                                     photons.get_delta_met_y(),   //
-                                                     jets.get_delta_met_x(),      //
-                                                     jets.get_delta_met_y(),      //
-                                                     bjets.get_delta_met_x(),     //
-                                                     bjets.get_delta_met_y(),     //
-                                                     is_data,                     //
-                                                     year,                        //
-                                                     diff_shift);
+                auto met = ObjectFactories::make_met( //
+                                                      // unwrap(MET_pt),                   //
+                    unwrap(RawMET_pt),                //
+                    // unwrap(MET_phi),                  //
+                    unwrap(RawMET_phi),          //
+                    muons.get_delta_met_x(),     //
+                    muons.get_delta_met_y(),     //
+                    electrons.get_delta_met_x(), //
+                    electrons.get_delta_met_y(), //
+                    taus.get_delta_met_x(),      //
+                    taus.get_delta_met_y(),      //
+                    photons.get_delta_met_x(),   //
+                    photons.get_delta_met_y(),   //
+                    jets.get_delta_met_x(),      //
+                    jets.get_delta_met_y(),      //
+                    bjets.get_delta_met_x(),     //
+                    bjets.get_delta_met_y(),     //
+                    is_data,                     //
+                    year,                        //
+                    diff_shift);
 
                 // check for trigger matching
                 // is_good_trigger is garantied to be filled by the if statement above

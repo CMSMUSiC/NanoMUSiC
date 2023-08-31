@@ -7,6 +7,8 @@ from tqdm import tqdm
 import toml  # type: ignore
 import argparse
 import os
+import sys
+import glob
 import subprocess
 import shlex
 from pprint import pprint
@@ -344,43 +346,32 @@ def classification_merger_per_sample(args):
         raise RuntimeError(f"ERROR: could not merge output files, per sample.\n{error}")
 
 
-def classification_merger(samples_to_merge, output_base, debug):
-    ROOT.gSystem.CompileMacro(
-        f"{os.getenv('MUSIC_BASE')}/NanoMUSiC/MUSiC-Classification/scripts/merge_outputs.C",
-        "gsO",
+def classification_final_merger_imp(year):
+    files_to_merge = filter(
+        lambda f: "cutflow" not in f, glob.glob("classification_outputs/2016*/*/*.root")
     )
-    # process, year, is_data, is_signal, output_base, debug = args
+    classification_final_merger_result = subprocess.run(
+        shlex.split(
+            f'hadd -f -T -j 25 ./classification_outputs/classification_outputs_{year.replace("*", "")}.root {" ".join(files_to_merge)}'
+        ),
+        capture_output=True,
+    )
 
-    hadd_inputs = {
-        "data": [],
-        "mc": [],
-        "signal": [],
-    }
+    if classification_final_merger_result.returncode != 0:
+        error = classification_final_merger_result.stderr.decode("utf-8")
+        raise RuntimeError(f"ERROR: Could not merge output files.\n{error}")
 
-    for sample_type in hadd_inputs:
-        output_file_path: str = (
-            f"{output_base}/classification_outputs/ec_{sample_type}.root"
-        )
-        for sample in samples_to_merge:
-            process, year, is_data, is_signal = sample
-            if sample_type == "data" and is_data:
-                hadd_inputs[sample_type].append(
-                    f"{output_base}/classification_outputs/{year}/{process}/{process}_{year}.root"
-                )
-            if sample_type == "is_signal" and not is_data and is_signal:
-                hadd_inputs[sample_type].append(
-                    f"{output_base}/classification_outputs/{year}/{process}/{process}_{year}.root"
-                )
-            if sample_type == "mc" and not is_data and not is_signal:
-                hadd_inputs[sample_type].append(
-                    f"{output_base}/classification_outputs/{year}/{process}/{process}_{year}.root"
-                )
 
-        print(f"Merging {sample_type} ...")
-        if len(hadd_inputs[sample_type]) > 0:
-            ROOT.merge_outputs(
-                "classification_outputs", hadd_inputs[sample_type], output_file_path
+def classification_merger(output_base):
+    year_to_merge = ["2016*", "2017", "2018"]
+    with Pool(3) as pool:
+        list(
+            tqdm(
+                pool.imap_unordered(classification_final_merger_imp, year_to_merge),
+                total=len(year_to_merge),
+                unit=" years",
             )
+        )
 
 
 def process_filter(args, is_data: bool, process: str, year: str) -> bool:
@@ -442,18 +433,24 @@ def main():
 
     if args.condor and (args.harvest or args.merge):
         print("ERROR: Option --condor is not compatible with --harvest or --merge.")
-        exit(-1)
+        sys.exit(-1)
 
     if args.harvest and args.merge:
         print("ERROR: Option --harvest is not compatible with --merge.")
-        exit(-1)
+        sys.exit(-1)
 
     # cleanning job
     if args.clear:
         os.system(
             f"rm -rf {args.output}/classification_outputs/*/*/buffer/buffer_*/*.root > /dev/null 2>&1"
         )
-        exit(0)
+        sys.exit(0)
+
+    if args.merge:
+        # merge final outputs
+        print("\nMerging outputs ...")
+        classification_merger(args.output)
+        sys.exit(0)
 
     # load analysis config file
     task_config_file: str = args.config
@@ -650,11 +647,6 @@ def main():
                     unit=" samples",
                 )
             )
-
-    if args.merge:
-        # merge final outputs
-        print("\nMerging outputs ...")
-        classification_merger(merge_arguments, args.output, args.debug)
 
 
 if __name__ == "__main__":

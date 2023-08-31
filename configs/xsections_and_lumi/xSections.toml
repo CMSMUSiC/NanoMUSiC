@@ -2149,21 +2149,24 @@ XSecOrder = "NLO"
 ProcessGroup = "DrellYan"
 
 [DYToMuMu_M-120To200_13TeV_PH]
-XSec = 19.32
+# XSec = 19.32
+XSec = 20.57
 FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"
 ProcessGroup = "DrellYan"
 
 [DYToMuMu_M-1400To2300_13TeV_PH]
-XSec = 0.00139
+# XSec = 0.00139
+XSec = 0.001369
 FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"
 ProcessGroup = "DrellYan"
 
 [DYToMuMu_M-200To400_13TeV_PH]
-XSec = 2.731
+# XSec = 2.731
+XSec = 2.888
 FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"
@@ -2212,7 +2215,8 @@ XSecOrder = "NLO"
 ProcessGroup = "DrellYan"
 
 [DYToMuMu_M-800To1400_13TeV_PH]
-XSec = 0.017
+# XSec = 0.017
+XSec = 0.01708
 FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"

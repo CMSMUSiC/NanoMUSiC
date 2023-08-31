@@ -130,12 +130,12 @@ JetCorrector::JetCorrector(const Year &_year, const std::string &_era, const boo
     }
 }
 
-auto JetCorrector::get_resolution(float pt, float eta, float rho) const -> float
+auto JetCorrector::get_resolution(float pt, float eta, float rho) const -> double
 {
     return pt_resolution_correction_ref->evaluate({eta, pt, rho});
 }
 
-auto JetCorrector::get_resolution_scale_factor(float eta, const std::string &variation) const -> float
+auto JetCorrector::get_resolution_scale_factor(float eta, const std::string &variation) const -> double
 {
     if (variation == "Nominal"s)
     {
@@ -152,6 +152,27 @@ auto JetCorrector::get_resolution_scale_factor(float eta, const std::string &var
     throw(std::runtime_error(fmt::format("The requested variation ({}) is not available.", variation)));
 }
 
+auto is_good_match(float pt,
+                   float eta,
+                   float phi,
+                   int genjet_idx,
+                   const NanoObjects::GenJets &gen_jets,
+                   double resolution) -> bool
+{
+    if (genjet_idx >= 0 and static_cast<std::size_t>(genjet_idx) < gen_jets.size)
+    {
+        const double radius = 0.4;
+        // fmt::print("gen_jets.eta.size() - genjet_idx: {} - {}\n", gen_jets.eta.size(), genjet_idx);
+        const double dr = VecOps::DeltaR(eta, gen_jets.eta.at(genjet_idx), phi, gen_jets.phi.at(genjet_idx));
+        const double dpt = std::fabs(pt - gen_jets.pt.at(genjet_idx));
+        if ((dr < radius / 2.) and (dpt < 3 * resolution * pt))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 //////////////////////////////////////////////////////////
 /// Calculate JER factor using the Hybrid Mode.
 /// References:
@@ -164,14 +185,14 @@ auto JetCorrector::get_resolution_correction(float pt,
                                              float rho,
                                              int genjet_idx,
                                              const NanoObjects::GenJets &gen_jets,
-                                             const std::string &variation) -> float
+                                             const std::string &variation) -> double
 {
     if (not is_data)
     {
-        // no eta>5 possible set it to 5 times the sign of eta
-        if (std::fabs(eta) >= 5)
+        // no eta>5.2 possible set it to 5.2 times the sign of eta
+        if (std::fabs(eta) >= 5.2)
         {
-            eta = 4.99 * eta / std::fabs(eta);
+            eta = 5.199 * eta / std::fabs(eta);
         }
 
         double scaling_factor = 1.0;
@@ -179,23 +200,7 @@ auto JetCorrector::get_resolution_correction(float pt,
         double const resolution = get_resolution(pt, eta, rho);
 
         // Found a match?
-        auto is_good_match = [&]() -> bool
-        {
-            if (genjet_idx >= 0 and static_cast<std::size_t>(genjet_idx) < gen_jets.size)
-            {
-                const double radius = 0.4;
-                // fmt::print("gen_jets.eta.size() - genjet_idx: {} - {}\n", gen_jets.eta.size(), genjet_idx);
-                const double dr = VecOps::DeltaR(eta, gen_jets.eta.at(genjet_idx), phi, gen_jets.phi.at(genjet_idx));
-                const double dpt = std::fabs(pt - gen_jets.pt.at(genjet_idx));
-                if ((dr < radius / 2.) and (dpt < 3 * resolution * pt))
-                {
-                    return true;
-                }
-            }
-            return false;
-        };
-
-        if (is_good_match())
+        if (is_good_match(pt, eta, phi, genjet_idx, gen_jets, resolution))
         {
             return std::max(min_correction_factor, 1 + (scaling_factor - 1) * (pt - gen_jets.pt.at(genjet_idx)) / pt);
         }
@@ -219,7 +224,7 @@ auto JetCorrector::get_scale_correction(float pt,
                                         float raw_factor,
                                         float rho,
                                         float area,
-                                        const std::string &variation) const -> float
+                                        const std::string &variation) const -> double
 {
     double correction_factor =
         (1 - raw_factor) * scale_correction_ref->evaluate({area, eta, pt * (1. - raw_factor), rho});
@@ -241,6 +246,7 @@ auto JetCorrector::get_scale_correction(float pt,
         {
             return correction_factor * (1. - correction_uncertainty);
         }
+
         throw(std::runtime_error(fmt::format("The requested variation ({}) is not available.", variation)));
     }
     return correction_factor;
