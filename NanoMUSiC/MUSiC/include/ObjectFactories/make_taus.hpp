@@ -104,8 +104,7 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
 
     auto taus_p4 = RVec<Math::PtEtaPhiMVector>{};
     auto scale_factors = RVec<double>{};
-    auto scale_factor_up = RVec<double>{};
-    auto scale_factor_down = RVec<double>{};
+    auto scale_factor_shift = RVec<double>{};
     auto delta_met_x = 0.;
     auto delta_met_y = 0.;
     auto is_fake = RVec<bool>{};
@@ -142,61 +141,52 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
             if (is_good_tau)
             {
 
-                // fmt::print("\n Mass of Taus: {}\n", Tau_mass[i]);
-                // fmt::print("\n Reference Mass of Taus: {}\n", PDG::Tau::Mass);
-                // fmt::print("\n Tau_genPartFlav is: {}\n", Tau_genPartFlav[i]);
-                // fmt::print("\n Tau_decayMode is: {}\n", Tau_decayMode[i]);
-                // fmt::print("\n Tau_genPartIdx is: {}\n", Tau_genPartIdx[i]);
+                auto sf_vs_e = MUSiCObjects::get_scale_factor(
+                    deep_tau_2017_v2_p1_vs_e, is_data, {std::fabs(tau_p4.eta()), Tau_genPartFlav[i], "Tight", "nom"});
+                auto sf_vs_mu = MUSiCObjects::get_scale_factor(
+                    deep_tau_2017_v2_p1_vs_mu, is_data, {std::fabs(tau_p4.eta()), Tau_genPartFlav[i], "Tight", "nom"});
+                auto sf_vs_jet = MUSiCObjects::get_scale_factor(
+                    deep_tau_2017_v2_p1_vs_jet,
+                    is_data,
+                    {tau_p4.pt(), Tau_decayMode[i], Tau_genPartFlav[i], "Tight", "Tight", "default", "pt"});
 
-                scale_factors.push_back(
-                    MUSiCObjects::get_scale_factor(deep_tau_2017_v2_p1_vs_e,
-                                                   is_data,
-                                                   {std::fabs(tau_p4.eta()), Tau_genPartFlav[i], "Tight", "nom"}) *
-                    MUSiCObjects::get_scale_factor(deep_tau_2017_v2_p1_vs_mu,
-                                                   is_data,
-                                                   {std::fabs(tau_p4.eta()), Tau_genPartFlav[i], "Tight", "nom"}) *
-                    MUSiCObjects::get_scale_factor(
-                        deep_tau_2017_v2_p1_vs_jet,
-                        is_data,
-                        {tau_p4.pt(), Tau_decayMode[i], Tau_genPartFlav[i], "Tight", "Tight", "default", "pt"}));
+                auto sf_vs_e_up = MUSiCObjects::get_scale_factor(
+                    deep_tau_2017_v2_p1_vs_e, is_data, {std::fabs(tau_p4.eta()), Tau_genPartFlav[i], "Tight", "up"});
+                auto sf_vs_mu_up = MUSiCObjects::get_scale_factor(
+                    deep_tau_2017_v2_p1_vs_mu, is_data, {std::fabs(tau_p4.eta()), Tau_genPartFlav[i], "Tight", "up"});
+                auto sf_vsjet_up = MUSiCObjects::get_scale_factor(
+                    deep_tau_2017_v2_p1_vs_jet,
+                    is_data,
+                    {tau_p4.pt(), Tau_decayMode[i], Tau_genPartFlav[i], "Tight", "Tight", "up", "pt"});
 
-                scale_factor_up.push_back(
-                    MUSiCObjects::get_scale_factor(deep_tau_2017_v2_p1_vs_e,
-                                                   is_data,
-                                                   {std::fabs(tau_p4.eta()), Tau_genPartFlav[i], "Tight", "up"}) *
-                    MUSiCObjects::get_scale_factor(deep_tau_2017_v2_p1_vs_mu,
-                                                   is_data,
-                                                   {std::fabs(tau_p4.eta()), Tau_genPartFlav[i], "Tight", "up"}) *
-                    MUSiCObjects::get_scale_factor(
-                        deep_tau_2017_v2_p1_vs_jet,
-                        is_data,
-                        {tau_p4.pt(), Tau_decayMode[i], Tau_genPartFlav[i], "Tight", "Tight", "up", "pt"}));
+                auto sf_vs_e_down = MUSiCObjects::get_scale_factor(
+                    deep_tau_2017_v2_p1_vs_e, is_data, {std::fabs(tau_p4.eta()), Tau_genPartFlav[i], "Tight", "down"});
+                auto sf_vs_mu_down = MUSiCObjects::get_scale_factor(
+                    deep_tau_2017_v2_p1_vs_mu, is_data, {std::fabs(tau_p4.eta()), Tau_genPartFlav[i], "Tight", "down"});
+                auto sf_vsjet_down = MUSiCObjects::get_scale_factor(
+                    deep_tau_2017_v2_p1_vs_jet,
+                    is_data,
+                    {tau_p4.pt(), Tau_decayMode[i], Tau_genPartFlav[i], "Tight", "Tight", "down", "pt"});
 
-                scale_factor_down.push_back(
-                    MUSiCObjects::get_scale_factor(deep_tau_2017_v2_p1_vs_e,
-                                                   is_data,
-                                                   {std::fabs(tau_p4.eta()), Tau_genPartFlav[i], "Tight", "down"}) *
-                    MUSiCObjects::get_scale_factor(deep_tau_2017_v2_p1_vs_mu,
-                                                   is_data,
-                                                   {std::fabs(tau_p4.eta()), Tau_genPartFlav[i], "Tight", "down"}) *
-                    MUSiCObjects::get_scale_factor(
-                        deep_tau_2017_v2_p1_vs_jet,
-                        is_data,
-                        {tau_p4.pt(), Tau_decayMode[i], Tau_genPartFlav[i], "Tight", "Tight", "down", "pt"}));
+                scale_factors.push_back(sf_vs_e * sf_vs_mu * sf_vs_jet);
+                scale_factor_shift.push_back(std::sqrt(                                                              //
+                    std::pow(std::max(std::fabs(sf_vs_e - sf_vs_e_up), std::fabs(sf_vs_e - sf_vs_e_down)), 2.)       //
+                    + std::pow(std::max(std::fabs(sf_vs_mu - sf_vs_mu_up), std::fabs(sf_vs_mu - sf_vs_mu_down)), 2.) //
+                    +
+                    std::pow(std::max(std::fabs(sf_vs_jet - sf_vsjet_up), std::fabs(sf_vs_jet - sf_vsjet_down)), 2.) //
+                    ));
 
                 taus_p4.push_back(tau_p4);
-
                 is_fake.push_back(is_data ? false : Tau_genPartIdx[i] < 0);
             }
         }
     }
 
-    return MUSiCObjects(taus_p4,           //
-                        scale_factors,     //
-                        scale_factor_up,   //
-                        scale_factor_down, //
-                        delta_met_x,       //
-                        delta_met_y,       //
+    return MUSiCObjects(taus_p4,            //
+                        scale_factors,      //
+                        scale_factor_shift, //
+                        delta_met_x,        //
+                        delta_met_y,        //
                         is_fake);
 }
 

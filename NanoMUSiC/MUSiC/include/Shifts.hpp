@@ -115,12 +115,12 @@ class Shifts
                                     : std::vector<std::string>{"Nominal",          //
                                                                "PU_Up",            //
                                                                "PU_Down",          //
-                                                               "Fake_Up",          //
-                                                               "Fake_Down",        //
+                                                               "Fakes_Up",          //
+                                                               "Fakes_Down",        //
                                                                "PDF_As_Up",        //
                                                                "PDF_As_Down",      //
-                                                            //    "ScaleFactor_Up",   //
-                                                            //    "ScaleFactor_Down", //
+                                                               "ScaleFactor_Up",   //
+                                                               "ScaleFactor_Down", //
                                                                "PreFiring_Up",     //
                                                                "PreFiring_Down"//
                                                                }),
@@ -268,14 +268,14 @@ class Shifts
         return luminosity;
     }
 
-    static auto get_scale_factor(const std::string &shift,
-                                 std::pair<std::size_t, const MUSiCObjects &> muons,
-                                 std::pair<std::size_t, const MUSiCObjects &> electrons,
-                                 std::pair<std::size_t, const MUSiCObjects &> taus,
-                                 std::pair<std::size_t, const MUSiCObjects &> photons,
-                                 std::pair<std::size_t, const MUSiCObjects &> bjets,
-                                 std::pair<std::size_t, const MUSiCObjects &> jets,
-                                 std::pair<std::size_t, const MUSiCObjects &> met) -> double
+    static auto get_reco_scale_factor(const std::string &shift,
+                                      std::pair<std::size_t, const MUSiCObjects &> muons,
+                                      std::pair<std::size_t, const MUSiCObjects &> electrons,
+                                      std::pair<std::size_t, const MUSiCObjects &> taus,
+                                      std::pair<std::size_t, const MUSiCObjects &> photons,
+                                      std::pair<std::size_t, const MUSiCObjects &> bjets,
+                                      std::pair<std::size_t, const MUSiCObjects &> jets,
+                                      std::pair<std::size_t, const MUSiCObjects &> met) -> double
     {
         auto [n_muons, this_muons] = muons;
         auto [n_electrons, this_electrons] = electrons;
@@ -285,97 +285,82 @@ class Shifts
         auto [n_jets, this_jets] = jets;
         auto [n_met, this_met] = met;
 
-        if (shift == "ScaleFactor_Up")
+        auto nominal =
+            std::reduce(this_muons.scale_factor.begin(),
+                        this_muons.scale_factor.begin() + n_muons,
+                        1.,
+                        std::multiplies<double>()) *
+            std::reduce(this_electrons.scale_factor.begin(),
+                        this_electrons.scale_factor.begin() + n_electrons,
+                        1.,
+                        std::multiplies<double>()) //
+            * std::reduce(this_taus.scale_factor.begin(),
+                          this_taus.scale_factor.begin() + n_taus,
+                          1.,
+                          std::multiplies<double>()) //
+            * std::reduce(this_photons.scale_factor.begin(),
+                          this_photons.scale_factor.begin() + n_photons,
+                          1.,
+                          std::multiplies<double>()) //
+            * std::reduce(this_bjets.scale_factor.begin(),
+                          this_bjets.scale_factor.begin() + n_bjets,
+                          1.,
+                          std::multiplies<double>()) *
+            std::reduce(this_jets.scale_factor.begin(),
+                        this_jets.scale_factor.begin() + n_jets,
+                        1.,
+                        std::multiplies<double>()) //
+            * std::reduce(
+                  this_met.scale_factor.begin(), this_met.scale_factor.begin() + n_met, 1., std::multiplies<double>());
+
+        auto delta = 0.;
+
+        if (shift == "ScaleFactor_Up" or shift == "ScaleFactor_Down")
         {
-            return std::reduce(this_muons.scale_factor_up.begin(),
-                               this_muons.scale_factor_up.begin() + n_muons,
-                               1.,
-                               std::multiplies<double>()) //
-                   * std::reduce(this_electrons.scale_factor_up.begin(),
-                                 this_electrons.scale_factor_up.begin() + n_electrons,
-                                 1.,
-                                 std::multiplies<double>()) //
-                   * std::reduce(this_taus.scale_factor_up.begin(),
-                                 this_taus.scale_factor_up.begin() + n_taus,
-                                 1.,
-                                 std::multiplies<double>()) //
-                   * std::reduce(this_photons.scale_factor_up.begin(),
-                                 this_photons.scale_factor_up.begin() + n_photons,
-                                 1.,
-                                 std::multiplies<double>()) //
-                   * std::reduce(this_bjets.scale_factor_up.begin(),
-                                 this_bjets.scale_factor_up.begin() + n_bjets,
-                                 1.,
-                                 std::multiplies<double>()) //
-                   * std::reduce(this_jets.scale_factor_up.begin(),
-                                 this_jets.scale_factor_up.begin() + n_jets,
-                                 1.,
-                                 std::multiplies<double>()) //
-                   * std::reduce(this_met.scale_factor_up.begin(),
-                                 this_met.scale_factor_up.begin() + n_met,
-                                 1.,
-                                 std::multiplies<double>());
+            delta = std::sqrt(std::pow(std::reduce(this_muons.scale_factor_shift.begin(),
+                                                   this_muons.scale_factor_shift.begin() + n_muons,
+                                                   0.,
+                                                   std::plus<double>()),
+                                       2.) //
+                              + std::pow(std::reduce(this_electrons.scale_factor_shift.begin(),
+                                                     this_electrons.scale_factor_shift.begin() + n_electrons,
+                                                     0.,
+                                                     std::plus<double>()),
+                                         2.) //
+                              + std::pow(std::reduce(this_taus.scale_factor_shift.begin(),
+                                                     this_taus.scale_factor_shift.begin() + n_taus,
+                                                     0.,
+                                                     std::plus<double>()),
+                                         2.) //
+                              + std::pow(std::reduce(this_photons.scale_factor_shift.begin(),
+                                                     this_photons.scale_factor_shift.begin() + n_photons,
+                                                     0.,
+                                                     std::plus<double>()),
+                                         2.) //
+                              + std::pow(std::reduce(this_bjets.scale_factor_shift.begin(),
+                                                     this_bjets.scale_factor_shift.begin() + n_bjets,
+                                                     0.,
+                                                     std::plus<double>()),
+                                         2.) //
+                              + std::pow(std::reduce(this_jets.scale_factor_shift.begin(),
+                                                     this_jets.scale_factor_shift.begin() + n_jets,
+                                                     0.,
+                                                     std::plus<double>()),
+                                         2.) //
+                              + std::pow(std::reduce(this_met.scale_factor_shift.begin(),
+                                                     this_met.scale_factor_shift.begin() + n_met,
+                                                     0.,
+                                                     std::plus<double>()),
+                                         2.) //
+            );
         }
 
         if (shift == "ScaleFactor_Down")
         {
-            return std::reduce(this_muons.scale_factor_down.begin(),
-                               this_muons.scale_factor_down.begin() + n_muons,
-                               1.,
-                               std::multiplies<double>()) //
-                   * std::reduce(this_electrons.scale_factor_down.begin(),
-                                 this_electrons.scale_factor_down.begin() + n_electrons,
-                                 1.,
-                                 std::multiplies<double>()) //
-                   * std::reduce(this_taus.scale_factor_down.begin(),
-                                 this_taus.scale_factor_down.begin() + n_taus,
-                                 1.,
-                                 std::multiplies<double>()) //
-                   * std::reduce(this_photons.scale_factor_down.begin(),
-                                 this_photons.scale_factor_down.begin() + n_photons,
-                                 1.,
-                                 std::multiplies<double>()) //
-                   * std::reduce(this_bjets.scale_factor_down.begin(),
-                                 this_bjets.scale_factor_down.begin() + n_bjets,
-                                 1.,
-                                 std::multiplies<double>()) //
-                   * std::reduce(this_jets.scale_factor_down.begin(),
-                                 this_jets.scale_factor_down.begin() + n_jets,
-                                 1.,
-                                 std::multiplies<double>()) //
-                   * std::reduce(this_met.scale_factor_down.begin(),
-                                 this_met.scale_factor_down.begin() + n_met,
-                                 1.,
-                                 std::multiplies<double>());
+            delta = -delta;
         }
 
-        return std::reduce(this_muons.scale_factor.begin(),
-                           this_muons.scale_factor.begin() + n_muons,
-                           1.,
-                           std::multiplies<double>()) *
-               std::reduce(this_electrons.scale_factor.begin(),
-                           this_electrons.scale_factor.begin() + n_electrons,
-                           1.,
-                           std::multiplies<double>()) //
-               * std::reduce(this_taus.scale_factor.begin(),
-                             this_taus.scale_factor.begin() + n_taus,
-                             1.,
-                             std::multiplies<double>()) //
-               * std::reduce(this_photons.scale_factor.begin(),
-                             this_photons.scale_factor.begin() + n_photons,
-                             1.,
-                             std::multiplies<double>()) //
-               * std::reduce(this_bjets.scale_factor.begin(),
-                             this_bjets.scale_factor.begin() + n_bjets,
-                             1.,
-                             std::multiplies<double>()) *
-               std::reduce(this_jets.scale_factor.begin(),
-                           this_jets.scale_factor.begin() + n_jets,
-                           1.,
-                           std::multiplies<double>()) //
-               *
-               std::reduce(
-                   this_met.scale_factor.begin(), this_met.scale_factor.begin() + n_met, 1., std::multiplies<double>());
+        return nominal + delta;
     }
 
     static auto get_xsec_order_modifier(const std::string &shift, const std::string &xs_order) -> double
@@ -391,24 +376,6 @@ class Shifts
                 return 1. - .5;
             }
         }
-        return 1.;
-    }
-
-    static auto get_qcd_scale_modifier(const std::string &shift, const std::string &xs_order) -> double
-    {
-        // LHEScaleWeight
-        if (xs_order == "LO")
-        {
-            if (shift == "xSecOrder_Up")
-            {
-                return 1. + .5;
-            }
-            if (shift == "xSecOrder_Down")
-            {
-                return 1. - .5;
-            }
-        }
-
         return 1.;
     }
 
@@ -599,6 +566,150 @@ class Shifts
             if (shift == "PDF_As_Down")
             {
                 return 1. - std::sqrt(std::pow(pdf_shift, 2.) + std::pow(alpha_s_shift, 2.));
+            }
+        }
+
+        return 1.;
+    }
+
+    constexpr static auto get_fake_shift(bool x) -> double
+    {
+        if (x)
+        {
+            return 0.5;
+        }
+        return 0.;
+    }
+
+    static auto get_fakes_variation_weight(const std::string &shift,
+                                           std::pair<std::size_t, const MUSiCObjects &> muons,
+                                           std::pair<std::size_t, const MUSiCObjects &> electrons,
+                                           std::pair<std::size_t, const MUSiCObjects &> taus,
+                                           std::pair<std::size_t, const MUSiCObjects &> photons,
+                                           std::pair<std::size_t, const MUSiCObjects &> bjets,
+                                           std::pair<std::size_t, const MUSiCObjects &> jets
+                                           //    std::pair<std::size_t, const MUSiCObjects &> met//
+                                           ) -> double
+    {
+        if (shift == "Fakes_Up" or shift == "Fakes_Down")
+        {
+            auto [n_muons, this_muons] = muons;
+            auto [n_electrons, this_electrons] = electrons;
+            auto [n_taus, this_taus] = taus;
+            auto [n_photons, this_photons] = photons;
+            auto [n_bjets, this_bjets] = bjets;
+            auto [n_jets, this_jets] = jets;
+            // auto [n_met, this_met] = met
+
+            auto variation_squared =
+                std::pow(
+                    std::reduce(
+                        this_muons.is_fake.cbegin(), this_muons.is_fake.cbegin() + n_muons, 0., std::plus<double>()) *
+                        0.5,
+                    2.) +
+                std::pow(std::reduce(this_electrons.is_fake.cbegin(),
+                                     this_electrons.is_fake.cbegin() + n_electrons,
+                                     0.,
+                                     std::plus<double>()) *
+                             0.5,
+                         2.) +
+
+                std::pow(std::reduce(
+                             this_taus.is_fake.cbegin(), this_taus.is_fake.cbegin() + n_taus, 0., std::plus<double>()) *
+                             0.5,
+                         2.) +
+
+                std::pow(std::reduce(this_photons.is_fake.cbegin(),
+                                     this_photons.is_fake.cbegin() + n_photons,
+                                     0.,
+                                     std::plus<double>()) *
+                             0.5,
+                         2.) +
+                std::pow(
+                    std::reduce(
+                        this_bjets.is_fake.cbegin(), this_bjets.is_fake.cbegin() + n_bjets, 0., std::plus<double>()) *
+                        0.5,
+                    2.) +
+
+                std::pow(std::reduce(
+                             this_jets.is_fake.cbegin(), this_jets.is_fake.cbegin() + n_jets, 0., std::plus<double>()) *
+                             0.5,
+                         2.);
+
+            if (shift == "Fakes_Up")
+            {
+                return 1. + std::sqrt(variation_squared);
+            }
+
+            if (shift == "Fakes_Down")
+            {
+                return 1. - std::sqrt(variation_squared);
+            }
+        }
+
+        return 1.;
+    }
+
+    ///////////////////////////////////////////////////////////////
+    // IMPORTANT: LHEScaleWeight is passed by value on purpose!
+    ///////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////
+    /// Set the QCD Scaling weights, using the envelope method. If the sample has no weights are kept as 1.
+    // Ref: https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopSystematics#Factorization_and_renormalizatio
+    // Python (Awkward Array) implementation:
+    // https://raw.githubusercontent.com/columnflow/columnflow/99a864ef4c6fbb9a80ed21dbe8f0f70d5e3a64cf/columnflow/production/cms/scale.py
+    static auto get_qcd_scale_weight(const std::string &shift, RVec<float> LHEScaleWeight) -> double
+    {
+        if (shift == "QCDScale_Up" or shift == "QCDScale_Down")
+        {
+            if (LHEScaleWeight.size() > 0)
+            {
+                if (not(LHEScaleWeight.size() == 9 or LHEScaleWeight.size() == 8))
+                {
+                    throw std::runtime_error(fmt::format(
+                        "ERROR: Unexpected number of QCD scale weights ({}). Expected to be 8 or 9. \nWeights: [{}]\n",
+                        LHEScaleWeight.size(),
+                        fmt::join(LHEScaleWeight, ", ")));
+                }
+
+                auto murf_nominal = LHEScaleWeight[4];
+
+                // REFERENCE on how to treat nLHEScaleWeight == 8:
+                // https://github.com/rappoccio/QJetMassUproot/blob/3b12e0d16adf4fe2c8a50aac55d6a8a2a360d4d7/cms_utils.py
+                if (LHEScaleWeight.size() == 8)
+                {
+                    murf_nominal = 1.;
+                }
+
+                // remove indexes 2 and 6 or 5 (n ==8) since they corresponds to unphysical values
+                if (LHEScaleWeight.size() == 9)
+                {
+                    LHEScaleWeight.erase(LHEScaleWeight.begin() + 2);
+                    LHEScaleWeight.erase(LHEScaleWeight.begin() + 4);
+                    LHEScaleWeight.erase(LHEScaleWeight.begin() + 6);
+                }
+                if (LHEScaleWeight.size() == 8)
+                {
+                    LHEScaleWeight.erase(LHEScaleWeight.begin() + 2);
+                    LHEScaleWeight.erase(LHEScaleWeight.begin() + 5);
+                }
+
+                // The nominal LHEScaleWeight is expected to be 1.
+                // All variations will be normalized to the nominal LHEScaleWeight and it is assumed that the nominal
+                // weight is already included in the LHEWeight. rescale, just in case, scale all weights to the nominal
+                for (auto &scale_weight : LHEScaleWeight)
+                {
+                    scale_weight /= murf_nominal;
+                }
+
+                if (shift == "QCDScale_Up")
+                {
+                    return VecOps::Max(LHEScaleWeight);
+                }
+                if (shift == "QCDScale_Down")
+                {
+                    return VecOps::Min(LHEScaleWeight);
+                }
             }
         }
 

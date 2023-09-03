@@ -104,10 +104,8 @@ inline auto make_jets(const RVec<float> &Jet_pt,            //
     auto bjets_p4 = RVec<Math::PtEtaPhiMVector>{};
     auto jets_scale_factors = RVec<double>{};
     auto bjets_scale_factors = RVec<double>{};
-    auto jets_scale_factor_up = RVec<double>{};
-    auto bjets_scale_factor_up = RVec<double>{};
-    auto jets_scale_factor_down = RVec<double>{};
-    auto bjets_scale_factor_down = RVec<double>{};
+    auto jets_scale_factor_shift = RVec<double>{};
+    auto bjets_scale_factor_shift = RVec<double>{};
     auto jets_delta_met_x = 0.;
     auto bjets_delta_met_x = 0.;
     auto jets_delta_met_y = 0.;
@@ -154,12 +152,11 @@ inline auto make_jets(const RVec<float> &Jet_pt,            //
             if (is_good_jet)
             {
                 jets_scale_factors.push_back(1.);
-                jets_scale_factor_up.push_back(1.);
-                jets_scale_factor_down.push_back(1.);
+                jets_scale_factor_shift.push_back(1.);
 
                 jets_p4.push_back(jet_p4);
 
-                jets_is_fake.push_back(is_data ? false : Jet_genJetIdx[i] == -1);
+                jets_is_fake.push_back(is_data ? false : Jet_genJetIdx[i] < 0);
             }
 
             if (is_good_bjet)
@@ -167,30 +164,23 @@ inline auto make_jets(const RVec<float> &Jet_pt,            //
                 // TODO: Implement those scale factors!
                 // Reference: BTagSFCorrector::BTagSFCorrector @ CorrectionSets.cpp
                 bjets_scale_factors.push_back(1.);
-                bjets_scale_factor_up.push_back(1.);
-                bjets_scale_factor_down.push_back(1.);
+                bjets_scale_factor_shift.push_back(1.);
 
                 bjets_p4.push_back(jet_p4);
-
-                bjets_is_fake.push_back(is_data ? false : Jet_genJetIdx[i] == -1);
+                bjets_is_fake.push_back(is_data ? false : Jet_genJetIdx[i] < 0);
             }
         }
     }
 
-    return std::make_pair(MUSiCObjects(jets_p4,
-                                       jets_scale_factors,
-                                       jets_scale_factor_up,
-                                       jets_scale_factor_down,
-                                       jets_delta_met_x,
-                                       jets_delta_met_y,
-                                       jets_is_fake),
-                          MUSiCObjects(bjets_p4,
-                                       bjets_scale_factors,
-                                       bjets_scale_factor_up,
-                                       bjets_scale_factor_down,
-                                       bjets_delta_met_x,
-                                       bjets_delta_met_y,
-                                       bjets_is_fake));
+    return std::make_pair(
+        MUSiCObjects(
+            jets_p4, jets_scale_factors, jets_scale_factor_shift, jets_delta_met_x, jets_delta_met_y, jets_is_fake),
+        MUSiCObjects(bjets_p4,
+                     bjets_scale_factors,
+                     bjets_scale_factor_shift,
+                     bjets_delta_met_x,
+                     bjets_delta_met_y,
+                     bjets_is_fake));
 }
 
 } // namespace ObjectFactories

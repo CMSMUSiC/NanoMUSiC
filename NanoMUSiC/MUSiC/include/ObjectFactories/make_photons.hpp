@@ -112,8 +112,7 @@ inline auto make_photons(const RVec<float> &Photon_pt,  //
 
     auto photons_p4 = RVec<Math::PtEtaPhiMVector>{};
     auto scale_factors = RVec<double>{};
-    auto scale_factor_up = RVec<double>{};
-    auto scale_factor_down = RVec<double>{};
+    auto scale_factor_shift = RVec<double>{};
     auto delta_met_x = 0.;
     auto delta_met_y = 0.;
     auto is_fake = RVec<bool>{};
@@ -141,43 +140,42 @@ inline auto make_photons(const RVec<float> &Photon_pt,  //
 
             if (is_good_photon)
             {
-                scale_factors.push_back( //
-                    MUSiCObjects::get_scale_factor(
-                        photon_sf,
-                        is_data,
-                        {get_year_for_photon_sf(year), "sf", "Tight", photon_p4.eta(), photon_p4.pt()}) *
-                    MUSiCObjects::get_scale_factor(
-                        photon_pixel_veto_sf, is_data, {get_year_for_photon_sf(year), "sf", "Tight", "EBInc"}));
+                auto sf_id = MUSiCObjects::get_scale_factor(
+                    photon_sf, is_data, {get_year_for_photon_sf(year), "sf", "Tight", photon_p4.eta(), photon_p4.pt()});
+                auto sf_veto = MUSiCObjects::get_scale_factor(
+                    photon_pixel_veto_sf, is_data, {get_year_for_photon_sf(year), "sf", "Tight", "EBInc"});
 
-                scale_factor_up.push_back( //
-                    MUSiCObjects::get_scale_factor(
-                        photon_sf,
-                        is_data,
-                        {get_year_for_photon_sf(year), "sfup", "Tight", photon_p4.eta(), photon_p4.pt()}) *
-                    MUSiCObjects::get_scale_factor(
-                        photon_pixel_veto_sf, is_data, {get_year_for_photon_sf(year), "sfup", "Tight", "EBInc"}));
+                auto sf_id_up = MUSiCObjects::get_scale_factor(
+                    photon_sf,
+                    is_data,
+                    {get_year_for_photon_sf(year), "sfup", "Tight", photon_p4.eta(), photon_p4.pt()});
+                auto sf_veto_up = MUSiCObjects::get_scale_factor(
+                    photon_pixel_veto_sf, is_data, {get_year_for_photon_sf(year), "sfup", "Tight", "EBInc"});
 
-                scale_factor_down.push_back( //
-                    MUSiCObjects::get_scale_factor(
-                        photon_sf,
-                        is_data,
-                        {get_year_for_photon_sf(year), "sfdown", "Tight", photon_p4.eta(), photon_p4.pt()}) *
-                    MUSiCObjects::get_scale_factor(
-                        photon_pixel_veto_sf, is_data, {get_year_for_photon_sf(year), "sfdown", "Tight", "EBInc"}));
+                auto sf_id_down = MUSiCObjects::get_scale_factor(
+                    photon_sf,
+                    is_data,
+                    {get_year_for_photon_sf(year), "sfdown", "Tight", photon_p4.eta(), photon_p4.pt()});
+                auto sf_veto_down = MUSiCObjects::get_scale_factor(
+                    photon_pixel_veto_sf, is_data, {get_year_for_photon_sf(year), "sfdown", "Tight", "EBInc"});
+
+                scale_factors.push_back(sf_veto * sf_id);
+                scale_factor_shift.push_back(std::sqrt(                                                        //
+                    std::pow(std::max(std::fabs(sf_veto - sf_veto_up), std::fabs(sf_veto - sf_veto_down)), 2.) //
+                    + std::pow(std::max(std::fabs(sf_id - sf_id_up), std::fabs(sf_id - sf_id_down)), 2.)       //
+                    ));
 
                 photons_p4.push_back(photon_p4);
-
-                is_fake.push_back(is_data ? false : Photon_genPartIdx[i] == -1);
+                is_fake.push_back(is_data ? false : Photon_genPartIdx[i] < 0);
             }
         }
     }
 
-    return MUSiCObjects(photons_p4,        //
-                        scale_factors,     //
-                        scale_factor_up,   //
-                        scale_factor_down, //
-                        delta_met_x,       //
-                        delta_met_y,       //
+    return MUSiCObjects(photons_p4,         //
+                        scale_factors,      //
+                        scale_factor_shift, //
+                        delta_met_x,        //
+                        delta_met_y,        //
                         is_fake);
 }
 

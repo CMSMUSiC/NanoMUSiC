@@ -39,8 +39,7 @@ inline auto make_met(const double raw_met_pt,                  //
     auto year = get_runyear(_year);
     auto met_p4 = RVec<Math::PtEtaPhiMVector>{};
     auto scale_factors = RVec<double>{};
-    auto scale_factor_up = RVec<double>{};
-    auto scale_factor_down = RVec<double>{};
+    auto scale_factor_shift = RVec<double>{};
     auto delta_met_x = 0.;
     auto delta_met_y = 0.;
     auto is_fake = RVec<bool>{};
@@ -70,19 +69,17 @@ inline auto make_met(const double raw_met_pt,                  //
     if (is_good_met)
     {
         scale_factors.push_back(1.);
-        scale_factor_up.push_back(1.);
-        scale_factor_down.push_back(1.);
+        scale_factor_shift.push_back(1.);
         met_p4.push_back(Math::PtEtaPhiMVector(this_met));
 
         is_fake.push_back(false);
     }
 
-    return MUSiCObjects(met_p4,            //
-                        scale_factors,     //
-                        scale_factor_up,   //
-                        scale_factor_down, //
-                        delta_met_x,       //
-                        delta_met_y,       //
+    return MUSiCObjects(met_p4,             //
+                        scale_factors,      //
+                        scale_factor_shift, //
+                        delta_met_x,        //
+                        delta_met_y,        //
                         is_fake);
 }
 

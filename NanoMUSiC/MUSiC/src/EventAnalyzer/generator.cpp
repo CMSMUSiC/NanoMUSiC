@@ -180,8 +180,6 @@ auto EventAnalyzer::set_scale_weights() -> EventAnalyzer &
                     lhe_info.LHEScaleWeight));
             }
 
-            // fmt::print("{}\n", lhe_info.LHEScaleWeight);
-
             auto murf_nominal = lhe_info.LHEScaleWeight[4];
             // REFERENCE on how to treat nLHEScaleWeight == 8:
             // https://github.com/rappoccio/QJetMassUproot/blob/3b12e0d16adf4fe2c8a50aac55d6a8a2a360d4d7/cms_utils.py

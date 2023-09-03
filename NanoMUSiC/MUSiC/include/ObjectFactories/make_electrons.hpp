@@ -120,7 +120,6 @@ inline auto get_high_pt_sf(bool is_data, const Year &year, const std::string &va
     else
     {
         eta = std::min(std::fabs(eta), 2.5f) * eta / eta;
-        // throw std::runtime_error(fmt::format("Eta SC value ({}) is out of range.", eta));
     }
 
     auto syst_multiplier = [&variation]() -> float
@@ -216,8 +215,7 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
     auto year = get_runyear(_year);
     auto electrons_p4 = RVec<Math::PtEtaPhiMVector>{};
     auto scale_factors = RVec<double>{};
-    auto scale_factor_up = RVec<double>{};
-    auto scale_factor_down = RVec<double>{};
+    auto scale_factor_shift = RVec<double>{};
     auto delta_met_x = 0.;
     auto delta_met_y = 0.;
     auto is_fake = RVec<bool>{};
@@ -278,97 +276,98 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
             // follow the previous MUSiC analysis, the SFs are set before the energy scale and resolution
             if (is_good_low_pt_electron)
             {
-                scale_factors.push_back( //
-                    MUSiCObjects::get_scale_factor(electron_sf,
-                                                   is_data,
-                                                   {get_year_for_electron_sf(year),
-                                                    "sf",
-                                                    "RecoAbove20",
-                                                    Electron_eta.at(i) + Electron_deltaEtaSC.at(i),
-                                                    electron_p4.pt()}) *
-                    MUSiCObjects::get_scale_factor(electron_sf,
-                                                   is_data,
-                                                   {get_year_for_electron_sf(year),
-                                                    "sf",
-                                                    "Tight",
-                                                    Electron_eta.at(i) + Electron_deltaEtaSC.at(i),
-                                                    electron_p4.pt()}));
+                auto sf_reco = MUSiCObjects::get_scale_factor(electron_sf,
+                                                              is_data,
+                                                              {get_year_for_electron_sf(year),
+                                                               "sf",
+                                                               "RecoAbove20",
+                                                               Electron_eta.at(i) + Electron_deltaEtaSC.at(i),
+                                                               electron_p4.pt()});
+                auto sf_id = MUSiCObjects::get_scale_factor(electron_sf,
+                                                            is_data,
+                                                            {get_year_for_electron_sf(year),
+                                                             "sf",
+                                                             "Tight",
+                                                             Electron_eta.at(i) + Electron_deltaEtaSC.at(i),
+                                                             electron_p4.pt()});
 
-                scale_factor_up.push_back( //
-                    MUSiCObjects::get_scale_factor(electron_sf,
-                                                   is_data,
-                                                   {get_year_for_electron_sf(year),
-                                                    "sfup",
-                                                    "RecoAbove20",
-                                                    Electron_eta.at(i) + Electron_deltaEtaSC.at(i),
-                                                    electron_p4.pt()}) *
-                    MUSiCObjects::get_scale_factor(electron_sf,
-                                                   is_data,
-                                                   {get_year_for_electron_sf(year),
-                                                    "sfup",
-                                                    "Tight",
-                                                    Electron_eta.at(i) + Electron_deltaEtaSC.at(i),
-                                                    electron_p4.pt()}));
+                auto sf_reco_up = MUSiCObjects::get_scale_factor(electron_sf,
+                                                                 is_data,
+                                                                 {get_year_for_electron_sf(year),
+                                                                  "sfup",
+                                                                  "RecoAbove20",
+                                                                  Electron_eta.at(i) + Electron_deltaEtaSC.at(i),
+                                                                  electron_p4.pt()});
+                auto sf_id_up = MUSiCObjects::get_scale_factor(electron_sf,
+                                                               is_data,
+                                                               {get_year_for_electron_sf(year),
+                                                                "sfup",
+                                                                "Tight",
+                                                                Electron_eta.at(i) + Electron_deltaEtaSC.at(i),
+                                                                electron_p4.pt()});
 
-                scale_factor_down.push_back( //
-                    MUSiCObjects::get_scale_factor(electron_sf,
-                                                   is_data,
-                                                   {get_year_for_electron_sf(year),
-                                                    "sfdown",
-                                                    "RecoAbove20",
-                                                    Electron_eta.at(i) + Electron_deltaEtaSC.at(i),
-                                                    electron_p4.pt()}) *
-                    MUSiCObjects::get_scale_factor(electron_sf,
-                                                   is_data,
-                                                   {get_year_for_electron_sf(year),
-                                                    "sfdown",
-                                                    "Tight",
-                                                    Electron_eta.at(i) + Electron_deltaEtaSC.at(i),
-                                                    electron_p4.pt()}));
+                auto sf_reco_down = MUSiCObjects::get_scale_factor(electron_sf,
+                                                                   is_data,
+                                                                   {get_year_for_electron_sf(year),
+                                                                    "sfdown",
+                                                                    "RecoAbove20",
+                                                                    Electron_eta.at(i) + Electron_deltaEtaSC.at(i),
+                                                                    electron_p4.pt()});
+                auto sf_id_down = MUSiCObjects::get_scale_factor(electron_sf,
+                                                                 is_data,
+                                                                 {get_year_for_electron_sf(year),
+                                                                  "sfdown",
+                                                                  "Tight",
+                                                                  Electron_eta.at(i) + Electron_deltaEtaSC.at(i),
+                                                                  electron_p4.pt()});
+
+                scale_factors.push_back(sf_reco * sf_id);
+                scale_factor_shift.push_back(std::sqrt(                                                        //
+                    std::pow(std::max(std::fabs(sf_reco - sf_reco_up), std::fabs(sf_reco - sf_reco_down)), 2.) //
+                    + std::pow(std::max(std::fabs(sf_id - sf_id_up), std::fabs(sf_id - sf_id_down)), 2.)       //
+                    ));
             }
 
             if (is_good_high_pt_electron)
             {
-                scale_factors.push_back( //
-                    MUSiCObjects::get_scale_factor(
-                        electron_sf,
-                        is_data,
-                        {get_year_for_electron_sf(year), "sf", "RecoAbove20", Electron_eta.at(i), electron_p4.pt()}) *
-                    get_high_pt_sf(is_data, year, "sf", electron_p4.pt(), electron_p4.eta()));
+                auto sf_reco = MUSiCObjects::get_scale_factor(
+                    electron_sf,
+                    is_data,
+                    {get_year_for_electron_sf(year), "sf", "RecoAbove20", Electron_eta.at(i), electron_p4.pt()});
+                auto sf_id = get_high_pt_sf(is_data, year, "sf", electron_p4.pt(), electron_p4.eta());
 
-                scale_factor_up.push_back( //
-                    MUSiCObjects::get_scale_factor(
-                        electron_sf,
-                        is_data,
-                        {get_year_for_electron_sf(year), "sfup", "RecoAbove20", Electron_eta.at(i), electron_p4.pt()}) *
-                    get_high_pt_sf(is_data, year, "sfup", electron_p4.pt(), electron_p4.eta()));
+                auto sf_reco_up = MUSiCObjects::get_scale_factor(
+                    electron_sf,
+                    is_data,
+                    {get_year_for_electron_sf(year), "sfup", "RecoAbove20", Electron_eta.at(i), electron_p4.pt()});
+                auto sf_id_up = get_high_pt_sf(is_data, year, "sfup", electron_p4.pt(), electron_p4.eta());
 
-                scale_factor_down.push_back( //
-                    MUSiCObjects::get_scale_factor(electron_sf,
-                                                   is_data,
-                                                   {get_year_for_electron_sf(year),
-                                                    "sfdown",
-                                                    "RecoAbove20",
-                                                    Electron_eta.at(i),
-                                                    electron_p4.pt()}) *
-                    get_high_pt_sf(is_data, year, "sfdown", electron_p4.pt(), electron_p4.eta()));
+                auto sf_reco_down = MUSiCObjects::get_scale_factor(
+                    electron_sf,
+                    is_data,
+                    {get_year_for_electron_sf(year), "sfdown", "RecoAbove20", Electron_eta.at(i), electron_p4.pt()});
+                auto sf_id_down = get_high_pt_sf(is_data, year, "sfdown", electron_p4.pt(), electron_p4.eta());
+
+                scale_factors.push_back(sf_reco * sf_id);
+                scale_factor_shift.push_back(std::sqrt(                                                        //
+                    std::pow(std::max(std::fabs(sf_reco - sf_reco_up), std::fabs(sf_reco - sf_reco_down)), 2.) //
+                    + std::pow(std::max(std::fabs(sf_id - sf_id_up), std::fabs(sf_id - sf_id_down)), 2.)       //
+                    ));
             }
 
             if (is_good_low_pt_electron or is_good_high_pt_electron)
             {
                 electrons_p4.push_back(electron_p4);
-
-                is_fake.push_back(is_data ? false : Electron_genPartIdx[i] == -1);
+                is_fake.push_back(is_data ? false : Electron_genPartIdx[i] < 0);
             }
         }
     }
 
-    return MUSiCObjects(electrons_p4,      //
-                        scale_factors,     //
-                        scale_factor_up,   //
-                        scale_factor_down, //
-                        delta_met_x,       //
-                        delta_met_y,       //
+    return MUSiCObjects(electrons_p4,       //
+                        scale_factors,      //
+                        scale_factor_shift, //
+                        delta_met_x,        //
+                        delta_met_y,        //
                         is_fake);
 }
 

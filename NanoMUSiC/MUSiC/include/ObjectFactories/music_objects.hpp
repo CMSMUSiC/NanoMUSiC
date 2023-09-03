@@ -34,8 +34,7 @@ class MUSiCObjects
   public:
     RVec<Math::PtEtaPhiMVector> p4;
     RVec<double> scale_factor;
-    RVec<double> scale_factor_up;
-    RVec<double> scale_factor_down;
+    RVec<double> scale_factor_shift;
     double delta_met_x;
     double delta_met_y;
     RVec<bool> is_fake;
@@ -43,8 +42,7 @@ class MUSiCObjects
     MUSiCObjects()
         : p4({}),
           scale_factor({}),
-          scale_factor_up({}),
-          scale_factor_down({}),
+          scale_factor_shift({}),
           delta_met_x(0.),
           delta_met_y(0.),
           is_fake({})
@@ -53,33 +51,29 @@ class MUSiCObjects
 
     MUSiCObjects(const RVec<Math::PtEtaPhiMVector> &_p4,
                  const RVec<double> &_scale_factor,
-                 const RVec<double> &_scale_factor_up,
-                 const RVec<double> &_scale_factor_down,
+                 const RVec<double> &_scale_factor_shift,
                  double _delta_met_x,
                  double _delta_met_y,
                  const RVec<bool> &_is_fake)
         : p4(_p4),
           scale_factor(_scale_factor),
-          scale_factor_up(_scale_factor_up),
-          scale_factor_down(_scale_factor_down),
+          scale_factor_shift(_scale_factor_shift),
           delta_met_x(_delta_met_x),
           delta_met_y(_delta_met_y),
           is_fake(_is_fake)
     {
 
-        if (not(                                          //
-                p4.size() == scale_factor.size()          //
-                and p4.size() == scale_factor_up.size()   //
-                and p4.size() == scale_factor_down.size() //
-                and p4.size() == is_fake.size()           //
+        if (not(                                           //
+                p4.size() == scale_factor.size()           //
+                and p4.size() == scale_factor_shift.size() //
+                and p4.size() == is_fake.size()            //
                 ))
         {
             throw std::runtime_error(fmt::format(
                 "ERROR: Could not create MUSiCObjects. Input vectors have different sizes. \n{} - {} - {} - {}",
                 p4.size(),
                 scale_factor.size(),
-                scale_factor_up.size(),
-                scale_factor_down.size(),
+                scale_factor_shift.size(),
                 is_fake.size()));
         }
 
@@ -100,8 +94,7 @@ class MUSiCObjects
     {
         p4 = VecOps::Take(p4, indexes);
         scale_factor = VecOps::Take(scale_factor, indexes);
-        scale_factor_up = VecOps::Take(scale_factor_up, indexes);
-        scale_factor_down = VecOps::Take(scale_factor_down, indexes);
+        scale_factor_shift = VecOps::Take(scale_factor_shift, indexes);
         is_fake = VecOps::Take(is_fake, indexes);
     }
 
