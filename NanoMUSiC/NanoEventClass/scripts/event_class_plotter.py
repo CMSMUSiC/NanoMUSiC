@@ -196,7 +196,10 @@ def plot_event_class(ec, histogram_name, year, output_path):
     ax2.plot(line)
 
     # Plot the relative error on the ratio axes
-    data_rebinned_for_ratio, mc_rebinned_for_ratio = data_hist.histo, total_mc_histo
+    data_rebinned_for_ratio, mc_rebinned_for_ratio = (
+        data_hist.histo.Clone(),
+        total_mc_histo.Clone(),
+    )
     if histogram_name != "counts":
         data_rebinned_for_ratio, mc_rebinned_for_ratio = ec.get_ratio_histogram(
             histogram_name
@@ -248,6 +251,7 @@ def plot_event_class(ec, histogram_name, year, output_path):
             ),
             textsize=14,
         )
+
         legend.AddEntry(
             data_graph, f"Data ({Decimal(data_hist.histo.GetBinContent(1)):.2E})", "EP"
         )

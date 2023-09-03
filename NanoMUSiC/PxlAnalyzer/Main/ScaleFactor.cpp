@@ -1,6 +1,7 @@
 #include "ScaleFactor.hpp"
 
-ScaleFactor::ScaleFactor(const std::string &particleType, const std::string &scale_factor_name,
+ScaleFactor::ScaleFactor(const std::string &particleType,
+                         const std::string &scale_factor_name,
                          const Tools::MConfig &cfg)
     : m_name(scale_factor_name),
       m_type(cfg.GetItem<std::string>(particleType + ".ScaleFactor." + scale_factor_name + ".type", "")),
@@ -11,8 +12,11 @@ ScaleFactor::ScaleFactor(const std::string &particleType, const std::string &sca
       m_scale_factor_histogram_name(
           cfg.GetItem<std::string>(particleType + ".ScaleFactor." + scale_factor_name + ".hist", "")),
       m_abs_eta(cfg.GetItem<bool>(particleType + ".ScaleFactor." + scale_factor_name + ".abseta", false)),
-      m_systematic(cfg.GetItem<double>(particleType + ".ScaleFactor." + scale_factor_name + ".syst", 0)), m_min_x(-1.),
-      m_min_y(-1.), m_max_x(-1.), m_max_y(-1.)
+      m_systematic(cfg.GetItem<double>(particleType + ".ScaleFactor." + scale_factor_name + ".syst", 0)),
+      m_min_x(-1.),
+      m_min_y(-1.),
+      m_max_x(-1.),
+      m_max_y(-1.)
 {
     // check if all info for initilaization is available
     if (m_scale_factor_file_name.empty())

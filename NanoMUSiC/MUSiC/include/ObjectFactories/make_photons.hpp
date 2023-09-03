@@ -137,12 +137,10 @@ inline auto make_photons(const RVec<float> &Photon_pt,  //
 
         if (is_good_photon_pre_filter)
         {
-
             bool is_good_photon = (photon_p4.pt() >= ObjConfig::Photons[year].MinPt) and is_good_photon_pre_filter;
 
             if (is_good_photon)
             {
-
                 scale_factors.push_back( //
                     MUSiCObjects::get_scale_factor(
                         photon_sf,

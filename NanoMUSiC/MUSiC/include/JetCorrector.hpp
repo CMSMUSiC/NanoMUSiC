@@ -32,8 +32,11 @@ class JetCorrector
 
   public:
     JetCorrector(const Year &_year, const std::string &_era, const bool _is_data);
+
     auto get_resolution(float pt, float eta, float rho) const -> double;
+
     auto get_resolution_scale_factor(float eta, const std::string &variation = "Nominal") const -> double;
+
     auto get_resolution_correction(float pt,
                                    float eta,
                                    float phi,
@@ -41,6 +44,7 @@ class JetCorrector
                                    int genjet_idx,
                                    const NanoObjects::GenJets &gen_jets,
                                    const std::string &variation = "Nominal") -> double;
+
     auto get_scale_correction(float pt,
                               float eta,
                               float phi,

@@ -238,6 +238,7 @@ NanoEventClassCollection::NanoEventClassCollection(const std::vector<std::string
         }
     }
 
+
     fmt::print("Building event classes ...\n");
 
     auto j = 0;

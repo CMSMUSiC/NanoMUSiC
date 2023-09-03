@@ -363,8 +363,8 @@ def classification_final_merger_imp(year):
 
 
 def classification_merger(output_base):
-    year_to_merge = ["2016*", "2017", "2018"]
-    with Pool(3) as pool:
+    year_to_merge = ["2016APV", "2016", "2017", "2018"]
+    with Pool(len(year_to_merge)) as pool:
         list(
             tqdm(
                 pool.imap_unordered(classification_final_merger_imp, year_to_merge),

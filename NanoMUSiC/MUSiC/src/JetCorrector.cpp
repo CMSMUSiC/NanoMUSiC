@@ -21,6 +21,7 @@ JetCorrector::JetCorrector(const Year &_year, const std::string &_era, const boo
     std::string json_file = ""s;
     std::string scale_correction_key = ""s;
     std::string scale_uncertainty_correction_key = ""s;
+
     switch (year)
     {
     case Year::Run2016APV:
@@ -195,9 +196,8 @@ auto JetCorrector::get_resolution_correction(float pt,
             eta = 5.199 * eta / std::fabs(eta);
         }
 
-        double scaling_factor = 1.0;
-        scaling_factor = get_resolution_scale_factor(eta, variation);
-        double const resolution = get_resolution(pt, eta, rho);
+        const double scaling_factor = get_resolution_scale_factor(eta, variation);
+        const double resolution = get_resolution(pt, eta, rho);
 
         // Found a match?
         if (is_good_match(pt, eta, phi, genjet_idx, gen_jets, resolution))
@@ -207,7 +207,7 @@ auto JetCorrector::get_resolution_correction(float pt,
 
         // If not, just smear with a Gaussian.
         return std::max(min_correction_factor,
-                        1 + rand.Gaus(0, resolution) * std::sqrt(std::max(std::pow(scaling_factor, 2) - 1.0, 0.0)));
+                        1 + rand.Gaus(0, resolution) * std::sqrt(std::max(std::pow(scaling_factor, 2.) - 1.0, 0.0)));
     }
     return 1.;
 }

@@ -110,19 +110,20 @@ class Shifts
 
   public:
     Shifts(bool is_data)
-        : m_constant_shifts(std::vector<std::string>{"Nominal"}),
-          // : m_constant_shifts(is_data ? std::vector<std::string>{"Nominal"}
-          //                             : std::vector<std::string>{"Nominal",          //
-          //                                                        "PU_Up",            //
-          //                                                        "PU_Down",          //
-          //                                                        "Fake_Up",          //
-          //                                                        "Fake_Down",        //
-          //                                                        "PDF_As_Up",        //
-          //                                                        "PDF_As_Down",      //
-          //                                                        "ScaleFactor_Up",   //
-          //                                                        "ScaleFactor_Down", //
-          //                                                        "PreFiring_Up",     //
-          //                                                        "PreFiring_Down"}),
+        // : m_constant_shifts(std::vector<std::string>{"Nominal"}),
+        : m_constant_shifts(is_data ? std::vector<std::string>{"Nominal"}
+                                    : std::vector<std::string>{"Nominal",          //
+                                                               "PU_Up",            //
+                                                               "PU_Down",          //
+                                                               "Fake_Up",          //
+                                                               "Fake_Down",        //
+                                                               "PDF_As_Up",        //
+                                                               "PDF_As_Down",      //
+                                                            //    "ScaleFactor_Up",   //
+                                                            //    "ScaleFactor_Down", //
+                                                               "PreFiring_Up",     //
+                                                               "PreFiring_Down"//
+                                                               }),
 
           m_differential_shifts(std::vector<std::string>{"Nominal"})
     //   m_differential_shifts(is_data ? std::vector<std::string>{"Nominal"}
@@ -194,11 +195,10 @@ class Shifts
     {
         if (diff_shift != "Nominal" and const_shift != "Nominal")
         {
-            throw std::runtime_error(
-                fmt::format("ERROR: Could not resolve shift. Differential ({}) and Constant ({}) can not be variations "
-                            "at the same time.",
-                            diff_shift,
-                            const_shift));
+            throw std::runtime_error(fmt::format(
+                "ERROR: Could not resolve shift. Differential ({}) and Constant ({}) can not be both variations.",
+                diff_shift,
+                const_shift));
         }
 
         if (diff_shift == "Nominal")
@@ -258,11 +258,11 @@ class Shifts
     {
         if (shift == "Luminosity_Up")
         {
-            return luminosity * (1 + 2.5 / 100.);
+            return luminosity * (1 + 1.6 / 100.);
         }
         if (shift == "Luminosity_Down")
         {
-            return luminosity * (1 - 2.5 / 100.);
+            return luminosity * (1 - 1.6 / 100.);
         }
 
         return luminosity;
@@ -434,7 +434,7 @@ class Shifts
         if (shift == "PDF_As_Up" or shift == "PDF_As_Down")
         {
             // references are dangerous!!!!!
-            // be carefull with life time
+            // be carefull with lifetime
             auto &default_pdf = std::get<0>(default_pdf_sets);
             auto &alpha_s_up_pdf = std::get<1>(default_pdf_sets);
             auto &alpha_s_down_pdf = std::get<2>(default_pdf_sets);
