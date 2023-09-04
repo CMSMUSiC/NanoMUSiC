@@ -39,7 +39,7 @@ inline auto get_photon_energy_corrections(const std::string &shift,
         return (1.f - dEsigmaUp / energy);
     }
 
-    if (shift == "PhotonResolution_Up")
+    if (shift == "PhotonResolution_Down")
     {
         return (1.f - dEsigmaDown / energy);
     }

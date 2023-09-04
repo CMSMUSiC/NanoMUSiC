@@ -125,25 +125,30 @@ class Shifts
                                                                "PreFiring_Down"//
                                                                }),
 
-          m_differential_shifts(std::vector<std::string>{"Nominal"})
-    //   m_differential_shifts(is_data ? std::vector<std::string>{"Nominal"}
-    //                                 : std::vector<std::string>{"Nominal", //
-    //                                                                       //    "MuonResolution_Up",       //
-    //                                                                       //    "MuonResolution_Down",     //
-    //                                                                       //    "MuonScale_Up",            //
-    //                                                                       //    "MuonScale_Down",          //
-    //                                                            "ElectronResolution_Up",   //
-    //                                                            "ElectronResolution_Down", //
-    //                                                            "ElectronScale_Up",        //
-    //                                                            "ElectronScale_Down",      //
-    //                                                            "PhotonResolution_Up",     //
-    //                                                            "PhotonResolution_Down",   //
-    //                                                            "PhotonScale_Up",          //
-    //                                                            "PhotonScale_Down",        //
-    //                                                            "JetResolution_Up",        //
-    //                                                            "JetResolution_Down",      //
-    //                                                            "JetScale_Up",             //
-    //                                                            "JetScale_Down"})
+        //   m_differential_shifts(std::vector<std::string>{"Nominal"})
+      m_differential_shifts(is_data ? std::vector<std::string>{"Nominal"}
+                                    : std::vector<std::string>{"Nominal", //
+                                                                          //    "MuonResolution_Up",       //
+                                                                          //    "MuonResolution_Down",     //
+                                                                          //    "MuonScale_Up",            //
+                                                                          //    "MuonScale_Down",          //
+                                                               "ElectronResolution_Up",   //
+                                                               "ElectronResolution_Down", //
+                                                               "ElectronScale_Up",        //
+                                                               "ElectronScale_Down",      //
+                                                               "PhotonResolution_Up",     //
+                                                               "PhotonResolution_Down",   //
+                                                               "PhotonScale_Up",          //
+                                                               "PhotonScale_Down",        //
+                                                               "JetResolution_Up",        //
+                                                               "JetResolution_Down",      //
+                                                               "JetScale_Up",             //
+                                                               "JetScale_Down",
+                                                               "UnclusteredEnergy_Up",//
+                                                               "UnclusteredEnergy_Down",//
+                                                               "TauEnergy_Up",//
+                                                               "TauEnergy_Down",//
+                                                               }                                                               )
     {
     }
 

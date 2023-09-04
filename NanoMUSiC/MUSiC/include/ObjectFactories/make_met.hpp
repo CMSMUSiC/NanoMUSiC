@@ -17,8 +17,25 @@ using namespace ROOT::VecOps;
 namespace ObjectFactories
 {
 
+inline auto get_unclustered_energy_shift(const std::string &shift, const double MET_MetUnclustEnUpDelta) -> double
+{
+    if (shift == "UnclusteredEnergy_Up")
+    {
+        return MET_MetUnclustEnUpDelta;
+    }
+
+    if (shift == "UnclusteredEnergy_Down")
+    {
+        return -MET_MetUnclustEnUpDelta;
+    }
+
+    return 0.;
+}
+
 inline auto make_met(const double raw_met_pt,                  //
                      const double raw_met_phi,                 //
+                     const double MET_MetUnclustEnUpDeltaX,    //
+                     const double MET_MetUnclustEnUpDeltaY,    //
                      const double delta_met_px_from_muons,     //
                      const double delta_met_py_from_muons,     //
                      const double delta_met_px_from_electrons, //
@@ -50,7 +67,8 @@ inline auto make_met(const double raw_met_pt,                  //
                   - delta_met_px_from_taus           //
                   - delta_met_px_from_photons        //
                   - delta_met_px_from_jets           //
-                  - delta_met_px_from_bjets;
+                  - delta_met_px_from_bjets          //
+                  + get_unclustered_energy_shift(shift, MET_MetUnclustEnUpDeltaX);
 
     auto met_py = raw_met_pt * std::sin(raw_met_phi) //
                   - delta_met_py_from_muons          //
@@ -58,11 +76,10 @@ inline auto make_met(const double raw_met_pt,                  //
                   - delta_met_py_from_taus           //
                   - delta_met_py_from_photons        //
                   - delta_met_py_from_jets           //
-                  - delta_met_py_from_bjets;
+                  - delta_met_py_from_bjets          //
+                  + get_unclustered_energy_shift(shift, MET_MetUnclustEnUpDeltaY);
 
     auto this_met = Math::PxPyPzMVector(met_px, met_py, 0., 0.);
-
-    // TODO: Implement the Unclustered energy shifts
 
     bool is_good_met = this_met.pt() >= ObjConfig::MET[year].MinPt;
 

@@ -17,69 +17,20 @@ using namespace ROOT::VecOps;
 namespace ObjectFactories
 {
 
-inline auto get_tau_energy_corrections(const std::string &shift,
-                                       float dEscaleUp,
-                                       float dEscaleDown,
-                                       float dEsigmaUp,
-                                       float dEsigmaDown,
-                                       double energy) -> double
+inline auto get_tau_energy_variation(const std::string &shift) -> std::string
 {
     if (shift == "Tau_Up")
     {
-        return 1.;
+        return "up";
     }
 
     if (shift == "Tau_Down")
     {
-        return 1.;
+        return "down";
     }
 
-    return 1.;
+    return "nom";
 }
-
-/////////////////////////////////////////////////////////////////////////////////////////
-/// Photons ID SFs, in the correctionlib JSONs, are implemented in: UL-Photon-ID-SF
-/// inputs: year (string), variation (string), WorkingPoint (string), eta_SC (real), pt (real)
-/// - year: 2016preVFP, 2016postVFP, 2017, 2018
-/// - variation: sf/sfup/sfdown (sfup = sf + syst, sfdown = sf - syst)
-/// - WorkingPoint: Loose, Medium, Tight, wp80, wp90
-/// - eta: [-inf, inf)
-/// - pt [20., inf)
-///
-/// Low pT
-/// RECO: From Twiki [0]: "The scale factor to reconstruct a supercluster with H/E<0.5 is assumed to be 100%."
-/// ID: Tight
-/// ISO: No recomendations (already incorporated).
-///
-/// [0] - https://twiki.cern.ch/twiki/bin/view/CMS/EgammaRunIIRecommendations#E_gamma_RECO
-///
-/// Photons PixelSeed SFs, in the correctionlib JSONs, are implemented in:  UL-Photon-PixVeto-SF
-/// These are the Photon Pixel Veto Scale Factors (nominal, up or down) for 2018 Ultra Legacy dataset.
-/// - year: 2016preVFP, 2016postVFP, 2017, 2018
-/// - variation: sf/sfup/sfdown (sfup = sf + syst, sfdown = sf - syst)
-/// - WorkingPoint (SFs available for the cut-based and MVA IDs): Loose, MVA, Medium, Tight
-/// - HasPixBin: For each working point of choice, they are dependent on the photon pseudorapidity and R9: Possible
-/// bin choices: ['EBInc','EBHighR9','EBLowR9','EEInc','EEHighR9','EELowR9']
-///////////////////////////////////////////////////////////////
-/// For some reason, the Official Muon SFs requires a field of the requested year, with proper formating.
-
-// inline auto get_year_for_tau_sf(Year year) -> std::string
-// {
-//     switch (year)
-//     {
-//     case Year::Run2016APV:
-//         return "2016preVFP"s;
-//     case Year::Run2016:
-//         return "2016postVFP"s;
-//     case Year::Run2017:
-//         return "2017"s;
-//     case Year::Run2018:
-//         return "2018"s;
-//     default:
-//         throw std::runtime_error("Year (" + std::to_string(year) +
-//                                  ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
-//     }
-// }
 
 inline auto make_taus(const RVec<float> &Tau_pt,                            //
                       const RVec<float> &Tau_eta,                           //
@@ -116,16 +67,20 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
             ((Tau_idDeepTau2017v2p1VSmu[i] & 8) == 8) and (Tau_decayMode[i] != 5) and (Tau_decayMode[i] != 6) and
             (std::fabs(Tau_eta[i]) <= 2.1) and (std::fabs(Tau_dz[i]) < 0.2);
 
-        // regard Tau_mass right here ("PDG::Tau::Mass" is only literature value)
         auto tau_p4 = Math::PtEtaPhiMVector(Tau_pt[i], Tau_eta[i], Tau_phi[i], Tau_mass[i]);
 
         auto energy_correction = 1.;
         if (Tau_decayMode[i] != 5 and Tau_decayMode[i] != 6)
         {
-            energy_correction = MUSiCObjects::get_scale_factor(
-                tau_energy_scale,
-                is_data,
-                {tau_p4.pt(), std::fabs(tau_p4.eta()), Tau_decayMode[i], Tau_genPartFlav[i], "DeepTau2017v2p1", "nom"});
+            auto variation = get_tau_energy_variation(shift);
+            energy_correction = MUSiCObjects::get_scale_factor(tau_energy_scale,
+                                                               is_data,
+                                                               {tau_p4.pt(),
+                                                                std::fabs(tau_p4.eta()),
+                                                                Tau_decayMode[i],
+                                                                Tau_genPartFlav[i],
+                                                                "DeepTau2017v2p1",
+                                                                variation});
             tau_p4 = tau_p4 * energy_correction;
         }
 
@@ -134,7 +89,6 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
 
         if (is_good_tau_pre_filter)
         {
-
             bool is_good_tau =
                 (tau_p4.pt() >= 25.) and is_good_tau_pre_filter; // 25 our studies 20 official recommondation
 
