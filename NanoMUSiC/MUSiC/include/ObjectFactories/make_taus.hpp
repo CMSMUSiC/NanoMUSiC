@@ -19,12 +19,12 @@ namespace ObjectFactories
 
 inline auto get_tau_energy_variation(const std::string &shift) -> std::string
 {
-    if (shift == "Tau_Up")
+    if (shift == "TauEnergy_Up")
     {
         return "up";
     }
 
-    if (shift == "Tau_Down")
+    if (shift == "TauEnergy_Down")
     {
         return "down";
     }

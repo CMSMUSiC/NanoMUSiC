@@ -133,7 +133,9 @@ def main():
                 directory = matching_directories[idx]
                 job_status[directory] = False
                 if os.path.isfile(f"{directory}/condor.out"):
-                    if check_file_for_string(f"{directory}/condor.out", "YAY!"):
+                    if check_file_for_string(
+                        f"{directory}/condor.out", "YAY!"
+                    ) and check_file_for_string(f"{directory}/condor.out", "COPIED!"):
                         job_status[directory] = True
                         completed_jobs.append(idx)
                 if (

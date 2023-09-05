@@ -37,7 +37,7 @@ def dump_list_to_file(lst, file_path):
 
 
 def get_splitting_factor(
-    sample, is_data, default_splitting_data=10, default_splitting_mc=10
+    sample, is_data, default_splitting_data=4, default_splitting_mc=4
 ):
     # get splitting for Data/MC
     splitting = default_splitting_mc
@@ -50,9 +50,9 @@ def get_splitting_factor(
         splitting = default_splitting_data
 
         if sample.startswith("EGamma"):
-            splitting = 3
+            splitting = min(3, default_splitting_data)
         if sample.startswith("SingleMuon"):
-            splitting = 3
+            splitting = min(3, default_splitting_data)
 
     return splitting
 
@@ -118,6 +118,9 @@ def parse_args():
         help="Output base path.",
         type=str,
         default=".",
+    )
+    parser.add_argument(
+        "-u", "--username", help="dCache username.", type=str, required=True
     )
 
     parser.add_argument(
@@ -191,14 +194,14 @@ def run_classification(
     processGroup: str,
     executable: str,
     # shift: str,
-    file_index: str,
+    buffer_index: str,
     input_file: str,
     debug: bool,
 ) -> bool:
     # debug: bool = False
 
     # default is MC
-    cmd_str: str = f"{executable} --process {process_name} --year {year} --output {output_path} --file_index {file_index} --xsection {str(xsection)} --filter_eff {str(filter_eff)} --k_factor {str(k_factor)} --luminosity {str(luminosity)} --xs_order {processOrder} --process_group {processGroup} --input {input_file}"
+    cmd_str: str = f"{executable} --process {process_name} --year {year} --output {output_path} --buffer_index {buffer_index} --xsection {str(xsection)} --filter_eff {str(filter_eff)} --k_factor {str(k_factor)} --luminosity {str(luminosity)} --xs_order {processOrder} --process_group {processGroup} --input {input_file}"
     if is_data:
         cmd_str: str = f"{executable} --process {process_name} --year {year} --is_data --output {output_path} --xsection {str(xsection)} --filter_eff {str(filter_eff)} --k_factor {str(k_factor)} --luminosity {str(luminosity)} --xs_order {processOrder} --process_group {processGroup} --input {input_file}"
 
@@ -233,7 +236,7 @@ def classification(args):
         k_factor,
         processOrder,
         processGroup,
-        file_index,
+        buffer_index,
         input_files,
         executable,
         # shift,
@@ -241,12 +244,12 @@ def classification(args):
         debug,
     ) = list(args.values())
 
-    output_path: str = f"{output_base}/classification_outputs/{year}/{process}/buffer/buffer_{file_index}"
+    output_path: str = f"{output_base}/classification_outputs/{year}/{process}/buffer/buffer_{buffer_index}"
 
     # print("[ MUSiC Classification ] Loading samples ...\n")
     # print("[ MUSiC Classification ] Preparing output directory ...\n")
     os.system(
-        f"rm -rf {output_base}/classification_outputs/{year}/{process}/buffer/buffer_{file_index}/*_{process}_{year}_{file_index}.root"
+        f"rm -rf {output_base}/classification_outputs/{year}/{process}/buffer/buffer_{buffer_index}/*_{process}_{year}_{buffer_index}.root"
     )
 
     dump_list_to_file(input_files, f"{output_path}/inputs.txt")
@@ -265,7 +268,7 @@ def classification(args):
         processGroup,
         executable,
         # shift,
-        file_index,
+        buffer_index,
         os.path.abspath(f"{output_path}/inputs.txt"),
         debug,
     )
@@ -282,15 +285,16 @@ def classification_condor(args):
         k_factor,
         processOrder,
         processGroup,
-        file_index,
+        buffer_index,
         input_files,
         executable,
         # shift,
         output_base,
+        username,
         debug,
     ) = list(args.values())
 
-    output_path: str = f"{output_base}/classification_outputs/{year}/{process}/buffer/buffer_{file_index}"
+    output_path: str = f"{output_base}/classification_outputs/{year}/{process}/buffer/buffer_{buffer_index}"
 
     dump_list_to_file(input_files, f"{output_path}/inputs.txt")
 
@@ -307,6 +311,8 @@ def classification_condor(args):
         processGroup,
         os.path.abspath(f"{output_path}/inputs.txt"),
         output_path,
+        buffer_index,
+        username,
         debug,
     )
 
@@ -320,8 +326,48 @@ def get_file_paths(root_dir, extension=".root"):
     return file_paths
 
 
+def get_files_in_buffer_area(
+    process: str,
+    year: str,
+    process_group: str,
+    xsec_order: str,
+    username: str,
+    debug: bool,
+):
+    srmls_merge_result = subprocess.run(
+        shlex.split(
+            f"srmls srm://grid-srm.physik.rwth-aachen.de:8443/srm/managerv2\\?SFN=/pnfs/physik.rwth-aachen.de/cms/store/user/{username}/classification_buffer/"
+        ),
+        capture_output=True,
+    )
+    if debug:
+        print(srmls_merge_result.stdout.decode("utf-8"))
+
+    if srmls_merge_result.returncode != 0:
+        error = srmls_merge_result.stderr.decode("utf-8")
+        raise RuntimeError(f"ERROR: could not merge output files, per sample.\n{error}")
+
+    buffer_files = []
+    for line in srmls_merge_result.stdout.decode("utf-8").split("\n"):
+        if (
+            "ec_classes" in line
+            and ".root" in line
+            and f"_{process}_" in line
+            and f"_{year}_" in line
+            and f"_{process_group}_" in line
+            and f"_{xsec_order}_" in line
+        ):
+            buffer_files.append(
+                f"dcap://grid-dcap-extern.physik.rwth-aachen.de/pnfs/physik.rwth-aachen.de/cms/store/user/{username}/classification_buffer/ec_classes"
+                + line.split("ec_classes")[1].split(".root")[0]
+                + ".root"
+            )
+
+    return buffer_files
+
+
 def classification_merger_per_sample(args):
-    process, year, output_base, debug = args
+    process, year, process_group, xsec_order, output_base, username, debug = args
 
     output_file_path: str = (
         f"{output_base}/classification_outputs/{year}/{process}/{process}_{year}.root"
@@ -332,8 +378,8 @@ def classification_merger_per_sample(args):
             "hadd",
             "-f",
             output_file_path,
-            *get_file_paths(
-                f"{output_base}/classification_outputs/{year}/{process}/buffer"
+            *get_files_in_buffer_area(
+                process, year, process_group, xsec_order, username, debug
             ),
         ],
         capture_output=True,
@@ -524,11 +570,11 @@ def main():
                                         "k_factor": 1.0,
                                         "processOrder": "DUMMY",
                                         "processGroup": "Data",
-                                        "file_index": idx,
+                                        "buffer_index": idx,
                                         "input_files": f,
                                         "executable": args.executable,
-                                        # "shift": "Nominal",
                                         "output_base": args.output,
+                                        "username": args.username,
                                         "debug": args.debug,
                                     }
                                 )
@@ -559,9 +605,30 @@ def main():
                                     )
 
                         # prepare merge jobs
-                        merge_per_sample_arguments.append(
-                            (sample, year, args.output, args.debug)
-                        )
+                        if task_config[sample]["is_data"]:
+                            merge_per_sample_arguments.append(
+                                (
+                                    sample,
+                                    year,
+                                    "Data",
+                                    "DUMMY",
+                                    args.output,
+                                    args.username,
+                                    args.debug,
+                                )
+                            )
+                        else:
+                            merge_per_sample_arguments.append(
+                                (
+                                    sample,
+                                    year,
+                                    task_config[sample]["ProcessGroup"],
+                                    task_config[sample]["XSecOrder"],
+                                    args.output,
+                                    args.username,
+                                    args.debug,
+                                )
+                            )
 
                         if args.merge:
                             try:
@@ -637,7 +704,7 @@ def main():
     if not args.condor and args.harvest:
         # merge outputs per sample
         print("\nMerging outputs per sample ...")
-        with Pool(min(args.jobs, len(merge_per_sample_arguments))) as pool:
+        with Pool(min([args.jobs, len(merge_per_sample_arguments), 30])) as pool:
             list(
                 tqdm(
                     pool.imap_unordered(

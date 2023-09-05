@@ -116,11 +116,11 @@ class Shifts
                                                                "PU_Up",            //
                                                                "PU_Down",          //
                                                                "Fakes_Up",          //
-                                                               "Fakes_Down",        //
+                                                            //    "Fakes_Down",        //
                                                                "PDF_As_Up",        //
-                                                               "PDF_As_Down",      //
+                                                            //    "PDF_As_Down",      //
                                                                "ScaleFactor_Up",   //
-                                                               "ScaleFactor_Down", //
+                                                            //    "ScaleFactor_Down", //
                                                                "PreFiring_Up",     //
                                                                "PreFiring_Down"//
                                                                }),
@@ -147,8 +147,8 @@ class Shifts
                                                                "UnclusteredEnergy_Up",//
                                                                "UnclusteredEnergy_Down",//
                                                                "TauEnergy_Up",//
-                                                               "TauEnergy_Down",//
-                                                               }                                                               )
+                                                               "TauEnergy_Down"//
+                                                               })
     {
     }
 

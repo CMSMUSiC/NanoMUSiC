@@ -149,6 +149,17 @@ class Histogram:
             histo_name,
         )
 
+    @staticmethod
+    def merge_histograms(histograms: list[Histogram]):
+        merged_histo = None
+        for h in histograms:
+            if merged_histo == None:
+                merged_histo = h.clone()
+            else:
+                merged_histo.add(h)
+
+        return merged_histo
+
 
 class EventClass:
     def __init__(

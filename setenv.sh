@@ -52,8 +52,8 @@ source set_env.sh
 cd $SCRIPTDIR/NanoMUSiC/PxlAnalyzer/EventClassFactory/
 source set_env.sh
 
-cd $SCRIPTDIR/NanoMUSiC/MUSiC-Utils/
-source set_env.sh
+# cd $SCRIPTDIR/NanoMUSiC/MUSiC-Utils/
+# source set_env.sh
 
 cd $SCRIPTDIR/NanoMUSiC/MUSiC-Configs/
 source set_env.sh

@@ -91,17 +91,17 @@ auto make_array_reader(TTreeReader &tree_reader, const std::string &leaf) -> Opt
 #define ADD_ARRAY_READER(VAR, TYPE) auto VAR = make_array_reader<TYPE>(tree_reader, #VAR)
 
 #define INITIALIZE_ANALYSIS(TYPE, ANALYSIS, COUNT_MAP)                                                                 \
-    ANALYSIS.insert(                                                                                                   \
-        {shift,                                                                                                        \
-         TYPE(#ANALYSIS,                                                                                               \
-              get_output_file_path(#ANALYSIS, output_path, process, year, process_group, xs_order, is_data, shift),    \
-              COUNT_MAP,                                                                                               \
-              false,                                                                                                   \
-              shift,                                                                                                   \
-              process,                                                                                                 \
-              year,                                                                                                    \
-              process_group,                                                                                           \
-              xs_order)})
+    ANALYSIS.insert({shift,                                                                                            \
+                     TYPE(#ANALYSIS,                                                                                   \
+                          get_output_file_path(                                                                        \
+                              #ANALYSIS, output_path, process, year, process_group, xs_order, is_data, buffer_index),  \
+                          COUNT_MAP,                                                                                   \
+                          false,                                                                                       \
+                          shift,                                                                                       \
+                          process,                                                                                     \
+                          year,                                                                                        \
+                          process_group,                                                                               \
+                          xs_order)})
 
 template <typename T>
 auto unwrap(std::optional<TTreeReaderValue<T>> &value) -> T
@@ -245,7 +245,7 @@ inline auto get_output_file_path(const std::string &prefix,
                                  const std::string &process_group,
                                  const std::string &xs_order,
                                  bool is_data,
-                                 const std::string &shift,
+                                 const std::string &buffer_index,
                                  const std::string &suffix = ".root") -> std::string
 {
     return fmt::format("{}/{}_{}_{}_{}_{}_{}_{}{}",
@@ -256,7 +256,7 @@ inline auto get_output_file_path(const std::string &prefix,
                        process_group,
                        xs_order,
                        is_data_to_string(is_data),
-                       shift,
+                       buffer_index,
                        suffix);
 }
 
