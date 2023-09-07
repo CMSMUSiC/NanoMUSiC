@@ -12,15 +12,13 @@
 #include "NanoEventClass.hpp"
 
 EventClass::EventClass(const std::string &_class_name,
-                       const std::string &_output_path,
                        const std::map<std::string, int> &_countMap,
-                       const std::string _shift,
+                       const Shifts::Variations _shift,
                        const std::string &_sample,
                        const std::string &_year,
                        const std::string &_process_group,
                        const std::string &_xs_order)
-    : output_path(_output_path),
-      min_bin_width(10.),
+    : min_bin_width(10.),
       countMap(_countMap),
       shift(_shift)
 {
@@ -33,42 +31,42 @@ EventClass::EventClass(const std::string &_class_name,
 
     std::string histo_name = "";
 
-    histo_name = NanoEventHisto::make_histogram_full_name(_class_name,    //
-                                                          _process_group, //
-                                                          _xs_order,      //
-                                                          _sample,        //
-                                                          _year,          //
-                                                          _shift,         //
+    histo_name = NanoEventHisto::make_histogram_full_name(_class_name,                         //
+                                                          _process_group,                      //
+                                                          _xs_order,                           //
+                                                          _sample,                             //
+                                                          _year,                               //
+                                                          Shifts::variation_to_string(_shift), //
                                                           "h_counts");
     h_counts = TH1F(histo_name.c_str(), histo_name.c_str(), 1, 0., 1.);
     h_counts.Sumw2();
 
-    histo_name = NanoEventHisto::make_histogram_full_name(_class_name,    //
-                                                          _process_group, //
-                                                          _xs_order,      //
-                                                          _sample,        //
-                                                          _year,          //
-                                                          _shift,         //
+    histo_name = NanoEventHisto::make_histogram_full_name(_class_name,                         //
+                                                          _process_group,                      //
+                                                          _xs_order,                           //
+                                                          _sample,                             //
+                                                          _year,                               //
+                                                          Shifts::variation_to_string(_shift), //
                                                           "h_invariant_mass");
     h_invariant_mass = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
     h_invariant_mass.Sumw2();
 
-    histo_name = NanoEventHisto::make_histogram_full_name(_class_name,    //
-                                                          _process_group, //
-                                                          _xs_order,      //
-                                                          _sample,        //
-                                                          _year,          //
-                                                          _shift,         //
+    histo_name = NanoEventHisto::make_histogram_full_name(_class_name,                         //
+                                                          _process_group,                      //
+                                                          _xs_order,                           //
+                                                          _sample,                             //
+                                                          _year,                               //
+                                                          Shifts::variation_to_string(_shift), //
                                                           "h_sum_pt");
     h_sum_pt = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
     h_sum_pt.Sumw2();
 
-    histo_name = NanoEventHisto::make_histogram_full_name(_class_name,    //
-                                                          _process_group, //
-                                                          _xs_order,      //
-                                                          _sample,        //
-                                                          _year,          //
-                                                          _shift,         //
+    histo_name = NanoEventHisto::make_histogram_full_name(_class_name,                         //
+                                                          _process_group,                      //
+                                                          _xs_order,                           //
+                                                          _sample,                             //
+                                                          _year,                               //
+                                                          Shifts::variation_to_string(_shift), //
                                                           "h_met");
     h_met = TH1F(histo_name.c_str(), histo_name.c_str(), limits_met.size() - 1, limits_met.data());
     h_met.Sumw2();

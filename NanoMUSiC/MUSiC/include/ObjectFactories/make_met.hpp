@@ -8,6 +8,7 @@
 #include "ROOT/RVec.hxx"
 
 #include "Configs.hpp"
+#include "Shifts.hpp"
 #include "music_objects.hpp"
 
 using namespace ROOT;
@@ -17,14 +18,14 @@ using namespace ROOT::VecOps;
 namespace ObjectFactories
 {
 
-inline auto get_unclustered_energy_shift(const std::string &shift, const double MET_MetUnclustEnUpDelta) -> double
+inline auto get_unclustered_energy_shift(const Shifts::Variations shift, const double MET_MetUnclustEnUpDelta) -> double
 {
-    if (shift == "UnclusteredEnergy_Up")
+    if (shift == Shifts::Variations::UnclusteredEnergy_Up)
     {
         return MET_MetUnclustEnUpDelta;
     }
 
-    if (shift == "UnclusteredEnergy_Down")
+    if (shift == Shifts::Variations::UnclusteredEnergy_Down)
     {
         return -MET_MetUnclustEnUpDelta;
     }
@@ -50,7 +51,7 @@ inline auto make_met(const double raw_met_pt,                  //
                      const double delta_met_py_from_bjets,     //
                      bool is_data,                             //
                      const std::string &_year,                 //
-                     const std::string &shift) -> MUSiCObjects
+                     const Shifts::Variations shift) -> MUSiCObjects
 {
 
     auto year = get_runyear(_year);

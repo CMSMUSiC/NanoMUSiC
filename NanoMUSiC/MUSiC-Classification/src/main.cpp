@@ -17,6 +17,7 @@
 #include <memory>
 #include <optional>
 #include <stdexcept>
+#include <stdlib.h>
 #include <string>
 #include <type_traits>
 #include <unordered_map>
@@ -44,7 +45,8 @@ auto main(int argc, char *argv[]) -> int
     const bool debug = cmdl[{"--debug"}];
 
     if (show_help or process == "" or year == "" or output_path == "" or input_file == "" or x_section_str == "" or
-        filter_eff_str == "" or k_factor_str == "" or luminosity_str == "" or xs_order == "" or process_group == "")
+        filter_eff_str == "" or k_factor_str == "" or luminosity_str == "" or xs_order == "" or process_group == "" or
+        buffer_index == "")
     {
         fmt::print("Usage: classification [OPTIONS]\n");
         fmt::print("          -h|--help: Shows this message.\n");
@@ -69,18 +71,12 @@ auto main(int argc, char *argv[]) -> int
     const double k_factor = std::stod(k_factor_str);
     const double luminosity = std::stod(luminosity_str);
 
-    // clear output path
-    // std::system(fmt::format("rm -rf {}/*.root  >/dev/null 2>&1", output_path).c_str());
-
     // create tree reader and add values and arrays
     TChain input_chain("nano_music");
     for (auto &&file : load_input_files(input_file))
     {
         input_chain.Add(file.c_str());
     }
-
-    // auto f = std::unique_ptr<TFile>(TFile::Open(input_file.c_str()));
-    // auto input_chain = std::unique_ptr<TTree>(f->Get<TTree>("nano_music"));
 
     auto tree_reader = TTreeReader(&input_chain);
 
@@ -252,31 +248,31 @@ auto main(int argc, char *argv[]) -> int
 
     // build classification factories
     // map each shift to one analysis
-    std::unordered_map<std::string, ZToLepLepX> z_to_mu_mu_x;
-    std::unordered_map<std::string, ZToLepLepX> z_to_mu_mu_x_Z_mass;
-    std::unordered_map<std::string, ZToLepLepX> z_to_ele_ele_x;
-    std::unordered_map<std::string, ZToLepLepX> z_to_ele_ele_x_Z_mass;
-    std::unordered_map<std::string, GammaPlusJet> gamma_plus_jet;
-    std::unordered_map<std::string, TTBarTo1Lep2Bjet2JetMET> ttbar_to_1mu_2bjet_2jet_MET;
-    std::unordered_map<std::string, TTBarTo1Lep2Bjet2JetMET> ttbar_to_1ele_2bjet_2jet_MET;
+    // std::unordered_map<std::string, ZToLepLepX> z_to_mu_mu_x;
+    // std::unordered_map<std::string, ZToLepLepX> z_to_mu_mu_x_Z_mass;
+    // std::unordered_map<std::string, ZToLepLepX> z_to_ele_ele_x;
+    // std::unordered_map<std::string, ZToLepLepX> z_to_ele_ele_x_Z_mass;
+    // std::unordered_map<std::string, GammaPlusJet> gamma_plus_jet;
+    // std::unordered_map<std::string, TTBarTo1Lep2Bjet2JetMET> ttbar_to_1mu_2bjet_2jet_MET;
+    // std::unordered_map<std::string, TTBarTo1Lep2Bjet2JetMET> ttbar_to_1ele_2bjet_2jet_MET;
 
     // Initialize analyses
-    shifts.for_each(
-        [&](const std::string &shift) -> void
-        {
-            INITIALIZE_ANALYSIS(ZToLepLepX, z_to_mu_mu_x, z_to_mu_mu_x_count_map);
-            INITIALIZE_ANALYSIS(ZToLepLepX, z_to_mu_mu_x_Z_mass, z_to_mu_mu_x_count_map);
-            INITIALIZE_ANALYSIS(ZToLepLepX, z_to_ele_ele_x, z_to_ele_ele_x_count_map);
-            INITIALIZE_ANALYSIS(ZToLepLepX, z_to_ele_ele_x_Z_mass, z_to_ele_ele_x_count_map);
-            INITIALIZE_ANALYSIS(GammaPlusJet, gamma_plus_jet, gamma_plus_jet_count_map);
-            INITIALIZE_ANALYSIS(
-                TTBarTo1Lep2Bjet2JetMET, ttbar_to_1mu_2bjet_2jet_MET, ttbar_to_1mu_2bjet_2jet_met_count_map);
-            INITIALIZE_ANALYSIS(
-                TTBarTo1Lep2Bjet2JetMET, ttbar_to_1ele_2bjet_2jet_MET, ttbar_to_1ele_2bjet_2jet_met_count_map);
-        });
+    // shifts.for_each(
+    //     [&](const std::string &shift) -> void
+    //     {
+    //         INITIALIZE_ANALYSIS(ZToLepLepX, z_to_mu_mu_x, z_to_mu_mu_x_count_map);
+    //         INITIALIZE_ANALYSIS(ZToLepLepX, z_to_mu_mu_x_Z_mass, z_to_mu_mu_x_count_map);
+    //         INITIALIZE_ANALYSIS(ZToLepLepX, z_to_ele_ele_x, z_to_ele_ele_x_count_map);
+    //         INITIALIZE_ANALYSIS(ZToLepLepX, z_to_ele_ele_x_Z_mass, z_to_ele_ele_x_count_map);
+    //         INITIALIZE_ANALYSIS(GammaPlusJet, gamma_plus_jet, gamma_plus_jet_count_map);
+    //         INITIALIZE_ANALYSIS(
+    //             TTBarTo1Lep2Bjet2JetMET, ttbar_to_1mu_2bjet_2jet_MET, ttbar_to_1mu_2bjet_2jet_met_count_map);
+    //         INITIALIZE_ANALYSIS(
+    //             TTBarTo1Lep2Bjet2JetMET, ttbar_to_1ele_2bjet_2jet_MET, ttbar_to_1ele_2bjet_2jet_met_count_map);
+    //     });
 
     // [EVENT_CLASS_NAME, [SHIFT, EVENT_CLASS] ]
-    using ClassCollection_t = std::unordered_map<std::string, EventClass>;
+    using ClassCollection_t = std::unordered_map<Shifts::Variations, EventClass>;
     std::unordered_map<std::string, ClassCollection_t> event_classes;
 
     auto cutflow_file = std::unique_ptr<TFile>(
@@ -306,10 +302,10 @@ auto main(int argc, char *argv[]) -> int
         // // remove the "unused variable" warning during compilation
         static_cast<void>(event);
 
-        // if (event > 3)
-        // {
-        //     break;
-        // }
+        if (event > 10000)
+        {
+            break;
+        }
 
         // Trigger
         auto is_good_trigger = trigger_filter(process,           //
@@ -514,62 +510,15 @@ auto main(int argc, char *argv[]) -> int
                                                                           {idx_met, met.size()},
                                                                           trigger_matches);
 
-                                                // create event class, if does not exists
-                                                for (auto &&class_name : {event_class_name_exclusive,
-                                                                          event_class_name_inclusive,
-                                                                          event_class_name_jetinclusive})
-                                                {
-                                                    if (class_name)
-                                                    {
-                                                        if (event_classes.find(*class_name) == event_classes.end())
-                                                        {
-                                                            event_classes.insert({*class_name, ClassCollection_t()});
-
-                                                            shifts.for_each(
-                                                                [&](const std::string &shift) -> void
-                                                                {
-                                                                    event_classes.at(*class_name)
-                                                                        .insert({shift,
-                                                                                 EventClass(
-                                                                                     *class_name,
-                                                                                     get_output_file_path(*class_name,
-                                                                                                          output_path,
-                                                                                                          process,
-                                                                                                          year,
-                                                                                                          process_group,
-                                                                                                          xs_order,
-                                                                                                          is_data,
-                                                                                                          shift,
-                                                                                                          buffer_index),
-                                                                                     {{"Ele", idx_electron},
-                                                                                      {"EleEE", 0},
-                                                                                      {"EleEB", 0},
-                                                                                      {"Muon", idx_muon},
-                                                                                      {"Gamma", 0},
-                                                                                      {"GammaEB", idx_photon},
-                                                                                      {"GammaEE", 0},
-                                                                                      {"Tau", idx_tau},
-                                                                                      {"Jet", idx_jet},
-                                                                                      {"bJet", idx_bjet},
-                                                                                      {"MET", idx_met}},
-                                                                                     shift,
-                                                                                     process,
-                                                                                     year,
-                                                                                     process_group,
-                                                                                     xs_order)});
-                                                                });
-                                                        }
-                                                    }
-                                                }
-
                                                 for (auto &&const_shift : shifts.get_constant_shifts(diff_shift))
                                                 {
-                                                    if (const_shift == "Nominal" or diff_shift == "Nominal")
+                                                    if (const_shift == Shifts::Variations::Nominal or
+                                                        diff_shift == Shifts::Variations::Nominal)
                                                     {
+                                                        auto shift = Shifts::resolve_shifts(const_shift, diff_shift);
+
                                                         // get effective event weight
                                                         double weight = 1.;
-
-                                                        auto shift = Shifts::resolve_shifts(const_shift, diff_shift);
 
                                                         if (not(is_data))
                                                         {
@@ -650,8 +599,41 @@ auto main(int argc, char *argv[]) -> int
                                                                                   event_class_name_inclusive,
                                                                                   event_class_name_jetinclusive})
                                                         {
+                                                            // create event class, if does not exists
                                                             if (class_name)
                                                             {
+                                                                if (event_classes.find(*class_name) ==
+                                                                    event_classes.end())
+                                                                {
+                                                                    event_classes.insert(
+                                                                        {*class_name, ClassCollection_t()});
+
+                                                                    shifts.for_each(
+                                                                        [&](const Shifts::Variations shift) -> void
+                                                                        {
+                                                                            event_classes.at(*class_name)
+                                                                                .insert({shift,
+                                                                                         EventClass(
+                                                                                             *class_name,
+                                                                                             {{"Ele", idx_electron},
+                                                                                              {"EleEE", 0},
+                                                                                              {"EleEB", 0},
+                                                                                              {"Muon", idx_muon},
+                                                                                              {"Gamma", 0},
+                                                                                              {"GammaEB", idx_photon},
+                                                                                              {"GammaEE", 0},
+                                                                                              {"Tau", idx_tau},
+                                                                                              {"Jet", idx_jet},
+                                                                                              {"bJet", idx_bjet},
+                                                                                              {"MET", idx_met}},
+                                                                                             shift,
+                                                                                             process,
+                                                                                             year,
+                                                                                             process_group,
+                                                                                             xs_order)});
+                                                                        });
+                                                                }
+
                                                                 // fill class
                                                                 event_classes.at(*class_name)[shift].fill(
                                                                     {idx_muon, muons},
@@ -893,7 +875,7 @@ auto main(int argc, char *argv[]) -> int
         }
         else
         {
-            if ((event > 1000000 and event % 1000000 == 0))
+            if ((event > 100000 and event % 100000 == 0))
             {
                 fmt::print("\n\nProcessed {} events ...\n", event);
                 PrintProcessInfo();
@@ -902,14 +884,17 @@ auto main(int argc, char *argv[]) -> int
     }
 
     fmt::print("\n[MUSiC Classification] Saving outputs ({} - {} - {}) ...\n", process, year, buffer_index);
-    auto ec_output_file = std::unique_ptr<TFile>(TFile::Open(
-        get_output_file_path("ec_classes", ".", process, year, process_group, xs_order, is_data, buffer_index).c_str(),
-        "RECREATE",
-        "nanomusic_event_classes",
-        ROOT::RCompressionSetting::EDefaults::kUseSmallest));
+    auto ec_output_file = std::unique_ptr<TFile>(TFile::Open( //
+        get_output_file_path("ec_classes", ".", process, year, process_group, xs_order, is_data, buffer_index)
+            .c_str(), //
+        "RECREATE"    //
+        // ,//
+        // "nanomusic_event_classes",//
+        // ROOT::RCompressionSetting::EDefaults::kUseSmallest//
+        ));
 
     shifts.for_each(
-        [&](const std::string &shift) -> void
+        [&](const Shifts::Variations shift) -> void
         {
             // z_to_mu_mu_x[shift].dump_outputs(ec_output_file);
             // z_to_mu_mu_x_Z_mass[shift].dump_outputs(ec_output_file);
@@ -922,7 +907,7 @@ auto main(int argc, char *argv[]) -> int
 
             for (auto &&[class_name, class_collection] : event_classes)
             {
-                class_collection[shift].dump_outputs(ec_output_file);
+                class_collection.at(shift).dump_outputs(ec_output_file);
             }
         });
 

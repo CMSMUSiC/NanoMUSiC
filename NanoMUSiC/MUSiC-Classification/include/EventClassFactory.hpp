@@ -15,6 +15,7 @@
 #include <string_view>
 
 #include "ObjectFactories/music_objects.hpp"
+#include "Shifts.hpp"
 #include "TriggerMatch.hpp"
 
 using namespace ROOT;
@@ -25,8 +26,6 @@ class EventClass
 {
   private:
   public:
-    std::string output_path;
-
     TH1F h_counts;
     TH1F h_invariant_mass;
     TH1F h_sum_pt;
@@ -38,14 +37,13 @@ class EventClass
 
     double min_bin_width;
     std::map<std::string, int> countMap;
-    std::string shift;
+    Shifts::Variations shift;
 
     EventClass() = default;
 
     EventClass(const std::string &_class_name,
-               const std::string &_output_path,
                const std::map<std::string, int> &_countMap,
-               const std::string _shift,
+               const Shifts::Variations _shift,
                const std::string &_sample,
                const std::string &_year,
                const std::string &_process_group,

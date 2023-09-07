@@ -12,7 +12,7 @@ import glob
 import subprocess
 import shlex
 from pprint import pprint
-
+import random
 import ROOT
 
 from local_condor import submit_condor_task
@@ -37,22 +37,29 @@ def dump_list_to_file(lst, file_path):
 
 
 def get_splitting_factor(
-    sample, is_data, default_splitting_data=4, default_splitting_mc=4
+    sample, sample_config, default_splitting_data=10, default_splitting_mc=4
 ):
-    # get splitting for Data/MC
-    splitting = default_splitting_mc
-
-    # TTZToLL samples take the longest to run
-    if sample.startswith("TTZToLL"):
-        splitting = 1
-
-    if is_data:
+    if sample_config["is_data"]:
         splitting = default_splitting_data
 
-        if sample.startswith("EGamma"):
-            splitting = min(3, default_splitting_data)
-        if sample.startswith("SingleMuon"):
-            splitting = min(3, default_splitting_data)
+        # if sample.startswith("EGamma"):
+        #     splitting = min(3, default_splitting_data)
+        # if sample.startswith("SingleMuon"):
+        #     splitting = min(3, default_splitting_data)
+
+    else:
+        # get splitting for Data/MC
+        splitting = default_splitting_mc
+
+        if "QCD" in sample_config["ProcessGroup"]:
+            return 20
+
+        if "NuNu" in sample_config["ProcessGroup"]:
+            return 10
+
+        # TTZToLL samples take the longest to run
+        if sample.startswith("TTZToLL"):
+            return 1
 
     return splitting
 
@@ -193,7 +200,6 @@ def run_classification(
     processOrder: str,
     processGroup: str,
     executable: str,
-    # shift: str,
     buffer_index: str,
     input_file: str,
     debug: bool,
@@ -546,7 +552,8 @@ def main():
 
                             # get splitting for Data/MC
                             splitting = get_splitting_factor(
-                                sample, task_config[sample]["is_data"]
+                                sample,
+                                task_config[sample],
                             )
 
                             for idx, f in enumerate(
@@ -644,6 +651,8 @@ def main():
                                 )
                             )
 
+    print(f"\n--> Will submit {len(classification_arguments)} jobs ...")
+
     if not args.harvest and not args.merge:
         if len(classification_arguments) == 0:
             raise Exception(
@@ -666,16 +675,13 @@ def main():
         if args.condor:
             # submit classification
             print("\nSubmiting classification ...")
-            # with Pool(min(args.jobs, 10, len(classification_arguments))) as pool:
             with Pool(min(args.jobs, len(classification_arguments))) as pool:
                 list(
                     tqdm(
                         pool.imap_unordered(
                             classification_condor,
-                            sorted(
-                                classification_arguments,
-                                key=lambda x: x["is_data"],
-                                reverse=True,
+                            random.sample(
+                                classification_arguments, len(classification_arguments)
                             ),
                         ),
                         total=len(classification_arguments),
@@ -690,10 +696,8 @@ def main():
                     tqdm(
                         pool.imap_unordered(
                             classification,
-                            sorted(
-                                classification_arguments,
-                                key=lambda x: x["is_data"],
-                                reverse=True,
+                            random.sample(
+                                classification_arguments, len(classification_arguments)
                             ),
                         ),
                         total=len(classification_arguments),

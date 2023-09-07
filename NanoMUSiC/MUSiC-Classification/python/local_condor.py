@@ -54,6 +54,7 @@ def make_condor_executable(
             "__USERNAME__", username
         )
     )
+    executable.append("date")
 
     file_path = f"{get_absolute_path(log_dir)}/condor.sh"
     with open(file_path, "w") as file:

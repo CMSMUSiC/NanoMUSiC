@@ -9,6 +9,7 @@
 
 #include "Configs.hpp"
 #include "music_objects.hpp"
+#include "Shifts.hpp"
 
 using namespace ROOT;
 using namespace ROOT::Math;
@@ -17,29 +18,29 @@ using namespace ROOT::VecOps;
 namespace ObjectFactories
 {
 
-inline auto get_photon_energy_corrections(const std::string &shift,
+inline auto get_photon_energy_corrections(const Shifts::Variations shift,
                                           float dEscaleUp,
                                           float dEscaleDown,
                                           float dEsigmaUp,
                                           float dEsigmaDown,
                                           double energy) -> double
 {
-    if (shift == "PhotonScale_Up")
+    if (shift == Shifts::Variations::PhotonScale_Up)
     {
         return (1.f - dEscaleUp / energy);
     }
 
-    if (shift == "PhotonScale_Down")
+    if (shift == Shifts::Variations::PhotonScale_Down)
     {
         return (1.f - dEscaleDown / energy);
     }
 
-    if (shift == "PhotonResolution_Up")
+    if (shift == Shifts::Variations::PhotonResolution_Up)
     {
         return (1.f - dEsigmaUp / energy);
     }
 
-    if (shift == "PhotonResolution_Down")
+    if (shift == Shifts::Variations::PhotonResolution_Down)
     {
         return (1.f - dEsigmaDown / energy);
     }
@@ -106,7 +107,7 @@ inline auto make_photons(const RVec<float> &Photon_pt,  //
                          const CorrectionlibRef_t &photon_pixel_veto_sf, //
                          bool is_data,                                   //
                          const std::string &_year,                       //
-                         const std::string &shift) -> MUSiCObjects
+                         const Shifts::Variations shift) -> MUSiCObjects
 {
     auto year = get_runyear(_year);
 

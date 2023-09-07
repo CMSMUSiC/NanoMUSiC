@@ -8,6 +8,7 @@
 #include "ROOT/RVec.hxx"
 
 #include "Configs.hpp"
+#include "Shifts.hpp"
 #include "music_objects.hpp"
 
 using namespace ROOT;
@@ -17,29 +18,29 @@ using namespace ROOT::VecOps;
 namespace ObjectFactories
 {
 
-inline auto get_electron_energy_corrections(const std::string &shift,
+inline auto get_electron_energy_corrections(const Shifts::Variations shift,
                                             float dEscaleUp,
                                             float dEscaleDown,
                                             float dEsigmaUp,
                                             float dEsigmaDown,
                                             double energy) -> double
 {
-    if (shift == "ElectronScale_Up")
+    if (shift == Shifts::Variations::ElectronScale_Up)
     {
         return (1.f - dEscaleUp / energy);
     }
 
-    if (shift == "ElectronScale_Down")
+    if (shift == Shifts::Variations::ElectronScale_Down)
     {
         return (1.f - dEscaleDown / energy);
     }
 
-    if (shift == "ElectronResolution_Up")
+    if (shift == Shifts::Variations::ElectronResolution_Up)
     {
         return (1.f - dEsigmaUp / energy);
     }
 
-    if (shift == "ElectronResolution_Down")
+    if (shift == Shifts::Variations::ElectronResolution_Down)
     {
         return (1.f - dEsigmaDown / energy);
     }
@@ -210,7 +211,7 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
                            const CorrectionlibRef_t &electron_sf,    //
                            bool is_data,                             //
                            const std::string &_year,                 //
-                           const std::string &shift) -> MUSiCObjects
+                           const Shifts::Variations shift) -> MUSiCObjects
 {
     auto year = get_runyear(_year);
     auto electrons_p4 = RVec<Math::PtEtaPhiMVector>{};

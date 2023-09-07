@@ -9,6 +9,7 @@
 
 #include "Configs.hpp"
 #include "music_objects.hpp"
+#include "Shifts.hpp"
 
 using namespace ROOT;
 using namespace ROOT::Math;
@@ -17,14 +18,14 @@ using namespace ROOT::VecOps;
 namespace ObjectFactories
 {
 
-inline auto get_tau_energy_variation(const std::string &shift) -> std::string
+inline auto get_tau_energy_variation(const Shifts::Variations shift) -> std::string
 {
-    if (shift == "TauEnergy_Up")
+    if (shift == Shifts::Variations::TauEnergy_Up)
     {
         return "up";
     }
 
-    if (shift == "TauEnergy_Down")
+    if (shift == Shifts::Variations::TauEnergy_Down)
     {
         return "down";
     }
@@ -49,7 +50,7 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
                       const CorrectionlibRef_t &tau_energy_scale,           //
                       bool is_data,                                         //
                       const std::string &_year,                             //
-                      const std::string &shift) -> MUSiCObjects
+                      const Shifts::Variations shift) -> MUSiCObjects
 {
     // auto year = get_runyear(_year);
 

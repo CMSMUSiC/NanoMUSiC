@@ -10,6 +10,7 @@
 #include "Configs.hpp"
 #include "CorrectionSets.hpp"
 #include "JetCorrector.hpp"
+#include "Shifts.hpp"
 #include "music_objects.hpp"
 
 using namespace ROOT;
@@ -18,24 +19,24 @@ using namespace ROOT::VecOps;
 namespace ObjectFactories
 {
 
-inline auto get_scale_resolution_shifts(const std::string &shift) -> std::pair<std::string, std::string>
+inline auto get_scale_resolution_shifts(const Shifts::Variations shift) -> std::pair<std::string, std::string>
 {
-    if (shift == "JetScale_Up")
+    if (shift == Shifts::Variations::JetScale_Up)
     {
         return std::make_pair<std::string, std::string>("Up", "Nominal");
     }
 
-    if (shift == "JetScale_Down")
+    if (shift == Shifts::Variations::JetScale_Down)
     {
         return std::make_pair<std::string, std::string>("Down", "Nominal");
     }
 
-    if (shift == "JetResolution_Up")
+    if (shift == Shifts::Variations::JetResolution_Up)
     {
         return std::make_pair<std::string, std::string>("Nominal", "Up");
     }
 
-    if (shift == "JetResolution_Down")
+    if (shift == Shifts::Variations::JetResolution_Down)
     {
         return std::make_pair<std::string, std::string>("Nominal", "Down");
     }
@@ -43,7 +44,7 @@ inline auto get_scale_resolution_shifts(const std::string &shift) -> std::pair<s
     return std::make_pair<std::string, std::string>("Nominal", "Nominal");
 }
 
-inline auto get_jet_energy_corrections(const std::string &shift,
+inline auto get_jet_energy_corrections(const Shifts::Variations shift,
                                        float Jet_pt,                 //
                                        float Jet_eta,                //
                                        float Jet_phi,                //
@@ -95,7 +96,7 @@ inline auto make_jets(const RVec<float> &Jet_pt,            //
                       const NanoObjects::GenJets &gen_jets, //
                       bool is_data,                         //
                       const std::string &_year,             //
-                      const std::string &shift) -> std::pair<MUSiCObjects, MUSiCObjects>
+                      const Shifts::Variations shift) -> std::pair<MUSiCObjects, MUSiCObjects>
 {
     auto year = get_runyear(_year);
     auto jets = RVec<Math::PtEtaPhiMVector>{};

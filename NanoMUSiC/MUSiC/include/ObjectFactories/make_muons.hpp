@@ -14,6 +14,7 @@ using namespace ROOT::VecOps;
 #include "Configs.hpp"
 #include "CorrectionSets.hpp"
 #include "music_objects.hpp"
+#include "Shifts.hpp"
 
 namespace ObjectFactories
 {
@@ -419,7 +420,7 @@ inline auto high_pt_reco_scale_factor(Year year, double momentum, double eta, co
 }
 
 // TODO implement muon corrections
-inline auto get_muon_energy_corrections(const std::string &shift) -> double
+inline auto get_muon_energy_corrections(const Shifts::Variations shift) -> double
 {
     return 1.;
 }
@@ -461,7 +462,7 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
                        const CorrectionlibRef_t &muon_sf_iso_high_pt,
                        bool is_data,             //
                        const std::string &_year, //
-                       const std::string &shift) -> MUSiCObjects
+                       const Shifts::Variations shift) -> MUSiCObjects
 {
     auto year = get_runyear(_year);
 
