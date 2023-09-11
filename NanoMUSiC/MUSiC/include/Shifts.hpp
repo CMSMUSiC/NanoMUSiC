@@ -113,21 +113,14 @@ class Shifts
         PU_Up,
         PU_Down,
         Fakes_Up,
-        Fakes_Down,
         PDF_As_Up,
-        PDF_As_Down,
         ScaleFactor_Up,
-        ScaleFactor_Down,
         PreFiring_Up,
         PreFiring_Down,
         QCDScale_Up,
         QCDScale_Down,
 
         // Differential
-        MuonResolution_Up,
-        MuonResolution_Down,
-        MuonScale_Up,
-        MuonScale_Down,
         ElectronResolution_Up,
         ElectronResolution_Down,
         ElectronScale_Up,
@@ -146,7 +139,16 @@ class Shifts
         TauEnergy_Down,
 
         // always the last one
-        kTotalVariations
+        kTotalVariations,
+
+        // backup
+        Fakes_Down,
+        PDF_As_Down,
+        ScaleFactor_Down,
+        MuonResolution_Up,
+        MuonResolution_Down,
+        MuonScale_Up,
+        MuonScale_Down,
     };
 
     static auto variation_to_string(const Variations var) -> std::string
@@ -302,7 +304,7 @@ class Shifts
         if (diff_shift == Variations::Nominal)
         {
             auto _m_constant_shifts = m_constant_shifts;
-            _m_constant_shifts.push_back(Variations::Nominal);
+            //_m_constant_shifts.push_back(Variations::Nominal);
             return _m_constant_shifts;
         }
         return {Variations::Nominal};
@@ -315,7 +317,7 @@ class Shifts
 
     auto size() const -> std::size_t
     {
-        return m_constant_shifts.size() + m_differential_shifts.size();
+        return m_constant_shifts.size() + m_differential_shifts.size() - 1;
     }
 
     static auto resolve_shifts(const Variations &const_shift, const Variations &diff_shift) -> Variations

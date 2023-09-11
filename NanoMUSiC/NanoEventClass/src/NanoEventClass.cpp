@@ -16,20 +16,19 @@ auto NanoEventHisto::split_histo_name(std::string histo_full_name, const std::st
     // remove leading and trailing bracket
     histo_full_name = histo_full_name.substr(1, histo_full_name.length() - 2);
 
+    size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+    std::string token;
     std::vector<std::string> parts;
-    std::size_t startPos = 0;
-    std::size_t endPos = histo_full_name.find(delimiter);
+    parts.reserve(7);
 
-    while (endPos != std::string::npos)
+    while ((pos_end = histo_full_name.find(delimiter, pos_start)) != std::string::npos)
     {
-        std::string part = histo_full_name.substr(startPos, endPos - startPos);
-        parts.push_back(part);
-        startPos = endPos + 1;
-        endPos = histo_full_name.find(delimiter, startPos);
+        token = histo_full_name.substr(pos_start, pos_end - pos_start);
+        pos_start = pos_end + delim_len;
+        parts.push_back(token);
     }
 
-    std::string lastPart = histo_full_name.substr(startPos);
-    parts.push_back(lastPart);
+    parts.push_back(histo_full_name.substr(pos_start));
 
     if (parts.size() != num_histo_name_parts)
     {
@@ -46,20 +45,27 @@ auto NanoEventHisto::split_histo_name(std::string histo_full_name, const std::st
 
 auto NanoEventHisto::make_nano_event_histo(const std::string &histo_full_name, TH1F *histo_ptr) -> NanoEventHisto
 {
+
     const auto [class_name, process_group, xs_order, sample, year, shift, histo_name] =
         NanoEventHisto::split_histo_name(histo_full_name);
 
     return NanoEventHisto{
-        class_name,                 //
-        process_group,              //
-        xs_order,                   //
-        sample,                     //
-        year,                       //
-        shift,                      //
-        histo_name,                 //
-        (TH1F *)histo_ptr->Clone(), //
-        (process_group == "Data")   //
+        class_name,                         //
+        process_group,                      //
+        xs_order,                           //
+        sample,                             //
+        year,                               //
+        shift,                              //
+        histo_name,                         //
+        std::make_shared<TH1F>(*histo_ptr), //
+        (process_group == "Data")           //
     };
+}
+
+auto NanoEventHisto::to_string() const -> std::string
+{
+    return fmt::format(
+        "{} - {} - {} - {} - {} - {} - {}", class_name, process_group, xs_order, sample, year, shift, histo_name);
 }
 
 auto NanoEventHisto::make_histogram_full_name(const std::string &class_name,
@@ -73,6 +79,12 @@ auto NanoEventHisto::make_histogram_full_name(const std::string &class_name,
     return fmt::format(
         "[{}]_[{}]_[{}]_[{}]_[{}]_[{}]_[{}]", class_name, process_group, xs_order, sample, year, shift, histo_name);
 }
+
+// NanoEventHisto::~NanoEventHisto()
+// {
+//     fmt::print("Destructor called ... \n");
+//     delete histogram;
+// }
 
 // // Function to check if a string matches a pattern with *
 // auto NanoEventClass::match_pattern(const std::string &str, const std::string &pattern) -> bool
@@ -112,22 +124,18 @@ NanoEventClass::NanoEventClass(const std::string &class_name,
       m_sum_pt(sum_pt),
       m_met(met)
 {
-    m_data_count = 0;
-    m_mc_count = 0;
-    for (auto count : m_counts)
+    m_data_count = 0.;
+    m_mc_count = 0.;
+    for (const auto &count : m_counts)
     {
-        fmt::print("{}\n", count.shift);
         if (count.shift == "Nominal")
         {
-            fmt::print("Passei por aqui \n");
             if (count.is_data)
             {
-                fmt::print("Passei  de novo\n");
                 m_data_count += count.histogram->Integral();
             }
             else
             {
-                fmt::print("Passei  de novo\n");
                 m_mc_count += count.histogram->Integral();
             }
         }
@@ -211,8 +219,8 @@ auto NanoEventClass::get_class_name(std::string histo_full_name, const std::stri
 // }
 
 NanoEventClassCollection::NanoEventClassCollection(const std::vector<std::string> &root_file_paths)
-    : m_classes({}),
-      m_root_files({})
+    : m_classes({}) //,
+//   m_root_files({})
 {
     auto h_counts_per_class = std::unordered_map<std::string, std::vector<NanoEventHisto>>();
     auto h_invariant_mass_per_class = std::unordered_map<std::string, std::vector<NanoEventHisto>>();
@@ -223,41 +231,46 @@ NanoEventClassCollection::NanoEventClassCollection(const std::vector<std::string
     auto i = 0;
     for (auto &&file_path : root_file_paths)
     {
+        if (i > 30)
+        {
+            break;
+        }
+
         i++;
-        std::cout << fmt::format("File: {} / {}\n", i, root_file_paths.size());
-        auto root_file = TFile::Open(file_path.c_str());
-        m_root_files.push_back(root_file);
+
+        fmt::print("File:  [{}] {} / {}\n", file_path, i, root_file_paths.size());
+        // auto root_file = TFile::Open(file_path.c_str());
+        std::unique_ptr<TFile> root_file(TFile::Open(file_path.c_str()));
+        // m_root_files.push_back(root_file);
 
         TIter keyList(root_file->GetListOfKeys());
         TKey *key;
         while ((key = (TKey *)keyList()))
         {
             auto full_name = std::string(key->GetName());
-            if (full_name.find("[EC_") == 0)
+            if (full_name.find("[Nominal]") != std::string::npos and full_name.find("[EC_") == 0)
             {
+                auto nano_histo = NanoEventHisto::make_nano_event_histo(full_name, (TH1F *)key->ReadObj());
                 if (full_name.find("h_counts") != std::string::npos)
                 {
-                    h_counts_per_class[NanoEventClass::get_class_name(full_name)].push_back(
-                        NanoEventHisto::make_nano_event_histo(full_name, (TH1F *)key->ReadObj()));
-                };
+                    h_counts_per_class[NanoEventClass::get_class_name(full_name)].emplace_back(std::move(nano_histo));
+                }
 
                 if (full_name.find("h_invariant_mass") != std::string::npos)
                 {
-                    h_invariant_mass_per_class[NanoEventClass::get_class_name(full_name)].push_back(
-                        NanoEventHisto::make_nano_event_histo(full_name, (TH1F *)key->ReadObj()));
-                };
+                    h_invariant_mass_per_class[NanoEventClass::get_class_name(full_name)].emplace_back(
+                        std::move(nano_histo));
+                }
 
                 if (full_name.find("h_sum_pt") != std::string::npos)
                 {
-                    h_sum_pt_per_class[NanoEventClass::get_class_name(full_name)].push_back(
-                        NanoEventHisto::make_nano_event_histo(full_name, (TH1F *)key->ReadObj()));
-                };
+                    h_sum_pt_per_class[NanoEventClass::get_class_name(full_name)].emplace_back(std::move(nano_histo));
+                }
 
                 if (full_name.find("h_met") != std::string::npos)
                 {
-                    h_met_per_class[NanoEventClass::get_class_name(full_name)].push_back(
-                        NanoEventHisto::make_nano_event_histo(full_name, (TH1F *)key->ReadObj()));
-                };
+                    h_met_per_class[NanoEventClass::get_class_name(full_name)].emplace_back(std::move(nano_histo));
+                }
             }
         }
     }
@@ -265,14 +278,15 @@ NanoEventClassCollection::NanoEventClassCollection(const std::vector<std::string
     fmt::print("Building event classes ...\n");
 
     auto j = 0;
+
     for (auto &&[event_class_name, _] : h_counts_per_class)
     {
         j++;
-        std::cout << fmt::format("EC: {} / {}\n", j, h_counts_per_class.size());
+        fmt::print("EC: [{}] {} / {}\n", event_class_name, j, h_counts_per_class.size());
 
-        if (h_invariant_mass_per_class.find(event_class_name) != h_invariant_mass_per_class.end() //
-            and h_sum_pt_per_class.find(event_class_name) != h_sum_pt_per_class.cend()            //
-            and h_met_per_class.find(event_class_name) != h_met_per_class.cend()                  //
+        if (h_invariant_mass_per_class.find(event_class_name) != h_invariant_mass_per_class.cend() //
+            and h_sum_pt_per_class.find(event_class_name) != h_sum_pt_per_class.cend()             //
+            and h_met_per_class.find(event_class_name) != h_met_per_class.cend()                   //
         )
         {
             auto ec = NanoEventClass(event_class_name,
@@ -287,6 +301,7 @@ NanoEventClassCollection::NanoEventClassCollection(const std::vector<std::string
             }
         }
     }
+
     fmt::print("\n");
 }
 
@@ -302,10 +317,7 @@ auto NanoEventClassCollection::get_classes() const -> std::vector<std::string>
     return classes;
 }
 
-NanoEventClassCollection::~NanoEventClassCollection()
+auto NanoEventClassCollection::get_class(const std::string &class_name) -> NanoEventClass &
 {
-    for (auto &&f : m_root_files)
-    {
-        f->Close();
-    }
+    return m_classes.at(class_name);
 }

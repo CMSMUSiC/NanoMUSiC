@@ -156,7 +156,7 @@ def main():
             num_running_jobs = len(
                 list(filter(lambda job: job_status[job] == False, job_status))
             )
-            if num_running_jobs <= 12:
+            if num_running_jobs <= 20:
                 print("Running jobs:")
                 for job in job_status:
                     if job_status[job] == False:

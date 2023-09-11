@@ -1,6 +1,7 @@
 #ifndef NANOEVENTCLASS_HPP
 #define NANOEVENTCLASS_HPP
 
+#include <cstddef>
 #include <memory>
 #include <unordered_map>
 
@@ -23,7 +24,7 @@ class NanoEventHisto
     const std::string year = "";
     const std::string shift = "";
     const std::string histo_name = "";
-    TH1F *histogram = nullptr;
+    std::shared_ptr<TH1F> histogram = std::make_shared<TH1F>();
     const bool is_data = false;
 
     static constexpr unsigned int num_histo_name_parts = 7;
@@ -40,6 +41,10 @@ class NanoEventHisto
                                          const std::string &year,
                                          const std::string &shift,
                                          const std::string &histo_name) -> std::string;
+
+    auto to_string() const -> std::string;
+
+    // ~NanoEventHisto();
 };
 
 class NanoEventClass
@@ -84,13 +89,15 @@ class NanoEventClassCollection
 {
   public:
     std::unordered_map<std::string, NanoEventClass> m_classes = {};
-    std::vector<TFile *> m_root_files = {};
+    // std::vector<TFile *> m_root_files = {};
 
     NanoEventClassCollection(const std::vector<std::string> &root_file_paths);
 
     auto get_classes() const -> std::vector<std::string>;
 
-    ~NanoEventClassCollection();
+    // ~NanoEventClassCollection();
+
+    auto get_class(const std::string &class_name) -> NanoEventClass &;
 };
 
 #endif // NANOEVENTCLASS_HPP

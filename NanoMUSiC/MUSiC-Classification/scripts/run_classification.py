@@ -11,8 +11,9 @@ import sys
 import glob
 import subprocess
 import shlex
-from pprint import pprint
 import random
+from functools import partial
+import itertools
 import ROOT
 
 from local_condor import submit_condor_task
@@ -22,46 +23,127 @@ years = ["2016APV", "2016", "2017", "2018"]
 nproc = multiprocessing.cpu_count()
 
 
-def split_list(lst, max_size):
-    sublists = []
-    for i in range(0, len(lst), max_size):
-        sublist = lst[i : i + max_size]
-        sublists.append(sublist)
-    return sublists
+def number_of_events(file_path):
+    root_file = ROOT.TFile.Open(file_path)
+    return root_file.Get("nano_music").GetEntries()
+
+
+def chunk_limits(lower_limit, upper_limit, chunk_size):
+    chunk_limits = []
+
+    lower = lower_limit
+    while lower < upper_limit:
+        upper = min(lower + chunk_size - 1, upper_limit)
+        chunk_limits.append((lower, upper))
+        lower = upper + 1
+
+    return chunk_limits
+
+
+# def split_list_of_blocks(blocks, max_size):
+#     # sublists = []
+#     # for i in range(0, len(blocks), max_size):
+#     #     sublist = blocks[i : i + max_size]
+#     #     sublists.append(sublist)
+#     # return sublists
+#     return [blocks[i : i + max_size] for i in range(0, len(blocks), max_size)]
+
+
+def split_list_of_blocks(iterable, n):
+    "Batch data into lists of length n. The last batch may be shorter."
+    # batched('ABCDEFG', 3) --> ABC DEF G
+    if n < 1:
+        raise ValueError("n must be at least one")
+    it = iter(iterable)
+    while batch := list(itertools.islice(it, n)):
+        yield batch
+
+
+def get_splitting_imp(f, splitting_factor):
+    return [
+        [f, lower, upper]
+        for lower, upper in chunk_limits(0, number_of_events(f), splitting_factor)
+    ]
+
+
+def get_spliting(files, sample, sample_config):
+    # get splitting for Data/MC
+    def splitting_factor(
+        sample_size,
+        sample,
+        sample_config,
+        default_splitting_data=100,
+        default_splitting_mc=10,
+    ):
+        if sample_config["is_data"]:
+            return max(default_splitting_data, int(sample_size / 150))
+
+        else:
+            if "QCD" in sample_config["ProcessGroup"]:
+                return max(default_splitting_mc, int(sample_size / 300))
+
+            if "NuNu" in sample_config["ProcessGroup"]:
+                return max(default_splitting_mc, int(sample_size / 300))
+
+            if sample.startswith("TTTo2L2Nu"):
+                return 10
+
+            if sample.startswith("TT"):
+                return 2
+
+            if sample.startswith("ttH"):
+                return 2
+
+            if sample.startswith("ZZZ"):
+                return 2
+
+            if sample.startswith("WZZ"):
+                return 2
+
+            if sample.startswith("WWZ"):
+                return 2
+
+            if sample.startswith("tZq"):
+                return 2
+
+            return max(default_splitting_mc, int(sample_size / 200))
+
+    print(f"Getting splitting for {sample} ...")
+    with Pool(min(len(files), 50)) as pool:
+        packed_splitting = pool.map(
+            partial(get_splitting_imp, splitting_factor=10000), files
+        )
+
+    print(f"Unpacking ...")
+    unpacked_splitting = list(itertools.chain(*packed_splitting))
+
+    print(f"Chunking ...")
+    return split_list_of_blocks(
+        unpacked_splitting,
+        splitting_factor(len(unpacked_splitting), sample, sample_config),
+    )
 
 
 def dump_list_to_file(lst, file_path):
     with open(file_path, "w") as file:
         for item in lst:
-            file.write(item + "\n")
+            file.write(f"{item[0]} {item[1]} {item[2]}" + "\n")
 
 
-def get_splitting_factor(
-    sample, sample_config, default_splitting_data=10, default_splitting_mc=4
-):
-    if sample_config["is_data"]:
-        splitting = default_splitting_data
-
-        # if sample.startswith("EGamma"):
-        #     splitting = min(3, default_splitting_data)
-        # if sample.startswith("SingleMuon"):
-        #     splitting = min(3, default_splitting_data)
-
-    else:
-        # get splitting for Data/MC
-        splitting = default_splitting_mc
-
-        if "QCD" in sample_config["ProcessGroup"]:
-            return 20
-
-        if "NuNu" in sample_config["ProcessGroup"]:
-            return 10
-
-        # TTZToLL samples take the longest to run
-        if sample.startswith("TTZToLL"):
-            return 1
-
-    return splitting
+def files_to_process(file_limit, year, output_files):
+    if file_limit < 0:
+        return list(
+            filter(
+                lambda file: f"_{year}/" in file,
+                output_files,
+            )
+        )
+    return list(
+        filter(
+            lambda file: f"_{year}/" in file,
+            output_files,
+        )
+    )[:file_limit]
 
 
 def parse_args():
@@ -209,7 +291,7 @@ def run_classification(
     # default is MC
     cmd_str: str = f"{executable} --process {process_name} --year {year} --output {output_path} --buffer_index {buffer_index} --xsection {str(xsection)} --filter_eff {str(filter_eff)} --k_factor {str(k_factor)} --luminosity {str(luminosity)} --xs_order {processOrder} --process_group {processGroup} --input {input_file}"
     if is_data:
-        cmd_str: str = f"{executable} --process {process_name} --year {year} --is_data --output {output_path} --xsection {str(xsection)} --filter_eff {str(filter_eff)} --k_factor {str(k_factor)} --luminosity {str(luminosity)} --xs_order {processOrder} --process_group {processGroup} --input {input_file}"
+        cmd_str: str = f"{executable} --process {process_name} --year {year} --is_data --output {output_path} --buffer_index {buffer_index} --xsection {str(xsection)} --filter_eff {str(filter_eff)} --k_factor {str(k_factor)} --luminosity {str(luminosity)} --xs_order {processOrder} --process_group {processGroup} --input {input_file}"
 
     if debug:
         cmd_str = cmd_str + " --debug"
@@ -252,15 +334,12 @@ def classification(args):
 
     output_path: str = f"{output_base}/classification_outputs/{year}/{process}/buffer/buffer_{buffer_index}"
 
-    # print("[ MUSiC Classification ] Loading samples ...\n")
-    # print("[ MUSiC Classification ] Preparing output directory ...\n")
     os.system(
         f"rm -rf {output_base}/classification_outputs/{year}/{process}/buffer/buffer_{buffer_index}/*_{process}_{year}_{buffer_index}.root"
     )
 
     dump_list_to_file(input_files, f"{output_path}/inputs.txt")
 
-    # print("[ MUSiC Classification ] Starting classification ...\n")
     run_classification(
         process,
         year,
@@ -273,7 +352,6 @@ def classification(args):
         processOrder,
         processGroup,
         executable,
-        # shift,
         buffer_index,
         os.path.abspath(f"{output_path}/inputs.txt"),
         debug,
@@ -330,46 +408,6 @@ def get_file_paths(root_dir, extension=".root"):
             if filename.endswith(extension):
                 file_paths.append(os.path.join(dirpath, filename))
     return file_paths
-
-
-def get_files_in_buffer_area(
-    process: str,
-    year: str,
-    process_group: str,
-    xsec_order: str,
-    username: str,
-    debug: bool,
-):
-    srmls_merge_result = subprocess.run(
-        shlex.split(
-            f"srmls srm://grid-srm.physik.rwth-aachen.de:8443/srm/managerv2\\?SFN=/pnfs/physik.rwth-aachen.de/cms/store/user/{username}/classification_buffer/"
-        ),
-        capture_output=True,
-    )
-    if debug:
-        print(srmls_merge_result.stdout.decode("utf-8"))
-
-    if srmls_merge_result.returncode != 0:
-        error = srmls_merge_result.stderr.decode("utf-8")
-        raise RuntimeError(f"ERROR: could not merge output files, per sample.\n{error}")
-
-    buffer_files = []
-    for line in srmls_merge_result.stdout.decode("utf-8").split("\n"):
-        if (
-            "ec_classes" in line
-            and ".root" in line
-            and f"_{process}_" in line
-            and f"_{year}_" in line
-            and f"_{process_group}_" in line
-            and f"_{xsec_order}_" in line
-        ):
-            buffer_files.append(
-                f"dcap://grid-dcap-extern.physik.rwth-aachen.de/pnfs/physik.rwth-aachen.de/cms/store/user/{username}/classification_buffer/ec_classes"
-                + line.split("ec_classes")[1].split(".root")[0]
-                + ".root"
-            )
-
-    return buffer_files
 
 
 def classification_merger_per_sample(args):
@@ -458,22 +496,6 @@ def process_filter(args, is_data: bool, process: str, year: str) -> bool:
     return False
 
 
-def files_to_process(file_limit, year, output_files):
-    if file_limit < 0:
-        return list(
-            filter(
-                lambda file: f"_{year}/" in file,
-                output_files,
-            )
-        )
-    return list(
-        filter(
-            lambda file: f"_{year}/" in file,
-            output_files,
-        )
-    )[:file_limit]
-
-
 def main():
     print("\n\n📶 [ MUSiC Classification ] 📶\n")
 
@@ -550,20 +572,15 @@ def main():
                                 )
                             )
 
-                            # get splitting for Data/MC
-                            splitting = get_splitting_factor(
-                                sample,
-                                task_config[sample],
-                            )
-
                             for idx, f in enumerate(
-                                split_list(
+                                get_spliting(
                                     files_to_process(
                                         args.file_limit,
                                         year,
                                         task_config[sample]["output_files"],
                                     ),
-                                    splitting,
+                                    sample,
+                                    task_config[sample],
                                 )
                             ):
                                 classification_arguments.append(

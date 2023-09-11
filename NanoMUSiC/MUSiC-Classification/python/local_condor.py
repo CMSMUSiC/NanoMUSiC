@@ -177,6 +177,7 @@ def submit_condor_task(
 
     submit_result = subprocess.run(
         shlex.split(f"condor_submit {jdl_file_name}"),
+        # shlex.split(f"ls {jdl_file_name}"),
         capture_output=True,
     )
     if debug:

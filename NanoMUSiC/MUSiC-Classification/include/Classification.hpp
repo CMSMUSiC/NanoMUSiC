@@ -167,20 +167,27 @@ inline auto getCpuTime() -> double
     return ((double)tv.tv_sec + (double)tv.tv_usec / 1000000.0);
 }
 
-inline auto load_input_files(const std::string &filename) -> std::vector<std::string>
+inline auto split_string(const std::string &input, const std::string &delimiter) -> std::vector<std::string>
 {
-    std::vector<std::string> input_files;
+    std::vector<std::string> result;
+    size_t start = 0;
+    size_t end = input.find(delimiter);
 
-    // check if input is a single file
-    // const std::string suffix = ".root";
-    // if (filename.length() > suffix.length())
-    // {
-    //     if (filename.substr(filename.length() - suffix.length()) == suffix)
-    //     {
-    //         input_files.push_back(filename);
-    //         return input_files;
-    //     }
-    // }
+    while (end != std::string::npos)
+    {
+        result.push_back(input.substr(start, end - start));
+        start = end + delimiter.length();
+        end = input.find(delimiter, start);
+    }
+
+    result.push_back(input.substr(start)); // Add the last token
+
+    return result;
+}
+
+inline auto load_input_files(const std::string &filename) -> std::vector<std::tuple<std::string, long long, long long>>
+{
+    std::vector<std::tuple<std::string, long long, long long>> input_files;
 
     std::ifstream file(filename);
 
@@ -192,7 +199,10 @@ inline auto load_input_files(const std::string &filename) -> std::vector<std::st
     std::string line;
     while (std::getline(file, line))
     {
-        input_files.push_back(line);
+        auto inputs = split_string(line, " ");
+
+        input_files.push_back(std::tuple<std::string, long long, long long>(
+            inputs.at(0), std::stoll(inputs.at(1)), std::stoll(inputs.at(2))));
     }
     file.close();
 
