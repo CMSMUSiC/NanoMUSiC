@@ -73,6 +73,7 @@ export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/NanoEventClass/scripts;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-BTagEff;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-CRAB;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/special_studies/jet_sf;
+export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/NanoEventClass/python;
 
 
 
