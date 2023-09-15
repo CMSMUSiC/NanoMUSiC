@@ -1,5 +1,7 @@
 #include "NanoEventClass.hpp"
 
+#include <cstdlib>
+#include <fnmatch.h>
 #include <iostream>
 #include <stdexcept>
 #include <tuple>
@@ -8,7 +10,10 @@
 #include "TFile.h"
 #include "TKey.h"
 
+#include "external/BS_thread_pool.hpp"
 #include "fmt/format.h"
+
+#include "roothelpers.hpp"
 
 auto NanoEventHisto::split_histo_name(std::string histo_full_name, const std::string delimiter)
     -> std::tuple<std::string, std::string, std::string, std::string, std::string, std::string, std::string>
@@ -32,12 +37,14 @@ auto NanoEventHisto::split_histo_name(std::string histo_full_name, const std::st
 
     if (parts.size() != num_histo_name_parts)
     {
-        throw std::runtime_error(
+        fmt::print(
+            stderr,
             fmt::format("ERROR: Could not split the histogram full name ({}). The number of unpacked parts ({}) does "
                         "not match the expectation ({}).",
                         histo_full_name,
                         parts.size(),
                         num_histo_name_parts));
+        std::exit(EXIT_FAILURE);
     }
 
     return std::make_tuple(parts.at(0), parts.at(1), parts.at(2), parts.at(3), parts.at(4), parts.at(5), parts.at(6));
@@ -50,15 +57,15 @@ auto NanoEventHisto::make_nano_event_histo(const std::string &histo_full_name, T
         NanoEventHisto::split_histo_name(histo_full_name);
 
     return NanoEventHisto{
-        class_name,                         //
-        process_group,                      //
-        xs_order,                           //
-        sample,                             //
-        year,                               //
-        shift,                              //
-        histo_name,                         //
-        std::make_shared<TH1F>(*histo_ptr), //
-        (process_group == "Data")           //
+        class_name,                       //
+        process_group,                    //
+        xs_order,                         //
+        sample,                           //
+        year,                             //
+        shift,                            //
+        histo_name,                       //
+        std::shared_ptr<TH1F>(histo_ptr), //
+        (process_group == "Data")         //
     };
 }
 
@@ -161,7 +168,7 @@ auto NanoEventClass::to_string() const -> std::string
 
     return fmt::format(
         "Event Class: {}\nData: {} events - {} "
-        "histograms\nMC:{} events - {} histograms\n",
+        "histograms\nMC: {} events - {} histograms\n",
         m_class_name,
         m_data_count,
         n_data,
@@ -183,8 +190,9 @@ auto NanoEventClass::get_class_name(std::string histo_full_name, const std::stri
         return histo_full_name.substr(startPos, endPos - startPos);
     }
 
-    throw std::runtime_error(
-        fmt::format("ERROR: Could not get the class name from histogram fulll name ({}).", histo_full_name));
+    fmt::print(stderr,
+               fmt::format("ERROR: Could not get the class name from histogram fulll name ({}).", histo_full_name));
+    std::exit(EXIT_FAILURE);
 }
 
 // auto NanoEventClass::filter_histos(const std::string &process_group_pattern,
@@ -218,9 +226,9 @@ auto NanoEventClass::get_class_name(std::string histo_full_name, const std::stri
 //     return filtered_histos;
 // }
 
-NanoEventClassCollection::NanoEventClassCollection(const std::vector<std::string> &root_file_paths)
-    : m_classes({}) //,
-//   m_root_files({})
+NanoEventClassCollection::NanoEventClassCollection(const std::vector<std::string> &root_file_paths,
+                                                   const std::vector<std::string> &class_patterns)
+    : m_classes({})
 {
     auto h_counts_per_class = std::unordered_map<std::string, std::vector<NanoEventHisto>>();
     auto h_invariant_mass_per_class = std::unordered_map<std::string, std::vector<NanoEventHisto>>();
@@ -229,26 +237,32 @@ NanoEventClassCollection::NanoEventClassCollection(const std::vector<std::string
 
     fmt::print("Reading input files ...\n");
     auto i = 0;
+
     for (auto &&file_path : root_file_paths)
     {
-        if (i > 30)
-        {
-            break;
-        }
-
         i++;
 
-        fmt::print("File:  [{}] {} / {}\n", file_path, i, root_file_paths.size());
-        // auto root_file = TFile::Open(file_path.c_str());
+        fmt::print("{} [{} / {}]\n", file_path, i, root_file_paths.size());
         std::unique_ptr<TFile> root_file(TFile::Open(file_path.c_str()));
-        // m_root_files.push_back(root_file);
 
         TIter keyList(root_file->GetListOfKeys());
         TKey *key;
         while ((key = (TKey *)keyList()))
         {
             auto full_name = std::string(key->GetName());
-            if (full_name.find("[Nominal]") != std::string::npos and full_name.find("[EC_") == 0)
+            auto event_class_name = NanoEventClass::get_class_name(full_name);
+            bool has_match = false;
+            for (auto &&pattern : class_patterns)
+            {
+                if (fnmatch(pattern.c_str(), event_class_name.c_str(), FNM_EXTMATCH) != FNM_NOMATCH)
+                {
+                    has_match = true;
+                    break;
+                }
+            }
+
+            // if (full_name.find("[Nominal]") != std::string::npos and full_name.find("[EC_") == 0 and has_match)
+            if (full_name.find("[EC_") == 0 and has_match)
             {
                 auto nano_histo = NanoEventHisto::make_nano_event_histo(full_name, (TH1F *)key->ReadObj());
                 if (full_name.find("h_counts") != std::string::npos)
@@ -282,7 +296,7 @@ NanoEventClassCollection::NanoEventClassCollection(const std::vector<std::string
     for (auto &&[event_class_name, _] : h_counts_per_class)
     {
         j++;
-        fmt::print("EC: [{}] {} / {}\n", event_class_name, j, h_counts_per_class.size());
+        fmt::print("{} [{} / {}]\n", event_class_name, j, h_counts_per_class.size());
 
         if (h_invariant_mass_per_class.find(event_class_name) != h_invariant_mass_per_class.cend() //
             and h_sum_pt_per_class.find(event_class_name) != h_sum_pt_per_class.cend()             //

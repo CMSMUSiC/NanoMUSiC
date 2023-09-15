@@ -23,8 +23,83 @@ import time
 
 
 years = ["2016APV", "2016", "2017", "2018"]
+classification_buffer_name = "classification_buffer"
+classification_histograms_name = "classification_histograms_signal"
 
 nproc = multiprocessing.cpu_count()
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "-c",
+        "--config",
+        required=True,
+        help='Task configuration (TOML) file, produced by "analysis_config_builder.py"',
+    )
+
+    parser.add_argument("-s", "--sample", help="Sample to be processed.", default="")
+
+    parser.add_argument("-y", "--year", help="Year to be processed.", default="")
+
+    parser.add_argument(
+        "--all-data",
+        help='Starts classification for all Data samples. Incompatible with "--sample" and "--all_mc".',
+        action="store_true",
+        default=False,
+    )
+
+    parser.add_argument(
+        "--all-mc",
+        help='Starts classification for all MC samples. Incompatible with "--sample" and "--all-data".',
+        action="store_true",
+        default=False,
+    )
+
+    parser.add_argument(
+        "--all",
+        help='Starts classification for all MC and Data samples. Incompatible with "--sample", "--all-data" and  "--all-mc".',
+        action="store_true",
+        default=False,
+    )
+
+    parser.add_argument(
+        "-j",
+        "--jobs",
+        help="Multiprocessing pool size.",
+        type=int,
+        default=min(80, nproc),
+    )
+
+    parser.add_argument("--debug", help="print debugging info", action="store_true")
+
+    parser.add_argument(
+        "-o",
+        "--output",
+        help="Output base path.",
+        type=str,
+        default=".",
+    )
+
+    parser.add_argument(
+        "-u", "--username", help="dCache username.", type=str, required=True
+    )
+
+    parser.add_argument(
+        "--harvest",
+        help="Will only harvest results, after condor execution is complete.",
+        action="store_true",
+        default=False,
+    )
+
+    args = parser.parse_args()
+
+    if args.sample and not (args.year):
+        raise Exception(
+            'ERROR: Could not start classification. When "--sample" is set, "--year" is required.'
+        )
+    return args
 
 
 def number_of_events(file_path):
@@ -128,79 +203,6 @@ def files_to_process(year, output_files):
             output_files,
         )
     )
-
-
-def parse_args():
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument(
-        "-c",
-        "--config",
-        required=True,
-        help='Task configuration (TOML) file, produced by "analysis_config_builder.py"',
-    )
-
-    parser.add_argument("-s", "--sample", help="Sample to be processed.", default="")
-
-    parser.add_argument("-y", "--year", help="Year to be processed.", default="")
-
-    parser.add_argument(
-        "--all-data",
-        help='Starts classification for all Data samples. Incompatible with "--sample" and "--all_mc".',
-        action="store_true",
-        default=False,
-    )
-
-    parser.add_argument(
-        "--all-mc",
-        help='Starts classification for all MC samples. Incompatible with "--sample" and "--all-data".',
-        action="store_true",
-        default=False,
-    )
-
-    parser.add_argument(
-        "--all",
-        help='Starts classification for all MC and Data samples. Incompatible with "--sample", "--all-data" and  "--all-mc".',
-        action="store_true",
-        default=False,
-    )
-
-    parser.add_argument(
-        "-j",
-        "--jobs",
-        help="Multiprocessing pool size.",
-        type=int,
-        default=min(80, nproc),
-    )
-
-    parser.add_argument("--debug", help="print debugging info", action="store_true")
-
-    parser.add_argument(
-        "-o",
-        "--output",
-        help="Output base path.",
-        type=str,
-        default=".",
-    )
-
-    parser.add_argument(
-        "-u", "--username", help="dCache username.", type=str, required=True
-    )
-
-    parser.add_argument(
-        "--harvest",
-        help="Will only harvest results, after condor execution is complete.",
-        action="store_true",
-        default=False,
-    )
-
-    args = parser.parse_args()
-
-    if args.sample and not (args.year):
-        raise Exception(
-            'ERROR: Could not start classification. When "--sample" is set, "--year" is required.'
-        )
-    return args
 
 
 def submit_classification(
@@ -313,7 +315,7 @@ def merge_cutflow_histograms(input_files, process, year, output_path, debug):
 def call_srmls(username, count, offset, debug):
     time.sleep(random.uniform(1, 3))
 
-    command = f"srmls -count={count} -offset={offset} srm://grid-srm.physik.rwth-aachen.de:8443/srm/managerv2\\?SFN=/pnfs/physik.rwth-aachen.de/cms/store/user/{username}/classification_buffer/"
+    command = f"srmls -count={count} -offset={offset} srm://grid-srm.physik.rwth-aachen.de:8443/srm/managerv2\\?SFN=/pnfs/physik.rwth-aachen.de/cms/store/user/{username}/{classification_buffer_name}/"
     srmls_merge_result = subprocess.run(
         shlex.split(command),
         capture_output=True,
@@ -322,7 +324,7 @@ def call_srmls(username, count, offset, debug):
         print(srmls_merge_result.stdout.decode("utf-8"))
 
     if srmls_merge_result.returncode != 0:
-        error = srmls_merge_result.stderr.decode("utf-8")
+        # error = srmls_merge_result.stderr.decode("utf-8")
         # sys.exit(f"ERROR: could not merge output files, per sample.\n{error}")
         sys.exit(
             f"ERROR: could not merge output files, per sample. Executed command: {command}"
@@ -338,15 +340,7 @@ def get_files_in_buffer_area(
     process_group: str,
     xsec_order: str,
     username: str,
-    debug: bool,
 ):
-    # count = 9000
-    # offset = 0
-    # srmls_output = call_srmls(username, count, offset, debug)
-    # while ".root" in srmls_output or "ec_classes" in srmls_output:
-    #     offset += count
-    #     srmls_output = srmls_output + "\n" + call_srmls(username, count, offset, debug)
-
     if ".root" not in srmls_output or "ec_classes" not in srmls_output:
         sys.exit(
             # f"ERROR: could not merge output files, per sample. No ROOT file found.\n{srmls_output}"
@@ -364,7 +358,7 @@ def get_files_in_buffer_area(
             and f"_{xsec_order}_" in line
         ):
             buffer_files.append(
-                f"dcap://grid-dcap-extern.physik.rwth-aachen.de/pnfs/physik.rwth-aachen.de/cms/store/user/{username}/classification_buffer/ec_classes"
+                f"dcap://grid-dcap-extern.physik.rwth-aachen.de/pnfs/physik.rwth-aachen.de/cms/store/user/{username}/{classification_buffer_name}/ec_classes"
                 + line.split("ec_classes")[1].split(".root")[0]
                 + ".root"
             )
@@ -374,25 +368,11 @@ def get_files_in_buffer_area(
 
 def merge_classification_results(args):
     (
-        srmls_output,
+        input_files,
         process,
         year,
-        process_group,
-        xsec_order,
         output_file_path,
-        username,
-        debug,
     ) = args
-
-    input_files = get_files_in_buffer_area(
-        srmls_output,
-        process,
-        year,
-        process_group,
-        xsec_order,
-        username,
-        debug,
-    )
 
     print(
         f"[Merger - {process} {year}] Merging output files ({len(input_files)} files ) ..."
@@ -436,41 +416,48 @@ def main():
                             # merge EventClass histograms
                             harvest_arguments.append(
                                 (
-                                    srmls_output,
+                                    get_files_in_buffer_area(
+                                        srmls_output,
+                                        sample,
+                                        year,
+                                        "Data"
+                                        if task_config[sample]["is_data"]
+                                        else task_config[sample]["ProcessGroup"],
+                                        "DUMMY"
+                                        if task_config[sample]["is_data"]
+                                        else task_config[sample]["XSecOrder"],
+                                        args.username,
+                                    ),
                                     sample,
                                     year,
-                                    "Data"
-                                    if task_config[sample]["is_data"]
-                                    else task_config[sample]["ProcessGroup"],
-                                    "DUMMY"
-                                    if task_config[sample]["is_data"]
-                                    else task_config[sample]["XSecOrder"],
                                     # f"{args.output}/classification_outputs/{year}/{sample}/{sample}_{year}.root",
-                                    f"/disk1/silva/classification_histograms/{sample}_{year}.root",
-                                    args.username,
-                                    args.debug,
+                                    f"/disk1/silva/{classification_histograms_name}/{sample}_{year}.root",
                                 )
                             )
-
-        # data first
+        # largest first
         harvest_arguments = sorted(
-            harvest_arguments, key=lambda x: x[3] == "Data", reverse=True
+            harvest_arguments, key=lambda x: len(x[0]), reverse=True
         )
 
-        # TTbar samples first
-        harvest_arguments = sorted(
-            harvest_arguments, key=lambda x: x[1].startswith("TT"), reverse=True
-        )
+        # # data first
+        # harvest_arguments = sorted(
+        #     harvest_arguments, key=lambda x: x[1] == "Data", reverse=True
+        # )
 
-        # then ZZ
-        harvest_arguments = sorted(
-            harvest_arguments, key=lambda x: x[1].startswith("ZZ"), reverse=True
-        )
+        # # TTbar samples first
+        # harvest_arguments = sorted(
+        #     harvest_arguments, key=lambda x: x[1].startswith("TT"), reverse=True
+        # )
 
-        # them WW
-        harvest_arguments = sorted(
-            harvest_arguments, key=lambda x: x[1].startswith("WW"), reverse=True
-        )
+        # # then ZZ
+        # harvest_arguments = sorted(
+        #     harvest_arguments, key=lambda x: x[1].startswith("ZZ"), reverse=True
+        # )
+
+        # # them WW
+        # harvest_arguments = sorted(
+        #     harvest_arguments, key=lambda x: x[1].startswith("WW"), reverse=True
+        # )
 
         with Pool(min([args.jobs, len(harvest_arguments), 100])) as pool:
             list(

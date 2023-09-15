@@ -95,6 +95,7 @@ auto wlnujets_filter(const NanoObjects::LHEParticles &lhe_particles,
 
     return filter_result;
 }
+
 auto wlnujets_mass_binned_filter(const NanoObjects::LHEParticles &lhe_particles,
                                  const NanoObjects::GenParticles &gen_particles,
                                  const Year &year,
