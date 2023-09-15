@@ -1,0 +1,114 @@
+#include "Distribution.hpp"
+
+#include <cstdlib>
+#include <fnmatch.h>
+#include <iostream>
+#include <stdexcept>
+#include <tuple>
+
+#include "ROOT/RVec.hxx"
+#include "TCollection.h"
+#include "TFile.h"
+#include "TKey.h"
+
+#include "fmt/format.h"
+
+#include "roothelpers.hpp"
+
+#include "NanoEventClass.hpp"
+
+using namespace ROOT;
+using namespace ROOT::VecOps;
+
+Distribution::Distribution(const NanoEventClass &ec, const std::string &distribution_name)
+    : m_distribution_name(distribution_name),
+      m_event_class_name(ec.m_class_name)
+{
+    const std::vector<NanoEventHisto> *event_class_histograms;
+    if (distribution_name == "counts")
+    {
+        event_class_histograms = &ec.m_counts;
+    }
+    else if (distribution_name == "invariant_mass")
+    {
+        event_class_histograms = &ec.m_invariant_mass;
+    }
+    else if (distribution_name == "sum_pt")
+    {
+        event_class_histograms = &ec.m_sum_pt;
+    }
+    else if (distribution_name == "met")
+    {
+        event_class_histograms = &ec.m_met;
+    }
+    else
+    {
+        fmt::print(stderr, "ERROR: Could not build Distribution for the requested name.");
+        std::exit(EXIT_FAILURE);
+    }
+
+    bool scale_to_area = true and (distribution_name != "counts");
+
+    // split the histograms per process group and shift
+    std::unordered_map<std::string, std::unordered_map<std::string, std::vector<std::shared_ptr<TH1F>>>> histograms;
+    for (auto &&histo : *event_class_histograms)
+    {
+        if (histograms.find(histo.shift) == histograms.end())
+        {
+            histograms[histo.shift] = std::unordered_map<std::string, std::vector<std::shared_ptr<TH1F>>>();
+        }
+        histograms[histo.shift][histo.process_group].push_back(histo.histogram);
+    }
+
+    // merge histograms per process group and shift
+    for (auto &&[shift, histos_per_process_group] : histograms)
+    {
+        if (m_histogram_per_process_group_and_shift.find(shift) == m_histogram_per_process_group_and_shift.end())
+        {
+            m_histogram_per_process_group_and_shift[shift] = std::unordered_map<std::string, std::shared_ptr<TH1F>>();
+        }
+        for (auto &&[pg, histos] : histograms[shift])
+        {
+            m_histogram_per_process_group_and_shift[shift][pg] = ROOTHelpers::SumAsTH1F(histos);
+        }
+    }
+
+    // build Data histogram and graph
+    m_total_data_histogram = m_histogram_per_process_group_and_shift["Nominal"]["Data"];
+    m_data_graph = ROOTHelpers::MakeDataGraph(m_total_data_histogram, scale_to_area);
+
+    // merge MC histograms
+    std::vector<std::shared_ptr<TH1F>> mc_histos;
+    for (auto &&[pg, histo] : m_histogram_per_process_group_and_shift["Nominal"])
+    {
+        if (pg != "Data")
+        {
+            mc_histos.push_back(histo);
+        }
+    }
+    auto m_total_mc_histogram = ROOTHelpers::SumAsTH1F(mc_histos);
+
+    // statistical uncertainties
+    m_statistical_uncert = ROOTHelpers::Errors(m_total_mc_histogram);
+
+    // systemtic uncertainties
+    m_systematics_uncert = ROOTHelpers::Counts(m_total_mc_histogram) * 0.05;
+
+    // total uncertainties
+    m_total_uncert =
+        ROOT::VecOps::sqrt(ROOT::VecOps::pow(m_statistical_uncert, 2.) + ROOT::VecOps::pow(m_systematics_uncert, 2.));
+
+    m_error_band = ROOTHelpers::MakeErrorBand(m_total_mc_histogram, m_total_uncert, scale_to_area);
+
+    // build MC Stack --> ideally, should be done when plotting
+    // compute systematics uncert
+    // compute statistical uncert
+    // compute data and its uncert for ratio plot
+    // compute MC uncertanties for ratio plot
+}
+
+auto Distribution::get_pvalue_props() const -> PValueProps
+{
+    return PValueProps{
+        .total_data = 2, .total_mc = 3., .sigma_total = 1., .sigma_stat = 3, .total_per_process_group = {2, 3, 5, 9}};
+}

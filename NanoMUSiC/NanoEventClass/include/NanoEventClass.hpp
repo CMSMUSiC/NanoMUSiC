@@ -91,7 +91,8 @@ class NanoEventClassCollection
     std::unordered_map<std::string, NanoEventClass> m_classes = {};
     // std::vector<TFile *> m_root_files = {};
 
-    NanoEventClassCollection(const std::vector<std::string> &root_file_paths);
+    NanoEventClassCollection(const std::vector<std::string> &root_file_paths,
+                             const std::vector<std::string> &class_patterns);
 
     auto get_classes() const -> std::vector<std::string>;
 

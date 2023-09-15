@@ -3,6 +3,7 @@ import scipy.stats
 from scipy.special import erfinv
 import math
 import json
+<<<<<<< HEAD
 import os
 import random
 import string
@@ -10,6 +11,8 @@ import tqdm
 from multiprocessing import Pool
 from functools import partial
 
+=======
+>>>>>>> fd55da13ce1ab60c27a6e7c57f8b41413dce7f8c
 
 NORMAL_PRIOR = 1
 LOGNORMAL_PRIOR = 2
@@ -31,10 +34,7 @@ def get_integral_pValue(
         "Total Uncertainity": sigma_exp,
         "Statistical Uncertainity": sigma_stat,
     }
-    # if os.path.exists("pvalue_results"):
-    # os.system("rm -rf pvalue_results")
-    os.system("mkdir -p pvalue_results")
-    json_file_path = f"pvalue_results/{ec_name}.json"
+    json_file_path = f"{ec_name}.json"
 
     with open(json_file_path, "w") as json_file:
         json.dump(p_value_data, json_file)
@@ -176,5 +176,5 @@ def main():
     # print(f"p = {p} : z = {pvalue_to_z(p)}")
 
 
-if __name__ == "__main__":
+if _name_ == "__main__":
     main()
