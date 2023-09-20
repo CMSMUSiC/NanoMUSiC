@@ -19,26 +19,32 @@ auto distribution_factory(NanoEventClassCollection &ec_collection, bool counts_o
 
     std::vector<std::future<std::shared_ptr<Distribution>>> future_distributions;
 
-    fmt::print("Launching threads ...\n");
+    fmt::print("[Distribution Factory] Launching threads ...\n");
     for (auto &&ec_name : ec_collection.get_classes())
     {
         for (auto &&distribution_name : all_distributions)
-            future_distributions.push_back(
-                pool.submit(make_distribution, ec_collection.get_class(ec_name), distribution_name));
+        {
+            if (not(distribution_name == "met" and ec_name.find("MET") == std::string::npos))
+            {
+                future_distributions.push_back(
+                    pool.submit(make_distribution, ec_collection.get_class(ec_name), distribution_name));
+            }
+        }
     }
 
-    fmt::print("Waiting ...\n");
+    fmt::print("[Distribution Factory] Waiting ...\n");
     for (auto &&fut : future_distributions)
     {
         fut.wait();
     }
 
-    fmt::print("Collecting results ...\n");
+    fmt::print("[Distribution Factory] Collecting results ... ");
     std::vector<std::shared_ptr<Distribution>> distributions;
     for (auto &&fut : future_distributions)
     {
         distributions.push_back(fut.get());
     }
+    fmt::print("done.\n");
 
     return distributions;
 }

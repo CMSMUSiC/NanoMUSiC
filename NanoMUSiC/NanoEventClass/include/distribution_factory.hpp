@@ -7,6 +7,7 @@
 #include "Distribution.hpp"
 #include "NanoEventClass.hpp"
 
-auto distribution_factory() -> std::vector<std::shared_ptr<Distribution>>;
+auto distribution_factory(NanoEventClassCollection &ec_collection, bool counts_only)
+    -> std::vector<std::shared_ptr<Distribution>>;
 
 #endif // !DISTRIBUTION_FACOTRY_HPP_

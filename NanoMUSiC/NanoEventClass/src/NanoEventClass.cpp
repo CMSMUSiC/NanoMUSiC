@@ -152,8 +152,6 @@ NanoEventClass::NanoEventClass(const std::string &class_name,
                   or (m_class_name.find("Electron") != std::string::npos) //
                   or (m_class_name.find("Photon") != std::string::npos))  //
                  and m_data_count >= min_data_count and m_mc_count >= min_mc_count;
-
-    // m_is_valid = true;
 }
 
 auto NanoEventClass::to_string() const -> std::string
@@ -261,8 +259,8 @@ NanoEventClassCollection::NanoEventClassCollection(const std::vector<std::string
                 }
             }
 
-            // if (full_name.find("[Nominal]") != std::string::npos and full_name.find("[EC_") == 0 and has_match)
-            if (full_name.find("[EC_") == 0 and has_match)
+            if (full_name.find("[Nominal]") != std::string::npos and full_name.find("[EC_") == 0 and has_match)
+            // if (full_name.find("[EC_") == 0 and has_match)
             {
                 auto nano_histo = NanoEventHisto::make_nano_event_histo(full_name, (TH1F *)key->ReadObj());
                 if (full_name.find("h_counts") != std::string::npos)
@@ -296,7 +294,7 @@ NanoEventClassCollection::NanoEventClassCollection(const std::vector<std::string
     for (auto &&[event_class_name, _] : h_counts_per_class)
     {
         j++;
-        fmt::print("{} [{} / {}]\n", event_class_name, j, h_counts_per_class.size());
+        // fmt::print("{} [{} / {}]\n", event_class_name, j, h_counts_per_class.size());
 
         if (h_invariant_mass_per_class.find(event_class_name) != h_invariant_mass_per_class.cend() //
             and h_sum_pt_per_class.find(event_class_name) != h_sum_pt_per_class.cend()             //

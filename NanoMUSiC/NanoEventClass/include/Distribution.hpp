@@ -7,6 +7,8 @@
 
 #include "TGraphAsymmErrors.h"
 #include "TGraphErrors.h"
+#include "THStack.h"
+#include "TLegend.h"
 #include "fmt/format.h"
 
 #include "NanoEventClass.hpp"
@@ -29,9 +31,29 @@ class PValueProps
     std::vector<double> total_per_process_group;
 };
 
+class PlotProps
+{
+  public:
+    std::string class_name;
+    std::string distribution_name;
+    double x_min;
+    double x_max;
+    double y_min;
+    double y_max;
+    std::shared_ptr<TH1F> total_data_histogram;
+    TGraphAsymmErrors data_graph;
+    std::unordered_map<std::string, std::shared_ptr<TH1F>> mc_histograms;
+    TGraphErrors mc_uncertainty;
+    TGraphAsymmErrors ratio_graph;
+    TGraphErrors ratio_mc_error_band;
+};
+
 class Distribution
 {
   public:
+    constexpr static double min_bin_width = 10.;
+
+    bool m_scale_to_area;
     std::string m_distribution_name;
     std::string m_event_class_name;
     RVec<double> m_statistical_uncert;
@@ -46,7 +68,7 @@ class Distribution
 
     Distribution(const NanoEventClass &ec, const std::string &distribution_name);
 
-    // auto plot() -> PlotProps;
+    auto get_plot_props() const -> PlotProps;
     auto get_pvalue_props() const -> PValueProps;
 };
 

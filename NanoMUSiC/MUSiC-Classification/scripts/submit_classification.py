@@ -24,7 +24,7 @@ import time
 
 years = ["2016APV", "2016", "2017", "2018"]
 classification_buffer_name = "classification_buffer"
-classification_histograms_name = "classification_histograms_signal"
+classification_histograms_name = "classification_histograms"
 
 nproc = multiprocessing.cpu_count()
 
@@ -459,16 +459,27 @@ def main():
         #     harvest_arguments, key=lambda x: x[1].startswith("WW"), reverse=True
         # )
 
-        with Pool(min([args.jobs, len(harvest_arguments), 100])) as pool:
-            list(
-                tqdm(
-                    pool.imap_unordered(
-                        merge_classification_results, harvest_arguments
-                    ),
-                    total=len(harvest_arguments),
-                    unit=" samples",
+        # with Pool(min([args.jobs, len(harvest_arguments), 100])) as pool:
+        #     list(
+        #         tqdm(
+        #             pool.imap_unordered(
+        #                 merge_classification_results, harvest_arguments
+        #             ),
+        #             total=len(harvest_arguments),
+        #             unit=" samples",
+        #         )
+        #     )
+
+        with open("harvest_commands.txt", "w") as f:
+            for harv_args in harvest_arguments:
+                f.write(
+                    f"hadd -n 5 -v 0 -T {harv_args[3]} {' '.join(harv_args[0])} && echo [Done] {harv_args[1]} - {harv_args[2]}\n"
                 )
-            )
+
+        print("Running parallel merge jobs ...")
+        os.system(
+            "cat harvest_commands.txt | parallel --halt now,fail=1 --progress --jobs 110"
+        )
 
         sys.exit(0)
 
