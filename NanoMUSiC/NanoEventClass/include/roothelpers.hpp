@@ -254,6 +254,26 @@ inline auto SumAsTH1F(const std::vector<H> &histos, const std::optional<std::str
     return sum;
 }
 
+template <typename H>
+inline auto SumAsTH1F(const std::unordered_map<std::string, H> &histos,
+                      bool remove_data = true,
+                      const std::optional<std::string> &new_name = std::nullopt) -> std::shared_ptr<TH1F>
+{
+    auto values = std::vector<H>();
+    for (const auto &[pg, h] : histos)
+    {
+        if (remove_data)
+        {
+            if (pg == "Data")
+            {
+                continue;
+            }
+        }
+        values.push_back(h);
+    }
+    return SumAsTH1F(values, new_name);
+}
+
 ///////////////////
 /// Ref: https://twiki.cern.ch/twiki/bin/view/CMS/PoissonErrorBastruct
 struct PoissonError
@@ -570,11 +590,37 @@ inline auto GetRawPtr(const H &h) -> TH1F *
 
 namespace Uncertanties
 {
-template <typename H>
+// Helper functions
 inline auto Symmetrize(const RVec<double> &v1, const RVec<double> &v2) -> RVec<double>
 {
     return v1 / 2. + v2 / 2.;
 }
+
+// Integral Systematics: the same value for the whole sample
+template <typename H>
+inline auto IntegralUncert(const H &nom, const double scale) -> RVec<double>
+{
+    return ROOTHelpers::Counts(nom) * scale;
+}
+
+inline auto XSecOrder(const RVec<double> &total_mc_counts) -> RVec<double>
+{
+    return total_mc_counts * 0.;
+}
+
+// Constant Systematics: event-wise weight
+template <typename H>
+inline auto AbsDiff(const H &nom, const H &shift) -> RVec<double>
+{
+    return ROOTHelpers::AbsDiff(nom, shift);
+}
+
+template <typename H>
+inline auto AbsDiffAndSymmetrize(const H &nom, const H &up, const H &down) -> RVec<double>
+{
+    return Symmetrize(ROOTHelpers::AbsDiff(nom, up), ROOTHelpers::AbsDiff(nom, down));
+}
+
 } // namespace Uncertanties
 
 #endif // ROOT_HELPERS

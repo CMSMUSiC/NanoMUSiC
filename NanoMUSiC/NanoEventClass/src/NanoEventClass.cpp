@@ -259,8 +259,8 @@ NanoEventClassCollection::NanoEventClassCollection(const std::vector<std::string
                 }
             }
 
-            if (full_name.find("[Nominal]") != std::string::npos and full_name.find("[EC_") == 0 and has_match)
-            // if (full_name.find("[EC_") == 0 and has_match)
+            // if (full_name.find("[Nominal]") != std::string::npos and full_name.find("[EC_") == 0 and has_match)
+            if (full_name.find("[EC_") == 0 and has_match)
             {
                 auto nano_histo = NanoEventHisto::make_nano_event_histo(full_name, (TH1F *)key->ReadObj());
                 if (full_name.find("h_counts") != std::string::npos)

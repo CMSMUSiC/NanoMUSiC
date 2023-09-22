@@ -308,10 +308,10 @@ auto main(int argc, char *argv[]) -> int
                 break;
             }
 
-            // if (global_event_number > 10)
-            // {
-            //     break;
-            // }
+            if (global_event_number > 100)
+            {
+                break;
+            }
 
             // check for chain readout quaility
             // REFERENCE: https://root.cern.ch/doc/v608/classTTreeReader.html#a568e43c7d7d8b1f511bbbeb92c9094a8

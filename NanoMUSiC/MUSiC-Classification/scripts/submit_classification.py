@@ -578,16 +578,20 @@ def main():
                                             username=args.username,
                                             debug=args.debug,
                                         ),
-                                        enumerate(
-                                            get_spliting(
-                                                files_to_process(
-                                                    year,
-                                                    task_config[sample]["output_files"],
-                                                ),
-                                                sample,
-                                                task_config[sample],
+                                        list(
+                                            enumerate(
+                                                get_spliting(
+                                                    files_to_process(
+                                                        year,
+                                                        task_config[sample][
+                                                            "output_files"
+                                                        ],
+                                                    ),
+                                                    sample,
+                                                    task_config[sample],
+                                                )
                                             )
-                                        ),
+                                        )[0:3],
                                     ),
                                 ),
                             )

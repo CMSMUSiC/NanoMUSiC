@@ -56,17 +56,25 @@ class Distribution
     bool m_scale_to_area;
     std::string m_distribution_name;
     std::string m_event_class_name;
+    // std::unordered_map<std::string, std::unordered_map<std::string, std::vector<std::shared_ptr<TH1F>>>>
+    //     m_unmerged_mc_histograms;
     RVec<double> m_statistical_uncert;
     RVec<double> m_systematics_uncert;
     RVec<double> m_total_uncert;
     std::shared_ptr<TH1F> m_total_data_histogram;
     std::shared_ptr<TH1F> m_total_mc_histogram;
+    unsigned long m_n_bins;
     TGraphAsymmErrors m_data_graph;
     TGraphErrors m_error_band;
     std::unordered_map<std::string, std::unordered_map<std::string, std::shared_ptr<TH1F>>>
         m_histogram_per_process_group_and_shift;
 
     Distribution(const NanoEventClass &ec, const std::string &distribution_name);
+
+    auto get_statistical_uncert() const -> RVec<double>;
+    auto get_systematics_uncert(
+        const std::unordered_map<std::string, std::unordered_map<std::string, std::vector<std::shared_ptr<TH1F>>>>
+            &unmerged_mc_histograms) const -> RVec<double>;
 
     auto get_plot_props() const -> PlotProps;
     auto get_pvalue_props() const -> PValueProps;

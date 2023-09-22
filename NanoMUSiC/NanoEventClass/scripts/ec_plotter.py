@@ -17,6 +17,7 @@ from multiprocessing import Pool
 
 # ROOT.gErrorIgnoreLevel = ROOT.kError
 ROOT.gErrorIgnoreLevel = 6000
+print("Compiling NanoEventClass ...")
 ROOT.gSystem.AddIncludePath("-I../NanoMUSiC/NanoEventClass/include")
 
 if (
@@ -46,20 +47,21 @@ ROOT.gROOT.SetBatch(True)
 ROOT.EnableThreadSafety()
 
 
-def get_source_files(path, year):
+def get_source_files(path, year_pattern):
     return list(
         filter(
             lambda f: ("cutflow" not in f),
-            glob(f"{path}/*.root"),
+            glob(f"{path}/*{year_pattern}.root"),
         )
     )
 
 
 years_glob = {
-    "2016*": {"name": "2016", "lumi": "36.3"},  #
-    "2017": {"name": "2017", "lumi": "41.5"},  #
-    "2018": {"name": "2018", "lumi": "59.8"},  #
-    "*": {"name": "", "lumi": "138"},
+    # "2016*": {"name": "2016", "lumi": "36.3"},  #
+    # "2017": {"name": "2017", "lumi": "41.5"},  #
+    # "2018": {"name": "2018", "lumi": "59.8"},  #
+    "[2017,2018]": {"name": "2017+2018", "lumi": "101"},  #
+    # "*": {"name": "", "lumi": "138"},
 }
 
 
@@ -296,22 +298,13 @@ def make_plot(args):
     )
 
     # Save the plot
-    ec_nice_name = class_name.replace("+", "_")
-    # os.system(f"mkdir -p {output_path}/{ec_nice_name}")
+    output_file_path = f"{output_path}/{class_name}/{class_name}_{distribution_name}{(lambda x: f'_{x}' if x!=''  else '') (years_glob[year]['name'])}"
+    output_file_path = output_file_path.replace("+", "_")
 
-    fig.savefig(
-        f"{output_path}/{ec_nice_name}/{ec_nice_name}_{distribution_name}{(lambda x: f'_{x}' if x!=''  else '') (years_glob[year]['name'])}.png"
-    )
-    fig.savefig(
-        f"{output_path}/{ec_nice_name}/{ec_nice_name}_{distribution_name}{(lambda x: f'_{x}' if x!=''  else '') (years_glob[year]['name'])}.pdf"
-    )
-    fig.savefig(
-        f"{output_path}/{ec_nice_name}/{ec_nice_name}_{distribution_name}{(lambda x: f'_{x}' if x!=''  else '') (years_glob[year]['name'])}.svg"
-    )
-
-    # os.system(
-    #     f"cp $MUSIC_BASE/NanoMUSiC/NanoEventClass/scripts/index.php {output_path}/{ec_nice_name}/index.php"
-    # )
+    fig.savefig(f"{output_file_path}.png")
+    fig.savefig(f"{output_file_path}.pdf")
+    fig.savefig(f"{output_file_path}.svg")
+    # fig.savefig(f"{output_file_path}.C")
 
 
 def main():
@@ -320,78 +313,99 @@ def main():
     ROOT.gStyle.SetMarkerSize(0.5)
     ROOT.gStyle.SetLabelSize(25, "XYZ")
 
-    input_files = get_source_files("/disk1/silva/classification_histograms", "2018")
-
-    print("Creating EC Collection ...")
-    ec_collection = ROOT.NanoEventClassCollection(
-        input_files,
-        # ["EC_2Muon*", "EC_2Electron*"],
-        [
-            # "EC_2Muon_1MET",
-            # "EC_2Muon*",
-            # "*",
-            # "EC_2Muon_1Electron_3bJet+X",
-            # "EC_2Muon+X",
-            # "EC_2Muon+NJet",
-            # "EC_1Electron_2Tau_1Jet_2bJet_1MET",
-            "*",
-            # "EC_2Muon_2Tau_1MET",
-            # "EC_2Muon_1Electron_1Tau_2Jet_1MET+X"
-        ],
-    )
-
-    print("Building plots ...")
-    plot_props = []
-    for dist in tqdm(ROOT.distribution_factory(ec_collection, False)):
-        plot = dist.get_plot_props()
-        plot_props.append(
+    for year in years_glob:
+        input_files = get_source_files("/disk1/silva/classification_histograms", year)
+        print("Creating EC Collection ...")
+        ec_collection = ROOT.NanoEventClassCollection(
+            input_files,
+            # ["EC_2Muon*", "EC_2Electron*"],
             [
-                plot.class_name,
-                plot.distribution_name,
-                plot.x_min,
-                plot.x_max,
-                plot.y_min,
-                plot.y_max,
-                plot.total_data_histogram.GetBinContent(1),
-                plot.data_graph,
-                plot.mc_histograms,
-                plot.mc_uncertainty,
-                plot.ratio_graph,
-                plot.ratio_mc_error_band,
-                "/disk1/silva/classification_plots",
-                "2018",
-            ]
+                "EC_2Muon_1MET",
+                # "EC_2Muon*",
+                # "EC_2Muon_1Photon_1bJet_1MET+X",
+                # "*",
+                # "EC_2Muon_1Electron_3bJet+X",
+                "EC_2Muon+X",
+                "EC_4Muon",
+                "EC_4Electron",
+                "EC_2Muon_2Electron",
+                # "EC_1Muon_1Electron+1MET",
+                "EC_1Muon_2Jet",
+                "EC_1Muon_2bJet",
+                "EC_1Muon_1Jet",
+                "EC_1Electron_2Jet",
+                # "EC_2Muon+NJet",
+                # "EC_1Electron_2Tau_1Jet_2bJet_1MET",
+                # "EC_2Muon_2Tau_1MET",
+                # "EC_2Muon_1Electron_1Tau_2Jet_1MET+X"
+            ],
         )
 
-        # prepare output area
-        ec_nice_name = plot.class_name.replace("+", "_")
-        # mkdir_command += f"/disk1/silva/classification_plots/{ec_nice_name} "
-        if not os.path.exists(f"/disk1/silva/classification_plots/{ec_nice_name}"):
-            os.makedirs(f"/disk1/silva/classification_plots/{ec_nice_name}")
+        print("Building distributions ...")
+        # plot_props = []
+        for dist in tqdm(ROOT.distribution_factory(ec_collection, False)):
+            plot = dist.get_plot_props()
+            # plot_props.append(
+            #     [
+            #         plot.class_name,
+            #         plot.distribution_name,
+            #         plot.x_min,
+            #         plot.x_max,
+            #         plot.y_min,
+            #         plot.y_max,
+            #         plot.total_data_histogram.GetBinContent(1),
+            #         plot.data_graph,
+            #         plot.mc_histograms,
+            #         plot.mc_uncertainty,
+            #         plot.ratio_graph,
+            #         plot.ratio_mc_error_band,
+            #         "/disk1/silva/classification_plots",
+            #         year,
+            #     ]
+            # )
 
-        # os.system(
-        #     f"cp $MUSIC_BASE/NanoMUSiC/NanoEventClass/scripts/index.php /disk1/silva/classification_outputs/{ec_nice_name}/index.php"
-        # )
+            # prepare output area
+            ec_nice_name = plot.class_name.replace("+", "_")
+            if not os.path.exists(f"/disk1/silva/classification_plots/{ec_nice_name}"):
+                os.makedirs(f"/disk1/silva/classification_plots/{ec_nice_name}")
 
-        # make_plot(plot_props[-1])
-
-    # os.system(f"mkdir -p {mkdir_command}")
-    print()
-
-    print("Saving plots ...")
-    with Pool(min(len(plot_props), 30)) as p:
-        list(
-            tqdm(
-                p.imap_unordered(
-                    func=make_plot,
-                    iterable=plot_props,
-                    # chunksize=int(len(plot_props) / 15),
-                ),
-                total=len(plot_props),
+            make_plot(
+                (
+                    plot.class_name,
+                    plot.distribution_name,
+                    plot.x_min,
+                    plot.x_max,
+                    plot.y_min,
+                    plot.y_max,
+                    plot.total_data_histogram.GetBinContent(1),
+                    plot.data_graph,
+                    plot.mc_histograms,
+                    plot.mc_uncertainty,
+                    plot.ratio_graph,
+                    plot.ratio_mc_error_band,
+                    "/disk1/silva/classification_plots",
+                    year,
+                )
             )
-        )
 
-    os.system(r"find classification_plots/ -type d -exec cp $MUSIC_BASE/NanoMUSiC/NanoEventClass/scripts/index.php {} \;")
+        print()
+
+        # print("Saving plots ...")
+        # with Pool(min(len(plot_props), 20)) as p:
+        #     list(
+        #         tqdm(
+        #             p.imap_unordered(
+        #                 func=make_plot,
+        #                 iterable=plot_props,
+        #             ),
+        #             total=len(plot_props),
+        #         )
+        #     )
+
+    print("Copying index.php ...")
+    os.system(
+        r"find classification_plots/ -type d -exec cp $MUSIC_BASE/NanoMUSiC/NanoEventClass/scripts/index.php {} \;"
+    )
 
     print("Done.")
 

@@ -153,7 +153,7 @@ inline auto make_jets(const RVec<float> &Jet_pt,            //
             if (is_good_jet)
             {
                 jets_scale_factors.push_back(1.);
-                jets_scale_factor_shift.push_back(1.);
+                jets_scale_factor_shift.push_back(0.);
 
                 jets_p4.push_back(jet_p4);
 
@@ -165,7 +165,7 @@ inline auto make_jets(const RVec<float> &Jet_pt,            //
                 // TODO: Implement those scale factors!
                 // Reference: BTagSFCorrector::BTagSFCorrector @ CorrectionSets.cpp
                 bjets_scale_factors.push_back(1.);
-                bjets_scale_factor_shift.push_back(1.);
+                bjets_scale_factor_shift.push_back(0.);
 
                 bjets_p4.push_back(jet_p4);
                 bjets_is_fake.push_back(is_data ? false : Jet_genJetIdx[i] < 0);

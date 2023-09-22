@@ -1,6 +1,7 @@
 #ifndef SHIFTS_HPP
 #define SHIFTS_HPP
 
+#include <cstdio>
 #include <limits>
 #include <stdexcept>
 #include <string>
@@ -10,6 +11,7 @@
 
 #include "ObjectFactories/music_objects.hpp"
 #include "PDFAlphaSWeights.hpp"
+#include "ROOT/RVec.hxx"
 
 inline auto contains(std::string &&str, const std::string &substring) -> bool
 {
@@ -108,8 +110,9 @@ class Shifts
   public:
     enum class Variations
     {
-        // Constant
         Nominal,
+
+        // Constant
         PU_Up,
         PU_Down,
         Fakes_Up,
@@ -523,7 +526,7 @@ class Shifts
                                         const std::tuple<std::vector<std::unique_ptr<LHAPDF::PDF>>,              //
                                                          std::unique_ptr<LHAPDF::PDF>,                           //
                                                          std::unique_ptr<LHAPDF::PDF>> &default_pdf_sets,        //
-                                        RVec<float> LHEPdfWeight,                                                //
+                                        const RVec<float> &_LHEPdfWeight,                                        //
                                         float Generator_scalePDF,                                                //
                                         float Generator_x1,                                                      //
                                         float Generator_x2,                                                      //
@@ -539,6 +542,12 @@ class Shifts
             auto &alpha_s_up_pdf = std::get<1>(default_pdf_sets);
             auto &alpha_s_down_pdf = std::get<2>(default_pdf_sets);
 
+            auto LHEPdfWeight = RVec<float>();
+            for (auto &&weight : _LHEPdfWeight)
+            {
+                LHEPdfWeight.push_back(weight);
+            }
+
             if (LHEPdfWeight.size() > 0)
             {
                 float alpha_s_up = 1.;
@@ -548,10 +557,11 @@ class Shifts
                 auto [lha_id, _] = lha_indexes.value_or(std::pair<unsigned int, unsigned int>());
                 if (lha_id == 0)
                 {
-                    throw std::runtime_error(
-                        fmt::format("ERROR: There are PDF weights written in the "
-                                    "file, but the REGEX parser failed to get "
-                                    "a proper LHA ID."));
+                    fmt::print(stderr,
+                               "ERROR: There are PDF weights written in the "
+                               "file, but the REGEX parser failed to get "
+                               "a proper LHA ID.");
+                    std::exit(-1);
                 }
 
                 // The nominal LHEPdfWeight (first element) is expected to be 1
@@ -605,16 +615,17 @@ class Shifts
                 }
                 else
                 {
-                    throw std::runtime_error(
-                        fmt::format("ERROR: Unexpected number of PDF weights ({}). According "
-                                    "to CMSSW "
-                                    "(https://github.dev/cms-sw/cmssw/blob/"
-                                    "6ef534126e6db3dfdea86c3f0eedb773f0117cbc/PhysicsTools/"
-                                    // "NanoAOD/python/genWeightsTable_cfi.py#L20) if should
-                                    // be eighther 101, 103, 31 or 33.\n",
-                                    "NanoAOD/python/genWeightsTable_cfi.py#L20) if should be "
-                                    "eighther 101 or 103.\n",
-                                    LHEPdfWeight.size()));
+                    fmt::print(stderr,
+                               "ERROR: Unexpected number of PDF weights ({}). According "
+                               "to CMSSW "
+                               "(https://github.dev/cms-sw/cmssw/blob/"
+                               "6ef534126e6db3dfdea86c3f0eedb773f0117cbc/PhysicsTools/"
+                               // "NanoAOD/python/genWeightsTable_cfi.py#L20) if should
+                               // be eighther 101, 103, 31 or 33.\n",
+                               "NanoAOD/python/genWeightsTable_cfi.py#L20) if should be "
+                               "eighther 101 or 103.\n",
+                               LHEPdfWeight.size());
+                    std::exit(-1);
                 }
 
                 // calculate shifts
@@ -625,7 +636,8 @@ class Shifts
                     auto sum_shifts_squared = 0.;
                     for (std::size_t i = 1; i < LHEPdfWeight.size(); i++)
                     {
-                        sum_shifts_squared += std::pow(LHEPdfWeight[i] - LHEWeight_originalXWGTUP, 2.);
+                        // sum_shifts_squared += std::pow(LHEPdfWeight[i] - LHEWeight_originalXWGTUP, 2.);
+                        sum_shifts_squared += std::pow(LHEPdfWeight[i] - 1., 2.);
                     }
                     pdf_shift = std::sqrt(sum_shifts_squared) / LHEWeight_originalXWGTUP;
                 }
@@ -643,11 +655,17 @@ class Shifts
                 }
                 else
                 {
-                    throw std::runtime_error(
-                        fmt::format("ERROR: Could not get PDF error type. "
-                                    "Unexpected error type ({}).\n",
-                                    default_pdf.at(0)->set().errorType()));
+                    fmt::print(stderr,
+                               "ERROR: Could not get PDF error type. "
+                               "Unexpected error type ({}).\n",
+                               default_pdf.at(0)->set().errorType());
+                    std::exit(-1);
                 }
+
+                // fmt::print("-- PDF Weight (From NanoAOD): {} - {} => {} \n",
+                //            pdf_shift,
+                //            alpha_s_shift,
+                //            1. + std::sqrt(std::pow(pdf_shift, 2.) + std::pow(alpha_s_shift, 2.)));
 
                 if (shift == Variations::PDF_As_Up)
                 {
@@ -807,19 +825,26 @@ class Shifts
     // https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopSystematics#Factorization_and_renormalizatio
     // Python (Awkward Array) implementation:
     // https://raw.githubusercontent.com/columnflow/columnflow/99a864ef4c6fbb9a80ed21dbe8f0f70d5e3a64cf/columnflow/production/cms/scale.py
-    static auto get_qcd_scale_weight(const Variations &shift, RVec<float> LHEScaleWeight) -> double
+    static auto get_qcd_scale_weight(const Variations &shift, const RVec<float> &_LHEScaleWeight) -> double
     {
         if (shift == Variations::QCDScale_Up or shift == Variations::QCDScale_Down)
         {
+            RVec<float> LHEScaleWeight;
+            for (auto &&weight : _LHEScaleWeight)
+            {
+                LHEScaleWeight.push_back(weight);
+            }
+
             if (LHEScaleWeight.size() > 0)
             {
                 if (not(LHEScaleWeight.size() == 9 or LHEScaleWeight.size() == 8))
                 {
-                    throw std::runtime_error(
-                        fmt::format("ERROR: Unexpected number of QCD scale weights ({}). "
-                                    "Expected to be 8 or 9. \nWeights: [{}]\n",
-                                    LHEScaleWeight.size(),
-                                    fmt::join(LHEScaleWeight, ", ")));
+                    fmt::print(stderr,
+                               fmt::format("ERROR: Unexpected number of QCD scale weights ({}). "
+                                           "Expected to be 8 or 9. \nWeights: [{}]\n",
+                                           LHEScaleWeight.size(),
+                                           fmt::join(LHEScaleWeight, ", ")));
+                    exit(-1);
                 }
 
                 auto murf_nominal = LHEScaleWeight[4];
@@ -831,18 +856,29 @@ class Shifts
                     murf_nominal = 1.;
                 }
 
-                // remove indexes 2 and 6 or 5 (n ==8) since they corresponds to
+                // remove indexes 2 and 6 or 5 (when n = 8) since they corresponds to
                 // unphysical values
                 if (LHEScaleWeight.size() == 9)
                 {
-                    LHEScaleWeight.erase(LHEScaleWeight.begin() + 2);
-                    LHEScaleWeight.erase(LHEScaleWeight.begin() + 4);
-                    LHEScaleWeight.erase(LHEScaleWeight.begin() + 6);
+                    LHEScaleWeight = {
+                        LHEScaleWeight[0],
+                        LHEScaleWeight[1],
+                        LHEScaleWeight[3],
+                        LHEScaleWeight[5],
+                        LHEScaleWeight[7],
+                        LHEScaleWeight[8],
+                    };
                 }
-                if (LHEScaleWeight.size() == 8)
+                else if (LHEScaleWeight.size() == 8)
                 {
-                    LHEScaleWeight.erase(LHEScaleWeight.begin() + 2);
-                    LHEScaleWeight.erase(LHEScaleWeight.begin() + 5);
+                    LHEScaleWeight = {
+                        LHEScaleWeight[0],
+                        LHEScaleWeight[1],
+                        LHEScaleWeight[3],
+                        LHEScaleWeight[4],
+                        LHEScaleWeight[6],
+                        LHEScaleWeight[7],
+                    };
                 }
 
                 // The nominal LHEScaleWeight is expected to be 1.
@@ -850,10 +886,16 @@ class Shifts
                 // and it is assumed that the nominal weight is already included
                 // in the LHEWeight. rescale, just in case, scale all weights to
                 // the nominal
-                for (auto &scale_weight : LHEScaleWeight)
+                // for (auto &scale_weight : LHEScaleWeight)
+                for (std::size_t i = 0; i < LHEScaleWeight.size(); i++)
                 {
-                    scale_weight /= murf_nominal;
+                    LHEScaleWeight.at(i) /= murf_nominal;
                 }
+
+                // fmt::print("-- QCD Scale Up/Down: {} / {} - All: [{}]\n",
+                //            VecOps::Max(LHEScaleWeight),
+                //            VecOps::Min(LHEScaleWeight),
+                //            fmt::join(LHEScaleWeight, ", "));
 
                 if (shift == Variations::QCDScale_Up)
                 {
