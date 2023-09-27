@@ -133,6 +133,9 @@ def main():
                 directory = matching_directories[idx]
                 job_status[directory] = False
                 if os.path.isfile(f"{directory}/condor.out"):
+                    if check_file_for_string(f"{directory}/condor.out", "NaN found!!"):
+                        print("ERROR: NaN weight was found!")
+                        exit(-1)
                     if check_file_for_string(
                         f"{directory}/condor.out", "YAY!"
                     ) and check_file_for_string(f"{directory}/condor.out", "COPIED!"):
@@ -156,7 +159,7 @@ def main():
             num_running_jobs = len(
                 list(filter(lambda job: job_status[job] == False, job_status))
             )
-            if num_running_jobs <= 20:
+            if num_running_jobs <= 200:
                 print("Running jobs:")
                 for job in job_status:
                     if job_status[job] == False:

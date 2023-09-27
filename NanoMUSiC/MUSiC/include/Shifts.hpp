@@ -1,7 +1,9 @@
 #ifndef SHIFTS_HPP
 #define SHIFTS_HPP
 
+#include <cmath>
 #include <cstdio>
+#include <cstdlib>
 #include <limits>
 #include <stdexcept>
 #include <string>
@@ -306,9 +308,7 @@ class Shifts
     {
         if (diff_shift == Variations::Nominal)
         {
-            auto _m_constant_shifts = m_constant_shifts;
-            //_m_constant_shifts.push_back(Variations::Nominal);
-            return _m_constant_shifts;
+            return m_constant_shifts;
         }
         return {Variations::Nominal};
     }
@@ -327,11 +327,12 @@ class Shifts
     {
         if (diff_shift != Variations::Nominal and const_shift != Variations::Nominal)
         {
-            throw std::runtime_error(
-                fmt::format("ERROR: Could not resolve shift. Differential ({}) "
-                            "and Constant ({}) can not be both variations.",
-                            diff_shift,
-                            const_shift));
+            fmt::print(stderr,
+                       "ERROR: Could not resolve shift. Differential ({}) "
+                       "and Constant ({}) can not be both variations.",
+                       diff_shift,
+                       const_shift);
+            std::exit(EXIT_FAILURE);
         }
 
         if (diff_shift == Variations::Nominal)
@@ -561,7 +562,7 @@ class Shifts
                                "ERROR: There are PDF weights written in the "
                                "file, but the REGEX parser failed to get "
                                "a proper LHA ID.");
-                    std::exit(-1);
+                    std::exit(EXIT_FAILURE);
                 }
 
                 // The nominal LHEPdfWeight (first element) is expected to be 1
@@ -625,7 +626,7 @@ class Shifts
                                "NanoAOD/python/genWeightsTable_cfi.py#L20) if should be "
                                "eighther 101 or 103.\n",
                                LHEPdfWeight.size());
-                    std::exit(-1);
+                    std::exit(EXIT_FAILURE);
                 }
 
                 // calculate shifts
@@ -634,10 +635,14 @@ class Shifts
                 if (contains(default_pdf.at(0)->set().errorType(), "hessian"))
                 {
                     auto sum_shifts_squared = 0.;
+                    // fmt::print("[{}]\n", ROOT::VecOps::Sum(LHEPdfWeight));
                     for (std::size_t i = 1; i < LHEPdfWeight.size(); i++)
                     {
-                        // sum_shifts_squared += std::pow(LHEPdfWeight[i] - LHEWeight_originalXWGTUP, 2.);
-                        sum_shifts_squared += std::pow(LHEPdfWeight[i] - 1., 2.);
+                        if (not(std::isnan(LHEPdfWeight[i])))
+                        {
+                            // sum_shifts_squared += std::pow(LHEPdfWeight[i] - LHEWeight_originalXWGTUP, 2.);
+                            sum_shifts_squared += std::pow(LHEPdfWeight[i] - 1., 2.);
+                        }
                     }
                     pdf_shift = std::sqrt(sum_shifts_squared) / LHEWeight_originalXWGTUP;
                 }
@@ -659,13 +664,22 @@ class Shifts
                                "ERROR: Could not get PDF error type. "
                                "Unexpected error type ({}).\n",
                                default_pdf.at(0)->set().errorType());
-                    std::exit(-1);
+                    std::exit(EXIT_FAILURE);
                 }
 
-                // fmt::print("-- PDF Weight (From NanoAOD): {} - {} => {} \n",
-                //            pdf_shift,
-                //            alpha_s_shift,
-                //            1. + std::sqrt(std::pow(pdf_shift, 2.) + std::pow(alpha_s_shift, 2.)));
+                if (std::isnan(pdf_shift) or std::isnan(alpha_s_shift) or std::isinf(pdf_shift) or
+                    std::isinf(alpha_s_shift))
+                {
+                    // fmt::print("[{}]\n", fmt::join(LHEPdfWeight, ", "));
+                    // fmt::print("-- PDF Weight (From NanoAOD): {} - {} => {} \n",
+                    //            pdf_shift,
+                    //            alpha_s_shift,
+                    //            1. + std::sqrt(std::pow(pdf_shift, 2.) + std::pow(alpha_s_shift, 2.)));
+                    // fmt::print("NaN found!!!!! (PDF)\n");
+
+                    pdf_shift = 0.;
+                    alpha_s_shift = 0.;
+                }
 
                 if (shift == Variations::PDF_As_Up)
                 {
@@ -678,6 +692,7 @@ class Shifts
                 }
             }
 
+            // If LHE PDF Weights are not available ....
             // Assuming: NNPDF31_nnlo_as_0118_hessian - 304400 (Hessian)
             float alpha_s_up = 1.;
             float alpha_s_down = 1.;
@@ -815,8 +830,6 @@ class Shifts
         return 1.;
     }
 
-    ///////////////////////////////////////////////////////////////
-    // IMPORTANT: LHEScaleWeight is passed by value on purpose!
     ///////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////
     /// Set the QCD Scaling weights, using the envelope method. If the sample has

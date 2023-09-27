@@ -349,9 +349,19 @@ inline auto MakeDataGraph(const H &data_histo,
 }
 
 template <typename H>
-inline auto GetMinMax(const H &histogram) -> std::pair<std::pair<int, double>, std::pair<int, double>>
+inline auto GetMinMax(const H &histogram_data, const H &histogram_mc)
+    -> std::pair<std::pair<int, double>, std::pair<int, double>>
 {
+    auto histogram = histogram_data;
     auto counts = Counts(histogram);
+
+    // check for empty histogram
+    if (ROOT::VecOps::Sum(counts) == 0)
+    {
+        histogram = histogram_mc;
+        counts = Counts(histogram);
+    }
+
     int first_nonzero_idx = 0;
     int last_nonzero_idx = std::numeric_limits<int>::max();
 
@@ -459,10 +469,12 @@ inline auto MakeErrorBand(const H &h, const RVec<double> &uncertanties, bool sca
 {
     if (static_cast<std::size_t>(h->GetNbinsX()) != uncertanties.size())
     {
-        fmt::print(
-            stderr,
-            "ERROR: Could not create error band. The length of the uncertanties vector is not same as the number of "
-            "bins.");
+        fmt::print(stderr,
+                   "ERROR: Could not create error band. The length of the uncertanties vector ({}) is not same as the "
+                   "number of "
+                   "bins ({}).\n",
+                   uncertanties.size(),
+                   h->GetNbinsX());
         std::exit(EXIT_FAILURE);
     }
 

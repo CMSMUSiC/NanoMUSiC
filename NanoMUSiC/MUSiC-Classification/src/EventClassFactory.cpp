@@ -14,8 +14,8 @@
 auto EventClass::make_bin_limits(const std::map<std::string, int> &countMap)
     -> std::pair<std::vector<double>, std::vector<double>>
 {
-    return std::make_pair(BinLimits::get_bin_limits("ec_plot", countMap, min_energy, max_energy, min_bin_width, 1),
-                          BinLimits::get_bin_limits("ec_plot_met", countMap, min_energy, max_energy, min_bin_width, 1));
+    return std::make_pair(BinLimits::get_bin_limits("DUMMY", countMap, min_energy, max_energy, min_bin_width, 1),
+                          BinLimits::get_bin_limits("MET", countMap, min_energy, max_energy, min_bin_width, 1));
 }
 
 EventClass::EventClass(const std::string &_class_name,
@@ -36,7 +36,7 @@ EventClass::EventClass(const std::string &_class_name,
 
     // std::vector<double> limits =
     //     BinLimits::get_bin_limits("ec_plot", countMap, min_energy, max_energy, min_bin_width, 1);
-    // std::vector<double> limits_met =
+    // // std::vector<double> limits_met =
     //     BinLimits::get_bin_limits("ec_plot_met", countMap, min_energy, max_energy, min_bin_width, 1);
 
     std::string histo_name = "";
@@ -89,47 +89,6 @@ auto EventClass::update_name(const std::string &_class_name,
                              const std::string &_process_group,
                              const std::string &_xs_order) -> void
 {
-
-    // h_counts.SetName(NanoEventHisto::make_histogram_full_name(_class_name,                        //
-    //                                                           _process_group,                     //
-    //                                                           _xs_order,                          //
-    //                                                           _sample,                            //
-    //                                                           _year,                              //
-    //                                                           Shifts::variation_to_string(shift), //
-    //                                                           "h_counts")
-    //                      .c_str());
-    // h_counts.Sumw2();
-
-    // h_invariant_mass.SetName(NanoEventHisto::make_histogram_full_name(_class_name,                        //
-    //                                                                   _process_group,                     //
-    //                                                                   _xs_order,                          //
-    //                                                                   _sample,                            //
-    //                                                                   _year,                              //
-    //                                                                   Shifts::variation_to_string(shift), //
-    //                                                                   "h_invariant_mass")
-    //                              .c_str());
-    // h_invariant_mass.Sumw2();
-
-    // h_sum_pt.SetName(NanoEventHisto::make_histogram_full_name(_class_name,                        //
-    //                                                           _process_group,                     //
-    //                                                           _xs_order,                          //
-    //                                                           _sample,                            //
-    //                                                           _year,                              //
-    //                                                           Shifts::variation_to_string(shift), //
-    //                                                           "h_sum_pt")
-    //                      .c_str());
-    // h_sum_pt.Sumw2();
-
-    // h_met.SetName(NanoEventHisto::make_histogram_full_name(_class_name,                        //
-    //                                                        _process_group,                     //
-    //                                                        _xs_order,                          //
-    //                                                        _sample,                            //
-    //                                                        _year,                              //
-    //                                                        Shifts::variation_to_string(shift), //
-    //                                                        "h_met")
-    //                   .c_str());
-    // h_met.Sumw2();
-
     h_counts.SetName("");
     h_counts.Sumw2();
 
@@ -143,14 +102,16 @@ auto EventClass::update_name(const std::string &_class_name,
     h_met.Sumw2();
 }
 
-auto EventClass::fill(std::pair<std::size_t, const MUSiCObjects &> this_muons,
-                      std::pair<std::size_t, const MUSiCObjects &> this_electrons,
-                      std::pair<std::size_t, const MUSiCObjects &> this_taus,
-                      std::pair<std::size_t, const MUSiCObjects &> this_photons,
-                      std::pair<std::size_t, const MUSiCObjects &> this_bjets,
-                      std::pair<std::size_t, const MUSiCObjects &> this_jets,
-                      std::pair<std::size_t, const MUSiCObjects &> this_met,
-                      double weight) -> void
+auto EventClass::fill( //
+    std::pair<std::size_t, const MUSiCObjects &> this_muons,
+    std::pair<std::size_t, const MUSiCObjects &> this_electrons,
+    std::pair<std::size_t, const MUSiCObjects &> this_taus,
+    std::pair<std::size_t, const MUSiCObjects &> this_photons,
+    std::pair<std::size_t, const MUSiCObjects &> this_bjets,
+    std::pair<std::size_t, const MUSiCObjects &> this_jets,
+    std::pair<std::size_t, const MUSiCObjects &> this_met,
+    double weight //
+    ) -> void
 {
     auto [n_muons, muons] = this_muons;
     auto [n_electrons, electrons] = this_electrons;

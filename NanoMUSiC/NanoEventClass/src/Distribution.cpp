@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdlib>
+#include <fmt/core.h>
 #include <fnmatch.h>
 #include <iostream>
 #include <limits>
@@ -84,7 +85,14 @@ Distribution::Distribution(const NanoEventClass &ec, const std::string &distribu
     }
 
     // build Data histogram and graph
-    m_total_data_histogram = m_histogram_per_process_group_and_shift.at("Nominal").at("Data");
+    m_total_data_histogram =
+        std::shared_ptr<TH1F>(static_cast<TH1F *>(event_class_histograms->at(0).histogram->Clone()));
+    m_total_data_histogram->Reset();
+    if (m_histogram_per_process_group_and_shift.at("Nominal").find("Data") !=
+        m_histogram_per_process_group_and_shift.at("Nominal").end())
+    {
+        m_total_data_histogram = m_histogram_per_process_group_and_shift.at("Nominal").at("Data");
+    }
 
     // merge MC histograms
     m_total_mc_histogram = ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("Nominal"));
@@ -95,7 +103,7 @@ Distribution::Distribution(const NanoEventClass &ec, const std::string &distribu
     // statistical uncertainties - uncorrelated bewtween processes
     m_statistical_uncert = get_statistical_uncert();
 
-    // systemtic uncertainties
+    // systemtic uncertaintiesMakeErrorBand
     m_systematics_uncert = get_systematics_uncert(unmerged_mc_histograms);
 
     // total uncertainties
@@ -149,10 +157,18 @@ auto Distribution::get_systematics_uncert(
                         }
                         else
                         {
-                            xsec_order_uncert_non_LO_samples.at(pg) += Uncertanties::AbsDiffAndSymmetrize(
+                            auto uncert_qcd_scale = Uncertanties::AbsDiffAndSymmetrize(
                                 unmerged_histos[i],
                                 unmerged_mc_histograms.at("QCDScale_Up").at(pg).at(i),
                                 unmerged_mc_histograms.at("QCDScale_Down").at(pg).at(i));
+                            auto nominal_counts = ROOTHelpers::Counts(unmerged_histos[i]);
+
+                            for (std::size_t i = 0; i < uncert_qcd_scale.size(); i++)
+                            {
+                                uncert_qcd_scale[i] = std::min(uncert_qcd_scale[i], std::fabs(nominal_counts[i] * 0.3));
+                            }
+
+                            xsec_order_uncert_non_LO_samples.at(pg) += uncert_qcd_scale;
                         }
                     }
                 }
@@ -165,14 +181,18 @@ auto Distribution::get_systematics_uncert(
     {
         xsec_uncert += ROOT::VecOps::pow(xsec_order_uncert_LO_samples.at(pg), 2.) +
                        ROOT::VecOps::pow(xsec_order_uncert_non_LO_samples.at(pg), 2.);
-        fmt::print("=== EC: {} - DIST: {} - PG: {} -- [{}]\n",
-                   m_event_class_name,
-                   m_distribution_name,
-                   pg,
-                   fmt::join(xsec_order_uncert_non_LO_samples.at(pg), ", "));
+        // fmt::print("=== EC: {} - DIST: {} - PG: {} -- [{}]\n",
+        //    m_event_class_name,
+        //    m_distribution_name,
+        //    pg,
+        //    fmt::join(xsec_order_uncert_non_LO_samples.at(pg), ", "));
     }
     xsec_uncert = ROOT::VecOps::sqrt(xsec_uncert);
 
+    // std::cout << "Fakes error: "
+    //           << Uncertanties::AbsDiff(m_total_mc_histogram,
+    //                                    ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("Fakes_Up")))
+    //           << std::endl;
     // std::cout << "PDF+As error: "
     //           << Uncertanties::AbsDiff(m_total_mc_histogram,
     //                                    ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("PDF_As_Up")))
@@ -180,6 +200,33 @@ auto Distribution::get_systematics_uncert(
     // for (auto &&[pg, h] : m_histogram_per_process_group_and_shift.at("PDF_As_Up"))
     // {
     //     fmt::print("PG:{} - [{}]\n", pg, fmt::join(ROOTHelpers::Counts(h), ", "));
+    // }
+    // if (m_distribution_name == "counts")
+    // {
+    //     for (const auto &[shift, histo_per_pg] : unmerged_mc_histograms)
+    //     {
+    //         if (shift == "Nominal")
+    //         {
+    //             for (const auto &[pg, unmerged_histos] : histo_per_pg)
+    //             {
+    //                 if (pg != "Data")
+    //                 {
+    //                     for (std::size_t i = 0; i < unmerged_histos.size(); i++)
+    //                     {
+    //                         fmt::print(
+    //                             "{} \n[{}]\n",
+    //                             unmerged_mc_histograms.at("PDF_As_Up").at(pg).at(i)->GetName(),
+    //                             fmt::join(
+    //                                 Uncertanties::AbsDiff(unmerged_mc_histograms.at("PDF_As_Up").at(pg).at(i),
+    //                                                       unmerged_mc_histograms.at("Nominal").at(pg).at(i)) /
+    //                                     (ROOTHelpers::Counts(unmerged_mc_histograms.at("Nominal").at(pg).at(i)) +
+    //                                     1e-6),
+    //                                 ", "));
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
     // }
 
     auto systematics_uncertainties = {
@@ -204,7 +251,8 @@ auto Distribution::get_systematics_uncert(
 
         // PDF + Alpha_S
         // Uncertanties::AbsDiff(m_total_mc_histogram,
-        //   ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("PDF_As_Up"))),
+        //                       ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("PDF_As_Up"))),
+        ROOTHelpers::Counts(m_total_mc_histogram) * 0.1,
 
         // Prefiring
         Uncertanties::AbsDiffAndSymmetrize(
@@ -213,8 +261,8 @@ auto Distribution::get_systematics_uncert(
             ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("PreFiring_Down"))),
 
         // Scale Factors
-        // Uncertanties::AbsDiff(m_total_mc_histogram,
-        //   ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("ScaleFactor_Up"))),
+        Uncertanties::AbsDiff(m_total_mc_histogram,
+                              ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("ScaleFactor_Up"))),
 
         // Pile up
         Uncertanties::AbsDiffAndSymmetrize(
@@ -287,13 +335,36 @@ auto Distribution::get_systematics_uncert(
 
 auto Distribution::get_pvalue_props() const -> PValueProps
 {
+    //  Sanity check
+    if (m_distribution_name != "counts")
+    {
+        fmt::print(
+            "WARNING: Could not get P-Value props for a histogram that is not \"Counts\". Using the returned values "
+            "will cause undefined behavior.\n");
+        return PValueProps{
+            .total_data = -1., .total_mc = -1., .sigma_total = -1., .sigma_stat = -1., .total_per_process_group = {}};
+    }
+
+    auto total_per_process_group = std::vector<double>();
+    for (const auto &[pg, hist] : m_histogram_per_process_group_and_shift.at("Nominal"))
+    {
+        if (pg != "Data")
+        {
+            total_per_process_group.push_back(hist->GetBinContent(1));
+        }
+    }
     return PValueProps{
-        .total_data = 2, .total_mc = 3., .sigma_total = 1., .sigma_stat = 3, .total_per_process_group = {2, 3, 5, 9}};
+        .total_data = m_total_data_histogram->GetBinContent(1), //
+        .total_mc = m_total_mc_histogram->GetBinContent(1),     //
+        .sigma_total = m_total_uncert.at(0),                    //
+        .sigma_stat = m_statistical_uncert.at(0),               //
+        .total_per_process_group = {}                           //
+    };
 }
 
 auto Distribution::get_plot_props() const -> PlotProps
 {
-    auto min_max = ROOTHelpers::GetMinMax(m_total_data_histogram);
+    auto min_max = ROOTHelpers::GetMinMax(m_total_data_histogram, m_total_mc_histogram);
     auto [_min, _max] = min_max;
     auto [idx_min, min] = _min;
     auto [idx_max, max] = _max;

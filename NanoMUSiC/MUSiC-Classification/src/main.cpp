@@ -308,10 +308,10 @@ auto main(int argc, char *argv[]) -> int
                 break;
             }
 
-            if (global_event_number > 100)
-            {
-                break;
-            }
+            // if (global_event_number > 100)
+            // {
+            //     break;
+            // }
 
             // check for chain readout quaility
             // REFERENCE: https://root.cern.ch/doc/v608/classTTreeReader.html#a568e43c7d7d8b1f511bbbeb92c9094a8
@@ -530,14 +530,15 @@ auto main(int argc, char *argv[]) -> int
                                                     auto [event_class_name_exclusive,
                                                           event_class_name_inclusive,
                                                           event_class_name_jetinclusive] =
-                                                        make_event_class_name({idx_muon, muons.size()},
-                                                                              {idx_electron, electrons.size()},
-                                                                              {idx_tau, taus.size()},
-                                                                              {idx_photon, photons.size()},
-                                                                              {idx_jet, jets.size()},
-                                                                              {idx_bjet, bjets.size()},
-                                                                              {idx_met, met.size()},
-                                                                              trigger_matches);
+                                                        make_event_class_name({idx_muon, muons.size()},         //
+                                                                              {idx_electron, electrons.size()}, //
+                                                                              {idx_tau, taus.size()},           //
+                                                                              {idx_photon, photons.size()},     //
+                                                                              {idx_jet, jets.size()},           //
+                                                                              {idx_bjet, bjets.size()},         //
+                                                                              {idx_met, met.size()}             //
+                                                                              //   trigger_matches                   //
+                                                        );
 
                                                     // fmt::print("---- DEBUG: NEW CLASS LOOP\n");
                                                     // fmt::print(
@@ -641,6 +642,12 @@ auto main(int argc, char *argv[]) -> int
                                                                              ) *
                                                                          Shifts::get_qcd_scale_weight(
                                                                              shift, unwrap(LHEScaleWeight));
+                                                            }
+
+                                                            // Check for NaNs
+                                                            if (std::isnan(weight) or std::isinf(weight))
+                                                            {
+                                                                fmt::print("NaN found!!!!!\n");
                                                             }
 
                                                             // fill event classes

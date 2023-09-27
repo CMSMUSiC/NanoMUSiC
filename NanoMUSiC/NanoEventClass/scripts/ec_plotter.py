@@ -10,7 +10,9 @@ from colors import PROCESS_GROUP_STYLES
 from tqdm import tqdm
 from decimal import Decimal
 import os
+import json
 from multiprocessing import Pool
+from pvalue import get_integral_pvalue
 
 # import warnings
 # warnings.simplefilter("ignore", UserWarning)
@@ -136,6 +138,7 @@ def make_plot(args):
         ratio_mc_error,
         output_path,
         year,
+        p_value,
     ) = args
 
     # print("--> ", class_name, distribution_name, x_min, x_max, y_min, y_max)
@@ -193,10 +196,14 @@ def make_plot(args):
     )
 
     # print class name
+    event_class_str = f"Event class: {to_root_latex(class_name)}"
+    if p_value and distribution_name == "counts":
+        if p_value > 0:
+            event_class_str += f" (p = {p_value:.2g})"
     ax1.text(
         0.19,
         0.9,
-        f"Event class: {to_root_latex(class_name)}",
+        event_class_str,
         size=26,
         align=13,
     )
@@ -229,6 +236,7 @@ def make_plot(args):
 
     # print("##### Plotting data graph")
     ax1.plot(data_graph, "P0")
+
     ax1.set_xlim(x_min, x_max)
 
     # Use same x-range in lower axes as upper axes
@@ -240,6 +248,7 @@ def make_plot(args):
     ax2.plot(line)
 
     ax2.plot(ratio_mc_error, "2", fillcolor=12, fillstyle=3254, linewidth=0)
+
     ax2.plot(ratio_graph, "P0")
 
     if distribution_name != "counts":
@@ -320,57 +329,92 @@ def main():
             input_files,
             # ["EC_2Muon*", "EC_2Electron*"],
             [
-                "EC_2Muon_1MET",
-                # "EC_2Muon*",
+                "*",
+                # # "EC_2Muon*",
+                # "EC_1Electron+NJet",
+                # "EC_2Muon_1MET",
+                # "EC_2Muon_2Tau_1MET",
                 # "EC_2Muon_1Photon_1bJet_1MET+X",
-                # "*",
                 # "EC_2Muon_1Electron_3bJet+X",
-                "EC_2Muon+X",
-                "EC_4Muon",
-                "EC_4Electron",
-                "EC_2Muon_2Electron",
+                # "EC_2Muon+X",
+                # "EC_4Muon",
+                # "EC_4Electron",
+                # "EC_2Muon_2Electron",
                 # "EC_1Muon_1Electron+1MET",
-                "EC_1Muon_2Jet",
-                "EC_1Muon_2bJet",
-                "EC_1Muon_1Jet",
-                "EC_1Electron_2Jet",
+                # "EC_1Muon_2Jet",
+                # "EC_1Muon+X",
+                # "EC_1Electron+X",
+                # "EC_1Photon+X",
+                # "EC_1Muon_2bJet",
+                # "EC_1Muon_1Jet",
+                # "EC_1Electron_2Jet",
                 # "EC_2Muon+NJet",
                 # "EC_1Electron_2Tau_1Jet_2bJet_1MET",
                 # "EC_2Muon_2Tau_1MET",
-                # "EC_2Muon_1Electron_1Tau_2Jet_1MET+X"
+                # "EC_2Muon_1Electron_1Tau_2Jet_1MET+X",
             ],
         )
 
         print("Building distributions ...")
-        # plot_props = []
-        for dist in tqdm(ROOT.distribution_factory(ec_collection, False)):
+        plot_props = []
+        plots_data = {}
+        distributions = ROOT.distribution_factory(ec_collection, True)
+        for dist in tqdm(distributions):
             plot = dist.get_plot_props()
-            # plot_props.append(
-            #     [
-            #         plot.class_name,
-            #         plot.distribution_name,
-            #         plot.x_min,
-            #         plot.x_max,
-            #         plot.y_min,
-            #         plot.y_max,
-            #         plot.total_data_histogram.GetBinContent(1),
-            #         plot.data_graph,
-            #         plot.mc_histograms,
-            #         plot.mc_uncertainty,
-            #         plot.ratio_graph,
-            #         plot.ratio_mc_error_band,
-            #         "/disk1/silva/classification_plots",
-            #         year,
-            #     ]
-            # )
+            if dist.m_distribution_name == "counts":
+                p_value_props = dist.get_pvalue_props()
+                p_value_data = get_integral_pvalue(
+                    p_value_props.total_data,
+                    p_value_props.total_mc,
+                    p_value_props.sigma_total,
+                    p_value_props.sigma_stat,
+                    p_value_props.total_per_process_group,
+                )
+                # print(p_value_data)
+                p_value = p_value_data["p-value"]
+                veto_reason = p_value_data["Veto Reason"]
 
-            # prepare output area
-            ec_nice_name = plot.class_name.replace("+", "_")
-            if not os.path.exists(f"/disk1/silva/classification_plots/{ec_nice_name}"):
-                os.makedirs(f"/disk1/silva/classification_plots/{ec_nice_name}")
+                # json for counts plot
+                plots_data[plot.class_name] = {}
+                plots_data[plot.class_name][
+                    "data_count"
+                ] = plot.total_data_histogram.GetBinContent(1)
+                plots_data[plot.class_name][
+                    "data_uncert"
+                ] = plot.total_data_histogram.GetBinError(1)
+                plots_data[plot.class_name]["mc"] = {}
+                mc_hists = {}
+                for pg, hist in plot.mc_histograms:
+                    mc_hists[pg] = hist
+                mc_hists_keys_sorted = sorted(
+                    filter(lambda pg: pg != "Data", mc_hists),
+                    key=lambda pg: mc_hists[pg].Integral(),
+                )
+                for pg in mc_hists_keys_sorted:
+                    plots_data[plot.class_name]["mc"][pg] = mc_hists[pg].GetBinContent(
+                        1
+                    )
+                plots_data[plot.class_name][
+                    "mc_uncert"
+                ] = plot.mc_uncertainty.GetErrorY(0)
+                plots_data[plot.class_name]["p_value"] = p_value
+                plots_data[plot.class_name]["veto_reason"] = veto_reason
 
-            make_plot(
-                (
+        if not os.path.exists(f"/disk1/silva/classification_plots/"):
+            os.makedirs(f"/disk1/silva/classification_plots/")
+        with open(
+            f"classification_plots/plot_data_{years_glob[year]['name'].replace('+', '_')}.json",
+            "w",
+            encoding="utf-8",
+        ) as f:
+            json.dump(plots_data, f, ensure_ascii=False, indent=4)
+
+        distributions = ROOT.distribution_factory(ec_collection, False)
+        for dist in tqdm(distributions):
+            plot = dist.get_plot_props()
+            # if plot.total_data_histogram.Integral() > 0:
+            plot_props.append(
+                [
                     plot.class_name,
                     plot.distribution_name,
                     plot.x_min,
@@ -385,22 +429,47 @@ def main():
                     plot.ratio_mc_error_band,
                     "/disk1/silva/classification_plots",
                     year,
-                )
+                    plots_data[plot.class_name]["p_value"],
+                ]
             )
+
+            # prepare output area
+            ec_nice_name = plot.class_name.replace("+", "_")
+            if not os.path.exists(f"/disk1/silva/classification_plots/{ec_nice_name}"):
+                os.makedirs(f"/disk1/silva/classification_plots/{ec_nice_name}")
+
+            # make_plot(
+            #     (
+            #         plot.class_name,
+            #         plot.distribution_name,
+            #         plot.x_min,
+            #         plot.x_max,
+            #         plot.y_min,
+            #         plot.y_max,
+            #         plot.total_data_histogram.GetBinContent(1),
+            #         plot.data_graph,
+            #         plot.mc_histograms,
+            #         plot.mc_uncertainty,
+            #         plot.ratio_graph,
+            #         plot.ratio_mc_error_band,
+            #         "/disk1/silva/classification_plots",
+            #         year,
+            #     )
+            # )
 
         print()
 
-        # print("Saving plots ...")
-        # with Pool(min(len(plot_props), 20)) as p:
-        #     list(
-        #         tqdm(
-        #             p.imap_unordered(
-        #                 func=make_plot,
-        #                 iterable=plot_props,
-        #             ),
-        #             total=len(plot_props),
-        #         )
-        #     )
+        print("Saving plots ...")
+        with Pool(min(len(plot_props), 50)) as p:
+            list(
+                tqdm(
+                    p.imap_unordered(
+                        func=make_plot,
+                        iterable=plot_props,
+                    ),
+                    total=len(plot_props),
+                )
+            )
 
     print("Copying index.php ...")
     os.system(

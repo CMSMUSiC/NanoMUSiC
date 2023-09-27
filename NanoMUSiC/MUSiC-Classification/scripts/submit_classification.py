@@ -22,7 +22,8 @@ from multiprocessing import Pool
 import time
 
 
-years = ["2016APV", "2016", "2017", "2018"]
+# years = ["2016APV", "2016", "2017", "2018"]
+years = ["2017", "2018"]
 classification_buffer_name = "classification_buffer"
 classification_histograms_name = "classification_histograms"
 
@@ -158,22 +159,22 @@ def get_spliting(files, sample, sample_config):
                 return max(50, int(sample_size / 100))
 
             if sample.startswith("TT"):
-                return max(10, int(sample_size / 100))
+                return max(40, int(sample_size / 100))
 
             if sample.startswith("ttH"):
-                return max(10, int(sample_size / 100))
+                return max(40, int(sample_size / 100))
 
             if sample.startswith("ZZZ"):
-                return max(10, int(sample_size / 100))
+                return max(40, int(sample_size / 100))
 
             if sample.startswith("WZZ"):
-                return max(10, int(sample_size / 100))
+                return max(40, int(sample_size / 100))
 
             if sample.startswith("WWZ"):
-                return max(10, int(sample_size / 100))
+                return max(40, int(sample_size / 100))
 
             if sample.startswith("tZq"):
-                return max(10, int(sample_size / 100))
+                return max(40, int(sample_size / 100))
 
             return max(default_splitting_mc, int(sample_size / 100))
 
@@ -578,20 +579,16 @@ def main():
                                             username=args.username,
                                             debug=args.debug,
                                         ),
-                                        list(
-                                            enumerate(
-                                                get_spliting(
-                                                    files_to_process(
-                                                        year,
-                                                        task_config[sample][
-                                                            "output_files"
-                                                        ],
-                                                    ),
-                                                    sample,
-                                                    task_config[sample],
-                                                )
+                                        enumerate(
+                                            get_spliting(
+                                                files_to_process(
+                                                    year,
+                                                    task_config[sample]["output_files"],
+                                                ),
+                                                sample,
+                                                task_config[sample],
                                             )
-                                        )[0:3],
+                                        ),
                                     ),
                                 ),
                             )

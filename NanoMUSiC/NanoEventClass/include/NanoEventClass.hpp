@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <set>
 #include <unordered_map>
 
 #include "fmt/format.h"
@@ -89,7 +90,8 @@ class NanoEventClassCollection
 {
   public:
     std::unordered_map<std::string, NanoEventClass> m_classes = {};
-    // std::vector<TFile *> m_root_files = {};
+
+    auto ClassesWithData(const std::vector<std::string> &root_file_paths) -> std::set<std::string>;
 
     NanoEventClassCollection(const std::vector<std::string> &root_file_paths,
                              const std::vector<std::string> &class_patterns);

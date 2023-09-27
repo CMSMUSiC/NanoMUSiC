@@ -11,8 +11,7 @@ auto distribution_factory(NanoEventClassCollection &ec_collection, bool counts_o
 {
     auto pool = BS::thread_pool(100);
 
-    // std::vector<std::string> all_distributions = {"counts", "sum_pt", "invariant_mass", "met"};
-    std::vector<std::string> all_distributions = {"counts"};
+    std::vector<std::string> all_distributions = {"counts", "sum_pt", "invariant_mass", "met"};
     if (counts_only)
     {
         all_distributions = {"counts"};

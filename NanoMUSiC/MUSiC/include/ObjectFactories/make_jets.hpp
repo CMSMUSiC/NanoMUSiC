@@ -156,7 +156,6 @@ inline auto make_jets(const RVec<float> &Jet_pt,            //
                 jets_scale_factor_shift.push_back(0.);
 
                 jets_p4.push_back(jet_p4);
-
                 jets_is_fake.push_back(is_data ? false : Jet_genJetIdx[i] < 0);
             }
 

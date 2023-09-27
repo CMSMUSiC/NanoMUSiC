@@ -84,7 +84,7 @@ auto make_event_class_name(
     std::pair<std::size_t, std::size_t> jet_counts,
     std::pair<std::size_t, std::size_t> bjet_counts,
     std::pair<std::size_t, std::size_t> met_counts,
-    const std::optional<std::unordered_map<std::string, std::optional<TriggerMatch>>> &trigger_matches)
+    const std::optional<std::unordered_map<std::string, std::optional<TriggerMatch>>> &trigger_matches = std::nullopt)
     -> std::tuple<std::optional<std::string>, std::optional<std::string>, std::optional<std::string>>;
 
 inline auto get_pt(const Math::PtEtaPhiMVector &obj) -> float

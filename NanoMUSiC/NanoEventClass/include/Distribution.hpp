@@ -56,8 +56,6 @@ class Distribution
     bool m_scale_to_area;
     std::string m_distribution_name;
     std::string m_event_class_name;
-    // std::unordered_map<std::string, std::unordered_map<std::string, std::vector<std::shared_ptr<TH1F>>>>
-    //     m_unmerged_mc_histograms;
     RVec<double> m_statistical_uncert;
     RVec<double> m_systematics_uncert;
     RVec<double> m_total_uncert;
