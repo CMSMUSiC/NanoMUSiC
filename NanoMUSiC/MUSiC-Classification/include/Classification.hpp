@@ -4,7 +4,9 @@
 // analysis classes
 #include "Validation.hpp"
 
+#include <cmath>
 #include <cstddef>
+#include <cstdlib>
 #include <functional>
 #include <optional>
 #include <stdexcept>
@@ -108,7 +110,13 @@ auto unwrap(std::optional<TTreeReaderValue<T>> &value) -> T
 {
     if (value)
     {
-        return **value;
+        auto _this_value = **value;
+        if (std::isnan(_this_value) or std::isinf(_this_value))
+        {
+            fmt::print("ERROR: NaN or INF value was unwraped.\n");
+            std::exit(EXIT_FAILURE);
+        }
+        return _this_value;
     }
     return T();
 }
@@ -120,7 +128,13 @@ auto unwrap(std::optional<TTreeReaderValue<T>> &value, Q &&default_value = Q()) 
 
     if (value)
     {
-        return **value;
+        auto _this_value = **value;
+        if (std::isnan(_this_value) or std::isinf(_this_value))
+        {
+            fmt::print("ERROR: NaN or INF value was unwraped.\n");
+            std::exit(EXIT_FAILURE);
+        }
+        return _this_value;
     }
     return static_cast<T>(default_value);
 }
@@ -130,7 +144,16 @@ auto unwrap(std::optional<TTreeReaderArray<T>> &array) -> RVec<T>
 {
     if (array)
     {
-        return RVec<T>(static_cast<T *>((*array).GetAddress()), (*array).GetSize());
+        auto _this_array = RVec<T>(static_cast<T *>((*array).GetAddress()), (*array).GetSize());
+        for (const auto &_this_value : _this_array)
+        {
+            if (std::isnan(_this_value) or std::isinf(_this_value))
+            {
+                fmt::print("ERROR: NaN or INF array was unwraped.\n");
+                std::exit(EXIT_FAILURE);
+            }
+        }
+        return _this_array;
     }
     return RVec<T>();
 }
@@ -140,7 +163,16 @@ auto unwrap(std::optional<TTreeReaderArray<T>> &array, Q &&default_value, R &&de
 {
     if (array)
     {
-        return RVec<T>(static_cast<T *>((*array).GetAddress()), (*array).GetSize());
+        auto _this_array = RVec<T>(static_cast<T *>((*array).GetAddress()), (*array).GetSize());
+        for (const auto &_this_value : _this_array)
+        {
+            if (std::isnan(_this_value) or std::isinf(_this_value))
+            {
+                fmt::print("ERROR: NaN or INF array was unwraped.\n");
+                std::exit(EXIT_FAILURE);
+            }
+        }
+        return _this_array;
     }
     return RVec<T>(default_size, default_value);
 }

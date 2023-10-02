@@ -34,3 +34,13 @@ pip install --user poxy
 
 # install atlasplot
 pip install --user atlasplots
+
+
+#install parallel with lastest version
+cd $SCRIPT_DIR/bin 
+wget https://git.savannah.gnu.org/cgit/parallel.git/plain/src/parallel 
+mv parallel parallel_music
+chmod +x parallel_music
+
+
+cd $SCRIPT_DIR

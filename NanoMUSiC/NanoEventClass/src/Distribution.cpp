@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <cstdio>
 #include <cstdlib>
 #include <fmt/core.h>
 #include <fnmatch.h>
@@ -170,6 +171,24 @@ auto Distribution::get_systematics_uncert(
 
                             xsec_order_uncert_non_LO_samples.at(pg) += uncert_qcd_scale;
                         }
+
+                        //////////////
+                        //////////////
+                        ///// DEBUG!!!
+                        // if (histo_name == "h_counts")
+                        // {
+                        //     fmt::print(
+                        //         "-- {} - {} - [{}]\n",
+                        //         sample,
+                        //         year,
+                        //         fmt::join(Uncertanties::AbsDiff(unmerged_histos[i],
+                        //                                         unmerged_mc_histograms.at("PDF_As_Up").at(pg).at(i))
+                        //                                         /
+                        //                       ROOTHelpers::Counts(unmerged_histos[i]),
+                        //                   ", "));
+                        // }
+                        //////////////
+                        //////////////
                     }
                 }
             }
@@ -229,6 +248,24 @@ auto Distribution::get_systematics_uncert(
     //     }
     // }
 
+    // will cap the PDF+As uncertainties
+    constexpr auto pdf_as_upper_limit = 0.7;
+    auto capped_pdf_as_uncert = ROOTHelpers::Counts(m_total_mc_histogram) * pdf_as_upper_limit;
+    auto pdf_as_uncert = Uncertanties::AbsDiff(
+        m_total_mc_histogram, ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("PDF_As_Up")));
+
+    // sanity check
+    if (capped_pdf_as_uncert.size() != pdf_as_uncert.size())
+    {
+        fmt::print(stderr, "ERROR: Capped and nominal PDF+As uncertainties have different sizes.\n");
+        std::exit(EXIT_FAILURE);
+    }
+
+    for (std::size_t i = 0; i < capped_pdf_as_uncert.size(); i++)
+    {
+        capped_pdf_as_uncert[i] = std::min(capped_pdf_as_uncert[i], pdf_as_uncert[i]);
+    }
+
     auto systematics_uncertainties = {
         ////////////////////////////////////
         // Integrals
@@ -251,8 +288,9 @@ auto Distribution::get_systematics_uncert(
 
         // PDF + Alpha_S
         // Uncertanties::AbsDiff(m_total_mc_histogram,
-        //                       ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("PDF_As_Up"))),
+        //   ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("PDF_As_Up"))),
         ROOTHelpers::Counts(m_total_mc_histogram) * 0.1,
+        // capped_pdf_as_uncert,
 
         // Prefiring
         Uncertanties::AbsDiffAndSymmetrize(

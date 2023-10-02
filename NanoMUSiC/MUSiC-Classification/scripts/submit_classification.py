@@ -387,6 +387,16 @@ def merge_classification_results(args):
     print(f"[Merger - {process} {year}] Done.")
 
 
+def number_of_unique_keys(root_files, output_file, histogram_multiplicity):
+    unique_histos = set()
+
+    rf = ROOT.TFile.Open(root_files[0])
+    unique_histos.update([k.GetName() for k in rf.GetListOfKeys()])
+    histogram_multiplicity[output_file] = len(unique_histos)
+
+    return len(unique_histos)
+
+
 def main():
     print("\n\n📶 [ MUSiC Classification ] 📶\n")
 
@@ -431,55 +441,36 @@ def main():
                                     ),
                                     sample,
                                     year,
-                                    # f"{args.output}/classification_outputs/{year}/{sample}/{sample}_{year}.root",
                                     f"/disk1/silva/{classification_histograms_name}/{sample}_{year}.root",
                                 )
                             )
-        # largest first
+
+        print("Sorting samples by number of histograms ...")
+        histogram_multiplicity = {}
         harvest_arguments = sorted(
-            harvest_arguments, key=lambda x: len(x[0]), reverse=True
+            harvest_arguments,
+            key=lambda x: number_of_unique_keys(x[0], x[3], histogram_multiplicity),
+            reverse=False,
         )
 
-        # # data first
-        # harvest_arguments = sorted(
-        #     harvest_arguments, key=lambda x: x[1] == "Data", reverse=True
-        # )
-
-        # # TTbar samples first
-        # harvest_arguments = sorted(
-        #     harvest_arguments, key=lambda x: x[1].startswith("TT"), reverse=True
-        # )
-
-        # # then ZZ
-        # harvest_arguments = sorted(
-        #     harvest_arguments, key=lambda x: x[1].startswith("ZZ"), reverse=True
-        # )
-
-        # # them WW
-        # harvest_arguments = sorted(
-        #     harvest_arguments, key=lambda x: x[1].startswith("WW"), reverse=True
-        # )
-
-        # with Pool(min([args.jobs, len(harvest_arguments), 100])) as pool:
-        #     list(
-        #         tqdm(
-        #             pool.imap_unordered(
-        #                 merge_classification_results, harvest_arguments
-        #             ),
-        #             total=len(harvest_arguments),
-        #             unit=" samples",
-        #         )
-        #     )
-
-        with open("harvest_commands.txt", "w") as f:
-            for harv_args in harvest_arguments:
-                f.write(
-                    f"hadd -n 5 -v 0 -T {harv_args[3]} {' '.join(harv_args[0])} && echo [Done] {harv_args[1]} - {harv_args[2]}\n"
-                )
+        print("Building merge jobs...")
+        with open("harvest_commands_par.txt", "w") as f_par:
+            with open("harvest_commands_serial.txt", "w") as f_ser:
+                for harv_args in tqdm(harvest_arguments):
+                    is_serial = histogram_multiplicity[harv_args[3]] > 200000
+                    if is_serial:
+                        f_ser.write(f"merger {harv_args[3]} {' '.join(harv_args[0])}\n")
+                    else:
+                        f_par.write(f"merger {harv_args[3]} {' '.join(harv_args[0])}\n")
 
         print("Running parallel merge jobs ...")
         os.system(
-            "cat harvest_commands.txt | parallel --halt now,fail=1 --progress --jobs 110"
+            "cat harvest_commands_par.txt | parallel_music --halt now,fail=1 --memsuspend 80G --progress --jobs 10"
+        )
+
+        print("Running serial merge jobs ...")
+        os.system(
+            "cat harvest_commands_serial.txt | parallel_music --halt now,fail=1 --memsuspend 100G --progress --jobs 2"
         )
 
         sys.exit(0)
@@ -594,7 +585,9 @@ def main():
                             )
         print()
         print("Waiting for all submitions to complete ...")
-        [print(r[0], r[1].wait()) for r in tqdm(res, unit=" samples")]
+        # [print(r[0], r[1].wait()) for r in tqdm(res, unit=" samples")]
+        for r in tqdm(res, unit=" samples"):
+            r[0], r[1].wait()
 
         print(
             f"Done. Submitted {len(list(itertools.chain(*[r[1].get() for r in res])))} jobs."

@@ -61,8 +61,8 @@ def get_source_files(path, year_pattern):
 years_glob = {
     # "2016*": {"name": "2016", "lumi": "36.3"},  #
     # "2017": {"name": "2017", "lumi": "41.5"},  #
-    # "2018": {"name": "2018", "lumi": "59.8"},  #
-    "[2017,2018]": {"name": "2017+2018", "lumi": "101"},  #
+    "2018": {"name": "2018", "lumi": "59.8"},  #
+    # "[2017,2018]": {"name": "2017+2018", "lumi": "101"},  #
     # "*": {"name": "", "lumi": "138"},
 }
 
@@ -323,7 +323,10 @@ def main():
     ROOT.gStyle.SetLabelSize(25, "XYZ")
 
     for year in years_glob:
-        input_files = get_source_files("/disk1/silva/classification_histograms", year)
+        # input_files = get_source_files("/disk1/silva/classification_histograms", year)
+        input_files = get_source_files(
+            "/disk1/silva/classification_histograms_signal", year
+        )
         print("Creating EC Collection ...")
         ec_collection = ROOT.NanoEventClassCollection(
             input_files,
@@ -460,7 +463,7 @@ def main():
         print()
 
         print("Saving plots ...")
-        with Pool(min(len(plot_props), 50)) as p:
+        with Pool(min(len(plot_props), 10)) as p:
             list(
                 tqdm(
                     p.imap_unordered(

@@ -533,7 +533,9 @@ class Shifts
                                         float Generator_x2,                                                      //
                                         int Generator_id1,                                                       //
                                         int Generator_id2,                                                       //
-                                        float LHEWeight_originalXWGTUP) -> double
+                                        const std::optional<std::unique_ptr<LHAPDF::PDF>> &this_sample_pdf
+                                        // float LHEWeight_originalXWGTUP
+                                        ) -> double
     {
         if (shift == Variations::PDF_As_Up or shift == Variations::PDF_As_Down)
         {
@@ -544,19 +546,27 @@ class Shifts
             auto &alpha_s_down_pdf = std::get<2>(default_pdf_sets);
 
             auto LHEPdfWeight = RVec<float>();
+
+            // some events have weird negative PDF weights
+            bool has_negatives = false;
             for (auto &&weight : _LHEPdfWeight)
             {
-                LHEPdfWeight.push_back(weight);
+                LHEPdfWeight.push_back(std::max(weight, 0.f));
+                if (weight < 0.)
+                {
+                    has_negatives = true;
+                }
             }
 
-            if (LHEPdfWeight.size() > 0)
+            // should fall back to manual PDF+As calculation, for negative weights
+            if (LHEPdfWeight.size() > 0 and not(has_negatives))
             {
-                float alpha_s_up = 1.;
-                float alpha_s_down = 1.;
+                double alpha_s_up = 1.;
+                double alpha_s_down = 1.;
 
                 // set LHA ID
-                auto [lha_id, _] = lha_indexes.value_or(std::pair<unsigned int, unsigned int>());
-                if (lha_id == 0)
+                auto [lha_id_first, lha_id_last] = lha_indexes.value_or(std::pair<unsigned int, unsigned int>());
+                if (lha_id_first == 0)
                 {
                     fmt::print(stderr,
                                "ERROR: There are PDF weights written in the "
@@ -564,11 +574,21 @@ class Shifts
                                "a proper LHA ID.");
                     std::exit(EXIT_FAILURE);
                 }
+                if (not(this_sample_pdf))
+                {
+                    fmt::print(stderr,
+                               "ERROR: Could not find valid PDF Set, even though the the indexes ({} and {}) could be "
+                               "read from the branch title.",
+                               lha_id_first,
+                               lha_id_last);
+                    std::exit(EXIT_FAILURE);
+                }
 
                 // The nominal LHEPdfWeight (first element) is expected to be 1
                 // but also found values  All variations will be normalized to the
                 // nominal LHEPdfWeight.
-                LHEPdfWeight = LHEPdfWeight / LHEPdfWeight[0];
+                auto LHEWeight_originalXWGTUP = LHEPdfWeight[0];
+                LHEPdfWeight = LHEPdfWeight / LHEWeight_originalXWGTUP;
 
                 // has alpha_s weights
                 if (LHEPdfWeight.size() == 103 or LHEPdfWeight.size() == 33)
@@ -587,8 +607,8 @@ class Shifts
                 // don't have alpha_s weights, should get the one from the 5f
                 // LHAPDF set. REF:
                 // https://cms-pdmv.gitbook.io/project/mccontact/info-for-mc-production-for-ultra-legacy-campaigns-2016-2017-2018#recommendations-on-the-usage-of-pdfs-and-cpx-tunes
-                else if (LHEPdfWeight.size() == 101 or LHEPdfWeight.size() == 31)
                 // else if (LHEPdfWeight.size() == 101)
+                else if (LHEPdfWeight.size() == 101 or LHEPdfWeight.size() == 31)
                 {
                     // Those are some possible convertion from for NNPDF31,
                     // without to with alpha_s During the classification, the code
@@ -600,19 +620,23 @@ class Shifts
                     // remove the first weight (always 1.)
                     LHEPdfWeight.erase(LHEPdfWeight.begin());
 
+                    auto alternative_LHEWeight_originalXWGTUP =
+                        default_pdf[0]->xfxQ(Generator_id1, Generator_x1, Generator_scalePDF) *
+                        default_pdf[0]->xfxQ(Generator_id2, Generator_x2, Generator_scalePDF);
+
                     // Compute the Alpha_S weight for this event using
                     // NNPDF31_nnlo_as_0120 (319500) and divide the new weight by
                     // the weight from the PDF the event was produced with.
                     alpha_s_up = alpha_s_up_pdf->xfxQ(Generator_id1, Generator_x1, Generator_scalePDF) *
                                  alpha_s_up_pdf->xfxQ(Generator_id2, Generator_x2, Generator_scalePDF) /
-                                 LHEWeight_originalXWGTUP;
+                                 alternative_LHEWeight_originalXWGTUP;
 
                     // Compute the Alpha_S weight for this event using
                     // NNPDF31_nnlo_as_0116 (319300) and divide the new weight by
                     // the weight from the PDF the event was produced with.
                     alpha_s_down = alpha_s_down_pdf->xfxQ(Generator_id1, Generator_x1, Generator_scalePDF) *
                                    alpha_s_down_pdf->xfxQ(Generator_id2, Generator_x2, Generator_scalePDF) /
-                                   LHEWeight_originalXWGTUP;
+                                   alternative_LHEWeight_originalXWGTUP;
                 }
                 else
                 {
@@ -621,8 +645,6 @@ class Shifts
                                "to CMSSW "
                                "(https://github.dev/cms-sw/cmssw/blob/"
                                "6ef534126e6db3dfdea86c3f0eedb773f0117cbc/PhysicsTools/"
-                               // "NanoAOD/python/genWeightsTable_cfi.py#L20) if should
-                               // be eighther 101, 103, 31 or 33.\n",
                                "NanoAOD/python/genWeightsTable_cfi.py#L20) if should be "
                                "eighther 101 or 103.\n",
                                LHEPdfWeight.size());
@@ -631,22 +653,23 @@ class Shifts
 
                 // calculate shifts
                 auto alpha_s_shift = (alpha_s_up - alpha_s_down) / 2.f;
-                float pdf_shift = std::numeric_limits<float>::max();
-                if (contains(default_pdf.at(0)->set().errorType(), "hessian"))
+                auto pdf_shift = std::numeric_limits<double>::max();
+
+                if (contains((*this_sample_pdf)->set().errorType(), "hessian"))
                 {
                     auto sum_shifts_squared = 0.;
-                    // fmt::print("[{}]\n", ROOT::VecOps::Sum(LHEPdfWeight));
                     for (std::size_t i = 1; i < LHEPdfWeight.size(); i++)
                     {
-                        if (not(std::isnan(LHEPdfWeight[i])))
+                        if (not(std::isnan(LHEPdfWeight[i])) and not(std::isinf(LHEPdfWeight[i])))
                         {
                             // sum_shifts_squared += std::pow(LHEPdfWeight[i] - LHEWeight_originalXWGTUP, 2.);
                             sum_shifts_squared += std::pow(LHEPdfWeight[i] - 1., 2.);
                         }
                     }
-                    pdf_shift = std::sqrt(sum_shifts_squared) / LHEWeight_originalXWGTUP;
+                    // pdf_shift = std::sqrt(sum_shifts_squared) / LHEWeight_originalXWGTUP;
+                    pdf_shift = std::sqrt(sum_shifts_squared);
                 }
-                else if (contains(default_pdf.at(0)->set().errorType(), "replica"))
+                else if (contains((*this_sample_pdf)->set().errorType(), "replica"))
                 {
                     if (LHEPdfWeight.size() == 100)
                     {
@@ -670,16 +693,17 @@ class Shifts
                 if (std::isnan(pdf_shift) or std::isnan(alpha_s_shift) or std::isinf(pdf_shift) or
                     std::isinf(alpha_s_shift))
                 {
-                    // fmt::print("[{}]\n", fmt::join(LHEPdfWeight, ", "));
-                    // fmt::print("-- PDF Weight (From NanoAOD): {} - {} => {} \n",
-                    //            pdf_shift,
-                    //            alpha_s_shift,
-                    //            1. + std::sqrt(std::pow(pdf_shift, 2.) + std::pow(alpha_s_shift, 2.)));
                     // fmt::print("NaN found!!!!! (PDF)\n");
 
                     pdf_shift = 0.;
                     alpha_s_shift = 0.;
                 }
+
+                // fmt::print("\n[{}]\n", fmt::join(LHEPdfWeight, ", "));
+                // fmt::print("-- PDF Weight (From NanoAOD): {} - {} => {} \n",
+                //            pdf_shift,
+                //            alpha_s_shift,
+                //            1. + std::sqrt(std::pow(pdf_shift, 2.) + std::pow(alpha_s_shift, 2.)));
 
                 if (shift == Variations::PDF_As_Up)
                 {
@@ -700,8 +724,8 @@ class Shifts
             // Compute the PDF weight for this event using
             // NNPDF31_nnlo_as_0118_hessian (304400) and divide the new weight by
             // the weight from the PDF the event was produced with.
-            LHEWeight_originalXWGTUP = default_pdf[0]->xfxQ(Generator_id1, Generator_x1, Generator_scalePDF) *
-                                       default_pdf[0]->xfxQ(Generator_id2, Generator_x2, Generator_scalePDF);
+            auto LHEWeight_originalXWGTUP = default_pdf[0]->xfxQ(Generator_id1, Generator_x1, Generator_scalePDF) *
+                                            default_pdf[0]->xfxQ(Generator_id2, Generator_x2, Generator_scalePDF);
 
             // skip the first, since it corresponds to the originalXWGTUP
             // (nominal)
@@ -737,6 +761,25 @@ class Shifts
             // auto pdf_shift = (sorted_weights[83] - sorted_weights[15]) / 2.f;
             auto pdf_shift = std::sqrt(sum_shifts_squared) / LHEWeight_originalXWGTUP;
             auto alpha_s_shift = (alpha_s_up - alpha_s_down) / 2.f;
+
+            if (std::isnan(pdf_shift) or std::isnan(alpha_s_shift) or std::isinf(pdf_shift) or
+                std::isinf(alpha_s_shift))
+            {
+                // fmt::print("[{}]\n", fmt::join(LHEPdfWeight, ", "));
+                // fmt::print("-- PDF Weight (From NanoAOD): {} - {} => {} \n",
+                //            pdf_shift,
+                //            alpha_s_shift,
+                //            1. + std::sqrt(std::pow(pdf_shift, 2.) + std::pow(alpha_s_shift, 2.)));
+
+                pdf_shift = 0.;
+                alpha_s_shift = 0.;
+            }
+            // fmt::print("\n-- PDF Weight (From NanoAOD): {} - {} - {} => {} \n",
+            //            has_negatives,
+            //            pdf_shift,
+            //            alpha_s_shift,
+            //            1. + std::sqrt(std::pow(pdf_shift, 2.) + std::pow(alpha_s_shift, 2.)));
+            // fmt::print("[{}]\n", fmt::join(LHEPdfWeight, ", "));
 
             if (shift == Variations::PDF_As_Up)
             {
@@ -920,7 +963,6 @@ class Shifts
                 }
             }
         }
-
         return 1.;
     }
 };

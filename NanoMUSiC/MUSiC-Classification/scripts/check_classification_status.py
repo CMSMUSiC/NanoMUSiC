@@ -72,7 +72,7 @@ def resubmit(job, always_resubmit=False):
     if os.path.isfile(f"{job}/condor.log"):
         os.system(f"head {job}/condor.log")
         print("\n[...]\n")
-        os.system(f"tail -10 {job}/condor.log")
+        os.system(f"tail -20 {job}/condor.log")
     else:
         print("Log file not found.")
 
@@ -82,9 +82,9 @@ def resubmit(job, always_resubmit=False):
     if os.path.isfile(f"{job}/condor.out"):
         os.system(f"head {job}/condor.out")
         print("\n[...]\n")
-        os.system(f"tail -10 {job}/condor.out")
+        os.system(f"tail -20 {job}/condor.out")
     else:
-        print("Out file not found.")
+        print("Output file not found.")
 
     print(
         f"\n\n \033[1m*************************** Error ***************************\033[0m"
@@ -92,7 +92,7 @@ def resubmit(job, always_resubmit=False):
     if os.path.isfile(f"{job}/condor.err"):
         os.system(f"head {job}/condor.err")
         print("\n[...]\n")
-        os.system(f"tail -10 {job}/condor.err")
+        os.system(f"tail -20 {job}/condor.err")
     else:
         print("Error file not found.")
 
@@ -117,38 +117,62 @@ def main():
     args = parse_args()
 
     sleep_time = 5
-    start_time = time.time()
 
     # Call the recursive function to find matching directories
     matching_directories = find_directories_with_prefix(args.buffer_dir, "buffer_")
 
     completed_jobs = []
-    last_done = 0
-    loop_counter = 0
-    initial_done_jobs = 0
     while True:
         job_status = {}
         for idx in tqdm(range(len(matching_directories)), unit=" job"):
+            directory = matching_directories[idx]
             if idx not in completed_jobs:
-                directory = matching_directories[idx]
                 job_status[directory] = False
-                if os.path.isfile(f"{directory}/condor.out"):
-                    if check_file_for_string(f"{directory}/condor.out", "NaN found!!"):
-                        print("ERROR: NaN weight was found!")
-                        exit(-1)
+                if os.path.isfile(f"{directory}/condor.err"):
                     if check_file_for_string(
-                        f"{directory}/condor.out", "YAY!"
-                    ) and check_file_for_string(f"{directory}/condor.out", "COPIED!"):
+                        f"{directory}/condor.err", "ERROR: NaN or INF weight found"
+                    ):
+                        print(
+                            f"ERROR: NaN or INF weight was found at file {directory}/condor.err!"
+                        )
+                        exit(-1)
+                if os.path.isfile(f"{directory}/condor.out"):
+                    if check_file_for_string(
+                        f"{directory}/condor.out", "ERROR: NaN or INF weight found"
+                    ):
+                        print(
+                            f"ERROR: NaN or INF weight was found at file {directory}/condor.out!"
+                        )
+                        exit(-1)
+                    if (
+                        check_file_for_string(f"{directory}/condor.out", "YAY!")
+                        and check_file_for_string(f"{directory}/condor.out", "COPIED!")
+                        and check_file_for_string(
+                            f"{directory}/condor.log", "(return value 0)"
+                        )
+                    ):
                         job_status[directory] = True
                         completed_jobs.append(idx)
+
                 if (
-                    check_file_for_string(f"{directory}/condor.log", "return value")
-                    or check_file_for_string(f"{directory}/condor.log", r"borted")
+                    (
+                        check_file_for_string(f"{directory}/condor.log", "return value")
+                        and (
+                            not check_file_for_string(
+                                f"{directory}/condor.log", "(return value 0)"
+                            )
+                        )
+                    )
+                    or (
+                        os.path.isfile(f"{directory}/condor.err")
+                        and os.stat(f"{directory}/condor.err").st_size != 0
+                    )
+                    or check_file_for_string(f"{directory}/condor.log", "aborted")
                 ) and not job_status[directory]:
                     if not args.no_resubmit:
                         resubmit(directory, args.always_resubmit)
             else:
-                job_status[matching_directories[idx]] = True
+                job_status[directory] = True
 
         print("")
         if all(job_status.values()):
@@ -172,7 +196,6 @@ def main():
             os.system("condor_q | tail -5")
 
         time.sleep(sleep_time)
-        loop_counter += 1
 
 
 if __name__ == "__main__":

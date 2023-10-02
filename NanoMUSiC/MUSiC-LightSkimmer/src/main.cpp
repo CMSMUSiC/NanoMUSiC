@@ -640,9 +640,9 @@ auto main(int argc, char *argv[]) -> int
 
                                 if (configuration.year == Year::Run2016APV or configuration.year == Year::Run2016)
                                 {
-                                    if (pre_skimmed_dataframe.HasColumn("HHLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW"))
+                                    if (pre_skimmed_dataframe.HasColumn("HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW"))
                                     {
-                                        double_electron_triggers.push_back("HHLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW");
+                                        double_electron_triggers.push_back("HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW");
                                     }
                                     if (pre_skimmed_dataframe.HasColumn("HLT_DoubleEle33_CaloIdL_MW"))
                                     {

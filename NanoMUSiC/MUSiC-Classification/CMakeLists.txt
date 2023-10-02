@@ -9,7 +9,6 @@ add_compile_options(-g)
 
 add_compile_options(-I/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/include)
 
-# add_compile_options(-I/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc11-opt/include)
 add_compile_options(${ROOT_CFLAGS} ${CORRECTIONLIB_FLAGS} -fdiagnostics-color=always -MD -MP -O3 -Wall -march=native -pthread -m64 -ffloat-store)
 
 # root linker options
@@ -33,8 +32,6 @@ add_link_options(
     -lstdc++fs
     -L/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/lib
     -L/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/lib64
-
-    # -lboost
 )
 
 add_executable(
@@ -53,7 +50,13 @@ add_executable(
     src/ZToTauTauLepX.cpp //
     src/EventClassFactory.cpp //
 )
-
 target_link_libraries(classification LINK_PUBLIC ROOT::RIO ROOT::Net)
-
 install(TARGETS classification DESTINATION ${CMAKE_SOURCE_DIR}/bin)
+
+add_executable(
+    merger //
+    src/merger.cpp
+)
+set_target_properties(merger PROPERTIES LINKER_LANGUAGE CXX)
+target_link_libraries(merger LINK_PUBLIC ROOT::RIO ROOT::Net)
+install(TARGETS merger DESTINATION ${CMAKE_SOURCE_DIR}/bin)
