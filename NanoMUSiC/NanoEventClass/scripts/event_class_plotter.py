@@ -76,7 +76,8 @@ def get_source_files(path, year):
     return list(
         filter(
             lambda f: ("cutflow" not in f),
-            glob.glob(f"{path}/{year}/*/*.root"),
+            #glob.glob(f"{path}/{year}/*/*.root"),
+            glob.glob(f"{path}/*.root"),
         )
     )
 
@@ -150,6 +151,7 @@ def plot_event_class(ec, histogram_name, year, output_path):
 
     # build the data as a graph
     data_graph = aplt.root_helpers.hist_to_graph(data_hist.histo)
+    
 
     mc_hists = ec.get_mc_histograms_per_process_group(histogram_name)
     mc_hists_keys_sorted = sorted(mc_hists, key=lambda x: mc_hists[x].integral())
@@ -168,10 +170,10 @@ def plot_event_class(ec, histogram_name, year, output_path):
             total_mc_histo = mc_hists[hist].histo.Clone()
         else:
             total_mc_histo.Add(mc_hists[hist].histo.Clone())
-
+    
     # Draw the stacked histogram on the axes
     ax1.plot(bkg_stack)
-
+    
     # Plot the MC stat error as a hatched band
     err_band = aplt.root_helpers.hist_to_graph(
         # bkg_stack.GetStack().Last(), show_bin_width=True
@@ -179,14 +181,14 @@ def plot_event_class(ec, histogram_name, year, output_path):
         show_bin_width=True,
     )
     ax1.plot(err_band, "2", fillcolor=13, fillstyle=3254, linewidth=0)
-
+    
     if histogram_name != "counts":
         ax1.set_ylim(ec.get_y_low(histogram_name) / 50)
     ax1.set_yscale("log")  # uncomment to use log scale for y axis
-
+    
     ax1.plot(data_graph, "P")
     ax1.set_xlim(x_min, x_max)
-
+    
     # Use same x-range in lower axes as upper axes
     ax2.set_xlim(ax1.get_xlim())
     ax2.set_xlim(x_min, x_max)
@@ -194,7 +196,7 @@ def plot_event_class(ec, histogram_name, year, output_path):
     # Draw line at y=1 in ratio panel
     line = ROOT.TLine(ax1.get_xlim()[0], 1, ax1.get_xlim()[1], 1)
     ax2.plot(line)
-
+    
     # Plot the relative error on the ratio axes
     data_rebinned_for_ratio, mc_rebinned_for_ratio = data_hist.histo, total_mc_histo
     if histogram_name != "counts":
@@ -223,7 +225,7 @@ def plot_event_class(ec, histogram_name, year, output_path):
         show_bin_width=True,
     )
     ax2.plot(ratio_graph, "P0")
-
+    
     # Add extra space at top of plot to make room for labels
     ax1.add_margins(top=0.05)
 
@@ -236,7 +238,7 @@ def plot_event_class(ec, histogram_name, year, output_path):
 
     # Go back to top axes to add labels
     ax1.cd()
-
+    
     # Add legend
     if histogram_name == "counts":
         legend = ax1.legend(
@@ -270,7 +272,7 @@ def plot_event_class(ec, histogram_name, year, output_path):
         years_glob[year]["lumi"],
         years_glob[year]["name"],
     )
-
+    
     # Save the plot
     ec_nice_name = ec.name.replace("+", "_")
     os.system(f"mkdir -p {output_path}/{ec_nice_name}")

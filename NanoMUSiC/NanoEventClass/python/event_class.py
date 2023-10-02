@@ -364,7 +364,7 @@ class EventClassCollection:
             root_file = ROOT.TFile.Open(f)
             self.root_files.append(root_file)
             for key in root_file.GetListOfKeys():
-                if key.GetName().startswith("[EC_"):
+                if key.GetName().startswith("[EC_") and "Nominal" in key.GetName():
                     class_name = Histogram.parse_histo_name(key.GetName())[0]
                     does_match = False
                     for p in event_class_pattern:

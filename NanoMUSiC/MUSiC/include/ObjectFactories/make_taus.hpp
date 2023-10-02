@@ -18,23 +18,23 @@ namespace ObjectFactories
 {
 
 inline auto get_tau_energy_corrections(const std::string &shift,
-                                       float dEscaleUp,
-                                       float dEscaleDown,
-                                       float dEsigmaUp,
-                                       float dEsigmaDown,
-                                       double energy) -> double
+                                       const CorrectionlibRef_t &tau_energy_scale,
+                                       float tau_pt,
+                                       float tau_eta,
+                                       int tau_decayMode,
+                                       int tau_genPartFlav) -> double
 {
     if (shift == "Tau_Up")
     {
-        return 1.;
+        return tau_energy_scale->evaluate({tau_pt, tau_eta, tau_decayMode, tau_genPartFlav, "DeepTau2017v2p1", "up"});
     }
 
     if (shift == "Tau_Down")
     {
-        return 1.;
+        return tau_energy_scale->evaluate({tau_pt, tau_eta, tau_decayMode, tau_genPartFlav, "DeepTau2017v2p1", "down"});
     }
 
-    return 1.;
+    return tau_energy_scale->evaluate({tau_pt, tau_eta, tau_decayMode, tau_genPartFlav, "DeepTau2017v2p1", "nom"});
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
