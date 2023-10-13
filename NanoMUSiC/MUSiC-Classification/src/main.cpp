@@ -133,31 +133,6 @@ auto main(int argc, char *argv[]) -> int
     /////////////////////////////////////////////
     /////////////////////////////////////////////
 
-    // build classification factories
-    // map each shift to one analysis
-    // std::unordered_map<std::string, ZToLepLepX> z_to_mu_mu_x;
-    // std::unordered_map<std::string, ZToLepLepX> z_to_mu_mu_x_Z_mass;
-    // std::unordered_map<std::string, ZToLepLepX> z_to_ele_ele_x;
-    // std::unordered_map<std::string, ZToLepLepX> z_to_ele_ele_x_Z_mass;
-    // std::unordered_map<std::string, GammaPlusJet> gamma_plus_jet;
-    // std::unordered_map<std::string, TTBarTo1Lep2Bjet2JetMET> ttbar_to_1mu_2bjet_2jet_MET;
-    // std::unordered_map<std::string, TTBarTo1Lep2Bjet2JetMET> ttbar_to_1ele_2bjet_2jet_MET;
-
-    // Initialize analyses
-    // shifts.for_each(
-    //     [&](const std::string &shift) -> void
-    //     {
-    //         INITIALIZE_ANALYSIS(ZToLepLepX, z_to_mu_mu_x, z_to_mu_mu_x_count_map);
-    //         INITIALIZE_ANALYSIS(ZToLepLepX, z_to_mu_mu_x_Z_mass, z_to_mu_mu_x_count_map);
-    //         INITIALIZE_ANALYSIS(ZToLepLepX, z_to_ele_ele_x, z_to_ele_ele_x_count_map);
-    //         INITIALIZE_ANALYSIS(ZToLepLepX, z_to_ele_ele_x_Z_mass, z_to_ele_ele_x_count_map);
-    //         INITIALIZE_ANALYSIS(GammaPlusJet, gamma_plus_jet, gamma_plus_jet_count_map);
-    //         INITIALIZE_ANALYSIS(
-    //             TTBarTo1Lep2Bjet2JetMET, ttbar_to_1mu_2bjet_2jet_MET, ttbar_to_1mu_2bjet_2jet_met_count_map);
-    //         INITIALIZE_ANALYSIS(
-    //             TTBarTo1Lep2Bjet2JetMET, ttbar_to_1ele_2bjet_2jet_MET, ttbar_to_1ele_2bjet_2jet_met_count_map);
-    //     });
-
     // [EVENT_CLASS_NAME, [SHIFT, EVENT_CLASS] ]
     using ClassCollection_t =
         std::array<std::unique_ptr<EventClass>, static_cast<std::size_t>(Shifts::Variations::kTotalVariations)>;
@@ -296,21 +271,15 @@ auto main(int argc, char *argv[]) -> int
         //  launch event loop for Data or MC
         for (auto &&event : tree_reader)
         {
-            // fmt::print("-- DEBUG: NEW EVENT\n");
-
             if (event < first_event)
             {
                 continue;
             }
-            else
-            {
-                global_event_number++;
-            }
-
-            if (event > last_event)
+            else if (event > last_event)
             {
                 break;
             }
+            global_event_number++;
 
             // if (global_event_number > 100)
             // {
@@ -351,8 +320,6 @@ auto main(int argc, char *argv[]) -> int
             {
                 for (auto &&diff_shift : shifts.get_differential_shifts())
                 {
-                    // fmt::print("---- DEBUG: NEW DIFF SHIFT\n");
-
                     // build objects
                     // muons
                     auto muons = ObjectFactories::make_muons(unwrap(Muon_pt),             //
@@ -504,528 +471,207 @@ auto main(int argc, char *argv[]) -> int
                     // Here goes the real analysis...
                     if (has_trigger_match)
                     {
-                        ////////////////////////////
-                        ////////////////////////////
-                        // DEBUG
-                        auto foo_w = Shifts::get_pdf_alpha_s_weights(Shifts::Variations::PDF_As_Up,
-                                                                     lha_indexes,
-                                                                     default_pdf_sets,           //
-                                                                     unwrap(LHEPdfWeight),       //
-                                                                     unwrap(Generator_scalePDF), //
-                                                                     unwrap(Generator_x1),       //
-                                                                     unwrap(Generator_x2),       //
-                                                                     unwrap(Generator_id1),      //
-                                                                     unwrap(Generator_id2),      //
-                                                                     this_sample_pdf
-                                                                     // unwrap(LHEWeight_originalXWGTUP, 1.f)
-                        );
+                        loop_over_objects(
+                            [&](std::size_t idx_muon,
+                                std::size_t idx_electron,
+                                std::size_t idx_tau,
+                                std::size_t idx_photon,
+                                std::size_t idx_bjet,
+                                std::size_t idx_jet,
+                                std::size_t idx_met) -> void
+                            {
+                                auto [event_class_name_exclusive,
+                                      event_class_name_inclusive,
+                                      event_class_name_jetinclusive] =
+                                    make_event_class_name({idx_muon, muons.size()},         //
+                                                          {idx_electron, electrons.size()}, //
+                                                          {idx_tau, taus.size()},           //
+                                                          {idx_photon, photons.size()},     //
+                                                          {idx_jet, jets.size()},           //
+                                                          {idx_bjet, bjets.size()},         //
+                                                          {idx_met, met.size()}             //
+                                                                                            // ,  trigger_matches //
+                                    );
 
-                        if (foo_w > 10. and diff_shift == Shifts::Variations::Nominal)
-                        {
-                            fmt::print("-- PDF Weight: {}\n", foo_w);
-                            fmt::print("[{}]\n", fmt::join(unwrap(LHEPdfWeight), ", "));
-                        }
-                        ////////////////////////////
-                        ////////////////////////////
-                        // for (std::size_t idx_muon = 0; idx_muon <= muons.size(); idx_muon++)
-                        // {
-                        //     for (std::size_t idx_electron = 0; idx_electron <= electrons.size(); idx_electron++)
-                        //     {
-                        //         for (std::size_t idx_tau = 0; idx_tau <= taus.size(); idx_tau++)
-                        //         {
-                        //             for (std::size_t idx_photon = 0; idx_photon <= photons.size(); idx_photon++)
-                        //             {
-                        //                 for (std::size_t idx_bjet = 0; idx_bjet <= bjets.size(); idx_bjet++)
-                        //                 {
-                        //                     for (std::size_t idx_jet = 0; idx_jet <= jets.size(); idx_jet++)
-                        //                     {
-                        //                         for (std::size_t idx_met = 0; idx_met <= met.size(); idx_met++)
-                        //                         {
-                        //                             auto [event_class_name_exclusive,
-                        //                                   event_class_name_inclusive,
-                        //                                   event_class_name_jetinclusive] =
-                        //                                 make_event_class_name({idx_muon, muons.size()},         //
-                        //                                                       {idx_electron, electrons.size()}, //
-                        //                                                       {idx_tau, taus.size()},           //
-                        //                                                       {idx_photon, photons.size()},     //
-                        //                                                       {idx_jet, jets.size()},           //
-                        //                                                       {idx_bjet, bjets.size()},         //
-                        //                                                       {idx_met, met.size()}             //
-                        //                                                       // ,  trigger_matches //
-                        //                                 );
+                                for (auto &&const_shift : shifts.get_constant_shifts(diff_shift))
+                                {
+                                    if (const_shift == Shifts::Variations::Nominal or
+                                        diff_shift == Shifts::Variations::Nominal)
+                                    {
+                                        auto shift = Shifts::resolve_shifts(const_shift, diff_shift);
 
-                        //                             // fmt::print("---- DEBUG: NEW CLASS LOOP\n");
-                        //                             // fmt::print(
-                        //                             //     "---- DEBUG: CLASS COUNTS {} -  {} -  {} -  {} -  {} -  {}
-                        //                             -
-                        //                             //     "
-                        //                             //     "{} \n",
-                        //                             //     idx_muon,
-                        //                             //     idx_electron,
-                        //                             //     idx_tau,
-                        //                             //     idx_photon,
-                        //                             //     idx_bjet,
-                        //                             //     idx_jet,
-                        //                             //     idx_met);
-                        //                             // fmt::print(" ------ DEBUG ALL CONST SHIFTS: {}\n",
-                        //                             // fmt::join(all_my_shifts, " - " ) );
-                        //                             for (auto &&const_shift : shifts.get_constant_shifts(diff_shift))
-                        //                             {
-                        //                                 // fmt::print("------ DEBUG: NEW CONST SHIFT [{} - {}]\n",
-                        //                                 //            Shifts::variation_to_string(diff_shift),
-                        //                                 //            Shifts::variation_to_string(const_shift));
+                                        // get effective event weight
+                                        double weight = 1.;
 
-                        //                                 if (const_shift == Shifts::Variations::Nominal or
-                        //                                     diff_shift == Shifts::Variations::Nominal)
-                        //                                 {
-                        //                                     auto shift =
-                        //                                         Shifts::resolve_shifts(const_shift, diff_shift);
+                                        if (not(is_data))
+                                        {
+                                            // get trigger SF
+                                            auto trigger_sf = 1.;
 
-                        //                                     // get effective event weight
-                        //                                     double weight = 1.;
+                                            // if
+                                            // (trigger_matches.at("pass_low_pt_muon_trigger"))
+                                            // {
+                                            //     trigger_sf =
+                                            //     low_pt_muon_trigger_sf->evaluate(
+                                            //
+                                            // {ObjectFactories::get_year_for_muon_sf(get_runyear(year)),
+                                            //
+                                            // std::fabs(trigger_matches.at("pass_low_pt_muon_trigger")->get_matched_eta(0)),
+                                            //
+                                            // trigger_matches.at("pass_low_pt_muon_trigger")->get_matched_pt(0),
+                                            //          "sf"});
+                                            // }
+                                            // else if
+                                            // (trigger_matches.at("pass_high_pt_muon_trigger"))
+                                            // {
+                                            //     trigger_sf =
+                                            //     high_pt_muon_trigger_sf->evaluate(
+                                            //
+                                            // {ObectFactories::get_year_for_muon_sf(get_runyear(year)),
+                                            //
+                                            // std::fabs(trigger_matches.at("pass_high_pt_muon_trigger")->get_matched_eta(0)),
+                                            //
+                                            // trigger_matches.at("pass_high_pt_muon_trigger")->get_matched_pt(0),
+                                            //          "sf"});
+                                            // }
 
-                        //                                     if (not(is_data))
-                        //                                     {
-                        //                                         // get trigger SF
-                        //                                         auto trigger_sf = 1.;
+                                            auto pu_weight = pu_corrector->evaluate(
+                                                {unwrap(Pileup_nTrueInt), Shifts::get_pu_variation(shift)});
 
-                        //                                         // if
-                        //                                         // (trigger_matches.at("pass_low_pt_muon_trigger"))
-                        //                                         // {
-                        //                                         //     trigger_sf =
-                        //                                         //     low_pt_muon_trigger_sf->evaluate(
-                        //                                         //
-                        //                                         {ObjectFactories::get_year_for_muon_sf(get_runyear(year)),
-                        //                                         //
-                        //                                         std::fabs(trigger_matches.at("pass_low_pt_muon_trigger")->get_matched_eta(0)),
-                        //                                         //
-                        //                                         trigger_matches.at("pass_low_pt_muon_trigger")->get_matched_pt(0),
-                        //                                         //          "sf"});
-                        //                                         // }
-                        //                                         // else if
-                        //                                         // (trigger_matches.at("pass_high_pt_muon_trigger"))
-                        //                                         // {
-                        //                                         //     trigger_sf =
-                        //                                         //     high_pt_muon_trigger_sf->evaluate(
-                        //                                         //
-                        //                                         {ObjectFactories::get_year_for_muon_sf(get_runyear(year)),
-                        //                                         //
-                        //                                         std::fabs(trigger_matches.at("pass_high_pt_muon_trigger")->get_matched_eta(0)),
-                        //                                         //
-                        //                                         trigger_matches.at("pass_high_pt_muon_trigger")->get_matched_pt(0),
-                        //                                         //          "sf"});
-                        //                                         // }
+                                            auto prefiring_weight = Shifts::get_prefiring_weight(
+                                                //
+                                                unwrap(L1PreFiringWeight_Nom, 1.), //
+                                                unwrap(L1PreFiringWeight_Up, 1.),  //
+                                                unwrap(L1PreFiringWeight_Dn, 1.),
+                                                shift);
 
-                        //                                         auto pu_weight = pu_corrector->evaluate(
-                        //                                             {unwrap(Pileup_nTrueInt),
-                        //                                              Shifts::get_pu_variation(shift)});
+                                            auto pdf_as_weight =
+                                                Shifts::get_pdf_alpha_s_weights(shift,
+                                                                                lha_indexes,
+                                                                                default_pdf_sets,           //
+                                                                                unwrap(LHEPdfWeight),       //
+                                                                                unwrap(Generator_scalePDF), //
+                                                                                unwrap(Generator_x1),       //
+                                                                                unwrap(Generator_x2),       //
+                                                                                unwrap(Generator_id1),      //
+                                                                                unwrap(Generator_id2),      //
+                                                                                this_sample_pdf
+                                                                                // unwrap(LHEWeight_originalXWGTUP, 1.f)
+                                                );
 
-                        //                                         auto prefiring_weight = Shifts::get_prefiring_weight(
-                        //                                         //
-                        //                                             unwrap(L1PreFiringWeight_Nom, 1.), //
-                        //                                             unwrap(L1PreFiringWeight_Up, 1.), //
-                        //                                             unwrap(L1PreFiringWeight_Dn, 1.), // shift);
+                                            weight =
+                                                unwrap(mc_weight, 1.) * pu_weight * prefiring_weight * trigger_sf *
+                                                generator_filter / no_cuts / generator_filter * x_section * luminosity *
+                                                filter_eff * k_factor * pdf_as_weight *
+                                                Shifts::get_reco_scale_factor(shift,
+                                                                              {idx_muon, muons},
+                                                                              {idx_electron, electrons},
+                                                                              {idx_tau, taus},
+                                                                              {idx_photon, photons},
+                                                                              {idx_bjet, bjets},
+                                                                              {idx_jet, jets},
+                                                                              {idx_met, met}) *
+                                                Shifts::get_fakes_variation_weight(shift,
+                                                                                   {idx_muon, muons},
+                                                                                   {idx_electron, electrons},
+                                                                                   {idx_tau, taus},
+                                                                                   {idx_photon, photons},
+                                                                                   {idx_bjet, bjets},
+                                                                                   {idx_jet, jets} //  {idx_met, met}
+                                                                                   ) *
+                                                Shifts::get_qcd_scale_weight(shift, unwrap(LHEScaleWeight));
+                                        }
 
-                        //                                         auto pdf_as_weight = Shifts::get_pdf_alpha_s_weights(
-                        //                                             shift,
-                        //                                             lha_indexes,
-                        //                                             default_pdf_sets,           //
-                        //                                             unwrap(LHEPdfWeight),       //
-                        //                                             unwrap(Generator_scalePDF), //
-                        //                                             unwrap(Generator_x1),       //
-                        //                                             unwrap(Generator_x2),       //
-                        //                                             unwrap(Generator_id1),      //
-                        //                                             unwrap(Generator_id2),      //
-                        //                                             this_sample_pdf
-                        //                                             // unwrap(LHEWeight_originalXWGTUP, 1.f)
-                        //                                         );
+                                        // Check for NaNs
+                                        if (std::isnan(weight) or std::isinf(weight))
+                                        {
+                                            fmt::print(stderr, "##########################\n");
+                                            fmt::print(stderr, "##########################\n");
+                                            fmt::print(stderr, "##########################\n");
+                                            fmt::print(stderr,
+                                                       "ERROR: NaN or INF weight found when "
+                                                       "processing shift: {}!\n",
+                                                       Shifts::variation_to_string(shift));
+                                            fmt::print(stderr, "##########################\n");
+                                            fmt::print(stderr, "##########################\n");
+                                            fmt::print(stderr, "##########################\n");
+                                            std::exit(EXIT_FAILURE);
+                                        }
 
-                        //                                         weight = unwrap(mc_weight, 1.) * pu_weight *
-                        //                                                  prefiring_weight * trigger_sf *
-                        //                                                  generator_filter / no_cuts /
-                        //                                                  generator_filter * x_section * luminosity *
-                        //                                                  filter_eff * k_factor * pdf_as_weight *
-                        //                                                  Shifts::get_reco_scale_factor(
-                        //                                                      shift,
-                        //                                                      {idx_muon, muons},
-                        //                                                      {idx_electron, electrons},
-                        //                                                      {idx_tau, taus},
-                        //                                                      {idx_photon, photons},
-                        //                                                      {idx_bjet, bjets},
-                        //                                                      {idx_jet, jets},
-                        //                                                      {idx_met, met}) *
-                        //                                                  Shifts::get_fakes_variation_weight(
-                        //                                                      shift,
-                        //                                                      {idx_muon, muons},
-                        //                                                      {idx_electron, electrons},
-                        //                                                      {idx_tau, taus},
-                        //                                                      {idx_photon, photons},
-                        //                                                      {idx_bjet, bjets},
-                        //                                                      {idx_jet, jets} //  {idx_met, met}
-                        //                                                      ) *
-                        //                                                  Shifts::get_qcd_scale_weight(
-                        //                                                      shift, unwrap(LHEScaleWeight));
-                        //                                     }
+                                        // fill event classes
+                                        for (auto &&class_name : {event_class_name_exclusive,
+                                                                  event_class_name_inclusive,
+                                                                  event_class_name_jetinclusive})
+                                        {
+                                            // create event class, if does not exists
+                                            if (class_name)
+                                            {
+                                                if (event_classes.find(*class_name) == event_classes.end())
+                                                {
+                                                    event_classes.insert({*class_name, ClassCollection_t()});
+                                                    const auto [edges, edges_met] =
+                                                        EventClass::make_bin_limits({{"Ele", idx_electron},
+                                                                                     {"EleEE", 0},
+                                                                                     {"EleEB", 0},
+                                                                                     {"Muon", idx_muon},
+                                                                                     {"Gamma", 0},
+                                                                                     {"GammaEB", idx_photon},
+                                                                                     {"GammaEE", 0},
+                                                                                     {"Tau", idx_tau},
+                                                                                     {"Jet", idx_jet},
+                                                                                     {"bJet", idx_bjet},
+                                                                                     {"MET", idx_met}});
 
-                        //                                     // Check for NaNs
-                        //                                     if (std::isnan(weight) or std::isinf(weight))
-                        //                                     {
-                        //                                         fmt::print(stderr, "##########################\n");
-                        //                                         fmt::print(stderr, "##########################\n");
-                        //                                         fmt::print(stderr, "##########################\n");
-                        //                                         fmt::print(stderr,
-                        //                                                    "ERROR: NaN or INF weight found when "
-                        //                                                    "processing shift: {}!\n",
-                        //                                                    Shifts::variation_to_string(shift));
-                        //                                         fmt::print(stderr, "##########################\n");
-                        //                                         fmt::print(stderr, "##########################\n");
-                        //                                         fmt::print(stderr, "##########################\n");
-                        //                                         std::exit(EXIT_FAILURE);
-                        //                                     }
+                                                    shifts.for_each(
+                                                        [&](const Shifts::Variations shift) -> void
+                                                        {
+                                                            if (shift == Shifts::Variations::Nominal)
+                                                            {
+                                                                event_classes[*class_name][static_cast<std::size_t>(
+                                                                    shift)] =
+                                                                    std::make_unique<EventClass>(*class_name,
+                                                                                                 edges,
+                                                                                                 edges_met,
+                                                                                                 shift,
+                                                                                                 process,
+                                                                                                 year,
+                                                                                                 process_group,
+                                                                                                 xs_order);
+                                                            }
+                                                            else
+                                                            {
+                                                                event_classes[*class_name][static_cast<std::size_t>(
+                                                                    shift)] =
+                                                                    std::make_unique<EventClass>(
+                                                                        *(event_classes
+                                                                              [*class_name][static_cast<std::size_t>(
+                                                                                  Shifts::Variations::Nominal)]));
+                                                            }
+                                                        });
+                                                }
 
-                        //                                     // fill event classes
-                        //                                     for (auto &&class_name : {event_class_name_exclusive,
-                        //                                                               event_class_name_inclusive,
-                        //                                                               event_class_name_jetinclusive})
-                        //                                     {
-                        //                                         // create event class, if does not exists
-                        //                                         if (class_name)
-                        //                                         {
-                        //                                             if (event_classes.find(*class_name) ==
-                        //                                                 event_classes.end())
-                        //                                             {
-                        //                                                 // fmt::print(
-                        //                                                 //     "----------- DEBUG: WILL INSERT CLASS:
-                        //                                                 {}
-                        //                                                 //     "
-                        //                                                 //     "-- CURRENT SIZE {} "
-                        //                                                 //     "\n",
-                        //                                                 //     *class_name,
-                        //                                                 //     event_classes.size());
-                        //                                                 event_classes.insert(
-                        //                                                     {*class_name, ClassCollection_t()});
-                        //                                                 const auto [edges, edges_met] =
-                        //                                                     EventClass::make_bin_limits(
-                        //                                                         {{"Ele", idx_electron},
-                        //                                                          {"EleEE", 0},
-                        //                                                          {"EleEB", 0},
-                        //                                                          {"Muon", idx_muon},
-                        //                                                          {"Gamma", 0},
-                        //                                                          {"GammaEB", idx_photon},
-                        //                                                          {"GammaEE", 0},
-                        //                                                          {"Tau", idx_tau},
-                        //                                                          {"Jet", idx_jet},
-                        //                                                          {"bJet", idx_bjet},
-                        //                                                          {"MET", idx_met}});
-
-                        //                                                 //  C++17 lambdas can not capture structured
-                        //                                                 //  bindings
-                        //                                                 const auto _edges = edges;
-                        //                                                 const auto _edges_met = edges_met;
-                        //                                                 shifts.for_each(
-                        //                                                     [&](const Shifts::Variations shift) ->
-                        //                                                     void
-                        //                                                     {
-                        //                                                         if (shift ==
-                        //                                                             Shifts::Variations::Nominal)
-                        //                                                         {
-                        //                                                             event_classes
-                        //                                                                 [*class_name]
-                        //                                                                 [static_cast<std::size_t>(
-                        //                                                                     shift)] =
-                        //                                                                     std::make_unique<
-                        //                                                                         EventClass>(
-                        //                                                                         *class_name,
-                        //                                                                         _edges,
-                        //                                                                         _edges_met,
-                        //                                                                         shift,
-                        //                                                                         process,
-                        //                                                                         year,
-                        //                                                                         process_group,
-                        //                                                                         xs_order);
-                        //                                                         }
-                        //                                                         else
-                        //                                                         {
-                        //                                                             event_classes[*class_name][static_cast<
-                        //                                                                 std::size_t>(shift)] =
-                        //                                                                 std::make_unique<EventClass>(*(
-                        //                                                                     event_classes
-                        //                                                                         [*class_name]
-                        //                                                                         [static_cast<
-                        //                                                                             std::size_t>(
-                        //                                                                             Shifts::Variations::
-                        //                                                                                 Nominal)]));
-
-                        //                                                             // event_classes
-                        //                                                             //     [*class_name]
-                        //                                                             //     [static_cast<std::size_t>(
-                        //                                                             //          shift)]
-                        //                                                             // ->update_name(*class_name,
-                        //                                                             //                       shift,
-                        //                                                             //                       process,
-                        //                                                             //                       year,
-                        //                                                             // process_group,
-                        //                                                             // xs_order);
-                        //                                                         }
-                        //                                                     });
-                        //                                             }
-
-                        //                                             // fill class
-                        //                                             event_classes[*class_name]
-                        //                                                          [static_cast<std::size_t>(shift)]
-                        //                                                              ->fill({idx_muon, muons},
-                        //                                                                     {idx_electron,
-                        //                                                                     electrons}, {idx_tau,
-                        //                                                                     taus}, {idx_photon,
-                        //                                                                     photons}, {idx_bjet,
-                        //                                                                     bjets}, {idx_jet, jets},
-                        //                                                                     {idx_met, met},
-                        //                                                                     weight);
-                        //                                         }
-                        //                                     }
-
-                        //                                     // // Validation classes should be filled only once per
-                        //                                     // // event
-                        //                                     // if (event_class_name_exclusive)
-                        //                                     // {
-                        //                                     //     ////////////////////////////
-                        //                                     //     // <BEGIN> Validation Classes
-                        //                                     //     ////////////////////////////
-                        //                                     //     // MuMu + X
-                        //                                     //     unsigned int n_muons = 2;
-                        //                                     //     if (muons.size() >= n_muons and
-                        //                                     // (trigger_matches.at("pass_low_pt_muon_trigger")
-                        //                                     //         or
-                        //                                     // trigger_matches.at("pass_high_pt_muon_trigger")
-                        //                                     //          or
-                        //                                     // trigger_matches.at("pass_double_muon_trigger")))
-                        //                                     //     {
-                        //                                     //         auto muon_1 = muons.p4[0];
-                        //                                     //         auto muon_2 = muons.p4[1];
-
-                        //                                     //         // wide mass range
-                        //                                     //         z_to_mu_mu_x[shift].fill(
-                        //                                     //             muon_1,
-                        //                                     //             muon_2,
-                        //                                     //             bjets.p4,
-                        //                                     //             jets.p4,
-                        //                                     //             met.p4,
-                        //                                     //             weight *
-                        //                                     //                 Shifts::get_reco_scale_factor(shift,
-                        //                                     // {n_muons,
-                        //                                     //                                               muons},
-                        //                                     {0,
-                        //                                     // electrons},
-                        //                                     //                                               {0,
-                        //                                     taus},
-                        //                                     //                                               {0,
-                        //                                     // photons},
-                        //                                     //                                               {0,
-                        //                                     bjets},
-                        //                                     //                                               {0,
-                        //                                     jets},
-                        //                                     //                                               {0,
-                        //                                     met}));
-
-                        //                                     //         // Z mass range
-                        //                                     //         if (PDG::Z::Mass - 20. < (muon_1 +
-                        //                                     muon_2).mass()
-                        //                                     //         and
-                        //                                     //             (muon_1 + muon_2).mass() < PDG::Z::Mass
-                        //                                     //             + 20.)
-                        //                                     //         {
-                        //                                     //             z_to_mu_mu_x_Z_mass[shift].fill(
-                        //                                     //                 muon_1,
-                        //                                     //                 muon_2,
-                        //                                     //                 bjets.p4,
-                        //                                     //                 jets.p4,
-                        //                                     //                 met.p4,
-                        //                                     //                 weight *
-                        //                                     Shifts::get_reco_scale_factor(
-                        //                                     //                              shift,
-                        //                                     //                              {n_muons, muons},
-                        //                                     //                              {0, electrons},
-                        //                                     //                              {0, taus},
-                        //                                     //                              {0, photons},
-                        //                                     //                              {0, bjets},
-                        //                                     //                              {0, jets},
-                        //                                     //                              {0, met}));
-                        //                                     //         }
-                        //                                     //     }
-
-                        //                                     //     // EleEle + X
-                        //                                     //     unsigned int n_electrons = 2;
-                        //                                     //     if (electrons.size() >= n_electrons and
-                        //                                     // (trigger_matches.at("pass_low_pt_electron_trigger")
-                        //                                     //         or
-                        //                                     // trigger_matches.at("pass_high_pt_electron_trigger")
-                        //                                     //          or
-                        //                                     // trigger_matches.at("pass_double_electron_trigger")))
-                        //                                     //     {
-                        //                                     //         // enter_electron_analysis++;
-                        //                                     //         auto electron_1 = electrons.p4[0];
-                        //                                     //         auto electron_2 = electrons.p4[1];
-
-                        //                                     //         // wide mass range
-                        //                                     //         z_to_ele_ele_x[shift].fill(
-                        //                                     //             electron_1,
-                        //                                     //             electron_2,
-                        //                                     //             bjets.p4,
-                        //                                     //             jets.p4,
-                        //                                     //             met.p4,
-                        //                                     //             weight * Shifts::get_reco_scale_factor(
-                        //                                     //                          shift,
-                        //                                     //                          {0, muons},
-                        //                                     //                          {n_electrons, electrons},
-                        //                                     //                          {0, taus},
-                        //                                     //                          {0, photons},
-                        //                                     //                          {0, bjets},
-                        //                                     //                          {0, jets},
-                        //                                     //                          {0, met}));
-
-                        //                                     //         // Z mass range
-                        //                                     //         if (PDG::Z::Mass - 20. <
-                        //                                     //                 (electron_1 + electron_2).mass() and
-                        //                                     //             (electron_1 + electron_2).mass() <
-                        //                                     //                 PDG::Z::Mass + 20.)
-                        //                                     //         {
-                        //                                     //             z_to_ele_ele_x_Z_mass[shift].fill(
-                        //                                     //                 electron_1,
-                        //                                     //                 electron_2,
-                        //                                     //                 bjets.p4,
-                        //                                     //                 jets.p4,
-                        //                                     //                 met.p4,
-                        //                                     //                 weight *
-                        //                                     Shifts::get_reco_scale_factor(
-                        //                                     //                              shift,
-                        //                                     //                              {0, muons},
-                        //                                     //                              {n_electrons, electrons},
-                        //                                     //                              {0, taus},
-                        //                                     //                              {0, photons},
-                        //                                     //                              {0, bjets},
-                        //                                     //                              {0, jets},
-                        //                                     //                              {0, met}));
-                        //                                     //         }
-                        //                                     //     }
-
-                        //                                     //     // Gamma Plus Jets
-                        //                                     //     unsigned int n_lepton =
-                        //                                     //         electrons.size() + muons.size() + taus.size();
-                        //                                     //     if (photons.size() == 1 and jets.size() == 1 and
-                        //                                     //         n_lepton == 0 and met.size() == 0 and
-                        //                                     //         (trigger_matches.at("pass_photon_trigger")))
-                        //                                     //     {
-                        //                                     //         auto gamma = photons.p4[0];
-                        //                                     //         gamma_plus_jet[shift].fill(
-                        //                                     //             gamma,
-                        //                                     //             weight *
-                        //                                     //                 Shifts::get_reco_scale_factor(shift,
-                        //                                     //                                               {0,
-                        //                                     muons},
-                        //                                     //                                               {0,
-                        //                                     // electrons},
-                        //                                     //                                               {0,
-                        //                                     taus},
-                        //                                     //                                               {1,
-                        //                                     // photons},
-                        //                                     //                                               {0,
-                        //                                     bjets},
-                        //                                     //                                               {1,
-                        //                                     jets},
-                        //                                     //                                               {0,
-                        //                                     met}));
-                        //                                     //     }
-
-                        //                                     //     // ttbar -> (mu+nu) + (qq)
-                        //                                     //     if (muons.size() > 0 and jets.size() >= 2 and
-                        //                                     //         bjets.size() >= 2 and
-                        //                                     // (trigger_matches.at("pass_low_pt_muon_trigger")
-                        //                                     //         or
-                        //                                     // trigger_matches.at("pass_high_pt_muon_trigger")))
-                        //                                     //     {
-                        //                                     //         auto muon = muons.p4[0];
-                        //                                     //         auto jet_1 = jets.p4[0];
-                        //                                     //         auto jet_2 = jets.p4[1];
-                        //                                     //         auto bjet_1 = bjets.p4[0];
-                        //                                     //         auto bjet_2 = bjets.p4[1];
-                        //                                     //         auto MET = met.p4[0];
-
-                        //                                     //         ttbar_to_1mu_2bjet_2jet_MET[shift].fill(
-                        //                                     //             muon,
-                        //                                     //             jet_1,
-                        //                                     //             jet_2,
-                        //                                     //             bjet_1,
-                        //                                     //             bjet_2,
-                        //                                     //             MET,
-                        //                                     //             weight *
-                        //                                     //                 Shifts::get_reco_scale_factor(shift,
-                        //                                     //                                               {1,
-                        //                                     muons},
-                        //                                     //                                               {0,
-                        //                                     // electrons},
-                        //                                     //                                               {0,
-                        //                                     taus},
-                        //                                     //                                               {0,
-                        //                                     // photons},
-                        //                                     //                                               {2,
-                        //                                     bjets},
-                        //                                     //                                               {2,
-                        //                                     jets},
-                        //                                     //                                               {1,
-                        //                                     met}));
-                        //                                     //     }
-
-                        //                                     //     // ttbar to ele
-                        //                                     //     if (electrons.size() > 0 and jets.size() >= 2 and
-                        //                                     //         bjets.size() >= 2 and
-                        //                                     // (trigger_matches.at("pass_low_pt_electron_trigger")
-                        //                                     //         or
-                        //                                     // trigger_matches.at("pass_high_pt_electron_trigger")))
-                        //                                     //     {
-                        //                                     //         auto electron = electrons.p4[0];
-                        //                                     //         auto jet_1 = jets.p4[0];
-                        //                                     //         auto jet_2 = jets.p4[1];
-                        //                                     //         auto bjet_1 = bjets.p4[0];
-                        //                                     //         auto bjet_2 = bjets.p4[1];
-                        //                                     //         auto MET = met.p4[0];
-
-                        //                                     //         ttbar_to_1ele_2bjet_2jet_MET[shift].fill(
-                        //                                     //             electron,
-                        //                                     //             jet_1,
-                        //                                     //             jet_2,
-                        //                                     //             bjet_1,
-                        //                                     //             bjet_2,
-                        //                                     //             MET,
-                        //                                     //             weight *
-                        //                                     //                 Shifts::get_reco_scale_factor(shift,
-                        //                                     //                                               {0,
-                        //                                     muons},
-                        //                                     //                                               {1,
-                        //                                     // electrons},
-                        //                                     //                                               {0,
-                        //                                     taus},
-                        //                                     //                                               {0,
-                        //                                     // photons},
-                        //                                     //                                               {2,
-                        //                                     bjets},
-                        //                                     //                                               {2,
-                        //                                     jets},
-                        //                                     //                                               {1,
-                        //                                     met}));
-                        //                                     //     }
-                        //                                     //     ////////////////////////////
-                        //                                     //     // <END> Validation Classes
-                        //                                     //     ////////////////////////////
-                        //                                     // }
-                        //                                 }
-                        //                             }
-                        //                         }
-                        //                     }
-                        //                 }
-                        //             }
-                        //         }
-                        //     }
-                        // }
+                                                // fill class
+                                                event_classes[*class_name][static_cast<std::size_t>(shift)]->fill(
+                                                    {idx_muon, muons},
+                                                    {idx_electron, electrons},
+                                                    {idx_tau, taus},
+                                                    {idx_photon, photons},
+                                                    {idx_bjet, bjets},
+                                                    {idx_jet, jets},
+                                                    {idx_met, met},
+                                                    weight);
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            muons.size(),
+                            electrons.size(),
+                            taus.size(),
+                            photons.size(),
+                            bjets.size(),
+                            jets.size(),
+                            met.size());
                     }
                 }
             }
@@ -1068,15 +714,6 @@ auto main(int argc, char *argv[]) -> int
     shifts.for_each(
         [&](const Shifts::Variations shift) -> void
         {
-            // z_to_mu_mu_x[shift].dump_outputs(ec_output_file);
-            // z_to_mu_mu_x_Z_mass[shift].dump_outputs(ec_output_file);
-            // z_to_ele_ele_x[shift].dump_outputs(ec_output_file);
-            // z_to_ele_ele_x_Z_mass[shift].dump_outputs(ec_output_file);
-            // gamma_plus_jet[shift].dump_outputs(ec_output_file);
-            // ttbar_to_1mu_2bjet_2jet_MET[shift].dump_outputs(ec_output_file);
-            // ttbar_to_1ele_2bjet_2jet_MET[shift].dump_outputs(ec_output_file);
-            // // dijets.dump_outputs(ec_output_file);
-
             for (auto &&[class_name, class_collection] : event_classes)
             {
                 if (is_data)

@@ -528,4 +528,38 @@ inline auto trigger_filter(const std::string &process, //
     return trigger_filter_res;
 };
 
+template <typename F>
+inline auto loop_over_objects(F f,
+                              std::size_t muons_size,
+                              std::size_t electrons_size,
+                              std::size_t taus_size,
+                              std::size_t photons_size,
+                              std::size_t bjets_size,
+                              std::size_t jets_size,
+                              std::size_t met_size) -> void
+{
+    for (std::size_t idx_muon = 0; idx_muon <= muons_size; idx_muon++)
+    {
+        for (std::size_t idx_electron = 0; idx_electron <= electrons_size; idx_electron++)
+        {
+            for (std::size_t idx_tau = 0; idx_tau <= taus_size; idx_tau++)
+            {
+                for (std::size_t idx_photon = 0; idx_photon <= photons_size; idx_photon++)
+                {
+                    for (std::size_t idx_bjet = 0; idx_bjet <= bjets_size; idx_bjet++)
+                    {
+                        for (std::size_t idx_jet = 0; idx_jet <= jets_size; idx_jet++)
+                        {
+                            for (std::size_t idx_met = 0; idx_met <= met_size; idx_met++)
+                            {
+                                f(idx_muon, idx_electron, idx_tau, idx_photon, idx_bjet, idx_jet, idx_met);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 #endif // CLASSIFICATION

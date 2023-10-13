@@ -465,7 +465,7 @@ def main():
 
         print("Running parallel merge jobs ...")
         os.system(
-            "cat harvest_commands_par.txt | parallel_music --halt now,fail=1 --memsuspend 80G --progress --jobs 10"
+        "cat harvest_commands_par.txt | parallel_music --halt now,fail=1 --memsuspend 80G --progress --jobs 10"
         )
 
         print("Running serial merge jobs ...")
