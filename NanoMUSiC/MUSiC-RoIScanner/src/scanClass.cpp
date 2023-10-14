@@ -8,6 +8,9 @@
 
 #include "Profiler.hpp"
 
+// // https://github.com/bshoshany/thread-pool
+// #include "BS_thread_pool.hpp"
+
 // definitions for command line parsing
 namespace po = boost::program_options;
 namespace
@@ -19,20 +22,30 @@ const size_t ERROR_UNHANDLED_EXCEPTION = 2;
 
 } // namespace
 
-int readCommandLineOptions(int argc, char *argv[], std::string &jsonFilePath, std::string &outputDirectory, int &rounds,
-                           int &startRound, std::string &shiftsFilePath, std::string &lutFilePath)
+int readCommandLineOptions(int argc,
+                           char *argv[],
+                           std::string &jsonFilePath,
+                           std::string &outputDirectory,
+                           int &rounds,
+                           int &startRound,
+                           std::string &shiftsFilePath,
+                           std::string &lutFilePath)
 {
     po::options_description allOptions("Generic options");
     allOptions.add_options()("help",
-                             "produce help message")("json,j", po::value<std::string>(&jsonFilePath)->required(),
+                             "produce help message")("json,j",
+                                                     po::value<std::string>(&jsonFilePath)->required(),
                                                      "The input json file containing a vector of bin information")(
-        "output,o", po::value<std::string>(&outputDirectory)->default_value("."),
+        "output,o",
+        po::value<std::string>(&outputDirectory)->default_value("."),
         "Directory for output files (json, csv, root, ...). Files will still be prefixed with EC name and "
         "distribution.")("rounds,n", po::value<int>(&rounds)->default_value(1), "Number of rounds to dice")(
         "start,l", po::value<int>(&startRound)->default_value(0), "Number of round to skip in shifts file")(
-        "shifts,s", po::value<std::string>(&shiftsFilePath)->default_value("shifts.json"),
+        "shifts,s",
+        po::value<std::string>(&shiftsFilePath)->default_value("shifts.json"),
         "Json file containing vectors of normalized systematic shifts for each systematic")(
-        "lut", po::value<std::string>(&lutFilePath)->default_value(""),
+        "lut",
+        po::value<std::string>(&lutFilePath)->default_value(""),
         "LUT table to use, will choose automatically if not given.");
 
     // add json as positional argument
@@ -74,10 +87,12 @@ int main(int argc, char *argv[])
     std::string lutFilePath;
 
     // Read in command line options
-    int success = readCommandLineOptions(argc, argv, jsonFilePath, outputDirectory, rounds, startRound, shiftsFilePath,
-                                         lutFilePath);
+    int success = readCommandLineOptions(
+        argc, argv, jsonFilePath, outputDirectory, rounds, startRound, shiftsFilePath, lutFilePath);
     if (success > 0)
+    {
         return success;
+    }
 
     // Create ECScanner object
     ECScanner scanner(rounds, startRound);
@@ -102,6 +117,28 @@ int main(int argc, char *argv[])
         // uncertainty on the bin count.
         scanner.readSystematicShiftsFile(shiftsFilePath);
 
+        // auto pool = BS::thread_pool(120);
+
+        //    std::vector<std::future<void>> future_collections;
+        //     for (std::size_t idx_file = 0; idx_file < root_file_paths.size(); idx_file++)
+        //     {
+
+        //         future_collections.push_back(pool.submit(make_collection, idx_file));
+        //     }
+
+        //     fmt::print("[NanoEventClass Collection] Waiting ...\n");
+        //     for (auto &&fut : future_collections)
+        //     {
+        //         fut.wait();
+        //     }
+
+        //     fmt::print("[NanoEventClass Collection] Checking for exceptions ...\n");
+        //     for (auto &&fut : future_collections)
+        //     {
+        //         fut.get();
+        //     }
+
+        // loops over toy rounds
         for (unsigned int i = 0; i < scanner.getDicingRounds(); i++)
         {
             // calculate index used for loading the right shifts from the shifts.json file
@@ -120,6 +157,7 @@ int main(int argc, char *argv[])
                 // Dice around the SM expectation
                 scanner.diceMcPseudoData(real_round_index);
             }
+            // auto toy_sampled_data = scanner.diceMcPseudoDataMT(real_round_index);
 
             // find roi in pseudo data
             scanner.findRoI();

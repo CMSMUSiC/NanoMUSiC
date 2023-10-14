@@ -1,10 +1,47 @@
+# compilation options
+execute_process(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+separate_arguments(ROOT_CFLAGS)
+add_compile_options(-g)
+
+add_compile_options(-I/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/include)
+
+add_compile_options(${ROOT_CFLAGS} -Wall -Wextra -g -O3 -ffast-math -fPIC -fdiagnostics-color=always -MD -MP -O3 -Wall -march=native -pthread -m64 -ffloat-store)
+
+# root linker options
+execute_process(COMMAND root-config --ldflags OUTPUT_VARIABLE ROOT_LDFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+separate_arguments(ROOT_LDFLAGS)
+
+# root libs
+execute_process(COMMAND root-config --libs OUTPUT_VARIABLE ROOT_LIBS OUTPUT_STRIP_TRAILING_WHITESPACE)
+separate_arguments(ROOT_LIBS)
+
+add_link_options(
+        -fdiagnostics-color=always
+        ${ROOT_LDFLAGS}
+        ${ROOT_LIBS}
+        -L${LCG_BASE}/lib
+        -L${LCG_BASE}/lib64
+        -lfmt
+        -lz
+        -lstdc++fs
+        -L/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/lib
+        -L/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/lib64
+        -lgsl
+        -lgslcblas
+        -lm
+        -lboost_program_options
+)
+
 add_executable(createLookupTable
         src/ConvolutionComputer.cpp
         src/ConvolutionLookup.cpp
         src/createLookupTable.cpp)
+
 target_compile_options(createLookupTable PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
-target_link_options(createLookupTable PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
+
+# # target_link_options(createLookupTable PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
 target_include_directories(createLookupTable PUBLIC include)
+
 install(TARGETS createLookupTable DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 
 # build lookuptable
@@ -38,8 +75,10 @@ add_executable(scanClass
         src/scanClass.cpp
         src/util.cpp
         src/ConvolutionLookup.cpp)
+
 target_compile_options(scanClass PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
-target_link_options(scanClass PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
+
+# target_link_options(scanClass PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
 target_include_directories(scanClass PUBLIC include)
 install(TARGETS scanClass DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 
@@ -47,16 +86,20 @@ add_executable(pCalc
         src/ConvolutionComputer.cpp
         src/ConvolutionLookup.cpp
         src/pCalc.cpp)
+
 target_compile_options(pCalc PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
-target_link_options(pCalc PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
+
+# target_link_options(pCalc PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
 target_include_directories(pCalc PUBLIC include)
 install(TARGETS pCalc DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 
 add_library(ConvolutionComputer SHARED
         src/ConvolutionComputer.cpp
 )
+
 target_compile_options(ConvolutionComputer PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
-target_link_options(ConvolutionComputer PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
+
+# target_link_options(ConvolutionComputer PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
 target_include_directories(ConvolutionComputer PUBLIC include)
 install(TARGETS ConvolutionComputer DESTINATION ${CMAKE_SOURCE_DIR}/lib)
 
@@ -64,7 +107,9 @@ add_library(ConvolutionLookup SHARED
         src/ConvolutionLookup.cpp
         src/ConvolutionComputer.cpp
 )
+
 target_compile_options(ConvolutionLookup PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
-target_link_options(ConvolutionLookup PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
+
+# target_link_options(ConvolutionLookup PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
 target_include_directories(ConvolutionLookup PUBLIC include)
 install(TARGETS ConvolutionLookup DESTINATION ${CMAKE_SOURCE_DIR}/lib)
