@@ -6,7 +6,9 @@
 #include "Tools/MConfig.hpp"
 #include "Tools/Tools.hpp"
 
-BinnedMapping::BinnedMapping(Tools::MConfig const &config, std::string const &keyName, std::string const &valueName,
+BinnedMapping::BinnedMapping(Tools::MConfig const &config,
+                             std::string const &keyName,
+                             std::string const &valueName,
                              std::string const &absBinName)
     : m_bin_edges(initBinEdges(config, keyName)),
       m_bin_values(Tools::splitString<double>(config.GetItem<std::string>(valueName))),
@@ -27,7 +29,8 @@ std::vector<double> BinnedMapping::initBinEdges(Tools::MConfig const &config, st
     return bin_edges;
 }
 
-TProfile BinnedMapping::initKeyValueMap(Tools::MConfig const &config, std::string const &keyName,
+TProfile BinnedMapping::initKeyValueMap(Tools::MConfig const &config,
+                                        std::string const &keyName,
                                         std::string const &valueName) const
 {
     TString const name = keyName + "_" + valueName;

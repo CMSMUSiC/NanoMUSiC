@@ -52,7 +52,6 @@ class Distribution
 {
   public:
     constexpr static double min_bin_width = 10.;
-
     bool m_scale_to_area;
     std::string m_distribution_name;
     std::string m_event_class_name;

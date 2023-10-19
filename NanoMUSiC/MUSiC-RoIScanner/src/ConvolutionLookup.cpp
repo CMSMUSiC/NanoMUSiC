@@ -10,7 +10,8 @@
 #include <fstream>
 #include <iostream>
 
-LookupTable::LookupTable(const bool debug) : debug(debug)
+LookupTable::LookupTable(const bool debug)
+    : debug(debug)
 {
 }
 
@@ -69,12 +70,14 @@ void LookupTable::generate(const LookupOptions &new_options)
         {
             for (size_t uncert_index = 0; uncert_index < totalUncertPoints(); uncert_index++)
             {
-                futures_buffer[index(data_index, bg_index, uncert_index)] = pool.submit([&]() {
-                    double data, bg, uncert;
-                    calcPoints(data_index, bg_index, uncert_index, data, bg, uncert);
-                    const double p = compute_p_convolution(data, bg, uncert, prior(), /* debug = */ 0);
-                    return p;
-                });
+                futures_buffer[index(data_index, bg_index, uncert_index)] = pool.submit(
+                    [&]()
+                    {
+                        double data, bg, uncert;
+                        calcPoints(data_index, bg_index, uncert_index, data, bg, uncert);
+                        const double p = compute_p_convolution(data, bg, uncert, prior(), /* debug = */ 0);
+                        return p;
+                    });
             }
         }
 
@@ -277,8 +280,12 @@ std::string LookupTable::lastLoadedFilename() const
     return lastFile;
 }
 
-void LookupTable::calcPoints(const double data_index, const double bg_index, const double uncert_index,
-                             double &data_out, double &bg_out, double &uncert_out) const
+void LookupTable::calcPoints(const double data_index,
+                             const double bg_index,
+                             const double uncert_index,
+                             double &data_out,
+                             double &bg_out,
+                             double &uncert_out) const
 {
     // Calculate (fractional) coordinates of points from indices (inverse of calcIndices)
 
@@ -329,8 +336,12 @@ void LookupTable::calcPoints(const double data_index, const double bg_index, con
     uncert_out = bg_out * relative_uncert;
 }
 
-void LookupTable::calcIndices(const double data, const double bg, const double uncert, double &data_index_out,
-                              double &bg_index_out, double &uncert_index_out) const
+void LookupTable::calcIndices(const double data,
+                              const double bg,
+                              const double uncert,
+                              double &data_index_out,
+                              double &bg_index_out,
+                              double &uncert_index_out) const
 {
 
     // Inverse of calcPoints, read its comments to better understand calcIndices (this function)
@@ -541,7 +552,11 @@ size_t LookupTable::index(const size_t data_index, const size_t bg_index, const 
     return (data_index * totalUncertPoints() * totalBgPoints() + bg_index * totalUncertPoints() + uncert_index);
 }
 
-double lookup_p_convolution(const double N_obs, const double N_SM, const double error_parameter, const bool debug,
+// main function
+double lookup_p_convolution(const double N_obs,
+                            const double N_SM,
+                            const double error_parameter,
+                            const bool debug,
                             const char *filename)
 {
 

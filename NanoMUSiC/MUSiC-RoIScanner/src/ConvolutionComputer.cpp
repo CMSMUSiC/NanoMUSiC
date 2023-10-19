@@ -15,7 +15,7 @@
 #include "TMath.h"
 
 // constants
-constexpr double SQRT2PI = sqrt(2 * M_PI);
+constexpr double SQRT2PI = std::sqrt(2 * M_PI);
 
 // numeric limits
 constexpr double DOUBLE_MIN = std::numeric_limits<double>::min();
@@ -96,6 +96,7 @@ double first_part(const double x)
 {
     return -exp((EXP_MIN + TMath::LnGamma(x + 1)) / x) / x;
 }
+
 double second_part(const double x, const double lambert)
 {
     return exp((-x * lambert + EXP_MIN + TMath::LnGamma(x + 1)) / x);
@@ -270,7 +271,10 @@ double integration_payload_lognormal(double x, void *par_tmp)
 }
 
 // "main"-function of this module. computes the MUSiC p-value associated with N_obs, N_SM and sigma_MC
-double compute_p_convolution(const double N_obs, const double N_SM, const double sigma_MC, PriorMode prior,
+double compute_p_convolution(const double N_obs,
+                             const double N_SM,
+                             const double sigma_MC,
+                             PriorMode prior,
                              const int debugLevel)
 {
     if (debugLevel > 2)
@@ -424,9 +428,19 @@ double compute_p_convolution(const double N_obs, const double N_SM, const double
     }
 
     // and now integrate
-    double convolution = 0, conv_error = 0;
-    const int ret_code = gsl_integration_qag(&gsl_func, lower, upper, abs_precision, rel_precision, max_points,
-                                             GSL_INTEG_GAUSS15, gsl_int_ws, &convolution, &conv_error);
+    double convolution = 0;
+    double conv_error = 0;
+
+    const int ret_code = gsl_integration_qag(&gsl_func,
+                                             lower,
+                                             upper,
+                                             abs_precision,
+                                             rel_precision,
+                                             max_points,
+                                             GSL_INTEG_GAUSS15,
+                                             gsl_int_ws,
+                                             &convolution,
+                                             &conv_error);
 
     if (debugLevel > 2)
     {

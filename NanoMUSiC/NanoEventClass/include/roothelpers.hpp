@@ -458,7 +458,7 @@ inline auto GetYMax(const H &histogram_data,
         exit(-1);
     }
 
-    return y_max * 1.1;
+    return y_max * 1.15;
 }
 
 ///////////////////////////

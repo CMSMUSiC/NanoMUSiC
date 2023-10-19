@@ -14,7 +14,10 @@ enum PriorMode
 };
 
 // use 'extern "C"' to disable name mangling (useful for loading shared object library from Python)
-extern "C" double compute_p_convolution(const double N_obs, const double N_SM, const double error_parameter,
-                                        PriorMode prior, const int debugLevel = 1);
+extern "C" double compute_p_convolution(const double N_obs,
+                                        const double N_SM,
+                                        const double error_parameter,
+                                        PriorMode prior,
+                                        const int debugLevel = 1);
 
 #endif

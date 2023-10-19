@@ -50,7 +50,6 @@ EventClass::EventClass(const std::string &_class_name,
                                                           "h_counts");
     h_counts = TH1F(histo_name.c_str(), "", 1, 0., 1.);
     h_counts.Sumw2();
-
     histo_name = NanoEventHisto::make_histogram_full_name(_class_name,                        //
                                                           _process_group,                     //
                                                           _xs_order,                          //

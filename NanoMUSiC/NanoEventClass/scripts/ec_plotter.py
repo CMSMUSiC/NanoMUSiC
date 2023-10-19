@@ -72,54 +72,64 @@ def to_root_latex(class_name):
     has_suffix = False
     is_first_object = True
 
+    muon_part=""
+    electron_part = ""
+    tau_part=""
+    photon_part=""
+    bjet_part=""
+    jet_part=""
+    met_part=""
+    suffix=""
+
     for i, p in enumerate(class_name.split("_")):
         if i > 0:
             if "Muon" in p:
-                root_latex_name += str(p[0]) + r"#mu"
+                muon_part = str(p[0]) + r"#mu"
                 is_first_object = False
 
             if "Electron" in p:
                 if is_first_object:
-                    root_latex_name += str(p[0]) + r"e"
+                    electron_part= str(p[0]) + r"e"
                     is_first_object = False
                 else:
-                    root_latex_name += r" + " + str(p[0]) + r"e"
+                    electron_part= r" + " + str(p[0]) + r"e"
 
             if "Tau" in p:
                 if is_first_object:
-                    root_latex_name += str(p[0]) + r"#tau"
+                    tau_part = str(p[0]) + r"#tau"
                     is_first_object = False
                 else:
-                    root_latex_name += r" + " + str(p[0]) + r"#tau"
+                    tau_part= r" + " + str(p[0]) + r"#tau"
 
             if "Photon" in p:
                 if is_first_object:
-                    root_latex_name += str(p[0]) + r"#gamma"
+                    photon_part= str(p[0]) + r"#gamma"
                     is_first_object = False
                 else:
-                    root_latex_name += r" + " + str(p[0]) + r"#gamma"
+                    photon_part= r" + " + str(p[0]) + r"#gamma"
 
             if "bJet" in p:
-                root_latex_name += r" + " + str(p[0]) + r"bjet"
+                bjet_part= r" + " + str(p[0]) + r"bjet"
 
-            if p[1:] == "Jet":
-                root_latex_name += r" + " + str(p[0]) + r"jet"
+            if p[1:] == "Jet" and p[0]!="b":
+                jet_part= r" + " + str(p[0]) + r"jet"
 
             if "MET" in p:
-                root_latex_name += r" + " + r"p_{T}^{miss}"
+                met_part= r" + " + r"p_{T}^{miss}"
 
             if r"+X" in p:
-                root_latex_name += r" " + r"incl."
+                suffix= r" " + r"incl."
                 has_suffix = True
 
             if r"+NJet" in p:
-                root_latex_name += r" " + r"jet inc."
+                suffix= r" " + r"jet inc."
                 has_suffix = True
 
     if not has_suffix:
-        root_latex_name += " excl."
+        suffix= " excl."
 
-    return root_latex_name
+    return muon_part+electron_part+tau_part+photon_part+bjet_part+jet_part+met_part+suffix
+
 
 
 def make_plot(args):
@@ -276,7 +286,7 @@ def make_plot(args):
                 0.6,
                 0.1,
                 1 - ROOT.gPad.GetRightMargin(),
-                1 - ROOT.gPad.GetTopMargin() - 0.05,
+                1 - ROOT.gPad.GetTopMargin() - 0.1,
             ),
             textsize=14,
         )
@@ -325,14 +335,14 @@ def main():
     for year in years_glob:
         # input_files = get_source_files("/disk1/silva/classification_histograms", year)
         input_files = get_source_files(
-            "/disk1/silva/classification_histograms_signal", year
+            "/disk1/silva/classification_histograms_2023_10_04", year
         )
         print("Creating EC Collection ...")
         ec_collection = ROOT.NanoEventClassCollection(
             input_files,
             # ["EC_2Muon*", "EC_2Electron*"],
             [
-                "*",
+                # "*",
                 # # "EC_2Muon*",
                 # "EC_1Electron+NJet",
                 # "EC_2Muon_1MET",
@@ -352,7 +362,8 @@ def main():
                 # "EC_1Muon_1Jet",
                 # "EC_1Electron_2Jet",
                 # "EC_2Muon+NJet",
-                # "EC_1Electron_2Tau_1Jet_2bJet_1MET",
+                "EC_1Electron_2Tau_1Jet_2bJet_1MET",
+                "EC_2Muon_1Tau_2Jet_1bJet_1MET+NJet",
                 # "EC_2Muon_2Tau_1MET",
                 # "EC_2Muon_1Electron_1Tau_2Jet_1MET+X",
             ],
