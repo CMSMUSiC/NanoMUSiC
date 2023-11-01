@@ -9,7 +9,6 @@ target_compile_options(TEventClass PUBLIC
         -O3
         -Wall
         -fPIC
-
         # -fsignaling-nans
         # -funsafe-math-optimizations
         # -fno-rounding-math

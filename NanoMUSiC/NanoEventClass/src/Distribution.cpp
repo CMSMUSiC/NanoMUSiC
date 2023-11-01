@@ -4,11 +4,14 @@
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
+#include <filesystem>
 #include <fmt/core.h>
 #include <fnmatch.h>
 #include <iostream>
 #include <limits>
 #include <memory>
+#include <numeric>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <tuple>
@@ -20,19 +23,18 @@
 #include "TGraphAsymmErrors.h"
 #include "TGraphErrors.h"
 #include "TKey.h"
-
 #include "TLegend.h"
-#include "fmt/format.h"
-
-#include "roothelpers.hpp"
 
 #include "NanoEventClass.hpp"
+#include "fmt/format.h"
+#include "indicators.hpp"
+#include "roothelpers.hpp"
 
 using namespace ROOT;
 using namespace ROOT::VecOps;
 
-Distribution::Distribution(const NanoEventClass &ec, const std::string &distribution_name)
-    : m_scale_to_area(distribution_name != "counts"),
+Distribution::Distribution(const NanoEventClass &ec, const std::string &distribution_name, bool allow_rescale_by_width)
+    : m_scale_to_area(distribution_name != "counts" and allow_rescale_by_width),
       m_distribution_name(distribution_name),
       m_event_class_name(ec.m_class_name)
 {
@@ -104,7 +106,7 @@ Distribution::Distribution(const NanoEventClass &ec, const std::string &distribu
     // statistical uncertainties - uncorrelated bewtween processes
     m_statistical_uncert = get_statistical_uncert();
 
-    // systemtic uncertaintiesMakeErrorBand
+    // systematic uncertainties
     m_systematics_uncert = get_systematics_uncert(unmerged_mc_histograms);
 
     // total uncertainties
@@ -371,7 +373,12 @@ auto Distribution::get_systematics_uncert(
     );
 }
 
-auto Distribution::get_pvalue_props() const -> PValueProps
+auto Distribution::serialize() const -> std::string
+{
+    return fmt::format("EC: {}\nDist: {}", m_event_class_name, m_distribution_name);
+}
+
+auto Distribution::get_integral_pvalue_props() const -> IntegralPValueProps
 {
     //  Sanity check
     if (m_distribution_name != "counts")
@@ -379,7 +386,7 @@ auto Distribution::get_pvalue_props() const -> PValueProps
         fmt::print(
             "WARNING: Could not get P-Value props for a histogram that is not \"Counts\". Using the returned values "
             "will cause undefined behavior.\n");
-        return PValueProps{
+        return IntegralPValueProps{
             .total_data = -1., .total_mc = -1., .sigma_total = -1., .sigma_stat = -1., .total_per_process_group = {}};
     }
 
@@ -391,7 +398,7 @@ auto Distribution::get_pvalue_props() const -> PValueProps
             total_per_process_group.push_back(hist->GetBinContent(1));
         }
     }
-    return PValueProps{
+    return IntegralPValueProps{
         .total_data = m_total_data_histogram->GetBinContent(1), //
         .total_mc = m_total_mc_histogram->GetBinContent(1),     //
         .sigma_total = m_total_uncert.at(0),                    //

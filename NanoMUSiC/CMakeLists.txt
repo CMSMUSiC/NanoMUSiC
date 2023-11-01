@@ -12,5 +12,5 @@ add_subdirectory(TEventClass)
 # add_subdirectory(PxlAnalyzer)
 
 # add_subdirectory(MUSiC-Utils)
-add_subdirectory(MUSiC-RoIScanner)
+# add_subdirectory(MUSiC-RoIScanner)
 add_subdirectory(NanoEventClass)

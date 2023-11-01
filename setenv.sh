@@ -74,12 +74,9 @@ export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-BTagEff;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-CRAB;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/special_studies/jet_sf;
 
-
-
 #setup go env
 export GOPATH="$SCRIPTDIR/cache/classification_cli:$GOPATH"
 
-
-
 # rust config
 export RUSTFLAGS="-C linker=$CC"
+

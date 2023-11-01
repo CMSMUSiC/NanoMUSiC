@@ -11,7 +11,7 @@
 #include "TFile.h"
 #include "TKey.h"
 
-#include "external/BS_thread_pool.hpp"
+#include "BS_thread_pool.hpp"
 #include "fmt/format.h"
 
 #include "roothelpers.hpp"

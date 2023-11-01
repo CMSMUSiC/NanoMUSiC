@@ -1,12 +1,13 @@
 
 #include "distribution_factory.hpp"
 
-auto make_distribution(const NanoEventClass &ec, const std::string &distribution_name) -> std::shared_ptr<Distribution>
+auto make_distribution(const NanoEventClass &ec, const std::string &distribution_name, bool allow_rescale_by_width)
+    -> std::shared_ptr<Distribution>
 {
-    return std::make_shared<Distribution>(ec, distribution_name);
+    return std::make_shared<Distribution>(ec, distribution_name, allow_rescale_by_width);
 }
 
-auto distribution_factory(NanoEventClassCollection &ec_collection, bool counts_only)
+auto distribution_factory(NanoEventClassCollection &ec_collection, bool counts_only, bool allow_rescale_by_width)
     -> std::vector<std::shared_ptr<Distribution>>
 {
     auto pool = BS::thread_pool(100);
@@ -26,8 +27,8 @@ auto distribution_factory(NanoEventClassCollection &ec_collection, bool counts_o
         {
             if (not(distribution_name == "met" and ec_name.find("MET") == std::string::npos))
             {
-                future_distributions.push_back(
-                    pool.submit(make_distribution, ec_collection.get_class(ec_name), distribution_name));
+                future_distributions.push_back(pool.submit(
+                    make_distribution, ec_collection.get_class(ec_name), distribution_name, allow_rescale_by_width));
             }
         }
     }

@@ -97,9 +97,6 @@ class NanoEventClassCollection
                              const std::vector<std::string> &class_patterns);
 
     auto get_classes() const -> std::vector<std::string>;
-
-    // ~NanoEventClassCollection();
-
     auto get_class(const std::string &class_name) -> NanoEventClass &;
 };
 

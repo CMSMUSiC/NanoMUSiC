@@ -17,11 +17,11 @@ function make_ec_name(m, e, t, p, b, j, met, class_type)
   if p > 0
     ec_name = string(ec_name, "_", p, "Photon")
   end
-  if b > 0
-    ec_name = string(ec_name, "_", b, "bJet")
-  end
   if j > 0
     ec_name = string(ec_name, "_", j, "Jet")
+  end
+  if b > 0
+    ec_name = string(ec_name, "_", b, "bJet")
   end
   if met > 0
     ec_name = string(ec_name, "_", met, "MET")
@@ -46,7 +46,7 @@ function make_classes(filter_func::Function, class_type::String)
         for t = 0:9
           for m = 0:9
             for e = 0:9
-              if b + j <= 6
+              if b + j <= 5
                 if filter_func(m, e, t, p, b, j)
                   print(make_ec_name(m, e, t, p, b, j, met, class_type), ", ")
                 end

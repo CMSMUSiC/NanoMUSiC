@@ -258,3 +258,6 @@ NanoMUSiC/MUSiC-CRAB/*.toml
 .vscode
 NanoMUSiC/MUSiC-CRAB/last_CRAB_submition_
 NanoMUSiC/MUSiC-CRAB/last_CRAB_submition_date*
+NanoMUSiC/NanoEventClass/src/NanoEventClass_cpp_ACLiC_dict3c340842f0_dictUmbrella.h
+NanoMUSiC/NanoEventClass/src/NanoEventClass_cpp_ACLiC_dictc92d57510f_dictContent.h
+Session.vim

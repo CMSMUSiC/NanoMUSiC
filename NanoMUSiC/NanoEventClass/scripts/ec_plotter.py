@@ -14,49 +14,6 @@ import json
 from multiprocessing import Pool
 from pvalue import get_integral_pvalue
 
-# import warnings
-# warnings.simplefilter("ignore", UserWarning)
-
-# ROOT.gErrorIgnoreLevel = ROOT.kError
-ROOT.gErrorIgnoreLevel = 6000
-print("Compiling NanoEventClass ...")
-ROOT.gSystem.AddIncludePath("-I../NanoMUSiC/NanoEventClass/include")
-
-if (
-    ROOT.gSystem.CompileMacro(
-        "../NanoMUSiC/NanoEventClass/src/NanoEventClass.cpp", "Ok"
-    )
-    == 0
-):
-    sys.exit("ERROR: Could not compile NanoEventClass.cpp.")
-if (
-    ROOT.gSystem.CompileMacro("../NanoMUSiC/NanoEventClass/src/Distribution.cpp", "Ok")
-    == 0
-):
-    sys.exit("ERROR: Could not compile Distribution.cpp.")
-if (
-    ROOT.gSystem.CompileMacro(
-        "../NanoMUSiC/NanoEventClass/src/distribution_factory.cpp", "Ok"
-    )
-    == 0
-):
-    sys.exit("ERROR: Could not compile Distribution.cpp.")
-
-ROOT.PyConfig.IgnoreCommandLineOptions = True
-ROOT.TH1.AddDirectory(False)
-ROOT.TDirectory.AddDirectory(False)
-ROOT.gROOT.SetBatch(True)
-ROOT.EnableThreadSafety()
-
-
-def get_source_files(path, year_pattern):
-    return list(
-        filter(
-            lambda f: ("cutflow" not in f),
-            glob(f"{path}/*{year_pattern}.root"),
-        )
-    )
-
 
 years_glob = {
     # "2016*": {"name": "2016", "lumi": "36.3"},  #
@@ -65,71 +22,6 @@ years_glob = {
     # "[2017,2018]": {"name": "2017+2018", "lumi": "101"},  #
     # "*": {"name": "", "lumi": "138"},
 }
-
-
-def to_root_latex(class_name):
-    root_latex_name = ""
-    has_suffix = False
-    is_first_object = True
-
-    muon_part=""
-    electron_part = ""
-    tau_part=""
-    photon_part=""
-    bjet_part=""
-    jet_part=""
-    met_part=""
-    suffix=""
-
-    for i, p in enumerate(class_name.split("_")):
-        if i > 0:
-            if "Muon" in p:
-                muon_part = str(p[0]) + r"#mu"
-                is_first_object = False
-
-            if "Electron" in p:
-                if is_first_object:
-                    electron_part= str(p[0]) + r"e"
-                    is_first_object = False
-                else:
-                    electron_part= r" + " + str(p[0]) + r"e"
-
-            if "Tau" in p:
-                if is_first_object:
-                    tau_part = str(p[0]) + r"#tau"
-                    is_first_object = False
-                else:
-                    tau_part= r" + " + str(p[0]) + r"#tau"
-
-            if "Photon" in p:
-                if is_first_object:
-                    photon_part= str(p[0]) + r"#gamma"
-                    is_first_object = False
-                else:
-                    photon_part= r" + " + str(p[0]) + r"#gamma"
-
-            if "bJet" in p:
-                bjet_part= r" + " + str(p[0]) + r"bjet"
-
-            if p[1:] == "Jet" and p[0]!="b":
-                jet_part= r" + " + str(p[0]) + r"jet"
-
-            if "MET" in p:
-                met_part= r" + " + r"p_{T}^{miss}"
-
-            if r"+X" in p:
-                suffix= r" " + r"incl."
-                has_suffix = True
-
-            if r"+NJet" in p:
-                suffix= r" " + r"jet inc."
-                has_suffix = True
-
-    if not has_suffix:
-        suffix= " excl."
-
-    return muon_part+electron_part+tau_part+photon_part+bjet_part+jet_part+met_part+suffix
-
 
 
 def make_plot(args):
@@ -376,7 +268,7 @@ def main():
         for dist in tqdm(distributions):
             plot = dist.get_plot_props()
             if dist.m_distribution_name == "counts":
-                p_value_props = dist.get_pvalue_props()
+                p_value_props = dist.get_integral_pvalue_props()
                 p_value_data = get_integral_pvalue(
                     p_value_props.total_data,
                     p_value_props.total_mc,

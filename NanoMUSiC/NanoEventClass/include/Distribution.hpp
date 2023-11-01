@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <unordered_map>
 
 #include "TGraphAsymmErrors.h"
@@ -21,7 +22,7 @@
 using namespace ROOT;
 using namespace ROOT::VecOps;
 
-class PValueProps
+class IntegralPValueProps
 {
   public:
     double total_data;
@@ -52,6 +53,7 @@ class Distribution
 {
   public:
     constexpr static double min_bin_width = 10.;
+
     bool m_scale_to_area;
     std::string m_distribution_name;
     std::string m_event_class_name;
@@ -66,7 +68,8 @@ class Distribution
     std::unordered_map<std::string, std::unordered_map<std::string, std::shared_ptr<TH1F>>>
         m_histogram_per_process_group_and_shift;
 
-    Distribution(const NanoEventClass &ec, const std::string &distribution_name);
+    // constructor and methods
+    Distribution(const NanoEventClass &ec, const std::string &distribution_name, bool allow_rescale_by_width);
 
     auto get_statistical_uncert() const -> RVec<double>;
     auto get_systematics_uncert(
@@ -74,7 +77,8 @@ class Distribution
             &unmerged_mc_histograms) const -> RVec<double>;
 
     auto get_plot_props() const -> PlotProps;
-    auto get_pvalue_props() const -> PValueProps;
+    auto get_integral_pvalue_props() const -> IntegralPValueProps;
+    auto serialize() const -> std::string;
 };
 
 #endif // DISTRIBUTION_HPP
