@@ -7,7 +7,7 @@
 #include "MUSiCTools.hpp"
 
 #include <fmt/color.h>
-#include <fmt/core.h>
+#include <fmt/format.h>
 #include <limits>
 #include <stdexcept>
 
@@ -153,6 +153,11 @@ enum Year
     Run2018,
     kTotalYears, // <-- should always be the last one!!
 };
+
+inline auto format_as(Year y)
+{
+    return fmt::underlying(y);
+}
 
 inline auto get_runyear(const std::string &year_str) -> Year
 {

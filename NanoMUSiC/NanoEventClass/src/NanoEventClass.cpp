@@ -317,7 +317,8 @@ NanoEventClassCollection::NanoEventClassCollection(const std::vector<std::string
             }
         }
         ++file_counter;
-        fmt::print("[NanoEventClass Collection] Done [{} / {}]: {}\n", file_counter, root_file_paths.size(), file_path);
+        fmt::print(
+            "[NanoEventClass Collection] Done [{} / {}]: {}\n", file_counter.load(), root_file_paths.size(), file_path);
     };
 
     std::vector<std::future<void>> future_collections;

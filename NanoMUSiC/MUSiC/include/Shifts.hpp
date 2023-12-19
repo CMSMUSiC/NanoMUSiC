@@ -967,4 +967,9 @@ class Shifts
     }
 };
 
+inline auto format_as(Shifts::Variations v)
+{
+    return fmt::underlying(v);
+}
+
 #endif /*SHIFTS_HPP*/

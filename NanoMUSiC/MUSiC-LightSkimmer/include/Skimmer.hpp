@@ -53,7 +53,7 @@
 // https://github.com/adishavit/argh
 #include "argh.h"
 
-#include <fmt/core.h>
+#include <fmt/format.h>
 
 // Configurarion and filter
 #include "MUSiCTools.hpp"

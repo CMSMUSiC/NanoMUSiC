@@ -3,7 +3,7 @@ execute_process(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_CFLAGS OUTPUT_
 separate_arguments(ROOT_CFLAGS)
 add_compile_options(-g)
 
-add_compile_options(-I/cvmfs/sft.cern.ch/lcg/views/LCG_104c/x86_64-el9-gcc13-opt/include)
+add_compile_options(-I/cvmfs/sft.cern.ch/lcg/views/LCG_104/x86_64-el9-gcc12-opt/include)
 
 add_compile_options(${ROOT_CFLAGS} -Wall -Wextra -g -O3 -ffast-math -fPIC -fdiagnostics-color=always -MD -MP -O3 -Wall -march=native -pthread -m64 -ffloat-store)
 
@@ -24,8 +24,8 @@ add_link_options(
         -lfmt
         -lz
         -lstdc++fs
-        -L/cvmfs/sft.cern.ch/lcg/views/LCG_104c/x86_64-el9-gcc13-opt/lib
-        -L/cvmfs/sft.cern.ch/lcg/views/LCG_104c/x86_64-el9-gcc13-opt/lib64
+        -L/cvmfs/sft.cern.ch/lcg/views/LCG_104/x86_64-el9-gcc12-opt/lib
+        -L/cvmfs/sft.cern.ch/lcg/views/LCG_104/x86_64-el9-gcc12-opt/lib64
         -lgsl
         -lgslcblas
         -lm
@@ -39,7 +39,6 @@ add_executable(createLookupTable
 
 target_compile_options(createLookupTable PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
 
-# # target_link_options(createLookupTable PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
 target_include_directories(createLookupTable PUBLIC include ${CMAKE_SOURCE_DIR}/NanoMUSiC/NanoEventClass/include/external)
 
 install(TARGETS createLookupTable DESTINATION ${CMAKE_SOURCE_DIR}/bin)
@@ -78,7 +77,6 @@ add_executable(scanClass
 
 target_compile_options(scanClass PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
 
-# target_link_options(scanClass PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
 target_include_directories(scanClass PUBLIC include  ${CMAKE_SOURCE_DIR}/NanoMUSiC/NanoEventClass/include/external)
 install(TARGETS scanClass DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 

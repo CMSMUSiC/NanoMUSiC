@@ -39,7 +39,7 @@ else
 
   # set env, run nano_music and save its exit code
   SCRIPTDIR=`pwd`
-  bash -c "eval \`scram unsetenv -sh\` ; echo \"================= [ BEGIN ] MUSiC environment ==================\" ; source /cvmfs/sft.cern.ch/lcg/views/LCG_104c/x86_64-el9-gcc13-opt/setup.sh ; echo \"ROOT Version\"; root -b -q; export MUSIC_BASE=$SCRIPTDIR; export LD_LIBRARY_PATH=$SCRIPTDIR/lib:\$LD_LIBRARY_PATH ; export PATH=$SCRIPTDIR/bin:\$PATH ; export PATH=$SCRIPTDIR/scripts:\$PATH ; export PATH=$SCRIPTDIR/NanoMUSiC/MUSiC-CRAB:\$PATH ; export ROOT_INCLUDE_PATH=$SCRIPTDIR/NanoMUSiC/MUSiC/include:$SCRIPTDIR/NanoMUSiC/MUSiC:\$ROOT_INCLUDE_PATH  ; env; echo \"================= [ END ] MUSiC environment ==================\" ; nano_music_skimmer --batch --run-config config.toml"
+  bash -c "eval \`scram unsetenv -sh\` ; echo \"================= [ BEGIN ] MUSiC environment ==================\" ; source /cvmfs/sft.cern.ch/lcg/views/LCG_104/x86_64-el9-gcc12-opt/setup.sh ; echo \"ROOT Version\"; root -b -q; export MUSIC_BASE=$SCRIPTDIR; export LD_LIBRARY_PATH=$SCRIPTDIR/lib:\$LD_LIBRARY_PATH ; export PATH=$SCRIPTDIR/bin:\$PATH ; export PATH=$SCRIPTDIR/scripts:\$PATH ; export PATH=$SCRIPTDIR/NanoMUSiC/MUSiC-CRAB:\$PATH ; export ROOT_INCLUDE_PATH=$SCRIPTDIR/NanoMUSiC/MUSiC/include:$SCRIPTDIR/NanoMUSiC/MUSiC:\$ROOT_INCLUDE_PATH  ; env; echo \"================= [ END ] MUSiC environment ==================\" ; nano_music_skimmer --batch --run-config config.toml"
   exit_code=$?
 
   FILE=outputs/success_flag.out
