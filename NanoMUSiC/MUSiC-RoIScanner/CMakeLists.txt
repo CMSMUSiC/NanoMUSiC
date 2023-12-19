@@ -3,7 +3,7 @@ execute_process(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_CFLAGS OUTPUT_
 separate_arguments(ROOT_CFLAGS)
 add_compile_options(-g)
 
-add_compile_options(-I/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/include)
+add_compile_options(-I/cvmfs/sft.cern.ch/lcg/views/LCG_104c/x86_64-el9-gcc13-opt/include)
 
 add_compile_options(${ROOT_CFLAGS} -Wall -Wextra -g -O3 -ffast-math -fPIC -fdiagnostics-color=always -MD -MP -O3 -Wall -march=native -pthread -m64 -ffloat-store)
 
@@ -24,8 +24,8 @@ add_link_options(
         -lfmt
         -lz
         -lstdc++fs
-        -L/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/lib
-        -L/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/lib64
+        -L/cvmfs/sft.cern.ch/lcg/views/LCG_104c/x86_64-el9-gcc13-opt/lib
+        -L/cvmfs/sft.cern.ch/lcg/views/LCG_104c/x86_64-el9-gcc13-opt/lib64
         -lgsl
         -lgslcblas
         -lm
