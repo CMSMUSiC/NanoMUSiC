@@ -20,7 +20,8 @@ export MUSIC_BASE=$SCRIPTDIR
 # Set dummy SCRAM_ARCH. needed for LHAPDF.
 # export SCRAM_ARCH=slc7_amd64_gcc12
 # export SCRAM_ARCH=slc7_amd64_gcc11
-export SCRAM_ARCH=el9_amd64_gcc10
+# export SCRAM_ARCH=el9_amd64_gcc10
+export SCRAM_ARCH=el9_amd64_gcc12
 
 # This is a TAPAS set_env script. Source it before usage of TAPAS.
 export LD_LIBRARY_PATH=$SCRIPTDIR/lib:$LD_LIBRARY_PATH
