@@ -71,7 +71,12 @@ export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-CRAB;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/special_studies/jet_sf;
 
 #setup go env
-export GOPATH="$SCRIPTDIR/cache/classification_cli:$GOPATH"
+export GOPATH="$SCRIPTDIR/cache:$GOPATH"
+export GOROOT="$SCRIPTDIR/opt/go"
+export PATH="$SCRIPTDIR/opt/go/bin:$PATH" 
+export GOBIN="$SCRIPTDIR/bin"
+
+
 
 # rust config
 export RUSTFLAGS="-C linker=$CC"

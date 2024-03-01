@@ -1,6 +1,7 @@
 build_before_alma9
 cache
 docs_BKP/
+opt/
 .vscode/.nfs*
 *CMSSW_*
 *.c
