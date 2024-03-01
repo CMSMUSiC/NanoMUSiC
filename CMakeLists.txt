@@ -14,7 +14,7 @@ find_package(ROOT REQUIRED COMPONENTS RIO)
 message(STATUS "ROOT ${ROOT_VERSION} found at ${ROOT_BINDIR}")
 
 # LCG base dir
-set(LCG_BASE /cvmfs/sft.cern.ch/lcg/views/LCG_104/x86_64-el9-gcc12-opt)
+set(LCG_BASE /cvmfs/sft.cern.ch/lcg/views/LCG_105a/x86_64-el9-gcc12-opt)
 
 # includes
 execute_process(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_INCLUDE_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)

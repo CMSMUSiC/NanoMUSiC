@@ -5,7 +5,7 @@
 # https://lcginfo.cern.ch/release_packages/x86_64-centos7-gcc11-opt/104c/
 
 echo "[ LCG View ] Using x86_64-el9-gcc12-opt ..."
-source /cvmfs/sft.cern.ch/lcg/views/LCG_104/x86_64-el9-gcc12-opt/setup.sh
+source /cvmfs/sft.cern.ch/lcg/views/LCG_105a/x86_64-el9-gcc12-opt/setup.sh
 echo "[ LCG View ] Done ..."
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)

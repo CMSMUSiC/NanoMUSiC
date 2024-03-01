@@ -19,7 +19,7 @@ add_link_options(
     -lgslcblas
     -lm
 )
-add_compile_options(-I/cvmfs/sft.cern.ch/lcg/views/LCG_104/x86_64-el9-gcc12-opt/include)
+add_compile_options(-I/cvmfs/sft.cern.ch/lcg/views/LCG_105a/x86_64-el9-gcc12-opt/include)
 
 add_library(NanoEventClass SHARED
         src/NanoEventClass.cpp
