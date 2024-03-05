@@ -526,6 +526,20 @@ kFactor = 1.0
 XSecOrder = "N3LO"
 ProcessGroup = "HIG"
 
+[GluGluHToWWTo2L2Nu_M-125-jhugen727_13TeV_PH]
+XSec = 0.9913
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "N3LO"
+ProcessGroup = "HIG"
+
+[GluGluHToWWTo2L2Nu_M-125_13TeV_PH]
+XSec = 0.9913
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "N3LO"
+ProcessGroup = "HIG"
+
 [GluGluHToZG_M-125_13TeV_PH]
 XSec = 0.07447
 FilterEff = 1.0
@@ -2527,12 +2541,6 @@ kFactor = 1.0
 XSecOrder = "N3LO"
 ProcessGroup = "HIG"
 
-[GluGluHToWWTo2L2Nu_M-125-jhugen727_13TeV_PH]
-XSec = 0.9913
-FilterEff = 1.0
-kFactor = 1.0
-XSecOrder = "N3LO"
-ProcessGroup = "HIG"
 
 [VBF_HToZZTo2L2Nu_M1252_JHUGenV735_13TeV_PH]
 XSec = 3.05

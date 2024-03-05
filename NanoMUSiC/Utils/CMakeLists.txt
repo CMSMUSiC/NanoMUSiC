@@ -4,3 +4,8 @@ add_custom_target(example ALL
     VERBATIM
 )
 
+add_custom_target(nanoaod_skimmer ALL
+    COMMAND
+    cd ${CMAKE_SOURCE_DIR}/NanoMUSiC/Utils/nanoaod_skimmer && go install
+    VERBATIM
+)

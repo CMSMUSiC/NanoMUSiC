@@ -62,7 +62,11 @@ parser.add_argument(
     "--jobs",
     help="Pool size.",
     required=False,
-    default=min(cpu_count(), 12),
+    default=min(cpu_count(), 24),
+)
+
+parser.add_argument(
+    "--clean", help="Clear the submition files", required=False, action="store_true"
 )
 
 args = parser.parse_args()
@@ -93,21 +97,9 @@ def make_task_config_file(
     task_config["dataset"] = das_name
 
     new_config = to_toml_dumps(task_config)
-    # print("\n*************** Modified task config file: ******************\n")
-    # print(
-    #     highlight(
-    #         new_config,
-    #         lexer=get_lexer_by_name("toml"),
-    #         formatter=Terminal256Formatter(style="monokai"),
-    #     )
-    # )
-    # print("\n" + "*" * 56)
 
-    # dump new config to file
-    # os.system("rm raw_config.toml > /dev/null 2>&1")
     os.system(f"mkdir -p raw_configs/{process_name}_{year}")
 
-    # raw_config = "raw_config_"
     with open(
         f"raw_configs/{process_name}_{year}/raw_config.toml", "w"
     ) as new_config_file:
@@ -168,9 +160,14 @@ def build_crab_config(process_name, das_name, year, is_data, global_now):
         this_config.JobType.outputFiles = [r"efficiency_hist.root"]
     this_config.User.voGroup = "dcms"
     this_config.Site.storageSite = "T2_DE_RWTH"
-    this_config.Site.blacklist = ["T2_BR_*", "T2_US_*"]
+    # this_config.Site.blacklist = ["T2_BR_*", "T2_US_*"]
+    this_config.Site.blacklist = ["T2_BR_*"]
 
-    return this_config
+    crab_config_file_path = f"raw_configs/{process_name}/crab_config.py"
+    with open(crab_config_file_path, "w") as f:
+        f.write(str(this_config))
+
+    return crab_config_file_path
 
 
 def submit(sample):
@@ -195,10 +192,36 @@ def submit(sample):
 
 
 def build_task_tarball():
-    print("Packing input files ...")
+    print("Building gridpack ...")
     os.system(r"rm task.tar.gz > /dev/null 2>&1")
     os.system(
-        r'tar --exclude="*.log" --exclude="rootlogon.C" --exclude="crab.log" --exclude="raw_config.toml" --exclude="crab_nano_music_*" --exclude="crab_music_pset.py" --exclude="task.tar.gz" --exclude="CMSSW_*" --exclude="__pycache*" --exclude="build" --exclude="docs_BKP" --exclude="docs" --exclude="crab_nano_music_date_*" --exclude="NanoMUSiC/tools" --exclude="NanoMUSiC/PxlAnalyzer" --exclude="*.root" --exclude="NanoMUSiC/PlotLib" --exclude="NanoMUSiC/MUSiC-Configs" --exclude="NanoMUSiC/MUSiC-RoIScanner" --exclude="NanoMUSiC/MUSiC-Utils" --exclude="NanoMUSiC/MUSiC-CRAB/crab_nano_music_DYJetsToLL*" --exclude="cache" --exclude="NanoMUSiC/MUSiC-BTagEff/Outputs" -zcvf task.tar.gz $CRAB_MUSIC_BASE/../../*'
+        r'tar \
+        --exclude="*.log" \
+        --exclude="rootlogon.C" \
+        --exclude="crab.log" \
+        --exclude="raw_config.toml" \
+        --exclude="crab_nano_music_*" \
+        --exclude="crab_music_pset.py" \
+        --exclude="task.tar.gz" \
+        --exclude="CMSSW_*" \
+        --exclude="__pycache*" \
+        --exclude="build" \
+        --exclude="build_before_alma9" \
+        --exclude="opt" \
+        --exclude="docs_BKP" \
+        --exclude="docs" \
+        --exclude="crab_nano_music_date_*" \
+        --exclude="NanoMUSiC/tools" \
+        --exclude="NanoMUSiC/PxlAnalyzer" \
+        --exclude="*.root" \
+        --exclude="NanoMUSiC/PlotLib" \
+        --exclude="NanoMUSiC/MUSiC-Configs" \
+        --exclude="NanoMUSiC/MUSiC-RoIScanner" \
+        --exclude="NanoMUSiC/MUSiC-Utils" \
+        --exclude="NanoMUSiC/MUSiC-CRAB/crab_nano_music_DYJetsToLL*" \
+        --exclude="cache" \
+        --exclude="NanoMUSiC/MUSiC-BTagEff/Outputs" \
+        -zcvf task.tar.gz $CRAB_MUSIC_BASE/../../*'
     )
     print("")
 
@@ -214,6 +237,13 @@ def check_voms():
 
 
 def main():
+    if args.clean:
+        os.system("rm -rf task.tar.gz")
+        os.system("rm -rf crab_nano_music_*")
+        os.system("rm -rf last_*.txt")
+        os.system("rm -rf submited_samples_date_*.json")
+        exit(0)
+
     global_now = datetime.now().strftime(r"date_%Y_%m_%d_time_%H_%M_%S")
     if args.date_and_time != "":
         global_now = args.date_and_time
@@ -242,7 +272,8 @@ def main():
     with Pool(min(int(args.jobs), len(sample_list))) as pool:
         submited_samples = list(
             tqdm(
-                pool.imap_unordered(submit, sample_list),
+                # pool.imap_unordered(submit, sample_list),
+                pool.imap_unordered(submit, list(sample_list[0])),
                 total=len(sample_list),
                 unit="sample",
             )

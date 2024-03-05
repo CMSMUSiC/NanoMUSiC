@@ -1,24 +1,31 @@
 # setup CMSSW
 
-set -e
+SCRIPTDIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 
 source /cvmfs/cms.cern.ch/common/crab-setup.sh
 
-# export SCRAM_ARCH="slc7_amd64_gcc10"
-export SCRAM_ARCH=el9_amd64_gcc12
+# export SCRAM_ARCH=el9_amd64_gcc12
+export SCRAM_ARCH=el8_amd64_gcc12
+CMSSW_VERSION="CMSSW_14_0_1"
 
-DIR="CMSSW_13_3_1"
-if [ -d "$DIR" ]; then
-  echo "CMSSW release area found ..."
+if [ -d "$CMSSW_VERSION" ]; then
+  echo "CMSSW area already exists."
 else
-  echo "CMSSW release area not found. Will be created ..."
-  cmsrel CMSSW_13_3_1
+  echo "CMSSW area does not exist. Creating it..."
+  cmsrel $CMSSW_VERSION
+  echo "... done."
 fi
- 
-cd CMSSW_13_3_1/src
-cmsenv
-pwd
-cd ../..
 
-export PATH="$PWD:$PATH"
-export CRAB_MUSIC_BASE=$PWD
+cd $CMSSW_VERSION/src
+cmsenv
+
+cd $SCRIPTDIR
+
+export PATH="$SCRIPTDIR:$PATH"
+export CRAB_MUSIC_BASE=$SCRIPTDIR
+
+#setup go env
+export GOPATH="$SCRIPTDIR/../../cache:$GOPATH"
+export GOROOT="$SCRIPTDIR/../../opt/go"
+export PATH="$SCRIPTDIR/../../opt/go/bin:$PATH" 
+export GOBIN="$SCRIPTDIR/../../bin"

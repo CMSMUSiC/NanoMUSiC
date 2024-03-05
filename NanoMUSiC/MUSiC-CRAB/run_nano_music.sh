@@ -32,9 +32,10 @@ else
   # get input files from PSet.py and modify the TOML config file 
   python3 config_builder.py $job_id 
 
-  echo "\n\n\n\n --> config.toml:"
+  echo "--> config.toml:"
   ls config.toml
   cat config.toml
+  echo ""
   echo "================= [ END ] Build config TOML =================="
 
   # set env, run nano_music and save its exit code
