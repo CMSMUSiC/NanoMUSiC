@@ -10,7 +10,6 @@ import time
 import json
 import copy
 
-from CRABClient.UserUtilities import config
 from CRABAPI.RawCommand import crabCommand
 
 
@@ -209,12 +208,15 @@ def main():
         print("Killing all tasks ...")
         for task in monitoring_args:
             process_name, year = task
+            print(
+                f"Killing: crab kill -d crab_nano_music_{process_name}_{year}/crab_{process_name}_{year} ..."
+            )
             os.system(
-                f"crab kill -d crab_nano_music_{process_name}_{year}/crab_{process_name}_{year} &"
+                f"crab kill -d crab_nano_music_{process_name}_{year}/crab_{process_name}_{year}"
             )
         exit(0)
 
-    with open(f"index.html", "w") as f:
+    with open("index.html", "w") as f:
         f.write(html_loading.replace("__INPUT_FILE__", args.submited_samples))
 
     while True:
@@ -257,7 +259,7 @@ def main():
         html_content = copy.copy(html_body_upper)
         html_content += f"<p><b>Completed: {completed}<br/>Failed: {failed}<br/>Others: {others}<br/>Total: {len(results)}</b></p>"
         if completed == len(results):
-            html_content += f"<h2><b>All done!</b></h2>"
+            html_content += "<h2><b>All done!</b></h2>"
 
         for idx_res, res in enumerate(results):
             if res["status"] == "Failed" or res["status"] == "Stalled":
@@ -295,14 +297,14 @@ def main():
                     .replace("__SAMPLE__", res["sample"])
                     .replace("__YEAR__", res["year"])
                     .replace(
-                        "__STATUS__", f'<span class="badge bg-success">COMPLETED</span>'
+                        "__STATUS__", '<span class="badge bg-success">COMPLETED</span>'
                     )
                     .replace("__MONITORING__", res["monitoring"])
                 )
 
         html_content += copy.copy(html_body_lower)
 
-        with open(f"index.html", "w") as f:
+        with open("index.html", "w") as f:
             f.write(html_content.replace("__INPUT_FILE__", args.submited_samples))
 
         if args.loop:

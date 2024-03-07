@@ -155,7 +155,7 @@ auto main(int argc, char *argv[]) -> int
     {
         // fmt::print("DEBUG: NEW FILE\n");
 
-        TChain input_chain("nano_music");
+        TChain input_chain("Events");
         input_chain.Add(file.c_str());
 
         auto tree_reader = TTreeReader(&input_chain);

@@ -22,8 +22,8 @@ from multiprocessing import Pool
 import time
 
 
-# years = ["2016APV", "2016", "2017", "2018"]
-years = ["2017", "2018"]
+years = ["2016APV", "2016", "2017", "2018"]
+# years = ["2017", "2018"]
 classification_buffer_name = "classification_buffer"
 classification_histograms_name = "classification_histograms"
 
@@ -465,7 +465,7 @@ def main():
 
         print("Running parallel merge jobs ...")
         os.system(
-        "cat harvest_commands_par.txt | parallel_music --halt now,fail=1 --memsuspend 80G --progress --jobs 10"
+            "cat harvest_commands_par.txt | parallel_music --halt now,fail=1 --memsuspend 80G --progress --jobs 10"
         )
 
         print("Running serial merge jobs ...")

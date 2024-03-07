@@ -1,12 +1,17 @@
 package main
 
-import "fmt"
-import "strings"
-import "os"
-import "math/rand"
-import "os/exec"
+import (
+	"fmt"
+	"math/rand"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
+	"sync"
+	"time"
 
-import toml "github.com/pelletier/go-toml/v2"
+	toml "github.com/pelletier/go-toml/v2"
+)
 
 type Config struct {
 	Output      string
@@ -19,16 +24,110 @@ type Config struct {
 	Input_files []string
 }
 
-func input_files(inputs []string) string {
-	var sb strings.Builder
-	for _, f := range inputs {
-		sb.WriteString(f + ":Events ")
+func make_include_string() string {
+	include_patterns := []string{
+		"nCorrT1METJet",
+		"CorrT1METJet_*",
+		"nElectron",
+		"Electron_pt",
+		"Electron_eta",
+		"Electron_phi",
+		"Electron_deltaEtaSC",
+		"Electron_cutBased",
+		"Electron_cutBased_HEEP",
+		"Electron_scEtOverPt",
+		"Electron_dEscaleUp",
+		"Electron_dEscaleDown",
+		"Electron_dEsigmaUp",
+		"Electron_dEsigmaDown",
+		"Electron_genPartIdx",
+		"Flag_*",
+		"nGenJet",
+		"GenJet_pt",
+		"GenJet_eta",
+		"GenJet_phi",
+		"GenPart_*",
+		"nGenPart",
+		"Generator_*",
+		"HLT_*",
+		"nJet",
+		"Jet_pt",
+		"Jet_eta",
+		"Jet_phi",
+		"Jet_mass",
+		"Jet_jetId",
+		"Jet_btagDeepFlavB",
+		"Jet_rawFactor",
+		"Jet_area",
+		"Jet_genJetIdx",
+		"L1PreFiringWeight_Up",
+		"L1PreFiringWeight_Dn",
+		"L1PreFiringWeight_Nom",
+		"LHE_*",
+		"nLHEPart",
+		"LHEPart_*",
+		"LHEPdfWeight",
+		"nLHEPdfWeight",
+		"LHEReweightingWeight",
+		"nLHEReweightingWeight",
+		"LHEScaleWeight",
+		"nLHEScaleWeight",
+		"LHEWeight_originalXWGTUP",
+		"nMuon",
+		"Muon_pt",
+		"Muon_eta",
+		"Muon_phi",
+		"Muon_tightId",
+		"Muon_highPtId",
+		"Muon_pfRelIso04_all",
+		"Muon_tkRelIso",
+		"Muon_tunepRelPt",
+		"Muon_highPurity",
+		"Muon_genPartIdx",
+		"nPSWeight",
+		"PSWeight",
+		"nPhoton",
+		"Photon_pt",
+		"Photon_eta",
+		"Photon_phi",
+		"Photon_isScEtaEB",
+		"Photon_isScEtaEE",
+		"Photon_cutBased",
+		"Photon_pixelSeed",
+		"Photon_dEscaleUp",
+		"Photon_dEscaleDown",
+		"Photon_dEsigmaUp",
+		"Photon_dEsigmaDown",
+		"Photon_genPartIdx",
+		"MET_*",
+		"RawMET_*",
+		"Pileup_nTrueInt",
+		"Tau_pt",
+		"Tau_eta",
+		"Tau_phi",
+		"Tau_dz",
+		"Tau_mass",
+		"Tau_idDeepTau2017v2p1VSe",
+		"Tau_idDeepTau2017v2p1VSjet",
+		"Tau_idDeepTau2017v2p1VSmu",
+		"Tau_decayMode",
+		"Tau_genPartIdx",
+		"Tau_genPartFlav",
+		"btagWeight_DeepCSVB",
+		"event",
+		"fixedGridRhoFastjetAll",
+		"genWeight",
+		"luminosityBlock",
+		"run",
 	}
-	return strings.TrimRight(sb.String(), " ")
+
+	return strings.Join(include_patterns[:], ",")
 }
 
 func main() {
-	inclusion_list := "nMuon,Muon_*,HLT_*"
+	fmt.Printf("\n\n[NanoAOD Skimmer - %s] Starting ... \n", time.Now().UTC())
+
+	inclusion_list := make_include_string()
 
 	data, err := os.ReadFile("config.toml")
 	if err != nil {
@@ -46,43 +145,110 @@ func main() {
 
 	output_file := "nano_music.root"
 
-	cmd := exec.Command("rm", "-rf", output_file)
-	fmt.Printf("Cleanning: %s \n", cmd.String())
-	_, err = cmd.Output()
+	matches, err := filepath.Glob("./*nano_music*.root")
 	if err != nil {
 		panic(err)
 	}
 
-	hadd_args := []string{"-ff", output_file}
-	for _, f := range cfg.Input_files {
-		this_output_file := fmt.Sprintf("nano_music_%s.root", fmt.Sprint(rand.Int63()))
-		cmd = exec.Command("rooteventselector", "--recreate", "--compress", "99999999", "-e", "*", "-i", inclusion_list, fmt.Sprintf("%s:Events", f), this_output_file)
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		fmt.Printf("Skimming: %s \n", cmd.String())
-		err := cmd.Run()
+	if len(matches) > 0 {
+		cmd := exec.Command("rm", append([]string{"-rf"}, matches...)...)
+		fmt.Printf("\n\n[NanoAOD Skimmer - %s] Cleanning: %s \n", time.Now().UTC(), cmd.String())
+		_, err = cmd.Output()
 		if err != nil {
 			panic(err)
 		}
-		hadd_args = append(hadd_args, this_output_file)
 	}
+
+	// copy files
+	var wg_copy sync.WaitGroup
+	temp_raw_files_ch := make(chan string, len(cfg.Input_files))
+	for _, f := range cfg.Input_files {
+		wg_copy.Add(1)
+		go func(f string, out chan<- string) {
+			defer wg_copy.Done()
+			this_output_file := fmt.Sprintf("raw_nano_music_%s.root", fmt.Sprint(rand.Int63()))
+
+			// 209 is the maximum compression level
+			cmd := exec.Command("xrdcp", "--silent", f, this_output_file)
+
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			fmt.Printf("\n\n[NanoAOD Skimmer - %s] Copying to job scratch area: %s \n", time.Now().UTC(), cmd.String())
+			err := cmd.Run()
+			if err != nil {
+				fmt.Printf("Panicing when copying file: %s \n", f)
+				panic(err)
+			}
+			out <- this_output_file
+		}(f, temp_raw_files_ch)
+	}
+
+	raw_files := []string{}
+	for i := 0; i < len(cfg.Input_files); i++ {
+		raw_files = append(raw_files, <-temp_raw_files_ch)
+	}
+
+	fmt.Printf("\n\n[NanoAOD Skimmer - %s] Awaiting ... \n", time.Now().UTC())
+	wg_copy.Wait()
+
+	cmd := exec.Command("ls", "-lha")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	fmt.Printf("\n\n[NanoAOD Skimmer - %s]Listing: %s \n", time.Now().UTC(), cmd.String())
+	err = cmd.Run()
+	if err != nil {
+		panic(err)
+	}
+
+	// skim files
+	var wg_skim sync.WaitGroup
+	temp_files_ch := make(chan string, len(raw_files))
+	for _, f := range raw_files {
+		wg_skim.Add(1)
+		go func(f string, out chan<- string) {
+			defer wg_skim.Done()
+			this_output_file := fmt.Sprintf("nano_music_%s.root", fmt.Sprint(rand.Int63()))
+
+			// 209 is the maximum compression level
+			cmd := exec.Command("rooteventselector", "--recreate", "--compress", "209", "-e", "*", "-i", inclusion_list, fmt.Sprintf("%s:Events", f), this_output_file)
+
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			fmt.Printf("\n\n[NanoAOD Skimmer - %s] Skimming: %s \n", time.Now().UTC(), cmd.String())
+			err := cmd.Run()
+			if err != nil {
+				fmt.Printf("Panicing when skimming file: %s \n", f)
+				panic(err)
+			}
+			out <- this_output_file
+		}(f, temp_files_ch)
+	}
+
+	hadd_args := []string{"-ff", output_file}
+	for i := 0; i < len(raw_files); i++ {
+		hadd_args = append(hadd_args, <-temp_files_ch)
+	}
+
+	fmt.Printf("\n\n[NanoAOD Skimmer - %s] Awaiting ... \n", time.Now().UTC())
+	wg_skim.Wait()
 
 	cmd = exec.Command("hadd", hadd_args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	fmt.Printf("Merging: %s \n", cmd.String())
+	fmt.Printf("\n\n[NanoAOD Skimmer - %s] Merging: %s \n", time.Now().UTC(), cmd.String())
 	err = cmd.Run()
 	if err != nil {
 		panic(err)
 	}
 
-	cmd = exec.Command("ls", "-lha", output_file)
+	cmd = exec.Command("ls", "-lha")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	fmt.Printf("Listing: %s \n", cmd.String())
+	fmt.Printf("\n\n[NanoAOD Skimmer - %s]Listing: %s \n", time.Now().UTC(), cmd.String())
 	err = cmd.Run()
 	if err != nil {
 		panic(err)
 	}
 
+	fmt.Printf("[NanoAOD Skimmer - %s] Done \n", time.Now().UTC())
 }

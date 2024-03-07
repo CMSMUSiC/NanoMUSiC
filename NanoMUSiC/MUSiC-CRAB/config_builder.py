@@ -3,16 +3,40 @@ from pathlib import Path
 import tomli
 import subprocess
 
-from helpers import *
 import ROOT
+
+
+def _dumps_value(value):
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    elif isinstance(value, (int, float)):
+        return str(value)
+    elif isinstance(value, str):
+        return f'"{value}"'
+    elif isinstance(value, list):
+        return f"[{', '.join(_dumps_value(v) for v in value)}]"
+    else:
+        raise TypeError(f"{type(value).__name__} {value!r} is not supported")
+
+
+def to_toml_dumps(toml_dict, table=""):
+    toml = []
+    for key, value in toml_dict.items():
+        if isinstance(value, dict):
+            table_key = f"{table}.{key}" if table else key
+            toml.append(f"\n[{table_key}]\n{to_toml_dumps(value, table_key)}")
+        else:
+            toml.append(f"{key} = {_dumps_value(value)}")
+    return "\n".join(toml)
+
 
 # get process parameters
 if len(sys.argv) < 2:
     print(f"Only {len(sys.argv)} were provided. Expected 2.")
     exit(1)
 job_id = sys.argv[1]
-# toml_config = sys.argv[2]
 toml_config = "raw_config.toml"
+
 
 # get input files from PSet.py
 def get_input_files(debug=False):
@@ -23,7 +47,7 @@ def get_input_files(debug=False):
 
     raw_input_files = PSet.process.source.fileNames.value()
     if len(raw_input_files) == 0:
-        print(f"No input files were provided.")
+        print(f"ERROR: No input files were provided.")
         exit(1)
 
     input_files = []
@@ -33,13 +57,16 @@ def get_input_files(debug=False):
             ["edmFileUtil", "-d", f], capture_output=True, check=True, text=True
         )
         local_pfn = (local_pfn_proc.stdout).rstrip()
-        local_pfn_returncode = local_pfn_proc.returncode
+        # local_pfn_returncode = local_pfn_proc.returncode
 
         # sets global pfn
         global_pfn = ("root://cms-xrd-global.cern.ch//" + f).rstrip()
 
         # test local vs global load
         try:
+            if not local_pfn.startswith("root"):
+                raise ValueError("Can not use another protocol other than xrootd.")
+
             testfile = ROOT.TFile.Open(local_pfn)
             if testfile and testfile.IsOpen():
                 print(f"-->Local load test OK: {local_pfn}")
@@ -50,8 +77,7 @@ def get_input_files(debug=False):
         except:
             print(f"Local test open failed, forcing GLOBAL XROOTD: {global_pfn}")
             input_files.append(global_pfn)
-    
-      
+
     print("\nInput files:")
     print(input_files)
 

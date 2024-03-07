@@ -9,9 +9,9 @@ export SCRAM_ARCH=el8_amd64_gcc12
 CMSSW_VERSION="CMSSW_14_0_1"
 
 if [ -d "$CMSSW_VERSION" ]; then
-  echo "CMSSW area already exists."
+  echo "$CMSSW_VERSION area found exists."
 else
-  echo "CMSSW area does not exist. Creating it..."
+  echo "$CMSSW_VERSION area does not exist. Creating one..."
   cmsrel $CMSSW_VERSION
   echo "... done."
 fi

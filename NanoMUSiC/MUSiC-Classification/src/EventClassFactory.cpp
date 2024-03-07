@@ -200,8 +200,6 @@ auto EventClass::dump_outputs(std::unique_ptr<TFile> &output_file, Shifts::Varia
                              replace_substring(h_met.GetName(), "Nominal", Shifts::variation_to_string(shift)).c_str());
 }
 
-constexpr std::size_t max_allowed_jets_per_class = 6;
-
 auto make_event_class_name(
     std::pair<std::size_t, std::size_t> muon_counts,
     std::pair<std::size_t, std::size_t> electron_counts,
@@ -213,6 +211,7 @@ auto make_event_class_name(
     const std::optional<std::unordered_map<std::string, std::optional<TriggerMatch>>> &trigger_matches)
     -> std::tuple<std::optional<std::string>, std::optional<std::string>, std::optional<std::string>>
 {
+    constexpr std::size_t max_allowed_jets_per_class = 6;
 
     auto [n_muons, total_muons] = muon_counts;
     auto [n_electrons, total_electrons] = electron_counts;

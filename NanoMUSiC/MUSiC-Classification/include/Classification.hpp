@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <cstddef>
+#include <cstdio>
 #include <cstdlib>
 #include <functional>
 #include <optional>
@@ -225,7 +226,8 @@ inline auto load_input_files(const std::string &filename) -> std::vector<std::tu
 
     if (!file.is_open())
     {
-        throw std::runtime_error(fmt::format("ERROR: Could not open file: {}", filename));
+        fmt::print(stderr, "ERROR: Could not open file: {}", filename);
+        exit(EXIT_FAILURE);
     }
 
     std::string line;

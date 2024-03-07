@@ -32,6 +32,10 @@ export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/MUSiC-Classification/python:$PYTHONPATH
 export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/NanoEventClass/python:$PYTHONPATH
 export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/CondorScheduler:$PYTHONPATH
 
+
+# add gfal2 to PATH
+export PYTHONPATH="$PYTHONPATH:/usr/lib64/python3.9/site-packages:/usr/lib/python3.9/site-packages"
+
 export MYPXLANA=EventClassFactory
 
 # Source all the needed set_env
