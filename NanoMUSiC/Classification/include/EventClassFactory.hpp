@@ -1,18 +1,13 @@
 #ifndef EVENT_CLASS_FACTORY_HPP
 #define EVENT_CLASS_FACTORY_HPP
 
-#include "Histograms.hpp"
-#include "Math/Vector4D.h"
 #include "Math/Vector4Dfwd.h"
-#include "Math/VectorUtil.h"
-#include "ROOT/RVec.hxx"
 #include "TEfficiency.h"
 #include <TFile.h>
 #include <TH1F.h>
 #include <TH2F.h>
 #include <memory>
 #include <optional>
-#include <string_view>
 
 #include "ObjectFactories/music_objects.hpp"
 #include "Shifts.hpp"
@@ -35,16 +30,11 @@ class EventClass
     static constexpr float count_bin_center = 0.5;
     static constexpr double min_bin_width = 10.;
 
-    // std::map<std::string, int> countMap;
-    // Shifts::Variations shift;
-
     static auto make_bin_limits(const std::map<std::string, int> &countMap)
         -> std::pair<std::vector<double>, std::vector<double>>;
 
-    // EventClass() = default;
 
     EventClass(const std::string &_class_name,
-               //    const std::map<std::string, int> &_countMap,
                const std::vector<double> &limits,
                const std::vector<double> &limits_met,
                const Shifts::Variations _shift,

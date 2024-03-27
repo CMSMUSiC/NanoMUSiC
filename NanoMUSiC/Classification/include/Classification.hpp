@@ -2,7 +2,6 @@
 #define CLASSIFICATION
 
 // analysis classes
-#include "Validation.hpp"
 
 #include <cmath>
 #include <cstddef>
@@ -34,6 +33,7 @@
 #include "Configs.hpp"
 #include "JetCorrector.hpp"
 #include "MUSiCTools.hpp"
+#include "NanoAODGenInfo.hpp"
 #include "TOMLConfig.hpp"
 
 #include "PDFAlphaSWeights.hpp"
@@ -54,6 +54,12 @@
 #include "TriggerMatch.hpp"
 
 #include "Shifts.hpp"
+
+#include "NanoEventClass.hpp"
+#include "EventClassFactory.hpp"
+
+#include "json.hpp"
+using json = nlohmann::json;
 
 using namespace ROOT;
 using namespace ROOT::Math;
@@ -123,7 +129,7 @@ auto unwrap(std::optional<TTreeReaderValue<T>> &value) -> T
 }
 
 template <typename T, typename Q>
-auto unwrap(std::optional<TTreeReaderValue<T>> &value, Q &&default_value = Q()) -> T
+auto unwrap_or(std::optional<TTreeReaderValue<T>> &value, Q &&default_value = Q()) -> T
 {
     static_assert(std::is_arithmetic<T>::value, "The default type must be numeric.");
 
@@ -160,7 +166,7 @@ auto unwrap(std::optional<TTreeReaderArray<T>> &array) -> RVec<T>
 }
 
 template <typename T, typename Q, typename R>
-auto unwrap(std::optional<TTreeReaderArray<T>> &array, Q &&default_value, R &&default_size) -> T
+auto unwrap_or(std::optional<TTreeReaderArray<T>> &array, Q &&default_value, R &&default_size) -> T
 {
     if (array)
     {
@@ -200,6 +206,55 @@ inline auto getCpuTime() -> double
     return ((double)tv.tv_sec + (double)tv.tv_usec / 1000000.0);
 }
 
+class LocalFile
+{
+  private:
+    std::string input_file;
+    std::string local_file;
+
+  public:
+    LocalFile(const std::string &_input_file)
+        : input_file(_input_file)
+    {
+        std::hash<std::string> hasher;
+
+        local_file = fmt::format("local_file_{}.root", hasher(input_file));
+
+        // check if file already exists
+        auto found_file = false;
+        std::filesystem::path currentDir = std::filesystem::current_path();
+        for (const auto &entry : std::filesystem::directory_iterator(currentDir))
+        {
+            if (entry.is_regular_file() && entry.path().filename() == local_file)
+            {
+                found_file = true;
+            }
+        }
+        if (not(found_file))
+        {
+            std::system(fmt::format("rm -rf local_file_*.root").c_str());
+
+            // download new file
+            auto xrdcp_return_code = std::system(fmt::format("xrdcp --silent {} {} ", input_file, local_file).c_str());
+            if (xrdcp_return_code != 0)
+            {
+                fmt::print(stderr, "ERROR: Could not download input file: {}\n", input_file);
+                std::exit(EXIT_FAILURE);
+            }
+        }
+    }
+
+    auto get_local_file() const
+    {
+        return local_file;
+    }
+
+    auto get_input_file() const
+    {
+        return input_file;
+    }
+};
+
 inline auto split_string(const std::string &input, const std::string &delimiter) -> std::vector<std::string>
 {
     std::vector<std::string> result;
@@ -218,30 +273,6 @@ inline auto split_string(const std::string &input, const std::string &delimiter)
     return result;
 }
 
-inline auto load_input_files(const std::string &filename) -> std::vector<std::tuple<std::string, long long, long long>>
-{
-    std::vector<std::tuple<std::string, long long, long long>> input_files;
-
-    std::ifstream file(filename);
-
-    if (!file.is_open())
-    {
-        fmt::print(stderr, "ERROR: Could not open file: {}", filename);
-        exit(EXIT_FAILURE);
-    }
-
-    std::string line;
-    while (std::getline(file, line))
-    {
-        auto inputs = split_string(line, " ");
-
-        input_files.push_back(std::tuple<std::string, long long, long long>(
-            inputs.at(0), std::stoll(inputs.at(1)), std::stoll(inputs.at(2))));
-    }
-    file.close();
-
-    return input_files;
-}
 
 template <typename T>
 inline auto save_as(T &histo, std::string &&filename) -> void

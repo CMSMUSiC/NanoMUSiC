@@ -1,13 +1,8 @@
 #ifndef MUSIC_CONFIG
 #define MUSIC_CONFIG
 
-#include <filesystem>
-
-#include "Enumerate.hpp"
-#include "MUSiCTools.hpp"
-
-#include <fmt/color.h>
-#include <fmt/format.h>
+#include "fmt/format.h"
+#include <array>
 #include <limits>
 #include <stdexcept>
 

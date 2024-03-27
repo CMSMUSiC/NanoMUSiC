@@ -45,7 +45,7 @@ def make_condor_executable(
     executable.append("date")
     executable.append("hostname")
     executable.append(
-        f"$_CONDOR_SCRATCH_DIR/NanoMUSiC/MUSiC-Classification/classification --process {process} --year {year} {get_is_data_argument(is_data)} --output {get_absolute_path(output_path)} --buffer {buffer_index} --xsection {xsection} --filter_eff {filter_eff} --k_factor {k_factor} --luminosity {luminosity} --xs_order {xs_order} --process_group {process_group} --input {input_file} && echo YAY!"
+        f"$_CONDOR_SCRATCH_DIR/NanoMUSiC/Classification/classification --process {process} --year {year} {get_is_data_argument(is_data)} --output {get_absolute_path(output_path)} --buffer {buffer_index} --xsection {xsection} --filter_eff {filter_eff} --k_factor {k_factor} --luminosity {luminosity} --xs_order {xs_order} --process_group {process_group} --input {input_file} && echo YAY!"
     )
     executable.append("date")
     executable.append("ls")

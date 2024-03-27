@@ -2,21 +2,30 @@
 
 #include "ROOT/RVec.hxx"
 #include <algorithm>
-#include <cassert>
 #include <cmath>
 #include <cstddef>
-#include <functional>
-#include <limits>
-#include <stdexcept>
 
 namespace GeneratorFilters
+{auto get_filter(const std::string &filter_name) -> Filter_t
 {
-auto no_filter(const NanoObjects::LHEParticles &lhe_particles, debugger_t &h_debug) -> bool
+    auto it = filters.find(filter_name);
+    if (it != filters.end())
+    {
+        return it->second;
+    }
+    else
+    {
+        fmt::print(stderr, "ERROR: Could not find generator filter: {}", filter_name);
+        std::exit(EXIT_FAILURE);
+    }
+}
+
+auto no_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, debugger_t &h_debug) -> bool
 {
     return true;
 }
 
-auto wlnujets_filter(const NanoObjects::LHEParticles &lhe_particles,
+auto wlnujets_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
                      const float &mass_min,
                      const float &mass_max,
                      const float &pt_min,
@@ -96,8 +105,8 @@ auto wlnujets_filter(const NanoObjects::LHEParticles &lhe_particles,
     return filter_result;
 }
 
-auto wlnujets_mass_binned_filter(const NanoObjects::LHEParticles &lhe_particles,
-                                 const NanoObjects::GenParticles &gen_particles,
+auto wlnujets_mass_binned_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
+                                 const NanoAODGenInfo::GenParticles &gen_particles,
                                  const Year &year,
                                  const float &mass_min,
                                  const float &mass_max,
@@ -194,8 +203,8 @@ auto wlnujets_mass_binned_filter(const NanoObjects::LHEParticles &lhe_particles,
     return filter_result;
 }
 
-auto wlnujets_mass_binned_sherpa_filter(const NanoObjects::LHEParticles &lhe_particles,
-                                        const NanoObjects::GenParticles &gen_particles,
+auto wlnujets_mass_binned_sherpa_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
+                                        const NanoAODGenInfo::GenParticles &gen_particles,
                                         const Year &year,
                                         const float &mass_min,
                                         const float &mass_max,
@@ -280,7 +289,7 @@ auto wlnujets_mass_binned_sherpa_filter(const NanoObjects::LHEParticles &lhe_par
     return filter_result;
 }
 
-auto dy_filter(const NanoObjects::LHEParticles &lhe_particles,
+auto dy_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
                const float &mass_min,
                const float &mass_max,
                const float &pt_min,
@@ -384,15 +393,15 @@ auto dy_filter(const NanoObjects::LHEParticles &lhe_particles,
     return filter_result;
 }
 
-auto ttbar_filter(const NanoObjects::LHEParticles &lhe_particles,
+auto ttbar_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
                   const float &mass_min,
                   const float &mass_max,
                   debugger_t &h_debug) -> bool
 {
-    auto ttbar_mass = VecOps::InvariantMass(VecOps::Take(lhe_particles.pt, -6),
-                                            VecOps::Take(lhe_particles.eta, -6),
-                                            VecOps::Take(lhe_particles.phi, -6),
-                                            VecOps::Take(lhe_particles.mass, -6));
+    auto ttbar_mass = ROOT::VecOps::InvariantMass(ROOT::VecOps::Take(lhe_particles.pt, -6),
+                                                  ROOT::VecOps::Take(lhe_particles.eta, -6),
+                                                  ROOT::VecOps::Take(lhe_particles.phi, -6),
+                                                  ROOT::VecOps::Take(lhe_particles.mass, -6));
 
     bool filter_result = false;
     if (std::max(0.f, mass_min - .5f) <= ttbar_mass and ttbar_mass <= mass_max + .5f)
@@ -414,11 +423,11 @@ auto ttbar_filter(const NanoObjects::LHEParticles &lhe_particles,
     return filter_result;
 }
 
-auto wg_filter(const NanoObjects::LHEParticles &lhe_particles, const float &pt_max, debugger_t &h_debug) -> bool
+auto wg_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, const float &pt_max, debugger_t &h_debug) -> bool
 {
     bool filter_result = false;
     auto pt_filter = (lhe_particles.pdgId == 22) && (lhe_particles.status == 1);
-    if (VecOps::Any(lhe_particles.pt[pt_filter] <= pt_max))
+    if (ROOT::VecOps::Any(lhe_particles.pt[pt_filter] <= pt_max))
     {
         filter_result = true;
     }
@@ -435,7 +444,8 @@ auto wg_filter(const NanoObjects::LHEParticles &lhe_particles, const float &pt_m
     return filter_result;
 }
 
-auto ww_2l2v_filter(const NanoObjects::LHEParticles &lhe_particles, const float &mass_max, debugger_t &h_debug) -> bool
+auto ww_2l2v_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, const float &mass_max, debugger_t &h_debug)
+    -> bool
 {
     bool filter_result = false;
     float mass = -99.;
@@ -497,7 +507,7 @@ auto ww_2l2v_filter(const NanoObjects::LHEParticles &lhe_particles, const float 
     return filter_result;
 }
 
-auto gamma_jet_cleanner_filter(const NanoObjects::LHEParticles &lhe_particles, float dr_max, debugger_t &h_debug)
+auto gamma_jet_cleanner_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, float dr_max, debugger_t &h_debug)
     -> bool
 {
     bool filter_result = false;
@@ -505,15 +515,15 @@ auto gamma_jet_cleanner_filter(const NanoObjects::LHEParticles &lhe_particles, f
     float dr = -999.;
 
     auto gamma_idx = (lhe_particles.pdgId == 22) && (lhe_particles.status == 1);
-    if (VecOps::Sum(gamma_idx) >= 1)
+    if (ROOT::VecOps::Sum(gamma_idx) >= 1)
     {
         auto jets_idx = (lhe_particles.pdgId != 22) && (lhe_particles.status == 1);
 
-        auto delta_phi = VecOps::DeltaPhi((lhe_particles.phi[gamma_idx]).at(0), lhe_particles.phi[jets_idx]);
+        auto delta_phi = ROOT::VecOps::DeltaPhi((lhe_particles.phi[gamma_idx]).at(0), lhe_particles.phi[jets_idx]);
         auto delta_eta = ((lhe_particles.eta[gamma_idx]).at(0) - (lhe_particles.eta[jets_idx]));
-        auto delta_r = VecOps::sqrt(delta_eta * delta_eta + delta_phi * delta_phi);
+        auto delta_r = ROOT::VecOps::sqrt(delta_eta * delta_eta + delta_phi * delta_phi);
 
-        dr = VecOps::Min(delta_r);
+        dr = ROOT::VecOps::Min(delta_r);
     }
 
     if (dr < dr_max)
@@ -535,9 +545,9 @@ auto gamma_jet_cleanner_filter(const NanoObjects::LHEParticles &lhe_particles, f
 
 ////////////////////////////////////////////
 /// Not needed for now. Samples have to be requested/followed-up.
-// auto zg_filter(const NanoObjects::LHEParticles &lhe_particles, const float &pt_max) -> bool
+// auto zg_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, const float &pt_max) -> bool
 // {
-//     if (VecOps::Any(lhe_particles.pt[(lhe_particles.pdgId == 22) && (lhe_particles.status == 1)] <= pt_max))
+//     if (ROOT::VecOps::Any(lhe_particles.pt[(lhe_particles.pdgId == 22) && (lhe_particles.status == 1)] <= pt_max))
 //     {
 //         // fmt::print("[ Generator Filter ] Pass: TTBar Mass Cut. ...\n");
 //         return true;
@@ -547,7 +557,7 @@ auto gamma_jet_cleanner_filter(const NanoObjects::LHEParticles &lhe_particles, f
 //     return false;
 // }
 
-// auto wwto2l2nu_filter(const NanoObjects::LHEParticles &lhe_particles, const float &mass_max, debugger_t &h_debug)
+// auto wwto2l2nu_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, const float &mass_max, debugger_t &h_debug)
 //     -> bool
 // {
 //     // filter Lep+Lep- pair

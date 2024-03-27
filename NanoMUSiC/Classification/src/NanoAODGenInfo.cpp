@@ -1,5 +1,5 @@
-#include "Math/Vector4Dfwd.h"
 #include "NanoAODGenInfo.hpp"
+#include "Math/Vector4Dfwd.h"
 
 namespace NanoAODGenInfo
 {
@@ -85,6 +85,5 @@ GenJets::GenJets(const RVec<float> _pt, const RVec<float> _eta, const RVec<float
       phi(_phi)
 {
 }
-
 
 } // namespace NanoAODGenInfo

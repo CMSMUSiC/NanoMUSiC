@@ -128,7 +128,7 @@ def parse_args():
     )
 
     parser.add_argument(
-        "--kill-all",
+        "--kill-all-jobs",
         help="Kill all tasks.",
         action="store_true",
         default=False,
@@ -201,19 +201,29 @@ def main():
         monitoring_args.append((sample["process_name"], sample["year"]))
 
     # launch web server
-    if not args.kill_all:
+    if not args.kill_all_jobs:
         os.system("pkill -9 -f 'python3 -m http.server 8089'")
         os.system("python3 -m http.server 8089 &")
     else:
-        print("Killing all tasks ...")
+        kill_list = []
         for task in monitoring_args:
             process_name, year = task
-            print(
-                f"Killing: crab kill -d crab_nano_music_{process_name}_{year}/crab_{process_name}_{year} ..."
-            )
-            os.system(
+            kill_list.append(
                 f"crab kill -d crab_nano_music_{process_name}_{year}/crab_{process_name}_{year}"
             )
+
+        # killing all jobs
+        if len(kill_list) > 0:
+            with Pool(min(args.jobs, len(kill_list))) as p:
+                monitoring_results = list(
+                    tqdm.tqdm(
+                        p.imap(os.system, kill_list),
+                        total=len(kill_list),
+                        desc=f"Killing all jobs [{min(args.jobs, len(kill_list))} jobs] ...",
+                        unit=" jobs",
+                    )
+                )
+
         exit(0)
 
     with open("index.html", "w") as f:
@@ -308,9 +318,24 @@ def main():
             f.write(html_content.replace("__INPUT_FILE__", args.submited_samples))
 
         if args.loop:
+            resubmition_list = []
             for idx_res, res in enumerate(results):
                 if res["status"] == "Failed":
-                    os.system(res["retry_command"])
+                    # os.system(res["retry_command"])
+                    resubmition_list.append(res["retry_command"])
+
+            # resubmitting failed tasks
+            if len(resubmition_list)>0:
+                max_resub_jobs = 20
+                with Pool(min(max_resub_jobs, len(resubmition_list))) as p:
+                    _ = list(
+                        tqdm.tqdm(
+                            p.imap(os.system, resubmition_list),
+                            total=len(resubmition_list),
+                            desc=f"Resubmiting tasks [{min(max_resub_jobs, len(resubmition_list))} jobs] ...",
+                            unit=" tasks",
+                        )
+                    )
             time.sleep(60)
         else:
             exit(0)

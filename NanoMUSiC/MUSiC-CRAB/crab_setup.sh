@@ -22,10 +22,15 @@ cmsenv
 cd $SCRIPTDIR
 
 export PATH="$SCRIPTDIR:$PATH"
+export PATH=$PATH:$SCRIPTDIR/../../bin;
 export CRAB_MUSIC_BASE=$SCRIPTDIR
+
+# add gfal2 to PATH
+export PYTHONPATH="$PYTHONPATH:/usr/lib64/python3.9/site-packages:/usr/lib/python3.9/site-packages"
 
 #setup go env
 export GOPATH="$SCRIPTDIR/../../cache:$GOPATH"
 export GOROOT="$SCRIPTDIR/../../opt/go"
 export PATH="$SCRIPTDIR/../../opt/go/bin:$PATH" 
 export GOBIN="$SCRIPTDIR/../../bin"
+

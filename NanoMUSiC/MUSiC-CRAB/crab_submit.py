@@ -129,6 +129,9 @@ def build_crab_config(process_name, das_name, year, is_data, global_now):
     this_config.JobType.psetName = f"{os.getenv('CRAB_MUSIC_BASE')}/crab_music_pset.py"
     this_config.JobType.scriptExe = f"{os.getenv('CRAB_MUSIC_BASE')}/run_nano_music.sh"
 
+    # run for at most 13 hours
+    this_config.JobType.maxJobRuntimeMin = 60*13
+
     this_config.JobType.inputFiles = [
         f"raw_configs/{process_name}/raw_config.toml",
         f"{os.getenv('CRAB_MUSIC_BASE')}/../../bin/nanoaod_skimmer",
@@ -140,9 +143,9 @@ def build_crab_config(process_name, das_name, year, is_data, global_now):
     this_config.Data.inputDBS = "global"
     this_config.Data.splitting = "FileBased"
     if is_data:
-        this_config.Data.unitsPerJob = 3
+        this_config.Data.unitsPerJob = 2
     else:
-        this_config.Data.unitsPerJob = 3
+        this_config.Data.unitsPerJob = 2
 
     this_config.Data.totalUnits = -1
     this_config.Data.publication = False

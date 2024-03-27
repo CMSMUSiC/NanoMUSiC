@@ -201,12 +201,9 @@ func main() {
 	}
 
 	// skim files
-	var wg_skim sync.WaitGroup
-	temp_files_ch := make(chan string, len(raw_files))
+	temp_files := []string{}
 	for _, f := range raw_files {
-		wg_skim.Add(1)
-		go func(f string, out chan<- string) {
-			defer wg_skim.Done()
+		func(f string) {
 			this_output_file := fmt.Sprintf("nano_music_%s.root", fmt.Sprint(rand.Int63()))
 
 			// 209 is the maximum compression level
@@ -217,20 +214,25 @@ func main() {
 			fmt.Printf("\n\n[NanoAOD Skimmer - %s] Skimming: %s \n", time.Now().UTC(), cmd.String())
 			err := cmd.Run()
 			if err != nil {
-				fmt.Printf("Panicing when skimming file: %s \n", f)
+				fmt.Printf("ERROR: Could not process file: %s \n", f)
 				panic(err)
 			}
-			out <- this_output_file
-		}(f, temp_files_ch)
+			temp_files = append(temp_files, this_output_file)
+
+			// cleanning
+			cmd = exec.Command("rm", f)
+			_, err = cmd.Output()
+			if err != nil {
+				fmt.Printf("ERROR: Could not remove raw file: %s \n", f)
+				panic(err)
+			}
+		}(f)
 	}
 
 	hadd_args := []string{"-ff", output_file}
-	for i := 0; i < len(raw_files); i++ {
-		hadd_args = append(hadd_args, <-temp_files_ch)
-	}
+	hadd_args = append(hadd_args, temp_files...)
 
 	fmt.Printf("\n\n[NanoAOD Skimmer - %s] Awaiting ... \n", time.Now().UTC())
-	wg_skim.Wait()
 
 	cmd = exec.Command("hadd", hadd_args...)
 	cmd.Stdout = os.Stdout

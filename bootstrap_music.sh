@@ -2,7 +2,7 @@
 
 # Set up the LCG environment
 # List of available software:
-# https://lcginfo.cern.ch/release_packages/x86_64-centos7-gcc11-opt/104c/
+# https://lcginfo.cern.ch/
 
 echo "[ LCG View ] Using x86_64-el9-gcc12-opt ..."
 source /cvmfs/sft.cern.ch/lcg/views/LCG_105a/x86_64-el9-gcc12-opt/setup.sh
@@ -25,6 +25,9 @@ pip install --user poxy
 
 # install atlasplot
 pip install --user atlasplots
+
+# install ray
+python3 -m pip install --user "ray[default]"
 
 
 #install parallel with lastest version

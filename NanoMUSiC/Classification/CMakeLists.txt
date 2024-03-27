@@ -39,9 +39,10 @@ add_executable(
     src/main.cpp //
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/TOMLConfig.cpp //
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/BinLimits.cpp //
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/NanoObjects.cpp //
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/JetCorrector.cpp //
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/NanoEventClass/src/NanoEventClass.cpp //
+    src/GeneratorFilters.cpp //
+    src/NanoAODGenInfo.cpp //
     src/ZToLepLepX.cpp //
     src/GammaPlusJet.cpp //
     src/TTBarTo1Lep2Bjet2JetMET.cpp //

@@ -29,7 +29,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/external/
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/include/
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-LightSkimmer/include/
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-Classification/include/
+    ${CMAKE_SOURCE_DIR}/NanoMUSiC/Classification/include/
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-Validation/include/
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer

@@ -6,7 +6,7 @@ import ROOT
 
 def main():
     ROOT.gSystem.CompileMacro(
-        f"{os.getenv('MUSIC_BASE')}/NanoMUSiC/MUSiC-Classification/scripts/merge_outputs.C",
+        f"{os.getenv('MUSIC_BASE')}/NanoMUSiC/Classification/scripts/merge_outputs.C",
         "gsO",
     )
     ROOT.merge_outputs("classification_outputs", ["SingleMuon"], "foo.root")

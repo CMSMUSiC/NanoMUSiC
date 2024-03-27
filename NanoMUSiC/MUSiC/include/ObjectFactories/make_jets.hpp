@@ -2,16 +2,15 @@
 #define MAKE_JETS_HPP
 
 // ROOT Stuff
-#include "Math/Vector4D.h"
 #include "Math/Vector4Dfwd.h"
-#include "Math/VectorUtil.h"
 #include "ROOT/RVec.hxx"
 
 #include "Configs.hpp"
-#include "CorrectionSets.hpp"
 #include "JetCorrector.hpp"
 #include "Shifts.hpp"
 #include "music_objects.hpp"
+
+#include "NanoAODGenInfo.hpp"
 
 using namespace ROOT;
 using namespace ROOT::Math;
@@ -53,7 +52,7 @@ inline auto get_jet_energy_corrections(const Shifts::Variations shift,
                                        Int_t Jet_genJetIdx,          //
                                        float fixedGridRhoFastjetAll, //
                                        JetCorrector &jet_corrections,
-                                       const NanoObjects::GenJets &gen_jets) -> double
+                                       const NanoAODGenInfo::GenJets &gen_jets) -> double
 {
 
     auto [scale_shift, resolution_shift] = get_scale_resolution_shifts(shift);
@@ -81,21 +80,21 @@ inline auto get_jet_energy_corrections(const Shifts::Variations shift,
     return scale_correction_nominal * resolution_correction_nominal;
 }
 
-inline auto make_jets(const RVec<float> &Jet_pt,            //
-                      const RVec<float> &Jet_eta,           //
-                      const RVec<float> &Jet_phi,           //
-                      const RVec<float> &Jet_mass,          //
-                      const RVec<Int_t> &Jet_jetId,         //
-                      const RVec<float> &Jet_btagDeepFlavB, //
-                      const RVec<float> &Jet_rawFactor,     //
-                      const RVec<float> &Jet_area,          //
-                      const RVec<Int_t> &Jet_genJetIdx,     //
-                      float fixedGridRhoFastjetAll,         //
-                      JetCorrector &jet_corrections,        //
-                                                            //   BTagSFCorrector &btag_sf_Corrector,   //
-                      const NanoObjects::GenJets &gen_jets, //
-                      bool is_data,                         //
-                      const std::string &_year,             //
+inline auto make_jets(const RVec<float> &Jet_pt,               //
+                      const RVec<float> &Jet_eta,              //
+                      const RVec<float> &Jet_phi,              //
+                      const RVec<float> &Jet_mass,             //
+                      const RVec<Int_t> &Jet_jetId,            //
+                      const RVec<float> &Jet_btagDeepFlavB,    //
+                      const RVec<float> &Jet_rawFactor,        //
+                      const RVec<float> &Jet_area,             //
+                      const RVec<Int_t> &Jet_genJetIdx,        //
+                      float fixedGridRhoFastjetAll,            //
+                      JetCorrector &jet_corrections,           //
+                                                               //   BTagSFCorrector &btag_sf_Corrector,   //
+                      const NanoAODGenInfo::GenJets &gen_jets, //
+                      bool is_data,                            //
+                      const std::string &_year,                //
                       const Shifts::Variations shift) -> std::pair<MUSiCObjects, MUSiCObjects>
 {
     auto year = get_runyear(_year);

@@ -1,13 +1,7 @@
-#include "../include/EventClassFactory.hpp"
-#include "Configs.hpp"
+#include "EventClassFactory.hpp"
 #include "Histograms.hpp"
-#include "Math/GenVector/VectorUtil.h"
-#include "Math/VectorUtil.h"
-#include "TEfficiency.h"
-#include <filesystem>
 #include <fmt/format.h>
 #include <optional>
-#include <string_view>
 
 #include "NanoEventClass.hpp"
 

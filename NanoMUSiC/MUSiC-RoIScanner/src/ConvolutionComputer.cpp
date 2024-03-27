@@ -105,9 +105,9 @@ double second_part(const double x, const double lambert)
 /* Limits to TMath::Poisson
  * Explanations:
  *
- * TMath::Poisson( x, par ) works like this:
  * if (x == 0.0)
  *    return 1./Exp(par);
+ * TMath::Poisson( x, par ) works like this:
  * else {
  *    Double_t lnpoisson = x*log(par)-par-LnGamma(x+1.);
  *    return Exp(lnpoisson);
@@ -513,7 +513,8 @@ double compute_p_convolution(const double N_obs,
         {
             // calculate normalization
             const double sigmas = N_SM / sigma_MC;
-            const double normalisation = gsl_sf_erf_Q(-sigmas) * sigma_MC * SQRT2PI;
+            // const double normalisation = gsl_sf_erf_Q(-sigmas) * sigma_MC * SQRT2PI;
+            const double normalisation = 1.0;
 
             if (debugLevel > 2)
             {

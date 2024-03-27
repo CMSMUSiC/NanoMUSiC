@@ -13,7 +13,7 @@ import (
 )
 
 type SubmitTask struct {
-	Sample string
+	Sample         string
 	XSec           float64
 	KFactor        float64
 	FilterEff      float64
@@ -27,7 +27,7 @@ type SubmitTask struct {
 }
 
 type SubmitTask struct {
-	Sample string
+	Sample         string
 	XSec           float64
 	KFactor        float64
 	FilterEff      float64
@@ -39,8 +39,6 @@ type SubmitTask struct {
 	Crab_task_name []string
 	Output_files   []string
 }
-
-
 
 func make_tasks_list(c *cli.Context) map[string]SubmitTask {
 	var cfg map[string]SubmitTask
@@ -65,7 +63,7 @@ func make_tasks_list(c *cli.Context) map[string]SubmitTask {
 func submit_task_imp(task SubmitTask) {
 	fmt.Printf("submiting with executable: %s...\n", task.executable)
 
-	cmd := exec.Command("ls", "-lah", "/home/home1/institut_3a/silva/projects/music/NanoMUSiC/NanoMUSiC/MUSiC-Classification/clai")
+	cmd := exec.Command("ls", "-lah", "/home/home1/institut_3a/silva/projects/music/NanoMUSiC/NanoMUSiC/Classification/clai")
 	out, err := cmd.CombinedOutput()
 
 	if err != nil {
