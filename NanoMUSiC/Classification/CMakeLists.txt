@@ -34,11 +34,10 @@ add_link_options(
     -L/cvmfs/sft.cern.ch/lcg/views/LCG_105a/x86_64-el9-gcc12-opt/lib64
 )
 
-add_executable(
-    classification //
-    src/main.cpp //
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/TOMLConfig.cpp //
+add_library(Classification SHARED 
+    src/classification.cpp //
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/BinLimits.cpp //
+    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/TOMLConfig.cpp //
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/JetCorrector.cpp //
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/NanoEventClass/src/NanoEventClass.cpp //
     src/GeneratorFilters.cpp //
@@ -49,10 +48,11 @@ add_executable(
     src/WToLepNuX.cpp //
     src/WToLepNu_eff.cpp //
     src/ZToTauTauLepX.cpp //
-    src/EventClassFactory.cpp //
+    src/EventClass.cpp //
 )
-target_link_libraries(classification LINK_PUBLIC ROOT::RIO ROOT::Net)
-install(TARGETS classification DESTINATION ${CMAKE_SOURCE_DIR}/bin)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+target_link_libraries(Classification LINK_PUBLIC ROOT::RIO ROOT::Net)
+install(TARGETS Classification DESTINATION ${CMAKE_SOURCE_DIR}/lib)
 
 add_executable(
     merger //

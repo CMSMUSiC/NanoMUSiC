@@ -195,6 +195,104 @@ auto NanoEventClass::get_class_name(std::string histo_full_name, const std::stri
     std::exit(EXIT_FAILURE);
 }
 
+auto NanoEventClass::make_event_class_name(std::pair<std::size_t, std::size_t> muon_counts,
+                                           std::pair<std::size_t, std::size_t> electron_counts,
+                                           std::pair<std::size_t, std::size_t> tau_counts,
+                                           std::pair<std::size_t, std::size_t> photon_counts,
+                                           std::pair<std::size_t, std::size_t> jet_counts,
+                                           std::pair<std::size_t, std::size_t> bjet_counts,
+                                           std::pair<std::size_t, std::size_t> met_counts)
+    -> std::tuple<std::optional<std::string>, std::optional<std::string>, std::optional<std::string>>
+{
+    constexpr std::size_t max_allowed_jets_per_class = 6;
+
+    auto [n_muons, total_muons] = muon_counts;
+    auto [n_electrons, total_electrons] = electron_counts;
+    auto [n_taus, total_taus] = tau_counts;
+    auto [n_photons, total_photons] = photon_counts;
+    auto [n_jets, total_jets] = jet_counts;
+    auto [n_bjets, total_bjets] = bjet_counts;
+    auto [n_met, total_met] = met_counts;
+
+    if (n_muons == 0 and n_electrons == 0 and n_photons == 0)
+    {
+        return std::make_tuple(std::nullopt, std::nullopt, std::nullopt);
+    }
+
+    if (n_bjets + n_jets > max_allowed_jets_per_class)
+    {
+        return std::make_tuple(std::nullopt, std::nullopt, std::nullopt);
+    }
+
+    std::string class_name = "EC";
+
+    if (n_muons > 0)
+    {
+        class_name = fmt::format("{}_{}Muon", class_name, n_muons);
+    }
+    if (n_electrons > 0)
+    {
+        class_name = fmt::format("{}_{}Electron", class_name, n_electrons);
+    }
+    if (n_taus > 0)
+    {
+        class_name = fmt::format("{}_{}Tau", class_name, n_taus);
+    }
+    if (n_photons > 0)
+    {
+        class_name = fmt::format("{}_{}Photon", class_name, n_photons);
+    }
+    if (n_jets > 0)
+    {
+        class_name = fmt::format("{}_{}Jet", class_name, n_jets);
+    }
+    if (n_bjets > 0)
+    {
+        class_name = fmt::format("{}_{}bJet", class_name, n_bjets);
+    }
+    if (n_met > 0)
+    {
+        class_name = fmt::format("{}_{}MET", class_name, n_met);
+    }
+
+    if (n_muons == 0         //
+        and n_electrons == 0 //
+        and n_taus == 0      //
+        and n_photons == 0   //
+        and n_jets == 0      //
+        and n_bjets == 0     //
+        and n_met == 0)
+    {
+        class_name = "EC_Empty";
+    }
+
+    std::optional<std::string> exclusive_class_name = std::nullopt;
+    if (n_muons == total_muons             //
+        and n_electrons == total_electrons //
+        and n_taus == total_taus           //
+        and n_photons == total_photons     //
+        and n_jets == total_jets           //
+        and n_bjets == total_bjets         //
+        and n_met == total_met)
+    {
+        exclusive_class_name = class_name;
+    }
+
+    std::optional<std::string> inclusive_class_name = fmt::format("{}+X", class_name);
+
+    std::optional<std::string> jet_inclusive_class_name = std::nullopt;
+    if (n_muons == total_muons             //
+        and n_electrons == total_electrons //
+        and n_taus == total_taus           //
+       and n_photons == total_photons     //
+        and n_met == total_met)
+    {
+        jet_inclusive_class_name = fmt::format("{}+NJet", class_name);
+    }
+
+    return std::make_tuple(exclusive_class_name, inclusive_class_name, jet_inclusive_class_name);
+}
+
 // auto NanoEventClass::filter_histos(const std::string &process_group_pattern,
 //                                    const std::string &xs_order_pattern,
 //                                    const std::string &sample_pattern,

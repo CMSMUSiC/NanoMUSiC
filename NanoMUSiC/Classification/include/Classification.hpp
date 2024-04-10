@@ -55,8 +55,8 @@
 
 #include "Shifts.hpp"
 
+#include "EventClass.hpp"
 #include "NanoEventClass.hpp"
-#include "EventClassFactory.hpp"
 
 #include "json.hpp"
 using json = nlohmann::json;
@@ -272,7 +272,6 @@ inline auto split_string(const std::string &input, const std::string &delimiter)
 
     return result;
 }
-
 
 template <typename T>
 inline auto save_as(T &histo, std::string &&filename) -> void
@@ -562,14 +561,14 @@ inline auto trigger_filter(const std::string &process, //
 };
 
 template <typename F>
-inline auto loop_over_objects(F f,
-                              std::size_t muons_size,
-                              std::size_t electrons_size,
-                              std::size_t taus_size,
-                              std::size_t photons_size,
-                              std::size_t bjets_size,
-                              std::size_t jets_size,
-                              std::size_t met_size) -> void
+inline auto loop_over_object_combinations(F f,
+                                          std::size_t muons_size,
+                                          std::size_t electrons_size,
+                                          std::size_t taus_size,
+                                          std::size_t photons_size,
+                                          std::size_t bjets_size,
+                                          std::size_t jets_size,
+                                          std::size_t met_size) -> void
 {
     for (std::size_t idx_muon = 0; idx_muon <= muons_size; idx_muon++)
     {
@@ -594,5 +593,36 @@ inline auto loop_over_objects(F f,
         }
     }
 }
+
+struct KinematicsBuffer
+{
+    double sum_pt;
+    double met;
+    Math::PtEtaPhiMVector sum_four_momenta;
+
+    void update(double other_sum_pt, double other_met, const Math::PtEtaPhiMVector &other_sum_four_momenta)
+    {
+        sum_pt += other_sum_pt;
+        met += other_met;
+        sum_four_momenta += other_sum_four_momenta;
+    }
+};
+
+auto classification(const std::string process,
+                    const std::string year,
+                    const bool is_data,
+                    const std::string x_section_str,
+                    const std::string filter_eff_str,
+                    const std::string k_factor_str,
+                    const std::string luminosity_str,
+                    const std::string xs_order,
+                    const std::string process_group,
+                    const std::string sum_weights_json_filepath,
+                    const std::string input_file,
+                    // [EVENT_CLASS_NAME, [SHIFT, EVENT_CLASS_OBJECT] ]
+                    EventClassContainer &event_classes,
+                    std::optional<unsigned long> first_event = std::nullopt,
+                    std::optional<unsigned long> last_event = std::nullopt,
+                    const bool debug = false) -> EventClassContainer &;
 
 #endif // CLASSIFICATION

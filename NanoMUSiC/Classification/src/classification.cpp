@@ -2,9 +2,6 @@
 
 #include "Configs.hpp"
 #include "RtypesCore.h"
-#include "TFile.h"
-#include "TH1.h"
-#include "TROOT.h"
 #include "TTreeReader.h"
 #include "TTreeReaderValue.h"
 #include "fmt/core.h"
@@ -14,64 +11,35 @@
 #include <stdlib.h>
 #include <string>
 
-auto main(int argc, char *argv[]) -> int
+auto classification(const std::string process,
+                    const std::string year,
+                    const bool is_data,
+                    const std::string x_section_str,
+                    const std::string filter_eff_str,
+                    const std::string k_factor_str,
+                    const std::string luminosity_str,
+                    const std::string xs_order,
+                    const std::string process_group,
+                    const std::string sum_weights_json_filepath,
+                    const std::string input_file,
+                    // [EVENT_CLASS_NAME, [SHIFT, EVENT_CLASS_OBJECT] ]
+                    EventClassContainer &event_classes,
+                    std::optional<unsigned long> first_event,
+                    std::optional<unsigned long> last_event,
+                    const bool debug) -> EventClassContainer &
 {
-    // command line options
-    argh::parser cmdl(argc, argv, argh::parser::PREFER_PARAM_FOR_UNREG_OPTION);
-    const bool show_help = cmdl[{"-h", "--help"}];
-    const std::string process = cmdl({"-p", "--process"}).str();
-    const std::string year = cmdl({"-y", "--year"}).str();
-    const bool is_data = cmdl[{"-d", "--is_data"}];
-    const std::string output_path = cmdl({"-o", "--output"}).str();
-    const std::string buffer_index = cmdl({"-b", "--buffer"}).str();
-    const std::string x_section_str = cmdl({"-x", "--xsection"}).str();
-    const std::string filter_eff_str = cmdl({"-f", "--filter_eff"}).str();
-    const std::string k_factor_str = cmdl({"-k", "--k_factor"}).str();
-    const std::string luminosity_str = cmdl({"-l", "--luminosity"}).str();
-    const std::string xs_order = cmdl({"-po", "--xs_order"}).str();
-    const std::string process_group = cmdl({"-pg", "--process_group"}).str();
-    const std::string sum_weights_json_filepath = cmdl({"-w", "--weights"}).str();
-    const std::string input_file = cmdl({"-i", "--input_file"}).str();
-    std::string first_event_str = cmdl({"-i", "--first_event"}).str();
-    std::string last_event_str = cmdl({"-i", "--last_event"}).str();
-    const bool debug = cmdl[{"--debug"}];
-
-    if (show_help or process == "" or year == "" or output_path == "" or input_file == "" or x_section_str == "" or
-        filter_eff_str == "" or k_factor_str == "" or luminosity_str == "" or xs_order == "" or process_group == "" or
-        sum_weights_json_filepath == "" or buffer_index == "")
+    if (not(first_event))
     {
-        fmt::print("Usage: classification [OPTIONS]\n");
-        fmt::print("          -h|--help: Shows this message.\n");
-        fmt::print("          -p|--process: Process (aka sample).\n");
-        fmt::print("          -y|--year: Year.\n");
-        fmt::print("          -d|--is_data: Is data ?\n");
-        fmt::print("          -o|--output: Output path.\n");
-        fmt::print("          -x|--xsection: cross-section.\n");
-        fmt::print("          -f|--filter_eff: Generator level filter efficiency.\n");
-        fmt::print("          -k|--k_factor: K-Factor.\n");
-        fmt::print("          -l|--luminosity: Int. luminosity.\n");
-        fmt::print("          -po|--xs_order: Process order.\n");
-        fmt::print("          -pg|--process_group: Process group.\n");
-        fmt::print("          -i|--input: Path to a .txt with input files (one per line).\n");
-        fmt::print("          --debug: Run in debug mode..\n\n");
-
-        std::exit(EXIT_FAILURE);
+        first_event = 0;
     }
-
-    if (first_event_str == "")
+    if (not(last_event))
     {
-        first_event_str = "0";
-    }
-    if (last_event_str == "")
-    {
-        last_event_str = "-1";
+        last_event = -1;
     }
     const double x_section = std::stod(x_section_str);
     const double filter_eff = std::stod(filter_eff_str);
     const double k_factor = std::stod(k_factor_str);
     const double luminosity = std::stod(luminosity_str);
-    const long long first_event = std::stol(first_event_str);
-    const long long last_event = std::stol(last_event_str);
 
     const auto shifts = Shifts(is_data);
 
@@ -135,12 +103,6 @@ auto main(int argc, char *argv[]) -> int
     /////////////////////////////////////////////
     /////////////////////////////////////////////
 
-    // [EVENT_CLASS_NAME, [SHIFT, EVENT_CLASS_OBJECT] ]
-    using ClassCollection_t =
-        std::array<std::unique_ptr<EventClass>, static_cast<std::size_t>(Shifts::Variations::kTotalVariations)>;
-    std::unordered_map<std::string, ClassCollection_t> event_classes;
-    event_classes.reserve(4000);
-
     // get sum of weights
     auto sum_weights_json_file = std::ifstream(sum_weights_json_filepath);
     if (!sum_weights_json_file.is_open())
@@ -149,41 +111,43 @@ auto main(int argc, char *argv[]) -> int
         std::exit(EXIT_FAILURE);
     }
     json sum_weights_json = json::parse(sum_weights_json_file);
-    const auto [sum_weights, counter_raw_events, should_use_LHEWeight] =
-        [&sum_weights_json, &process, &year, is_data]() -> std::tuple<double, double, bool>
-    {
-        if (not(is_data))
-        {
-            double w_LHEWeight_originalXWGTUP = sum_weights_json[process][year]["LHEWeight_originalXWGTUP"];
-            double w_genWeight = sum_weights_json[process][year]["genWeight"];
-            long long counter_raw_events = sum_weights_json[process][year]["counter_raw_events"];
-
-            if (w_genWeight == 0. and w_LHEWeight_originalXWGTUP > 0.)
-            {
-                return {w_LHEWeight_originalXWGTUP, counter_raw_events, true};
-            }
-
-            if (w_genWeight > 0.)
-            {
-                if (w_genWeight / static_cast<double>(counter_raw_events) == 1.)
-                {
-                    if (w_LHEWeight_originalXWGTUP > 0.)
-                    {
-                        return {w_LHEWeight_originalXWGTUP, counter_raw_events, true};
-                    }
-                    fmt::print(stderr, "ERROR: Could not get sum of weights. Both weights are invalid.\n");
-                    std::exit(EXIT_FAILURE);
-                }
-                return {w_genWeight, counter_raw_events, false};
-            }
-
-            fmt::print(stderr, "ERROR: Could not get sum of weights. Both weights are invalid.\n");
-            std::exit(EXIT_FAILURE);
-        }
-        return {1., 1., false};
-    }();
+    const auto [sum_weights, counter_raw_events, should_use_LHEWeight] = std::tuple<double, double, double>(1., 1., 1.);
+    // const auto [sum_weights, counter_raw_events, should_use_LHEWeight] =
+    //     [&sum_weights_json, &process, &year, is_data]() -> std::tuple<double, double, bool>
+    // {
+    //     if (not(is_data))
+    //     {
+    //         double w_LHEWeight_originalXWGTUP = sum_weights_json[process][year]["sum_LHEWeight_originalXWGTUP"];
+    //         double w_genWeight = sum_weights_json[process][year]["sum_genWeight"];
+    //         long long counter_raw_events = sum_weights_json[process][year]["raw_events"];
+    //
+    //         if (w_genWeight == 0. and w_LHEWeight_originalXWGTUP > 0.)
+    //         {
+    //             return {w_LHEWeight_originalXWGTUP, counter_raw_events, true};
+    //         }
+    //
+    //         if (w_genWeight > 0.)
+    //         {
+    //             if (w_genWeight / static_cast<double>(counter_raw_events) == 1.)
+    //             {
+    //                 if (w_LHEWeight_originalXWGTUP > 0.)
+    //                 {
+    //                     return {w_LHEWeight_originalXWGTUP, counter_raw_events, true};
+    //                 }
+    //                 fmt::print(stderr, "ERROR: Could not get sum of weights. Both weights are invalid.\n");
+    //                 std::exit(EXIT_FAILURE);
+    //             }
+    //             return {w_genWeight, counter_raw_events, false};
+    //         }
+    //
+    //         fmt::print(stderr, "ERROR: Could not get sum of weights. Both weights are invalid.\n");
+    //         std::exit(EXIT_FAILURE);
+    //     }
+    //     return {1., 1., false};
+    // }();
 
     TChain input_chain("Events");
+    input_chain.SetBranchStatus("*", 0);
     input_chain.Add(input_file.c_str());
 
     auto tree_reader = TTreeReader(&input_chain);
@@ -301,11 +265,11 @@ auto main(int argc, char *argv[]) -> int
     long long global_event_number = -1;
     for (auto &&event : tree_reader)
     {
-        if (event < first_event)
+        if (event < *first_event)
         {
             continue;
         }
-        else if (event > last_event and last_event >= 0)
+        else if (event > *last_event and *last_event >= 0)
         {
             break;
         }
@@ -509,15 +473,13 @@ auto main(int argc, char *argv[]) -> int
                                       std::size_t idx_met) -> void
             {
                 auto [event_class_name_exclusive, event_class_name_inclusive, event_class_name_jetinclusive] =
-                    make_event_class_name({idx_muon, muons.size()},         //
-                                          {idx_electron, electrons.size()}, //
-                                          {idx_tau, taus.size()},           //
-                                          {idx_photon, photons.size()},     //
-                                          {idx_jet, jets.size()},           //
-                                          {idx_bjet, bjets.size()},         //
-                                          {idx_met, met.size()}             //
-                                                                            // ,  trigger_matches //
-                    );
+                    NanoEventClass::make_event_class_name({idx_muon, muons.size()},         //
+                                                          {idx_electron, electrons.size()}, //
+                                                          {idx_tau, taus.size()},           //
+                                                          {idx_photon, photons.size()},     //
+                                                          {idx_jet, jets.size()},           //
+                                                          {idx_bjet, bjets.size()},         //
+                                                          {idx_met, met.size()});
 
                 for (auto &&const_shift : shifts.get_constant_shifts(diff_shift))
                 {
@@ -538,12 +500,10 @@ auto main(int argc, char *argv[]) -> int
                         auto pu_weight =
                             pu_corrector->evaluate({unwrap(Pileup_nTrueInt), Shifts::get_pu_variation(shift)});
 
-                        auto prefiring_weight = Shifts::get_prefiring_weight(
-                            //
-                            unwrap_or(L1PreFiringWeight_Nom, 1.), //
-                            unwrap_or(L1PreFiringWeight_Up, 1.),  //
-                            unwrap_or(L1PreFiringWeight_Dn, 1.),
-                            shift);
+                        auto prefiring_weight = Shifts::get_prefiring_weight(unwrap_or(L1PreFiringWeight_Nom, 1.), //
+                                                                             unwrap_or(L1PreFiringWeight_Up, 1.),  //
+                                                                             unwrap_or(L1PreFiringWeight_Dn, 1.),
+                                                                             shift);
 
                         auto pdf_as_weight = Shifts::get_pdf_alpha_s_weights(shift,
                                                                              lha_indexes,
@@ -612,73 +572,41 @@ auto main(int argc, char *argv[]) -> int
                     for (auto &&class_name :
                          {event_class_name_exclusive, event_class_name_inclusive, event_class_name_jetinclusive})
                     {
-                        if (class_name)
+                        if (not(class_name))
                         {
                             continue;
                         }
 
                         // create event class, if does not exists
-                        if (event_classes.find(*class_name) == event_classes.end())
+                        if (not(event_classes.has_ec(*class_name)))
                         {
-                            event_classes.insert({*class_name, ClassCollection_t()});
-                            const auto [edges, edges_met] = EventClass::make_bin_limits({{"Ele", idx_electron},
-                                                                                         {"EleEE", 0},
-                                                                                         {"EleEB", 0},
-                                                                                         {"Muon", idx_muon},
-                                                                                         {"Gamma", 0},
-                                                                                         {"GammaEB", idx_photon},
-                                                                                         {"GammaEE", 0},
-                                                                                         {"Tau", idx_tau},
-                                                                                         {"Jet", idx_jet},
-                                                                                         {"bJet", idx_bjet},
-                                                                                         {"MET", idx_met}});
-
-                            shifts.for_each(
-                                [&](const Shifts::Variations shift) -> void
-                                {
-                                    if (shift == Shifts::Variations::Nominal)
-                                    {
-                                        event_classes[*class_name][static_cast<std::size_t>(shift)] =
-                                            std::make_unique<EventClass>(*class_name,
-                                                                         edges,
-                                                                         edges_met,
-                                                                         shift,
-                                                                         process,
-                                                                         year,
-                                                                         process_group,
-                                                                         xs_order);
-                                    }
-                                    else
-                                    {
-                                        event_classes[*class_name][static_cast<std::size_t>(shift)] =
-                                            std::make_unique<EventClass>(*(
-                                                event_classes[*class_name]
-                                                             [static_cast<std::size_t>(Shifts::Variations::Nominal)]));
-                                    }
-                                });
+                            event_classes.push(*class_name);
                         }
 
                         // fill class
-                        event_classes[*class_name][static_cast<std::size_t>(shift)]->fill({idx_muon, muons},
-                                                                                          {idx_electron, electrons},
-                                                                                          {idx_tau, taus},
-                                                                                          {idx_photon, photons},
-                                                                                          {idx_bjet, bjets},
-                                                                                          {idx_jet, jets},
-                                                                                          {idx_met, met},
-                                                                                          weight);
+                        // auto [sum_pt, invariant_mass, _met] = compute_music_variables({idx_muon, muons},
+                        //                                                               {idx_electron, electrons},
+                        //                                                               {idx_tau, taus},
+                        //                                                               {idx_photon, photons},
+                        //                                                               {idx_bjet, bjets},
+                        //                                                               {idx_jet, jets},
+                        //                                                               {idx_met, met},
+                        //                                                               weight);
+                        auto [sum_pt, invariant_mass, _met] = std::tuple<float, float, float>(1., 1., 1.);
+
+                        event_classes.unsafe_ec(*class_name).push(sum_pt, invariant_mass, _met, weight, shift);
                     }
                 }
             };
 
-            loop_over_objects(classification,
-                              muons.size(),
-                              electrons.size(),
-                              taus.size(),
-                              photons.size(),
-                              bjets.size(),
-                              jets.size(),
-                              met.size());
+            loop_over_object_combinations(classification,
+                                          muons.size(),
+                                          electrons.size(),
+                                          taus.size(),
+                                          photons.size(),
+                                          bjets.size(),
+                                          jets.size(),
+                                          met.size());
         }
 
         // process monitoring
@@ -706,39 +634,11 @@ auto main(int argc, char *argv[]) -> int
         }
     }
 
-    fmt::print("\n[MUSiC Classification] Saving outputs ({} - {} - {}) ...\n", process, year, buffer_index);
-    auto ec_output_file = std::unique_ptr<TFile>(TFile::Open( //
-        get_output_file_path("ec_classes", ".", process, year, process_group, xs_order, is_data, buffer_index)
-            .c_str(),              //
-        "RECREATE",                //
-        "nanomusic_event_classes", //
-        0                          //
-        ));
-
-    shifts.for_each(
-        [&](const Shifts::Variations shift) -> void
-        {
-            for (auto &&[class_name, class_collection] : event_classes)
-            {
-                if (is_data)
-                {
-                    if (shift == Shifts::Variations::Nominal)
-                    {
-                        class_collection[static_cast<std::size_t>(shift)]->dump_outputs(ec_output_file, shift);
-                    }
-                }
-                else
-                {
-                    class_collection[static_cast<std::size_t>(shift)]->dump_outputs(ec_output_file, shift);
-                }
-            }
-        });
-
-    ec_output_file->Close();
+    fmt::print("{}", EventClassContainer::serialize(event_classes));
 
     fmt::print("\n[MUSiC Classification] Done ...\n");
     fmt::print("\n\nProcessed {} events ...\n", global_event_number);
     PrintProcessInfo();
 
-    return EXIT_SUCCESS;
+    return event_classes;
 }

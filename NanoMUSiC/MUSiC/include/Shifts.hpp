@@ -156,8 +156,10 @@ class Shifts
         MuonScale_Down,
     };
 
-    static auto variation_to_string(const Variations var) -> std::string
+    template <typename T>
+    static auto variation_to_string(T _var) -> std::string
     {
+        auto var = static_cast<Variations>(_var);
         switch (var)
         {
         case Variations::Nominal:
@@ -227,7 +229,8 @@ class Shifts
         case Variations::TauEnergy_Down:
             return "TauEnergy_Down";
         default:
-            throw std::runtime_error(fmt::format("ERROR: Could not convert variation ({}) to string.", var));
+            fmt::print(stderr, "ERROR: Could not convert variation ({}) to string.", var);
+            std::exit(EXIT_FAILURE);
         }
     }
 

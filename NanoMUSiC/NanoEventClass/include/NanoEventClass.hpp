@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <set>
 #include <unordered_map>
 
@@ -78,12 +79,14 @@ class NanoEventClass
 
     static auto get_class_name(std::string histo_full_name, const std::string delimiter = "]_[") -> std::string;
 
-    // auto filter_histos(const std::string &process_group,
-    //                    const std::string &xs_order,
-    //                    const std::string &sample,
-    //                    const std::string &year,
-    //                    const std::string &shift,
-    //                    const std::string &histo_name) -> std::vector<NanoEventHisto>;
+    static auto make_event_class_name(std::pair<std::size_t, std::size_t> muon_counts,
+                                      std::pair<std::size_t, std::size_t> electron_counts,
+                                      std::pair<std::size_t, std::size_t> tau_counts,
+                                      std::pair<std::size_t, std::size_t> photon_counts,
+                                      std::pair<std::size_t, std::size_t> jet_counts,
+                                      std::pair<std::size_t, std::size_t> bjet_counts,
+                                      std::pair<std::size_t, std::size_t> met_counts)
+        -> std::tuple<std::optional<std::string>, std::optional<std::string>, std::optional<std::string>>;
 };
 
 class NanoEventClassCollection
