@@ -30,6 +30,11 @@ pip install --user atlasplots
 python3 -m pip install --user "ray[default]"
 
 
+# install CLI helpers and tools 
+python3 -m pip install --user typer
+python3 -m pip install --user pydantic
+
+
 #install parallel with lastest version
 cd $SCRIPT_DIR/bin 
 wget https://git.savannah.gnu.org/cgit/parallel.git/plain/src/parallel 
@@ -45,5 +50,8 @@ rm -rf go
 wget https://go.dev/dl/go1.22.0.linux-amd64.tar.gz 
 tar -zvxf go1.22.0.linux-amd64.tar.gz 
 rm go1.22.0.linux-amd64.tar.gz 
+
+
+# install redis-server
 
 cd $SCRIPT_DIR

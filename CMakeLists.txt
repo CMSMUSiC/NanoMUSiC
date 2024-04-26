@@ -24,29 +24,14 @@ include_directories(
     ${ROOT_INCLUDE_DIR}
     ${LCG_BASE}/include
     ${LCG_BASE}/include/rapidjson
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/TEventClass/include/
+    ${LCG_BASE}/include/python3.9
+    ${LCG_BASE}/lib/python3.9/site-packages/pybind11/include
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/NanoEventClass/include/
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/external/
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/include/
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-LightSkimmer/include/
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/Classification/include/
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-Validation/include/
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Pxl/Pxl/src
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Tools
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/include
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/tools/include
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Tools/
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Tools/PXL/
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Main
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-Utils/include
 )
 
 # base library
 add_subdirectory(NanoMUSiC)
 
-# enable tests
-# enable_testing()
-
-# list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")

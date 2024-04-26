@@ -173,24 +173,6 @@ auto Distribution::get_systematics_uncert(
 
                             xsec_order_uncert_non_LO_samples.at(pg) += uncert_qcd_scale;
                         }
-
-                        //////////////
-                        //////////////
-                        ///// DEBUG!!!
-                        // if (histo_name == "h_counts")
-                        // {
-                        //     fmt::print(
-                        //         "-- {} - {} - [{}]\n",
-                        //         sample,
-                        //         year,
-                        //         fmt::join(Uncertanties::AbsDiff(unmerged_histos[i],
-                        //                                         unmerged_mc_histograms.at("PDF_As_Up").at(pg).at(i))
-                        //                                         /
-                        //                       ROOTHelpers::Counts(unmerged_histos[i]),
-                        //                   ", "));
-                        // }
-                        //////////////
-                        //////////////
                     }
                 }
             }

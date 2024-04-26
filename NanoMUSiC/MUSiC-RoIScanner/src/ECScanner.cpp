@@ -400,7 +400,6 @@ bool ECScanner::vetoRegion(const MCBin &mcbin,
     }
 
     // Low-Statistics treatment as presented to EXO on 20. Jan 2016
-
     if (not m_noLowStatsTreatment)
     {
         if (mcbin.getTotalMcStatUncert() / mcbin.getTotalMcEvents() > m_thresholdLowStatsUncert)
@@ -555,7 +554,6 @@ double ECScanner::calcPvalMUSiC(const MCBin &bin, const double data) const
     if (p < 0)
     {
         // p negative (either lookup-table-miss or lookup table skipped)
-
         // call p-value calculation from ConvolutionComputer.h
         p = compute_p_convolution(data, bin.getTotalMcEvents(), bin.getTotalMcUncert(), m_p_prior);
     }
@@ -573,16 +571,12 @@ double ECScanner::calcPvalMUSiC(const MCBin &bin, const double data) const
 }
 
 //// Calculate significance
-//
-//
 double ECScanner::calcSignificance(const MCBin &bin, const double data) const
 {
     return (bin.getTotalMcEvents() - data) / bin.getTotalMcUncert();
 }
 
 //// Filter regions based on significance
-//
-//
 void ECScanner::significanceFilter()
 {
     findRoI("significance", false);
@@ -599,8 +593,6 @@ void ECScanner::significanceFilter()
 }
 
 //// Return the position of the highest filled bin in either data or MC
-//
-//
 int ECScanner::getMaxFilledBin()
 {
     int highestMC = m_mcBins.size() - 1;

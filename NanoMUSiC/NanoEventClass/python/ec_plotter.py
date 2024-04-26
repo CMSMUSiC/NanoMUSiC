@@ -11,14 +11,15 @@ import os
 import json
 from multiprocessing import Pool
 from pvalue import get_integral_pvalue
+from ec_tools import get_source_files, to_root_latex
 
 
 years_glob = {
-    # "2016*": {"name": "2016", "lumi": "36.3"},  #
-    # "2017": {"name": "2017", "lumi": "41.5"},  #
+    "2016*": {"name": "2016", "lumi": "36.3"},  #
+    "2017": {"name": "2017", "lumi": "41.5"},  #
     "2018": {"name": "2018", "lumi": "59.8"},  #
-    # "[2017,2018]": {"name": "2017+2018", "lumi": "101"},  #
-    # "*": {"name": "", "lumi": "138"},
+    "[2017,2018]": {"name": "2017+2018", "lumi": "101"},  #
+    "*": {"name": "", "lumi": "138"},
 }
 
 
@@ -216,47 +217,47 @@ def make_plot(args):
     # fig.savefig(f"{output_file_path}.C")
 
 
-def main():
+def ec_plotter(
+    input_dir: str, patterns: list[str], output_dir: str = "classification_plots"
+):
     aplt.set_atlas_style()
     tdrstyle.setTDRStyle()
     ROOT.gStyle.SetMarkerSize(0.5)
     ROOT.gStyle.SetLabelSize(25, "XYZ")
 
     for year in years_glob:
-        # input_files = get_source_files("/disk1/silva/classification_histograms", year)
-        input_files = get_source_files(
-            "/disk1/silva/classification_histograms_2023_10_04", year
-        )
+        input_files = get_source_files(input_dir, year)
         print("Creating EC Collection ...")
         ec_collection = ROOT.NanoEventClassCollection(
             input_files,
-            # ["EC_2Muon*", "EC_2Electron*"],
-            [
-                # "*",
-                # # "EC_2Muon*",
-                # "EC_1Electron+NJet",
-                # "EC_2Muon_1MET",
-                # "EC_2Muon_2Tau_1MET",
-                # "EC_2Muon_1Photon_1bJet_1MET+X",
-                # "EC_2Muon_1Electron_3bJet+X",
-                # "EC_2Muon+X",
-                # "EC_4Muon",
-                # "EC_4Electron",
-                # "EC_2Muon_2Electron",
-                # "EC_1Muon_1Electron+1MET",
-                # "EC_1Muon_2Jet",
-                # "EC_1Muon+X",
-                # "EC_1Electron+X",
-                # "EC_1Photon+X",
-                # "EC_1Muon_2bJet",
-                # "EC_1Muon_1Jet",
-                # "EC_1Electron_2Jet",
-                # "EC_2Muon+NJet",
-                "EC_1Electron_2Tau_1Jet_2bJet_1MET",
-                "EC_2Muon_1Tau_2Jet_1bJet_1MET+NJet",
-                # "EC_2Muon_2Tau_1MET",
-                # "EC_2Muon_1Electron_1Tau_2Jet_1MET+X",
-            ],
+            patterns,
+            # # ["EC_2Muon*", "EC_2Electron*"],
+            # [
+            #     # "*",
+            #     # # "EC_2Muon*",
+            #     # "EC_1Electron+NJet",
+            #     # "EC_2Muon_1MET",
+            #     # "EC_2Muon_2Tau_1MET",
+            #     # "EC_2Muon_1Photon_1bJet_1MET+X",
+            #     # "EC_2Muon_1Electron_3bJet+X",
+            #     # "EC_2Muon+X",
+            #     # "EC_4Muon",
+            #     # "EC_4Electron",
+            #     # "EC_2Muon_2Electron",
+            #     # "EC_1Muon_1Electron+1MET",
+            #     # "EC_1Muon_2Jet",
+            #     # "EC_1Muon+X",
+            #     # "EC_1Electron+X",
+            #     # "EC_1Photon+X",
+            #     # "EC_1Muon_2bJet",
+            #     # "EC_1Muon_1Jet",
+            #     # "EC_1Electron_2Jet",
+            #     # "EC_2Muon+NJet",
+            #     "EC_1Electron_2Tau_1Jet_2bJet_1MET",
+            #     "EC_2Muon_1Tau_2Jet_1bJet_1MET+NJet",
+            #     # "EC_2Muon_2Tau_1MET",
+            #     # "EC_2Muon_1Electron_1Tau_2Jet_1MET+X",
+            # ],
         )
 
         print("Building distributions ...")
@@ -304,10 +305,12 @@ def main():
                 plots_data[plot.class_name]["p_value"] = p_value
                 plots_data[plot.class_name]["veto_reason"] = veto_reason
 
-        if not os.path.exists(f"/disk1/silva/classification_plots/"):
-            os.makedirs(f"/disk1/silva/classification_plots/")
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
         with open(
-            f"classification_plots/plot_data_{years_glob[year]['name'].replace('+', '_')}.json",
+            "{}/plot_data_{}.json".format(
+                output_dir, years_glob[year]["name"].replace("+", "_")
+            ),
             "w",
             encoding="utf-8",
         ) as f:
@@ -331,7 +334,7 @@ def main():
                     plot.mc_uncertainty,
                     plot.ratio_graph,
                     plot.ratio_mc_error_band,
-                    "/disk1/silva/classification_plots",
+                    output_dir,
                     year,
                     plots_data[plot.class_name]["p_value"],
                 ]
@@ -339,8 +342,8 @@ def main():
 
             # prepare output area
             ec_nice_name = plot.class_name.replace("+", "_")
-            if not os.path.exists(f"/disk1/silva/classification_plots/{ec_nice_name}"):
-                os.makedirs(f"/disk1/silva/classification_plots/{ec_nice_name}")
+            if not os.path.exists("{}/{}".format(output_dir, ec_nice_name)):
+                os.makedirs("{}/{}".format(output_dir, ec_nice_name))
 
             # make_plot(
             #     (
@@ -356,7 +359,7 @@ def main():
             #         plot.mc_uncertainty,
             #         plot.ratio_graph,
             #         plot.ratio_mc_error_band,
-            #         "/disk1/silva/classification_plots",
+            #         output_dir,
             #         year,
             #     )
             # )
@@ -377,11 +380,13 @@ def main():
 
     print("Copying index.php ...")
     os.system(
-        r"find classification_plots/ -type d -exec cp $MUSIC_BASE/NanoMUSiC/NanoEventClass/scripts/index.php {} \;"
+        r"find ___OUTPUT_DIR___/ -type d -exec cp $MUSIC_BASE/NanoMUSiC/NanoEventClass/scripts/index.php {} \;".replace(
+            "___OUTPUT_DIR___", output_dir
+        )
     )
 
     print("Done.")
 
 
 if __name__ == "__main__":
-    main()
+    ec_plotter()

@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstdlib>
 #include <iostream>
 #include <stdexcept>
 #include <stdlib.h>
@@ -79,7 +80,7 @@ MCBin &MCBin::operator+=(const MCBin &add)
         std::cerr << "MCBin2 lowerEdge: " << add.lowerEdge;
         std::cerr << " upperEdge: " << (add.lowerEdge + add.width);
         std::cerr << " (width " << add.width << ")" << std::endl;
-        exit(1);
+	std::exit(EXIT_FAILURE);
     }
     lowerEdge = min(lowerEdge, add.lowerEdge);
     width += add.width;

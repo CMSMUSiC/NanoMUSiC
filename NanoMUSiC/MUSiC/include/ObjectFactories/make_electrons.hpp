@@ -239,7 +239,11 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
         float eta_correction_factor = 0.f;
         if (Electron_pt.at(i) >= ObjConfig::Electrons[year].MaxLowPt)
         {
-            pt_correction_factor = Electron_scEtOverPt[i] + 1.f;
+            pt_correction_factor = 1.f;
+            if (not(std::isnan(Electron_scEtOverPt[i]) or std::isinf(Electron_scEtOverPt[i])))
+            {
+                pt_correction_factor += Electron_scEtOverPt[i];
+            }
             eta_correction_factor = Electron_deltaEtaSC[i];
         }
 

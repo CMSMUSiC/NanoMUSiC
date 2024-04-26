@@ -23,11 +23,8 @@ add_compile_options(-I/cvmfs/sft.cern.ch/lcg/views/LCG_105a/x86_64-el9-gcc12-opt
 
 add_library(NanoEventClass SHARED
         src/NanoEventClass.cpp
-        src/Scanner.cpp
         src/Distribution.cpp
         src/distribution_factory.cpp
-        src/ConvolutionComputer.cpp
-        src/ConvolutionLookup.cpp
 )
 
 # compilation options
@@ -67,7 +64,7 @@ install(TARGETS NanoEventClass
 )
 
 message(STATUS "Generating NanoEventClass dictionaries ...")
-ROOT_GENERATE_DICTIONARY(NanoEventClassDict include/NanoEventClass.hpp include/Distribution.hpp include/distribution_factory.hpp include/Scanner.hpp MODULE NanoEventClass LINKDEF include/NanoEventClassLinkDef.h)
+ROOT_GENERATE_DICTIONARY(NanoEventClassDict include/NanoEventClass.hpp include/Distribution.hpp include/distribution_factory.hpp  MODULE NanoEventClass LINKDEF include/NanoEventClassLinkDef.h)
 message(STATUS "Done.")
 
 install(TARGETS NanoEventClassDict DESTINATION ${CMAKE_SOURCE_DIR}/lib)
@@ -75,37 +72,3 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libNanoEventClass_rdict.pcm DESTINATIO
 install(TARGETS NanoEventClass DESTINATION ${CMAKE_SOURCE_DIR}/lib)
 
 
-# ec_scanner
-add_executable(ec_scanner
-        src/NanoEventClass.cpp
-        src/Scanner.cpp
-        src/Distribution.cpp
-        src/distribution_factory.cpp
-        src/ConvolutionComputer.cpp
-        src/ConvolutionLookup.cpp
-        src/main/ec_scanner.cpp)
-
-target_compile_options(ec_scanner PUBLIC 
-        -MD
-        -MP
-        -O3
-        -Wall
-        -Wextra
-        -fPIC
-        -pthread
-        -std=c++17
-        -m64
-        -g
-        -fdiagnostics-color=always 
-        -march=native 
-        -ffloat-store
-        ${ROOT_CFLAGS}
-        )
-target_link_libraries(NanoEventClass ROOT::RIO ROOT::Net ROOT::ROOTVecOps fmt gsl gslcblas)
-
-target_include_directories(ec_scanner PUBLIC 
-        ${CMAKE_SOURCE_DIR}/NanoMUSiC/NanoEventClass/include
-        ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/external
-  )
-
-install(TARGETS ec_scanner DESTINATION ${CMAKE_SOURCE_DIR}/bin)

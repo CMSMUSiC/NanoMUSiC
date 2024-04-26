@@ -1,12 +1,7 @@
 import ROOT
+import classification_imp as clft
 from glob import glob
 import sys
-import copy
-from tqdm import tqdm
-from decimal import Decimal
-import os
-import json
-from multiprocessing import Pool
 
 ROOT.gErrorIgnoreLevel = 6000
 print("Loading NanoEventClass ...")
@@ -120,3 +115,4 @@ def make_shifts(shifts):
             n_shifts = len(shifts[s])
 
     return cpp_shift, n_shifts
+

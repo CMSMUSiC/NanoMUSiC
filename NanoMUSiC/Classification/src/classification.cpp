@@ -6,18 +6,51 @@
 #include "TTreeReaderValue.h"
 #include "fmt/core.h"
 #include <cstdlib>
-#include <memory>
+#include <fmt/format.h>
 #include <optional>
+#include <pybind11/pytypes.h>
 #include <stdlib.h>
 #include <string>
+
+#include "pybind11/pybind11.h"
+#include "pybind11/stl.h"
+namespace py = pybind11;
+using namespace pybind11::literals;
+
+auto print_debug(long long global_event_index, bool debug) -> void
+{
+    // process monitoring
+    if (debug)
+    {
+        if ((global_event_index < 10) or                                        //
+            (global_event_index < 100 && global_event_index % 10 == 0) or       //
+            (global_event_index < 1000 && global_event_index % 100 == 0) or     //
+            (global_event_index < 10000 && global_event_index % 1000 == 0) or   //
+            (global_event_index < 100000 && global_event_index % 10000 == 0) or //
+            (global_event_index >= 100000 && global_event_index % 100000 == 0)  //
+        )
+        {
+            fmt::print("\n\nProcessed {} events ...\n", global_event_index + 1);
+            PrintProcessInfo();
+        }
+    }
+    else
+    {
+        if ((global_event_index > 100000 and global_event_index % 100000 == 0))
+        {
+            fmt::print("\n\nProcessed {} events ...\n", global_event_index);
+            PrintProcessInfo();
+        }
+    }
+}
 
 auto classification(const std::string process,
                     const std::string year,
                     const bool is_data,
-                    const std::string x_section_str,
-                    const std::string filter_eff_str,
-                    const std::string k_factor_str,
-                    const std::string luminosity_str,
+                    const double x_section,
+                    const double filter_eff,
+                    const double k_factor,
+                    const double luminosity,
                     const std::string xs_order,
                     const std::string process_group,
                     const std::string sum_weights_json_filepath,
@@ -25,9 +58,15 @@ auto classification(const std::string process,
                     // [EVENT_CLASS_NAME, [SHIFT, EVENT_CLASS_OBJECT] ]
                     EventClassContainer &event_classes,
                     std::optional<unsigned long> first_event,
-                    std::optional<unsigned long> last_event,
-                    const bool debug) -> EventClassContainer &
+                    std::optional<long> last_event,
+                    const bool debug) -> void
 {
+    fmt::print("\n[MUSiC Classification] Starting ...\n");
+    if (debug)
+    {
+        fmt::print("[MUSiC Classification] Will process file: {}\n", input_file);
+    }
+
     if (not(first_event))
     {
         first_event = 0;
@@ -36,10 +75,6 @@ auto classification(const std::string process,
     {
         last_event = -1;
     }
-    const double x_section = std::stod(x_section_str);
-    const double filter_eff = std::stod(filter_eff_str);
-    const double k_factor = std::stod(k_factor_str);
-    const double luminosity = std::stod(luminosity_str);
 
     const auto shifts = Shifts(is_data);
 
@@ -145,12 +180,12 @@ auto classification(const std::string process,
     //     }
     //     return {1., 1., false};
     // }();
+    //
 
-    TChain input_chain("Events");
-    input_chain.SetBranchStatus("*", 0);
-    input_chain.Add(input_file.c_str());
-
-    auto tree_reader = TTreeReader(&input_chain);
+    auto input_root_file = std::unique_ptr<TFile>(TFile::Open(input_file.c_str()));
+    auto input_ttree = input_root_file->Get<TTree>("Events");
+    input_ttree->SetBranchStatus("*", false);
+    auto tree_reader = TTreeReader(input_ttree);
 
     // check for the available pdf weights in the tree
     std::optional<std::pair<unsigned int, unsigned int>> lha_indexes =
@@ -162,17 +197,7 @@ auto classification(const std::string process,
         this_sample_pdf = std::unique_ptr<LHAPDF::PDF>(LHAPDF::mkPDF(std::get<0>(*lha_indexes)));
     }
 
-    ADD_VALUE_READER(pass_low_pt_muon_trigger, bool);
-    ADD_VALUE_READER(pass_high_pt_muon_trigger, bool);
-    ADD_VALUE_READER(pass_double_muon_trigger, bool);
-    ADD_VALUE_READER(pass_low_pt_electron_trigger, bool);
-    ADD_VALUE_READER(pass_high_pt_electron_trigger, bool);
-    ADD_VALUE_READER(pass_double_electron_trigger, bool);
-    ADD_VALUE_READER(pass_photon_trigger, bool);
-    ADD_VALUE_READER(pass_high_pt_tau_trigger, bool);
-    ADD_VALUE_READER(pass_double_tau_trigger, bool);
-    ADD_VALUE_READER(pass_jet_ht_trigger, bool);
-    ADD_VALUE_READER(pass_jet_pt_trigger, bool);
+    ADD_VALUE_READER(HLT_IsoMu24, bool);
 
     ADD_VALUE_READER(genWeight, float);
 
@@ -262,48 +287,49 @@ auto classification(const std::string process,
     ADD_VALUE_READER(MET_MetUnclustEnUpDeltaY, float);
 
     //  launch event loop for Data or MC
-    long long global_event_number = -1;
+    fmt::print("\n[MUSiC Classification] Starting event loop ...\n");
+    long long global_event_index = 0;
     for (auto &&event : tree_reader)
     {
-        if (event < *first_event)
+        if (event < static_cast<long long>(*first_event))
         {
             continue;
         }
-        else if (event > *last_event and *last_event >= 0)
+        else if (event > static_cast<long long>(*last_event) and static_cast<long long>(*last_event) >= 0)
         {
             break;
         }
-        global_event_number++;
+        print_debug(global_event_index, debug);
 
         // check for chain readout quality
         // REFERENCE: https://root.cern.ch/doc/v608/classTTreeReader.html#a568e43c7d7d8b1f511bbbeb92c9094a8
-        auto reader_status = tree_reader.GetEntryStatus();
-        if (reader_status == TTreeReader::EEntryStatus::kEntryChainFileError or
-            reader_status == TTreeReader::EEntryStatus::kEntryNotLoaded or
-            reader_status == TTreeReader::EEntryStatus::kEntryNoTree or
-            reader_status == TTreeReader::EEntryStatus::kEntryNotFound or
-            reader_status == TTreeReader::EEntryStatus::kEntryChainSetupError or
-            reader_status == TTreeReader::EEntryStatus::kEntryDictionaryError)
+        if (tree_reader.GetEntryStatus() != TTreeReader::EEntryStatus::kEntryValid)
         {
-            fmt::print(stderr, "ERROR: Could not load TChain entry.");
+            fmt::print(stderr, "ERROR: Could not load TTree entry.");
             std::exit(EXIT_FAILURE);
         }
 
         // Trigger
-        auto is_good_trigger = trigger_filter(process,                               //
-                                              is_data,                               //
-                                              get_runyear(year),                     //
-                                              unwrap(pass_low_pt_muon_trigger),      //
-                                              unwrap(pass_high_pt_muon_trigger),     //
-                                              unwrap(pass_double_muon_trigger),      //
-                                              unwrap(pass_low_pt_electron_trigger),  //
-                                              unwrap(pass_high_pt_electron_trigger), //
-                                              unwrap(pass_double_electron_trigger),  //
+        auto is_good_trigger = trigger_filter(process,             //
+                                              is_data,             //
+                                              get_runyear(year),   //
+                                              unwrap(HLT_IsoMu24), //
+                                              false,
+                                              false,
+                                              false,
+                                              false,
+                                              false,
+                                              false,
+                                              false,
+                                              false
+                                              // unwrap(pass_high_pt_muon_trigger),     //
+                                              // unwrap(pass_double_muon_trigger),      //
+                                              // unwrap(pass_low_pt_electron_trigger),  //
+                                              // unwrap(pass_high_pt_electron_trigger), //
+                                              // unwrap(pass_double_electron_trigger),  //
                                               //   unwrap(pass_high_pt_tau_trigger),      //
-                                              false,                      //
-                                                                          //   unwrap(pass_double_tau_trigger),       //
-                                              false,                      //
-                                              unwrap(pass_photon_trigger) //
+                                              //   unwrap(pass_double_tau_trigger), //
+                                              // unwrap(pass_photon_trigger) //
         );
         if (not(is_good_trigger))
         {
@@ -333,21 +359,21 @@ auto classification(const std::string process,
                                                      year,                        //
                                                      diff_shift);
 
-            auto electrons = ObjectFactories::make_electrons(unwrap(Electron_pt),            //
-                                                             unwrap(Electron_eta),           //
-                                                             unwrap(Electron_phi),           //
-                                                             unwrap(Electron_deltaEtaSC),    //
-                                                             unwrap(Electron_cutBased),      //
-                                                             unwrap(Electron_cutBased_HEEP), //
-                                                             unwrap(Electron_scEtOverPt),    //
-                                                             unwrap(Electron_dEscaleUp),     //
-                                                             unwrap(Electron_dEscaleDown),   //
-                                                             unwrap(Electron_dEsigmaUp),     //
-                                                             unwrap(Electron_dEsigmaDown),   //
-                                                             unwrap(Electron_genPartIdx),    //
-                                                             electron_sf,                    //
-                                                             is_data,                        //
-                                                             year,                           //
+            auto electrons = ObjectFactories::make_electrons(unwrap(Electron_pt),               //
+                                                             unwrap(Electron_eta),              //
+                                                             unwrap(Electron_phi),              //
+                                                             unwrap(Electron_deltaEtaSC),       //
+                                                             unwrap(Electron_cutBased),         //
+                                                             unwrap(Electron_cutBased_HEEP),    //
+                                                             unwrap(Electron_scEtOverPt, true), //
+                                                             unwrap(Electron_dEscaleUp),        //
+                                                             unwrap(Electron_dEscaleDown),      //
+                                                             unwrap(Electron_dEsigmaUp),        //
+                                                             unwrap(Electron_dEsigmaDown),      //
+                                                             unwrap(Electron_genPartIdx),       //
+                                                             electron_sf,                       //
+                                                             is_data,                           //
+                                                             year,                              //
                                                              diff_shift);
 
             auto taus = ObjectFactories::make_taus(unwrap(Tau_pt),   //
@@ -464,22 +490,23 @@ auto classification(const std::string process,
             }
 
             // Here goes the real analysis...
-            auto classification = [&](std::size_t idx_muon,
-                                      std::size_t idx_electron,
-                                      std::size_t idx_tau,
-                                      std::size_t idx_photon,
-                                      std::size_t idx_bjet,
-                                      std::size_t idx_jet,
-                                      std::size_t idx_met) -> void
+            auto do_classification = [&](KinematicsBuffer &buffer,
+                                         std::size_t num_muon,
+                                         std::size_t num_electron,
+                                         std::size_t num_tau,
+                                         std::size_t num_photon,
+                                         std::size_t num_bjet,
+                                         std::size_t num_jet,
+                                         std::size_t num_met) -> void
             {
                 auto [event_class_name_exclusive, event_class_name_inclusive, event_class_name_jetinclusive] =
-                    NanoEventClass::make_event_class_name({idx_muon, muons.size()},         //
-                                                          {idx_electron, electrons.size()}, //
-                                                          {idx_tau, taus.size()},           //
-                                                          {idx_photon, photons.size()},     //
-                                                          {idx_jet, jets.size()},           //
-                                                          {idx_bjet, bjets.size()},         //
-                                                          {idx_met, met.size()});
+                    NanoEventClass::make_event_class_name({num_muon, muons.size()},         //
+                                                          {num_electron, electrons.size()}, //
+                                                          {num_tau, taus.size()},           //
+                                                          {num_photon, photons.size()},     //
+                                                          {num_jet, jets.size()},           //
+                                                          {num_bjet, bjets.size()},         //
+                                                          {num_met, met.size()});
 
                 for (auto &&const_shift : shifts.get_constant_shifts(diff_shift))
                 {
@@ -505,17 +532,19 @@ auto classification(const std::string process,
                                                                              unwrap_or(L1PreFiringWeight_Dn, 1.),
                                                                              shift);
 
-                        auto pdf_as_weight = Shifts::get_pdf_alpha_s_weights(shift,
-                                                                             lha_indexes,
-                                                                             default_pdf_sets,           //
-                                                                             unwrap(LHEPdfWeight),       //
-                                                                             unwrap(Generator_scalePDF), //
-                                                                             unwrap(Generator_x1),       //
-                                                                             unwrap(Generator_x2),       //
-                                                                             unwrap(Generator_id1),      //
-                                                                             unwrap(Generator_id2),      //
-                                                                             this_sample_pdf
-                                                                             // unwrap_or(LHEWeight_originalXWGTUP, 1.f)
+                        auto pdf_as_weight = Shifts::get_pdf_alpha_s_weights(
+                            shift,
+                            lha_indexes,
+                            default_pdf_sets,           //
+                            unwrap(LHEPdfWeight),       //
+                            unwrap(Generator_scalePDF), //
+                            unwrap(Generator_x1),       //
+                            unwrap(Generator_x2),       //
+                            unwrap(Generator_id1),      //
+                            unwrap(Generator_id2),      //
+                            this_sample_pdf
+                            // unwrap_or(LHEWeight_originalXWGTUP,
+                            //                                                                1.f)
                         );
                         double mc_weight =
                             [is_data, &genWeight, &LHEWeight_originalXWGTUP, &should_use_LHEWeight]() -> double
@@ -534,20 +563,20 @@ auto classification(const std::string process,
                         weight = mc_weight * pu_weight * prefiring_weight * trigger_sf / sum_weights * x_section *
                                  luminosity * filter_eff * k_factor * pdf_as_weight *
                                  Shifts::get_reco_scale_factor(shift,
-                                                               {idx_muon, muons},
-                                                               {idx_electron, electrons},
-                                                               {idx_tau, taus},
-                                                               {idx_photon, photons},
-                                                               {idx_bjet, bjets},
-                                                               {idx_jet, jets},
-                                                               {idx_met, met}) *
+                                                               {num_muon, muons},
+                                                               {num_electron, electrons},
+                                                               {num_tau, taus},
+                                                               {num_photon, photons},
+                                                               {num_bjet, bjets},
+                                                               {num_jet, jets},
+                                                               {num_met, met}) *
                                  Shifts::get_fakes_variation_weight(shift,
-                                                                    {idx_muon, muons},
-                                                                    {idx_electron, electrons},
-                                                                    {idx_tau, taus},
-                                                                    {idx_photon, photons},
-                                                                    {idx_bjet, bjets},
-                                                                    {idx_jet, jets} //  {idx_met, met}
+                                                                    {num_muon, muons},
+                                                                    {num_electron, electrons},
+                                                                    {num_tau, taus},
+                                                                    {num_photon, photons},
+                                                                    {num_bjet, bjets},
+                                                                    {num_jet, jets} //  {num_met, met}
                                                                     ) *
                                  Shifts::get_qcd_scale_weight(shift, unwrap(LHEScaleWeight));
                     }
@@ -584,61 +613,80 @@ auto classification(const std::string process,
                         }
 
                         // fill class
-                        // auto [sum_pt, invariant_mass, _met] = compute_music_variables({idx_muon, muons},
-                        //                                                               {idx_electron, electrons},
-                        //                                                               {idx_tau, taus},
-                        //                                                               {idx_photon, photons},
-                        //                                                               {idx_bjet, bjets},
-                        //                                                               {idx_jet, jets},
-                        //                                                               {idx_met, met},
-                        //                                                               weight);
-                        auto [sum_pt, invariant_mass, _met] = std::tuple<float, float, float>(1., 1., 1.);
-
-                        event_classes.unsafe_ec(*class_name).push(sum_pt, invariant_mass, _met, weight, shift);
+                        event_classes.unsafe_ec(*class_name)
+                            .push(buffer.sum_pt(), buffer.mass(), buffer.met(), weight, shift);
                     }
                 }
             };
 
-            loop_over_object_combinations(classification,
-                                          muons.size(),
-                                          electrons.size(),
-                                          taus.size(),
-                                          photons.size(),
-                                          bjets.size(),
-                                          jets.size(),
-                                          met.size());
+            loop_over_object_combinations(do_classification, muons, electrons, taus, photons, bjets, jets, met);
         }
 
-        // process monitoring
-        if (debug)
-        {
-            if ((global_event_number < 10) or                                         //
-                (global_event_number < 100 && global_event_number % 10 == 0) or       //
-                (global_event_number < 1000 && global_event_number % 100 == 0) or     //
-                (global_event_number < 10000 && global_event_number % 1000 == 0) or   //
-                (global_event_number < 100000 && global_event_number % 10000 == 0) or //
-                (global_event_number >= 100000 && global_event_number % 100000 == 0)  //
-            )
-            {
-                fmt::print("\n\nProcessed {} events ...\n", event);
-                PrintProcessInfo();
-            }
-        }
-        else
-        {
-            if ((global_event_number > 100000 and global_event_number % 100000 == 0))
-            {
-                fmt::print("\n\nProcessed {} events ...\n", global_event_number);
-                PrintProcessInfo();
-            }
-        }
+        global_event_index++;
     }
 
-    fmt::print("{}", EventClassContainer::serialize(event_classes));
-
     fmt::print("\n[MUSiC Classification] Done ...\n");
-    fmt::print("\n\nProcessed {} events ...\n", global_event_number);
+    fmt::print("\n\nProcessed {} events ...\n", global_event_index);
     PrintProcessInfo();
+}
 
-    return event_classes;
+PYBIND11_MODULE(classification_imp, m)
+{
+    m.def("classification",
+          &classification,
+          "process"_a,
+          "year"_a,
+          "is_data"_a,
+          "x_section"_a,
+          "filter_eff"_a,
+          "k_factor"_a,
+          "luminosity"_a,
+          "xs_order"_a,
+          "process_group"_a,
+          "sum_weights_json_filepath"_a,
+          "input_file"_a,
+          "event_classes"_a,
+          "first_event"_a = std::nullopt,
+          "last_event"_a = std::nullopt,
+          "debug"_a = false,
+          "Entry point for classification code.");
+    m.doc() = "python bindings for classification";
+
+    py::class_<EventClassContainer>(m, "EventClassContainer")
+        .def(py::init<>())
+        .def("merge_inplace", &EventClassContainer::merge_inplace, "event_classes_container"_a)
+        .def_static(
+            "serialize",
+            [](EventClassContainer &cont) -> py::bytes
+            {
+                return py::bytes(EventClassContainer::serialize(cont));
+            },
+            "event_classes_container"_a)
+        .def_static(
+            "deserialize",
+            [](const py::bytes &bytes) -> EventClassContainer
+            {
+                return EventClassContainer::deserialize(bytes);
+            },
+            "bytes"_a)
+        .def_static(
+            "serialize_to_root",
+            [](EventClassContainer &cont,
+               const std::string &ouput_file_path,
+               const std::string &process_name,
+               const std::string &process_group,
+               const std::string &xsec_order,
+               const std::string &year,
+               bool is_data) -> void
+            {
+                EventClassContainer::serialize_to_root(
+                    cont, ouput_file_path, process_name, process_group, xsec_order, year, is_data);
+            },
+            "event_classes_container"_a,
+            "ouput_file_path"_a,
+            "process_name"_a,
+            "process_group"_a,
+            "xsec_order"_a,
+            "year"_a,
+            "is_data"_a);
 }

@@ -2,144 +2,46 @@
 #define EVENT_CLASS_HPP
 
 #include <cstddef>
-#include <cstdint>
 #include <cstdlib>
 #include <cstring>
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <stdexcept>
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include <zlib.h>
 
-#include "../../MUSiC/external/msgpack.hpp"
+#include "BinLimits.hpp"
 #include "Shifts.hpp"
+#include "msgpack.hpp"
 
-/** Compress a STL string using zlib with given compression level and return
- * the binary data. */
-inline std::string compress_string(const std::string &str, int compressionlevel = Z_BEST_COMPRESSION)
+namespace Histograms
 {
-    z_stream zs; // z_stream is zlib's control structure
-    memset(&zs, 0, sizeof(zs));
+constexpr double fudge = 1.;
+constexpr double min_bin_size = 10.;
 
-    if (deflateInit(&zs, compressionlevel) != Z_OK)
-        throw(std::runtime_error("deflateInit failed while compressing."));
+constexpr int n_energy_bins = 1300;
+constexpr float min_energy = 0;
+constexpr float max_energy = 13000;
 
-    zs.next_in = (Bytef *)str.data();
-    zs.avail_in = str.size(); // set the z_stream's input
+constexpr int n_eta_bins = 20;
+constexpr float min_eta = -3.;
+constexpr float max_eta = 3.;
 
-    int ret;
-    char outbuffer[32768];
-    std::string outstring;
+constexpr int n_phi_bins = 20;
+constexpr float min_phi = -M_PI;
+constexpr float max_phi = M_PI;
 
-    // retrieve the compressed bytes blockwise
-    do
-    {
-        zs.next_out = reinterpret_cast<Bytef *>(outbuffer);
-        zs.avail_out = sizeof(outbuffer);
+constexpr float min_dR = 0;
+constexpr float max_dR = 10;
+constexpr int n_dR_bins = static_cast<int>((max_dR - min_dR) / 0.4);
 
-        ret = deflate(&zs, Z_FINISH);
-
-        if (outstring.size() < zs.total_out)
-        {
-            // append the block to the output string
-            outstring.append(outbuffer, zs.total_out - outstring.size());
-        }
-    } while (ret == Z_OK);
-
-    deflateEnd(&zs);
-
-    if (ret != Z_STREAM_END)
-    { // an error occurred that was not EOF
-        std::ostringstream oss;
-        oss << "Exception during zlib compression: (" << ret << ") " << zs.msg;
-        throw(std::runtime_error(oss.str()));
-    }
-
-    return outstring;
-}
-
-/** Decompress an STL string using zlib and return the original data. */
-inline std::string decompress_string(const std::string &str)
-{
-    z_stream zs; // z_stream is zlib's control structure
-    memset(&zs, 0, sizeof(zs));
-
-    if (inflateInit(&zs) != Z_OK)
-        throw(std::runtime_error("inflateInit failed while decompressing."));
-
-    zs.next_in = (Bytef *)str.data();
-    zs.avail_in = str.size();
-
-    int ret;
-    char outbuffer[32768];
-    std::string outstring;
-
-    // get the decompressed bytes blockwise using repeated calls to inflate
-    do
-    {
-        zs.next_out = reinterpret_cast<Bytef *>(outbuffer);
-        zs.avail_out = sizeof(outbuffer);
-
-        ret = inflate(&zs, 0);
-
-        if (outstring.size() < zs.total_out)
-        {
-            outstring.append(outbuffer, zs.total_out - outstring.size());
-        }
-
-    } while (ret == Z_OK);
-
-    inflateEnd(&zs);
-
-    if (ret != Z_STREAM_END)
-    { // an error occurred that was not EOF
-        std::ostringstream oss;
-        oss << "Exception during zlib decompression: (" << ret << ") " << zs.msg;
-        throw(std::runtime_error(oss.str()));
-    }
-
-    return outstring;
-}
-
-// Function to compress data using gzip and save to a file
-inline void writeCompressedFile(const std::string &filename, const std::vector<uint8_t> &data)
-{
-    std::string compressedData = compress_string(std::string(data.begin(), data.end()));
-    std::ofstream outputFile(filename, std::ios::out | std::ios::binary);
-    if (!outputFile.is_open())
-    {
-        throw std::runtime_error("Failed to open file for writing.");
-    }
-    outputFile.write(compressedData.data(), compressedData.size());
-    outputFile.close();
-}
-
-// Function to read compressed data from file and decompress
-inline std::vector<uint8_t> readCompressedFile(const std::string &filename)
-{
-    std::ifstream inputFile(filename, std::ios::in | std::ios::binary);
-    if (!inputFile.is_open())
-    {
-        throw std::runtime_error("Failed to open file for reading.");
-    }
-    inputFile.seekg(0, std::ios::end);
-    std::streamsize fileSize = inputFile.tellg();
-    inputFile.seekg(0, std::ios::beg);
-
-    std::string readData(fileSize, ' ');
-    inputFile.read(readData.data(), fileSize);
-    inputFile.close();
-
-    std::string decompressed_str = decompress_string(readData);
-    return std::vector<uint8_t>(decompressed_str.begin(), decompressed_str.end());
-}
+constexpr int n_multiplicity_bins = 11;
+constexpr float min_multiplicity = -0.5;
+constexpr float max_multiplicity = static_cast<float>(n_multiplicity_bins - 1) + 0.5;
+} // namespace Histograms
 
 struct EventClassHistogram
 {
-    constexpr static float bin_size = 10.;
+    constexpr static float bin_size = Histograms::min_bin_size;
     constexpr static std::size_t expected_max_bins = 1300;
 
     std::string name;
@@ -147,50 +49,33 @@ struct EventClassHistogram
     std::unordered_map<unsigned int, double> counts;
     std::unordered_map<unsigned int, double> squared_weights;
 
-    auto static make_event_class_histogram(const std::string &name = "", bool weighted = false)
-        -> EventClassHistogram;
+    auto static make_event_class_histogram(const std::string &name = "", bool weighted = false) -> EventClassHistogram;
     auto push(float x, float w = 1.f) -> void;
     auto count(float x) -> double;
     auto error(float x) -> double;
     auto size() -> std::size_t;
 
-    auto bin_index(float x) -> std::size_t;
     auto bounded_bin_index(float x) -> std::optional<std::size_t>;
+    auto bin_index(float x) -> std::size_t;
+    auto merge_inplace(EventClassHistogram &other) -> void;
 
     template <class T>
     void pack(T &pack)
     {
         pack(name, weighted, counts, squared_weights);
     }
-};
 
-// Define fmt::format for EventClassHistogram
-template <>
-struct fmt::formatter<EventClassHistogram>
-{
-    constexpr auto parse(format_parse_context &ctx)
-    {
-        return ctx.begin();
-    }
-
-    template <typename FormatContext>
-    auto format(const EventClassHistogram &h, FormatContext &ctx)
-    {
-        std::string out = "[";
-        for (auto &&[idx, count] : h.counts)
-        {
-            if (h.weighted)
-            {
-                out += fmt::format("({} -> {}, {})", idx, count, h.squared_weights.at(idx));
-            }
-            else
-            {
-                out += fmt::format("({} -> {})", idx, count);
-            }
-        }
-        out += "]";
-        return format_to(ctx.out(), "{}: {}", h.name, out);
-    }
+    auto serialize_to_root(const std::unique_ptr<TFile> &output_root_file,
+                           const std::unordered_map<ObjectNames, int> &count_map,
+                           std::vector<double> &bins_limits,
+                           const std::string &event_class_name,
+                           const std::string &process_name,
+                           const std::string &process_group,
+                           const std::string &xsec_order,
+                           const std::string &year,
+                           bool is_data,
+                           const std::string &histogram_name,
+                           const std::string &variation_name) -> void;
 };
 
 struct EventClass
@@ -241,6 +126,16 @@ struct EventClass
     {
         pack(ec_name, h_sum_pt, h_invariant_mass, h_met);
     }
+
+    auto merge_inplace(EventClass &other) -> void;
+
+    auto serialize_to_root(const std::unique_ptr<TFile> &output_root_file,
+                           const std::string &event_class_name,
+                           const std::string &process_name,
+                           const std::string &process_group,
+                           const std::string &xsec_order,
+                           const std::string &year,
+                           bool is_data) -> void;
 };
 
 struct EventClassContainer
@@ -267,17 +162,67 @@ struct EventClassContainer
         classes[ec_name] = EventClass::make_event_class(ec_name);
     }
 
-    static auto serialize(EventClassContainer &cont) -> std::string
-    {
-        auto data = msgpack::pack(cont);
-        return compress_string(std::string(data.begin(), data.end()));
-    }
+    auto merge_inplace(EventClassContainer &other) -> void;
 
     template <class T>
     void pack(T &pack)
     {
         pack(classes);
     }
+
+    static auto serialize(EventClassContainer &cont) -> std::string
+    {
+        auto data = msgpack::pack(cont);
+        return std::string(data.cbegin(), data.cend());
+    }
+
+    static auto deserialize(const std::string &bytes) -> EventClassContainer
+    {
+        auto data = std::vector<uint8_t>(bytes.cbegin(), bytes.cend());
+        return msgpack::unpack<EventClassContainer>(data);
+    }
+
+    static auto serialize_to_root(EventClassContainer &cont,
+                                  const std::string &ouput_file_path,
+                                  const std::string &process_name,
+                                  const std::string &process_group,
+                                  const std::string &xsec_order,
+                                  const std::string &year,
+                                  bool is_data) -> void;
 };
 
+// Utils
+inline auto set_of_bins(const EventClassHistogram &hist1, const EventClassHistogram &hist2) -> std::set<std::size_t>
+{
+    std::set<std::size_t> result;
+
+    for (const auto &item : hist1.counts)
+    {
+        result.insert(item.first);
+    }
+
+    for (const auto &item : hist2.counts)
+    {
+        result.insert(item.first);
+    }
+
+    return result;
+}
+
+inline auto set_of_classes(const EventClassContainer &cont1, const EventClassContainer &cont2) -> std::set<std::string>
+{
+    std::set<std::string> result;
+
+    for (const auto &item : cont1.classes)
+    {
+        result.insert(item.first);
+    }
+
+    for (const auto &item : cont2.classes)
+    {
+        result.insert(item.first);
+    }
+
+    return result;
+}
 #endif // !EVENT_CLASS_HPP

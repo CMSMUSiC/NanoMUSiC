@@ -3,11 +3,21 @@
 #define BIN_LIMITS
 
 #include <cmath>
-#include <functional>
-#include <map>
 #include <stdexcept>
 #include <string>
+#include <unordered_map>
 #include <vector>
+
+enum class ObjectNames
+{
+    Muon,
+    Electron,
+    Photon,
+    Tau,
+    bJet,
+    Jet,
+    MET,
+};
 
 namespace ResolutionsFuncs
 {
@@ -59,7 +69,7 @@ inline double tau(const double pt)
 
 // read of from resolution plots for calo only resolution
 // https://twiki.cern.ch/twiki/bin/view/CMSPublic/EGMElectronsMoriond2013#Electron_Resolution
-inline double gamma(double energy)
+inline double photon(double energy)
 {
     if (energy < 30)
     {
@@ -125,21 +135,20 @@ inline double met(double const sumpt)
 namespace BinLimits
 {
 
-auto getApproximateResolution(const std::map<std::string, int> &countMap, double sumpt, double const fudge) -> const
-    double;
+auto getApproximateResolution(const std::unordered_map<ObjectNames, int> &countMap, double sumpt, double const fudge)
+    -> const double;
 
-auto getApproximateResolutionMET(const std::map<std::string, int> &countMap, double sumpt, double const fudge) -> const
-    double;
+auto getApproximateResolutionMET(const std::unordered_map<ObjectNames, int> &countMap, double sumpt, double const fudge)
+    -> const double;
 
-auto callResolutionFunction(const std::string &name, const double &value) -> const double;
+auto callResolutionFunction(const ObjectNames name, const double &value) -> const double;
 
-auto get_bin_limits(const std::string &distribution,
-                    const std::map<std::string, int> &countMap,
-                    double min,
-                    double max,
-                    double step_size,
-                    double const fudge) -> const std::vector<double>;
-
+auto limits(const std::unordered_map<ObjectNames, int> &countMap,
+            const bool isMET,
+            double min,
+            double max,
+            double step_size,
+            const double fudge) -> const std::vector<double>;
 } // namespace BinLimits
 
 #endif // !BIN_LIMITS

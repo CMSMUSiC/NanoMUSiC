@@ -1,9 +1,6 @@
 #ifndef CLASSIFICATION
 #define CLASSIFICATION
 
-// analysis classes
-
-#include <cmath>
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
@@ -21,8 +18,6 @@
 #include "ROOT/RVec.hxx"
 #include "RtypesCore.h"
 #include "TCanvas.h"
-#include "TChain.h"
-#include "TEfficiency.h"
 #include "TFile.h"
 #include "TH1.h"
 #include "TTree.h"
@@ -30,7 +25,6 @@
 #include "TTreeReaderArray.h"
 #include "TTreeReaderValue.h"
 
-#include "Configs.hpp"
 #include "JetCorrector.hpp"
 #include "MUSiCTools.hpp"
 #include "NanoAODGenInfo.hpp"
@@ -41,7 +35,6 @@
 #include "argh.h"
 #include "emoji.hpp"
 #include "fmt/format.h"
-#include "processed_data_events.hpp"
 
 #include "ObjectFactories/make_electrons.hpp"
 #include "ObjectFactories/make_jets.hpp"
@@ -79,7 +72,7 @@ auto make_value_reader(TTreeReader &tree_reader, const std::string &leaf) -> Opt
         return std::make_optional<TTreeReaderValue<T>>(tree_reader, leaf.c_str());
     }
 
-    fmt::print("WARNING: Could not read branch: {}\n", leaf);
+    fmt::print(stderr, "WARNING: Could not read branch: {}\n", leaf);
     return std::nullopt;
 }
 
@@ -91,13 +84,18 @@ auto make_array_reader(TTreeReader &tree_reader, const std::string &leaf) -> Opt
         return std::make_optional<TTreeReaderArray<T>>(tree_reader, leaf.c_str());
     }
 
-    fmt::print("WARNING: Could not read branch: {}\n", leaf);
+    fmt::print(stderr, "WARNING: Could not read branch: {}\n", leaf);
     return std::nullopt;
 }
 
 // helper macros
-#define ADD_VALUE_READER(VAR, TYPE) auto VAR = make_value_reader<TYPE>(tree_reader, #VAR)
-#define ADD_ARRAY_READER(VAR, TYPE) auto VAR = make_array_reader<TYPE>(tree_reader, #VAR)
+#define ADD_VALUE_READER(VAR, TYPE)                                                                                    \
+    input_ttree->SetBranchStatus(#VAR, true);                                                                          \
+    auto VAR = make_value_reader<TYPE>(tree_reader, #VAR)
+
+#define ADD_ARRAY_READER(VAR, TYPE)                                                                                    \
+    input_ttree->SetBranchStatus(#VAR, true);                                                                          \
+    auto VAR = make_array_reader<TYPE>(tree_reader, #VAR)
 
 #define INITIALIZE_ANALYSIS(TYPE, ANALYSIS, COUNT_MAP)                                                                 \
     ANALYSIS.insert({shift,                                                                                            \
@@ -113,15 +111,21 @@ auto make_array_reader(TTreeReader &tree_reader, const std::string &leaf) -> Opt
                           xs_order)})
 
 template <typename T>
-auto unwrap(std::optional<TTreeReaderValue<T>> &value) -> T
+auto unwrap(std::optional<TTreeReaderValue<T>> &value, bool allow_nan_or_inf = false) -> T
 {
     if (value)
     {
         auto _this_value = **value;
-        if (std::isnan(_this_value) or std::isinf(_this_value))
+        if (not(allow_nan_or_inf))
         {
-            fmt::print("ERROR: NaN or INF value was unwraped.\n");
-            std::exit(EXIT_FAILURE);
+            if (std::isnan(_this_value) or std::isinf(_this_value))
+            {
+                fmt::print(stderr,
+                           "ERROR: Could not unwrap value: {}. NaN or INF found. Unwraped value: {}.\n",
+                           (*value).GetBranchName(),
+                           _this_value);
+                std::exit(EXIT_FAILURE);
+            }
         }
         return _this_value;
     }
@@ -129,17 +133,23 @@ auto unwrap(std::optional<TTreeReaderValue<T>> &value) -> T
 }
 
 template <typename T, typename Q>
-auto unwrap_or(std::optional<TTreeReaderValue<T>> &value, Q &&default_value = Q()) -> T
+auto unwrap_or(std::optional<TTreeReaderValue<T>> &value, Q &&default_value = Q(), bool allow_nan_or_inf = false) -> T
 {
     static_assert(std::is_arithmetic<T>::value, "The default type must be numeric.");
 
     if (value)
     {
         auto _this_value = **value;
-        if (std::isnan(_this_value) or std::isinf(_this_value))
+        if (not(allow_nan_or_inf))
         {
-            fmt::print("ERROR: NaN or INF value was unwraped.\n");
-            std::exit(EXIT_FAILURE);
+            if (std::isnan(_this_value) or std::isinf(_this_value))
+            {
+                fmt::print(stderr,
+                           "ERROR: Could not unwrap value: {}. NaN or INF found. Unwraped value: {}.\n",
+                           (*value).GetBranchName(),
+                           _this_value);
+                std::exit(EXIT_FAILURE);
+            }
         }
         return _this_value;
     }
@@ -147,17 +157,23 @@ auto unwrap_or(std::optional<TTreeReaderValue<T>> &value, Q &&default_value = Q(
 }
 
 template <typename T>
-auto unwrap(std::optional<TTreeReaderArray<T>> &array) -> RVec<T>
+auto unwrap(std::optional<TTreeReaderArray<T>> &array, bool allow_nan_or_inf = false) -> RVec<T>
 {
     if (array)
     {
-        auto _this_array = RVec<T>(static_cast<T *>((*array).GetAddress()), (*array).GetSize());
-        for (const auto &_this_value : _this_array)
+        auto _this_array = RVec<T>((*array).cbegin(), (*array).cend());
+        if (not(allow_nan_or_inf))
         {
-            if (std::isnan(_this_value) or std::isinf(_this_value))
+            for (const auto &_this_value : _this_array)
             {
-                fmt::print("ERROR: NaN or INF array was unwraped.\n");
-                std::exit(EXIT_FAILURE);
+                if (std::isnan(_this_value) or std::isinf(_this_value))
+                {
+                    fmt::print(stderr,
+                               "ERROR: Could not unwrap array: {}. NaN or INF found. Unwraped array: [{}].\n",
+                               (*array).GetBranchName(),
+                               fmt::join(_this_array, ", "));
+                    std::exit(EXIT_FAILURE);
+                }
             }
         }
         return _this_array;
@@ -166,17 +182,26 @@ auto unwrap(std::optional<TTreeReaderArray<T>> &array) -> RVec<T>
 }
 
 template <typename T, typename Q, typename R>
-auto unwrap_or(std::optional<TTreeReaderArray<T>> &array, Q &&default_value, R &&default_size) -> T
+auto unwrap_or(std::optional<TTreeReaderArray<T>> &array,
+               Q &&default_value,
+               R &&default_size,
+               bool allow_nan_or_inf = false) -> T
 {
     if (array)
     {
-        auto _this_array = RVec<T>(static_cast<T *>((*array).GetAddress()), (*array).GetSize());
-        for (const auto &_this_value : _this_array)
+        auto _this_array = RVec<T>((*array).cbegin(), (*array).cend());
+        if (not(allow_nan_or_inf))
         {
-            if (std::isnan(_this_value) or std::isinf(_this_value))
+            for (const auto &_this_value : _this_array)
             {
-                fmt::print("ERROR: NaN or INF array was unwraped.\n");
-                std::exit(EXIT_FAILURE);
+                if (std::isnan(_this_value) or std::isinf(_this_value))
+                {
+                    fmt::print(stderr,
+                               "ERROR: Could not unwrap array: {}. NaN or INF found. Unwraped array: [{}].\n",
+                               (*array).GetBranchName(),
+                               fmt::join(_this_array, ", "));
+                    std::exit(EXIT_FAILURE);
+                }
             }
         }
         return _this_array;
@@ -560,31 +585,136 @@ inline auto trigger_filter(const std::string &process, //
     return trigger_filter_res;
 };
 
+// template <typename F>
+// inline auto loop_over_object_combinations(F f,
+//                                           std::size_t muons_size,
+//                                           std::size_t electrons_size,
+//                                           std::size_t taus_size,
+//                                           std::size_t photons_size,
+//                                           std::size_t bjets_size,
+//                                           std::size_t jets_size,
+//                                           std::size_t met_size) -> void
+// {
+//     for (std::size_t idx_muon = 0; idx_muon <= muons_size; idx_muon++)
+//     {
+//         for (std::size_t idx_electron = 0; idx_electron <= electrons_size; idx_electron++)
+//         {
+//             for (std::size_t idx_tau = 0; idx_tau <= taus_size; idx_tau++)
+//             {
+//                 for (std::size_t idx_photon = 0; idx_photon <= photons_size; idx_photon++)
+//                 {
+//                     for (std::size_t idx_bjet = 0; idx_bjet <= bjets_size; idx_bjet++)
+//                     {
+//                         for (std::size_t idx_jet = 0; idx_jet <= jets_size; idx_jet++)
+//                         {
+//                             for (std::size_t idx_met = 0; idx_met <= met_size; idx_met++)
+//                             {
+//                                 f(idx_muon, idx_electron, idx_tau, idx_photon, idx_bjet, idx_jet, idx_met);
+//                             }
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+//     }
+// }
+
+class KinematicsBuffer
+{
+    double _sum_pt = 0.;
+    double _met = 0.;
+    double e = 0.;
+    double px = 0.;
+    double py = 0.;
+    double pz = 0.;
+
+  public:
+    auto accumulate(const MUSiCObjects &objs, std::size_t num, bool is_met = false) -> void
+    {
+        if (num > 0)
+        {
+            auto p4 = objs.p4[num - 1];
+            update(p4.pt(), (is_met ? p4.pt() : 0.), p4.e(), p4.px(), p4.py(), p4.pz());
+        }
+        else
+        {
+            update(0., 0., 0., 0., 0., 0.);
+        }
+    }
+
+    auto update(double other_sum_pt,
+                double other_met,
+                double other_e,
+                double other_px,
+                double other_py,
+                double other_pz) -> void
+    {
+        _sum_pt += other_sum_pt;
+        _met += other_met;
+        e += other_e;
+        px += other_px;
+        py += other_py;
+        pz += other_pz;
+    }
+
+    auto sum_pt() -> double
+    {
+        return _sum_pt;
+    }
+    auto met() -> double
+    {
+        return _met;
+    }
+    auto mass(bool has_met = false) -> double
+    {
+        if (has_met)
+        {
+            return std::sqrt(std::pow(e, 2) - std::pow(px, 2) - std::pow(py, 2));
+        }
+
+        return std::sqrt(std::pow(e, 2) - std::pow(px, 2) - std::pow(py, 2) - std::pow(pz, 2));
+    }
+};
+
 template <typename F>
 inline auto loop_over_object_combinations(F f,
-                                          std::size_t muons_size,
-                                          std::size_t electrons_size,
-                                          std::size_t taus_size,
-                                          std::size_t photons_size,
-                                          std::size_t bjets_size,
-                                          std::size_t jets_size,
-                                          std::size_t met_size) -> void
+                                          const MUSiCObjects &muons,
+                                          const MUSiCObjects &electrons,
+                                          const MUSiCObjects &taus,
+                                          const MUSiCObjects &photons,
+                                          const MUSiCObjects &bjets,
+                                          const MUSiCObjects &jets,
+                                          const MUSiCObjects &met) -> void
 {
-    for (std::size_t idx_muon = 0; idx_muon <= muons_size; idx_muon++)
+    auto muon_buffer = KinematicsBuffer();
+    for (std::size_t num_muon = 0; num_muon <= muons.size(); num_muon++)
     {
-        for (std::size_t idx_electron = 0; idx_electron <= electrons_size; idx_electron++)
+        muon_buffer.accumulate(muons, num_muon);
+        auto electron_buffer = muon_buffer;
+        for (std::size_t num_electron = 0; num_electron <= electrons.size(); num_electron++)
         {
-            for (std::size_t idx_tau = 0; idx_tau <= taus_size; idx_tau++)
+            electron_buffer.accumulate(electrons, num_electron);
+            auto tau_buffer = electron_buffer;
+            for (std::size_t num_tau = 0; num_tau <= taus.size(); num_tau++)
             {
-                for (std::size_t idx_photon = 0; idx_photon <= photons_size; idx_photon++)
+                tau_buffer.accumulate(taus, num_tau);
+                auto photon_buffer = tau_buffer;
+                for (std::size_t num_photon = 0; num_photon <= photons.size(); num_photon++)
                 {
-                    for (std::size_t idx_bjet = 0; idx_bjet <= bjets_size; idx_bjet++)
+                    photon_buffer.accumulate(photons, num_photon);
+                    auto bjet_buffer = photon_buffer;
+                    for (std::size_t num_bjet = 0; num_bjet <= bjets.size(); num_bjet++)
                     {
-                        for (std::size_t idx_jet = 0; idx_jet <= jets_size; idx_jet++)
+                        bjet_buffer.accumulate(bjets, num_bjet);
+                        auto jet_buffer = bjet_buffer;
+                        for (std::size_t num_jet = 0; num_jet <= jets.size(); num_jet++)
                         {
-                            for (std::size_t idx_met = 0; idx_met <= met_size; idx_met++)
+                            jet_buffer.accumulate(jets, num_jet);
+                            auto met_buffer = jet_buffer;
+                            for (std::size_t num_met = 0; num_met <= met.size(); num_met++)
                             {
-                                f(idx_muon, idx_electron, idx_tau, idx_photon, idx_bjet, idx_jet, idx_met);
+                                met_buffer.accumulate(met, num_met, true);
+                                f(met_buffer, num_muon, num_electron, num_tau, num_photon, num_bjet, num_jet, num_met);
                             }
                         }
                     }
@@ -594,27 +724,13 @@ inline auto loop_over_object_combinations(F f,
     }
 }
 
-struct KinematicsBuffer
-{
-    double sum_pt;
-    double met;
-    Math::PtEtaPhiMVector sum_four_momenta;
-
-    void update(double other_sum_pt, double other_met, const Math::PtEtaPhiMVector &other_sum_four_momenta)
-    {
-        sum_pt += other_sum_pt;
-        met += other_met;
-        sum_four_momenta += other_sum_four_momenta;
-    }
-};
-
 auto classification(const std::string process,
                     const std::string year,
                     const bool is_data,
-                    const std::string x_section_str,
-                    const std::string filter_eff_str,
-                    const std::string k_factor_str,
-                    const std::string luminosity_str,
+                    const double x_section,
+                    const double filter_eff,
+                    const double k_factor,
+                    const double luminosity,
                     const std::string xs_order,
                     const std::string process_group,
                     const std::string sum_weights_json_filepath,
@@ -622,7 +738,7 @@ auto classification(const std::string process,
                     // [EVENT_CLASS_NAME, [SHIFT, EVENT_CLASS_OBJECT] ]
                     EventClassContainer &event_classes,
                     std::optional<unsigned long> first_event = std::nullopt,
-                    std::optional<unsigned long> last_event = std::nullopt,
-                    const bool debug = false) -> EventClassContainer &;
+                    std::optional<long> last_event = std::nullopt,
+                    const bool debug = false) -> void;
 
 #endif // CLASSIFICATION

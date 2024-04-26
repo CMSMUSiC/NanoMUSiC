@@ -22,10 +22,11 @@ export SCRAM_ARCH=el9_amd64_gcc12
 
 # This is a TAPAS set_env script. Source it before usage of TAPAS.
 export LD_LIBRARY_PATH=$SCRIPTDIR/lib:$LD_LIBRARY_PATH
-export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/lib/python:$PYTHONPATH
+export PYTHONPATH=$SCRIPTDIR/lib/python:$PYTHONPATH
 export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/MUSiC-CRAB:$PYTHONPATH
 export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/Classification:$PYTHONPATH
 export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/Classification/python:$PYTHONPATH
+export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/MUSiC/python:$PYTHONPATH
 export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/NanoEventClass/python:$PYTHONPATH
 export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/CondorScheduler:$PYTHONPATH
 
@@ -33,29 +34,12 @@ export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/CondorScheduler:$PYTHONPATH
 # add gfal2 to PATH
 export PYTHONPATH="$PYTHONPATH:/usr/lib64/python3.9/site-packages:/usr/lib/python3.9/site-packages"
 
-export MYPXLANA=EventClassFactory
-
-cd $SCRIPTDIR/NanoMUSiC/tools/
-source set_env.sh
-
-cd $SCRIPTDIR/NanoMUSiC/PxlAnalyzer/
-source set_env.sh
-
-cd $SCRIPTDIR/NanoMUSiC/PxlAnalyzer/EventClassFactory/
-source set_env.sh
-
-cd $SCRIPTDIR/NanoMUSiC/MUSiC-Configs/
-source set_env.sh
-
-cd $SCRIPTDIR/NanoMUSiC/MUSiC-RoIScanner/
-source set_env.sh
-
 cd $SCRIPTDIR
 
 # set PATH
 export PATH=$PATH:$SCRIPTDIR/bin;
 export PATH=$PATH:$SCRIPTDIR/scripts;
-export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/Classification/scripts;
+export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC/scripts;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/Classification/scripts;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/ClassificationUtils/scripts;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/NanoEventClass/scripts;
@@ -72,3 +56,5 @@ export GOBIN="$SCRIPTDIR/bin"
 # rust config
 export RUSTFLAGS="-C linker=$CC"
 
+#pybind11 CMAKE files
+export pybind11_DIR="/cvmfs/sft.cern.ch/lcg/views/LCG_105a/x86_64-el9-gcc12-opt/lib/python3.9/site-packages/pybind11/share/cmake/pybind11"
