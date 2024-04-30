@@ -3,11 +3,9 @@
 ![music](https://raw.githubusercontent.com/CMSMUSiC/NanoMUSiC/main/docs/images/music.svg)    	
 
 
-**MUSiC - Model Unspecific Search in CMS **
+MUSiC - Model Unspecific Search in CMS 
 
-📶 Run 2 - Ultra Legacy, using NanoAOD 📶
-
-Full Documentation: https://cmsmusic.github.io/NanoMUSiC/
+Run2 - Ultra Legacy and Run3, using NanoAOD
 
 ## About 
 
@@ -36,5 +34,18 @@ All the credit goes, to the authors of the legacy repositories.
 The LICENSING inherits from them, also. When not this is not applicable, MIT license applies.
 
 
+## Setup
 
+In order to setup de environment, just clone the repository and run the bootstrap script.
 
+```
+git clone git@github.com:CMSMUSiC/NanoMUSiC.git
+cd NanoMUSiC
+./bootstrap_music.sh
+```
+
+For every new session you should setup the environment.
+
+```
+source setenv.sh
+```

@@ -26,6 +26,7 @@ def run_classification(
     process_group: str,
     sum_weights_json_filepath: str,
     input_files: Union[list[str], str],
+    generator_filter: str,
     first_event: Optional[int] = None,
     last_event: Optional[int] = None,
     debug: bool = False,
@@ -51,6 +52,7 @@ def run_classification(
             process_group,
             sum_weights_json_filepath,
             _file,
+            generator_filter,
             event_classes,
             first_event,
             last_event,
@@ -71,6 +73,11 @@ def build_classification_job(
 ):
     template = r"""
 import classification
+import time
+import json
+
+# Record the start time
+start_time = time.time()
 
 classification.run_classification(
     output_file="{}",
@@ -85,10 +92,27 @@ classification.run_classification(
     process_group="{}",
     sum_weights_json_filepath="sum_weights.json",
     input_files={},
+    generator_filter="{}",
     first_event=None,
     last_event=None,
     debug=False,
 )
+
+# Record the end time
+end_time = time.time()
+
+# Calculate the time taken
+time_taken = data = dict()
+time_taken["process_name"] = "{}"
+time_taken["year"] = "{}"
+time_taken["split_index"] = {}
+time_taken["num_input_files"] = {}
+time_taken["processing_time"] = end_time - start_time
+
+with open("timming_{}_{}_{}.json", "w") as json_file:
+    json.dump(time_taken, json_file)
+
+
     """.format(
         f"{process.name}_{year}_{split_index}.music.gz",
         process.name,
@@ -101,6 +125,14 @@ classification.run_classification(
         process.XSecOrder,
         process.ProcessGroup,
         sub_input_files,
+        process.generator_filter_key,
+        process.name,
+        year,
+        split_index,
+        len(sub_input_files),
+        process.name,
+        year,
+        split_index,
     )
 
     output_path = (
@@ -131,6 +163,17 @@ def launch_condor(
         for process_name in config_file
     ]
     random.shuffle(processes)
+
+    def expected_timming(process: Process) -> int:
+        if process.name.startswith("TT"):
+            return 0
+        if process.name.startswith("QCD"):
+            return 100
+        if process.is_data:
+            return sys.maxsize
+        return 10
+
+    processes = sorted(processes, key=expected_timming)
 
     os.system("rm -rf classification_outputs")
     os.system("rm -rf classification_jobs && mkdir -p classification_jobs")
@@ -164,9 +207,15 @@ def launch_condor(
         assert n > 0
         return [lst[i : i + n] for i in range(0, len(lst), n)]
 
-    def request_memory(name: str) -> int:
-        if name.startswith("TT"):
+    def request_memory(process: Process) -> int:
+        if process.name.startswith("TT"):
             return 6
+        if process.name.startswith("ggZH_HToBB_ZToNuNu_M-125_13TeV_PH"):
+            return 4
+        if process.name.startswith("QCD"):
+            return 2
+        if process.is_data:
+            return 2
         return 3
 
     jobs = []
@@ -187,6 +236,7 @@ def launch_condor(
                                 r"ls -lha",
                                 f"python3 run_classification_{p.name}_{year}_{split_index}.py",
                                 f"mv {p.name}_{year}_{split_index}*.music.gz classification_outputs/.",
+                                f"mv timming_{p.name}_{year}_{split_index}*.json classification_outputs/.",
                                 r"ls -lha classification_outputs",
                             ],
                             preamble=preamble,
@@ -196,7 +246,7 @@ def launch_condor(
                                 r"classification_src.tar.gz",
                             ],
                             output_files=[r"classification_outputs"],
-                            request_memory=request_memory(p.name),
+                            request_memory=request_memory(p),
                         )
                     )
 
@@ -235,6 +285,7 @@ def launch_dev(
         process_group=process.ProcessGroup,
         sum_weights_json_filepath="sum_weights.json",
         input_files=process.get_files(year, max_files),
+        generator_filter=process.generator_filter_key,
         first_event=None,
         last_event=None,
         debug=True,
@@ -247,6 +298,7 @@ def launch_local(
     year: Union[Years, None] = None,
     max_files: int = sys.maxsize,
     num_cpus: int = 100,
+    split_size: Union[int, None] = None,
 ):
     if process_name or year:
         print(
@@ -261,6 +313,17 @@ def launch_local(
         for process_name in config_file
     ]
     random.shuffle(processes)
+
+    def expected_timming(process: Process) -> int:
+        if process.name.startswith("TT"):
+            return 0
+        if process.name.startswith("QCD"):
+            return 100
+        if process.is_data:
+            return sys.maxsize
+        return 10
+
+    processes = sorted(processes, key=expected_timming)
 
     os.system("rm -rf classification_outputs")
     os.system("mkdir -p  classification_outputs")
@@ -290,11 +353,19 @@ def launch_local(
         _temp_dir="{}/tmp_ray".format(os.getcwd()),
     )
 
+    def chunks(lst: list[str], n: Union[int, None]) -> list[list[str]]:
+        if not n:
+            return [lst]
+        if split_size > len(lst):
+            return [lst]
+        assert n > 0
+        return [lst[i : i + n] for i in range(0, len(lst), n)]
+
     print("Launching jobs...")
     jobs = []
     for process in processes:
         for year in Years:
-            input_files = [process.get_files(year, max_files)]
+            input_files = chunks(process.get_files(year, max_files), split_size)
             for split_index, sub_input_files in enumerate(input_files):
                 if len(sub_input_files):
                     jobs.append(
@@ -311,6 +382,7 @@ def launch_local(
                             process_group=process.ProcessGroup,
                             sum_weights_json_filepath="sum_weights.json",
                             input_files=process.get_files(year, max_files),
+                            generator_filter=process.generator_filter_key,
                             first_event=None,
                             last_event=None,
                             debug=True,
@@ -430,7 +502,9 @@ def serialize_to_root(
     for process, year in product(processes, Years):
         file_to_process = "{}/{}_{}.music.gz".format(inputs_dir, process.name, year)
         if os.path.exists(file_to_process):
-            serialization_jobs.append(serialize_to_root_task.remote(file_to_process, process, year))
+            serialization_jobs.append(
+                serialize_to_root_task.remote(file_to_process, process, year)
+            )
         else:
             print("WARINING: File ({}) does not exist.".format(file_to_process))
 
@@ -471,6 +545,7 @@ def main():
         process_group="DrellYan",
         sum_weights_json_filepath="sum_weights.json",
         input_files=input_files_1,
+        generator_filter="",
         first_event=None,
         last_event=None,
         debug=True,
@@ -489,6 +564,7 @@ def main():
         process_group="DrellYan",
         sum_weights_json_filepath="sum_weights.json",
         input_files=input_files_2,
+        generator_filter="",
         first_event=None,
         last_event=None,
         debug=True,

@@ -1,7 +1,9 @@
 #include "Classification.hpp"
 
 #include "Configs.hpp"
+#include "GeneratorFilters.hpp"
 #include "RtypesCore.h"
+#include "RunLumiFilter.hpp"
 #include "TTreeReader.h"
 #include "TTreeReaderValue.h"
 #include "fmt/core.h"
@@ -22,12 +24,12 @@ auto print_debug(long long global_event_index, bool debug) -> void
     // process monitoring
     if (debug)
     {
-        if ((global_event_index < 10) or                                        //
-            (global_event_index < 100 && global_event_index % 10 == 0) or       //
-            (global_event_index < 1000 && global_event_index % 100 == 0) or     //
-            (global_event_index < 10000 && global_event_index % 1000 == 0) or   //
-            (global_event_index < 100000 && global_event_index % 10000 == 0) or //
-            (global_event_index >= 100000 && global_event_index % 100000 == 0)  //
+        if ((global_event_index < 10) or                                         //
+            (global_event_index < 100 and global_event_index % 10 == 0) or       //
+            (global_event_index < 1000 and global_event_index % 100 == 0) or     //
+            (global_event_index < 10000 and global_event_index % 1000 == 0) or   //
+            (global_event_index < 100000 and global_event_index % 10000 == 0) or //
+            (global_event_index >= 100000 and global_event_index % 100000 == 0)  //
         )
         {
             fmt::print("\n\nProcessed {} events ...\n", global_event_index + 1);
@@ -44,6 +46,55 @@ auto print_debug(long long global_event_index, bool debug) -> void
     }
 }
 
+auto pass_generator_filter(const std::string &generator_filter,
+                           const std::string &year_str,
+                           ROOT::RVec<float> LHEPart_pt,
+                           ROOT::RVec<float> LHEPart_eta,
+                           ROOT::RVec<float> LHEPart_phi,
+                           ROOT::RVec<float> LHEPart_mass,
+                           ROOT::RVec<float> LHEPart_incomingpz,
+                           ROOT::RVec<int> LHEPart_pdgId,
+                           ROOT::RVec<int> LHEPart_status,
+                           ROOT::RVec<float> GenPart_pt,
+                           ROOT::RVec<float> GenPart_eta,
+                           ROOT::RVec<float> GenPart_phi,
+                           ROOT::RVec<float> GenPart_mass,
+                           ROOT::RVec<int> GenPart_genPartIdxMother,
+                           ROOT::RVec<int> GenPart_pdgId,
+                           ROOT::RVec<int> GenPart_status,
+                           ROOT::RVec<int> GenPart_statusFlags) -> bool
+{
+    if (generator_filter != "")
+    {
+        auto gen_filter_func = GeneratorFilters::get_filter(generator_filter);
+        const auto lhe_particles = NanoAODGenInfo::LHEParticles(
+            LHEPart_pt, LHEPart_eta, LHEPart_phi, LHEPart_mass, LHEPart_incomingpz, LHEPart_pdgId, LHEPart_status);
+
+        const auto gen_particles = NanoAODGenInfo::GenParticles(GenPart_pt,
+                                                                GenPart_eta,
+                                                                GenPart_phi,
+                                                                GenPart_mass,
+                                                                GenPart_genPartIdxMother,
+                                                                GenPart_pdgId,
+                                                                GenPart_status,
+                                                                GenPart_statusFlags);
+        auto year = get_runyear(year_str);
+        debugger_t debugger = std::nullopt;
+        return gen_filter_func(lhe_particles, gen_particles, year, debugger);
+    }
+
+    return true;
+}
+
+struct EventWeights
+{
+    double sum_weights;
+    double sum_pass_filter;
+    double total_events;
+    double total_events_pass_filter;
+    bool should_use_LHEWeight;
+};
+
 auto classification(const std::string process,
                     const std::string year,
                     const bool is_data,
@@ -55,6 +106,7 @@ auto classification(const std::string process,
                     const std::string process_group,
                     const std::string sum_weights_json_filepath,
                     const std::string input_file,
+                    const std::string &generator_filter,
                     // [EVENT_CLASS_NAME, [SHIFT, EVENT_CLASS_OBJECT] ]
                     EventClassContainer &event_classes,
                     std::optional<unsigned long> first_event,
@@ -77,6 +129,32 @@ auto classification(const std::string process,
     }
 
     const auto shifts = Shifts(is_data);
+
+    // Run/Lumi filter
+    auto golden_json = [](const std::string &year) -> std::string
+    {
+        auto _year = get_runyear(year);
+        if (_year == Year::Run2016APV)
+        {
+            return std::string(RunConfig::Run2016APV.golden_json);
+        }
+        if (_year == Year::Run2016)
+        {
+            return std::string(RunConfig::Run2016.golden_json);
+        }
+        if (_year == Year::Run2017)
+        {
+            return std::string(RunConfig::Run2017.golden_json);
+        }
+        if (_year == Year::Run2018)
+        {
+            return std::string(RunConfig::Run2018.golden_json);
+        }
+
+        fmt::print(stderr, "ERROR: Could not find Golden JSON for the requested year ({}).", year);
+        std::exit(EXIT_FAILURE);
+    };
+    auto run_lumi_filter = RunLumiFilter(golden_json(year));
 
     // corrections
     auto correctionlib_utils = CorrectionLibUtils();
@@ -146,41 +224,76 @@ auto classification(const std::string process,
         std::exit(EXIT_FAILURE);
     }
     json sum_weights_json = json::parse(sum_weights_json_file);
-    const auto [sum_weights, counter_raw_events, should_use_LHEWeight] = std::tuple<double, double, double>(1., 1., 1.);
-    // const auto [sum_weights, counter_raw_events, should_use_LHEWeight] =
-    //     [&sum_weights_json, &process, &year, is_data]() -> std::tuple<double, double, bool>
-    // {
-    //     if (not(is_data))
-    //     {
-    //         double w_LHEWeight_originalXWGTUP = sum_weights_json[process][year]["sum_LHEWeight_originalXWGTUP"];
-    //         double w_genWeight = sum_weights_json[process][year]["sum_genWeight"];
-    //         long long counter_raw_events = sum_weights_json[process][year]["raw_events"];
-    //
-    //         if (w_genWeight == 0. and w_LHEWeight_originalXWGTUP > 0.)
-    //         {
-    //             return {w_LHEWeight_originalXWGTUP, counter_raw_events, true};
-    //         }
-    //
-    //         if (w_genWeight > 0.)
-    //         {
-    //             if (w_genWeight / static_cast<double>(counter_raw_events) == 1.)
-    //             {
-    //                 if (w_LHEWeight_originalXWGTUP > 0.)
-    //                 {
-    //                     return {w_LHEWeight_originalXWGTUP, counter_raw_events, true};
-    //                 }
-    //                 fmt::print(stderr, "ERROR: Could not get sum of weights. Both weights are invalid.\n");
-    //                 std::exit(EXIT_FAILURE);
-    //             }
-    //             return {w_genWeight, counter_raw_events, false};
-    //         }
-    //
-    //         fmt::print(stderr, "ERROR: Could not get sum of weights. Both weights are invalid.\n");
-    //         std::exit(EXIT_FAILURE);
-    //     }
-    //     return {1., 1., false};
-    // }();
-    //
+
+    const auto event_weights = [&sum_weights_json, &process, &year, is_data]() -> EventWeights
+    {
+        if (not(is_data))
+        {
+            double sum_genWeight = sum_weights_json[process][year]["sum_genWeight"];
+            double sum_genWeight_pass_filter = sum_weights_json[process][year]["sum_genWeight_pass_generator_filter"];
+            double sum_LHEWeight_originalXWGTUP = sum_weights_json[process][year]["sum_LHEWeight"];
+            double sum_LHEWeight_originalXWGTUP_pass_filter =
+                sum_weights_json[process][year]["sum_LHEWeight_pass_generator_filter"];
+            long long raw_events = sum_weights_json[process][year]["raw_events"];
+            long long raw_events_pass_filters = sum_weights_json[process][year]["pass_generator_filter"];
+            int _has_genWeight = sum_weights_json[process][year]["has_genWeight"];
+            bool has_genWeight = static_cast<bool>(_has_genWeight);
+            int _has_LHEWeight_originalXWGTUP = sum_weights_json[process][year]["has_LHEWeight_originalXWGTUP"];
+            bool has_LHEWeight_originalXWGTUP = static_cast<bool>(_has_LHEWeight_originalXWGTUP);
+
+            bool should_use_LHEWeight = false;
+            if (has_genWeight and has_LHEWeight_originalXWGTUP)
+            {
+                if (sum_genWeight / static_cast<double>(raw_events) != 1.)
+                {
+                    should_use_LHEWeight = false;
+                }
+                else
+                {
+                    should_use_LHEWeight = true;
+                }
+            }
+            if (has_genWeight and not(has_LHEWeight_originalXWGTUP))
+            {
+                should_use_LHEWeight = false;
+            }
+            if (not(has_genWeight) and has_LHEWeight_originalXWGTUP)
+            {
+                should_use_LHEWeight = true;
+            }
+            if (not(has_genWeight) and not(has_LHEWeight_originalXWGTUP))
+            {
+                fmt::print(stderr,
+                           "ERROR: Could not assing sum of weights. This sample ({} - {}) has not genWeight or "
+                           "LHEWeight_originalXWGTUP.",
+                           process,
+                           year);
+                std::exit(EXIT_FAILURE);
+            }
+
+            if (should_use_LHEWeight)
+            {
+                return EventWeights{.sum_weights = sum_LHEWeight_originalXWGTUP,
+                                    .sum_pass_filter = sum_LHEWeight_originalXWGTUP_pass_filter,
+                                    .total_events = static_cast<double>(raw_events),
+                                    .total_events_pass_filter = static_cast<double>(raw_events_pass_filters),
+                                    .should_use_LHEWeight = should_use_LHEWeight};
+            }
+            else
+            {
+                return EventWeights{.sum_weights = sum_genWeight,
+                                    .sum_pass_filter = sum_genWeight_pass_filter,
+                                    .total_events = static_cast<double>(raw_events),
+                                    .total_events_pass_filter = static_cast<double>(raw_events_pass_filters),
+                                    .should_use_LHEWeight = should_use_LHEWeight};
+            }
+        }
+        return EventWeights{.sum_weights = 1.,
+                            .sum_pass_filter = 1.,
+                            .total_events = 1.,
+                            .total_events_pass_filter = 1.,
+                            .should_use_LHEWeight = false};
+    }();
 
     auto input_root_file = std::unique_ptr<TFile>(TFile::Open(input_file.c_str()));
     auto input_ttree = input_root_file->Get<TTree>("Events");
@@ -197,9 +310,59 @@ auto classification(const std::string process,
         this_sample_pdf = std::unique_ptr<LHAPDF::PDF>(LHAPDF::mkPDF(std::get<0>(*lha_indexes)));
     }
 
+    ADD_VALUE_READER(run, unsigned int);
+    ADD_VALUE_READER(luminosityBlock, unsigned int);
+
+    ADD_VALUE_READER(PV_npvsGood, int);
+
+    // https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2
+    ADD_VALUE_READER(Flag_goodVertices, bool);
+    ADD_VALUE_READER(Flag_globalSuperTightHalo2016Filter, bool);
+    ADD_VALUE_READER(Flag_HBHENoiseFilter, bool);
+    ADD_VALUE_READER(Flag_HBHENoiseIsoFilter, bool);
+    ADD_VALUE_READER(Flag_EcalDeadCellTriggerPrimitiveFilter, bool);
+    ADD_VALUE_READER(Flag_BadPFMuonFilter, bool);
+    ADD_VALUE_READER(Flag_BadPFMuonDzFilter, bool);
+    ADD_VALUE_READER(Flag_eeBadScFilter, bool);
+    ADD_VALUE_READER(Flag_hfNoisyHitsFilter, bool);
+    ADD_VALUE_READER(Flag_ecalBadCalibFilter, bool);
+
     ADD_VALUE_READER(HLT_IsoMu24, bool);
+    ADD_VALUE_READER(HLT_IsoTkMu24, bool);
+    ADD_VALUE_READER(HLT_IsoMu27, bool);
+    ADD_VALUE_READER(HLT_Mu50, bool);
+    ADD_VALUE_READER(HLT_TkMu50, bool);
+    ADD_VALUE_READER(HLT_TkMu100, bool);
+    ADD_VALUE_READER(HLT_OldMu100, bool);
+    ADD_VALUE_READER(HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ, bool);
+    ADD_VALUE_READER(HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ, bool);
+    ADD_VALUE_READER(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ, bool);
+    ADD_VALUE_READER(HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL, bool);
+    ADD_VALUE_READER(HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL, bool);
+    ADD_VALUE_READER(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL, bool);
+    ADD_VALUE_READER(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8, bool);
+    ADD_VALUE_READER(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8, bool);
+    ADD_VALUE_READER(HLT_Ele27_WPTight_Gsf, bool);
+    ADD_VALUE_READER(HLT_Ele35_WPTight_Gsf, bool);
+    ADD_VALUE_READER(HLT_Ele32_WPTight_Gsf, bool);
+    ADD_VALUE_READER(HLT_Photon175, bool);
+    ADD_VALUE_READER(HLT_Ele115_CaloIdVT_GsfTrkIdT, bool);
+    ADD_VALUE_READER(HLT_Photon200, bool);
+    ADD_VALUE_READER(HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW, bool);
+    ADD_VALUE_READER(HLT_DoubleEle33_CaloIdL_MW, bool);
+    ADD_VALUE_READER(HLT_DoubleEle25_CaloIdL_MW, bool);
+    ADD_VALUE_READER(HLT_VLooseIsoPFTau120_Trk50_eta2p1, bool);
+    ADD_VALUE_READER(HLT_VLooseIsoPFTau140_Trk50_eta2p1, bool);
+    ADD_VALUE_READER(HLT_MediumChargedIsoPFTau180HighPtRelaxedIso_Trk50_eta2p1, bool);
+    ADD_VALUE_READER(HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg, bool);
+    ADD_VALUE_READER(HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg, bool);
+    ADD_VALUE_READER(HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg, bool);
+    ADD_VALUE_READER(HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg, bool);
+    ADD_VALUE_READER(HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg, bool);
+    ADD_VALUE_READER(HLT_DoubleMediumChargedIsoPFTauHPS35_Trk1_eta2p1_Reg, bool);
 
     ADD_VALUE_READER(genWeight, float);
+    ADD_VALUE_READER(LHEWeight_originalXWGTUP, float);
 
     ADD_VALUE_READER(Pileup_nTrueInt, float);
     ADD_VALUE_READER(L1PreFiringWeight_Up, float);
@@ -212,9 +375,25 @@ auto classification(const std::string process,
     ADD_VALUE_READER(Generator_x2, float);
     ADD_VALUE_READER(Generator_id1, int);
     ADD_VALUE_READER(Generator_id2, int);
-    ADD_VALUE_READER(LHEWeight_originalXWGTUP, float);
 
     ADD_ARRAY_READER(LHEScaleWeight, float);
+
+    ADD_ARRAY_READER(LHEPart_pt, float);
+    ADD_ARRAY_READER(LHEPart_eta, float);
+    ADD_ARRAY_READER(LHEPart_phi, float);
+    ADD_ARRAY_READER(LHEPart_mass, float);
+    ADD_ARRAY_READER(LHEPart_incomingpz, float);
+    ADD_ARRAY_READER(LHEPart_pdgId, int);
+    ADD_ARRAY_READER(LHEPart_status, int);
+
+    ADD_ARRAY_READER(GenPart_pt, float);
+    ADD_ARRAY_READER(GenPart_eta, float);
+    ADD_ARRAY_READER(GenPart_phi, float);
+    ADD_ARRAY_READER(GenPart_mass, float);
+    ADD_ARRAY_READER(GenPart_genPartIdxMother, int);
+    ADD_ARRAY_READER(GenPart_pdgId, int);
+    ADD_ARRAY_READER(GenPart_status, int);
+    ADD_ARRAY_READER(GenPart_statusFlags, int);
 
     ADD_ARRAY_READER(Muon_pt, float);
     ADD_ARRAY_READER(Muon_eta, float);
@@ -291,6 +470,7 @@ auto classification(const std::string process,
     long long global_event_index = 0;
     for (auto &&event : tree_reader)
     {
+        print_debug(global_event_index, debug);
         if (event < static_cast<long long>(*first_event))
         {
             continue;
@@ -299,7 +479,7 @@ auto classification(const std::string process,
         {
             break;
         }
-        print_debug(global_event_index, debug);
+        global_event_index++;
 
         // check for chain readout quality
         // REFERENCE: https://root.cern.ch/doc/v608/classTTreeReader.html#a568e43c7d7d8b1f511bbbeb92c9094a8
@@ -309,27 +489,318 @@ auto classification(const std::string process,
             std::exit(EXIT_FAILURE);
         }
 
+        if (not(pass_generator_filter(generator_filter,
+                                      year,
+                                      unwrap(LHEPart_pt),
+                                      unwrap(LHEPart_eta),
+                                      unwrap(LHEPart_phi),
+                                      unwrap(LHEPart_mass),
+                                      unwrap(LHEPart_incomingpz),
+                                      unwrap(LHEPart_pdgId),
+                                      unwrap(LHEPart_status),
+                                      unwrap(GenPart_pt),
+                                      unwrap(GenPart_eta),
+                                      unwrap(GenPart_phi),
+                                      unwrap(GenPart_mass),
+                                      unwrap(GenPart_genPartIdxMother),
+                                      unwrap(GenPart_pdgId),
+                                      unwrap(GenPart_status),
+                                      unwrap(GenPart_statusFlags))))
+        {
+            continue;
+        }
+
+        if (not(run_lumi_filter(unwrap(run), unwrap(luminosityBlock), is_data)))
+        {
+            continue;
+        }
+
+        if (not(unwrap_or(PV_npvsGood, 1) > 0))
+        {
+            continue;
+        }
+
+        auto met_filters = [&Flag_goodVertices,
+                            &Flag_globalSuperTightHalo2016Filter,
+                            &Flag_HBHENoiseFilter,
+                            &Flag_HBHENoiseIsoFilter,
+                            &Flag_EcalDeadCellTriggerPrimitiveFilter,
+                            &Flag_BadPFMuonFilter,
+                            &Flag_BadPFMuonDzFilter,
+                            &Flag_eeBadScFilter,
+                            &Flag_hfNoisyHitsFilter,
+                            &Flag_ecalBadCalibFilter](const std::string &year) -> bool
+        {
+            auto _year = get_runyear(year);
+
+            if (_year == Year::Run2016APV or _year == Year::Run2016)
+            {
+                return unwrap(Flag_goodVertices) and unwrap(Flag_globalSuperTightHalo2016Filter) and
+                       unwrap(Flag_HBHENoiseFilter) and unwrap(Flag_HBHENoiseIsoFilter) and
+                       unwrap(Flag_EcalDeadCellTriggerPrimitiveFilter) and unwrap(Flag_BadPFMuonFilter) and
+                       unwrap(Flag_BadPFMuonDzFilter) and unwrap(Flag_eeBadScFilter) and unwrap(Flag_hfNoisyHitsFilter);
+            }
+
+            if (_year == Year::Run2017 or _year == Year::Run2018)
+            {
+                return unwrap(Flag_goodVertices) and unwrap(Flag_globalSuperTightHalo2016Filter) and
+                       unwrap(Flag_HBHENoiseFilter) and unwrap(Flag_HBHENoiseIsoFilter) and
+                       unwrap(Flag_EcalDeadCellTriggerPrimitiveFilter) and unwrap(Flag_BadPFMuonFilter) and
+                       unwrap(Flag_BadPFMuonDzFilter) and unwrap(Flag_hfNoisyHitsFilter) and
+                       unwrap(Flag_eeBadScFilter) and unwrap(Flag_ecalBadCalibFilter);
+            }
+
+            fmt::print(stderr, "ERROR: Could not define MET filters bits. The requested year ({}) is invalid.", year);
+            std::exit(EXIT_FAILURE);
+        };
+        if (not(met_filters(year)))
+        {
+            continue;
+        }
+
+        auto pass_low_pt_muon_trigger = [&](const std::string &year) -> bool
+        {
+            auto _year = get_runyear(year);
+            if (_year == Year::Run2016APV)
+            {
+                return unwrap(HLT_IsoMu24) or unwrap(HLT_IsoTkMu24);
+            }
+
+            if (_year == Year::Run2016)
+            {
+                return unwrap(HLT_IsoMu24) or unwrap(HLT_IsoTkMu24);
+            }
+
+            if (_year == Year::Run2017)
+            {
+                return unwrap(HLT_IsoMu27);
+            }
+
+            if (_year == Year::Run2018)
+            {
+                return unwrap(HLT_IsoMu24);
+            }
+
+            fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
+            std::exit(EXIT_FAILURE);
+        };
+
+        auto pass_high_pt_muon_trigger = [&](const std::string &year) -> bool
+        {
+            auto _year = get_runyear(year);
+            if (_year == Year::Run2016APV)
+            {
+                return unwrap(HLT_Mu50) or unwrap(HLT_TkMu50);
+            }
+
+            if (_year == Year::Run2016)
+            {
+                return unwrap(HLT_Mu50) or unwrap(HLT_TkMu50);
+            }
+
+            if (_year == Year::Run2017)
+            {
+                return unwrap(HLT_Mu50) or unwrap(HLT_TkMu100) or unwrap(HLT_OldMu100);
+            }
+
+            if (_year == Year::Run2018)
+            {
+                return unwrap(HLT_Mu50) or unwrap(HLT_TkMu100) or unwrap(HLT_OldMu100);
+            }
+
+            fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
+            std::exit(EXIT_FAILURE);
+        };
+
+        auto pass_double_muon_trigger = [&](const std::string &year) -> bool
+        {
+            auto _year = get_runyear(year);
+            std::vector<std::string> double_muon_triggers = {};
+            if (_year == Year::Run2016APV or _year == Year::Run2016)
+            {
+                return unwrap(HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ) or
+                       unwrap(HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ) or unwrap(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ) or
+                       unwrap(HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL) or unwrap(HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL) or
+                       unwrap(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL);
+            }
+
+            if (_year == Year::Run2017)
+            {
+                return unwrap(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8) or
+                       unwrap(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8);
+            }
+
+            if (_year == Year::Run2018)
+            {
+                return unwrap(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8);
+            }
+
+            fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
+            std::exit(EXIT_FAILURE);
+        };
+
+        auto pass_low_pt_electron_trigger = [&](const std::string &year) -> bool
+        {
+            auto _year = get_runyear(year);
+            if (_year == Year::Run2016APV)
+            {
+                return unwrap(HLT_Ele27_WPTight_Gsf);
+            }
+
+            if (_year == Year::Run2016)
+            {
+                return unwrap(HLT_Ele27_WPTight_Gsf);
+            }
+
+            if (_year == Year::Run2017)
+            {
+                return unwrap(HLT_Ele35_WPTight_Gsf);
+            }
+
+            if (_year == Year::Run2018)
+            {
+                return unwrap(HLT_Ele32_WPTight_Gsf);
+            }
+
+            fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
+            std::exit(EXIT_FAILURE);
+        };
+
+        auto pass_high_pt_electron_trigger = [&](const std::string &year) -> bool
+        {
+            auto _year = get_runyear(year);
+            if (_year == Year::Run2016APV)
+            {
+                return unwrap(HLT_Photon175) or unwrap(HLT_Ele115_CaloIdVT_GsfTrkIdT) or unwrap(HLT_Ele27_WPTight_Gsf);
+            }
+
+            if (_year == Year::Run2016)
+            {
+                return unwrap(HLT_Photon175) or unwrap(HLT_Ele115_CaloIdVT_GsfTrkIdT) or unwrap(HLT_Ele27_WPTight_Gsf);
+            }
+
+            if (_year == Year::Run2017)
+            {
+                return unwrap(HLT_Photon200) or unwrap(HLT_Ele115_CaloIdVT_GsfTrkIdT) or unwrap(HLT_Ele35_WPTight_Gsf);
+            }
+            if (_year == Year::Run2018)
+            {
+                return unwrap(HLT_Ele32_WPTight_Gsf) or unwrap(HLT_Photon200) or unwrap(HLT_Ele115_CaloIdVT_GsfTrkIdT);
+            }
+
+            fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
+            std::exit(EXIT_FAILURE);
+        };
+
+        auto pass_double_electron_trigger = [&](const std::string &year) -> bool
+        {
+            auto _year = get_runyear(year);
+
+            if (_year == Year::Run2016APV or _year == Year::Run2016)
+            {
+                return unwrap(HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW) or unwrap(HLT_DoubleEle33_CaloIdL_MW);
+            }
+            if (_year == Year::Run2017)
+            {
+                return unwrap(HLT_DoubleEle33_CaloIdL_MW) or unwrap(HLT_DoubleEle25_CaloIdL_MW);
+            }
+            if (_year == Year::Run2018)
+            {
+                return unwrap(HLT_DoubleEle25_CaloIdL_MW);
+            }
+
+            fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
+            std::exit(EXIT_FAILURE);
+        };
+
+        auto pass_photon_trigger = [&](const std::string &year) -> bool
+        {
+            auto _year = get_runyear(year);
+            if (_year == Year::Run2016APV or _year == Year::Run2016)
+            {
+                return unwrap(HLT_Photon175);
+            }
+            if (_year == Year::Run2017)
+            {
+                return unwrap(HLT_Photon200);
+            }
+
+            if (_year == Year::Run2018)
+            {
+                return unwrap(HLT_Photon200);
+            }
+
+            fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
+            std::exit(EXIT_FAILURE);
+        };
+
+        auto pass_high_pt_tau_trigger = [&](const std::string &year) -> bool
+        {
+            auto _year = get_runyear(year);
+            std::vector<std::string> high_pt_tau_triggers = {};
+            if (_year == Year::Run2016APV or _year == Year::Run2016)
+            {
+                return unwrap(HLT_VLooseIsoPFTau120_Trk50_eta2p1) or unwrap(HLT_VLooseIsoPFTau140_Trk50_eta2p1);
+            }
+            if (_year == Year::Run2017)
+            {
+                return unwrap(HLT_MediumChargedIsoPFTau180HighPtRelaxedIso_Trk50_eta2p1);
+            }
+
+            if (_year == Year::Run2018)
+            {
+                return unwrap(HLT_MediumChargedIsoPFTau180HighPtRelaxedIso_Trk50_eta2p1);
+            }
+
+            fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
+            std::exit(EXIT_FAILURE);
+        };
+        (void)pass_high_pt_tau_trigger;
+
+        auto pass_double_tau_trigger = [&](const std::string &year) -> bool
+        {
+            auto _year = get_runyear(year);
+            std::vector<std::string> double_tau_triggers = {};
+
+            if (_year == Year::Run2016APV or _year == Year::Run2016)
+            {
+                return unwrap(HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg) or
+                       unwrap(HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg);
+            }
+            if (_year == Year::Run2017)
+            {
+                return unwrap(HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg) or
+                       unwrap(HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg) or
+                       (HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg);
+            }
+            if (_year == Year::Run2018)
+            {
+                return unwrap(HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg) or
+                       unwrap(HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg) or
+                       unwrap(HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg) or
+                       unwrap(HLT_DoubleMediumChargedIsoPFTauHPS35_Trk1_eta2p1_Reg);
+            }
+
+            fmt::print(
+                stderr, "ERROR: Could not define double tau trigger bits. The requested year ({}) is invalid.", year);
+            std::exit(EXIT_FAILURE);
+        };
+        (void)pass_double_tau_trigger;
+
         // Trigger
-        auto is_good_trigger = trigger_filter(process,             //
-                                              is_data,             //
-                                              get_runyear(year),   //
-                                              unwrap(HLT_IsoMu24), //
-                                              false,
-                                              false,
-                                              false,
-                                              false,
-                                              false,
-                                              false,
-                                              false,
-                                              false
-                                              // unwrap(pass_high_pt_muon_trigger),     //
-                                              // unwrap(pass_double_muon_trigger),      //
-                                              // unwrap(pass_low_pt_electron_trigger),  //
-                                              // unwrap(pass_high_pt_electron_trigger), //
-                                              // unwrap(pass_double_electron_trigger),  //
-                                              //   unwrap(pass_high_pt_tau_trigger),      //
-                                              //   unwrap(pass_double_tau_trigger), //
-                                              // unwrap(pass_photon_trigger) //
+        auto is_good_trigger = trigger_filter(process,           //
+                                              is_data,           //
+                                              get_runyear(year), //
+                                              pass_low_pt_muon_trigger(year),
+                                              pass_high_pt_muon_trigger(year),
+                                              pass_double_muon_trigger(year),
+                                              pass_low_pt_electron_trigger(year),
+                                              pass_high_pt_electron_trigger(year),
+                                              pass_double_electron_trigger(year),
+                                              false, // pass_high_pt_tau_trigger(year), //
+                                              false, // pass_double_tau_trigger(year),  //
+                                              pass_photon_trigger(year),
+                                              false // pass_double_photon_trigger(year)
         );
         if (not(is_good_trigger))
         {
@@ -546,12 +1017,11 @@ auto classification(const std::string process,
                             // unwrap_or(LHEWeight_originalXWGTUP,
                             //                                                                1.f)
                         );
-                        double mc_weight =
-                            [is_data, &genWeight, &LHEWeight_originalXWGTUP, &should_use_LHEWeight]() -> double
+                        double mc_weight = [is_data, &genWeight, &LHEWeight_originalXWGTUP, &event_weights]() -> double
                         {
                             if (not(is_data))
                             {
-                                if (should_use_LHEWeight)
+                                if (event_weights.should_use_LHEWeight)
                                 {
                                     return unwrap(LHEWeight_originalXWGTUP);
                                 }
@@ -560,8 +1030,8 @@ auto classification(const std::string process,
                             return 1.;
                         }();
 
-                        weight = mc_weight * pu_weight * prefiring_weight * trigger_sf / sum_weights * x_section *
-                                 luminosity * filter_eff * k_factor * pdf_as_weight *
+                        weight = mc_weight * pu_weight * prefiring_weight * trigger_sf / event_weights.sum_weights *
+                                 x_section * luminosity * filter_eff * k_factor * pdf_as_weight *
                                  Shifts::get_reco_scale_factor(shift,
                                                                {num_muon, muons},
                                                                {num_electron, electrons},
@@ -621,8 +1091,6 @@ auto classification(const std::string process,
 
             loop_over_object_combinations(do_classification, muons, electrons, taus, photons, bjets, jets, met);
         }
-
-        global_event_index++;
     }
 
     fmt::print("\n[MUSiC Classification] Done ...\n");
@@ -645,6 +1113,7 @@ PYBIND11_MODULE(classification_imp, m)
           "process_group"_a,
           "sum_weights_json_filepath"_a,
           "input_file"_a,
+          "generator_filter"_a,
           "event_classes"_a,
           "first_event"_a = std::nullopt,
           "last_event"_a = std::nullopt,

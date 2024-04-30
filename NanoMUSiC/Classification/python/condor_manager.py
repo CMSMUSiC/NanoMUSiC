@@ -70,11 +70,11 @@ class CondorJob:
             "universe": "vanilla",
             "getenv": "true",
             "use_x509userproxy": "true",
-            "executable": f"{condor_log_dir}/exec_{random.randint(0, 10000000)}.sh",
+            # "executable": f"{condor_log_dir}/exec_{random.randint(0, 10000000)}.sh",
+            # "log": f"{condor_log_dir}/condor-$(CLUSTER).log",
+            # "output": f"{condor_log_dir}/condor-$(CLUSTER).out",
+            # "error": f"{condor_log_dir}/condor-$(CLUSTER).err",
             "arguments": "$(CLUSTER) $(PROCESS)",
-            "log": f"{condor_log_dir}/condor-$(CLUSTER).log",
-            "output": f"{condor_log_dir}/condor-$(CLUSTER).out",
-            "error": f"{condor_log_dir}/condor-$(CLUSTER).err",
             "notification": "never",
             # "request_memory": "4G",
             "rank": "Memory",
@@ -119,10 +119,20 @@ class CondorJob:
     def _add_request_memory(self) -> None:
         self._submit_config["request_memory"] = "{}G".format(self.request_memory)
 
+    def _add_log_files(self) -> None:
+        self._submit_config["log"] = "{}/{}.log".format(condor_log_dir, self.name)
+        self._submit_config["output"] = "{}/{}.out".format(condor_log_dir, self.name)
+        self._submit_config["error"] = "{}/{}.err".format(condor_log_dir, self.name)
+
+    def _add_executable(self) -> None:
+        self._submit_config["executable"] = "{}/{}.sh".format(condor_log_dir, self.name)
+
     def submit(self, schedd) -> int:
         self._add_input_files()
         self._add_output_files()
         self._add_request_memory()
+        self._add_log_files()
+        self._add_executable()
         self.executable_script = self._build_executable()
         self.job_status = JobStatus.BUILD
 
@@ -138,7 +148,10 @@ class CondorJob:
             self.log_file = submit_result.clusterad()["UserLog"]
             self.stdout = self.log_file.replace(".log", ".out")
             self.stderr = self.log_file.replace(".log", ".err")
-        finally:
+        except RuntimeError as error:
+            print("ERROR: Could not submit job. Scheduler message: {}".format(error))
+            sys.exit(-1)
+        else:
             self.job_status = JobStatus.SUBMITED
             return self.cluster_id
 

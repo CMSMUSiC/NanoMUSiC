@@ -1,5 +1,4 @@
 #include "NanoAODGenInfo.hpp"
-#include "Math/Vector4Dfwd.h"
 
 namespace NanoAODGenInfo
 {

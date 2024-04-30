@@ -26,6 +26,7 @@ type Config struct {
 
 func make_include_string() string {
 	include_patterns := []string{
+		"PV_npvsGood",
 		"nCorrT1METJet",
 		"CorrT1METJet_*",
 		"nElectron",

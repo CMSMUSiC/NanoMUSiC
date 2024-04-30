@@ -376,7 +376,8 @@ inline auto trigger_filter(const std::string &process, //
                            bool pass_double_electron_trigger,  //
                            bool pass_high_pt_tau_trigger,      //
                            bool pass_double_tau_trigger,       //
-                           bool pass_photon_trigger) -> std::optional<std::unordered_map<std::string, bool>>
+                           bool pass_photon_trigger,
+                           bool pass_double_photon_trigger) -> std::optional<std::unordered_map<std::string, bool>>
 {
     std::optional<std::unordered_map<std::string, bool>> trigger_filter_res = std::nullopt;
 
@@ -397,7 +398,8 @@ inline auto trigger_filter(const std::string &process, //
                     {"pass_double_electron_trigger", pass_double_electron_trigger},   //
                     {"pass_high_pt_tau_trigger", pass_high_pt_tau_trigger},           //
                     {"pass_double_tau_trigger", pass_double_tau_trigger},             //
-                    {"pass_photon_trigger", pass_photon_trigger}                      //
+                    {"pass_photon_trigger", pass_photon_trigger},                     //
+                    {"pass_double_photon_trigger", pass_double_photon_trigger}        //
                 };
             }
 
@@ -419,7 +421,8 @@ inline auto trigger_filter(const std::string &process, //
                     {"pass_double_electron_trigger", pass_double_electron_trigger},   //
                     {"pass_high_pt_tau_trigger", pass_high_pt_tau_trigger},           //
                     {"pass_double_tau_trigger", pass_double_tau_trigger},             //
-                    {"pass_photon_trigger", pass_photon_trigger}                      //
+                    {"pass_photon_trigger", pass_photon_trigger},                     //
+                    {"pass_double_photon_trigger", pass_double_photon_trigger}        //
                 };
             }
 
@@ -444,7 +447,8 @@ inline auto trigger_filter(const std::string &process, //
                         {"pass_double_electron_trigger", pass_double_electron_trigger},   //
                         {"pass_high_pt_tau_trigger", pass_high_pt_tau_trigger},           //
                         {"pass_double_tau_trigger", pass_double_tau_trigger},             //
-                        {"pass_photon_trigger", pass_photon_trigger}                      //
+                        {"pass_photon_trigger", pass_photon_trigger},                     //
+                        {"pass_double_photon_trigger", pass_double_photon_trigger}        //
                     };
                 }
 
@@ -467,7 +471,8 @@ inline auto trigger_filter(const std::string &process, //
                         {"pass_double_electron_trigger", pass_double_electron_trigger},   //
                         {"pass_high_pt_tau_trigger", pass_high_pt_tau_trigger},           //
                         {"pass_double_tau_trigger", pass_double_tau_trigger},             //
-                        {"pass_photon_trigger", pass_photon_trigger}                      //
+                        {"pass_photon_trigger", pass_photon_trigger},                     //
+                        {"pass_double_photon_trigger", pass_double_photon_trigger}        //
                     };
                 }
 
@@ -491,7 +496,8 @@ inline auto trigger_filter(const std::string &process, //
                         {"pass_double_electron_trigger", pass_double_electron_trigger},   //
                         {"pass_high_pt_tau_trigger", pass_high_pt_tau_trigger},           //
                         {"pass_double_tau_trigger", pass_double_tau_trigger},             //
-                        {"pass_photon_trigger", pass_photon_trigger}                      //
+                        {"pass_photon_trigger", pass_photon_trigger},                     //
+                        {"pass_double_photon_trigger", pass_double_photon_trigger}        //
                     };
                 }
 
@@ -517,7 +523,8 @@ inline auto trigger_filter(const std::string &process, //
                         {"pass_double_electron_trigger", pass_double_electron_trigger},   //
                         {"pass_high_pt_tau_trigger", pass_high_pt_tau_trigger},           //
                         {"pass_double_tau_trigger", pass_double_tau_trigger},             //
-                        {"pass_photon_trigger", pass_photon_trigger}                      //
+                        {"pass_photon_trigger", pass_photon_trigger},                     //
+                        {"pass_double_photon_trigger", pass_double_photon_trigger}        //
                     };
                 }
 
@@ -543,17 +550,19 @@ inline auto trigger_filter(const std::string &process, //
                     {"pass_double_electron_trigger", pass_double_electron_trigger},   //
                     {"pass_high_pt_tau_trigger", pass_high_pt_tau_trigger},           //
                     {"pass_double_tau_trigger", pass_double_tau_trigger},             //
-                    {"pass_photon_trigger", pass_photon_trigger}                      //
+                    {"pass_photon_trigger", pass_photon_trigger},                     //
+                    {"pass_double_photon_trigger", pass_double_photon_trigger}        //
                 };
             }
 
             return trigger_filter_res;
         }
 
-        throw std::runtime_error(
-            fmt::format("ERROR: Could not check trigger filter for Data file. The requested process ({}) does not "
-                        "match any dataset pattern.",
-                        process));
+        fmt::print(stderr,
+                   "ERROR: Could not check trigger filter for Data file. The requested process ({}) does not "
+                   "match any dataset pattern.",
+                   process);
+        std::exit(EXIT_FAILURE);
     }
 
     // MC
@@ -578,7 +587,8 @@ inline auto trigger_filter(const std::string &process, //
             {"pass_double_electron_trigger", pass_double_electron_trigger},   //
             {"pass_high_pt_tau_trigger", pass_high_pt_tau_trigger},           //
             {"pass_double_tau_trigger", pass_double_tau_trigger},             //
-            {"pass_photon_trigger", pass_photon_trigger}                      //
+            {"pass_photon_trigger", pass_photon_trigger},                     //
+            {"pass_double_photon_trigger", pass_double_photon_trigger}        //
         };
     }
 
@@ -735,6 +745,7 @@ auto classification(const std::string process,
                     const std::string process_group,
                     const std::string sum_weights_json_filepath,
                     const std::string input_file,
+                    const std::string &generator_filter,
                     // [EVENT_CLASS_NAME, [SHIFT, EVENT_CLASS_OBJECT] ]
                     EventClassContainer &event_classes,
                     std::optional<unsigned long> first_event = std::nullopt,

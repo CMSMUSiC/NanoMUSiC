@@ -1,4 +1,5 @@
 from enum import Enum
+import random
 import sys
 import tomli
 from pydantic import BaseModel, Field
@@ -34,6 +35,7 @@ class Process(BaseModel):
     kFactor: float = Field(default_factory=float)
     XSecOrder: str = Field(default_factory=str)
     ProcessGroup: str = Field(default_factory=str)
+    generator_filter_key: str = Field(default_factory=str)
     is_data: bool
     das_name_2016APV: list[str] = Field(default_factory=list)
     das_name_2016: list[str] = Field(default_factory=list)
@@ -47,12 +49,26 @@ class Process(BaseModel):
 
     def get_files(self, year: Years, max_files: int = sys.maxsize) -> list[str]:
         if year == Years.Run2016APV:
-            return self.output_files_2016APV[
+            files = self.output_files_2016APV[
                 : min(max_files, len(self.output_files_2016APV))
             ]
+            random.shuffle(files)
+            return files
         if year == Years.Run2016:
-            return self.output_files_2016[: min(max_files, len(self.output_files_2016))]
+            files = self.output_files_2016[
+                : min(max_files, len(self.output_files_2016))
+            ]
+            random.shuffle(files)
+            return files
         if year == Years.Run2017:
-            return self.output_files_2017[: min(max_files, len(self.output_files_2017))]
+            files = self.output_files_2017[
+                : min(max_files, len(self.output_files_2017))
+            ]
+            random.shuffle(files)
+            return files
         if year == Years.Run2018:
-            return self.output_files_2018[: min(max_files, len(self.output_files_2018))]
+            files = self.output_files_2018[
+                : min(max_files, len(self.output_files_2018))
+            ]
+            random.shuffle(files)
+            return files
