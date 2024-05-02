@@ -9,8 +9,9 @@
 #include "Enumerate.hpp"
 #include "NanoObjects.hpp"
 
-#include <fmt/core.h>
-#include <fmt/ostream.h>
+#include <fmt/format.h>
+#include <fmt/ranges.h>
+// #include <fmt/ostream.h>
 
 #include "ROOT/RVec.hxx"
 using namespace ROOT;

@@ -34,8 +34,12 @@ namespace ph = std::placeholders;
 //
 //
 ECScanner::ECScanner(int &rounds, int &startRound)
-    : m_scanType(ScanType::unknown), m_numDicingRounds(rounds), m_firstDicingRound(startRound), m_scoreFunc("p-value"),
-      m_dicingProfiler("pseudo experiment generation"), m_roiFindingProfiler("RoI finding total"),
+    : m_scanType(ScanType::unknown),
+      m_numDicingRounds(rounds),
+      m_firstDicingRound(startRound),
+      m_scoreFunc("p-value"),
+      m_dicingProfiler("pseudo experiment generation"),
+      m_roiFindingProfiler("RoI finding total"),
       m_pValueProfiler("p-value calculation")
 {
     // initalize function maps
@@ -186,8 +190,13 @@ void ECScanner::findRoI(const std::string scoreType, const bool filtered)
             if (score >= 0)
             {
                 // store scan result
-                m_scanResultsCache.push_back(ScanResult(mcbin, data, score, m_integralScan,
-                                                        /* skipped = */ false, m_dataBins, m_totalMcEvents,
+                m_scanResultsCache.push_back(ScanResult(mcbin,
+                                                        data,
+                                                        score,
+                                                        m_integralScan,
+                                                        /* skipped = */ false,
+                                                        m_dataBins,
+                                                        m_totalMcEvents,
                                                         m_totalMcUncert));
                 fillRegionControlPlot(mcbin, -std::log10(score));
             }
@@ -210,12 +219,22 @@ void ECScanner::findRoI(const std::string scoreType, const bool filtered)
             data_integral = data;
             if (m_integralScan)
             {
-                bool skipped = vetoRegion(mcbin, data, startMCBinIter, endMCBinIter, startDataBinIter, endDataBinIter,
-                                          maxMCBinIter, m_integralScan);
+                bool skipped = vetoRegion(mcbin,
+                                          data,
+                                          startMCBinIter,
+                                          endMCBinIter,
+                                          startDataBinIter,
+                                          endDataBinIter,
+                                          maxMCBinIter,
+                                          m_integralScan);
                 const double score = thisScoreFunc(mcbin, data);
-                m_scanResultsCache.push_back(ScanResult(mcbin, data, score,
+                m_scanResultsCache.push_back(ScanResult(mcbin,
+                                                        data,
+                                                        score,
                                                         /* integralScan = */ true,
-                                                        /* skipped = */ skipped, m_dataBins, m_totalMcEvents,
+                                                        /* skipped = */ skipped,
+                                                        m_dataBins,
+                                                        m_totalMcEvents,
                                                         m_totalMcUncert));
                 break;
             }
@@ -269,9 +288,14 @@ void ECScanner::findRoI(const std::string scoreType, const bool filtered)
     else
     { // no scan result found. Use integral of distribution as output
         // This result has to be skipped later in the analysis!
-        m_scanResults.push_back(ScanResult(mcbin_integral, data_integral, 1,
+        m_scanResults.push_back(ScanResult(mcbin_integral,
+                                           data_integral,
+                                           1,
                                            /* integralScan = */ true,
-                                           /* skipped = */ true, m_dataBins, m_totalMcEvents, m_totalMcUncert));
+                                           /* skipped = */ true,
+                                           m_dataBins,
+                                           m_totalMcEvents,
+                                           m_totalMcUncert));
     }
 
     if (not filtered)
@@ -285,11 +309,14 @@ void ECScanner::findRoI(const std::string scoreType, const bool filtered)
 //// Function to determine if a region should be skipped for scoreFunction calculation
 //
 //
-bool ECScanner::vetoRegion(const MCBin &mcbin, double data, std::vector<MCBin>::iterator const &startMCBinIter,
+bool ECScanner::vetoRegion(const MCBin &mcbin,
+                           double data,
+                           std::vector<MCBin>::iterator const &startMCBinIter,
                            std::vector<MCBin>::iterator const &endMCBinIter,
                            __attribute__((unused)) std::vector<double>::iterator const &startDataBinIter,
                            std::vector<double>::iterator const &endDataBinIter,
-                           std::vector<MCBin>::iterator const &maxMCBinIter, bool isIntegral)
+                           std::vector<MCBin>::iterator const &maxMCBinIter,
+                           bool isIntegral)
 {
 
     constexpr double no_data_threshold = 1e-9; // data values less than this will be treated as 0
@@ -373,7 +400,6 @@ bool ECScanner::vetoRegion(const MCBin &mcbin, double data, std::vector<MCBin>::
     }
 
     // Low-Statistics treatment as presented to EXO on 20. Jan 2016
-
     if (not m_noLowStatsTreatment)
     {
         if (mcbin.getTotalMcStatUncert() / mcbin.getTotalMcEvents() > m_thresholdLowStatsUncert)
@@ -454,7 +480,8 @@ bool ECScanner::vetoRegion(const MCBin &mcbin, double data, std::vector<MCBin>::
 }
 
 MCBin ECScanner::constructNeighborhood(
-    std::vector<MCBin>::iterator iter, const int width,
+    std::vector<MCBin>::iterator iter,
+    const int width,
     std::vector<MCBin>::iterator minIter, // minimal possible iterator
     std::vector<MCBin>::iterator maxIter  // maximally possible iterator (maximal filled bin + 1)
 )
@@ -527,7 +554,6 @@ double ECScanner::calcPvalMUSiC(const MCBin &bin, const double data) const
     if (p < 0)
     {
         // p negative (either lookup-table-miss or lookup table skipped)
-
         // call p-value calculation from ConvolutionComputer.h
         p = compute_p_convolution(data, bin.getTotalMcEvents(), bin.getTotalMcUncert(), m_p_prior);
     }
@@ -545,16 +571,12 @@ double ECScanner::calcPvalMUSiC(const MCBin &bin, const double data) const
 }
 
 //// Calculate significance
-//
-//
 double ECScanner::calcSignificance(const MCBin &bin, const double data) const
 {
     return (bin.getTotalMcEvents() - data) / bin.getTotalMcUncert();
 }
 
 //// Filter regions based on significance
-//
-//
 void ECScanner::significanceFilter()
 {
     findRoI("significance", false);
@@ -571,8 +593,6 @@ void ECScanner::significanceFilter()
 }
 
 //// Return the position of the highest filled bin in either data or MC
-//
-//
 int ECScanner::getMaxFilledBin()
 {
     int highestMC = m_mcBins.size() - 1;
@@ -621,6 +641,12 @@ void ECScanner::diceSignalPseudoData(const unsigned int round)
     m_dicingProfiler.start();
     m_dataBins = m_dicer.dicePseudoData(m_signalBins, round, m_p_prior);
     m_dicingProfiler.stop();
+}
+
+// will be used for multithreading
+std::vector<double> ECScanner::diceMcPseudoDataMT(const unsigned int round)
+{
+    return m_dicer.dicePseudoData(m_mcBins, round, m_p_prior);
 }
 
 ////////////////////////////////////////////////
@@ -714,7 +740,8 @@ std::vector<MCBin> ECScanner::readMCBinArray(const rs::Value &jsonArray, MCBin *
         MCBin::yield_vector mcEventsPerProcessGroup;
         int j = 0;
         for (rs::Value::ConstMemberIterator itr = mcEventsPerProcessObj.MemberBegin();
-             itr != mcEventsPerProcessObj.MemberEnd(); ++j, ++itr)
+             itr != mcEventsPerProcessObj.MemberEnd();
+             ++j, ++itr)
         {
             mcEventsPerProcessGroup.push_back(itr->value.GetDouble());
 
@@ -787,8 +814,13 @@ std::vector<MCBin> ECScanner::readMCBinArray(const rs::Value &jsonArray, MCBin *
         }
 
         // Construct MCBin and append to result
-        const MCBin mcBin(mcEventsPerProcessGroup, mcStatUncertPerProcessGroup, mcProcessGroupNames, lowerEdge, width,
-                          mcSysUncerts, mcSysUncertNames);
+        const MCBin mcBin(mcEventsPerProcessGroup,
+                          mcStatUncertPerProcessGroup,
+                          mcProcessGroupNames,
+                          lowerEdge,
+                          width,
+                          mcSysUncerts,
+                          mcSysUncertNames);
 
         if (integralBinOut != nullptr)
         {

@@ -1,0 +1,338 @@
+from typing import Union
+from collections import defaultdict
+from tqdm import tqdm
+import sys
+import copy
+from fnmatch import fnmatch
+from array import array
+
+import ROOT
+
+ROOT.gROOT.SetBatch(True)
+
+
+class Histogram:
+    def __init__(
+        self,
+        root_file: ROOT.TFile,
+        class_name: str,
+        process_group: str,
+        xs_order: str,
+        sample: str,
+        year: str,
+        shift: str,
+        histo_name: str,
+    ):
+        self.class_name = class_name
+        self.process_group = process_group
+        self.xs_order = xs_order
+        self.sample = sample
+        self.year = year
+        self.shift = shift
+        self.histo_name = histo_name
+        self.full_histo_name = f"[{self.class_name}]_[{self.process_group}]_[{self.xs_order}]_[{self.sample}]_[{self.year}]_[{self.shift}]_[{self.histo_name}]"
+        self.histo = root_file.Get(self.full_histo_name)
+
+        self.is_data = process_group == "Data"
+
+    def __str__(self):
+        return self.full_histo_name
+
+    def get_bin_content(self, bin):
+        return self.histo.GetBinContent(bin)
+
+    def integral(self):
+        try:
+            return self.histo.Integral()
+        except AttributeError:
+            print(f"ERROR: Could not get integral of {self}.")
+            exit(-1)
+
+    def clone(self):
+        try:
+            new_histo = copy.deepcopy(self)
+            new_histo.histo = self.histo.Clone()
+            return new_histo
+        except AttributeError:
+            print(f"ERROR: Could not clone {self}.")
+            exit(-1)
+
+    def reset(self):
+        try:
+            self.histo.Reset()
+        except AttributeError:
+            print(f"ERROR: Could not reset {self}.")
+            exit(-1)
+
+    def add(self, other):
+        try:
+            self.histo.Add(other.histo)
+        except:
+            print(f"ERROR: Could not add {self} to {other}.")
+            exit(-1)
+
+    def __add__(self, other):
+        self.add(other)
+        return self
+
+    def scale(self, c):
+        try:
+            self.histo.Scale(c)
+        except:
+            print(f"ERROR: Could not scale {self}.")
+            exit(-1)
+
+    def __mul__(self, c):
+        self.scale(c)
+        return self
+
+    def scale_for_plot(self, c=10.0):
+        try:
+            return self.histo.Scale(c, "width")
+        except:
+            print(f"ERROR: Could not scale {self} for plotting.")
+            exit(-1)
+
+    def get_limits_bins(self):
+        min_bin = 0
+        max_bin = 0
+        for idx in range(1, self.histo.GetNbinsX() + 1, 1):
+            if self.histo.GetBinContent(idx) > 0:
+                min_bin = idx
+                break
+        for idx in range(self.histo.GetNbinsX(), 0, -1):
+            if self.histo.GetBinContent(idx) > 0:
+                max_bin = idx
+                break
+
+        assert min_bin <= max_bin
+
+        if min_bin == max_bin:
+            max_bin += 1
+
+        return min_bin, max_bin
+
+    def get_limits(self):
+        limits = self.get_limits_bins()
+        if limits is None:
+            return None
+        min_bin, max_bin = limits
+        return self.histo.GetBinLowEdge(min_bin), self.histo.GetBinLowEdge(max_bin + 1)
+
+    @staticmethod
+    def parse_histo_name(histo_name: str):
+        parsed_histogram = histo_name.split("]_[")
+        parsed_histogram[0] = parsed_histogram[0][1:]
+        parsed_histogram[-1] = parsed_histogram[-1][:-1]
+        return parsed_histogram
+
+    @staticmethod
+    def from_full_name(hist: str, root_file):
+        (
+            class_name,
+            process_group,
+            xs_order,
+            sample,
+            year,
+            shift,
+            histo_name,
+        ) = Histogram.parse_histo_name(hist)
+
+        return Histogram(
+            root_file,
+            class_name,
+            process_group,
+            xs_order,
+            sample,
+            year,
+            shift,
+            histo_name,
+        )
+
+    @staticmethod
+    def merge_histograms(histograms):
+        merged_histo = None
+        for h in histograms:
+            if merged_histo == None:
+                merged_histo = h.clone()
+            else:
+                merged_histo.add(h)
+
+        return merged_histo
+
+
+class EventClass:
+    def __init__(
+        self,
+        name: str,
+        counts: list[Histogram],
+    ):
+        self.name = name
+
+        self.histos = {
+            "counts": counts,
+        }
+
+        self.data_count = 0
+        self.mc_count = 0
+        for count in self.histos["counts"]:
+            if count.shift == "Nominal":
+                if count.is_data:
+                    self.data_count += count.get_bin_content(1)
+                else:
+                    self.mc_count += count.get_bin_content(1)
+
+        self.is_valid = self.data_count >= 1 and self.mc_count >= 0.1
+
+    def get_data_count(self) -> float:
+        return self.data_count
+
+    def get_mc_count(self) -> float:
+        return self.mc_count
+
+    def __str__(self):
+        n_data = len(
+            list(filter(lambda h: (h.process_group == "Data"), self.histos["counts"]))
+        )
+        n_mc = len(self.histos["counts"]) - n_data
+        return f"Event Class: {self.name}\nData: {self.get_data_count()} events - {n_data} histograms\nMC: {self.get_mc_count()} events - {n_mc} histograms\n"
+
+    def get_data_histogram(self, histo_name) -> Histogram:
+        data_hist = None
+        for h in self.histos[histo_name]:
+            if h.is_data:
+                if data_hist is None:
+                    data_hist = h.clone()
+                else:
+                    data_hist.add(h)
+
+        return data_hist
+
+    def get_data_th1(self, histo_name, scale=False) -> ROOT.TH1F:
+        h = self.get_data_histogram(histo_name)
+        if scale:
+            h.scale_for_plot()
+
+        return h
+
+    def get_y_low(self, histo_name) -> float:
+        total_mc_hist = None
+        for h in self.histos[histo_name]:
+            if total_mc_hist is None:
+                total_mc_hist = h.clone()
+            else:
+                total_mc_hist.add(h)
+
+        lowest_bin_count = sys.float_info.max
+        for ibin in range(1, total_mc_hist.histo.GetNbinsX() + 1):
+            if (
+                total_mc_hist.histo.GetBinContent(ibin) < lowest_bin_count
+                and total_mc_hist.histo.GetBinContent(ibin) > 0
+            ):
+                lowest_bin_count = total_mc_hist.histo.GetBinContent(ibin)
+
+        return lowest_bin_count
+
+    def get_mc_histograms_per_process_group(self, histo_name) -> Histogram:
+        mc_hists = {}
+        for h in self.histos[histo_name]:
+            if not h.is_data:
+                if h.process_group not in mc_hists:
+                    mc_hists[h.process_group] = h.clone()
+                else:
+                    mc_hists[h.process_group].add(h)
+
+        return mc_hists
+
+
+class EventClassCollection:
+    def __init__(self, source_files, event_class_pattern):
+        if isinstance(event_class_pattern, str):
+            event_class_pattern = [event_class_pattern]
+
+        self.classes: dict[EventClass] = {}
+        self.root_files = []
+
+        h_counts_per_class = defaultdict(list)
+        for f in tqdm(source_files):
+            root_file = ROOT.TFile.Open(f)
+            self.root_files.append(root_file)
+            for key in root_file.GetListOfKeys():
+                if key.GetName().startswith("[EC_"):
+                    class_name = Histogram.parse_histo_name(key.GetName())[0]
+                    does_match = False
+                    for p in event_class_pattern:
+                        if fnmatch(class_name, p):
+                            does_match = True
+                            break
+                    if does_match:
+                        if "h_counts" in key.GetName():
+                            histo = Histogram.from_full_name(key.GetName(), root_file)
+                            h_counts_per_class[histo.class_name].append(histo)
+
+        if len(h_counts_per_class) == 0:
+            print(
+                "ERROR: Could not build Event Class collection. No matches were found."
+            )
+            sys.exit(-1)
+        for event_class in h_counts_per_class:
+            ec = EventClass(
+                event_class,
+                h_counts_per_class[event_class],
+            )
+            if ec.is_valid:
+                self.classes[event_class] = ec
+
+    def __iter__(self):
+        self.list_event_classes = list(self.classes.keys())
+        self.index = 0
+        return self
+
+    def __next__(self):
+        if self.index < len(self.list_event_classes):
+            this_ec = self.classes[self.list_event_classes[self.index]]
+            self.index += 1
+            return this_ec
+        else:
+            raise StopIteration
+
+    def __getitem__(self, event_class_name):
+        return self.classes[event_class_name]
+
+    def __len__(self):
+        return len(list(self.classes.keys()))
+
+    def add(self, event_class: EventClass):
+        self.classes[event_class.name] = event_class
+
+    def has(self, event_class_name):
+        return event_class_name in self.classes.keys()
+
+    def is_in(self, event_class_name):
+        return self.has(event_class_name)
+
+    def get_all_classes_names(self):
+        return list(self.classes.keys())
+
+
+if __name__ == "__main__":
+    import glob
+
+    source_files = list(
+        filter(
+            lambda f: ("cutflow" not in f),
+            glob.glob(
+                "/net/scratch_cms3a/silva/classification_outputs_2023_08_21/*/*/*.root"
+            ),
+        )
+    )
+
+    with EventClassCollection(
+        # source_files, ["EC_2Muon", "EC_2Muon+*"]
+        source_files,
+        "EC_2Muon",
+    ) as test_event_classes:
+        for ec in test_event_classes:
+            print(ec)
+
+        # print(test_event_classes["EC_2Muon+X"])

@@ -2,6 +2,7 @@
 #define MUSIC_OBJECTS_HPP
 
 #include <any>
+#include <cstdlib>
 #include <optional>
 #include <stdexcept>
 
@@ -113,7 +114,41 @@ class MUSiCObjects
     {
         if (not(is_data))
         {
-            return CorrectionlibRef_t(correction_ref)->evaluate(std::forward<T>(values));
+            try
+            {
+                return CorrectionlibRef_t(correction_ref)->evaluate(std::forward<T>(values));
+            }
+            catch (const std::exception &e)
+            {
+                // Catch any other unexpected exceptions
+                auto inputs = std::vector<std::string>{};
+                for (auto &&var : correction_ref->inputs())
+                {
+                    inputs.push_back(fmt::format("({} as {})", var.name(), var.typeStr()));
+                }
+                fmt::print(stderr,
+                           "ERROR: Caught an exception when trying to evaluate a scale factor from "
+                           "correctionlib. Exception: {}. Correctionlib Ref: {}. Expected inputs: [{}].\n",
+                           e.what(),
+                           correction_ref->name(),
+                           fmt::join(inputs, " - "));
+                std::exit(EXIT_FAILURE);
+            }
+            // Catch any other unexpected exceptions
+            catch (...)
+            {
+                auto inputs = std::vector<std::string>{};
+                for (auto &&var : correction_ref->inputs())
+                {
+                    inputs.push_back(fmt::format("({} as {})", var.name(), var.typeStr()));
+                }
+                fmt::print(stderr,
+                           "ERROR: Caught an unkown exception when trying to evaluate a scale factor from "
+                           "correctionlib. Correctionlib Ref: {}. Expected inputs: [{}].\n",
+                           correction_ref->name(),
+                           fmt::join(inputs, " - "));
+                std::exit(EXIT_FAILURE);
+            }
         }
         return 1.;
     }

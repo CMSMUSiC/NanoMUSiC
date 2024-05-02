@@ -62,7 +62,11 @@ parser.add_argument(
     "--jobs",
     help="Pool size.",
     required=False,
-    default=min(cpu_count(), 12),
+    default=min(cpu_count(), 24),
+)
+
+parser.add_argument(
+    "--clean", help="Clear the submition files", required=False, action="store_true"
 )
 
 args = parser.parse_args()
@@ -93,21 +97,9 @@ def make_task_config_file(
     task_config["dataset"] = das_name
 
     new_config = to_toml_dumps(task_config)
-    # print("\n*************** Modified task config file: ******************\n")
-    # print(
-    #     highlight(
-    #         new_config,
-    #         lexer=get_lexer_by_name("toml"),
-    #         formatter=Terminal256Formatter(style="monokai"),
-    #     )
-    # )
-    # print("\n" + "*" * 56)
 
-    # dump new config to file
-    # os.system("rm raw_config.toml > /dev/null 2>&1")
     os.system(f"mkdir -p raw_configs/{process_name}_{year}")
 
-    # raw_config = "raw_config_"
     with open(
         f"raw_configs/{process_name}_{year}/raw_config.toml", "w"
     ) as new_config_file:
@@ -131,33 +123,29 @@ def build_crab_config(process_name, das_name, year, is_data, global_now):
 
     this_config.General.requestName = process_name
     this_config.General.workArea = f"crab_nano_music_{process_name}"
-    if args.btageff:
-        this_config.General.workArea = f"crab_btageff_{process_name}"
     this_config.General.transferOutputs = True
 
     this_config.JobType.pluginName = "Analysis"
     this_config.JobType.psetName = f"{os.getenv('CRAB_MUSIC_BASE')}/crab_music_pset.py"
-    if args.btageff:
-        this_config.JobType.psetName = (
-            f"{os.getenv('CRAB_MUSIC_BASE')}/crab_music_btageff_pset.py"
-        )
     this_config.JobType.scriptExe = f"{os.getenv('CRAB_MUSIC_BASE')}/run_nano_music.sh"
-    if args.btageff:
-        print("Will submit BTag Efficiency code ...")
-        this_config.JobType.scriptExe = f"{os.getenv('CRAB_MUSIC_BASE')}/run_btageff.sh"
+
+    # run for at most 13 hours
+    this_config.JobType.maxJobRuntimeMin = 60*13
 
     this_config.JobType.inputFiles = [
-        "task.tar.gz",
         f"raw_configs/{process_name}/raw_config.toml",
+        f"{os.getenv('CRAB_MUSIC_BASE')}/../../bin/nanoaod_skimmer",
+        f"{os.getenv('CRAB_MUSIC_BASE')}/config_builder.py",
+        f"{os.getenv('CRAB_MUSIC_BASE')}/dummy_frameworkjob_report.xml",
     ]
 
     this_config.Data.inputDataset = das_name
     this_config.Data.inputDBS = "global"
     this_config.Data.splitting = "FileBased"
     if is_data:
-        this_config.Data.unitsPerJob = 3
+        this_config.Data.unitsPerJob = 2
     else:
-        this_config.Data.unitsPerJob = 3
+        this_config.Data.unitsPerJob = 2
 
     this_config.Data.totalUnits = -1
     this_config.Data.publication = False
@@ -168,9 +156,14 @@ def build_crab_config(process_name, das_name, year, is_data, global_now):
         this_config.JobType.outputFiles = [r"efficiency_hist.root"]
     this_config.User.voGroup = "dcms"
     this_config.Site.storageSite = "T2_DE_RWTH"
-    this_config.Site.blacklist = ["T2_BR_*", "T2_US_*"]
+    # this_config.Site.blacklist = ["T2_BR_*", "T2_US_*"]
+    this_config.Site.blacklist = ["T2_BR_*"]
 
-    return this_config
+    crab_config_file_path = f"raw_configs/{process_name}/crab_config.py"
+    with open(crab_config_file_path, "w") as f:
+        f.write(str(this_config))
+
+    return crab_config_file_path
 
 
 def submit(sample):
@@ -194,15 +187,6 @@ def submit(sample):
     return {"process_name": process_name, "year": year}
 
 
-def build_task_tarball():
-    print("Packing input files ...")
-    os.system(r"rm task.tar.gz > /dev/null 2>&1")
-    os.system(
-        r'tar --exclude="*.log" --exclude="rootlogon.C" --exclude="crab.log" --exclude="raw_config.toml" --exclude="crab_nano_music_*" --exclude="crab_music_pset.py" --exclude="task.tar.gz" --exclude="CMSSW_*" --exclude="__pycache*" --exclude="build" --exclude="docs_BKP" --exclude="docs" --exclude="crab_nano_music_date_*" --exclude="NanoMUSiC/tools" --exclude="NanoMUSiC/PxlAnalyzer" --exclude="*.root" --exclude="NanoMUSiC/PlotLib" --exclude="NanoMUSiC/MUSiC-Configs" --exclude="NanoMUSiC/MUSiC-RoIScanner" --exclude="NanoMUSiC/MUSiC-Utils" --exclude="NanoMUSiC/MUSiC-CRAB/crab_nano_music_DYJetsToLL*" --exclude="cache" --exclude="NanoMUSiC/MUSiC-BTagEff/Outputs" -zcvf task.tar.gz $CRAB_MUSIC_BASE/../../*'
-    )
-    print("")
-
-
 def check_voms():
     ret_code = subprocess.run(
         shlex.split("voms-proxy-info"), capture_output=True
@@ -214,6 +198,12 @@ def check_voms():
 
 
 def main():
+    if args.clean:
+        os.system("rm -rf crab_nano_music_*")
+        os.system("rm -rf last_*.txt")
+        os.system("rm -rf submited_samples_date_*.json")
+        exit(0)
+
     global_now = datetime.now().strftime(r"date_%Y_%m_%d_time_%H_%M_%S")
     if args.date_and_time != "":
         global_now = args.date_and_time
@@ -225,10 +215,6 @@ def main():
     # check for VOMS proxy
     if not (check_voms()):
         raise RuntimeError("ERROR: Could not find valid VOMS proxy.")
-
-    # create the task tarball and submit the jobs
-    if not args.skip_tarball:
-        build_task_tarball()
 
     os.system("rm -rf raw_configs")
     os.system("mkdir raw_configs")
@@ -243,6 +229,7 @@ def main():
         submited_samples = list(
             tqdm(
                 pool.imap_unordered(submit, sample_list),
+                # pool.imap_unordered(submit, [sample_list[0]]),
                 total=len(sample_list),
                 unit="sample",
             )

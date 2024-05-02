@@ -87,7 +87,7 @@ inline auto make_met(const double raw_met_pt,                  //
     if (is_good_met)
     {
         scale_factors.push_back(1.);
-        scale_factor_shift.push_back(1.);
+        scale_factor_shift.push_back(0.);
         met_p4.push_back(Math::PtEtaPhiMVector(this_met));
 
         is_fake.push_back(false);

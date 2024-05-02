@@ -157,7 +157,7 @@ auto is_good_match(float pt,
                    float eta,
                    float phi,
                    int genjet_idx,
-                   const NanoObjects::GenJets &gen_jets,
+                   const NanoAODGenInfo::GenJets &gen_jets,
                    double resolution) -> bool
 {
     if (genjet_idx >= 0 and static_cast<std::size_t>(genjet_idx) < gen_jets.size)
@@ -185,7 +185,7 @@ auto JetCorrector::get_resolution_correction(float pt,
                                              float phi,
                                              float rho,
                                              int genjet_idx,
-                                             const NanoObjects::GenJets &gen_jets,
+                                             const NanoAODGenInfo::GenJets &gen_jets,
                                              const std::string &variation) -> double
 {
     if (not is_data)

@@ -1,1 +1,0 @@
-ECMerger.py /disk1/roemer/MUSiC_Run/Data/12/Data/* --final --merge=all --data=True -o /user/roemer/mergedOutputs/data_2016_6_1.root

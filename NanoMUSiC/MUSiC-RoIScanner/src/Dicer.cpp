@@ -59,7 +59,8 @@ void Dicer::setPoissonSeed(const RNG::result_type seed)
     m_poissonSeed = seed;
 }
 
-std::vector<double> Dicer::dicePoissonData(const std::vector<MCBin> &bins, const std::vector<double> &systematicShifts,
+std::vector<double> Dicer::dicePoissonData(const std::vector<MCBin> &bins,
+                                           const std::vector<double> &systematicShifts,
                                            PriorMode prior)
 {
 

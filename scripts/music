@@ -1,0 +1,127 @@
+#!/usr/bin/env python3
+
+from enum import Enum
+from typing import Union
+import typer
+import metadata
+import sys
+
+############################################################################
+############################################################################
+# Classification
+############################################################################
+############################################################################
+classification_app = typer.Typer()
+
+
+@classification_app.command()
+def preprocess(config_file: str):
+    import preprocessing
+
+    preprocessing.preamble()
+    preprocessing.compute_sum_weights(config_file)
+
+
+class ClassificationTarget(str, Enum):
+    Local = "local"
+    Condor = "condor"
+    Dev = "dev"
+
+
+@classification_app.command()
+def launch(
+    config_file: str,
+    target: ClassificationTarget = ClassificationTarget.Condor,
+    process: Union[str, None] = None,
+    year: Union[metadata.Years, None] = None,
+    max_files: int = sys.maxsize,
+    split_size: Union[int, None] = None,
+    dry_run: bool = False,
+    num_cpus: int = 100,
+):
+    import classification
+
+    if target == ClassificationTarget.Dev:
+        classification.launch_dev(config_file, process, year, max_files)
+    elif target == ClassificationTarget.Local:
+        classification.launch_local(
+            config_file, process, year, max_files, num_cpus, split_size
+        )
+    else:
+        classification.launch_condor(
+            config_file, process, year, max_files, split_size, dry_run
+        )
+
+
+@classification_app.command()
+def merge(
+    config_file: str,
+    inputs_dir: str,
+):
+    import classification
+
+    classification.merge_classification_outputs(config_file, inputs_dir)
+
+
+@classification_app.command()
+def rootfy(
+    config_file: str,
+    inputs_dir: str,
+):
+    import classification
+
+    classification.serialize_to_root(config_file, inputs_dir)
+
+
+############################################################################
+############################################################################
+# Plotter
+############################################################################
+############################################################################
+plot_app = typer.Typer()
+
+
+@plot_app.command()
+def distribution(
+    input_dir: str, patterns: list[str], output_dir: str = "classification_plots"
+):
+    from ec_plotter import ec_plotter
+
+    ec_plotter(input_dir, patterns, output_dir)
+
+
+@plot_app.command()
+def summary(config: str):
+    pass
+
+
+############################################################################
+############################################################################
+# Scanner
+############################################################################
+############################################################################
+scan_app = typer.Typer()
+
+
+@scan_app.command()
+def integral(config: str):
+    pass
+
+
+@scan_app.command()
+def scan(config: str):
+    pass
+
+
+############################################################################
+############################################################################
+# Main
+############################################################################
+############################################################################
+app = typer.Typer()
+app.add_typer(classification_app, name="classification")
+app.add_typer(scan_app, name="scan")
+app.add_typer(plot_app, name="plot")
+
+if __name__ == "__main__":
+    app()

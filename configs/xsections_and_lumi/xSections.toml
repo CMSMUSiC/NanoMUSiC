@@ -526,6 +526,20 @@ kFactor = 1.0
 XSecOrder = "N3LO"
 ProcessGroup = "HIG"
 
+[GluGluHToWWTo2L2Nu_M-125-jhugen727_13TeV_PH]
+XSec = 0.9913
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "N3LO"
+ProcessGroup = "HIG"
+
+[GluGluHToWWTo2L2Nu_M-125_13TeV_PH]
+XSec = 0.9913
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "N3LO"
+ProcessGroup = "HIG"
+
 [GluGluHToZG_M-125_13TeV_PH]
 XSec = 0.07447
 FilterEff = 1.0
@@ -2527,12 +2541,6 @@ kFactor = 1.0
 XSecOrder = "N3LO"
 ProcessGroup = "HIG"
 
-[GluGluHToWWTo2L2Nu_M-125-jhugen727_13TeV_PH]
-XSec = 0.9913
-FilterEff = 1.0
-kFactor = 1.0
-XSecOrder = "N3LO"
-ProcessGroup = "HIG"
 
 [VBF_HToZZTo2L2Nu_M1252_JHUGenV735_13TeV_PH]
 XSec = 3.05
@@ -2623,6 +2631,120 @@ is_signal = true
 
 [Taustar_TauG_L10000_m5000_13TeV_P8]
 XSec = 0.0000013593
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "Taustar"
+is_signal = true
+
+[Taustar_TauG_L10000_m250_CP5_13TeV_P8]
+XSec = 0.021568
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "Taustar"
+is_signal = true
+
+[Taustar_TauG_L10000_m375_CP5_13TeV_P8]
+XSec = 0.015570
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "Taustar"
+is_signal = true
+
+[Taustar_TauG_L10000_m500_CP5_13TeV_P8]
+XSec = 0.011845
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "Taustar"
+is_signal = true
+
+[Taustar_TauG_L10000_m625_CP5_13TeV_P8]
+XSec = 0.0091358
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "Taustar"
+is_signal = true
+
+[Taustar_TauG_L10000_m750_CP5_13TeV_P8]
+XSec = 0.0070675
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "Taustar"
+is_signal = true
+
+[Taustar_TauG_L10000_m1000_CP5_13TeV_P8]
+XSec = 0.0042595
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "Taustar"
+is_signal = true
+
+[Taustar_TauG_L10000_m1250_CP5_13TeV_P8]
+XSec = 0.0025543
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "Taustar"
+is_signal = true
+
+
+[Taustar_TauG_L10000_m1750_CP5_13TeV_P8]
+XSec = 0.00090690
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "Taustar"
+is_signal = true
+
+[Taustar_TauG_L10000_m2000_CP5_13TeV_P8]
+XSec = 0.00053708
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "Taustar"
+is_signal = true
+
+[Taustar_TauG_L10000_m2500_CP5_13TeV_P8]
+XSec = 0.00018693
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "Taustar"
+is_signal = true
+
+[Taustar_TauG_L10000_m3000_13TeV_P8]
+XSec = 0.000075051
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "Taustar"
+is_signal = true
+
+[Taustar_TauG_L10000_m3500_13TeV_P8]
+XSec = 0.000027155
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "Taustar"
+is_signal = true
+
+[Taustar_TauG_L10000_m4000_13TeV_P8]
+XSec = 0.0000098806
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "LO"
+ProcessGroup = "Taustar"
+is_signal = true
+
+
+[Taustar_TauG_L10000_m4500_13TeV_P8]
+XSec = 0.0000036315
 FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "LO"

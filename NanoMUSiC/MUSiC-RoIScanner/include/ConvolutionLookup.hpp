@@ -66,9 +66,17 @@ class LookupTable
     static std::string getDefaultLutPath();
 
   private:
-    void calcPoints(double data_index, double bg_index, double uncert_index, double &data_out, double &bg_out,
+    void calcPoints(double data_index,
+                    double bg_index,
+                    double uncert_index,
+                    double &data_out,
+                    double &bg_out,
                     double &uncert_out) const;
-    void calcIndices(double data, double bg, double uncert, double &data_index_out, double &bg_index_out,
+    void calcIndices(double data,
+                     double bg,
+                     double uncert,
+                     double &data_index_out,
+                     double &bg_index_out,
                      double &uncert_index_out) const;
 
     double interpolate(double data_index, double bg_index, double uncert_index) const;
@@ -99,7 +107,10 @@ class LookupTable
     static constexpr float BETWEEN_REGIONS = -5.;
 };
 
-extern "C" double lookup_p_convolution(double N_obs, double N_SM, double error_parameter, bool debug = false,
+extern "C" double lookup_p_convolution(double N_obs,
+                                       double N_SM,
+                                       double error_parameter,
+                                       bool debug = false,
                                        const char *filename = "");
 
 #endif // CONVOLUTIONLOOKUP_HH

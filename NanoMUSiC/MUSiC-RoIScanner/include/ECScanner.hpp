@@ -49,6 +49,7 @@ class ECScanner
     int getMaxFilledBin();
 
     void diceMcPseudoData(const unsigned int round);
+    std::vector<double> diceMcPseudoDataMT(const unsigned int round);
     void diceSignalPseudoData(const unsigned int round);
 
     void findRoI(const std::string scoreType, const bool filtered);
@@ -91,11 +92,14 @@ class ECScanner
     static std::vector<MCBin> readMCBinArray(const rs::Value &jsonArray, MCBin *integralBinOut = nullptr);
     void initFilterFuncMap();
     void significanceFilter();
-    bool vetoRegion(const MCBin &mcbin, double data, std::vector<MCBin>::iterator const &startMCBinIter,
+    bool vetoRegion(const MCBin &mcbin,
+                    double data,
+                    std::vector<MCBin>::iterator const &startMCBinIter,
                     std::vector<MCBin>::iterator const &endMCBinIter,
                     std::vector<double>::iterator const &startDataBinIter,
                     std::vector<double>::iterator const &endDataBinIter,
-                    std::vector<MCBin>::iterator const &maxMCBinIter, bool isIntegral = false);
+                    std::vector<MCBin>::iterator const &maxMCBinIter,
+                    bool isIntegral = false);
 
     template <typename T>
     void checkAndSetConfig(const std::string name, T &config);
@@ -107,8 +111,10 @@ class ECScanner
     {
         return r1.getScore() > r2.getScore();
     };
-    static MCBin constructNeighborhood(std::vector<MCBin>::iterator iter, const int width,
-                                       std::vector<MCBin>::iterator minIter, std::vector<MCBin>::iterator maxIter);
+    static MCBin constructNeighborhood(std::vector<MCBin>::iterator iter,
+                                       const int width,
+                                       std::vector<MCBin>::iterator minIter,
+                                       std::vector<MCBin>::iterator maxIter);
 
     static rs::Document readJsonDocument(const std::string filename);
     static void writeJsonDocument(const std::string filename, const rs::Document &document);
@@ -155,7 +161,7 @@ class ECScanner
     // chosen filtering function
     std::string m_filterFunc;
     // Number of scan results that should be considered for full scan when filtering
-    int m_nFilterRegions = 1e9;
+    int m_nFilterRegions = 1E9;
     // function map for filter functions. A filter function is expected
     // to construct regions and replace the existing vectors m_mcBins and m_dataBins
     // with versions, which contain only the considered candidate regions

@@ -248,19 +248,6 @@ def main():
 
     # dump new config to string
     xSections_list = to_toml_dumps(xsections)
-    # add lumi and global scale factor to toml file
-    lumi_string = r"""
-
-[Lumi]
-2016APV = 19520.0
-2016 = 16810.0
-2017 = 41480.0
-2018 = 59830.0
-Unit = "pb-1"
-
-[Global]
-ScalefactorError = 0.026
-"""
 
     if error_count == 0:
         os.system(f"rm {args.output_filename} > /dev/null 2>&1")
@@ -274,3 +261,4 @@ ScalefactorError = 0.026
 
 if __name__ == "__main__":
     main()
+

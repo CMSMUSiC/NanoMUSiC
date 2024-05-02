@@ -2,7 +2,11 @@
 #define ROOT_HELPERS
 
 #include <cmath>
+#include <cstddef>
+#include <fmt/core.h>
+#include <functional>
 #include <iostream>
+#include <limits>
 #include <memory>
 #include <numeric>
 #include <optional>
@@ -250,35 +254,211 @@ inline auto SumAsTH1F(const std::vector<H> &histos, const std::optional<std::str
     return sum;
 }
 
-///////////////////
-/// Ref: https://twiki.cern.ch/twiki/bin/view/CMS/PoissonErrorBars
 template <typename H>
-inline auto MakeDataGraph(const H &data_histo, bool scale_to_area, double min_bin_width = 10.) -> TGraphAsymmErrors
+inline auto SumAsTH1F(const std::unordered_map<std::string, H> &histos,
+                      bool remove_data = true,
+                      const std::optional<std::string> &new_name = std::nullopt) -> std::shared_ptr<TH1F>
 {
-    constexpr double alpha = 1 - 0.6827;
-    auto scale_factor = 1.;
-    TGraphAsymmErrors g = TGraphAsymmErrors(data_histo.get());
+    auto values = std::vector<H>();
+    for (const auto &[pg, h] : histos)
+    {
+        if (remove_data)
+        {
+            if (pg == "Data")
+            {
+                continue;
+            }
+        }
+        values.push_back(h);
+    }
+    return SumAsTH1F(values, new_name);
+}
 
-    for (int i = 0; i < g.GetN(); ++i)
+///////////////////
+/// Ref: https://twiki.cern.ch/twiki/bin/view/CMS/PoissonErrorBastruct
+struct PoissonError
+{
+    constexpr static double alpha = 1 - 0.6827;
+    double low;
+    double high;
+
+    PoissonError(double val, double scale_factor = 1.)
+    {
+        int N = static_cast<int>(std::round(val));
+        double L = (N <= 0) ? 0 : (ROOT::Math::gamma_quantile(alpha / 2, N, 1.));
+        double U = ROOT::Math::gamma_quantile_c(alpha / 2, N + 1, 1);
+
+        low = (N - L) * scale_factor;
+        high = (U - N) * scale_factor;
+    }
+};
+
+template <typename H>
+inline auto MakeDataGraph(const H &data_histo,
+                          bool scale_to_area,
+                          std::pair<std::pair<int, double>, std::pair<int, double>> min_max,
+                          double min_bin_width = 10.) -> TGraphAsymmErrors
+{
+    auto [_min, _max] = min_max;
+    auto [idx_min, min] = _min;
+    auto [idx_max, max] = _max;
+
+    auto scale_factor = 1.;
+    auto hist_clone = std::unique_ptr<TH1F>(static_cast<TH1F *>(data_histo->Clone()));
+    if (scale_to_area)
+    {
+        hist_clone->Scale(min_bin_width, "width");
+    }
+
+    int n_graph_points = idx_max - idx_min + 1;
+    // fmt::print("number of points: {}\n", n_graph_points);
+
+    ROOT::VecOps::RVec<double> x;
+    ROOT::VecOps::RVec<double> y;
+    ROOT::VecOps::RVec<double> ex;
+    ROOT::VecOps::RVec<double> ey_low;
+    ROOT::VecOps::RVec<double> ey_high;
+    x.reserve(n_graph_points);
+    y.reserve(n_graph_points);
+    ex.reserve(n_graph_points);
+    ey_low.reserve(n_graph_points);
+    ey_high.reserve(n_graph_points);
+
+    for (int i = idx_min; i <= idx_max; ++i)
     {
         if (scale_to_area)
         {
-            scale_factor = data_histo->GetBinWidth(i + 1) / min_bin_width;
+            scale_factor = hist_clone->GetBinContent(i) / data_histo->GetBinContent(i);
         }
 
-        int N = static_cast<int>(std::round(data_histo->GetBinContent(i + 1) * scale_factor));
-        double L = (N <= 0) ? 0 : (ROOT::Math::gamma_quantile(alpha / 2, N, 1.));
+        // g.SetPoint(i - 1, hist_clone->GetBinCenter(i), hist_clone->GetBinContent(i));
+        x.push_back(hist_clone->GetBinCenter(i));
+        y.push_back(hist_clone->GetBinContent(i));
+        // fmt::print("i: {} - {}\n", i, hist_clone->GetBinCenter(i));
 
-        // official recommendation
-        double U = ROOT::Math::gamma_quantile_c(alpha / 2, N + 1, 1);
-        // MUSiC does this ...
-        // double U = static_cast<double>(N);
+        auto errors = PoissonError(data_histo->GetBinContent(i), scale_factor);
+        // g.SetPointError(i - 1, 0., 0., errors.low, errors.high);
+        ex.push_back(0.);
+        ey_low.push_back(errors.low);
+        ey_high.push_back(errors.high);
+    }
+    // fmt::print("Data Graph: {} - {} \n", idx_min, idx_max);
+    auto g = TGraphAsymmErrors(x.size(), x.data(), y.data(), ex.data(), ex.data(), ey_low.data(), ey_high.data());
+    // g.Print("all");
+    return g;
+}
 
-        g.SetPointEYlow(i, (N - L) / scale_factor);
-        g.SetPointEYhigh(i, (U - N) / scale_factor);
+template <typename H>
+inline auto GetMinMax(const H &histogram_data, const H &histogram_mc)
+    -> std::pair<std::pair<int, double>, std::pair<int, double>>
+{
+    auto histogram = histogram_data;
+    auto counts = Counts(histogram);
+
+    // check for empty histogram
+    if (ROOT::VecOps::Sum(counts) == 0)
+    {
+        histogram = histogram_mc;
+        counts = Counts(histogram);
     }
 
-    return g;
+    int first_nonzero_idx = 0;
+    int last_nonzero_idx = std::numeric_limits<int>::max();
+
+    for (std::size_t i = 0; i < counts.size(); i++)
+    {
+        if (first_nonzero_idx < 1 and counts[i] > 0)
+        {
+            first_nonzero_idx = i + 1;
+        }
+        if (counts[i] > 0)
+        {
+            last_nonzero_idx = i + 1;
+        }
+    }
+
+    return {{first_nonzero_idx, histogram->GetBinLowEdge(first_nonzero_idx)},
+            {last_nonzero_idx, histogram->GetBinLowEdge(last_nonzero_idx + 1)}};
+}
+
+template <typename H>
+inline auto GetYMin(const H &histogram,
+                    bool scale_to_area,
+                    std::pair<std::pair<int, double>, std::pair<int, double>> min_max,
+                    double min_bin_width = 10.) -> double
+{
+    auto [_min, _max] = min_max;
+    auto [idx_min, min] = _min;
+    auto [idx_max, max] = _max;
+
+    auto y_min = std::numeric_limits<double>::max();
+    auto histo_clone = std::unique_ptr<TH1F>(static_cast<TH1F *>(histogram->Clone()));
+
+    if (scale_to_area)
+    {
+        histo_clone->Scale(min_bin_width, "width");
+    }
+
+    for (std::size_t i = static_cast<std::size_t>(idx_min); i <= static_cast<std::size_t>(idx_max); i++)
+    {
+        auto this_bin_content = histo_clone->GetBinContent(i);
+        if (this_bin_content < y_min and this_bin_content > 0)
+        {
+            y_min = this_bin_content;
+        }
+    }
+
+    if (y_min == std::numeric_limits<double>::max())
+    {
+        y_min = 1E-6;
+    }
+
+    // fmt::print("y_min: {}\n", y_min);
+
+    return y_min;
+}
+template <typename H>
+inline auto GetYMax(const H &histogram_data,
+                    const H &histogram_mc,
+                    bool scale_to_area,
+                    std::pair<std::pair<int, double>, std::pair<int, double>> min_max,
+                    double min_bin_width = 10.) -> double
+{
+    auto [_min, _max] = min_max;
+    auto [idx_min, min] = _min;
+    auto [idx_max, max] = _max;
+
+    auto y_max = 0.;
+    auto data_histo_clone = std::unique_ptr<TH1F>(static_cast<TH1F *>(histogram_data->Clone()));
+    auto mc_histo_clone = std::unique_ptr<TH1F>(static_cast<TH1F *>(histogram_mc->Clone()));
+
+    if (scale_to_area)
+    {
+        data_histo_clone->Scale(min_bin_width, "width");
+        mc_histo_clone->Scale(min_bin_width, "width");
+    }
+
+    for (std::size_t i = static_cast<std::size_t>(idx_min); i <= static_cast<std::size_t>(idx_max); i++)
+    {
+        auto mc_bin_content = mc_histo_clone->GetBinContent(i);
+        auto data_bin_content = data_histo_clone->GetBinContent(i);
+        if (mc_bin_content > y_max)
+        {
+            y_max = mc_bin_content;
+        }
+        if (data_bin_content + std::sqrt(data_bin_content) > y_max)
+        {
+            y_max = data_bin_content + std::sqrt(data_bin_content);
+        }
+    }
+
+    if (y_max == 0.)
+    {
+        fmt::print(stderr, "ERROR: Could not set y_max for {} - {}.\n");
+        exit(-1);
+    }
+
+    return y_max * 1.15;
 }
 
 ///////////////////////////
@@ -289,10 +469,12 @@ inline auto MakeErrorBand(const H &h, const RVec<double> &uncertanties, bool sca
 {
     if (static_cast<std::size_t>(h->GetNbinsX()) != uncertanties.size())
     {
-        fmt::print(
-            stderr,
-            "ERROR: Could not create error band. The length of the uncertanties vector is not same as the number of "
-            "bins.");
+        fmt::print(stderr,
+                   "ERROR: Could not create error band. The length of the uncertanties vector ({}) is not same as the "
+                   "number of "
+                   "bins ({}).\n",
+                   uncertanties.size(),
+                   h->GetNbinsX());
         std::exit(EXIT_FAILURE);
     }
 
@@ -312,8 +494,16 @@ inline auto MakeErrorBand(const H &h, const RVec<double> &uncertanties, bool sca
 ///////////////////////////
 /// Make the Data/MC ratio
 template <typename H>
-inline auto MakeRatioGraph(const H &data_histo, const H &mc_histo) -> TGraphErrors
+inline auto MakeRatioGraph(const H &data_histo,
+                           const H &mc_histo,
+                           const RVec<double> &uncertainties,
+                           std::pair<std::pair<int, double>, std::pair<int, double>> min_max)
+    -> std::pair<TGraphAsymmErrors, TGraphErrors>
 {
+    auto [_min, _max] = min_max;
+    auto [idx_min, min] = _min;
+    auto [idx_max, max] = _max;
+
     if (data_histo->GetNbinsX() != mc_histo->GetNbinsX())
     {
         fmt::print(stderr,
@@ -321,69 +511,82 @@ inline auto MakeRatioGraph(const H &data_histo, const H &mc_histo) -> TGraphErro
         std::exit(EXIT_FAILURE);
     }
 
-    auto widths = Widths(data_histo);
-    auto e_x = Widths(data_histo) / 2.;
-    auto data_counts = Counts(data_histo);
-    auto data_errors = Errors(data_histo);
-    auto mc_counts = Counts(mc_histo);
-
     RVec<double> ratio;
-    ratio.reserve(data_counts.size());
-    RVec<double> ratio_err;
-    ratio_err.reserve(mc_counts.size());
-
-    for (std::size_t i = 0; i < data_counts.size(); i++)
-    {
-        if (mc_counts[i] == 0.)
-        {
-            ratio.push_back(-1);
-            ratio_err.push_back(0);
-        }
-        else
-        {
-            ratio.push_back(data_counts[i] / mc_counts[i]);
-            ratio_err.push_back(data_errors[i] / mc_counts[i]);
-        }
-    }
-
-    return TGraphErrors(e_x.size(), Centers(data_histo).data(), ratio.data(), e_x.data(), ratio_err.data());
-}
-
-///////////////////////////
-/// Make the MC ratio error (background error band)
-template <typename H>
-inline auto MakeRatioErrorBand(const H &mc_histo, const RVec<double> &uncertanties) -> TGraphErrors *
-{
-    if (mc_histo->GetNbinsX() != uncertanties.size())
-    {
-        fmt::print(
-            stderr,
-            "ERROR: Could not create ratio uncertanties bands. The length of the MC histograms and the uncertanties "
-            "vector are different.");
-        std::exit(EXIT_FAILURE);
-    }
-
-    auto widths = Widths(mc_histo);
-    auto e_x = Widths(mc_histo) / 2.;
-    auto mc_counts = Counts(mc_histo);
-
-    RVec<double> ratio_mc(widths.size(), 1.);
+    RVec<double> ratio_data_err_up;
+    RVec<double> ratio_data_err_down;
+    RVec<double> ratio_mc;
     RVec<double> ratio_mc_err;
-    ratio_mc_err.reserve(ratio_mc.size());
+    RVec<double> centers;
+    RVec<double> erros_x;
+    double accum_data = 0.;
+    double accum_mc = 0.;
+    double accum_mc_err_squared = 0.;
+    double accum_bin_width = 0.;
 
-    for (std::size_t i = 0; i < ratio_mc.size(); i++)
+    for (std::size_t i = static_cast<std::size_t>(idx_max); i >= static_cast<std::size_t>(idx_min); i--)
     {
-        if (mc_counts[i] == 0.)
+        accum_data += data_histo->GetBinContent(i);
+        accum_mc += mc_histo->GetBinContent(i);
+        accum_mc_err_squared += std::pow(uncertainties[i - 1], 2.);
+        accum_bin_width += mc_histo->GetBinWidth(i);
+        if (accum_mc >= 0.1 or i == static_cast<std::size_t>(idx_min))
         {
-            ratio_mc_err.push_back(0);
-        }
-        else
-        {
-            ratio_mc_err.push_back(mc_counts[i] + uncertanties[i] / mc_counts[i]);
+            if (accum_mc > 0)
+            {
+                ratio.push_back(accum_data / accum_mc);
+
+                // auto data_errors = PoissonError(accum_data);
+                // ratio_data_err_up.push_back(data_errors.high / accum_mc);
+                // ratio_data_err_down.push_back(data_errors.low / accum_mc);
+                ratio_data_err_up.push_back(std::sqrt(accum_data) / accum_mc);
+                ratio_data_err_down.push_back(std::sqrt(accum_data) / accum_mc);
+
+                ratio_mc.push_back(1.);
+                ratio_mc_err.push_back(std::sqrt(accum_mc_err_squared) / accum_mc);
+
+                erros_x.push_back(accum_bin_width / 2.);
+                centers.push_back(accum_bin_width / 2. + mc_histo->GetBinLowEdge(i));
+
+                accum_data = 0.;
+                accum_mc = 0.;
+                accum_mc_err_squared = 0.;
+                accum_bin_width = 0.;
+            }
+            else
+            {
+                ratio.push_back(-1.);
+                ratio_data_err_up.push_back(0.);
+                ratio_data_err_down.push_back(0.);
+
+                ratio_mc.push_back(1.);
+                ratio_mc_err.push_back(0.);
+
+                erros_x.push_back(accum_bin_width / 2.);
+                centers.push_back(accum_bin_width / 2. + mc_histo->GetBinLowEdge(i));
+
+                accum_data = 0.;
+                accum_mc = 0.;
+                accum_mc_err_squared = 0.;
+                accum_bin_width = 0.;
+            }
         }
     }
 
-    return new TGraphErrors(e_x.size(), Centers(mc_histo).data(), ratio_mc.data(), e_x.data(), ratio_mc_err.data());
+    // reverse all vecs
+    for (RVec<double> &vec : std::vector<std::reference_wrapper<RVec<double>>>{
+             ratio, ratio_data_err_down, ratio_data_err_up, ratio_mc, ratio_mc_err, erros_x, centers})
+    {
+        vec = ROOT::VecOps::Reverse(vec);
+    }
+
+    return {TGraphAsymmErrors(ratio.size(),
+                              centers.data(),
+                              ratio.data(),
+                              erros_x.data(),
+                              erros_x.data(),
+                              ratio_data_err_down.data(),
+                              ratio_data_err_up.data()),
+            TGraphErrors(ratio_mc.size(), centers.data(), ratio_mc.data(), erros_x.data(), ratio_mc_err.data())};
 }
 
 ///////////////////////////
@@ -399,11 +602,37 @@ inline auto GetRawPtr(const H &h) -> TH1F *
 
 namespace Uncertanties
 {
-template <typename H>
+// Helper functions
 inline auto Symmetrize(const RVec<double> &v1, const RVec<double> &v2) -> RVec<double>
 {
     return v1 / 2. + v2 / 2.;
 }
+
+// Integral Systematics: the same value for the whole sample
+template <typename H>
+inline auto IntegralUncert(const H &nom, const double scale) -> RVec<double>
+{
+    return ROOTHelpers::Counts(nom) * scale;
+}
+
+inline auto XSecOrder(const RVec<double> &total_mc_counts) -> RVec<double>
+{
+    return total_mc_counts * 0.;
+}
+
+// Constant Systematics: event-wise weight
+template <typename H>
+inline auto AbsDiff(const H &nom, const H &shift) -> RVec<double>
+{
+    return ROOTHelpers::AbsDiff(nom, shift);
+}
+
+template <typename H>
+inline auto AbsDiffAndSymmetrize(const H &nom, const H &up, const H &down) -> RVec<double>
+{
+    return Symmetrize(ROOTHelpers::AbsDiff(nom, up), ROOTHelpers::AbsDiff(nom, down));
+}
+
 } // namespace Uncertanties
 
 #endif // ROOT_HELPERS

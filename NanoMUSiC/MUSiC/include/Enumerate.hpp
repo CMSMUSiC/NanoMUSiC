@@ -146,6 +146,5 @@ constexpr auto make_enumerate(Ts &&...args)
         return Enumerate(std::forward<Ts>(args)...);
     }
 }
-
 } // namespace Enumerate
 #endif /*ENUMERATE_H*/

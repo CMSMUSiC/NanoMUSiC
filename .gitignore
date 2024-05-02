@@ -1,5 +1,14 @@
+NanoMUSiC/Legacy
+NanoMUSiC/MUSiC-CRAB/fonte.root
+NanoMUSiC/MUSiC-CRAB/fonte2.root
+NanoMUSiC/MUSiC-CRAB/foo.root
+NanoMUSiC/MUSiC-CRAB/index.html
+NanoMUSiC/MUSiC-CRAB/raw_configs/
+NanoMUSiC/MUSiC-CRAB/submited_samples_date_2024_03_04_time_15_43_18.json
+build_before_alma9
 cache
 docs_BKP/
+opt/
 .vscode/.nfs*
 *CMSSW_*
 *.c
@@ -258,3 +267,6 @@ NanoMUSiC/MUSiC-CRAB/*.toml
 .vscode
 NanoMUSiC/MUSiC-CRAB/last_CRAB_submition_
 NanoMUSiC/MUSiC-CRAB/last_CRAB_submition_date*
+NanoMUSiC/NanoEventClass/src/NanoEventClass_cpp_ACLiC_dict3c340842f0_dictUmbrella.h
+NanoMUSiC/NanoEventClass/src/NanoEventClass_cpp_ACLiC_dictc92d57510f_dictContent.h
+Session.vim

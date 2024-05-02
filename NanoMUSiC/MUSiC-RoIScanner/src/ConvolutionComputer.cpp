@@ -15,7 +15,7 @@
 #include "TMath.h"
 
 // constants
-constexpr double SQRT2PI = sqrt(2 * M_PI);
+constexpr double SQRT2PI = std::sqrt(2 * M_PI);
 
 // numeric limits
 constexpr double DOUBLE_MIN = std::numeric_limits<double>::min();
@@ -96,6 +96,7 @@ double first_part(const double x)
 {
     return -exp((EXP_MIN + TMath::LnGamma(x + 1)) / x) / x;
 }
+
 double second_part(const double x, const double lambert)
 {
     return exp((-x * lambert + EXP_MIN + TMath::LnGamma(x + 1)) / x);
@@ -104,9 +105,9 @@ double second_part(const double x, const double lambert)
 /* Limits to TMath::Poisson
  * Explanations:
  *
- * TMath::Poisson( x, par ) works like this:
  * if (x == 0.0)
  *    return 1./Exp(par);
+ * TMath::Poisson( x, par ) works like this:
  * else {
  *    Double_t lnpoisson = x*log(par)-par-LnGamma(x+1.);
  *    return Exp(lnpoisson);
@@ -270,7 +271,10 @@ double integration_payload_lognormal(double x, void *par_tmp)
 }
 
 // "main"-function of this module. computes the MUSiC p-value associated with N_obs, N_SM and sigma_MC
-double compute_p_convolution(const double N_obs, const double N_SM, const double sigma_MC, PriorMode prior,
+double compute_p_convolution(const double N_obs,
+                             const double N_SM,
+                             const double sigma_MC,
+                             PriorMode prior,
                              const int debugLevel)
 {
     if (debugLevel > 2)
@@ -326,6 +330,7 @@ double compute_p_convolution(const double N_obs, const double N_SM, const double
 
     // we need to stay close to the peak or the integration might miss it
     double Nsigma = fabs(N_SM - N_obs) / sigma_MC + 1;
+
     // should be between 5 and 10
     if (Nsigma < 5)
         Nsigma = 5;
@@ -424,9 +429,19 @@ double compute_p_convolution(const double N_obs, const double N_SM, const double
     }
 
     // and now integrate
-    double convolution = 0, conv_error = 0;
-    const int ret_code = gsl_integration_qag(&gsl_func, lower, upper, abs_precision, rel_precision, max_points,
-                                             GSL_INTEG_GAUSS15, gsl_int_ws, &convolution, &conv_error);
+    double convolution = 0;
+    double conv_error = 0;
+
+    const int ret_code = gsl_integration_qag(&gsl_func,
+                                             lower,
+                                             upper,
+                                             abs_precision,
+                                             rel_precision,
+                                             max_points,
+                                             GSL_INTEG_GAUSS15,
+                                             gsl_int_ws,
+                                             &convolution,
+                                             &conv_error);
 
     if (debugLevel > 2)
     {
@@ -498,7 +513,8 @@ double compute_p_convolution(const double N_obs, const double N_SM, const double
         {
             // calculate normalization
             const double sigmas = N_SM / sigma_MC;
-            const double normalisation = gsl_sf_erf_Q(-sigmas) * sigma_MC * SQRT2PI;
+            // const double normalisation = gsl_sf_erf_Q(-sigmas) * sigma_MC * SQRT2PI;
+            const double normalisation = 1.0;
 
             if (debugLevel > 2)
             {

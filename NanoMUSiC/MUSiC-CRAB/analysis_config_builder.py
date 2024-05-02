@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
-import sys
 
 import tomli
-from helpers import *
-import logging
+from helpers import to_toml_dumps
 import argparse
 import os
 import re
-from collections import OrderedDict
-import json
 import subprocess
 import shlex
 from tqdm import tqdm
@@ -39,7 +35,7 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "-j", "--jobs", help="Simultanious number of jobs.", type=int, default=10
+    "-j", "--jobs", help="Simultanious number of jobs.", type=int, default=50
 )
 
 parser.add_argument(
@@ -65,20 +61,23 @@ def collect_output_files(collector_inputs: CollectorInputs):
             "crab_task_name"
         ]:
             scan_process = subprocess.run(
-                shlex.split(collector_inputs.cmd_str.replace("__taskname__", task)),
+                shlex.split(collector_inputs.cmd_str.replace("__TASKNAME__", task)),
                 capture_output=True,
                 text=True,
             )
-            for addr in scan_process.stdout.split("\n"):
-                condition = r"nano_music" in addr and addr.endswith("root")
-                if args.btag:
-                    condition = "efficiency_hist" in addr and addr.endswith("root")
-                if condition:
-                    address = (
-                        "dcap://grid-dcap-extern.physik.rwth-aachen.de"
-                        + addr.split(" ")[-1]
-                    )
-                    address_list.append(address)
+            if scan_process.returncode == 0:
+                for addr in scan_process.stdout.split("\n"):
+                    if r"nano_music" in addr and addr.endswith("root"):
+                        address = addr.replace(
+                            r"davs://grid-webdav.physik.rwth-aachen.de:2889",
+                            r"root://grid-dcache.physik.rwth-aachen.de//",
+                        )
+                        address_list.append(address)
+
+    if len(address_list) == 0:
+        print(
+            f"WARNING: Could not find any ROOT file for sample: {collector_inputs}.\n\n"
+        )
     return collector_inputs.sample, address_list
 
 
@@ -106,11 +105,11 @@ def main():
 
     job_list = xsection_list
 
-    cmd_str = r"""srmls  -recursion_depth=999 "srm://grid-srm.physik.rwth-aachen.de:8443/srm/managerv2?SFN=/pnfs/physik.rwth-aachen.de/cms/store/user/__USERNAME__/nano_music___DATETIME__/__taskname__/" """
+    cmd_str = r"gfal-ls-recursive davs://grid-webdav.physik.rwth-aachen.de:2889/store/user/__USERNAME__/nano_music___DATETIME__/__TASKNAME__/"
     cmd_str = cmd_str.replace("__USERNAME__", args.username)
     cmd_str = cmd_str.replace("__DATETIME__", args.datetime)
 
-    print(f"--> Collecting outputs path ...")
+    print("--> Collecting outputs path ...")
     with multiprocessing.Pool(args.jobs) as pool:
         results = list(
             tqdm(
@@ -124,35 +123,32 @@ def main():
                 total=len(job_list),
             )
         )
+
+    def append_or_create(d, k, i):
+        if k not in d:
+            d[k] = []
+        d[k].append(i)
+
     for r in results:
         sample, address_list = r
-        job_list[sample]["output_files"] = address_list
+        for addr in address_list:
+            if "2016APV" in addr:
+                append_or_create(job_list[sample], "output_files_2016APV", addr)
+            if "2016" in addr:
+                append_or_create(job_list[sample], "output_files_2016", addr)
+            if "2017" in addr:
+                append_or_create(job_list[sample], "output_files_2017", addr)
+            if "2018" in addr:
+                append_or_create(job_list[sample], "output_files_2018", addr)
 
     # dump new config to string
     crab_job_list = to_toml_dumps(job_list)
-    # add lumi and global scale factor to toml file
-
-    crab_job_list = (
-        crab_job_list
-        + r"""                                                                                       
-
-[Lumi]                                                                                                                        
-2016APV = 19520.0                                                                                                             
-2016 = 16810.0                                                                                                                
-2017 = 41480.0                                                                                                                
-2018 = 59830.0                                                                                                                
-Unit = "pb-1"
-
-[Global]                                                                                                                      
-ScalefactorError = 0.026                                                                                                      
-"""
-    )
 
     os.system("rm analysis_config.toml > /dev/null 2>&1")
     with open("analysis_config.toml", "w") as new_jobList_file:
         new_jobList_file.write(crab_job_list)
 
-    print(f"Output saved to: analysis_config.toml")
+    print("Output saved to: analysis_config.toml")
     print("[ Done ]")
 
 

@@ -1,13 +1,8 @@
 #ifndef MUSIC_CONFIG
 #define MUSIC_CONFIG
 
-#include <filesystem>
-
-#include "Enumerate.hpp"
-#include "MUSiCTools.hpp"
-
-#include <fmt/color.h>
-#include <fmt/core.h>
+#include "fmt/format.h"
+#include <array>
 #include <limits>
 #include <stdexcept>
 
@@ -154,12 +149,17 @@ enum Year
     kTotalYears, // <-- should always be the last one!!
 };
 
+inline auto format_as(Year y)
+{
+    return fmt::underlying(y);
+}
+
 inline auto get_runyear(const std::string &year_str) -> Year
 {
     // check year
-    if (year_str != "2016APV" && year_str != "2016" && year_str != "2017" && year_str != "2018")
+    if (year_str != "2016APV" and year_str != "2016" and year_str != "2017" and year_str != "2018")
     {
-        throw std::out_of_range{"ERROR: year should be 2016APV, 2016, 2017 or 2018"};
+        fmt::print(stderr, "ERROR: year should be 2016APV, 2016, 2017 or 2018");
     }
 
     // return year as enum

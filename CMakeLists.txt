@@ -14,41 +14,24 @@ find_package(ROOT REQUIRED COMPONENTS RIO)
 message(STATUS "ROOT ${ROOT_VERSION} found at ${ROOT_BINDIR}")
 
 # LCG base dir
-set(LCG_BASE /cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt)
-
-# set(LCG_BASE /cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc11-opt)
+set(LCG_BASE /cvmfs/sft.cern.ch/lcg/views/LCG_105a/x86_64-el9-gcc12-opt)
 
 # includes
-execute_process(COMMAND root-config --incdir OUTPUT_VARIABLE ROOT_INCLUDE_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_INCLUDE_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
 separate_arguments(ROOT_INCLUDE_DIR)
 include_directories(
     NanoMUSiC/
     ${ROOT_INCLUDE_DIR}
     ${LCG_BASE}/include
     ${LCG_BASE}/include/rapidjson
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/TEventClass/include/
+    ${LCG_BASE}/include/python3.9
+    ${LCG_BASE}/lib/python3.9/site-packages/pybind11/include
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/NanoEventClass/include/
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/external/
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/include/
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-LightSkimmer/include/
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-Classification/include/
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-Validation/include/
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Pxl/Pxl/src
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Tools
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/include
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/tools/include
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Tools/
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Tools/PXL/
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Main
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-Utils/include
+    ${CMAKE_SOURCE_DIR}/NanoMUSiC/Classification/include/
 )
 
 # base library
 add_subdirectory(NanoMUSiC)
 
-# enable tests
-# enable_testing()
-
-# list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")

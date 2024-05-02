@@ -1,22 +1,36 @@
 # setup CMSSW
-# cd /cvmfs/cms.cern.ch/slc7_amd64_gcc11/cms/cmssw/CMSSW_12_3_4 ; cmsenv ; cd - > /dev/null
+
+SCRIPTDIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 
 source /cvmfs/cms.cern.ch/common/crab-setup.sh
 
-export SCRAM_ARCH="slc7_amd64_gcc10"
+# export SCRAM_ARCH=el9_amd64_gcc12
+export SCRAM_ARCH=el8_amd64_gcc12
+CMSSW_VERSION="CMSSW_14_0_1"
 
-DIR="CMSSW_12_3_4"
-if [ -d "$DIR" ]; then
-  echo "CMSSW release area found ..."
+if [ -d "$CMSSW_VERSION" ]; then
+  echo "$CMSSW_VERSION area found exists."
 else
-  echo "CMSSW release area not found. Will be created ..."
-  cmsrel CMSSW_12_3_4
+  echo "$CMSSW_VERSION area does not exist. Creating one..."
+  cmsrel $CMSSW_VERSION
+  echo "... done."
 fi
- 
-cd CMSSW_12_3_4/src
-cmsenv
-pwd
-cd ../..
 
-export PATH="$PWD:$PATH"
-export CRAB_MUSIC_BASE=$PWD
+cd $CMSSW_VERSION/src
+cmsenv
+
+cd $SCRIPTDIR
+
+export PATH="$SCRIPTDIR:$PATH"
+export PATH=$PATH:$SCRIPTDIR/../../bin;
+export CRAB_MUSIC_BASE=$SCRIPTDIR
+
+# add gfal2 to PATH
+export PYTHONPATH="$PYTHONPATH:/usr/lib64/python3.9/site-packages:/usr/lib/python3.9/site-packages"
+
+#setup go env
+export GOPATH="$SCRIPTDIR/../../cache:$GOPATH"
+export GOROOT="$SCRIPTDIR/../../opt/go"
+export PATH="$SCRIPTDIR/../../opt/go/bin:$PATH" 
+export GOBIN="$SCRIPTDIR/../../bin"
+
