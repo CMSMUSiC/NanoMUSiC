@@ -68,11 +68,12 @@ def collect_output_files(collector_inputs: CollectorInputs):
             if scan_process.returncode == 0:
                 for addr in scan_process.stdout.split("\n"):
                     if r"nano_music" in addr and addr.endswith("root"):
-                        address = addr.replace(
-                            r"davs://grid-webdav.physik.rwth-aachen.de:2889",
-                            r"root://grid-dcache.physik.rwth-aachen.de//",
-                        )
-                        address_list.append(address)
+                        # address = addr.replace(
+                        #     r"davs://grid-webdav.physik.rwth-aachen.de:2889",
+                        #     r"root://grid-dcache.physik.rwth-aachen.de//",
+                        # )
+                        # address_list.append(address)
+                        address_list.append(addr)
 
     if len(address_list) == 0:
         print(

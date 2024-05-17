@@ -5,6 +5,7 @@ from typing import Union
 import typer
 import metadata
 import sys
+import os
 
 ############################################################################
 ############################################################################
@@ -12,6 +13,13 @@ import sys
 ############################################################################
 ############################################################################
 classification_app = typer.Typer()
+
+
+@classification_app.command()
+def build(config_file: str):
+    import analysis_builder
+
+    analysis_builder.build_analysis_config(config_file)
 
 
 @classification_app.command()
@@ -26,6 +34,7 @@ class ClassificationTarget(str, Enum):
     Local = "local"
     Condor = "condor"
     Dev = "dev"
+    Parallel = "parallel"
 
 
 @classification_app.command()
@@ -35,17 +44,25 @@ def launch(
     process: Union[str, None] = None,
     year: Union[metadata.Years, None] = None,
     max_files: int = sys.maxsize,
-    split_size: Union[int, None] = None,
+    split_size: int = sys.maxsize,
     dry_run: bool = False,
     num_cpus: int = 100,
 ):
     import classification
+
+    if not os.path.exists("sum_weights.json"):
+        print("ERROR: Could not find sum_weights.json. Did you run the preprocess?")
+        sys.exit(-1)
 
     if target == ClassificationTarget.Dev:
         classification.launch_dev(config_file, process, year, max_files)
     elif target == ClassificationTarget.Local:
         classification.launch_local(
             config_file, process, year, max_files, num_cpus, split_size
+        )
+    elif target == ClassificationTarget.Parallel:
+        classification.launch_parallel(
+            config_file, process, year, max_files, split_size, num_cpus
         )
     else:
         classification.launch_condor(
@@ -56,7 +73,7 @@ def launch(
 @classification_app.command()
 def merge(
     config_file: str,
-    inputs_dir: str,
+    inputs_dir: str = "classification_outputs",
 ):
     import classification
 
@@ -66,11 +83,12 @@ def merge(
 @classification_app.command()
 def rootfy(
     config_file: str,
-    inputs_dir: str,
+    inputs_dir: str = "classification_merged_results",
+    validation_inputs_dir: str = "validation_merged_results",
 ):
     import classification
 
-    classification.serialize_to_root(config_file, inputs_dir)
+    classification.serialize_to_root(config_file, inputs_dir,validation_inputs_dir)
 
 
 ############################################################################
@@ -83,7 +101,9 @@ plot_app = typer.Typer()
 
 @plot_app.command()
 def distribution(
-    input_dir: str, patterns: list[str], output_dir: str = "classification_plots"
+    input_dir: str,
+    patterns: list[str] = ["*"],
+    output_dir: str = "classification_plots",
 ):
     from ec_plotter import ec_plotter
 

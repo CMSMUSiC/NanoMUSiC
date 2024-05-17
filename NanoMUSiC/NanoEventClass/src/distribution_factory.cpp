@@ -10,6 +10,8 @@ auto make_distribution(const NanoEventClass &ec, const std::string &distribution
 auto distribution_factory(NanoEventClassCollection &ec_collection, bool counts_only, bool allow_rescale_by_width)
     -> std::vector<std::shared_ptr<Distribution>>
 {
+    fmt::print("NanoEventClassCollection classes: [ {} ]\n", fmt::join(ec_collection.get_classes(), ", "));
+
     auto pool = BS::thread_pool(100);
 
     std::vector<std::string> all_distributions = {"counts", "sum_pt", "invariant_mass", "met"};
@@ -25,7 +27,7 @@ auto distribution_factory(NanoEventClassCollection &ec_collection, bool counts_o
     {
         for (auto &&distribution_name : all_distributions)
         {
-            if (not(distribution_name == "met" and ec_name.find("MET") == std::string::npos))
+            if (not(distribution_name == "met" and ec_name.find("1MET") == std::string::npos))
             {
                 future_distributions.push_back(pool.submit(
                     make_distribution, ec_collection.get_class(ec_name), distribution_name, allow_rescale_by_width));

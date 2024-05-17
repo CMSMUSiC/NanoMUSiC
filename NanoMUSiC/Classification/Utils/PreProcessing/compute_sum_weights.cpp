@@ -60,11 +60,13 @@ struct Accumulator
     }
 };
 
-auto process(const std::vector<std::string> &files,
-             const std::string &year_str,
-             const std::optional<std::string> &generator_filter) -> SumWeights
+auto process(const std::vector<std::string> &files, const std::string &year_str, const std::string &generator_filter)
+    -> SumWeights
 {
-    ROOT::EnableImplicitMT();
+    // ROOT::EnableImplicitMT();
+
+    fmt::print("Will process: {}", fmt::join(files, ", "));
+
     ROOT::RDataFrame raw_df("Events", files);
     auto inflated_df =
         raw_df
@@ -138,60 +140,66 @@ auto process(const std::vector<std::string> &files,
     {
         auto r_genWeight = df.Aggregate(aggregator, merger, "genWeight", Accumulator());
         auto r_LHEWeight_originalXWGTUP = df.Aggregate(aggregator, merger, "LHEWeight_originalXWGTUP", Accumulator());
-        if (generator_filter)
+        if (generator_filter != "")
         {
+            // auto filtered_df = df.Filter(
+            // [&generator_filter, &year_str](ROOT::RVec<float> LHEPart_pt,
+            //                                ROOT::RVec<float> LHEPart_eta,
+            //                                ROOT::RVec<float> LHEPart_phi,
+            //                                ROOT::RVec<float> LHEPart_mass,
+            //                                ROOT::RVec<float> LHEPart_incomingpz,
+            //                                ROOT::RVec<int> LHEPart_pdgId,
+            //                                ROOT::RVec<int> LHEPart_status,
+            //                                ROOT::RVec<float> GenPart_pt,
+            //                                ROOT::RVec<float> GenPart_eta,
+            //                                ROOT::RVec<float> GenPart_phi,
+            //                                ROOT::RVec<float> GenPart_mass,
+            //                                ROOT::RVec<int> GenPart_genPartIdxMother,
+            //                                ROOT::RVec<int> GenPart_pdgId,
+            //                                ROOT::RVec<int> GenPart_status,
+            //                                ROOT::RVec<int> GenPart_statusFlags) -> bool
+            // {
+            //     auto gen_filter_func = GeneratorFilters::get_filter(*generator_filter);
+            //     const auto lhe_particles = NanoAODGenInfo::LHEParticles(LHEPart_pt,
+            //                                                             LHEPart_eta,
+            //                                                             LHEPart_phi,
+            //                                                             LHEPart_mass,
+            //                                                             LHEPart_incomingpz,
+            //                                                             LHEPart_pdgId,
+            //                                                             LHEPart_status);
+            //     const auto gen_particles = NanoAODGenInfo::GenParticles(GenPart_pt,
+            //                                                             GenPart_eta,
+            //                                                             GenPart_phi,
+            //                                                             GenPart_mass,
+            //                                                             GenPart_genPartIdxMother,
+            //                                                             GenPart_pdgId,
+            //                                                             GenPart_status,
+            //                                                             GenPart_statusFlags);
+            //     auto year = get_runyear(year_str);
+            //     debugger_t debugger = std::nullopt;
+            //     return gen_filter_func(lhe_particles, gen_particles, year, debugger);
+            // },
+            // {"_LHEPart_pt",
+            //  "_LHEPart_eta",
+            //  "_LHEPart_phi",
+            //  "_LHEPart_mass",
+            //  "_LHEPart_incomingpz",
+            //  "_LHEPart_pdgId",
+            //  "_LHEPart_status",
+            //  "GenPart_pt",
+            //  "GenPart_eta",
+            //  "GenPart_phi",
+            //  "GenPart_mass",
+            //  "GenPart_genPartIdxMother",
+            //  "GenPart_pdgId",
+            //  "GenPart_status",
+            //  "GenPart_statusFlags"});
             auto filtered_df = df.Filter(
-                [&generator_filter, &year_str](ROOT::RVec<float> LHEPart_pt,
-                                               ROOT::RVec<float> LHEPart_eta,
-                                               ROOT::RVec<float> LHEPart_phi,
-                                               ROOT::RVec<float> LHEPart_mass,
-                                               ROOT::RVec<float> LHEPart_incomingpz,
-                                               ROOT::RVec<int> LHEPart_pdgId,
-                                               ROOT::RVec<int> LHEPart_status,
-                                               ROOT::RVec<float> GenPart_pt,
-                                               ROOT::RVec<float> GenPart_eta,
-                                               ROOT::RVec<float> GenPart_phi,
-                                               ROOT::RVec<float> GenPart_mass,
-                                               ROOT::RVec<int> GenPart_genPartIdxMother,
-                                               ROOT::RVec<int> GenPart_pdgId,
-                                               ROOT::RVec<int> GenPart_status,
-                                               ROOT::RVec<int> GenPart_statusFlags) -> bool
+                []()
                 {
-                    auto gen_filter_func = GeneratorFilters::get_filter(*generator_filter);
-                    const auto lhe_particles = NanoAODGenInfo::LHEParticles(LHEPart_pt,
-                                                                            LHEPart_eta,
-                                                                            LHEPart_phi,
-                                                                            LHEPart_mass,
-                                                                            LHEPart_incomingpz,
-                                                                            LHEPart_pdgId,
-                                                                            LHEPart_status);
-                    const auto gen_particles = NanoAODGenInfo::GenParticles(GenPart_pt,
-                                                                            GenPart_eta,
-                                                                            GenPart_phi,
-                                                                            GenPart_mass,
-                                                                            GenPart_genPartIdxMother,
-                                                                            GenPart_pdgId,
-                                                                            GenPart_status,
-                                                                            GenPart_statusFlags);
-                    auto year = get_runyear(year_str);
-                    debugger_t debugger = std::nullopt;
-                    return gen_filter_func(lhe_particles, gen_particles, year, debugger);
+                    return true;
                 },
-                {"_LHEPart_pt",
-                 "_LHEPart_eta",
-                 "_LHEPart_phi",
-                 "_LHEPart_mass",
-                 "_LHEPart_incomingpz",
-                 "_LHEPart_pdgId",
-                 "_LHEPart_status",
-                 "GenPart_pt",
-                 "GenPart_eta",
-                 "GenPart_phi",
-                 "GenPart_mass",
-                 "GenPart_genPartIdxMother",
-                 "GenPart_pdgId",
-                 "GenPart_status",
-                 "GenPart_statusFlags"});
+                {});
 
             auto r_genWeight_filtered = filtered_df.Aggregate(aggregator, merger, "genWeight", Accumulator());
             auto r_LHEWeight_originalXWGTUP_filtered =

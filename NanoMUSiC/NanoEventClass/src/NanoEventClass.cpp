@@ -214,7 +214,18 @@ auto NanoEventClass::make_event_class_name(std::pair<std::size_t, std::size_t> m
     auto [n_bjets, total_bjets] = bjet_counts;
     auto [n_met, total_met] = met_counts;
 
-    if (n_muons == 0 and n_electrons == 0 and n_photons == 0)
+    if (n_muons == 0         //
+        and n_electrons == 0 //
+        and n_taus == 0      //
+        and n_photons == 0   //
+        and n_jets == 0      //
+        and n_bjets == 0     //
+        and n_met == 0)
+    {
+        return std::make_tuple(std::nullopt, std::nullopt, std::nullopt);
+    }
+
+    if (n_muons == 0 and n_electrons == 0 and n_photons == 0 and n_taus == 0)
     {
         return std::make_tuple(std::nullopt, std::nullopt, std::nullopt);
     }
@@ -224,47 +235,14 @@ auto NanoEventClass::make_event_class_name(std::pair<std::size_t, std::size_t> m
         return std::make_tuple(std::nullopt, std::nullopt, std::nullopt);
     }
 
-    std::string class_name = "EC";
-
-    if (n_muons > 0)
-    {
-        class_name = fmt::format("{}_{}Muon", class_name, n_muons);
-    }
-    if (n_electrons > 0)
-    {
-        class_name = fmt::format("{}_{}Electron", class_name, n_electrons);
-    }
-    if (n_taus > 0)
-    {
-        class_name = fmt::format("{}_{}Tau", class_name, n_taus);
-    }
-    if (n_photons > 0)
-    {
-        class_name = fmt::format("{}_{}Photon", class_name, n_photons);
-    }
-    if (n_jets > 0)
-    {
-        class_name = fmt::format("{}_{}Jet", class_name, n_jets);
-    }
-    if (n_bjets > 0)
-    {
-        class_name = fmt::format("{}_{}bJet", class_name, n_bjets);
-    }
-    if (n_met > 0)
-    {
-        class_name = fmt::format("{}_{}MET", class_name, n_met);
-    }
-
-    if (n_muons == 0         //
-        and n_electrons == 0 //
-        and n_taus == 0      //
-        and n_photons == 0   //
-        and n_jets == 0      //
-        and n_bjets == 0     //
-        and n_met == 0)
-    {
-        class_name = "EC_Empty";
-    }
+    std::string class_name = fmt::format("EC_{}Muon_{}Electron_{}Tau_{}Photon_{}bJet_{}Jet_{}MET",
+                                         n_muons,
+                                         n_electrons,
+                                         n_taus,
+                                         n_photons,
+                                         n_bjets,
+                                         n_jets,
+                                         n_met);
 
     std::optional<std::string> exclusive_class_name = std::nullopt;
     if (n_muons == total_muons             //
@@ -284,7 +262,7 @@ auto NanoEventClass::make_event_class_name(std::pair<std::size_t, std::size_t> m
     if (n_muons == total_muons             //
         and n_electrons == total_electrons //
         and n_taus == total_taus           //
-       and n_photons == total_photons     //
+        and n_photons == total_photons     //
         and n_met == total_met)
     {
         jet_inclusive_class_name = fmt::format("{}+NJet", class_name);
@@ -292,37 +270,6 @@ auto NanoEventClass::make_event_class_name(std::pair<std::size_t, std::size_t> m
 
     return std::make_tuple(exclusive_class_name, inclusive_class_name, jet_inclusive_class_name);
 }
-
-// auto NanoEventClass::filter_histos(const std::string &process_group_pattern,
-//                                    const std::string &xs_order_pattern,
-//                                    const std::string &sample_pattern,
-//                                    const std::string &year_pattern,
-//                                    const std::string &shift_pattern,
-//                                    const std::string &histo_name_pattern) -> std::vector<NanoEventHisto>
-// {
-//     std::vector<NanoEventHisto> filtered_histos;
-//     std::copy_if(m_histograms.cbegin(),
-//                  m_histograms.cend(),
-//                  std::back_inserter(filtered_histos),
-//                  [&process_group_pattern,
-//                   &xs_order_pattern,
-//                   &sample_pattern,
-//                   &year_pattern,
-//                   &shift_pattern,
-//                   &histo_name_pattern](auto &histo)
-//                  {
-//                      return (match_pattern(histo.process_group, process_group_pattern)     //
-//                              and match_pattern(histo.process_group, process_group_pattern) //
-//                              and match_pattern(histo.xs_order, xs_order_pattern)           //
-//                              and match_pattern(histo.sample, sample_pattern)               //
-//                              and match_pattern(histo.year, year_pattern)                   //
-//                              and match_pattern(histo.shift, shift_pattern)                 //
-//                              and match_pattern(histo.histo_name, histo_name_pattern)       //
-//                      );
-//                  });
-
-//     return filtered_histos;
-// }
 
 auto NanoEventClassCollection::ClassesWithData(const std::vector<std::string> &root_file_paths) -> std::set<std::string>
 {
@@ -415,15 +362,13 @@ NanoEventClassCollection::NanoEventClassCollection(const std::vector<std::string
             }
         }
         ++file_counter;
-        fmt::print(
-            "[NanoEventClass Collection] Done [{} / {}]: {}\n", file_counter.load(), root_file_paths.size(), file_path);
+        fmt::print("[NanoEventClass Collection] Done: {} / {} \r", file_counter.load(), root_file_paths.size());
     };
 
     std::vector<std::future<void>> future_collections;
     fmt::print("[NanoEventClass Collection] Launching threads ...\n");
     for (std::size_t idx_file = 0; idx_file < root_file_paths.size(); idx_file++)
     {
-
         future_collections.push_back(pool.submit(make_collection, idx_file));
     }
 
@@ -432,6 +377,7 @@ NanoEventClassCollection::NanoEventClassCollection(const std::vector<std::string
     {
         fut.wait();
     }
+    fmt::print("\n");
 
     fmt::print("[NanoEventClass Collection] Checking for exceptions ...\n");
     for (auto &&fut : future_collections)
@@ -487,8 +433,6 @@ NanoEventClassCollection::NanoEventClassCollection(const std::vector<std::string
     fmt::print("[NanoEventClass Collection] Building event classes ...\n");
     for (auto &&[event_class_name, _] : h_counts_per_class)
     {
-        // fmt::print("{} [{}]\n", event_class_name, h_counts_per_class.size());
-
         if (h_invariant_mass_per_class.find(event_class_name) != h_invariant_mass_per_class.cend() //
             and h_sum_pt_per_class.find(event_class_name) != h_sum_pt_per_class.cend()             //
             and h_met_per_class.find(event_class_name) != h_met_per_class.cend())                  //

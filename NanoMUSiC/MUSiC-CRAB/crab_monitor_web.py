@@ -173,6 +173,10 @@ def monitor(task):
         retry_command = f"crab resubmit -d {dir}"
         kill_command = f"crab kill -d {dir}"
 
+        if res["status"] == "FAILED":
+            if "Crab resubmit will not work" in res["statusFailureMsg"]:
+                status = "FATAL"
+
         return (process_name, year, status, monitoring_url, retry_command, kill_command)
 
     except:
@@ -245,8 +249,17 @@ def main():
         completed = 0
         failed = 0
         others = 0
+        fatal = 0
         for task in monitoring_results:
             sample, year, status, monitoring, retry_command, kill_command = task
+            if status == "FATAL":
+                print(
+                    "FATAL: Task {} - {} failed completly. Will not resubmit autmatically. Better to resubmit all tasks.".format(
+                        sample, year
+                    )
+                )
+                fatal += 1
+
             results.append(
                 {
                     "sample": sample,
@@ -263,6 +276,10 @@ def main():
                 failed += 1
             else:
                 others += 1
+
+        if fatal>0:
+            p.terminate()
+            sys.exit(-1)
 
         results = sorted(results, key=lambda r: r["sample"])
 
@@ -325,7 +342,7 @@ def main():
                     resubmition_list.append(res["retry_command"])
 
             # resubmitting failed tasks
-            if len(resubmition_list)>0:
+            if len(resubmition_list) > 0:
                 max_resub_jobs = 20
                 with Pool(min(max_resub_jobs, len(resubmition_list))) as p:
                     _ = list(

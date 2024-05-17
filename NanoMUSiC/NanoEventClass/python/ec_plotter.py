@@ -5,43 +5,45 @@ import sys
 import tdrstyle
 import atlasplots as aplt
 from colors import PROCESS_GROUP_STYLES
-from tqdm import tqdm
 from decimal import Decimal
 import os
 import json
 from multiprocessing import Pool
 from pvalue import get_integral_pvalue
 from ec_tools import get_source_files, to_root_latex
+from rich.progress import Progress, track
 
 
 years_glob = {
     "2016*": {"name": "2016", "lumi": "36.3"},  #
     "2017": {"name": "2017", "lumi": "41.5"},  #
     "2018": {"name": "2018", "lumi": "59.8"},  #
-    "[2017,2018]": {"name": "2017+2018", "lumi": "101"},  #
+    # "[2017,2018]": {"name": "2017+2018", "lumi": "101"},  #
     "*": {"name": "", "lumi": "138"},
 }
 
 
-def make_plot(args):
-    (
-        class_name,
-        distribution_name,
-        x_min,
-        x_max,
-        y_min,
-        y_max,
-        total_data_histogram_first_bin_content,
-        data_graph,
-        mc_histograms,
-        mc_uncertainty,
-        ratio_graph,
-        ratio_mc_error,
-        output_path,
-        year,
-        p_value,
-    ) = args
+def make_plot_task(args):
+    return make_plot(*args)
 
+
+def make_plot(
+    class_name,
+    distribution_name,
+    x_min,
+    x_max,
+    y_min,
+    y_max,
+    total_data_histogram_first_bin_content,
+    data_graph,
+    mc_histograms,
+    mc_uncertainty,
+    ratio_graph,
+    ratio_mc_error,
+    output_path,
+    year,
+    p_value,
+):
     # print("--> ", class_name, distribution_name, x_min, x_max, y_min, y_max)
     # skip MET histogram for non-MET classes
     if distribution_name == "met" and "MET" not in class_name:
@@ -64,7 +66,7 @@ def make_plot(args):
     ax2.set_ylabel("", loc="centre", titlesize=30)
     x_label_text = ""
     if distribution_name == "invariant_mass":
-        if "MET" in class_name:
+        if "1MET" in class_name:
             x_label_text = r"M_{T} [GeV]"
         else:
             x_label_text = r"M [GeV]"
@@ -97,7 +99,7 @@ def make_plot(args):
     )
 
     # print class name
-    event_class_str = f"Event class: {to_root_latex(class_name)}"
+    event_class_str = "Event class: {}".format(to_root_latex(class_name))
     if p_value and distribution_name == "counts":
         if p_value > 0:
             event_class_str += f" (p = {p_value:.2g})"
@@ -125,6 +127,7 @@ def make_plot(args):
 
     bkg_stack = ROOT.THStack("bkg", "")
     for pg in mc_hists_keys_sorted:
+        # mc_hists[pg].Print("all")
         mc_hists[pg].SetFillColor(PROCESS_GROUP_STYLES[pg].color)
         mc_hists[pg].SetLineWidth(0)
         bkg_stack.Add(mc_hists[pg])
@@ -216,6 +219,8 @@ def make_plot(args):
     fig.savefig(f"{output_file_path}.svg")
     # fig.savefig(f"{output_file_path}.C")
 
+    return "{} - {} - {}".format(class_name, distribution_name, year)
+
 
 def ec_plotter(
     input_dir: str, patterns: list[str], output_dir: str = "classification_plots"
@@ -264,7 +269,12 @@ def ec_plotter(
         plot_props = []
         plots_data = {}
         distributions = ROOT.distribution_factory(ec_collection, True)
-        for dist in tqdm(distributions):
+
+        if len(distributions) == 0:
+            print("ERROR: No matching classes were found.")
+            sys.exit(1)
+
+        for dist in track(distributions):
             plot = dist.get_plot_props()
             if dist.m_distribution_name == "counts":
                 p_value_props = dist.get_integral_pvalue_props()
@@ -317,11 +327,10 @@ def ec_plotter(
             json.dump(plots_data, f, ensure_ascii=False, indent=4)
 
         distributions = ROOT.distribution_factory(ec_collection, False)
-        for dist in tqdm(distributions):
+        for dist in track(distributions):
             plot = dist.get_plot_props()
-            # if plot.total_data_histogram.Integral() > 0:
             plot_props.append(
-                [
+                (
                     plot.class_name,
                     plot.distribution_name,
                     plot.x_min,
@@ -337,7 +346,7 @@ def ec_plotter(
                     output_dir,
                     year,
                     plots_data[plot.class_name]["p_value"],
-                ]
+                )
             )
 
             # prepare output area
@@ -367,16 +376,12 @@ def ec_plotter(
         print()
 
         print("Saving plots ...")
-        with Pool(min(len(plot_props), 10)) as p:
-            list(
-                tqdm(
-                    p.imap_unordered(
-                        func=make_plot,
-                        iterable=plot_props,
-                    ),
-                    total=len(plot_props),
-                )
-            )
+        with Pool(min(len(plot_props), 124)) as p:
+            with Progress() as progress:
+                task = progress.add_task("Plotting ...", total=len(plot_props))
+                for job in p.imap_unordered(make_plot_task, plot_props):
+                    progress.console.print("Done: {}".format(job))
+                    progress.advance(task)
 
     print("Copying index.php ...")
     os.system(

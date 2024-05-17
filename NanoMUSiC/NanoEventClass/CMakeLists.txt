@@ -15,8 +15,6 @@ add_link_options(
     -lfmt
     -lz
     -fno-associative-math
-    -lgsl
-    -lgslcblas
     -lm
 )
 add_compile_options(-I/cvmfs/sft.cern.ch/lcg/views/LCG_105a/x86_64-el9-gcc12-opt/include)
@@ -36,7 +34,7 @@ target_include_directories(NanoEventClass PUBLIC
         ${CMAKE_SOURCE_DIR}/NanoMUSiC/NanoEventClass/include
         ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/external
   )
-target_link_libraries(NanoEventClass ROOT::RIO ROOT::Net ROOT::ROOTVecOps fmt gsl gslcblas)
+target_link_libraries(NanoEventClass ROOT::RIO ROOT::Net ROOT::ROOTVecOps fmt)
 
 target_include_directories(NanoEventClass PUBLIC ./)
 

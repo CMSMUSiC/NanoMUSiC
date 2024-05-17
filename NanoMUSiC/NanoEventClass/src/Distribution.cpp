@@ -98,7 +98,7 @@ Distribution::Distribution(const NanoEventClass &ec, const std::string &distribu
     }
 
     // merge MC histograms
-    m_total_mc_histogram = ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("Nominal"));
+    m_total_mc_histogram = ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("Nominal"), true);
 
     // number of bins
     m_n_bins = m_total_mc_histogram->GetNbinsX();
@@ -152,8 +152,14 @@ auto Distribution::get_systematics_uncert(
 
                     for (std::size_t i = 0; i < unmerged_histos.size(); i++)
                     {
-                        const auto [class_name, process_group, xs_order, sample, year, shift, histo_name] =
-                            NanoEventHisto::split_histo_name(unmerged_histos[i]->GetName());
+                        const auto [class_name,    //
+                                    process_group, //
+                                    xs_order,      //
+                                    sample,        //
+                                    year,          //
+                                    shift,         //
+                                    histo_name] = NanoEventHisto::split_histo_name(unmerged_histos[i]->GetName());
+
                         if (xs_order == "LO")
                         {
                             xsec_order_uncert_LO_samples.at(pg) += ROOTHelpers::Counts(unmerged_histos[i]) * 0.5;
@@ -411,6 +417,7 @@ auto Distribution::get_plot_props() const -> PlotProps
     {
         for (auto &[pg, hist] : mc_histograms)
         {
+            // hist->Print("all");
             hist->Scale(min_bin_width, "width");
         }
     }

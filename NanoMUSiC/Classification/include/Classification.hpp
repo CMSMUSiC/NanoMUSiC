@@ -32,6 +32,7 @@
 
 #include "PDFAlphaSWeights.hpp"
 
+#include "ValidationContainer.hpp"
 #include "argh.h"
 #include "emoji.hpp"
 #include "fmt/format.h"
@@ -47,6 +48,7 @@
 #include "TriggerMatch.hpp"
 
 #include "Shifts.hpp"
+#include "PDFAlphaSWeight.hpp"
 
 #include "EventClass.hpp"
 #include "NanoEventClass.hpp"
@@ -748,6 +750,7 @@ auto classification(const std::string process,
                     const std::string &generator_filter,
                     // [EVENT_CLASS_NAME, [SHIFT, EVENT_CLASS_OBJECT] ]
                     EventClassContainer &event_classes,
+                    ValidationContainer &validation_container,
                     std::optional<unsigned long> first_event = std::nullopt,
                     std::optional<long> last_event = std::nullopt,
                     const bool debug = false) -> void;

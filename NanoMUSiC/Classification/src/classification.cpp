@@ -6,9 +6,13 @@
 #include "RunLumiFilter.hpp"
 #include "TTreeReader.h"
 #include "TTreeReaderValue.h"
+#include "ValidationContainer.hpp"
+#include "ZToLepLepX.hpp"
 #include "fmt/core.h"
+#include <algorithm>
 #include <cstdlib>
 #include <fmt/format.h>
+#include <memory>
 #include <optional>
 #include <pybind11/pytypes.h>
 #include <stdlib.h>
@@ -109,6 +113,7 @@ auto classification(const std::string process,
                     const std::string &generator_filter,
                     // [EVENT_CLASS_NAME, [SHIFT, EVENT_CLASS_OBJECT] ]
                     EventClassContainer &event_classes,
+                    ValidationContainer &validation_container,
                     std::optional<unsigned long> first_event,
                     std::optional<long> last_event,
                     const bool debug) -> void
@@ -960,6 +965,93 @@ auto classification(const std::string process,
                 continue;
             }
 
+            auto get_effective_weight = [&](Shifts::Variations shift,
+                                            std::size_t num_muon,
+                                            std::size_t num_electron,
+                                            std::size_t num_tau,
+                                            std::size_t num_photon,
+                                            std::size_t num_bjet,
+                                            std::size_t num_jet,
+                                            std::size_t num_met) -> double
+            {
+                double weight = 1.;
+                if (not(is_data))
+                {
+                    // get trigger SF
+                    auto trigger_sf = 1.;
+
+                    auto pu_weight = pu_corrector->evaluate({unwrap(Pileup_nTrueInt), Shifts::get_pu_variation(shift)});
+
+                    auto prefiring_weight = Shifts::get_prefiring_weight(unwrap_or(L1PreFiringWeight_Nom, 1.), //
+                                                                         unwrap_or(L1PreFiringWeight_Up, 1.),  //
+                                                                         unwrap_or(L1PreFiringWeight_Dn, 1.),
+                                                                         shift);
+
+                    auto pdf_as_weight =
+                        get_pdf_alpha_s_weights(shift,
+                                                lha_indexes,
+                                                default_pdf_sets,           //
+                                                unwrap(LHEPdfWeight),       //
+                                                unwrap(Generator_scalePDF), //
+                                                unwrap(Generator_x1),       //
+                                                unwrap(Generator_x2),       //
+                                                unwrap(Generator_id1),      //
+                                                unwrap(Generator_id2),      //
+                                                this_sample_pdf
+                                                // unwrap_or(LHEWeight_originalXWGTUP,
+                                                //                                                                1.f)
+                        );
+                    double mc_weight = [is_data, &genWeight, &LHEWeight_originalXWGTUP, &event_weights]() -> double
+                    {
+                        if (not(is_data))
+                        {
+                            if (event_weights.should_use_LHEWeight)
+                            {
+                                return unwrap(LHEWeight_originalXWGTUP);
+                            }
+                            return unwrap(genWeight);
+                        }
+                        return 1.;
+                    }();
+
+                    weight = mc_weight * pu_weight * prefiring_weight * trigger_sf / event_weights.sum_weights *
+                             x_section * luminosity * filter_eff * k_factor * pdf_as_weight *
+                             Shifts::get_reco_scale_factor(shift,
+                                                           {num_muon, muons},
+                                                           {num_electron, electrons},
+                                                           {num_tau, taus},
+                                                           {num_photon, photons},
+                                                           {num_bjet, bjets},
+                                                           {num_jet, jets},
+                                                           {num_met, met}) *
+                             Shifts::get_fakes_variation_weight(shift,
+                                                                {num_muon, muons},
+                                                                {num_electron, electrons},
+                                                                {num_tau, taus},
+                                                                {num_photon, photons},
+                                                                {num_bjet, bjets},
+                                                                {num_jet, jets}) *
+                             Shifts::get_qcd_scale_weight(shift, unwrap(LHEScaleWeight));
+                }
+                // Check for NaNs
+                if (std::isnan(weight) or std::isinf(weight))
+                {
+                    fmt::print(stderr, "##########################\n");
+                    fmt::print(stderr, "##########################\n");
+                    fmt::print(stderr, "##########################\n");
+                    fmt::print(stderr,
+                               "ERROR: NaN or INF weight found when "
+                               "processing shift: {}!\n",
+                               Shifts::variation_to_string(shift));
+                    fmt::print(stderr, "##########################\n");
+                    fmt::print(stderr, "##########################\n");
+                    fmt::print(stderr, "##########################\n");
+                    std::exit(EXIT_FAILURE);
+                }
+
+                return weight;
+            };
+
             // Here goes the real analysis...
             auto do_classification = [&](KinematicsBuffer &buffer,
                                          std::size_t num_muon,
@@ -988,85 +1080,6 @@ auto classification(const std::string process,
 
                     auto shift = Shifts::resolve_shifts(const_shift, diff_shift);
 
-                    // get effective event weight
-                    double weight = 1.;
-                    if (not(is_data))
-                    {
-                        // get trigger SF
-                        auto trigger_sf = 1.;
-
-                        auto pu_weight =
-                            pu_corrector->evaluate({unwrap(Pileup_nTrueInt), Shifts::get_pu_variation(shift)});
-
-                        auto prefiring_weight = Shifts::get_prefiring_weight(unwrap_or(L1PreFiringWeight_Nom, 1.), //
-                                                                             unwrap_or(L1PreFiringWeight_Up, 1.),  //
-                                                                             unwrap_or(L1PreFiringWeight_Dn, 1.),
-                                                                             shift);
-
-                        auto pdf_as_weight = Shifts::get_pdf_alpha_s_weights(
-                            shift,
-                            lha_indexes,
-                            default_pdf_sets,           //
-                            unwrap(LHEPdfWeight),       //
-                            unwrap(Generator_scalePDF), //
-                            unwrap(Generator_x1),       //
-                            unwrap(Generator_x2),       //
-                            unwrap(Generator_id1),      //
-                            unwrap(Generator_id2),      //
-                            this_sample_pdf
-                            // unwrap_or(LHEWeight_originalXWGTUP,
-                            //                                                                1.f)
-                        );
-                        double mc_weight = [is_data, &genWeight, &LHEWeight_originalXWGTUP, &event_weights]() -> double
-                        {
-                            if (not(is_data))
-                            {
-                                if (event_weights.should_use_LHEWeight)
-                                {
-                                    return unwrap(LHEWeight_originalXWGTUP);
-                                }
-                                return unwrap(genWeight);
-                            }
-                            return 1.;
-                        }();
-
-                        weight = mc_weight * pu_weight * prefiring_weight * trigger_sf / event_weights.sum_weights *
-                                 x_section * luminosity * filter_eff * k_factor * pdf_as_weight *
-                                 Shifts::get_reco_scale_factor(shift,
-                                                               {num_muon, muons},
-                                                               {num_electron, electrons},
-                                                               {num_tau, taus},
-                                                               {num_photon, photons},
-                                                               {num_bjet, bjets},
-                                                               {num_jet, jets},
-                                                               {num_met, met}) *
-                                 Shifts::get_fakes_variation_weight(shift,
-                                                                    {num_muon, muons},
-                                                                    {num_electron, electrons},
-                                                                    {num_tau, taus},
-                                                                    {num_photon, photons},
-                                                                    {num_bjet, bjets},
-                                                                    {num_jet, jets} //  {num_met, met}
-                                                                    ) *
-                                 Shifts::get_qcd_scale_weight(shift, unwrap(LHEScaleWeight));
-                    }
-
-                    // Check for NaNs
-                    if (std::isnan(weight) or std::isinf(weight))
-                    {
-                        fmt::print(stderr, "##########################\n");
-                        fmt::print(stderr, "##########################\n");
-                        fmt::print(stderr, "##########################\n");
-                        fmt::print(stderr,
-                                   "ERROR: NaN or INF weight found when "
-                                   "processing shift: {}!\n",
-                                   Shifts::variation_to_string(shift));
-                        fmt::print(stderr, "##########################\n");
-                        fmt::print(stderr, "##########################\n");
-                        fmt::print(stderr, "##########################\n");
-                        std::exit(EXIT_FAILURE);
-                    }
-
                     // fill event classes
                     for (auto &&class_name :
                          {event_class_name_exclusive, event_class_name_inclusive, event_class_name_jetinclusive})
@@ -1084,14 +1097,93 @@ auto classification(const std::string process,
 
                         // fill class
                         event_classes.unsafe_ec(*class_name)
-                            .push(buffer.sum_pt(), buffer.mass(), buffer.met(), weight, shift);
+                            .push(buffer.sum_pt(),
+                                  buffer.mass(),
+                                  buffer.met(),
+                                  get_effective_weight(
+                                      shift, num_muon, num_electron, num_tau, num_photon, num_bjet, num_jet, num_met),
+                                  shift);
                     }
                 }
             };
 
             loop_over_object_combinations(do_classification, muons, electrons, taus, photons, bjets, jets, met);
+
+            //////////////////////////////////////////////
+            /// Validation analysis
+            for (auto &&const_shift : shifts.get_constant_shifts(diff_shift))
+            {
+                if (not(const_shift == Shifts::Variations::Nominal or diff_shift == Shifts::Variations::Nominal))
+                {
+                    continue;
+                }
+
+                auto shift = Shifts::resolve_shifts(const_shift, diff_shift);
+
+                validation_container.z_to_muon_muon_x.fill(
+                    muons,
+                    bjets,
+                    jets,
+                    met,
+                    get_effective_weight(shift, std::min(static_cast<int>(muons.size()), 2), 0, 0, 0, 0, 0, met.size()),
+                    shift);
+                validation_container.z_to_muon_muon_x_z_mass.fill(
+                    muons,
+                    bjets,
+                    jets,
+                    met,
+                    get_effective_weight(
+                        shift, 0, std::min(static_cast<int>(electrons.size()), 2), 0, 0, 0, 0, met.size()),
+                    shift);
+
+                validation_container.z_to_electron_electron_x.fill(
+                    electrons,
+                    bjets,
+                    jets,
+                    met,
+                    get_effective_weight(
+                        shift, 0, std::min(static_cast<int>(electrons.size()), 2), 0, 0, 0, 0, met.size()),
+                    shift);
+                validation_container.z_to_electron_electron_x_z_mass.fill(
+                    electrons,
+                    bjets,
+                    jets,
+                    met,
+                    get_effective_weight(shift, std::min(static_cast<int>(muons.size()), 2), 0, 0, 0, 0, 0, met.size()),
+                    shift);
+
+                validation_container.z_to_tau_tau_x.fill(
+                    taus,
+                    bjets,
+                    jets,
+                    met,
+                    get_effective_weight(shift, 0, 0, std::min(static_cast<int>(taus.size()), 2), 0, 0, 0, met.size()),
+                    shift);
+                validation_container.z_to_tau_tau_x_z_mass.fill(
+                    taus,
+                    bjets,
+                    jets,
+                    met,
+                    get_effective_weight(shift, 0, 0, std::min(static_cast<int>(taus.size()), 2), 0, 0, 0, met.size()),
+                    shift);
+            }
+            //////////////////////////////////////////////
         }
     }
+
+    // //////////////////////////////////
+    // /// Serialize Validations to disk
+    // std::hash<std::string> hasher;
+    // auto hash = std::to_string(hasher(input_file));
+    // std::unique_ptr<TFile> output_file(TFile::Open(fmt::format("validation_{}.root", hash).c_str(), "RECREATE"));
+    //
+    // z_to_muon_muon_x.dumpt_to_root_file(output_file);
+    // z_to_muon_muon_x_Z_mass.dumpt_to_root_file(output_file);
+    // z_to_electron_electron_x.dumpt_to_root_file(output_file);
+    // z_to_electron_electron_x_Z_mass.dumpt_to_root_file(output_file);
+    // z_to_tau_tau_x.dumpt_to_root_file(output_file);
+    // z_to_tau_tau_x_Z_mass.dumpt_to_root_file(output_file);
+    // //////////////////////////////////
 
     fmt::print("\n[MUSiC Classification] Done ...\n");
     fmt::print("\n\nProcessed {} events ...\n", global_event_index);
@@ -1115,6 +1207,7 @@ PYBIND11_MODULE(classification_imp, m)
           "input_file"_a,
           "generator_filter"_a,
           "event_classes"_a,
+          "validation_container"_a,
           "first_event"_a = std::nullopt,
           "last_event"_a = std::nullopt,
           "debug"_a = false,
@@ -1123,39 +1216,160 @@ PYBIND11_MODULE(classification_imp, m)
 
     py::class_<EventClassContainer>(m, "EventClassContainer")
         .def(py::init<>())
-        .def("merge_inplace", &EventClassContainer::merge_inplace, "event_classes_container"_a)
         .def_static(
-            "serialize",
-            [](EventClassContainer &cont) -> py::bytes
+            "save",
+            [](EventClassContainer &cont, const std::string &object_name, const std::string &output_path) -> void
             {
-                return py::bytes(EventClassContainer::serialize(cont));
+                std::unique_ptr<TFile> output_file(TFile::Open(output_path.c_str(), "RECREATE"));
+                output_file->WriteObject(&cont, object_name.c_str());
             },
-            "event_classes_container"_a)
+            "event_classes_container"_a,
+            "object_name"_a,
+            "output_path"_a)
         .def_static(
-            "deserialize",
-            [](const py::bytes &bytes) -> EventClassContainer
+            "merge_many",
+            [](const std::string &object_name,
+               const std::vector<std::string> &input_paths,
+               const std::string &output_path) -> void
             {
-                return EventClassContainer::deserialize(bytes);
+                if (input_paths.size() == 0)
+                {
+                    return;
+                }
+
+                auto input_file = std::unique_ptr<TFile>(TFile::Open(input_paths[0].c_str()));
+                auto buffer = input_file->Get<EventClassContainer>(object_name.c_str());
+                if (not(buffer))
+                {
+                    fmt::print(stderr, "Could not find the requested EventClassContainer: {}.\n", object_name);
+                    std::exit(EXIT_FAILURE);
+                }
+
+                for (std::size_t i = 1; i < input_paths.size(); i++)
+                {
+                    auto _input_file = std::unique_ptr<TFile>(TFile::Open(input_paths[i].c_str()));
+                    auto ec = std::unique_ptr<EventClassContainer>(
+                        _input_file->Get<EventClassContainer>(object_name.c_str()));
+                    if (not(ec))
+                    {
+                        fmt::print(stderr, "Could not find the requested EventClassContainer: {}.\n", object_name);
+                        std::exit(EXIT_FAILURE);
+                    }
+                    buffer->merge_inplace(std::move(ec));
+                }
+
+                // dump buffer to file
+                std::unique_ptr<TFile> output_file(TFile::Open(output_path.c_str(), "RECREATE"));
+                output_file->WriteObject(buffer, object_name.c_str());
             },
-            "bytes"_a)
+            "object_name"_a,
+            "input_paths"_a,
+            "output_path"_a)
         .def_static(
             "serialize_to_root",
-            [](EventClassContainer &cont,
+            [](const std::string &input_file_path,
                const std::string &ouput_file_path,
                const std::string &process_name,
                const std::string &process_group,
                const std::string &xsec_order,
                const std::string &year,
-               bool is_data) -> void
+               bool is_data) -> std::vector<std::string>
             {
+                auto input_file = std::unique_ptr<TFile>(TFile::Open(input_file_path.c_str()));
+                auto cont = input_file->Get<EventClassContainer>(fmt::format("{}_{}", process_name, year).c_str());
+                if (not(cont))
+                {
+                    fmt::print(stderr,
+                               "Could not find the requested EventClassContainer: {}.\n",
+                               fmt::format("{}_{}", process_name, year));
+                    std::exit(EXIT_FAILURE);
+                }
+
                 EventClassContainer::serialize_to_root(
-                    cont, ouput_file_path, process_name, process_group, xsec_order, year, is_data);
+                    *cont, ouput_file_path, process_name, process_group, xsec_order, year, is_data);
+
+                std::vector<std::string> classes;
+                classes.reserve(cont->classes.size());
+                for (auto &&[class_name, _] : cont->classes)
+                {
+                    classes.push_back(class_name);
+                }
+
+                return classes;
             },
-            "event_classes_container"_a,
+            "input_file_path"_a,
             "ouput_file_path"_a,
             "process_name"_a,
             "process_group"_a,
             "xsec_order"_a,
             "year"_a,
             "is_data"_a);
+
+    py::class_<ValidationContainer>(m, "ValidationContainer")
+        .def(py::init<const std::string &, const std::string &, const std::string &, const std::string &>(),
+             "process_group"_a,
+             "xs_order"_a,
+             "process"_a,
+             "year"_a)
+        .def_static(
+            "save",
+            [](ValidationContainer &cont, const std::string &output_path) -> void
+            {
+                std::unique_ptr<TFile> output_file(TFile::Open(output_path.c_str(), "RECREATE"));
+                output_file->WriteObject(&cont, "validation");
+            },
+            "validation_container"_a,
+            "output_path"_a)
+        .def_static(
+            "merge_many",
+            [](const std::vector<std::string> &input_paths, const std::string &output_path) -> void
+            {
+                if (input_paths.size() == 0)
+                {
+                    return;
+                }
+
+                auto input_file = std::unique_ptr<TFile>(TFile::Open(input_paths[0].c_str()));
+                auto buffer = input_file->Get<ValidationContainer>("validation");
+                if (not(buffer))
+                {
+                    fmt::print(stderr, "Could not find the requested ValidationContainer: {}.\n", "validation");
+                    std::exit(EXIT_FAILURE);
+                }
+
+                for (std::size_t i = 1; i < input_paths.size(); i++)
+                {
+                    auto _input_file = std::unique_ptr<TFile>(TFile::Open(input_paths[i].c_str()));
+                    auto val =
+                        std::unique_ptr<ValidationContainer>(_input_file->Get<ValidationContainer>("validation"));
+                    if (not(val))
+                    {
+                        fmt::print(stderr, "Could not find the requested ValidationContainer: {}.\n", "validation");
+                        std::exit(EXIT_FAILURE);
+                    }
+                    buffer->merge_inplace(std::move(val));
+                }
+
+                // dump buffer to file
+                std::unique_ptr<TFile> output_file(TFile::Open(output_path.c_str(), "RECREATE"));
+                output_file->WriteObject(buffer, "validation");
+            },
+            "input_paths"_a,
+            "output_path"_a)
+        .def_static(
+            "serialize_to_root",
+            [](const std::string &input_file_path, const std::string &ouput_file_path) -> std::vector<std::string>
+            {
+                auto input_file = std::unique_ptr<TFile>(TFile::Open(input_file_path.c_str()));
+                auto cont = input_file->Get<ValidationContainer>("validation");
+                if (not(cont))
+                {
+                    fmt::print(stderr, "Could not find the requested ValidationContainer: {}.\n", "validation");
+                    std::exit(EXIT_FAILURE);
+                }
+
+                return cont->serialize_to_root(ouput_file_path);
+            },
+            "input_file_path"_a,
+            "ouput_file_path"_a);
 }
