@@ -30,7 +30,6 @@ def get_source_files(path, year_pattern):
 
 
 def to_root_latex(class_name):
-    root_latex_name = ""
     has_suffix = False
     is_first_object = True
 
@@ -46,38 +45,45 @@ def to_root_latex(class_name):
     for i, p in enumerate(class_name.split("_")):
         if i > 0:
             if "Muon" in p:
-                muon_part = str(p[0]) + r"#mu"
-                is_first_object = False
+                if str(p[0]) != str(0):
+                    muon_part = str(p[0]) + r"#mu"
+                    is_first_object = False
 
             if "Electron" in p:
-                if is_first_object:
-                    electron_part = str(p[0]) + r"e"
-                    is_first_object = False
-                else:
-                    electron_part = r" + " + str(p[0]) + r"e"
+                if str(p[0]) != str(0):
+                    if is_first_object:
+                        electron_part = str(p[0]) + r"e"
+                        is_first_object = False
+                    else:
+                        electron_part = r" + " + str(p[0]) + r"e"
 
             if "Tau" in p:
-                if is_first_object:
-                    tau_part = str(p[0]) + r"#tau"
-                    is_first_object = False
-                else:
-                    tau_part = r" + " + str(p[0]) + r"#tau"
+                if str(p[0]) != str(0):
+                    if is_first_object:
+                        tau_part = str(p[0]) + r"#tau"
+                        is_first_object = False
+                    else:
+                        tau_part = r" + " + str(p[0]) + r"#tau"
 
             if "Photon" in p:
-                if is_first_object:
-                    photon_part = str(p[0]) + r"#gamma"
-                    is_first_object = False
-                else:
-                    photon_part = r" + " + str(p[0]) + r"#gamma"
+                if str(p[0]) != str(0):
+                    if is_first_object:
+                        photon_part = str(p[0]) + r"#gamma"
+                        is_first_object = False
+                    else:
+                        photon_part = r" + " + str(p[0]) + r"#gamma"
 
             if "bJet" in p:
-                bjet_part = r" + " + str(p[0]) + r"bjet"
+                if str(p[0]) != str(0):
+                    bjet_part = r" + " + str(p[0]) + r"bjet"
 
             if p[1:] == "Jet" and p[0] != "b":
-                jet_part = r" + " + str(p[0]) + r"jet"
+                if str(p[0]) != str(0):
+                    jet_part = r" + " + str(p[0]) + r"jet"
 
             if "MET" in p:
-                met_part = r" + " + r"p_{T}^{miss}"
+                if str(p[0]) != str(0):
+                    met_part = r" + " + r"p_{T}^{miss}"
 
             if r"+X" in p:
                 suffix = r" " + r"incl."
@@ -115,4 +121,3 @@ def make_shifts(shifts):
             n_shifts = len(shifts[s])
 
     return cpp_shift, n_shifts
-

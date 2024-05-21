@@ -40,19 +40,30 @@ pybind11_add_module(classification_imp MODULE
     src/classification.cpp //
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/BinLimits.cpp //
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/JetCorrector.cpp //
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/NanoEventClass/src/NanoEventClass.cpp //
+    # ${CMAKE_SOURCE_DIR}/NanoMUSiC/NanoEventClass/src/NanoEventClass.cpp //
     src/GeneratorFilters.cpp //
     src/NanoAODGenInfo.cpp //
-    # src/ZToLepLepX.cpp //
+    src/ZToLepLepX.cpp //
     # src/GammaPlusJet.cpp //
     # src/TTBarTo1Lep2Bjet2JetMET.cpp //
     # src/WToLepNuX.cpp //
     # src/WToLepNu_eff.cpp //
     # src/ZToTauTauLepX.cpp //
     src/EventClass.cpp //
+    src/Distribution.cpp //
+    src/pybind_imp.cpp //
 )
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(classification_imp LINK_PUBLIC ROOT::RIO ROOT::Net correctionlib)
+target_include_directories(classification_imp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 install(TARGETS classification_imp DESTINATION ${CMAKE_SOURCE_DIR}/lib/python)
 
+
+message(STATUS "Generating EventClass dictionaries ...")
+# ROOT_GENERATE_DICTIONARY(EventClassDict include/EventClass.hpp include/ValidationContainer.hpp include/ZToLepLepX.hpp include/Distribution.hpp include/distribution_factory.hpp MODULE classification_imp LINKDEF include/EventClassLinkDef.h)
+ROOT_GENERATE_DICTIONARY(EventClassDict include/EventClass.hpp include/ValidationContainer.hpp include/ZToLepLepX.hpp include/Distribution.hpp  MODULE classification_imp LINKDEF include/EventClassLinkDef.h)
+message(STATUS "Done.")
+
+install(TARGETS EventClassDict DESTINATION ${CMAKE_SOURCE_DIR}/lib)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libclassification_imp_rdict.pcm DESTINATION ${CMAKE_SOURCE_DIR}/lib/python)
 

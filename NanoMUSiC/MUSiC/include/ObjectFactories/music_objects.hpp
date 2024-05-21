@@ -19,7 +19,7 @@
 
 using namespace ROOT;
 using namespace ROOT::Math;
-using namespace ROOT::VecOps;
+// using namespace ROOT::ROOT::VecOps;
 
 // correctionlib
 // More info: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BTagCalibration
@@ -93,15 +93,15 @@ class MUSiCObjects
 
     auto take(const RVec<int> &indexes) -> void
     {
-        p4 = VecOps::Take(p4, indexes);
-        scale_factor = VecOps::Take(scale_factor, indexes);
-        scale_factor_shift = VecOps::Take(scale_factor_shift, indexes);
-        is_fake = VecOps::Take(is_fake, indexes);
+        p4 = ROOT::VecOps::Take(p4, indexes);
+        scale_factor = ROOT::VecOps::Take(scale_factor, indexes);
+        scale_factor_shift = ROOT::VecOps::Take(scale_factor_shift, indexes);
+        is_fake = ROOT::VecOps::Take(is_fake, indexes);
     }
 
     auto reorder() -> void
     {
-        this->take(VecOps::Argsort(p4,
+        this->take(ROOT::VecOps::Argsort(p4,
                                    [](auto p1, auto p2) -> bool
                                    {
                                        return p1.pt() > p2.pt();

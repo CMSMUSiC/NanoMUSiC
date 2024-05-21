@@ -184,11 +184,26 @@ class CondorJob:
 
                 subprocess.run(
                     shlex.split(f"condor_rm {self.cluster_id}"),
-                    capture_output=True,
                     text=True,
+                    capture_output=True,
                 )
 
-                self.resubmit(schedd, logger)
+                # if fail due to memory issue, will bump the requested memory before resubmit
+                bump_memory = False
+                try:
+                    with open(self.log_file, "r") as file:
+                        content = file.read()
+                        if (
+                            "Job was aborted" in content
+                            and "SYSTEM_PERIODIC_REMOVE"
+                            and "RequestMemory" in content
+                        ):
+                            bump_memory = True
+                except FileNotFoundError:
+                    log.error("Log file not found.")
+                    sys.exit(-1)
+
+                self.resubmit(schedd, logger, bump_memory)
                 return self.job_status
 
             self.job_status = JobStatus.MAX_RETRIES
@@ -229,10 +244,18 @@ class CondorJob:
             log.error("Could not get Job Status from Condor.")
             sys.exit(-1)
 
-    def resubmit(self, schedd, logger=log.warning) -> None:
+    def resubmit(self, schedd, logger=log.warning, bump_memory: bool = False) -> None:
         logger(
             f"[yellow]Job failed: {self.name} - Cluster Id: {self.cluster_id}. Resubmiting..."
         )
+        if bump_memory:
+            logger(f"[yellow]Will bump the requested memory for {self.name} by 1GB.")
+            self.request_memory += 1
+
+        os.system("rm -rf {}".format(self.log_file))
+        os.system("rm -rf {}".format(self.stdout))
+        os.system("rm -rf {}".format(self.stderr))
+
         self.submit(schedd)
         self.job_status == JobStatus.SUBMITED
         self._num_retries += 1
@@ -288,7 +311,7 @@ class CondorManager:
     """Manager for many Condor jobs."""
 
     jobs: list[CondorJob]
-    verbose_monitoring_threshold: int = 10
+    verbose_monitoring_threshold: int = 50
     schedd = htcondor.Schedd()
     counter: MonitoringCounter = field(default_factory=MonitoringCounter)
     jobs_ids: dict[str, int] = field(default_factory=dict)

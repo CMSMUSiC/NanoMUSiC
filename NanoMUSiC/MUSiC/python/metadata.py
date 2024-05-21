@@ -17,6 +17,16 @@ class Years(str, Enum):
     Run2017 = "2017"
     Run2018 = "2018"
 
+    @staticmethod
+    def years_to_plot():
+        return {
+            "2016*": {"name": "2016", "lumi": "36.3"},  #
+            "2017": {"name": "2017", "lumi": "41.5"},  #
+            "2018": {"name": "2018", "lumi": "59.8"},  #
+            # "[2017,2018]": {"name": "2017+2018", "lumi": "101"},  #
+            "*": {"name": "Run2", "lumi": "138"},
+        }
+
 
 class Lumi:
     lumi: dict[str, float] = {
@@ -41,7 +51,7 @@ class Process(BaseModel):
     das_name_2016: list[str] = Field(default_factory=list)
     das_name_2017: list[str] = Field(default_factory=list)
     das_name_2018: list[str] = Field(default_factory=list)
-    crab_task_name: list[str]
+    crab_task_name: list[str] = Field(default_factory=str)
     output_files_2016APV: list[str] = Field(default_factory=list)
     output_files_2016: list[str] = Field(default_factory=list)
     output_files_2017: list[str] = Field(default_factory=list)

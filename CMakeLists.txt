@@ -26,7 +26,7 @@ include_directories(
     ${LCG_BASE}/include/rapidjson
     ${LCG_BASE}/include/python3.9
     ${LCG_BASE}/lib/python3.9/site-packages/pybind11/include
-    ${CMAKE_SOURCE_DIR}/NanoMUSiC/NanoEventClass/include/
+    # ${CMAKE_SOURCE_DIR}/NanoMUSiC/NanoEventClass/include/
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/external/
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/include/
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/Classification/include/

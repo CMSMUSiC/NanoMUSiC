@@ -1,14 +1,17 @@
 #include "EventClass.hpp"
 #include "BinLimits.hpp"
 #include "TFile.h"
-#include "TH1F.h"
+#include "TH1.h"
 #include "fmt/core.h"
 #include <cmath>
 #include <cstddef>
 #include <cstdlib>
+#include <memory>
 #include <optional>
 #include <string>
 #include <unordered_map>
+
+#include "Shifts.hpp"
 
 //////////////////////////
 /// EventClassHistogram
@@ -101,6 +104,7 @@ auto EventClassHistogram::merge_inplace(EventClassHistogram &other) -> void
         }
     }
 }
+
 auto EventClassHistogram::serialize_to_root(const std::unique_ptr<TFile> &output_root_file,
                                             const std::unordered_map<ObjectNames, int> &count_map,
                                             std::vector<double> &bins_limits,
@@ -115,13 +119,6 @@ auto EventClassHistogram::serialize_to_root(const std::unique_ptr<TFile> &output
 {
     if (not(is_data and variation_name != Shifts::variation_to_string(Shifts::Variations::Nominal)))
     {
-
-        // auto histo = TH1F("histo",
-        //                   "",
-        //                   static_cast<int>(Histograms::max_energy / bin_size),
-        //                   Histograms::min_energy,
-        //                   Histograms::max_energy);
-
         auto histo_name = fmt::format("[{}]_[{}]_[{}]_[{}]_[{}]_[{}]_[{}]",
                                       event_class_name,
                                       process_group,
@@ -138,7 +135,7 @@ auto EventClassHistogram::serialize_to_root(const std::unique_ptr<TFile> &output
         for (auto &&[idx, count] : counts)
         {
             total_count += count;
-            auto bin_center = idx * bin_size / 2.;
+            auto bin_center = idx * bin_size + bin_size / 2.;
             auto root_bin_idx = histo.FindBin(bin_center);
             histo.SetBinContent(root_bin_idx, histo.GetBinContent(root_bin_idx) + count);
             if (weighted)
@@ -177,6 +174,8 @@ auto EventClassHistogram::serialize_to_root(const std::unique_ptr<TFile> &output
 //////////////////////////
 auto EventClass::make_event_class(const std::string &ec_name) -> EventClass
 {
+    constexpr auto total_variations = static_cast<std::size_t>(Shifts::Variations::kTotalVariations);
+
     auto ec = EventClass{};
     ec.ec_name = ec_name;
     for (std::size_t var = 0; var < total_variations; var++)
@@ -234,6 +233,8 @@ auto EventClass::histogram(const std::string &observable, std::size_t variation)
 
 auto EventClass::merge_inplace(EventClass &other) -> void
 {
+    constexpr auto total_variations = static_cast<std::size_t>(Shifts::Variations::kTotalVariations);
+
     for (std::size_t var_idx = 0; var_idx < total_variations; var_idx++)
     {
         h_sum_pt[var_idx].merge_inplace(other.h_sum_pt[var_idx]);
@@ -293,16 +294,17 @@ auto EventClass::serialize_to_root(const std::unique_ptr<TFile> &output_root_fil
             count_map.at(ObjectNames::Photon) = std::stoi(tok.substr(0, pos));
             continue;
         }
+        pos = tok.find("Jet");
+        if (pos != std::string::npos and tok.find("NJet") == std::string::npos and
+            tok.find("bJet") == std::string::npos)
+        {
+            count_map.at(ObjectNames::Jet) = std::stoi(tok.substr(0, pos));
+            continue;
+        }
         pos = tok.find("bJet");
         if (pos != std::string::npos)
         {
             count_map.at(ObjectNames::bJet) = std::stoi(tok.substr(0, pos));
-            continue;
-        }
-        pos = tok.find("Jet");
-        if (pos != std::string::npos)
-        {
-            count_map.at(ObjectNames::Jet) = std::stoi(tok.substr(0, pos));
             continue;
         }
         pos = tok.find("MET");
@@ -312,8 +314,14 @@ auto EventClass::serialize_to_root(const std::unique_ptr<TFile> &output_root_fil
             continue;
         }
     }
+
     auto bins_limits = BinLimits::limits(
         count_map, false, Histograms::min_energy, Histograms::max_energy, Histograms::min_bin_size, Histograms::fudge);
+
+    auto bins_limits_MET = BinLimits::limits(
+        count_map, true, Histograms::min_energy, Histograms::max_energy, Histograms::min_bin_size, Histograms::fudge);
+
+    constexpr auto total_variations = static_cast<std::size_t>(Shifts::Variations::kTotalVariations);
 
     for (std::size_t var_idx = 0; var_idx < total_variations; var_idx++)
     {
@@ -339,33 +347,35 @@ auto EventClass::serialize_to_root(const std::unique_ptr<TFile> &output_root_fil
                                                     is_data,
                                                     "h_invariant_mass",
                                                     Shifts::variation_to_string(var_idx));
-        if (count_map[ObjectNames::MET] > 0)
-        {
-    auto bins_limits_MET = BinLimits::limits(
-        count_map, true, Histograms::min_energy, Histograms::max_energy, Histograms::min_bin_size, Histograms::fudge);
-            h_met[var_idx].serialize_to_root(output_root_file,
-                                             count_map,
-                                             bins_limits_MET,
-                                             event_class_name,
-                                             process_name,
-                                             process_group,
-                                             xsec_order,
-                                             year,
-                                             is_data,
-                                             "h_met",
-                                             Shifts::variation_to_string(var_idx));
-        }
+        h_met[var_idx].serialize_to_root(output_root_file,
+                                         count_map,
+                                         bins_limits_MET,
+                                         event_class_name,
+                                         process_name,
+                                         process_group,
+                                         xsec_order,
+                                         year,
+                                         is_data,
+                                         "h_met",
+                                         Shifts::variation_to_string(var_idx));
     }
 }
 
 /////////////////////////
 /// EventClassContainer
 /////////////////////////
-auto EventClassContainer::merge_inplace(EventClassContainer &other) -> void
+auto EventClassContainer::merge_inplace(std::unique_ptr<EventClassContainer> &&other) -> void
 {
-    for (auto &&ec_name : set_of_classes(*this, other))
+    for (auto &&ec_name : set_of_classes(*this, *other))
     {
-        classes[ec_name].merge_inplace(other.classes[ec_name]);
+        if (other->classes.count(ec_name) > 0)
+        {
+            if (classes.count(ec_name) == 0)
+            {
+                push(ec_name);
+            }
+            classes[ec_name].merge_inplace(other->classes[ec_name]);
+        }
     }
 }
 

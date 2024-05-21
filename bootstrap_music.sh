@@ -52,6 +52,8 @@ tar -zvxf go1.22.0.linux-amd64.tar.gz
 rm go1.22.0.linux-amd64.tar.gz 
 
 
-# install redis-server
+# install htcondor
+pip install --user htcondor
+
 
 cd $SCRIPT_DIR

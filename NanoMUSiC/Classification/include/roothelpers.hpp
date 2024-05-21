@@ -10,19 +10,14 @@
 #include <memory>
 #include <numeric>
 #include <optional>
-#include <stdexcept>
 #include <string>
 #include <vector>
-
-#include "fmt/format.h"
 
 #include "Math/QuantFuncMathCore.h"
 #include "ROOT/RVec.hxx"
 #include "TGraphAsymmErrors.h"
 #include "TGraphErrors.h"
 #include "TH1.h"
-#include "TH1F.h"
-#include "TMath.h"
 
 using namespace ROOT;
 using namespace ROOT::VecOps;
@@ -30,25 +25,24 @@ using namespace ROOT::VecOps;
 namespace ROOTHelpers
 {
 
-template <typename H>
-inline auto Print(const H &h) -> void
+inline auto Print(const TH1F &h) -> void
 {
-    std::cout << "Name: " << h->GetName() << " - Bins: " << h->GetNbinsX() << std::endl;
+    std::cout << "Name: " << h.GetName() << " - Bins: " << h.GetNbinsX() << std::endl;
     std::cout << "Edges: [";
     std::cout << "-inf, ";
-    for (int i = 1; i < h->GetNbinsX() + 2; i++)
+    for (int i = 1; i < h.GetNbinsX() + 2; i++)
     {
-        std::cout << h->GetBinLowEdge(i);
+        std::cout << h.GetBinLowEdge(i);
         std::cout << ", ";
     }
     std::cout << "+inf";
     std::cout << "]" << std::endl;
 
     std::cout << "Counts: [";
-    for (int i = 0; i < h->GetNbinsX() + 2; i++)
+    for (int i = 0; i < h.GetNbinsX() + 2; i++)
     {
-        std::cout << h->GetBinContent(i);
-        if (i < h->GetNbinsX() + 1)
+        std::cout << h.GetBinContent(i);
+        if (i < h.GetNbinsX() + 1)
         {
             std::cout << ", ";
         }
@@ -56,10 +50,10 @@ inline auto Print(const H &h) -> void
     std::cout << "]" << std::endl;
 
     std::cout << "Errors: [";
-    for (int i = 0; i < h->GetNbinsX() + 2; i++)
+    for (int i = 0; i < h.GetNbinsX() + 2; i++)
     {
-        std::cout << h->GetBinError(i);
-        if (i < h->GetNbinsX() + 1)
+        std::cout << h.GetBinError(i);
+        if (i < h.GetNbinsX() + 1)
         {
             std::cout << ", ";
         }
@@ -67,121 +61,109 @@ inline auto Print(const H &h) -> void
     std::cout << "]\n" << std::endl;
 }
 
-template <typename H>
-inline auto Clone(const H &h, const std::optional<std::string> &new_name = std::nullopt) -> std::shared_ptr<TH1F>
+inline auto Clone(const TH1F &h, const std::optional<std::string> &new_name = std::nullopt) -> TH1F
 {
-    auto new_histo = std::make_shared<TH1F>(*h);
+    auto new_histo = static_cast<TH1F *>(h.Clone());
     if (new_name)
     {
         new_histo->SetName(new_name->c_str());
     }
-    return new_histo;
+    return *new_histo;
 }
 
-template <typename H>
-inline auto CloneAndReset(const H &h, const std::optional<std::string> &new_name = std::nullopt)
-    -> std::shared_ptr<TH1F>
+inline auto CloneAndReset(const TH1F &h, const std::optional<std::string> &new_name = std::nullopt) -> TH1F
 {
-    auto new_histo = std::make_shared<TH1F>(*h);
+    auto new_histo = static_cast<TH1F *>(h.Clone());
     if (new_name)
     {
         new_histo->SetName(new_name->c_str());
     }
     new_histo->Reset();
 
-    return new_histo;
+    return *new_histo;
 }
 
-template <typename H>
-inline auto Counts(const H &h) -> RVec<double>
+inline auto Counts(const TH1F &h) -> RVec<double>
 {
     auto counts = RVec<double>{};
-    counts.reserve(h->GetNbinsX());
+    counts.reserve(h.GetNbinsX());
 
-    for (int i = 1; i <= h->GetNbinsX(); i++)
+    for (int i = 1; i <= h.GetNbinsX(); i++)
     {
-        counts.push_back(h->GetBinContent(i));
+        counts.push_back(h.GetBinContent(i));
     }
 
     return counts;
 }
 
-template <typename H>
-inline auto Errors(const H &h) -> RVec<double>
+inline auto Errors(const TH1F &h) -> RVec<double>
 {
     auto errors = RVec<double>{};
-    errors.reserve(h->GetNbinsX());
+    errors.reserve(h.GetNbinsX());
 
-    for (int i = 1; i <= h->GetNbinsX(); i++)
+    for (int i = 1; i <= h.GetNbinsX(); i++)
     {
-        errors.push_back(h->GetBinError(i));
+        errors.push_back(h.GetBinError(i));
     }
 
     return errors;
 }
 
-template <typename H>
-inline auto Edges(const H &h) -> RVec<double>
+inline auto Edges(const TH1F &h) -> RVec<double>
 {
     auto edges = RVec<double>{};
-    edges.reserve(h->GetNbinsX() + 1);
+    edges.reserve(h.GetNbinsX() + 1);
 
-    for (int i = 1; i <= h->GetNbinsX() + 1; i++)
+    for (int i = 1; i <= h.GetNbinsX() + 1; i++)
     {
-        edges.push_back(h->GetBinLowEdge(i));
+        edges.push_back(h.GetBinLowEdge(i));
     }
 
     return edges;
 }
 
-template <typename H>
-inline auto Widths(const H &h) -> RVec<double>
+inline auto Widths(const TH1F &h) -> RVec<double>
 {
     auto widths = RVec<double>{};
-    widths.reserve(h->GetNbinsX());
+    widths.reserve(h.GetNbinsX());
 
-    for (int i = 1; i <= h->GetNbinsX(); i++)
+    for (int i = 1; i <= h.GetNbinsX(); i++)
     {
-        widths.push_back(h->GetBinWidth(i));
+        widths.push_back(h.GetBinWidth(i));
     }
 
     return widths;
 }
 
-template <typename H>
-inline auto Centers(const H &h) -> RVec<double>
+inline auto Centers(const TH1F &h) -> RVec<double>
 {
     auto centers = RVec<double>{};
-    centers.reserve(h->GetNbinsX());
+    centers.reserve(h.GetNbinsX());
 
-    for (int i = 1; i <= h->GetNbinsX(); i++)
+    for (int i = 1; i <= h.GetNbinsX(); i++)
     {
-        centers.push_back(h->GetBinCenter(i));
+        centers.push_back(h.GetBinCenter(i));
     }
 
     return centers;
 }
 
-template <typename H>
-inline auto Abs(const H &h) -> RVec<double>
+inline auto Abs(const TH1F &h) -> RVec<double>
 {
     return ROOT::VecOps::abs(Counts(h));
 }
 
-template <typename H>
-inline auto Pow2(const H &h) -> RVec<double>
+inline auto Pow2(const TH1F &h) -> RVec<double>
 {
     return ROOT::VecOps::pow(Counts(h), 2.);
 }
 
-template <typename H>
-inline auto Sqrt(const H &h) -> RVec<double>
+inline auto Sqrt(const TH1F &h) -> RVec<double>
 {
     return ROOT::VecOps::sqrt(Counts(h));
 }
 
-template <typename H>
-inline auto Sum(const std::vector<H> &histos) -> RVec<double>
+inline auto Sum(const std::vector<TH1F> &histos) -> RVec<double>
 {
     if (histos.size() == 0)
     {
@@ -190,16 +172,15 @@ inline auto Sum(const std::vector<H> &histos) -> RVec<double>
     }
     return std::transform_reduce(histos.cbegin(),
                                  histos.cend(),
-                                 RVec<double>(histos[0]->GetNbinsX(), 0),
+                                 RVec<double>(histos[0].GetNbinsX(), 0),
                                  std::plus{},
-                                 [](const H &h) -> RVec<double>
+                                 [](const TH1F &h) -> RVec<double>
                                  {
                                      return Counts(h);
                                  });
 }
 
-template <typename H>
-inline auto SqrtSum(const std::vector<H> &histos) -> RVec<double>
+inline auto SqrtSum(const std::vector<TH1F> &histos) -> RVec<double>
 {
     if (histos.size() == 0)
     {
@@ -208,9 +189,9 @@ inline auto SqrtSum(const std::vector<H> &histos) -> RVec<double>
     }
     return ROOT::VecOps::sqrt(std::transform_reduce(histos.cbegin(),
                                                     histos.cend(),
-                                                    RVec<double>(histos[0]->GetNbinsX(), 0),
+                                                    RVec<double>(histos[0].GetNbinsX(), 0),
                                                     std::plus{},
-                                                    [](const H &h) -> RVec<double>
+                                                    [](const TH1F &h) -> RVec<double>
                                                     {
                                                         return Pow2(h);
                                                     }));
@@ -218,17 +199,15 @@ inline auto SqrtSum(const std::vector<H> &histos) -> RVec<double>
 
 ///////////////////
 /// returns |h1-h2|
-template <typename H>
-inline auto AbsDiff(const H &h1, const H &h2) -> RVec<double>
+inline auto AbsDiff(const TH1F &h1, const TH1F &h2) -> RVec<double>
 {
     return ROOT::VecOps::abs(Counts(h1) - Counts(h2));
 }
 
 /////////////////
 /// This is important to sum Data and MC histograms and get the proper errors
-template <typename H>
-inline auto SumAsTH1F(const std::vector<H> &histos, const std::optional<std::string> &new_name = std::nullopt)
-    -> std::shared_ptr<TH1F>
+inline auto SumAsTH1F(const std::vector<TH1F> &histos, const std::optional<std::string> &new_name = std::nullopt)
+    -> TH1F
 {
     if (histos.size() == 0)
     {
@@ -239,27 +218,53 @@ inline auto SumAsTH1F(const std::vector<H> &histos, const std::optional<std::str
     auto sum = Clone(histos[0]);
     for (std::size_t i = 1; i < histos.size(); i++)
     {
-        sum->Add(histos[i].get());
+        sum.Add(&histos[i]);
     }
 
     if (new_name)
     {
-        sum->SetName(new_name->c_str());
+        sum.SetName(new_name->c_str());
     }
     else
     {
-        sum->SetName(histos[0].get()->GetName());
+        sum.SetName(histos[0].GetName());
     }
 
     return sum;
 }
 
-template <typename H>
-inline auto SumAsTH1F(const std::unordered_map<std::string, H> &histos,
-                      bool remove_data = true,
-                      const std::optional<std::string> &new_name = std::nullopt) -> std::shared_ptr<TH1F>
+inline auto SumAsTH1F(const std::vector<std::shared_ptr<TH1F>> &histos,
+                      const std::optional<std::string> &new_name = std::nullopt) -> TH1F
 {
-    auto values = std::vector<H>();
+    if (histos.size() == 0)
+    {
+        fmt::print(stderr, "ERROR: Could not sum histograms. The provided list is empty.");
+        std::exit(EXIT_FAILURE);
+    }
+
+    auto sum = Clone(*histos[0]);
+    for (std::size_t i = 1; i < histos.size(); i++)
+    {
+        sum.Add(histos[i].get());
+    }
+
+    if (new_name)
+    {
+        sum.SetName(new_name->c_str());
+    }
+    else
+    {
+        sum.SetName(histos[0]->GetName());
+    }
+
+    return sum;
+}
+
+inline auto SumAsTH1F(const std::unordered_map<std::string, TH1F> &histos,
+                      bool remove_data = true,
+                      const std::optional<std::string> &new_name = std::nullopt) -> TH1F
+{
+    auto values = std::vector<TH1F>();
     for (const auto &[pg, h] : histos)
     {
         if (remove_data)
@@ -293,8 +298,7 @@ struct PoissonError
     }
 };
 
-template <typename H>
-inline auto MakeDataGraph(const H &data_histo,
+inline auto MakeDataGraph(const TH1F &data_histo,
                           bool scale_to_area,
                           std::pair<std::pair<int, double>, std::pair<int, double>> min_max,
                           double min_bin_width = 10.) -> TGraphAsymmErrors
@@ -304,7 +308,7 @@ inline auto MakeDataGraph(const H &data_histo,
     auto [idx_max, max] = _max;
 
     auto scale_factor = 1.;
-    auto hist_clone = std::unique_ptr<TH1F>(static_cast<TH1F *>(data_histo->Clone()));
+    auto hist_clone = std::unique_ptr<TH1F>(static_cast<TH1F *>(data_histo.Clone()));
     if (scale_to_area)
     {
         hist_clone->Scale(min_bin_width, "width");
@@ -328,7 +332,7 @@ inline auto MakeDataGraph(const H &data_histo,
     {
         if (scale_to_area)
         {
-            scale_factor = hist_clone->GetBinContent(i) / data_histo->GetBinContent(i);
+            scale_factor = hist_clone->GetBinContent(i) / data_histo.GetBinContent(i);
         }
 
         // g.SetPoint(i - 1, hist_clone->GetBinCenter(i), hist_clone->GetBinContent(i));
@@ -336,7 +340,7 @@ inline auto MakeDataGraph(const H &data_histo,
         y.push_back(hist_clone->GetBinContent(i));
         // fmt::print("i: {} - {}\n", i, hist_clone->GetBinCenter(i));
 
-        auto errors = PoissonError(data_histo->GetBinContent(i), scale_factor);
+        auto errors = PoissonError(data_histo.GetBinContent(i), scale_factor);
         // g.SetPointError(i - 1, 0., 0., errors.low, errors.high);
         ex.push_back(0.);
         ey_low.push_back(errors.low);
@@ -348,8 +352,7 @@ inline auto MakeDataGraph(const H &data_histo,
     return g;
 }
 
-template <typename H>
-inline auto GetMinMax(const H &histogram_data, const H &histogram_mc)
+inline auto GetMinMax(const TH1F &histogram_data, const TH1F &histogram_mc)
     -> std::pair<std::pair<int, double>, std::pair<int, double>>
 {
     auto histogram = histogram_data;
@@ -377,12 +380,11 @@ inline auto GetMinMax(const H &histogram_data, const H &histogram_mc)
         }
     }
 
-    return {{first_nonzero_idx, histogram->GetBinLowEdge(first_nonzero_idx)},
-            {last_nonzero_idx, histogram->GetBinLowEdge(last_nonzero_idx + 1)}};
+    return {{first_nonzero_idx, histogram.GetBinLowEdge(first_nonzero_idx)},
+            {last_nonzero_idx, histogram.GetBinLowEdge(last_nonzero_idx + 1)}};
 }
 
-template <typename H>
-inline auto GetYMin(const H &histogram,
+inline auto GetYMin(const TH1F &histogram,
                     bool scale_to_area,
                     std::pair<std::pair<int, double>, std::pair<int, double>> min_max,
                     double min_bin_width = 10.) -> double
@@ -392,7 +394,7 @@ inline auto GetYMin(const H &histogram,
     auto [idx_max, max] = _max;
 
     auto y_min = std::numeric_limits<double>::max();
-    auto histo_clone = std::unique_ptr<TH1F>(static_cast<TH1F *>(histogram->Clone()));
+    auto histo_clone = std::unique_ptr<TH1F>(static_cast<TH1F *>(histogram.Clone()));
 
     if (scale_to_area)
     {
@@ -413,13 +415,10 @@ inline auto GetYMin(const H &histogram,
         y_min = 1E-6;
     }
 
-    // fmt::print("y_min: {}\n", y_min);
-
     return y_min;
 }
-template <typename H>
-inline auto GetYMax(const H &histogram_data,
-                    const H &histogram_mc,
+inline auto GetYMax(const TH1F &histogram_data,
+                    const TH1F &histogram_mc,
                     bool scale_to_area,
                     std::pair<std::pair<int, double>, std::pair<int, double>> min_max,
                     double min_bin_width = 10.) -> double
@@ -429,8 +428,8 @@ inline auto GetYMax(const H &histogram_data,
     auto [idx_max, max] = _max;
 
     auto y_max = 0.;
-    auto data_histo_clone = std::unique_ptr<TH1F>(static_cast<TH1F *>(histogram_data->Clone()));
-    auto mc_histo_clone = std::unique_ptr<TH1F>(static_cast<TH1F *>(histogram_mc->Clone()));
+    auto data_histo_clone = std::unique_ptr<TH1F>(static_cast<TH1F *>(histogram_data.Clone()));
+    auto mc_histo_clone = std::unique_ptr<TH1F>(static_cast<TH1F *>(histogram_mc.Clone()));
 
     if (scale_to_area)
     {
@@ -463,18 +462,19 @@ inline auto GetYMax(const H &histogram_data,
 
 ///////////////////////////
 /// Make the MC (background error band)
-template <typename H>
-inline auto MakeErrorBand(const H &h, const RVec<double> &uncertanties, bool scale_to_area, double min_bin_width = 10.)
-    -> TGraphErrors
+inline auto MakeErrorBand(const TH1F &h,
+                          const RVec<double> &uncertanties,
+                          bool scale_to_area,
+                          double min_bin_width = 10.) -> TGraphErrors
 {
-    if (static_cast<std::size_t>(h->GetNbinsX()) != uncertanties.size())
+    if (static_cast<std::size_t>(h.GetNbinsX()) != uncertanties.size())
     {
         fmt::print(stderr,
                    "ERROR: Could not create error band. The length of the uncertanties vector ({}) is not same as the "
                    "number of "
                    "bins ({}).\n",
                    uncertanties.size(),
-                   h->GetNbinsX());
+                   h.GetNbinsX());
         std::exit(EXIT_FAILURE);
     }
 
@@ -493,9 +493,8 @@ inline auto MakeErrorBand(const H &h, const RVec<double> &uncertanties, bool sca
 
 ///////////////////////////
 /// Make the Data/MC ratio
-template <typename H>
-inline auto MakeRatioGraph(const H &data_histo,
-                           const H &mc_histo,
+inline auto MakeRatioGraph(const TH1F &data_histo,
+                           const TH1F &mc_histo,
                            const RVec<double> &uncertainties,
                            std::pair<std::pair<int, double>, std::pair<int, double>> min_max)
     -> std::pair<TGraphAsymmErrors, TGraphErrors>
@@ -504,7 +503,7 @@ inline auto MakeRatioGraph(const H &data_histo,
     auto [idx_min, min] = _min;
     auto [idx_max, max] = _max;
 
-    if (data_histo->GetNbinsX() != mc_histo->GetNbinsX())
+    if (data_histo.GetNbinsX() != mc_histo.GetNbinsX())
     {
         fmt::print(stderr,
                    "ERROR: Could not create ratio plot. The length of the Data and MC histograms are different.");
@@ -525,10 +524,10 @@ inline auto MakeRatioGraph(const H &data_histo,
 
     for (std::size_t i = static_cast<std::size_t>(idx_max); i >= static_cast<std::size_t>(idx_min); i--)
     {
-        accum_data += data_histo->GetBinContent(i);
-        accum_mc += mc_histo->GetBinContent(i);
+        accum_data += data_histo.GetBinContent(i);
+        accum_mc += mc_histo.GetBinContent(i);
         accum_mc_err_squared += std::pow(uncertainties[i - 1], 2.);
-        accum_bin_width += mc_histo->GetBinWidth(i);
+        accum_bin_width += mc_histo.GetBinWidth(i);
         if (accum_mc >= 0.1 or i == static_cast<std::size_t>(idx_min))
         {
             if (accum_mc > 0)
@@ -545,7 +544,7 @@ inline auto MakeRatioGraph(const H &data_histo,
                 ratio_mc_err.push_back(std::sqrt(accum_mc_err_squared) / accum_mc);
 
                 erros_x.push_back(accum_bin_width / 2.);
-                centers.push_back(accum_bin_width / 2. + mc_histo->GetBinLowEdge(i));
+                centers.push_back(accum_bin_width / 2. + mc_histo.GetBinLowEdge(i));
 
                 accum_data = 0.;
                 accum_mc = 0.;
@@ -562,7 +561,7 @@ inline auto MakeRatioGraph(const H &data_histo,
                 ratio_mc_err.push_back(0.);
 
                 erros_x.push_back(accum_bin_width / 2.);
-                centers.push_back(accum_bin_width / 2. + mc_histo->GetBinLowEdge(i));
+                centers.push_back(accum_bin_width / 2. + mc_histo.GetBinLowEdge(i));
 
                 accum_data = 0.;
                 accum_mc = 0.;
@@ -589,6 +588,9 @@ inline auto MakeRatioGraph(const H &data_histo,
             TGraphErrors(ratio_mc.size(), centers.data(), ratio_mc.data(), erros_x.data(), ratio_mc_err.data())};
 }
 
+///////////////////////////
+/// will convert a std::shared_ptr<TH1F> to TH1F*
+/// usefull to pass to PyROOT
 inline auto GetRawPtr(const std::shared_ptr<TH1F> &h) -> TH1F *
 {
     return h.get();
@@ -605,8 +607,7 @@ inline auto Symmetrize(const RVec<double> &v1, const RVec<double> &v2) -> RVec<d
 }
 
 // Integral Systematics: the same value for the whole sample
-template <typename H>
-inline auto IntegralUncert(const H &nom, const double scale) -> RVec<double>
+inline auto IntegralUncert(const TH1F &nom, const double scale) -> RVec<double>
 {
     return ROOTHelpers::Counts(nom) * scale;
 }
@@ -617,14 +618,12 @@ inline auto XSecOrder(const RVec<double> &total_mc_counts) -> RVec<double>
 }
 
 // Constant Systematics: event-wise weight
-template <typename H>
-inline auto AbsDiff(const H &nom, const H &shift) -> RVec<double>
+inline auto AbsDiff(const TH1F &nom, const TH1F &shift) -> RVec<double>
 {
     return ROOTHelpers::AbsDiff(nom, shift);
 }
 
-template <typename H>
-inline auto AbsDiffAndSymmetrize(const H &nom, const H &up, const H &down) -> RVec<double>
+inline auto AbsDiffAndSymmetrize(const TH1F &nom, const TH1F &up, const TH1F &down) -> RVec<double>
 {
     return Symmetrize(ROOTHelpers::AbsDiff(nom, up), ROOTHelpers::AbsDiff(nom, down));
 }

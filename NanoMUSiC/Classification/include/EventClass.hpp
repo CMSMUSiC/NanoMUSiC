@@ -1,17 +1,21 @@
 #ifndef EVENT_CLASS_HPP
 #define EVENT_CLASS_HPP
 
+#include <array>
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
 #include <memory>
+#include <optional>
+#include <set>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
-#include "BinLimits.hpp"
 #include "Shifts.hpp"
-#include "msgpack.hpp"
+#include "TFile.h"
+
+#include "BinLimits.hpp"
 
 namespace Histograms
 {
@@ -39,8 +43,9 @@ constexpr float min_multiplicity = -0.5;
 constexpr float max_multiplicity = static_cast<float>(n_multiplicity_bins - 1) + 0.5;
 } // namespace Histograms
 
-struct EventClassHistogram
+class EventClassHistogram
 {
+  public:
     constexpr static float bin_size = Histograms::min_bin_size;
     constexpr static std::size_t expected_max_bins = 1300;
 
@@ -59,12 +64,6 @@ struct EventClassHistogram
     auto bin_index(float x) -> std::size_t;
     auto merge_inplace(EventClassHistogram &other) -> void;
 
-    template <class T>
-    void pack(T &pack)
-    {
-        pack(name, weighted, counts, squared_weights);
-    }
-
     auto serialize_to_root(const std::unique_ptr<TFile> &output_root_file,
                            const std::unordered_map<ObjectNames, int> &count_map,
                            std::vector<double> &bins_limits,
@@ -78,10 +77,11 @@ struct EventClassHistogram
                            const std::string &variation_name) -> void;
 };
 
-struct EventClass
+class EventClass
 {
-    constexpr static auto total_variations = static_cast<std::size_t>(Shifts::Variations::kTotalVariations);
+    static constexpr std::size_t total_variations = static_cast<std::size_t>(Shifts::Variations::kTotalVariations);
 
+  public:
     std::string ec_name;
     std::array<EventClassHistogram, total_variations> h_sum_pt;
     std::array<EventClassHistogram, total_variations> h_invariant_mass;
@@ -118,14 +118,8 @@ struct EventClass
 
     inline auto size() -> std::size_t
     {
-        return total_variations;
+        return h_sum_pt.size();
     };
-
-    template <class T>
-    void pack(T &pack)
-    {
-        pack(ec_name, h_sum_pt, h_invariant_mass, h_met);
-    }
 
     auto merge_inplace(EventClass &other) -> void;
 
@@ -138,8 +132,9 @@ struct EventClass
                            bool is_data) -> void;
 };
 
-struct EventClassContainer
+class EventClassContainer
 {
+  public:
     std::unordered_map<std::string, EventClass> classes;
 
     auto unsafe_ec(const std::string &ec_name) -> EventClass &
@@ -162,25 +157,7 @@ struct EventClassContainer
         classes[ec_name] = EventClass::make_event_class(ec_name);
     }
 
-    auto merge_inplace(EventClassContainer &other) -> void;
-
-    template <class T>
-    void pack(T &pack)
-    {
-        pack(classes);
-    }
-
-    static auto serialize(EventClassContainer &cont) -> std::string
-    {
-        auto data = msgpack::pack(cont);
-        return std::string(data.cbegin(), data.cend());
-    }
-
-    static auto deserialize(const std::string &bytes) -> EventClassContainer
-    {
-        auto data = std::vector<uint8_t>(bytes.cbegin(), bytes.cend());
-        return msgpack::unpack<EventClassContainer>(data);
-    }
+    auto merge_inplace(std::unique_ptr<EventClassContainer> &&other) -> void;
 
     static auto serialize_to_root(EventClassContainer &cont,
                                   const std::string &ouput_file_path,

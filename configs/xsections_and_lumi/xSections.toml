@@ -358,17 +358,17 @@ XSecOrder = "NLO"
 ProcessGroup = "DrellYan"
 
 [DiPhotonJetsBox_M40_80_13TeV_SP]
-XSec = 299.3
+XSec = 306.8
 FilterEff = 1.0
 kFactor = 1.0
-XSecOrder = "LO"
+XSecOrder = "NLO"
 ProcessGroup = "GG"
 
 [DiPhotonJetsBox_MGG-80toInf_13TeV_SP]
 XSec = 88.36
 FilterEff = 1.0
 kFactor = 1.0
-XSecOrder = "LO"
+XSecOrder = "NLO"
 ProcessGroup = "GG"
 
 [DiPhotonJets_MGG-80toInf_13TeV_AM]
@@ -418,6 +418,69 @@ XSec = 0.0644229
 FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "LO"
+ProcessGroup = "GG"
+
+[GluGluHToWWTo2L2Nu_M-125_13TeV_PH]
+XSec = 21.47
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "NLO"
+ProcessGroup = "HIG"
+
+[DiPhotonJetsBox_MGG-1000to2000_13TeV_SP]
+XSec = 0.0462
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "NLO"
+ProcessGroup = "GG"
+
+[DiPhotonJetsBox_MGG-2000to4000_13TeV_SP]
+XSec = 0.003153
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "NLO"
+ProcessGroup = "GG"
+
+[DiPhotonJetsBox_MGG-200to500_13TeV_SP]
+XSec = 6.916	
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "NLO"
+ProcessGroup = "GG"
+
+[DiPhotonJetsBox_MGG-4000to8000_13TeV_SP]
+XSec = 0.00004851
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "NLO"
+ProcessGroup = "GG"
+
+[DiPhotonJetsBox_MGG-500to1000_13TeV_SP]
+XSec = 0.4305
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "NLO"
+ProcessGroup = "GG"
+
+[DiPhotonJetsBox_MGG-8000toInf_13TeV_SP]
+XSec = 7.204e-9
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "NLO"
+ProcessGroup = "GG"
+
+[DiPhotonJetsBox_MGG-0to40_13TeV_SP]
+XSec = 754.6
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "NLO"
+ProcessGroup = "GG"
+
+[DiPhotonJetsBox_MGG-80to200_13TeV_SP]
+XSec = 76.3
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "NLO"
 ProcessGroup = "GG"
 
 [GJets_DR-0p4_HT-600ToInf_13TeV_MG]
@@ -521,20 +584,6 @@ ProcessGroup = "HIG"
 
 [GluGluHToWWTo2L2Nu_M125_JHUgen_13TeV_PH]
 XSec = 1.102
-FilterEff = 1.0
-kFactor = 1.0
-XSecOrder = "N3LO"
-ProcessGroup = "HIG"
-
-[GluGluHToWWTo2L2Nu_M-125-jhugen727_13TeV_PH]
-XSec = 0.9913
-FilterEff = 1.0
-kFactor = 1.0
-XSecOrder = "N3LO"
-ProcessGroup = "HIG"
-
-[GluGluHToWWTo2L2Nu_M-125_13TeV_PH]
-XSec = 0.9913
 FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "N3LO"
@@ -1086,9 +1135,15 @@ kFactor = 1.0
 XSecOrder = "NNLO"
 ProcessGroup = "HIG"
 
+[VBFHToZG_ZToLL_M-125_13TeV_PH]
+XSec = 0.0005798 # approximate to 10% of the inclusive one
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "NNLO"
+ProcessGroup = "HIG"
 
 [VBF_HToZZTo4L_M1252_JHUGenV7011_13TeV_PH]
-XSec = 0.09905
+XSec = 0.001034
 FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NNLO"
@@ -1112,7 +1167,8 @@ ProcessGroup = "HIG"
 
 
 [WGG_5f_13TeV_AM]
-XSec = 1.869
+# XSec = 1.869
+XSec = 2.005 #XSDB
 FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"
@@ -1542,6 +1598,20 @@ XSecOrder = "NNLO"
 ProcessGroup = "WW"
 generator_filter_key = "ww_mLL_less_200"
 
+[WWTo2L2Nu_MLL_200To600_13TeV_PH]
+XSec = 10.4814
+FilterEff = 0.113773
+kFactor = 1.162
+XSecOrder = "NNLO"
+ProcessGroup = "WW"
+
+[WWTo2L2Nu_MLL_600To1200_13TeV_PH]
+XSec = 10.4814
+FilterEff = 0.0046514
+kFactor = 1.162
+XSecOrder = "NNLO"
+ProcessGroup = "WW"
+
 [WWTo2L2Nu_MLL_1200To2500_13TeV_PH]
 XSec = 10.4814
 FilterEff = 0.00029203
@@ -1557,13 +1627,6 @@ kFactor = 1.162
 XSecOrder = "NNLO"
 ProcessGroup = "WW"
 
-[WWTo2L2Nu_MLL_200To600_13TeV_PH]
-XSec = 10.4814
-FilterEff = 0.113773
-kFactor = 1.162
-XSecOrder = "NNLO"
-ProcessGroup = "WW"
-
 [WWTo2L2Nu_MLL_2500ToInf_13TeV_PH]
 XSec = 10.4814
 FilterEff = 4.431e-06
@@ -1571,12 +1634,6 @@ kFactor = 1.162
 XSecOrder = "NNLO"
 ProcessGroup = "WW"
 
-[WWTo2L2Nu_MLL_600To1200_13TeV_PH]
-XSec = 10.4814
-FilterEff = 0.0046514
-kFactor = 1.162
-XSecOrder = "NNLO"
-ProcessGroup = "WW"
 
 [WWTo2L2Nu_Mll_1200To2500_13TeV_PH]
 XSec = 10.4814
@@ -1852,6 +1909,7 @@ FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"
 ProcessGroup = "ZG"
+generator_filter_key = "pt_gamma_less_130"
 
 [ZGTo2NuG_PtG-130_13TeV_AM]
 XSec = 0.2768
@@ -1867,6 +1925,15 @@ FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"
 ProcessGroup = "ZG"
+generator_filter_key = "pt_gamma_less_130"
+
+[ZGToLLG_01J_5f_PtG-130_13TeV_AM]
+XSec = 0.1595 
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "NLO"
+ProcessGroup = "ZG"
+
 
 [ZH_HToBB_ZToLL_M-125_13TeV_PH]
 XSec = 0.04865
@@ -2541,6 +2608,12 @@ kFactor = 1.0
 XSecOrder = "N3LO"
 ProcessGroup = "HIG"
 
+[GluGluHToWWTo2L2Nu_M-125-jhugen727_13TeV_PH]
+XSec = 0.9913
+FilterEff = 1.0
+kFactor = 1.0
+XSecOrder = "N3LO"
+ProcessGroup = "HIG"
 
 [VBF_HToZZTo2L2Nu_M1252_JHUGenV735_13TeV_PH]
 XSec = 3.05
@@ -2631,120 +2704,6 @@ is_signal = true
 
 [Taustar_TauG_L10000_m5000_13TeV_P8]
 XSec = 0.0000013593
-FilterEff = 1.0
-kFactor = 1.0
-XSecOrder = "LO"
-ProcessGroup = "Taustar"
-is_signal = true
-
-[Taustar_TauG_L10000_m250_CP5_13TeV_P8]
-XSec = 0.021568
-FilterEff = 1.0
-kFactor = 1.0
-XSecOrder = "LO"
-ProcessGroup = "Taustar"
-is_signal = true
-
-[Taustar_TauG_L10000_m375_CP5_13TeV_P8]
-XSec = 0.015570
-FilterEff = 1.0
-kFactor = 1.0
-XSecOrder = "LO"
-ProcessGroup = "Taustar"
-is_signal = true
-
-[Taustar_TauG_L10000_m500_CP5_13TeV_P8]
-XSec = 0.011845
-FilterEff = 1.0
-kFactor = 1.0
-XSecOrder = "LO"
-ProcessGroup = "Taustar"
-is_signal = true
-
-[Taustar_TauG_L10000_m625_CP5_13TeV_P8]
-XSec = 0.0091358
-FilterEff = 1.0
-kFactor = 1.0
-XSecOrder = "LO"
-ProcessGroup = "Taustar"
-is_signal = true
-
-[Taustar_TauG_L10000_m750_CP5_13TeV_P8]
-XSec = 0.0070675
-FilterEff = 1.0
-kFactor = 1.0
-XSecOrder = "LO"
-ProcessGroup = "Taustar"
-is_signal = true
-
-[Taustar_TauG_L10000_m1000_CP5_13TeV_P8]
-XSec = 0.0042595
-FilterEff = 1.0
-kFactor = 1.0
-XSecOrder = "LO"
-ProcessGroup = "Taustar"
-is_signal = true
-
-[Taustar_TauG_L10000_m1250_CP5_13TeV_P8]
-XSec = 0.0025543
-FilterEff = 1.0
-kFactor = 1.0
-XSecOrder = "LO"
-ProcessGroup = "Taustar"
-is_signal = true
-
-
-[Taustar_TauG_L10000_m1750_CP5_13TeV_P8]
-XSec = 0.00090690
-FilterEff = 1.0
-kFactor = 1.0
-XSecOrder = "LO"
-ProcessGroup = "Taustar"
-is_signal = true
-
-[Taustar_TauG_L10000_m2000_CP5_13TeV_P8]
-XSec = 0.00053708
-FilterEff = 1.0
-kFactor = 1.0
-XSecOrder = "LO"
-ProcessGroup = "Taustar"
-is_signal = true
-
-[Taustar_TauG_L10000_m2500_CP5_13TeV_P8]
-XSec = 0.00018693
-FilterEff = 1.0
-kFactor = 1.0
-XSecOrder = "LO"
-ProcessGroup = "Taustar"
-is_signal = true
-
-[Taustar_TauG_L10000_m3000_13TeV_P8]
-XSec = 0.000075051
-FilterEff = 1.0
-kFactor = 1.0
-XSecOrder = "LO"
-ProcessGroup = "Taustar"
-is_signal = true
-
-[Taustar_TauG_L10000_m3500_13TeV_P8]
-XSec = 0.000027155
-FilterEff = 1.0
-kFactor = 1.0
-XSecOrder = "LO"
-ProcessGroup = "Taustar"
-is_signal = true
-
-[Taustar_TauG_L10000_m4000_13TeV_P8]
-XSec = 0.0000098806
-FilterEff = 1.0
-kFactor = 1.0
-XSecOrder = "LO"
-ProcessGroup = "Taustar"
-is_signal = true
-
-
-[Taustar_TauG_L10000_m4500_13TeV_P8]
-XSec = 0.0000036315
 FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "LO"
