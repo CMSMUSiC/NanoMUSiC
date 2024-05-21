@@ -4,7 +4,7 @@
 #include <memory>
 
 #include "EventClass.hpp"
-#include "NanoEventClass.hpp"
+#include "SerializationUtils.hpp"
 
 ZToLepLepX::ZToLepLepX(enum Leptons lepton,
                        bool around_to_Z_mass,
@@ -77,7 +77,7 @@ ZToLepLepX::ZToLepLepX(enum Leptons lepton,
     for (std::size_t idx_var = 0; idx_var < total_variations; idx_var++)
     {
         std::string histo_name = "";
-        histo_name = NanoEventHisto::make_histogram_full_name(analysis_name,                        //
+        histo_name = SerializationUtils::make_histogram_full_name(analysis_name,                        //
                                                               process_group,                        //
                                                               xs_order,                             //
                                                               sample,                               //
@@ -89,7 +89,7 @@ ZToLepLepX::ZToLepLepX(enum Leptons lepton,
             TH1F(histo_name.c_str(), histo_name.c_str(), bins_limits.size() - 1, bins_limits.data());
         h_invariant_mass[idx_var].Sumw2();
 
-        histo_name = NanoEventHisto::make_histogram_full_name(analysis_name,                        //
+        histo_name = SerializationUtils::make_histogram_full_name(analysis_name,                        //
                                                               process_group,                        //
                                                               xs_order,                             //
                                                               sample,                               //

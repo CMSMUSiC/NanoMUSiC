@@ -81,14 +81,24 @@ def merge(
 
 
 @classification_app.command()
-def rootfy(
+def unwrap(
     config_file: str,
     inputs_dir: str = "classification_merged_results",
     validation_inputs_dir: str = "validation_merged_results",
 ):
     import classification
 
-    classification.serialize_to_root(config_file, inputs_dir,validation_inputs_dir)
+    classification.serialize_to_root(config_file, inputs_dir, validation_inputs_dir)
+
+
+@classification_app.command()
+def fold(
+    inputs_dir: str = "classification_root_files",
+    validation_inputs_dir: str = "validation_root_files",
+):
+    import classification
+
+    classification.make_distributions( inputs_dir, validation_inputs_dir)
 
 
 ############################################################################

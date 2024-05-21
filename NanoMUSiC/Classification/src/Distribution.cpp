@@ -15,12 +15,19 @@
 #include "TFile.h"
 #include "TKey.h"
 
-#include "fmt/format.h"
+#include "SerializationUtils.hpp"
 #include "indicators.hpp"
 #include "roothelpers.hpp"
 
 using namespace ROOT;
 using namespace ROOT::VecOps;
+
+struct ECHistogram
+{
+    std::string process_group;
+    std::string shift;
+    TH1F histogram;
+};
 
 Distribution::Distribution(const std::vector<std::string> &input_files,
                            const std::string &event_class_name,
@@ -32,7 +39,7 @@ Distribution::Distribution(const std::vector<std::string> &input_files,
 {
     TH1::AddDirectory(kFALSE);
 
-    const std::vector<TH1F> event_class_histograms;
+    auto event_class_histograms = std::vector<ECHistogram>();
     for (auto &&file : input_files)
     {
         auto root_file = std::unique_ptr<TFile>(TFile::Open(file.c_str()));
@@ -44,43 +51,31 @@ Distribution::Distribution(const std::vector<std::string> &input_files,
             if (name.find(m_event_class_name) != std::string::npos and
                 name.find(distribution_name) != std::string::npos)
             {
-                event_class_histograms.push_back(*(root_file->Get<TH1F>(name.c_str())));
+
+                const auto [class_name,    //
+                            process_group, //
+                            xs_order,      //
+                            sample,        //
+                            year,          //
+                            shift,         //
+                            histo_name] = SerializationUtils::split_histo_name(name);
+                event_class_histograms.push_back(ECHistogram{.process_group = process_group,
+                                                             .shift = shift,
+                                                             .histogram = *(root_file->Get<TH1F>(name.c_str()))});
             }
         }
-    }
-
-    if (distribution_name == "counts")
-    {
-        event_class_histograms = &ec.m_counts;
-    }
-    else if (distribution_name == "invariant_mass")
-    {
-        event_class_histograms = &ec.m_invariant_mass;
-    }
-    else if (distribution_name == "sum_pt")
-    {
-        event_class_histograms = &ec.m_sum_pt;
-    }
-    else if (distribution_name == "met")
-    {
-        event_class_histograms = &ec.m_met;
-    }
-    else
-    {
-        fmt::print(stderr, "ERROR: Could not build Distribution for the requested name.");
-        std::exit(EXIT_FAILURE);
     }
 
     // split the histograms per process group and shift
     std::unordered_map<std::string, std::unordered_map<std::string, std::vector<std::shared_ptr<TH1F>>>>
         unmerged_mc_histograms;
-    for (auto &&histo : *event_class_histograms)
+    for (const auto &histo : event_class_histograms)
     {
         if (unmerged_mc_histograms.find(histo.shift) == unmerged_mc_histograms.end())
         {
             unmerged_mc_histograms[histo.shift] = std::unordered_map<std::string, std::vector<std::shared_ptr<TH1F>>>();
         }
-        unmerged_mc_histograms[histo.shift][histo.process_group].push_back(histo.histogram);
+        unmerged_mc_histograms[histo.shift][histo.process_group].push_back(std::make_shared<TH1F>(histo.histogram));
     }
 
     // merge unmerged_mc_histograms per process group and shift
@@ -88,7 +83,7 @@ Distribution::Distribution(const std::vector<std::string> &input_files,
     {
         if (m_histogram_per_process_group_and_shift.find(shift) == m_histogram_per_process_group_and_shift.end())
         {
-            m_histogram_per_process_group_and_shift[shift] = std::unordered_map<std::string, std::shared_ptr<TH1F>>();
+            m_histogram_per_process_group_and_shift[shift] = std::unordered_map<std::string, TH1F>();
         }
 
         for (auto &&[pg, histos] : unmerged_mc_histograms[shift])
@@ -98,9 +93,8 @@ Distribution::Distribution(const std::vector<std::string> &input_files,
     }
 
     // build Data histogram and graph
-    m_total_data_histogram =
-        std::shared_ptr<TH1F>(static_cast<TH1F *>(event_class_histograms->at(0).histogram->Clone()));
-    m_total_data_histogram->Reset();
+    m_total_data_histogram = *(static_cast<TH1F *>(event_class_histograms.at(0).histogram.Clone()));
+    m_total_data_histogram.Reset();
     if (m_histogram_per_process_group_and_shift.at("Nominal").find("Data") !=
         m_histogram_per_process_group_and_shift.at("Nominal").end())
     {
@@ -111,7 +105,7 @@ Distribution::Distribution(const std::vector<std::string> &input_files,
     m_total_mc_histogram = ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("Nominal"), true);
 
     // number of bins
-    m_n_bins = m_total_mc_histogram->GetNbinsX();
+    m_n_bins = m_total_mc_histogram.GetNbinsX();
 
     // statistical uncertainties - uncorrelated bewtween processes
     m_statistical_uncert = get_statistical_uncert();
@@ -168,19 +162,19 @@ auto Distribution::get_systematics_uncert(
                                     sample,        //
                                     year,          //
                                     shift,         //
-                                    histo_name] = NanoEventHisto::split_histo_name(unmerged_histos[i]->GetName());
+                                    histo_name] = SerializationUtils::split_histo_name(unmerged_histos[i]->GetName());
 
                         if (xs_order == "LO")
                         {
-                            xsec_order_uncert_LO_samples.at(pg) += ROOTHelpers::Counts(unmerged_histos[i]) * 0.5;
+                            xsec_order_uncert_LO_samples.at(pg) += ROOTHelpers::Counts(*unmerged_histos[i]) * 0.5;
                         }
                         else
                         {
                             auto uncert_qcd_scale = Uncertanties::AbsDiffAndSymmetrize(
-                                unmerged_histos[i],
-                                unmerged_mc_histograms.at("QCDScale_Up").at(pg).at(i),
-                                unmerged_mc_histograms.at("QCDScale_Down").at(pg).at(i));
-                            auto nominal_counts = ROOTHelpers::Counts(unmerged_histos[i]);
+                                *unmerged_histos[i],
+                                *unmerged_mc_histograms.at("QCDScale_Up").at(pg).at(i),
+                                *unmerged_mc_histograms.at("QCDScale_Down").at(pg).at(i));
+                            auto nominal_counts = ROOTHelpers::Counts(*unmerged_histos[i]);
 
                             for (std::size_t i = 0; i < uncert_qcd_scale.size(); i++)
                             {
@@ -371,9 +365,12 @@ auto Distribution::get_systematics_uncert(
     );
 }
 
-auto Distribution::serialize() const -> std::string
+auto Distribution::save(const std::string &output_file) const -> std::string
 {
-    return fmt::format("EC: {}\nDist: {}", m_event_class_name, m_distribution_name);
+    auto output_root_file = std::unique_ptr<TFile>(TFile::Open(output_file.c_str(), "RECREATE"));
+    output_root_file->WriteObject(this, fmt::format("[{}]_[{}]", m_event_class_name, m_distribution_name).c_str());
+
+    return fmt::format("EC: {} - Dist: {}", m_event_class_name, m_distribution_name);
 }
 
 auto Distribution::get_integral_pvalue_props() const -> IntegralPValueProps
@@ -393,19 +390,19 @@ auto Distribution::get_integral_pvalue_props() const -> IntegralPValueProps
     {
         if (pg != "Data")
         {
-            total_per_process_group.push_back(hist->GetBinContent(1));
+            total_per_process_group.push_back(hist.GetBinContent(1));
         }
     }
     return IntegralPValueProps{
-        .total_data = m_total_data_histogram->GetBinContent(1), //
-        .total_mc = m_total_mc_histogram->GetBinContent(1),     //
-        .sigma_total = m_total_uncert.at(0),                    //
-        .sigma_stat = m_statistical_uncert.at(0),               //
-        .total_per_process_group = {}                           //
+        .total_data = m_total_data_histogram.GetBinContent(1), //
+        .total_mc = m_total_mc_histogram.GetBinContent(1),     //
+        .sigma_total = m_total_uncert.at(0),                   //
+        .sigma_stat = m_statistical_uncert.at(0),              //
+        .total_per_process_group = {}                          //
     };
 }
 
-auto Distribution::get_plot_props() const -> PlotProps
+auto Distribution::get_plot_props() -> PlotProps
 {
     auto min_max = ROOTHelpers::GetMinMax(m_total_data_histogram, m_total_mc_histogram);
     auto [_min, _max] = min_max;
@@ -422,14 +419,14 @@ auto Distribution::get_plot_props() const -> PlotProps
     auto y_min = ROOTHelpers::GetYMin(m_total_mc_histogram, m_scale_to_area, min_max);
     auto y_max = ROOTHelpers::GetYMax(m_total_data_histogram, m_total_mc_histogram, m_scale_to_area, min_max);
 
-    auto mc_histograms = m_histogram_per_process_group_and_shift.at("Nominal");
-    if (m_scale_to_area)
+    std::unordered_map<std::string, std::shared_ptr<TH1F>> mc_histograms;
+    for (auto &[pg, hist] : m_histogram_per_process_group_and_shift.at("Nominal"))
     {
-        for (auto &[pg, hist] : mc_histograms)
+        if (m_scale_to_area)
         {
-            // hist->Print("all");
-            hist->Scale(min_bin_width, "width");
+            hist.Scale(min_bin_width, "width");
         }
+        mc_histograms[pg] = std::make_shared<TH1F>(hist);
     }
 
     return PlotProps{
@@ -439,7 +436,7 @@ auto Distribution::get_plot_props() const -> PlotProps
         .x_max = max,
         .y_min = y_min,
         .y_max = y_max,
-        .total_data_histogram = m_total_data_histogram,
+        .total_data_histogram = std::make_shared<TH1F>(m_total_data_histogram),
         .data_graph = data_graph,
         .mc_histograms = mc_histograms,
         .mc_uncertainty = mc_uncert,

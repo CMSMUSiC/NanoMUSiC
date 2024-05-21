@@ -1,3 +1,6 @@
+#ifndef PDF_ALPHA_S_WEIGHT
+#define PDF_ALPHA_S_WEIGHT
+
 #include "Shifts.hpp"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -277,3 +280,4 @@ inline auto get_pdf_alpha_s_weights(const Shifts::Variations &shift,            
 
     return 1.;
 }
+#endif

@@ -1,4 +1,5 @@
 import ray
+import fnmatch
 from multiprocessing import Pool
 from itertools import product
 import glob
@@ -726,5 +727,116 @@ def serialize_to_root(
 
     with open("classification_root_files/classes_to_files.json", "w") as json_file:
         json.dump(dict(classes_to_files), json_file, indent=4)
+
     with open("validation_root_files/validation_to_files.json", "w") as json_file:
         json.dump(dict(validation_to_files), json_file, indent=4)
+
+
+def make_distributions_task(args):
+    (
+        files_to_process,
+        analysis_name,
+        distribution_name,
+        allow_rescale_by_width,
+        year,
+        output_file_path,
+    ) = args
+
+    distribution = clft.Distribution(
+        files_to_process, analysis_name, distribution_name, allow_rescale_by_width
+    )
+    distribution.save(output_file_path)
+
+    return analysis_name, distribution_name, year
+
+
+def make_distributions(
+    inputs_dir: str,
+    validation_inputs_dir: str,
+):
+    with open("{}/classes_to_files.json".format(inputs_dir), "r") as file:
+        classes_to_files = json.load(file)
+
+    with open("{}/validation_to_files.json".format(validation_inputs_dir), "r") as file:
+        validation_to_files = json.load(file)
+
+    os.system("rm -rf classification_distribution_files")
+    os.system("mkdir -p classification_distribution_files")
+    os.system("rm -rf validation_distribution_files")
+    os.system("mkdir -p validation_distribution_files")
+
+    output_dir = "distribution_files"
+
+    def get_distributions(analysis_name):
+        if analysis_name.startswith("EC_"):
+            return [
+                ("h_counts", False),
+                ("h_sum_pt", True),
+                ("h_invariant_mass", True),
+                ("h_met", True),
+            ]
+
+        print("ERROR: Could not find distributions for {}.".format(analysis_name))
+        sys.exit(-1)
+
+    def make_distribution_jobs(analysis_names):
+        distribution_jobs = []
+
+        for analysis, year in product(analysis_names, Years.years_to_plot()):
+            files_to_process = fnmatch.filter(
+                analysis_names[analysis], "{}.root".format(year)
+            )
+
+            for dist, allow_rescale_by_width in get_distributions(analysis):
+                distribution_jobs.append(
+                    (
+                        files_to_process,
+                        analysis,
+                        dist,
+                        allow_rescale_by_width,
+                        year,
+                        "{}/distribution_{}_{}_{}.root".format(
+                            output_dir,
+                            analysis,
+                            dist,
+                            Years.years_to_plot()[year]["name"],
+                        ),
+                    )
+                )
+
+        return distribution_jobs
+
+    print("Building distributions from Classification...")
+    distribution_jobs_classification = make_distribution_jobs(classes_to_files)
+    with Pool() as p:
+        with Progress() as progress:
+            task = progress.add_task(
+                "Folding [Classification] ...",
+                total=len(distribution_jobs_classification),
+            )
+            for job in p.imap_unordered(
+                make_distributions_task, distribution_jobs_classification
+            ):
+                analysis, distribution_name, year = job
+                progress.console.print(
+                    "Done: {} - {} - {}".format(analysis, distribution_name, year)
+                )
+
+                progress.advance(task)
+
+    distribution_jobs_classification = make_distribution_jobs(validation_to_files)
+    with Pool() as p:
+        with Progress() as progress:
+            task = progress.add_task(
+                "Folding [Classification] ...",
+                total=len(distribution_jobs_classification),
+            )
+            for job in p.imap_unordered(
+                make_distributions_task, distribution_jobs_classification
+            ):
+                analysis, distribution_name, year = job
+                progress.console.print(
+                    "Done: {} - {} - {}".format(analysis, distribution_name, year)
+                )
+
+                progress.advance(task)

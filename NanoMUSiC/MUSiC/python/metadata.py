@@ -17,6 +17,16 @@ class Years(str, Enum):
     Run2017 = "2017"
     Run2018 = "2018"
 
+    @staticmethod
+    def years_to_plot():
+        return {
+            "2016*": {"name": "2016", "lumi": "36.3"},  #
+            "2017": {"name": "2017", "lumi": "41.5"},  #
+            "2018": {"name": "2018", "lumi": "59.8"},  #
+            # "[2017,2018]": {"name": "2017+2018", "lumi": "101"},  #
+            "*": {"name": "Run2", "lumi": "138"},
+        }
+
 
 class Lumi:
     lumi: dict[str, float] = {
