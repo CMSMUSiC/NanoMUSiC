@@ -10,7 +10,7 @@ from condor_manager import CondorJob, CondorManager
 import os
 import classification_imp as clft
 import sys
-from metadata import Lumi, Years, Process, load_toml
+from metadata import Lumi, Years, Process, load_toml, get_distributions
 from rich.progress import Progress
 import hashlib
 import subprocess
@@ -177,8 +177,7 @@ def run_classification(
             event_classes,
             validation_container,
             first_event,
-            # last_event,
-            10,
+            last_event,
             debug,
         )
         _output_file = "{}_{}.root".format(output_file.split(".root")[0], idx)
@@ -548,9 +547,7 @@ def serialize_to_root_task(args):
 
 
 def serialize_to_root(
-    config_file_path: str,
-    inputs_dir: str,
-    validation_inputs_dir: str,
+    config_file_path: str, inputs_dir: str, validation_inputs_dir: str, num_cpus: int
 ):
     config_file = load_toml(config_file_path)
 
@@ -589,7 +586,7 @@ def serialize_to_root(
     print("Serializing Classification results to ROOT ...")
     classes_to_files = defaultdict(list)
     validation_to_files = defaultdict(list)
-    with Pool() as p:
+    with Pool(num_cpus) as p:
         with Progress() as progress:
             task = progress.add_task("Serializing ...", total=len(serialization_jobs))
             for job in p.imap_unordered(serialize_to_root_task, serialization_jobs):
@@ -621,7 +618,7 @@ def make_distributions_task(args: tuple[list[str], str, str, bool, str, str]):
     ) = args
 
     distribution = clft.Distribution(
-        files_to_process, analysis_name, distribution_name, allow_rescale_by_width
+        files_to_process, analysis_name, distribution_name, year, allow_rescale_by_width
     )
     clft.Distribution.save(distribution, output_file_path)
 
@@ -631,7 +628,7 @@ def make_distributions_task(args: tuple[list[str], str, str, bool, str, str]):
 def make_distributions(
     inputs_dir: str,
     validation_inputs_dir: str,
-    class_name_filter_patterns: str,
+    class_name_filter_patterns: list[str],
     num_cpus: int,
 ) -> None:
     with open("{}/classes_to_files.json".format(inputs_dir), "r") as file:
@@ -644,21 +641,6 @@ def make_distributions(
     os.system("mkdir -p classification_distribution_files")
     os.system("rm -rf validation_distribution_files")
     os.system("mkdir -p validation_distribution_files")
-
-    def get_distributions(analysis_name: str) -> list[tuple[str, bool]]:
-        if analysis_name.startswith("EC_"):
-            return [
-                ("h_counts", False),
-                ("h_sum_pt", True),
-                ("h_invariant_mass", True),
-                ("h_met", True),
-            ]
-
-        return [
-            ("h_invariant_mass", True),
-        ]
-        # print("ERROR: Could not find distributions for {}.".format(analysis_name))
-        # sys.exit(-1)
 
     def filter_classes(class_name, patterns):
         return any(fnmatch.fnmatch(class_name, pattern) for pattern in patterns)
@@ -723,6 +705,7 @@ def make_distributions(
 
                     progress.advance(task)
 
+    print("Building distributions from Validation...")
     distribution_jobs_validation = make_distribution_jobs(
         validation_to_files, validation_inputs_dir, "validation_distribution_files"
     )

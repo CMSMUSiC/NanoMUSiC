@@ -1,26 +1,19 @@
-#!/usr/bin/env python3
-
-import ROOT
+import os
 import sys
 import tdrstyle
+import fnmatch
 import atlasplots as aplt
 from colors import PROCESS_GROUP_STYLES
 from decimal import Decimal
-import os
 import json
 from multiprocessing import Pool
 from pvalue import get_integral_pvalue
-from ec_tools import get_source_files, to_root_latex
+from tools import to_root_latex
 from rich.progress import Progress, track
+from metadata import Years
+import ROOT
 
-
-years_glob = {
-    "2016*": {"name": "2016", "lumi": "36.3"},  #
-    "2017": {"name": "2017", "lumi": "41.5"},  #
-    "2018": {"name": "2018", "lumi": "59.8"},  #
-    # "[2017,2018]": {"name": "2017+2018", "lumi": "101"},  #
-    "*": {"name": "", "lumi": "138"},
-}
+from ROOT import TFile, THStack, gSystem, TLine, gPad, gStyle, Distribution
 
 
 def make_plot_task(args):
@@ -43,12 +36,12 @@ def make_plot(
     output_path,
     year,
     p_value,
-):
+) -> str:
     # print("--> ", class_name, distribution_name, x_min, x_max, y_min, y_max)
     # skip MET histogram for non-MET classes
     if distribution_name == "met" and "MET" not in class_name:
         print(f"[INFO] Skipping MET distribution for {class_name} ...")
-        return
+        return "{} - {} - {}".format(class_name, distribution_name, year)
 
     # Create a figure and axes
     fig, (ax1, ax2) = aplt.ratio_plot(
@@ -125,7 +118,7 @@ def make_plot(
         key=lambda pg: mc_hists[pg].Integral(),
     )
 
-    bkg_stack = ROOT.THStack("bkg", "")
+    bkg_stack = THStack("bkg", "")
     for pg in mc_hists_keys_sorted:
         # mc_hists[pg].Print("all")
         mc_hists[pg].SetFillColor(PROCESS_GROUP_STYLES[pg].color)
@@ -148,7 +141,7 @@ def make_plot(
     ax2.set_xlim(x_min, x_max)
 
     # Draw line at y=1 in ratio panel
-    line = ROOT.TLine(ax1.get_xlim()[0], 1, ax1.get_xlim()[1], 1)
+    line = TLine(ax1.get_xlim()[0], 1, ax1.get_xlim()[1], 1)
     ax2.plot(line)
 
     ax2.plot(ratio_mc_error, "2", fillcolor=12, fillstyle=3254, linewidth=0)
@@ -179,8 +172,8 @@ def make_plot(
             loc=(
                 0.6,
                 0.1,
-                1 - ROOT.gPad.GetRightMargin(),
-                1 - ROOT.gPad.GetTopMargin() - 0.1,
+                1 - gPad.GetRightMargin(),
+                1 - gPad.GetTopMargin() - 0.1,
             ),
             textsize=14,
         )
@@ -200,18 +193,22 @@ def make_plot(
 
         legend.AddEntry(mc_uncertainty, "Bkg. Uncert.", "f")
 
+    year_label = year
+    if year_label == "Run2":
+        year_label = ""
+
     # add the cms label
     tdrstyle.CMS_lumi(
         fig.canvas,
         4,
         0,
         "",
-        years_glob[year]["lumi"],
-        years_glob[year]["name"],
+        Years.get_lumi(year),
+        year_label,
     )
 
     # Save the plot
-    output_file_path = f"{output_path}/{class_name}/{class_name}_{distribution_name}{(lambda x: f'_{x}' if x!=''  else '') (years_glob[year]['name'])}"
+    output_file_path = f"{output_path}/{class_name}/{class_name}_{distribution_name}{(lambda x: f'_{x}' if x!='' else '_Run2') (year_label)}"
     output_file_path = output_file_path.replace("+", "_")
 
     fig.savefig(f"{output_file_path}.png")
@@ -222,113 +219,114 @@ def make_plot(
     return "{} - {} - {}".format(class_name, distribution_name, year)
 
 
-def ec_plotter(
-    input_dir: str, patterns: list[str], output_dir: str = "classification_plots"
+def get_distribution(file_path: str) -> Distribution:
+    root_file = TFile.Open(file_path)
+    return root_file.Get("distribution")
+
+
+def plotter(
+    input_dir: str,
+    patterns: list[str],
+    output_dir: str = "classification_plots",
+    num_cpus: int = 120,
 ):
     aplt.set_atlas_style()
     tdrstyle.setTDRStyle()
-    ROOT.gStyle.SetMarkerSize(0.5)
-    ROOT.gStyle.SetLabelSize(25, "XYZ")
+    gStyle.SetMarkerSize(0.5)
+    gStyle.SetLabelSize(25, "XYZ")
 
-    for year in years_glob:
-        input_files = get_source_files(input_dir, year)
-        print("Creating EC Collection ...")
-        ec_collection = ROOT.NanoEventClassCollection(
-            input_files,
-            patterns,
-            # # ["EC_2Muon*", "EC_2Electron*"],
-            # [
-            #     # "*",
-            #     # # "EC_2Muon*",
-            #     # "EC_1Electron+NJet",
-            #     # "EC_2Muon_1MET",
-            #     # "EC_2Muon_2Tau_1MET",
-            #     # "EC_2Muon_1Photon_1bJet_1MET+X",
-            #     # "EC_2Muon_1Electron_3bJet+X",
-            #     # "EC_2Muon+X",
-            #     # "EC_4Muon",
-            #     # "EC_4Electron",
-            #     # "EC_2Muon_2Electron",
-            #     # "EC_1Muon_1Electron+1MET",
-            #     # "EC_1Muon_2Jet",
-            #     # "EC_1Muon+X",
-            #     # "EC_1Electron+X",
-            #     # "EC_1Photon+X",
-            #     # "EC_1Muon_2bJet",
-            #     # "EC_1Muon_1Jet",
-            #     # "EC_1Electron_2Jet",
-            #     # "EC_2Muon+NJet",
-            #     "EC_1Electron_2Tau_1Jet_2bJet_1MET",
-            #     "EC_2Muon_1Tau_2Jet_1bJet_1MET+NJet",
-            #     # "EC_2Muon_2Tau_1MET",
-            #     # "EC_2Muon_1Electron_1Tau_2Jet_1MET+X",
-            # ],
-        )
+    def make_distribution_paths(
+        inputs_dir: str, patterns: list[str], year: str
+    ) -> list[str]:
+        distribution_paths: list[str] = []
+        for root, _, files in os.walk(inputs_dir):
+            for file in files:
+                if (
+                    any(
+                        fnmatch.fnmatch(file, "*" + pattern.replace("+", "_") + "*")
+                        for pattern in patterns
+                    )
+                    and "{}.root".format(Years.years_to_plot()[year]["name"]) in file
+                ):
+                    distribution_paths.append(os.path.join(root, file))
+        return distribution_paths
 
-        print("Building distributions ...")
-        plot_props = []
-        plots_data = {}
-        distributions = ROOT.distribution_factory(ec_collection, True)
-
-        if len(distributions) == 0:
-            print("ERROR: No matching classes were found.")
+    for year in Years.years_to_plot():
+        distribution_files = make_distribution_paths(input_dir, patterns, year)
+        if len(distribution_files) == 0:
+            print("WARNING: No distribution matches the requirements.")
             sys.exit(1)
 
-        for dist in track(distributions):
-            plot = dist.get_plot_props()
-            if dist.m_distribution_name == "counts":
-                p_value_props = dist.get_integral_pvalue_props()
-                p_value_data = get_integral_pvalue(
-                    p_value_props.total_data,
-                    p_value_props.total_mc,
-                    p_value_props.sigma_total,
-                    p_value_props.sigma_stat,
-                    p_value_props.total_per_process_group,
-                )
-                # print(p_value_data)
-                p_value = p_value_data["p-value"]
-                veto_reason = p_value_data["Veto Reason"]
-
-                # json for counts plot
-                plots_data[plot.class_name] = {}
-                plots_data[plot.class_name]["data_count"] = (
-                    plot.total_data_histogram.GetBinContent(1)
-                )
-                plots_data[plot.class_name]["data_uncert"] = (
-                    plot.total_data_histogram.GetBinError(1)
-                )
-                plots_data[plot.class_name]["mc"] = {}
-                mc_hists = {}
-                for pg, hist in plot.mc_histograms:
-                    mc_hists[pg] = hist
-                mc_hists_keys_sorted = sorted(
-                    filter(lambda pg: pg != "Data", mc_hists),
-                    key=lambda pg: mc_hists[pg].Integral(),
-                )
-                for pg in mc_hists_keys_sorted:
-                    plots_data[plot.class_name]["mc"][pg] = mc_hists[pg].GetBinContent(
-                        1
+        plots_data = {}
+        for f in track(
+            distribution_files,
+            description="Calculating p-values for year {} [{} distributions] ...".format(
+                Years.years_to_plot()[year]["name"], len(distribution_files)
+            ),
+        ):
+            if "counts" in f:
+                dist = get_distribution(f)
+                plot = dist.plot_props
+                if dist.m_distribution_name == "counts":
+                    p_value_props = dist.integral_pvalue_props
+                    p_value_data = get_integral_pvalue(
+                        p_value_props.total_data,
+                        p_value_props.total_mc,
+                        p_value_props.sigma_total,
+                        p_value_props.sigma_stat,
+                        p_value_props.total_per_process_group,
                     )
-                plots_data[plot.class_name]["mc_uncert"] = (
-                    plot.mc_uncertainty.GetErrorY(0)
-                )
-                plots_data[plot.class_name]["p_value"] = p_value
-                plots_data[plot.class_name]["veto_reason"] = veto_reason
+                    # print(p_value_data)
+                    p_value = p_value_data["p-value"]
+                    veto_reason = p_value_data["Veto Reason"]
+
+                    # json for counts plot
+                    plots_data[plot.class_name] = {}
+                    plots_data[plot.class_name]["data_count"] = (
+                        plot.total_data_histogram.GetBinContent(1)
+                    )
+                    plots_data[plot.class_name]["data_uncert"] = (
+                        plot.total_data_histogram.GetBinError(1)
+                    )
+                    plots_data[plot.class_name]["mc"] = {}
+                    mc_hists = {}
+                    for pg, hist in plot.mc_histograms:
+                        mc_hists[pg] = hist
+                    mc_hists_keys_sorted = sorted(
+                        filter(lambda pg: pg != "Data", mc_hists),
+                        key=lambda pg: mc_hists[pg].Integral(),
+                    )
+                    for pg in mc_hists_keys_sorted:
+                        plots_data[plot.class_name]["mc"][pg] = mc_hists[
+                            pg
+                        ].GetBinContent(1)
+                    plots_data[plot.class_name]["mc_uncert"] = (
+                        plot.mc_uncertainty.GetErrorY(0)
+                    )
+                    plots_data[plot.class_name]["p_value"] = p_value
+                    plots_data[plot.class_name]["veto_reason"] = veto_reason
 
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
+
         with open(
             "{}/plot_data_{}.json".format(
-                output_dir, years_glob[year]["name"].replace("+", "_")
+                output_dir, Years.years_to_plot()[year]["name"].replace("+", "_")
             ),
             "w",
             encoding="utf-8",
         ) as f:
             json.dump(plots_data, f, ensure_ascii=False, indent=4)
 
-        distributions = ROOT.distribution_factory(ec_collection, False)
-        for dist in track(distributions):
-            plot = dist.get_plot_props()
+        plot_props = []
+        for f in track(
+            distribution_files,
+            description="Building plot jobs for year {} [{} distributions] ...".format(
+                Years.years_to_plot()[year]["name"], len(distribution_files)
+            ),
+        ):
+            dist = get_distribution(f)
+            plot = dist.plot_props
             plot_props.append(
                 (
                     plot.class_name,
@@ -344,7 +342,7 @@ def ec_plotter(
                     plot.ratio_graph,
                     plot.ratio_mc_error_band,
                     output_dir,
-                    year,
+                    plot.year_to_plot,
                     plots_data[plot.class_name]["p_value"],
                 )
             )
@@ -354,44 +352,24 @@ def ec_plotter(
             if not os.path.exists("{}/{}".format(output_dir, ec_nice_name)):
                 os.makedirs("{}/{}".format(output_dir, ec_nice_name))
 
-            # make_plot(
-            #     (
-            #         plot.class_name,
-            #         plot.distribution_name,
-            #         plot.x_min,
-            #         plot.x_max,
-            #         plot.y_min,
-            #         plot.y_max,
-            #         plot.total_data_histogram.GetBinContent(1),
-            #         plot.data_graph,
-            #         plot.mc_histograms,
-            #         plot.mc_uncertainty,
-            #         plot.ratio_graph,
-            #         plot.ratio_mc_error_band,
-            #         output_dir,
-            #         year,
-            #     )
-            # )
-
-        print()
-
-        print("Saving plots ...")
-        with Pool(min(len(plot_props), 124)) as p:
+        print("Saving plots for year {}...".format(Years.years_to_plot()[year]["name"]))
+        with Pool(min(len(plot_props), num_cpus)) as p:
             with Progress() as progress:
-                task = progress.add_task("Plotting ...", total=len(plot_props))
+                task = progress.add_task(
+                    "Saving [{} - {} plots]...".format(
+                        Years.years_to_plot()[year]["name"], len(plot_props)
+                    ),
+                    total=len(plot_props),
+                )
                 for job in p.imap_unordered(make_plot_task, plot_props):
                     progress.console.print("Done: {}".format(job))
                     progress.advance(task)
 
     print("Copying index.php ...")
     os.system(
-        r"find ___OUTPUT_DIR___/ -type d -exec cp $MUSIC_BASE/NanoMUSiC/NanoEventClass/scripts/index.php {} \;".replace(
+        r"find ___OUTPUT_DIR___/ -type d -exec cp $MUSIC_BASE/NanoMUSiC/Plotter/assets/index.php {} \;".replace(
             "___OUTPUT_DIR___", output_dir
         )
     )
 
     print("Done.")
-
-
-if __name__ == "__main__":
-    ec_plotter()

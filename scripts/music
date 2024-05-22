@@ -80,10 +80,13 @@ def unwrap(
     config_file: str,
     inputs_dir: str = "classification_merged_results",
     validation_inputs_dir: str = "validation_merged_results",
+    num_cpus: int = 120,
 ):
     import classification
 
-    classification.serialize_to_root(config_file, inputs_dir, validation_inputs_dir)
+    classification.serialize_to_root(
+        config_file, inputs_dir, validation_inputs_dir, num_cpus
+    )
 
 
 @classification_app.command()
@@ -100,6 +103,20 @@ def fold(
     )
 
 
+@classification_app.command()
+def unwrap_and_fold(
+    config_file: str,
+    unwrap_inputs_dir: str = "classification_merged_results",
+    unwrap_validation_inputs_dir: str = "validation_merged_results",
+    fold_inputs_dir: str = "classification_root_files",
+    fold_validation_inputs_dir: str = "validation_root_files",
+    filters: list[str] = ["*"],
+    num_cpus: int = 120,
+):
+    unwrap(config_file, unwrap_inputs_dir, unwrap_validation_inputs_dir, num_cpus)
+    fold(fold_inputs_dir, fold_validation_inputs_dir, filters, num_cpus)
+
+
 ############################################################################
 ############################################################################
 # Plotter
@@ -110,18 +127,23 @@ plot_app = typer.Typer()
 
 @plot_app.command()
 def distribution(
-    input_dir: str,
-    patterns: list[str] = ["*"],
+    input_dir: str="classification_distribution_files",
     output_dir: str = "classification_plots",
+    validation_input_dir: str="validation_distribution_files",
+    validation_output_dir: str = "validation_plots",
+    filters:list[str]=["*"],
+    validation_filters:list[str]=["*"],
+    num_cpus:int=120
 ):
-    from ec_plotter import ec_plotter
+    from plotter import plotter
 
-    ec_plotter(input_dir, patterns, output_dir)
+    plotter(input_dir, filters, output_dir, num_cpus)
+    plotter(validation_input_dir, validation_filters, validation_output_dir, num_cpus)
 
 
-@plot_app.command()
-def summary(config: str):
-    pass
+# @plot_app.command()
+# def summary(config: str):
+#     pass
 
 
 ############################################################################
@@ -132,14 +154,14 @@ def summary(config: str):
 scan_app = typer.Typer()
 
 
-@scan_app.command()
-def integral(config: str):
-    pass
-
-
-@scan_app.command()
-def scan(config: str):
-    pass
+# @scan_app.command()
+# def integral(config: str):
+#     pass
+#
+#
+# @scan_app.command()
+# def scan(config: str):
+#     pass
 
 
 ############################################################################

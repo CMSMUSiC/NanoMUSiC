@@ -18,7 +18,7 @@ class Years(str, Enum):
     Run2018 = "2018"
 
     @staticmethod
-    def years_to_plot():
+    def years_to_plot() -> dict[str, dict[str, str]]:
         return {
             "2016*": {"name": "2016", "lumi": "36.3"},  #
             "2017": {"name": "2017", "lumi": "41.5"},  #
@@ -26,6 +26,16 @@ class Years(str, Enum):
             # "[2017,2018]": {"name": "2017+2018", "lumi": "101"},  #
             "*": {"name": "Run2", "lumi": "138"},
         }
+
+    @staticmethod
+    def get_lumi(year: str) -> str:
+        year_to_lumi = {
+            "2016": "36.3",  #
+            "2017": "41.5",  #
+            "2018": "59.8",  #
+            "Run2": "138",
+        }
+        return year_to_lumi[year]
 
 
 class Lumi:
@@ -81,3 +91,19 @@ class Process(BaseModel):
             ]
             random.shuffle(files)
             return files
+
+
+def get_distributions(analysis_name: str) -> list[tuple[str, bool]]:
+    if analysis_name.startswith("EC_"):
+        return [
+            ("counts", False),
+            ("sum_pt", True),
+            ("invariant_mass", True),
+            ("met", True),
+        ]
+
+    return [
+        ("invariant_mass", True),
+    ]
+    # print("ERROR: Could not find distributions for {}.".format(analysis_name))
+    # sys.exit(-1)

@@ -192,10 +192,15 @@ PYBIND11_MODULE(classification_imp, m)
             "ouput_file_path"_a);
 
     py::class_<Distribution>(m, "Distribution")
-        .def(py::init<const std::vector<std::string> &, const std::string &, const std::string &, bool>(),
+        .def(py::init<const std::vector<std::string> &,
+                      const std::string &,
+                      const std::string &,
+                      const std::string &,
+                      bool>(),
              "input_files"_a,
              "event_class_name"_a,
              "distribution_name"_a,
+             "year_to_plot"_a,
              "allow_rescale_by_width"_a)
         // .def("save", &Distribution::save, "output_file"_a);
         .def_static(
@@ -203,8 +208,7 @@ PYBIND11_MODULE(classification_imp, m)
             [](Distribution &dist, const std::string &ouput_file_path) -> void
             {
                 auto output_root_file = std::unique_ptr<TFile>(TFile::Open(ouput_file_path.c_str(), "RECREATE"));
-                auto res = output_root_file->WriteObject(
-                    &dist, fmt::format("[{}]_[{}]", dist.m_event_class_name, dist.m_distribution_name).c_str());
+                auto res = output_root_file->WriteObject(&dist, "distribution");
 
                 if (res > 0)
                 {

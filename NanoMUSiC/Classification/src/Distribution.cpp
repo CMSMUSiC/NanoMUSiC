@@ -37,10 +37,12 @@ struct ECHistogram
 Distribution::Distribution(const std::vector<std::string> &input_files,
                            const std::string &event_class_name,
                            const std::string &distribution_name,
+                           const std::string &year_to_plot,
                            bool allow_rescale_by_width)
     : m_scale_to_area(distribution_name != "counts" and allow_rescale_by_width),
       m_distribution_name(distribution_name),
-      m_event_class_name(event_class_name)
+      m_event_class_name(event_class_name),
+      m_year_to_plot(year_to_plot)
 {
     TH1::AddDirectory(kFALSE);
 
@@ -124,6 +126,11 @@ Distribution::Distribution(const std::vector<std::string> &input_files,
     // total uncertainties
     m_total_uncert =
         ROOT::VecOps::sqrt(ROOT::VecOps::pow(m_statistical_uncert, 2.) + ROOT::VecOps::pow(m_systematics_uncert, 2.));
+
+    // plot properties
+    plot_props = make_plot_props();
+    if (m_distribution_name=="counts"){
+    integral_pvalue_props = make_integral_pvalue_props();}
 }
 
 auto Distribution::get_statistical_uncert() const -> RVec<double>
@@ -395,7 +402,7 @@ auto Distribution::get_systematics_uncert(
 //     return fmt::format("EC: {} - Dist: {}", m_event_class_name, m_distribution_name);
 // }
 
-auto Distribution::get_integral_pvalue_props() const -> IntegralPValueProps
+auto Distribution::make_integral_pvalue_props() const -> IntegralPValueProps
 {
     //  Sanity check
     if (m_distribution_name != "counts")
@@ -408,7 +415,8 @@ auto Distribution::get_integral_pvalue_props() const -> IntegralPValueProps
     }
 
     auto total_per_process_group = std::vector<double>();
-    for (const auto &[pg, hist] : m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>( Shifts::Variations::Nominal )))
+    for (const auto &[pg, hist] :
+         m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::Nominal)))
     {
         if (pg != "Data")
         {
@@ -424,7 +432,7 @@ auto Distribution::get_integral_pvalue_props() const -> IntegralPValueProps
     };
 }
 
-auto Distribution::get_plot_props() -> PlotProps
+auto Distribution::make_plot_props() -> PlotProps
 {
     auto min_max = ROOTHelpers::GetMinMax(m_total_data_histogram, m_total_mc_histogram);
     auto [_min, _max] = min_max;
@@ -442,7 +450,8 @@ auto Distribution::get_plot_props() -> PlotProps
     auto y_max = ROOTHelpers::GetYMax(m_total_data_histogram, m_total_mc_histogram, m_scale_to_area, min_max);
 
     std::unordered_map<std::string, TH1F> mc_histograms;
-    for (auto &[pg, hist] : m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>( Shifts::Variations::Nominal )))
+    for (auto &[pg, hist] :
+         m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::Nominal)))
     {
         if (m_scale_to_area)
         {
@@ -454,6 +463,7 @@ auto Distribution::get_plot_props() -> PlotProps
     return PlotProps{
         .class_name = m_event_class_name,
         .distribution_name = m_distribution_name,
+        .year_to_plot = m_year_to_plot,
         .x_min = min,
         .x_max = max,
         .y_min = y_min,

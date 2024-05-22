@@ -1,16 +1,20 @@
 import ROOT
-import classification_imp as clft
 from glob import glob
 import sys
+import os
 
 ROOT.gErrorIgnoreLevel = 6000
-print("Loading NanoEventClass ...")
-ROOT.gSystem.AddIncludePath("-I../NanoMUSiC/NanoEventClass/include")
 
+ROOT.gSystem.AddIncludePath(
+    "-I{}/NanoMUSiC/Classification/include".format(os.getenv("MUSIC_BASE"))
+)
+ROOT.gSystem.AddIncludePath(
+    "-I{}/NanoMUSiC/MUSiC/include".format(os.getenv("MUSIC_BASE"))
+)
 
-if ROOT.gSystem.Load("libNanoEventClass") != 0:
+if ROOT.gSystem.Load("classification_imp.cpython-39-x86_64-linux-gnu.so") != 0:
     sys.exit(
-        'ERROR: Could not load NanoEventClass shared library. Did you "ninja install"?'
+        'ERROR: Could not load Classification shared library. Did you "ninja install"?'
     )
 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
@@ -18,15 +22,6 @@ ROOT.TH1.AddDirectory(False)
 ROOT.TDirectory.AddDirectory(False)
 ROOT.gROOT.SetBatch(True)
 ROOT.EnableThreadSafety()
-
-
-def get_source_files(path, year_pattern):
-    return list(
-        filter(
-            lambda f: ("cutflow" not in f),
-            glob(f"{path}/*{year_pattern}.root"),
-        )
-    )
 
 
 def to_root_latex(class_name):

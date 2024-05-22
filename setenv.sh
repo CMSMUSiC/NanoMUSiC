@@ -20,15 +20,13 @@ export MUSIC_BASE=$SCRIPTDIR
 # Set dummy SCRAM_ARCH. needed for LHAPDF.
 export SCRAM_ARCH=el9_amd64_gcc12
 
-# This is a TAPAS set_env script. Source it before usage of TAPAS.
 export LD_LIBRARY_PATH=$SCRIPTDIR/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$SCRIPTDIR/lib/python:$LD_LIBRARY_PATH
 export PYTHONPATH=$SCRIPTDIR/lib/python:$PYTHONPATH
-export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/MUSiC-CRAB:$PYTHONPATH
 export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/Classification:$PYTHONPATH
 export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/Classification/python:$PYTHONPATH
 export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/MUSiC/python:$PYTHONPATH
-export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/NanoEventClass/python:$PYTHONPATH
-export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/CondorScheduler:$PYTHONPATH
+export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/Plotter/python:$PYTHONPATH
 
 
 # add gfal2 to PATH
@@ -41,11 +39,6 @@ export PATH=$PATH:$SCRIPTDIR/bin;
 export PATH=$PATH:$SCRIPTDIR/scripts;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC/scripts;
 export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/Classification/scripts;
-export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/ClassificationUtils/scripts;
-export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/NanoEventClass/scripts;
-export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-BTagEff;
-export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/MUSiC-CRAB;
-export PATH=$PATH:$SCRIPTDIR/NanoMUSiC/special_studies/jet_sf;
 
 #setup go env
 export GOPATH="$SCRIPTDIR/cache:$GOPATH"
