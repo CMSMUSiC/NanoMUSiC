@@ -25,8 +25,13 @@ using namespace ROOT::VecOps;
 struct ECHistogram
 {
     std::string process_group;
-    std::string shift;
+    std::size_t shift;
     TH1F histogram;
+
+    auto get_shift() const -> std::string
+    {
+        return Shifts::variation_to_string(static_cast<Shifts::Variations>(shift));
+    }
 };
 
 Distribution::Distribution(const std::vector<std::string> &input_files,
@@ -59,9 +64,10 @@ Distribution::Distribution(const std::vector<std::string> &input_files,
                             year,          //
                             shift,         //
                             histo_name] = SerializationUtils::split_histo_name(name);
-                event_class_histograms.push_back(ECHistogram{.process_group = process_group,
-                                                             .shift = shift,
-                                                             .histogram = *(root_file->Get<TH1F>(name.c_str()))});
+                event_class_histograms.push_back(
+                    ECHistogram{.process_group = process_group,
+                                .shift = static_cast<std::size_t>(Shifts::string_to_variation(shift)),
+                                .histogram = *(root_file->Get<TH1F>(name.c_str()))});
             }
         }
     }
@@ -71,38 +77,40 @@ Distribution::Distribution(const std::vector<std::string> &input_files,
         unmerged_mc_histograms;
     for (const auto &histo : event_class_histograms)
     {
-        if (unmerged_mc_histograms.find(histo.shift) == unmerged_mc_histograms.end())
+        if (unmerged_mc_histograms.find(histo.get_shift()) == unmerged_mc_histograms.end())
         {
-            unmerged_mc_histograms[histo.shift] = std::unordered_map<std::string, std::vector<std::shared_ptr<TH1F>>>();
+            unmerged_mc_histograms[histo.get_shift()] =
+                std::unordered_map<std::string, std::vector<std::shared_ptr<TH1F>>>();
         }
-        unmerged_mc_histograms[histo.shift][histo.process_group].push_back(std::make_shared<TH1F>(histo.histogram));
+        unmerged_mc_histograms[histo.get_shift()][histo.process_group].push_back(
+            std::make_shared<TH1F>(histo.histogram));
     }
 
     // merge unmerged_mc_histograms per process group and shift
-    for (auto &&[shift, histos_per_process_group] : unmerged_mc_histograms)
+    // for (auto &&[shift, histos_per_process_group] : unmerged_mc_histograms)
+    for (std::size_t shift = 0; shift < static_cast<std::size_t>(Shifts::Variations::kTotalVariations); shift++)
     {
-        if (m_histogram_per_process_group_and_shift.find(shift) == m_histogram_per_process_group_and_shift.end())
+        for (auto &&[pg, histos] : unmerged_mc_histograms[Shifts::variation_to_string(shift)])
         {
-            m_histogram_per_process_group_and_shift[shift] = std::unordered_map<std::string, TH1F>();
-        }
-
-        for (auto &&[pg, histos] : unmerged_mc_histograms[shift])
-        {
-            m_histogram_per_process_group_and_shift[shift][pg] = ROOTHelpers::SumAsTH1F(histos);
+            m_histogram_per_process_group_and_shift.at(shift)[pg] = ROOTHelpers::SumAsTH1F(histos);
         }
     }
 
     // build Data histogram and graph
     m_total_data_histogram = *(static_cast<TH1F *>(event_class_histograms.at(0).histogram.Clone()));
     m_total_data_histogram.Reset();
-    if (m_histogram_per_process_group_and_shift.at("Nominal").find("Data") !=
-        m_histogram_per_process_group_and_shift.at("Nominal").end())
+    if (m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::Nominal))
+            .find("Data") !=
+        m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::Nominal)).end())
     {
-        m_total_data_histogram = m_histogram_per_process_group_and_shift.at("Nominal").at("Data");
+        m_total_data_histogram =
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::Nominal))
+                .at("Data");
     }
 
     // merge MC histograms
-    m_total_mc_histogram = ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("Nominal"), true);
+    m_total_mc_histogram = ROOTHelpers::SumAsTH1F(
+        m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::Nominal)), true);
 
     // number of bins
     m_n_bins = m_total_mc_histogram.GetNbinsX();
@@ -122,7 +130,8 @@ auto Distribution::get_statistical_uncert() const -> RVec<double>
 {
     auto statistical_uncertainties = RVec<double>(m_n_bins, 0.);
 
-    for (const auto &[pg, histo] : m_histogram_per_process_group_and_shift.at("Nominal"))
+    for (const auto &[pg, histo] :
+         m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::Nominal)))
     {
         if (pg != "Data")
         {
@@ -245,8 +254,9 @@ auto Distribution::get_systematics_uncert(
     // will cap the PDF+As uncertainties
     constexpr auto pdf_as_upper_limit = 0.7;
     auto capped_pdf_as_uncert = ROOTHelpers::Counts(m_total_mc_histogram) * pdf_as_upper_limit;
-    auto pdf_as_uncert = Uncertanties::AbsDiff(
-        m_total_mc_histogram, ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("PDF_As_Up")));
+    auto pdf_as_uncert = Uncertanties::AbsDiff(m_total_mc_histogram,
+                                               ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                                   static_cast<std::size_t>(Shifts::Variations::PDF_As_Up))));
 
     // sanity check
     if (capped_pdf_as_uncert.size() != pdf_as_uncert.size())
@@ -278,7 +288,8 @@ auto Distribution::get_systematics_uncert(
         ////////////////////////////////////
         // fakes
         Uncertanties::AbsDiff(m_total_mc_histogram,
-                              ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("Fakes_Up"))),
+                              ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                  static_cast<std::size_t>(Shifts::Variations::Fakes_Up)))),
 
         // PDF + Alpha_S
         // Uncertanties::AbsDiff(m_total_mc_histogram,
@@ -287,71 +298,82 @@ auto Distribution::get_systematics_uncert(
         // capped_pdf_as_uncert,
 
         // Prefiring
-        Uncertanties::AbsDiffAndSymmetrize(
-            m_total_mc_histogram,
-            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("PreFiring_Up")),
-            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("PreFiring_Down"))),
+        Uncertanties::AbsDiffAndSymmetrize(m_total_mc_histogram,
+                                           ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                               static_cast<std::size_t>(Shifts::Variations::PreFiring_Up))),
+                                           ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                               static_cast<std::size_t>(Shifts::Variations::PreFiring_Down)))),
 
         // Scale Factors
         Uncertanties::AbsDiff(m_total_mc_histogram,
-                              ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("ScaleFactor_Up"))),
+                              ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                  static_cast<std::size_t>(Shifts::Variations::ScaleFactor_Up)))),
 
         // Pile up
-        Uncertanties::AbsDiffAndSymmetrize(
-            m_total_mc_histogram,
-            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("PU_Up")),
-            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("PU_Down"))),
+        Uncertanties::AbsDiffAndSymmetrize(m_total_mc_histogram,
+                                           ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                               static_cast<std::size_t>(Shifts::Variations::PU_Up))),
+                                           ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                               static_cast<std::size_t>(Shifts::Variations::PU_Down)))),
 
         ////////////////////////////////////
         // Differential
         ////////////////////////////////////
         // Electron Resolution
-        Uncertanties::AbsDiffAndSymmetrize(
-            m_total_mc_histogram,
-            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("ElectronResolution_Up")),
-            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("ElectronResolution_Down"))),
+        Uncertanties::AbsDiffAndSymmetrize(m_total_mc_histogram,
+                                           ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                               static_cast<std::size_t>(Shifts::Variations::ElectronResolution_Up))),
+                                           ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                               static_cast<std::size_t>(Shifts::Variations::ElectronResolution_Down)))),
 
         // Electron Scale
-        Uncertanties::AbsDiffAndSymmetrize(
-            m_total_mc_histogram,
-            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("ElectronScale_Up")),
-            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("ElectronScale_Down"))),
+        Uncertanties::AbsDiffAndSymmetrize(m_total_mc_histogram,
+                                           ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                               static_cast<std::size_t>(Shifts::Variations::ElectronScale_Up))),
+                                           ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                               static_cast<std::size_t>(Shifts::Variations::ElectronScale_Down)))),
 
         // Photon Resolution
-        Uncertanties::AbsDiffAndSymmetrize(
-            m_total_mc_histogram,
-            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("PhotonResolution_Up")),
-            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("PhotonResolution_Down"))),
+        Uncertanties::AbsDiffAndSymmetrize(m_total_mc_histogram,
+                                           ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                               static_cast<std::size_t>(Shifts::Variations::PhotonResolution_Up))),
+                                           ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                               static_cast<std::size_t>(Shifts::Variations::PhotonResolution_Down)))),
 
         // Photon Scale
-        Uncertanties::AbsDiffAndSymmetrize(
-            m_total_mc_histogram,
-            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("PhotonScale_Up")),
-            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("PhotonScale_Down"))),
+        Uncertanties::AbsDiffAndSymmetrize(m_total_mc_histogram,
+                                           ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                               static_cast<std::size_t>(Shifts::Variations::PhotonScale_Up))),
+                                           ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                               static_cast<std::size_t>(Shifts::Variations::PhotonScale_Down)))),
 
         // Tau Energy
-        Uncertanties::AbsDiffAndSymmetrize(
-            m_total_mc_histogram,
-            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("TauEnergy_Up")),
-            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("TauEnergy_Down"))),
+        Uncertanties::AbsDiffAndSymmetrize(m_total_mc_histogram,
+                                           ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                               static_cast<std::size_t>(Shifts::Variations::TauEnergy_Up))),
+                                           ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                               static_cast<std::size_t>(Shifts::Variations::TauEnergy_Down)))),
 
         // Jet Resolution
-        Uncertanties::AbsDiffAndSymmetrize(
-            m_total_mc_histogram,
-            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("JetResolution_Up")),
-            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("JetResolution_Down"))),
+        Uncertanties::AbsDiffAndSymmetrize(m_total_mc_histogram,
+                                           ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                               static_cast<std::size_t>(Shifts::Variations::JetResolution_Up))),
+                                           ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                               static_cast<std::size_t>(Shifts::Variations::JetResolution_Down)))),
 
         // Jet Scale
-        Uncertanties::AbsDiffAndSymmetrize(
-            m_total_mc_histogram,
-            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("JetScale_Up")),
-            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("JetScale_Down"))),
+        Uncertanties::AbsDiffAndSymmetrize(m_total_mc_histogram,
+                                           ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                               static_cast<std::size_t>(Shifts::Variations::JetScale_Up))),
+                                           ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                               static_cast<std::size_t>(Shifts::Variations::JetScale_Down)))),
 
         // MET Unclustered Energy
-        Uncertanties::AbsDiffAndSymmetrize(
-            m_total_mc_histogram,
-            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("UnclusteredEnergy_Up")),
-            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("UnclusteredEnergy_Down"))),
+        Uncertanties::AbsDiffAndSymmetrize(m_total_mc_histogram,
+                                           ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                               static_cast<std::size_t>(Shifts::Variations::UnclusteredEnergy_Up))),
+                                           ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                               static_cast<std::size_t>(Shifts::Variations::UnclusteredEnergy_Down)))),
     };
 
     return ROOT::VecOps::sqrt( //
@@ -365,13 +387,13 @@ auto Distribution::get_systematics_uncert(
     );
 }
 
-auto Distribution::save(const std::string &output_file) const -> std::string
-{
-    auto output_root_file = std::unique_ptr<TFile>(TFile::Open(output_file.c_str(), "RECREATE"));
-    output_root_file->WriteObject(this, fmt::format("[{}]_[{}]", m_event_class_name, m_distribution_name).c_str());
-
-    return fmt::format("EC: {} - Dist: {}", m_event_class_name, m_distribution_name);
-}
+// auto Distribution::save(const std::string &output_file) const -> std::string
+// {
+//     auto output_root_file = std::unique_ptr<TFile>(TFile::Open(output_file.c_str(), "RECREATE"));
+//     output_root_file->WriteObject(this, fmt::format("[{}]_[{}]", m_event_class_name, m_distribution_name).c_str());
+//
+//     return fmt::format("EC: {} - Dist: {}", m_event_class_name, m_distribution_name);
+// }
 
 auto Distribution::get_integral_pvalue_props() const -> IntegralPValueProps
 {
@@ -386,7 +408,7 @@ auto Distribution::get_integral_pvalue_props() const -> IntegralPValueProps
     }
 
     auto total_per_process_group = std::vector<double>();
-    for (const auto &[pg, hist] : m_histogram_per_process_group_and_shift.at("Nominal"))
+    for (const auto &[pg, hist] : m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>( Shifts::Variations::Nominal )))
     {
         if (pg != "Data")
         {
@@ -419,14 +441,14 @@ auto Distribution::get_plot_props() -> PlotProps
     auto y_min = ROOTHelpers::GetYMin(m_total_mc_histogram, m_scale_to_area, min_max);
     auto y_max = ROOTHelpers::GetYMax(m_total_data_histogram, m_total_mc_histogram, m_scale_to_area, min_max);
 
-    std::unordered_map<std::string, std::shared_ptr<TH1F>> mc_histograms;
-    for (auto &[pg, hist] : m_histogram_per_process_group_and_shift.at("Nominal"))
+    std::unordered_map<std::string, TH1F> mc_histograms;
+    for (auto &[pg, hist] : m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>( Shifts::Variations::Nominal )))
     {
         if (m_scale_to_area)
         {
             hist.Scale(min_bin_width, "width");
         }
-        mc_histograms[pg] = std::make_shared<TH1F>(hist);
+        mc_histograms[pg] = hist;
     }
 
     return PlotProps{
@@ -436,7 +458,7 @@ auto Distribution::get_plot_props() -> PlotProps
         .x_max = max,
         .y_min = y_min,
         .y_max = y_max,
-        .total_data_histogram = std::make_shared<TH1F>(m_total_data_histogram),
+        .total_data_histogram = m_total_data_histogram,
         .data_graph = data_graph,
         .mc_histograms = mc_histograms,
         .mc_uncertainty = mc_uncert,

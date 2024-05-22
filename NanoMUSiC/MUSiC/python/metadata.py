@@ -51,7 +51,6 @@ class Process(BaseModel):
     das_name_2016: list[str] = Field(default_factory=list)
     das_name_2017: list[str] = Field(default_factory=list)
     das_name_2018: list[str] = Field(default_factory=list)
-    crab_task_name: list[str] = Field(default_factory=str)
     output_files_2016APV: list[str] = Field(default_factory=list)
     output_files_2016: list[str] = Field(default_factory=list)
     output_files_2017: list[str] = Field(default_factory=list)

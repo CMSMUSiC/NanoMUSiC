@@ -35,12 +35,6 @@ python3 -m pip install --user typer
 python3 -m pip install --user pydantic
 
 
-#install parallel with lastest version
-cd $SCRIPT_DIR/bin 
-wget https://git.savannah.gnu.org/cgit/parallel.git/plain/src/parallel 
-mv parallel parallel_music
-chmod +x parallel_music
-
 cd $SCRIPT_DIR
 
 #install go

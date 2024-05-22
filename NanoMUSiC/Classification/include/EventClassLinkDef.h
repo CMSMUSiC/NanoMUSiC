@@ -8,5 +8,8 @@
 #pragma link C++ class EventClassContainer + ;
 #pragma link C++ class ValidationContainer + ;
 #pragma link C++ class ZToLepLepX + ;
+#pragma link C++ class Distribution + ;
+#pragma link C++ class IntegralPValueProps + ;
+#pragma link C++ class PlotProps + ;
 
 #endif

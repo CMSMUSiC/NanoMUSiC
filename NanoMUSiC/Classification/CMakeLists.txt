@@ -60,7 +60,6 @@ install(TARGETS classification_imp DESTINATION ${CMAKE_SOURCE_DIR}/lib/python)
 
 
 message(STATUS "Generating EventClass dictionaries ...")
-# ROOT_GENERATE_DICTIONARY(EventClassDict include/EventClass.hpp include/ValidationContainer.hpp include/ZToLepLepX.hpp include/Distribution.hpp include/distribution_factory.hpp MODULE classification_imp LINKDEF include/EventClassLinkDef.h)
 ROOT_GENERATE_DICTIONARY(EventClassDict include/EventClass.hpp include/ValidationContainer.hpp include/ZToLepLepX.hpp include/Distribution.hpp  MODULE classification_imp LINKDEF include/EventClassLinkDef.h)
 message(STATUS "Done.")
 

@@ -3,6 +3,7 @@
 
 #include "pybind11/pybind11.h"
 #include "pybind11/stl.h"
+#include <cstdlib>
 #include <pybind11/pytypes.h>
 namespace py = pybind11;
 using namespace pybind11::literals;
@@ -196,5 +197,26 @@ PYBIND11_MODULE(classification_imp, m)
              "event_class_name"_a,
              "distribution_name"_a,
              "allow_rescale_by_width"_a)
-        .def("save", &Distribution::save, "output_file"_a);
+        // .def("save", &Distribution::save, "output_file"_a);
+        .def_static(
+            "save",
+            [](Distribution &dist, const std::string &ouput_file_path) -> void
+            {
+                auto output_root_file = std::unique_ptr<TFile>(TFile::Open(ouput_file_path.c_str(), "RECREATE"));
+                auto res = output_root_file->WriteObject(
+                    &dist, fmt::format("[{}]_[{}]", dist.m_event_class_name, dist.m_distribution_name).c_str());
+
+                if (res > 0)
+                {
+                    return;
+                }
+
+                fmt::print(stderr,
+                           "ERROR: Could not write object to file: {} - {}\n",
+                           dist.m_event_class_name,
+                           dist.m_distribution_name);
+                std::exit(EXIT_FAILURE);
+            },
+            "distribution"_a,
+            "ouput_file_path"_a);
 }

@@ -31,7 +31,6 @@ def preprocess(config_file: str):
 
 
 class ClassificationTarget(str, Enum):
-    Local = "local"
     Condor = "condor"
     Dev = "dev"
     Parallel = "parallel"
@@ -56,10 +55,6 @@ def launch(
 
     if target == ClassificationTarget.Dev:
         classification.launch_dev(config_file, process, year, max_files)
-    elif target == ClassificationTarget.Local:
-        classification.launch_local(
-            config_file, process, year, max_files, num_cpus, split_size
-        )
     elif target == ClassificationTarget.Parallel:
         classification.launch_parallel(
             config_file, process, year, max_files, split_size, num_cpus
@@ -95,10 +90,14 @@ def unwrap(
 def fold(
     inputs_dir: str = "classification_root_files",
     validation_inputs_dir: str = "validation_root_files",
+    filters: list[str] = ["*"],
+    num_cpus: int = 120,
 ):
     import classification
 
-    classification.make_distributions( inputs_dir, validation_inputs_dir)
+    classification.make_distributions(
+        inputs_dir, validation_inputs_dir, filters, num_cpus
+    )
 
 
 ############################################################################

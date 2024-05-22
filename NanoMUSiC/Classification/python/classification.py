@@ -1,4 +1,5 @@
-import ray
+from typing import Optional, Union, Iterator
+from multiprocessing.pool import AsyncResult
 import fnmatch
 from multiprocessing import Pool
 from itertools import product
@@ -8,10 +9,9 @@ import json
 from condor_manager import CondorJob, CondorManager
 import os
 import classification_imp as clft
-from typing import Optional, Union
 import sys
 from metadata import Lumi, Years, Process, load_toml
-from rich.progress import track, Progress
+from rich.progress import Progress
 import hashlib
 import subprocess
 import shlex
@@ -25,7 +25,9 @@ class XrdcpResult(Enum):
     TIMEOUT = auto()
 
 
-def xrdcp(src: str, dest: str, redirector: str, timeout: int) -> XrdcpResult:
+def xrdcp(
+    src: str, dest: str, redirector: str, timeout: Union[int, None]
+) -> XrdcpResult:
     if not redirector.endswith("//"):
         redirector += "//"
     try:
@@ -93,7 +95,7 @@ def fetch_file(file):
     return hashed_file_name
 
 
-def download_files(files: list[str]):
+def download_files(files: list[str]) -> Iterator[str]:
     if len(files) == 0:
         print("ERROR: No input file was provided.")
         sys.exit(-1)
@@ -103,7 +105,7 @@ def download_files(files: list[str]):
             yield f
     else:
         with Pool(processes=1) as pool:
-            result = None
+            result: Union[AsyncResult, None] = None
             for i, f in enumerate(files):
                 this_file = None
                 if i == 0:
@@ -111,11 +113,12 @@ def download_files(files: list[str]):
                         result = pool.apply_async(fetch_file, (files[1],))
                     this_file = fetch_file(f)
                 else:
-                    result.wait()
-                    if result.successful():
-                        this_file = result.get()
-                    if i + 1 < len(files):
-                        result = pool.apply_async(fetch_file, (files[i + 1],))
+                    if isinstance(result, AsyncResult):
+                        result.wait()
+                        if result.successful():
+                            this_file = result.get()
+                        if i + 1 < len(files):
+                            result = pool.apply_async(fetch_file, (files[i + 1],))
                 if not this_file:
                     print("ERROR: Could not download input file {}.".format(f))
                     sys.exit(-1)
@@ -134,7 +137,7 @@ def run_classification(
     xs_order: str,
     process_group: str,
     sum_weights_json_filepath: str,
-    input_files: Union[list[str], str],
+    input_files: list[str],
     generator_filter: str,
     first_event: Optional[int] = None,
     last_event: Optional[int] = None,
@@ -249,7 +252,7 @@ print("YAY! Done _o/")
 
 
 def launch_condor(
-    config_file: str,
+    config_file_path: str,
     process_name: Union[str, None] = None,
     year: Union[Years, None] = None,
     max_files: int = sys.maxsize,
@@ -263,7 +266,7 @@ def launch_condor(
             file=sys.stderr,
         )
 
-    config_file = load_toml(config_file)
+    config_file = load_toml(config_file_path)
 
     processes = [
         Process(name=process_name, **config_file[process_name])
@@ -419,14 +422,11 @@ def launch_parallel(
         )
         print("Parallel command: {}".format(parallel_cmd))
 
-        with open("last_parallel_command.txt", "w") as file:
-            file.write("{}\n".format(j))
-
         os.system(parallel_cmd)
 
 
 def launch_dev(
-    config_file: str,
+    config_file_path: str,
     process_name: Union[str, None] = None,
     year: Union[Years, None] = None,
     max_files: int = sys.maxsize,
@@ -438,7 +438,7 @@ def launch_dev(
         )
         sys.exit(-1)
 
-    config_file = load_toml(config_file)
+    config_file = load_toml(config_file_path)
     process = Process(name=process_name, **config_file[process_name])
 
     run_classification(
@@ -461,128 +461,6 @@ def launch_dev(
     )
 
 
-def launch_local(
-    config_file: str,
-    process_name: Union[str, None] = None,
-    year: Union[Years, None] = None,
-    max_files: int = sys.maxsize,
-    num_cpus: int = 100,
-    split_size: int = sys.maxsize,
-):
-    if process_name or year:
-        print(
-            "WARINING: Launching a Local Classification will run over all samples. Process name and Year will be ignored.",
-            file=sys.stderr,
-        )
-
-    config_file = load_toml(config_file)
-
-    processes = [
-        Process(name=process_name, **config_file[process_name])
-        for process_name in config_file
-    ]
-    random.shuffle(processes)
-
-    def expected_timming(process: Process) -> int:
-        if process.name.startswith("tt") or process.name.startswith("TT"):
-            return 0
-        if process.name.startswith("QCD"):
-            return 100
-        if process.is_data:
-            return sys.maxsize
-        return 10
-
-    processes = sorted(processes, key=expected_timming)
-
-    os.system("rm -rf classification_outputs")
-    os.system("mkdir -p  classification_outputs")
-    os.system("rm -rf ray_spill_objects")
-    os.system("mkdir -p  ray_spill_objects")
-    os.system("rm -rf tmp_ray")
-    os.system("mkdir -p  tmp_ray")
-
-    @ray.remote
-    def run_classification_fwd(*args, **kwargs):
-        return run_classification(*args, **kwargs)
-
-    def chunks(lst: list[str], n: Union[int, None]) -> list[list[str]]:
-        if not n:
-            return [lst]
-        if split_size > len(lst):
-            return [lst]
-        assert n > 0
-        return [lst[i : i + n] for i in range(0, len(lst), n)]
-
-    def launch_imp(
-        description: str, this_processes: list[Process], _num_cpus: int = 100
-    ) -> None:
-        print("Starting ray cluster ...")
-        ray.init(
-            log_to_driver=False,
-            num_cpus=_num_cpus,
-            _system_config={
-                "object_spilling_config": json.dumps(
-                    {
-                        "type": "filesystem",
-                        "params": {
-                            "directory_path": "{}/ray_spill_objects".format(os.getcwd())
-                        },
-                    },
-                )
-            },
-            _temp_dir="{}/tmp_ray".format(os.getcwd()),
-        )
-
-        print("Launching jobs: {}...".format(description))
-        jobs = []
-        for process in this_processes:
-            for year in Years:
-                input_files = chunks(process.get_files(year, max_files), split_size)
-                for split_index, sub_input_files in enumerate(input_files):
-                    if len(sub_input_files):
-                        jobs.append(
-                            run_classification_fwd.remote(
-                                output_file=f"classification_outputs/{process.name}_{year}_{split_index}.root",
-                                process=process.name,
-                                year=year,
-                                is_data=process.is_data,
-                                x_section=process.XSec,
-                                filter_eff=process.FilterEff,
-                                k_factor=process.kFactor,
-                                luminosity=Lumi.lumi[year],
-                                xs_order=process.XSecOrder,
-                                process_group=process.ProcessGroup,
-                                sum_weights_json_filepath="sum_weights.json",
-                                input_files=process.get_files(year, max_files),
-                                generator_filter=process.generator_filter_key,
-                                first_event=None,
-                                last_event=None,
-                                debug=True,
-                            )
-                        )
-
-        def to_iterator(obj_ids):
-            while obj_ids:
-                done, obj_ids = ray.wait(obj_ids)
-                yield ray.get(done[0])
-
-        print("Collecting results ...")
-        for x in track(
-            to_iterator(jobs),
-            description="Processing {} jobs ...".format(len(jobs)),
-            total=len(jobs),
-        ):
-            pass
-
-        ray.shutdown()
-
-    launch_imp(
-        "All",
-        processes,
-        num_cpus,
-    )
-
-
 def merge_task(args):
     files_to_merge, validation_files_to_merge, process, year = args
     clft.EventClassContainer.merge_many(
@@ -598,10 +476,10 @@ def merge_task(args):
 
 
 def merge_classification_outputs(
-    config_file: str,
+    config_file_path: str,
     inputs_dir: str,
 ):
-    config_file = load_toml(config_file)
+    config_file = load_toml(config_file_path)
 
     processes = [
         Process(name=process_name, **config_file[process_name])
@@ -670,11 +548,11 @@ def serialize_to_root_task(args):
 
 
 def serialize_to_root(
-    config_file: str,
+    config_file_path: str,
     inputs_dir: str,
     validation_inputs_dir: str,
 ):
-    config_file = load_toml(config_file)
+    config_file = load_toml(config_file_path)
 
     processes = [
         Process(name=process_name, **config_file[process_name])
@@ -732,7 +610,7 @@ def serialize_to_root(
         json.dump(dict(validation_to_files), json_file, indent=4)
 
 
-def make_distributions_task(args):
+def make_distributions_task(args: tuple[list[str], str, str, bool, str, str]):
     (
         files_to_process,
         analysis_name,
@@ -745,7 +623,7 @@ def make_distributions_task(args):
     distribution = clft.Distribution(
         files_to_process, analysis_name, distribution_name, allow_rescale_by_width
     )
-    distribution.save(output_file_path)
+    clft.Distribution.save(distribution, output_file_path)
 
     return analysis_name, distribution_name, year
 
@@ -753,7 +631,9 @@ def make_distributions_task(args):
 def make_distributions(
     inputs_dir: str,
     validation_inputs_dir: str,
-):
+    class_name_filter_patterns: str,
+    num_cpus: int,
+) -> None:
     with open("{}/classes_to_files.json".format(inputs_dir), "r") as file:
         classes_to_files = json.load(file)
 
@@ -765,9 +645,7 @@ def make_distributions(
     os.system("rm -rf validation_distribution_files")
     os.system("mkdir -p validation_distribution_files")
 
-    output_dir = "distribution_files"
-
-    def get_distributions(analysis_name):
+    def get_distributions(analysis_name: str) -> list[tuple[str, bool]]:
         if analysis_name.startswith("EC_"):
             return [
                 ("h_counts", False),
@@ -776,67 +654,93 @@ def make_distributions(
                 ("h_met", True),
             ]
 
-        print("ERROR: Could not find distributions for {}.".format(analysis_name))
-        sys.exit(-1)
+        return [
+            ("h_invariant_mass", True),
+        ]
+        # print("ERROR: Could not find distributions for {}.".format(analysis_name))
+        # sys.exit(-1)
 
-    def make_distribution_jobs(analysis_names):
-        distribution_jobs = []
+    def filter_classes(class_name, patterns):
+        return any(fnmatch.fnmatch(class_name, pattern) for pattern in patterns)
+
+    def make_distribution_jobs(
+        analysis_names, inputs_dir, output_dir
+    ) -> Union[list[tuple[list[str], str, str, bool, str, str]], None]:
+        distribution_jobs: list[tuple[list[str], str, str, bool, str, str]] = []
 
         for analysis, year in product(analysis_names, Years.years_to_plot()):
-            files_to_process = fnmatch.filter(
-                analysis_names[analysis], "{}.root".format(year)
-            )
-
-            for dist, allow_rescale_by_width in get_distributions(analysis):
-                distribution_jobs.append(
-                    (
-                        files_to_process,
-                        analysis,
-                        dist,
-                        allow_rescale_by_width,
-                        year,
-                        "{}/distribution_{}_{}_{}.root".format(
-                            output_dir,
-                            analysis,
-                            dist,
-                            Years.years_to_plot()[year]["name"],
-                        ),
+            if filter_classes(analysis, class_name_filter_patterns):
+                files_to_process = [
+                    "{}/{}".format(inputs_dir, f)
+                    for f in fnmatch.filter(
+                        analysis_names[analysis], "*{}.root".format(year)
                     )
-                )
-
-        return distribution_jobs
+                ]
+                if len(files_to_process):
+                    for dist, allow_rescale_by_width in get_distributions(analysis):
+                        distribution_jobs.append(
+                            (
+                                files_to_process,
+                                analysis,
+                                dist,
+                                allow_rescale_by_width,
+                                Years.years_to_plot()[year]["name"],
+                                "{}/distribution_{}_{}_{}.root".format(
+                                    output_dir,
+                                    analysis,
+                                    dist,
+                                    Years.years_to_plot()[year]["name"],
+                                ).replace("+", "_"),
+                            )
+                        )
+        if len(distribution_jobs):
+            return distribution_jobs
+        print(
+            "WARNING: Could not build distribution jobs. No distributions matches the requirements."
+        )
+        return None
 
     print("Building distributions from Classification...")
-    distribution_jobs_classification = make_distribution_jobs(classes_to_files)
-    with Pool() as p:
-        with Progress() as progress:
-            task = progress.add_task(
-                "Folding [Classification] ...",
-                total=len(distribution_jobs_classification),
-            )
-            for job in p.imap_unordered(
-                make_distributions_task, distribution_jobs_classification
-            ):
-                analysis, distribution_name, year = job
-                progress.console.print(
-                    "Done: {} - {} - {}".format(analysis, distribution_name, year)
+    distribution_jobs_classification = make_distribution_jobs(
+        classes_to_files, inputs_dir, "classification_distribution_files"
+    )
+    if distribution_jobs_classification:
+        with Pool(min(len(distribution_jobs_classification), num_cpus)) as p:
+            with Progress() as progress:
+                task = progress.add_task(
+                    "Folding [Classification]: {} jobs ...".format(
+                        len(distribution_jobs_classification)
+                    ),
+                    total=len(distribution_jobs_classification),
                 )
+                for job in p.imap_unordered(
+                    make_distributions_task, distribution_jobs_classification
+                ):
+                    analysis, distribution_name, year = job
+                    progress.console.print(
+                        "Done: {} - {} - {}".format(analysis, distribution_name, year)
+                    )
 
-                progress.advance(task)
+                    progress.advance(task)
 
-    distribution_jobs_classification = make_distribution_jobs(validation_to_files)
-    with Pool() as p:
-        with Progress() as progress:
-            task = progress.add_task(
-                "Folding [Classification] ...",
-                total=len(distribution_jobs_classification),
-            )
-            for job in p.imap_unordered(
-                make_distributions_task, distribution_jobs_classification
-            ):
-                analysis, distribution_name, year = job
-                progress.console.print(
-                    "Done: {} - {} - {}".format(analysis, distribution_name, year)
+    distribution_jobs_validation = make_distribution_jobs(
+        validation_to_files, validation_inputs_dir, "validation_distribution_files"
+    )
+    if distribution_jobs_validation:
+        with Pool(min(len(distribution_jobs_validation), num_cpus)) as p:
+            with Progress() as progress:
+                task = progress.add_task(
+                    "Folding [Validation]: {} jobs ...".format(
+                        len(distribution_jobs_validation)
+                    ),
+                    total=len(distribution_jobs_validation),
                 )
+                for job in p.imap_unordered(
+                    make_distributions_task, distribution_jobs_validation
+                ):
+                    analysis, distribution_name, year = job
+                    progress.console.print(
+                        "Done: {} - {} - {}".format(analysis, distribution_name, year)
+                    )
 
-                progress.advance(task)
+                    progress.advance(task)
