@@ -1,4 +1,3 @@
-# compilation options
 execute_process(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
 separate_arguments(ROOT_CFLAGS)
 add_compile_options(-g)
@@ -39,7 +38,8 @@ add_executable(createLookupTable
 
 target_compile_options(createLookupTable PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
 
-target_include_directories(createLookupTable PUBLIC include ${CMAKE_SOURCE_DIR}/NanoMUSiC/NanoEventClass/include/external)
+target_include_directories(createLookupTable PUBLIC include ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/include/external)
+target_include_directories(createLookupTable PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 install(TARGETS createLookupTable DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 
@@ -65,20 +65,20 @@ add_custom_target(lut
         DEPENDS ${CMAKE_SOURCE_DIR}/bin/lookuptable.bin
 )
 
-add_executable(scanClass
+add_library(scan SHARED
         src/ConvolutionComputer.cpp
         src/ECScanner.cpp
         src/Dicer.cpp
         src/MCBin.cpp
         src/ScanResult.cpp
-        src/scanClass.cpp
+        src/scan.cpp
         src/util.cpp
         src/ConvolutionLookup.cpp)
 
-target_compile_options(scanClass PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
-
-target_include_directories(scanClass PUBLIC include  ${CMAKE_SOURCE_DIR}/NanoMUSiC/NanoEventClass/include/external)
-install(TARGETS scanClass DESTINATION ${CMAKE_SOURCE_DIR}/bin)
+target_compile_options(scan PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
+target_include_directories(scan PUBLIC include  ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/include/external)
+target_include_directories(scan PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+install(TARGETS scan DESTINATION ${CMAKE_SOURCE_DIR}/lib)
 
 add_executable(pCalc
         src/ConvolutionComputer.cpp
@@ -86,14 +86,16 @@ add_executable(pCalc
         src/pCalc.cpp)
 
 target_compile_options(pCalc PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
-target_include_directories(pCalc PUBLIC include  ${CMAKE_SOURCE_DIR}/NanoMUSiC/NanoEventClass/include/external)
+target_include_directories(pCalc PUBLIC include  ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/include/external)
+target_include_directories(pCalc PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 install(TARGETS pCalc DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 
 add_library(ConvolutionComputer SHARED
         src/ConvolutionComputer.cpp
 )
 target_compile_options(ConvolutionComputer PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
-target_include_directories(ConvolutionComputer PUBLIC include  ${CMAKE_SOURCE_DIR}/NanoMUSiC/NanoEventClass/include/external)
+target_include_directories(ConvolutionComputer PUBLIC include  ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/include/external)
+target_include_directories(ConvolutionComputer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 install(TARGETS ConvolutionComputer DESTINATION ${CMAKE_SOURCE_DIR}/lib)
 
 add_library(ConvolutionLookup SHARED
@@ -101,5 +103,6 @@ add_library(ConvolutionLookup SHARED
         src/ConvolutionComputer.cpp
 )
 target_compile_options(ConvolutionLookup PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
-target_include_directories(ConvolutionLookup PUBLIC include  ${CMAKE_SOURCE_DIR}/NanoMUSiC/NanoEventClass/include/external)
+target_include_directories(ConvolutionLookup PUBLIC include  ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/include/external)
+target_include_directories(ConvolutionLookup PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 install(TARGETS ConvolutionLookup DESTINATION ${CMAKE_SOURCE_DIR}/lib)

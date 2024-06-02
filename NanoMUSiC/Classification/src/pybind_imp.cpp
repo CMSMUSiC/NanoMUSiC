@@ -192,35 +192,10 @@ PYBIND11_MODULE(classification_imp, m)
             "ouput_file_path"_a);
 
     py::class_<Distribution>(m, "Distribution")
-        .def(py::init<const std::vector<std::string> &,
-                      const std::string &,
-                      const std::string &,
-                      const std::string &,
-                      bool>(),
-             "input_files"_a,
-             "event_class_name"_a,
-             "distribution_name"_a,
-             "year_to_plot"_a,
-             "allow_rescale_by_width"_a)
-        // .def("save", &Distribution::save, "output_file"_a);
-        .def_static(
-            "save",
-            [](Distribution &dist, const std::string &ouput_file_path) -> void
-            {
-                auto output_root_file = std::unique_ptr<TFile>(TFile::Open(ouput_file_path.c_str(), "RECREATE"));
-                auto res = output_root_file->WriteObject(&dist, "distribution");
-
-                if (res > 0)
-                {
-                    return;
-                }
-
-                fmt::print(stderr,
-                           "ERROR: Could not write object to file: {} - {}\n",
-                           dist.m_event_class_name,
-                           dist.m_distribution_name);
-                std::exit(EXIT_FAILURE);
-            },
-            "distribution"_a,
-            "ouput_file_path"_a);
+        .def_static("make_distributions",
+                    Distribution::make_distributions,
+                    "input_files"_a,
+                    "ouput_dir"_a,
+                    "analysis_to_plot"_a,
+                    "pool_size"_a);
 }

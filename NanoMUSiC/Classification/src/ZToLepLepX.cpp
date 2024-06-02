@@ -15,7 +15,7 @@ ZToLepLepX::ZToLepLepX(enum Leptons lepton,
     : lepton(lepton),
       around_to_Z_mass(around_to_Z_mass)
 {
-    TH1::AddDirectory(kFALSE);
+    // TH1::AddDirectory(kFALSE);
 
     auto count_map = std::unordered_map<ObjectNames, int>{};
     if (lepton == Leptons::MUONS)

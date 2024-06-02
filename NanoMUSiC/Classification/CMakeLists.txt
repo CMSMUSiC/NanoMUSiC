@@ -1,8 +1,3 @@
-# correctionlib compilation and linking flags
-# execute_process(COMMAND correction config --cflags --ldflags --rpath OUTPUT_VARIABLE CORRECTIONLIB_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
-# separate_arguments(CORRECTIONLIB_FLAGS)
-
-# compilation options
 execute_process(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
 separate_arguments(ROOT_CFLAGS)
 add_compile_options(-g)
@@ -40,7 +35,6 @@ pybind11_add_module(classification_imp MODULE
     src/classification.cpp //
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/BinLimits.cpp //
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/JetCorrector.cpp //
-    # ${CMAKE_SOURCE_DIR}/NanoMUSiC/NanoEventClass/src/NanoEventClass.cpp //
     src/GeneratorFilters.cpp //
     src/NanoAODGenInfo.cpp //
     src/ZToLepLepX.cpp //

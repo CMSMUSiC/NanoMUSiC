@@ -1,4 +1,5 @@
 #include "Distribution.hpp"
+#include "BS_thread_pool.hpp"
 
 #include <algorithm>
 #include <cstddef>
@@ -6,6 +7,7 @@
 #include <cstdlib>
 #include <fmt/core.h>
 #include <fnmatch.h>
+#include <iterator>
 #include <memory>
 #include <numeric>
 #include <string>
@@ -13,93 +15,49 @@
 
 #include "ROOT/RVec.hxx"
 #include "TFile.h"
+#include "TH1.h"
 #include "TKey.h"
+#include "TROOT.h"
 
 #include "SerializationUtils.hpp"
-#include "indicators.hpp"
 #include "roothelpers.hpp"
 
 using namespace ROOT;
 using namespace ROOT::VecOps;
 
-struct ECHistogram
-{
-    std::string process_group;
-    std::size_t shift;
-    TH1F histogram;
-
-    auto get_shift() const -> std::string
-    {
-        return Shifts::variation_to_string(static_cast<Shifts::Variations>(shift));
-    }
-};
-
-Distribution::Distribution(const std::vector<std::string> &input_files,
+Distribution::Distribution(const std::vector<ECHistogram> &event_class_histograms,
                            const std::string &event_class_name,
                            const std::string &distribution_name,
-                           const std::string &year_to_plot,
-                           bool allow_rescale_by_width)
-    : m_scale_to_area(distribution_name != "counts" and allow_rescale_by_width),
+                           bool allow_rescale_by_width,
+                           YearToPlot year_to_plot)
+    : m_scale_to_area(allow_rescale_by_width),
       m_distribution_name(distribution_name),
       m_event_class_name(event_class_name),
-      m_year_to_plot(year_to_plot)
+      m_year_to_plot(year_to_string(year_to_plot))
 {
-    TH1::AddDirectory(kFALSE);
-
-    auto event_class_histograms = std::vector<ECHistogram>();
-    for (auto &&file : input_files)
-    {
-        auto root_file = std::unique_ptr<TFile>(TFile::Open(file.c_str()));
-        TIter keyList(root_file->GetListOfKeys());
-        TKey *key;
-        while ((key = (TKey *)keyList()))
-        {
-            const std::string name = key->GetName();
-            if (name.find(m_event_class_name) != std::string::npos and
-                name.find(distribution_name) != std::string::npos)
-            {
-
-                const auto [class_name,    //
-                            process_group, //
-                            xs_order,      //
-                            sample,        //
-                            year,          //
-                            shift,         //
-                            histo_name] = SerializationUtils::split_histo_name(name);
-                event_class_histograms.push_back(
-                    ECHistogram{.process_group = process_group,
-                                .shift = static_cast<std::size_t>(Shifts::string_to_variation(shift)),
-                                .histogram = *(root_file->Get<TH1F>(name.c_str()))});
-            }
-        }
-    }
-
     // split the histograms per process group and shift
-    std::unordered_map<std::string, std::unordered_map<std::string, std::vector<std::shared_ptr<TH1F>>>>
+    std::array<std::unordered_map<std::string, std::vector<std::shared_ptr<TH1F>>>, total_variations>
         unmerged_mc_histograms;
     for (const auto &histo : event_class_histograms)
     {
-        if (unmerged_mc_histograms.find(histo.get_shift()) == unmerged_mc_histograms.end())
-        {
-            unmerged_mc_histograms[histo.get_shift()] =
-                std::unordered_map<std::string, std::vector<std::shared_ptr<TH1F>>>();
-        }
-        unmerged_mc_histograms[histo.get_shift()][histo.process_group].push_back(
-            std::make_shared<TH1F>(histo.histogram));
+        unmerged_mc_histograms[histo.shift][histo.process_group].push_back(histo.histogram);
     }
 
     // merge unmerged_mc_histograms per process group and shift
-    // for (auto &&[shift, histos_per_process_group] : unmerged_mc_histograms)
+    auto start = std::chrono::high_resolution_clock::now();
     for (std::size_t shift = 0; shift < static_cast<std::size_t>(Shifts::Variations::kTotalVariations); shift++)
     {
-        for (auto &&[pg, histos] : unmerged_mc_histograms[Shifts::variation_to_string(shift)])
+        for (const auto &[pg, histos] : unmerged_mc_histograms[shift])
         {
-            m_histogram_per_process_group_and_shift.at(shift)[pg] = ROOTHelpers::SumAsTH1F(histos);
+            m_histogram_per_process_group_and_shift[shift][pg] = ROOTHelpers::SumAsTH1F(histos);
         }
     }
+        auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    std::cout << "Time taken: " << duration.count() << " milliseconds" << std::endl;
 
     // build Data histogram and graph
-    m_total_data_histogram = *(static_cast<TH1F *>(event_class_histograms.at(0).histogram.Clone()));
+    m_total_data_histogram = TH1F(*(event_class_histograms.at(0).histogram));
     m_total_data_histogram.Reset();
     if (m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::Nominal))
             .find("Data") !=
@@ -129,8 +87,228 @@ Distribution::Distribution(const std::vector<std::string> &input_files,
 
     // plot properties
     plot_props = make_plot_props();
-    if (m_distribution_name=="counts"){
-    integral_pvalue_props = make_integral_pvalue_props();}
+    if (m_distribution_name == "counts")
+    {
+        integral_pvalue_props = make_integral_pvalue_props();
+    }
+}
+
+// struct JobResult
+// {
+//     Distribution dist;
+//     std::string output_dir;
+//     std::string analysis_name;
+//     std::string distribution_name;
+//     Distribution::YearToPlot year_to_plot;
+//
+//     JobResult(const Distribution &dist,
+//               const std::string &output_dir,
+//               const std::string &analysis_name,
+//               const std::string &distribution_name,
+//               Distribution::YearToPlot year_to_plot)
+//         : dist(dist),
+//           output_dir(output_dir),
+//           analysis_name(analysis_name),
+//           distribution_name(distribution_name)
+// 	  , year_to_plot(year_to_plot)
+//     {
+//     }
+// };
+
+auto Distribution::make_distributions(const std::vector<std::string> &input_files,
+                                      const std::string &output_dir,
+                                      std::vector<std::string> &analysis_to_plot,
+                                      unsigned int pool_size) -> void
+{
+    TH1::AddDirectory(false);
+    TDirectory::AddDirectory(false);
+    ROOT::EnableThreadSafety();
+
+    std::sort(analysis_to_plot.begin(), analysis_to_plot.end());
+
+    fmt::print("[Distribution Factory] Starting pool: will launch {} threads ...\n", input_files.size());
+    auto load_histograms_pool = BS::thread_pool(input_files.size());
+
+    fmt::print("[Distribution Factory] Opening ROOT files and getting histograms...\n");
+    std::vector<std::future<std::vector<ECHistogram>>> future_ec_histograms;
+    std::atomic<int> file_counter = 0;
+    for (std::size_t i = 0; i < input_files.size(); i++)
+    {
+        future_ec_histograms.push_back(load_histograms_pool.submit(
+            [&](std::size_t i) -> std::vector<ECHistogram>
+            {
+                auto root_file = std::unique_ptr<TFile>(TFile::Open(input_files[i].c_str()));
+                auto this_event_class_histograms = std::vector<ECHistogram>();
+                this_event_class_histograms.reserve(root_file->GetListOfKeys()->GetSize());
+
+                TIter keyList(root_file->GetListOfKeys());
+                TKey *key;
+                while ((key = (TKey *)keyList()))
+                {
+                    const std::string name = key->GetName();
+                    const auto [analysis_name, //
+                                process_group, //
+                                xs_order,      //
+                                sample,        //
+                                year,          //
+                                shift,         //
+                                histo_name] = SerializationUtils::split_histo_name(name);
+                    if (std::binary_search(analysis_to_plot.cbegin(), analysis_to_plot.cend(), analysis_name))
+                    {
+                        auto hist_ptr = std::shared_ptr<TH1F>(static_cast<TH1F *>(key->ReadObj()));
+                        if (not(hist_ptr.get()))
+                        {
+                            fmt::print(stderr,
+                                       "ERROR: Could not load histogram for EventClass/Validation Analysis {}.\n",
+                                       name);
+                            std::exit(EXIT_FAILURE);
+                        }
+                        this_event_class_histograms.push_back(
+                            ECHistogram{.analysis_name = analysis_name,
+                                        .process_group = process_group,
+                                        .xs_order = xs_order,
+                                        .sample = sample,
+                                        .year = year,
+                                        .shift = static_cast<std::size_t>(Shifts::string_to_variation(shift)),
+                                        .histo_name = histo_name,
+                                        .histogram = hist_ptr});
+                    }
+                }
+
+                file_counter++;
+                fmt::print("Loaded ROOT file: {} - {}/{}\n", input_files[i], file_counter.load(), input_files.size());
+                return this_event_class_histograms;
+            },
+            i));
+    }
+
+    fmt::print("[Distribution Factory] Harversting histograms ... \n");
+    // analysis_name [distribution_name[year,ec_histogram]]]
+    auto event_class_histograms = std::unordered_map<
+        std::string,
+        std::unordered_map<std::string, std::unordered_map<std::string, std::vector<ECHistogram>>>>();
+    unsigned int collected_jobs = 0;
+    for (auto &fut : future_ec_histograms)
+    {
+        auto this_histos = fut.get();
+        for (const auto &ec_hist : this_histos)
+        {
+            event_class_histograms[ec_hist.analysis_name][ec_hist.histo_name][ec_hist.year].push_back(ec_hist);
+            event_class_histograms[ec_hist.analysis_name][ec_hist.histo_name][year_to_string(YearToPlot::Run2)]
+                .push_back(ec_hist);
+        }
+        this_histos.clear();
+        collected_jobs++;
+
+        if (static_cast<std::size_t>(file_counter.load()) == input_files.size())
+        {
+            fmt::print("Harversted {} / {} files.\n", collected_jobs, future_ec_histograms.size());
+        }
+    }
+
+    if (event_class_histograms.size() == 0)
+    {
+        fmt::print(stderr, "ERROR: Could not load any histogram for EventClass/Validation Analysis.\n");
+        std::exit(EXIT_FAILURE);
+    }
+    fmt::print("\n");
+
+    fmt::print("[Distribution Factory] Starting pool: will launch {} threads ...\n", pool_size);
+    auto pool = BS::thread_pool(pool_size);
+
+    fmt::print("[Distribution Factory] Launching tasks ...\n");
+    std::vector<std::future<void>> future_distributions;
+    std::queue<Distribution> io_queue;
+    std::mutex io_mutex;
+    std::atomic<int> distributions_counter = 0;
+    std::atomic<int> distributions_done = 0;
+    for (const auto &analysis_name : analysis_to_plot)
+    {
+        for (const auto year_to_plot : years_to_plot())
+        {
+            for (const auto &[_distribution_name, _allow_rescale_by_width] : get_distribution_props(analysis_name))
+            {
+                const std::string distribution_name = _distribution_name;
+                const bool allow_rescale_by_width = _allow_rescale_by_width;
+                if (not(distribution_name == "met" and analysis_name.find("1MET") == std::string::npos))
+                {
+                    future_distributions.push_back(pool.submit(
+                        [&io_mutex, &io_queue, &distributions_done, &distributions_counter, &event_class_histograms](
+                            const std::string &output_dir,
+                            const std::string &analysis_name,
+                            const std::string &distribution_name,
+                            bool allow_rescale_by_width,
+                            YearToPlot year_to_plot) -> void
+                        {
+                            {
+                                const std::lock_guard<std::mutex> lock(io_mutex);
+                                io_queue.emplace(event_class_histograms.at(analysis_name)
+                                                     .at("h_" + distribution_name)
+                                                     .at(year_to_string(year_to_plot)),
+                                                 analysis_name,
+                                                 distribution_name,
+                                                 allow_rescale_by_width,
+                                                 year_to_plot);
+                                // io_queue.push(Distribution());
+                            }
+
+                            distributions_done++;
+                            fmt::print("Done: {} - {} - {} | {} / {}\n",
+                                       analysis_name,
+                                       distribution_name,
+                                       year_to_string(year_to_plot),
+                                       distributions_done.load(),
+                                       distributions_counter.load());
+                        },
+                        output_dir,
+                        analysis_name,
+                        distribution_name,
+                        allow_rescale_by_width,
+                        year_to_plot));
+                    distributions_counter++;
+                }
+            }
+        }
+    }
+
+    fmt::print("[Distribution Factory] Collecting results and saving ...\n");
+    if (future_distributions.size() > 0)
+    {
+        while (distributions_done.load() < distributions_counter.load() or distributions_counter.load() == 0)
+        {
+            if (io_queue.size() > 0)
+            {
+                auto dist = io_queue.front();
+                auto output_root_file = std::unique_ptr<TFile>(TFile::Open(fmt::format("{}/distribution_{}_{}_{}.root",
+                                                                                       output_dir,
+                                                                                       dist.m_distribution_name,
+                                                                                       dist.m_event_class_name,
+                                                                                       dist.m_year_to_plot)
+                                                                               .c_str(),
+                                                                           "RECREATE"));
+                auto write_res = output_root_file->WriteObject(&dist, "distribution");
+                if (write_res <= 0)
+                {
+                    fmt::print(stderr,
+                               "ERROR: Could not write object to file: {} - {} - {}\n",
+                               dist.m_event_class_name,
+                               dist.m_distribution_name,
+                               dist.m_year_to_plot);
+                    std::exit(EXIT_FAILURE);
+                }
+
+                const std::lock_guard<std::mutex> lock(io_mutex);
+                io_queue.pop();
+            }
+        }
+    }
+
+    for (auto &fut : future_distributions)
+    {
+        fut.wait();
+    }
+
+    fmt::print("All done.\n");
 }
 
 auto Distribution::get_statistical_uncert() const -> RVec<double>
@@ -150,56 +328,52 @@ auto Distribution::get_statistical_uncert() const -> RVec<double>
 }
 
 auto Distribution::get_systematics_uncert(
-    const std::unordered_map<std::string, std::unordered_map<std::string, std::vector<std::shared_ptr<TH1F>>>>
+    const std::array<std::unordered_map<std::string, std::vector<std::shared_ptr<TH1F>>>, total_variations>
         &unmerged_mc_histograms) const -> RVec<double>
 {
     std::unordered_map<std::string, RVec<double>> xsec_order_uncert_LO_samples;
     std::unordered_map<std::string, RVec<double>> xsec_order_uncert_non_LO_samples;
 
-    for (const auto &[shift, histo_per_pg] : unmerged_mc_histograms)
+    for (const auto &[pg, unmerged_histos] :
+         unmerged_mc_histograms[static_cast<std::size_t>(Shifts::Variations::Nominal)])
     {
-        if (shift == "Nominal")
+        if (pg != "Data")
         {
-            for (const auto &[pg, unmerged_histos] : histo_per_pg)
+            if (xsec_order_uncert_LO_samples.find(pg) == xsec_order_uncert_LO_samples.end())
             {
-                if (pg != "Data")
+                xsec_order_uncert_LO_samples.insert({pg, RVec<double>(m_n_bins, 0.)});
+                xsec_order_uncert_non_LO_samples.insert({pg, RVec<double>(m_n_bins, 0.)});
+            }
+
+            for (std::size_t i = 0; i < unmerged_histos.size(); i++)
+            {
+                const auto [class_name,    //
+                            process_group, //
+                            xs_order,      //
+                            sample,        //
+                            year,          //
+                            shift,         //
+                            histo_name] = SerializationUtils::split_histo_name(unmerged_histos[i]->GetName());
+
+                if (xs_order == "LO")
                 {
-                    if (xsec_order_uncert_LO_samples.find(pg) == xsec_order_uncert_LO_samples.end())
+                    xsec_order_uncert_LO_samples.at(pg) += ROOTHelpers::Counts(*(unmerged_histos[i])) * 0.5;
+                }
+                else
+                {
+                    auto uncert_qcd_scale = Uncertanties::AbsDiffAndSymmetrize(
+                        *(unmerged_histos[i]),
+                        *unmerged_mc_histograms[static_cast<std::size_t>(Shifts::Variations::QCDScale_Up)].at(pg).at(i),
+                        *unmerged_mc_histograms[static_cast<std::size_t>(Shifts::Variations::QCDScale_Down)].at(pg).at(
+                            i));
+                    auto nominal_counts = ROOTHelpers::Counts(*(unmerged_histos[i]));
+
+                    for (std::size_t i = 0; i < uncert_qcd_scale.size(); i++)
                     {
-                        xsec_order_uncert_LO_samples.insert({pg, RVec<double>(m_n_bins, 0.)});
-                        xsec_order_uncert_non_LO_samples.insert({pg, RVec<double>(m_n_bins, 0.)});
+                        uncert_qcd_scale[i] = std::min(uncert_qcd_scale[i], std::fabs(nominal_counts[i] * 0.3));
                     }
 
-                    for (std::size_t i = 0; i < unmerged_histos.size(); i++)
-                    {
-                        const auto [class_name,    //
-                                    process_group, //
-                                    xs_order,      //
-                                    sample,        //
-                                    year,          //
-                                    shift,         //
-                                    histo_name] = SerializationUtils::split_histo_name(unmerged_histos[i]->GetName());
-
-                        if (xs_order == "LO")
-                        {
-                            xsec_order_uncert_LO_samples.at(pg) += ROOTHelpers::Counts(*unmerged_histos[i]) * 0.5;
-                        }
-                        else
-                        {
-                            auto uncert_qcd_scale = Uncertanties::AbsDiffAndSymmetrize(
-                                *unmerged_histos[i],
-                                *unmerged_mc_histograms.at("QCDScale_Up").at(pg).at(i),
-                                *unmerged_mc_histograms.at("QCDScale_Down").at(pg).at(i));
-                            auto nominal_counts = ROOTHelpers::Counts(*unmerged_histos[i]);
-
-                            for (std::size_t i = 0; i < uncert_qcd_scale.size(); i++)
-                            {
-                                uncert_qcd_scale[i] = std::min(uncert_qcd_scale[i], std::fabs(nominal_counts[i] * 0.3));
-                            }
-
-                            xsec_order_uncert_non_LO_samples.at(pg) += uncert_qcd_scale;
-                        }
-                    }
+                    xsec_order_uncert_non_LO_samples.at(pg) += uncert_qcd_scale;
                 }
             }
         }
@@ -394,21 +568,14 @@ auto Distribution::get_systematics_uncert(
     );
 }
 
-// auto Distribution::save(const std::string &output_file) const -> std::string
-// {
-//     auto output_root_file = std::unique_ptr<TFile>(TFile::Open(output_file.c_str(), "RECREATE"));
-//     output_root_file->WriteObject(this, fmt::format("[{}]_[{}]", m_event_class_name, m_distribution_name).c_str());
-//
-//     return fmt::format("EC: {} - Dist: {}", m_event_class_name, m_distribution_name);
-// }
-
 auto Distribution::make_integral_pvalue_props() const -> IntegralPValueProps
 {
     //  Sanity check
     if (m_distribution_name != "counts")
     {
         fmt::print(
-            "WARNING: Could not get P-Value props for a histogram that is not \"Counts\". Using the returned values "
+            "WARNING: Could not get P-Value props for a histogram that is not \"Counts\". Using the returned "
+            "values "
             "will cause undefined behavior.\n");
         return IntegralPValueProps{
             .total_data = -1., .total_mc = -1., .sigma_total = -1., .sigma_stat = -1., .total_per_process_group = {}};
@@ -423,6 +590,7 @@ auto Distribution::make_integral_pvalue_props() const -> IntegralPValueProps
             total_per_process_group.push_back(hist.GetBinContent(1));
         }
     }
+
     return IntegralPValueProps{
         .total_data = m_total_data_histogram.GetBinContent(1), //
         .total_mc = m_total_mc_histogram.GetBinContent(1),     //

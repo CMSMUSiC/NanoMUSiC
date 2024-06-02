@@ -1,11 +1,11 @@
 #include "ECScanner.hpp"
 
+#include "fmt/core.h"
 #include "util.h"
 
 #include <algorithm>
 #include <cmath>
-#include <math.h>
-#include <unordered_map>
+#include <fstream>
 
 #include <TCanvas.h>
 #include <TColor.h>
@@ -20,7 +20,6 @@
 #include "filereadstream.h"
 #include "filewritestream.h"
 #include "prettywriter.h"
-#include "writer.h"
 
 #include "ConvolutionComputer.hpp"
 
@@ -37,10 +36,7 @@ ECScanner::ECScanner(int &rounds, int &startRound)
     : m_scanType(ScanType::unknown),
       m_numDicingRounds(rounds),
       m_firstDicingRound(startRound),
-      m_scoreFunc("p-value"),
-      m_dicingProfiler("pseudo experiment generation"),
-      m_roiFindingProfiler("RoI finding total"),
-      m_pValueProfiler("p-value calculation")
+      m_scoreFunc("p-value")
 {
     // initalize function maps
     initScoreFuncMap();
@@ -67,14 +63,10 @@ ECScanner::~ECScanner()
 void ECScanner::finalize()
 {
     // print stuff, etc.
-    std::cout << "=== PROFILERS ===" << std::endl;
-    std::cout << m_dicingProfiler << std::endl;
-    std::cout << m_roiFindingProfiler << std::endl;
-    std::cout << m_pValueProfiler << std::endl;
     std::cout << "=== STATS ===" << std::endl;
-    for (const auto pair : m_regionStatistics)
+    for (const auto &[region, count] : m_regionStatistics)
     {
-        std::cout << pair.first << " = " << pair.second << std::endl;
+        fmt::print("{} = {}\n", region, count);
     }
 }
 
@@ -111,8 +103,6 @@ unsigned int ECScanner::getFirstDicingRound() const
 //
 void ECScanner::findRoI(const std::string scoreType, const bool filtered)
 {
-    m_roiFindingProfiler.start();
-
     const int maxBin = getMaxFilledBin();
 
     // Might be -1 if no data and no MC is in the distribution
@@ -302,8 +292,6 @@ void ECScanner::findRoI(const std::string scoreType, const bool filtered)
     {
         m_scanResultsCache.clear(); // cache may be used if we filter
     }
-
-    m_roiFindingProfiler.stop();
 }
 
 //// Function to determine if a region should be skipped for scoreFunction calculation
@@ -318,7 +306,6 @@ bool ECScanner::vetoRegion(const MCBin &mcbin,
                            std::vector<MCBin>::iterator const &maxMCBinIter,
                            bool isIntegral)
 {
-
     constexpr double no_data_threshold = 1e-9; // data values less than this will be treated as 0
 
     // check special cases for the region
@@ -521,7 +508,6 @@ void ECScanner::findRoI()
 //
 double ECScanner::calcPvalMUSiC(const MCBin &bin, const double data) const
 {
-    m_pValueProfiler.start();
     double p = -1.;
 
     // avoid caluclation if the difference between data and expecation is too large, just set it to a small p-value
@@ -566,7 +552,6 @@ double ECScanner::calcPvalMUSiC(const MCBin &bin, const double data) const
         p = std::max(p, 1e-8);
     }
 
-    m_pValueProfiler.stop();
     return p;
 }
 
@@ -631,16 +616,12 @@ int ECScanner::getMaxFilledBin()
 // stores them in the m_dataBins vector
 void ECScanner::diceMcPseudoData(const unsigned int round)
 {
-    m_dicingProfiler.start();
     m_dataBins = m_dicer.dicePseudoData(m_mcBins, round, m_p_prior);
-    m_dicingProfiler.stop();
 }
 
 void ECScanner::diceSignalPseudoData(const unsigned int round)
 {
-    m_dicingProfiler.start();
     m_dataBins = m_dicer.dicePseudoData(m_signalBins, round, m_p_prior);
-    m_dicingProfiler.stop();
 }
 
 // will be used for multithreading
@@ -865,9 +846,7 @@ void ECScanner::readSystematicShiftsFile(const std::string filename)
     m_dicer.setSystematicShifts(shifts);
 }
 
-//// read bin infos in m_dataBins
-//
-//
+// read bin infos in m_dataBins
 void ECScanner::readDataBinInfo()
 {
     assert(m_jsonDocument.HasMember("DataBins"));
@@ -880,9 +859,7 @@ void ECScanner::readDataBinInfo()
     }
 }
 
-//// Open and parse json file using rapidjson
-//
-//
+// Open and parse json file using rapidjson
 void ECScanner::readInputJson(const std::string jsonFilePath)
 {
     // NOTE: This function does NOT reset the scanner before reading
@@ -1102,9 +1079,6 @@ void ECScanner::writeOutputFiles(const std::string outputDirectory)
 
     // Add timing results
     rs::Value timingObj(rs::kObjectType);
-    timingObj.AddMember("dicing", m_dicingProfiler.rapidjsonValue(allocator), allocator);
-    timingObj.AddMember("roiFinding", m_roiFindingProfiler.rapidjsonValue(allocator), allocator);
-    timingObj.AddMember("pValue", m_pValueProfiler.rapidjsonValue(allocator), allocator);
     infoJsonDocument.AddMember("timing", timingObj, allocator);
 
     // Add stats results

@@ -3,12 +3,8 @@
 
 #include <vector>
 
-#include <fstream>
 #include <functional>
-#include <iostream>
 #include <map>
-#include <random>
-#include <streambuf>
 #include <vector>
 
 #include <TH2.h>
@@ -24,7 +20,6 @@
 #include "ConvolutionLookup.hpp"
 #include "Dicer.hpp"
 #include "MCBin.hpp"
-#include "Profiler.hpp"
 #include "ScanResult.hpp"
 
 namespace rs = rapidjson;
@@ -212,14 +207,7 @@ class ECScanner
     std::vector<ScanResult> m_scanResults;
     std::vector<ScanResult> m_scanResultsCache;
 
-    // debugging / control plots
-
-    // these are mutable so we can access then from const methods!
-    mutable Profiler m_dicingProfiler;
-    mutable Profiler m_roiFindingProfiler;
-    mutable Profiler m_pValueProfiler;
-
-    mutable std::map<const char *, unsigned long long> m_regionStatistics;
+    mutable std::unordered_map<const char *, unsigned long long> m_regionStatistics;
     TH2F *m_regionControlPlot = nullptr;
 };
 

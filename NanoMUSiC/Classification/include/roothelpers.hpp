@@ -18,6 +18,7 @@
 #include "TGraphAsymmErrors.h"
 #include "TGraphErrors.h"
 #include "TH1.h"
+#include "TList.h"
 
 using namespace ROOT;
 using namespace ROOT::VecOps;
@@ -63,24 +64,26 @@ inline auto Print(const TH1F &h) -> void
 
 inline auto Clone(const TH1F &h, const std::optional<std::string> &new_name = std::nullopt) -> TH1F
 {
-    auto new_histo = static_cast<TH1F *>(h.Clone());
+    // auto new_histo = *(static_cast<TH1F *>(h.Clone()));
+    auto new_histo = TH1F(h);
     if (new_name)
     {
-        new_histo->SetName(new_name->c_str());
+        new_histo.SetName(new_name->c_str());
     }
-    return *new_histo;
+    return new_histo;
 }
 
 inline auto CloneAndReset(const TH1F &h, const std::optional<std::string> &new_name = std::nullopt) -> TH1F
 {
-    auto new_histo = static_cast<TH1F *>(h.Clone());
+    // auto new_histo = *(static_cast<TH1F *>(h.Clone()));
+    auto new_histo = TH1F(h);
     if (new_name)
     {
-        new_histo->SetName(new_name->c_str());
+        new_histo.SetName(new_name->c_str());
     }
-    new_histo->Reset();
+    new_histo.Reset();
 
-    return *new_histo;
+    return new_histo;
 }
 
 inline auto Counts(const TH1F &h) -> RVec<double>
@@ -215,11 +218,18 @@ inline auto SumAsTH1F(const std::vector<TH1F> &histos, const std::optional<std::
         std::exit(EXIT_FAILURE);
     }
 
-    auto sum = Clone(histos[0]);
+    // auto sum = Clone(histos[0]);
+    // for (std::size_t i = 1; i < histos.size(); i++)
+    // {
+    //     sum.Add(&histos[i]);
+    // }
+    auto list = std::unique_ptr<TList>();
     for (std::size_t i = 1; i < histos.size(); i++)
     {
-        sum.Add(&histos[i]);
+        list->Add((TObject*)&(histos[i]));
     }
+    auto sum = Clone(histos[0]);
+    sum.Merge(list.get(), "NOL NOCHECK");
 
     if (new_name)
     {
@@ -241,12 +251,13 @@ inline auto SumAsTH1F(const std::vector<std::shared_ptr<TH1F>> &histos,
         fmt::print(stderr, "ERROR: Could not sum histograms. The provided list is empty.");
         std::exit(EXIT_FAILURE);
     }
-
-    auto sum = Clone(*histos[0]);
+    auto list = std::unique_ptr<TList>();
     for (std::size_t i = 1; i < histos.size(); i++)
     {
-        sum.Add(histos[i].get());
+        list->Add(histos[i].get());
     }
+    auto sum = Clone(*histos[0]);
+    sum.Merge(list.get(), "NOL NOCHECK");
 
     if (new_name)
     {

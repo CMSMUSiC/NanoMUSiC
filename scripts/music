@@ -94,27 +94,15 @@ def fold(
     inputs_dir: str = "classification_root_files",
     validation_inputs_dir: str = "validation_root_files",
     filters: list[str] = ["*"],
-    num_cpus: int = 120,
+    validation_filters: list[str] = ["*"],
+    num_cpus: int = 124,
 ):
     import classification
 
     classification.make_distributions(
-        inputs_dir, validation_inputs_dir, filters, num_cpus
+        inputs_dir, validation_inputs_dir, filters, validation_filters, num_cpus
     )
 
-
-@classification_app.command()
-def unwrap_and_fold(
-    config_file: str,
-    unwrap_inputs_dir: str = "classification_merged_results",
-    unwrap_validation_inputs_dir: str = "validation_merged_results",
-    fold_inputs_dir: str = "classification_root_files",
-    fold_validation_inputs_dir: str = "validation_root_files",
-    filters: list[str] = ["*"],
-    num_cpus: int = 120,
-):
-    unwrap(config_file, unwrap_inputs_dir, unwrap_validation_inputs_dir, num_cpus)
-    fold(fold_inputs_dir, fold_validation_inputs_dir, filters, num_cpus)
 
 
 ############################################################################
