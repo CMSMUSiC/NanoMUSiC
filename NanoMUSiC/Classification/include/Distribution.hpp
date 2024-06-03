@@ -159,12 +159,12 @@ class Distribution
                                    std::vector<std::string> &analysis_to_plot,
                                    unsigned int pool_size) -> void;
 
-    auto get_statistical_uncert() const -> RVec<double>;
+    auto get_statistical_uncert() -> RVec<double>;
     auto get_systematics_uncert(const std::array<std::unordered_map<std::string, std::vector<std::shared_ptr<TH1F>>>,
-                                                 total_variations> &unmerged_mc_histograms) const -> RVec<double>;
+                                                 total_variations> &unmerged_mc_histograms) -> RVec<double>;
 
     auto make_plot_props() -> PlotProps;
-    auto make_integral_pvalue_props() const -> IntegralPValueProps;
+    auto make_integral_pvalue_props()  -> IntegralPValueProps;
 };
 
 #endif // DISTRIBUTION_HPP

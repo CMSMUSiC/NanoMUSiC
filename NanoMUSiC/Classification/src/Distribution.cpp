@@ -7,7 +7,6 @@
 #include <cstdlib>
 #include <fmt/core.h>
 #include <fnmatch.h>
-#include <iterator>
 #include <memory>
 #include <numeric>
 #include <string>
@@ -35,6 +34,7 @@ Distribution::Distribution(const std::vector<ECHistogram> &event_class_histogram
       m_event_class_name(event_class_name),
       m_year_to_plot(year_to_string(year_to_plot))
 {
+    // auto start = std::chrono::high_resolution_clock::now();
     // split the histograms per process group and shift
     std::array<std::unordered_map<std::string, std::vector<std::shared_ptr<TH1F>>>, total_variations>
         unmerged_mc_histograms;
@@ -44,7 +44,6 @@ Distribution::Distribution(const std::vector<ECHistogram> &event_class_histogram
     }
 
     // merge unmerged_mc_histograms per process group and shift
-    auto start = std::chrono::high_resolution_clock::now();
     for (std::size_t shift = 0; shift < static_cast<std::size_t>(Shifts::Variations::kTotalVariations); shift++)
     {
         for (const auto &[pg, histos] : unmerged_mc_histograms[shift])
@@ -52,9 +51,6 @@ Distribution::Distribution(const std::vector<ECHistogram> &event_class_histogram
             m_histogram_per_process_group_and_shift[shift][pg] = ROOTHelpers::SumAsTH1F(histos);
         }
     }
-        auto end = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    std::cout << "Time taken: " << duration.count() << " milliseconds" << std::endl;
 
     // build Data histogram and graph
     m_total_data_histogram = TH1F(*(event_class_histograms.at(0).histogram));
@@ -91,29 +87,11 @@ Distribution::Distribution(const std::vector<ECHistogram> &event_class_histogram
     {
         integral_pvalue_props = make_integral_pvalue_props();
     }
+    // auto end = std::chrono::high_resolution_clock::now();
+    // auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    // std::cout << "Time taken: " << duration.count() << " milliseconds" << std::endl;
 }
 
-// struct JobResult
-// {
-//     Distribution dist;
-//     std::string output_dir;
-//     std::string analysis_name;
-//     std::string distribution_name;
-//     Distribution::YearToPlot year_to_plot;
-//
-//     JobResult(const Distribution &dist,
-//               const std::string &output_dir,
-//               const std::string &analysis_name,
-//               const std::string &distribution_name,
-//               Distribution::YearToPlot year_to_plot)
-//         : dist(dist),
-//           output_dir(output_dir),
-//           analysis_name(analysis_name),
-//           distribution_name(distribution_name)
-// 	  , year_to_plot(year_to_plot)
-//     {
-//     }
-// };
 
 auto Distribution::make_distributions(const std::vector<std::string> &input_files,
                                       const std::string &output_dir,
@@ -240,16 +218,16 @@ auto Distribution::make_distributions(const std::vector<std::string> &input_file
                             bool allow_rescale_by_width,
                             YearToPlot year_to_plot) -> void
                         {
+                            auto dist = Distribution(event_class_histograms.at(analysis_name)
+                                                         .at("h_" + distribution_name)
+                                                         .at(year_to_string(year_to_plot)),
+                                                     analysis_name,
+                                                     distribution_name,
+                                                     allow_rescale_by_width,
+                                                     year_to_plot);
                             {
                                 const std::lock_guard<std::mutex> lock(io_mutex);
-                                io_queue.emplace(event_class_histograms.at(analysis_name)
-                                                     .at("h_" + distribution_name)
-                                                     .at(year_to_string(year_to_plot)),
-                                                 analysis_name,
-                                                 distribution_name,
-                                                 allow_rescale_by_width,
-                                                 year_to_plot);
-                                // io_queue.push(Distribution());
+                                io_queue.push(dist);
                             }
 
                             distributions_done++;
@@ -278,23 +256,26 @@ auto Distribution::make_distributions(const std::vector<std::string> &input_file
         {
             if (io_queue.size() > 0)
             {
-                auto dist = io_queue.front();
-                auto output_root_file = std::unique_ptr<TFile>(TFile::Open(fmt::format("{}/distribution_{}_{}_{}.root",
-                                                                                       output_dir,
-                                                                                       dist.m_distribution_name,
-                                                                                       dist.m_event_class_name,
-                                                                                       dist.m_year_to_plot)
-                                                                               .c_str(),
-                                                                           "RECREATE"));
-                auto write_res = output_root_file->WriteObject(&dist, "distribution");
-                if (write_res <= 0)
                 {
-                    fmt::print(stderr,
-                               "ERROR: Could not write object to file: {} - {} - {}\n",
-                               dist.m_event_class_name,
-                               dist.m_distribution_name,
-                               dist.m_year_to_plot);
-                    std::exit(EXIT_FAILURE);
+                    auto dist = io_queue.front();
+                    auto output_root_file =
+                        std::unique_ptr<TFile>(TFile::Open(fmt::format("{}/distribution_{}_{}_{}.root",
+                                                                       output_dir,
+                                                                       dist.m_distribution_name,
+                                                                       dist.m_event_class_name,
+                                                                       dist.m_year_to_plot)
+                                                               .c_str(),
+                                                           "RECREATE"));
+                    auto write_res = output_root_file->WriteObject(&dist, "distribution");
+                    if (write_res <= 0)
+                    {
+                        fmt::print(stderr,
+                                   "ERROR: Could not write object to file: {} - {} - {}\n",
+                                   dist.m_event_class_name,
+                                   dist.m_distribution_name,
+                                   dist.m_year_to_plot);
+                        std::exit(EXIT_FAILURE);
+                    }
                 }
 
                 const std::lock_guard<std::mutex> lock(io_mutex);
@@ -311,7 +292,7 @@ auto Distribution::make_distributions(const std::vector<std::string> &input_file
     fmt::print("All done.\n");
 }
 
-auto Distribution::get_statistical_uncert() const -> RVec<double>
+auto Distribution::get_statistical_uncert() -> RVec<double>
 {
     auto statistical_uncertainties = RVec<double>(m_n_bins, 0.);
 
@@ -329,7 +310,7 @@ auto Distribution::get_statistical_uncert() const -> RVec<double>
 
 auto Distribution::get_systematics_uncert(
     const std::array<std::unordered_map<std::string, std::vector<std::shared_ptr<TH1F>>>, total_variations>
-        &unmerged_mc_histograms) const -> RVec<double>
+        &unmerged_mc_histograms) -> RVec<double>
 {
     std::unordered_map<std::string, RVec<double>> xsec_order_uncert_LO_samples;
     std::unordered_map<std::string, RVec<double>> xsec_order_uncert_non_LO_samples;
@@ -564,11 +545,10 @@ auto Distribution::get_systematics_uncert(
                         [](const RVec<double> &acc_vec, const RVec<double> &next_vec) -> RVec<double>
                         {
                             return acc_vec + ROOT::VecOps::pow(next_vec, 2.);
-                        }) //
-    );
+                        }));
 }
 
-auto Distribution::make_integral_pvalue_props() const -> IntegralPValueProps
+auto Distribution::make_integral_pvalue_props() -> IntegralPValueProps
 {
     //  Sanity check
     if (m_distribution_name != "counts")

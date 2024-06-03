@@ -95,7 +95,7 @@ def fold(
     validation_inputs_dir: str = "validation_root_files",
     filters: list[str] = ["*"],
     validation_filters: list[str] = ["*"],
-    num_cpus: int = 124,
+    num_cpus: int = 50,
 ):
     import classification
 

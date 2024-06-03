@@ -209,7 +209,34 @@ inline auto AbsDiff(const TH1F &h1, const TH1F &h2) -> RVec<double>
 
 /////////////////
 /// This is important to sum Data and MC histograms and get the proper errors
-inline auto SumAsTH1F(const std::vector<TH1F> &histos, const std::optional<std::string> &new_name = std::nullopt)
+// inline auto SumAsTH1F(const std::vector<TH1F> &histos, const std::optional<std::string> &new_name = std::nullopt)
+//     -> TH1F
+// {
+//     if (histos.size() == 0)
+//     {
+//         fmt::print(stderr, "ERROR: Could not sum histograms. The provided list is empty.");
+//         std::exit(EXIT_FAILURE);
+//     }
+//
+//     auto sum = Clone(histos[0]);
+//     for (std::size_t i = 1; i < histos.size(); i++)
+//     {
+//         sum.Add(&histos[i]);
+//     }
+//
+//     if (new_name)
+//     {
+//         sum.SetName(new_name->c_str());
+//     }
+//     else
+//     {
+//         sum.SetName(histos[0].GetName());
+//     }
+//
+//     return sum;
+// }
+
+inline auto SumAsTH1F(const std::vector<TH1F *> &histos, const std::optional<std::string> &new_name = std::nullopt)
     -> TH1F
 {
     if (histos.size() == 0)
@@ -218,46 +245,19 @@ inline auto SumAsTH1F(const std::vector<TH1F> &histos, const std::optional<std::
         std::exit(EXIT_FAILURE);
     }
 
-    // auto sum = Clone(histos[0]);
+    // auto sum = Clone(*(histos[0]));
     // for (std::size_t i = 1; i < histos.size(); i++)
     // {
-    //     sum.Add(&histos[i]);
+    //     sum.Add(histos[i].get());
     // }
-    auto list = std::unique_ptr<TList>();
+
+    auto list = TList();
     for (std::size_t i = 1; i < histos.size(); i++)
     {
-        list->Add((TObject*)&(histos[i]));
+        list.Add(histos[i]);
     }
-    auto sum = Clone(histos[0]);
-    sum.Merge(list.get(), "NOL NOCHECK");
-
-    if (new_name)
-    {
-        sum.SetName(new_name->c_str());
-    }
-    else
-    {
-        sum.SetName(histos[0].GetName());
-    }
-
-    return sum;
-}
-
-inline auto SumAsTH1F(const std::vector<std::shared_ptr<TH1F>> &histos,
-                      const std::optional<std::string> &new_name = std::nullopt) -> TH1F
-{
-    if (histos.size() == 0)
-    {
-        fmt::print(stderr, "ERROR: Could not sum histograms. The provided list is empty.");
-        std::exit(EXIT_FAILURE);
-    }
-    auto list = std::unique_ptr<TList>();
-    for (std::size_t i = 1; i < histos.size(); i++)
-    {
-        list->Add(histos[i].get());
-    }
-    auto sum = Clone(*histos[0]);
-    sum.Merge(list.get(), "NOL NOCHECK");
+    auto sum = Clone(*(histos[0]));
+    sum.Merge(&list);
 
     if (new_name)
     {
@@ -271,12 +271,40 @@ inline auto SumAsTH1F(const std::vector<std::shared_ptr<TH1F>> &histos,
     return sum;
 }
 
-inline auto SumAsTH1F(const std::unordered_map<std::string, TH1F> &histos,
+inline auto SumAsTH1F(const std::vector<std::shared_ptr<TH1F>> &histos,
+                      const std::optional<std::string> &new_name = std::nullopt) -> TH1F
+{
+    if (histos.size() == 0)
+    {
+        fmt::print(stderr, "ERROR: Could not sum histograms. The provided list is empty.");
+        std::exit(EXIT_FAILURE);
+    }
+    auto list = TList();
+    for (std::size_t i = 1; i < histos.size(); i++)
+    {
+        list.Add(histos[i].get());
+    }
+    auto sum = Clone(*(histos[0]));
+    sum.Merge(&list);
+
+    if (new_name)
+    {
+        sum.SetName(new_name->c_str());
+    }
+    else
+    {
+        sum.SetName(histos[0]->GetName());
+    }
+
+    return sum;
+}
+
+inline auto SumAsTH1F(std::unordered_map<std::string, TH1F> &histos,
                       bool remove_data = true,
                       const std::optional<std::string> &new_name = std::nullopt) -> TH1F
 {
-    auto values = std::vector<TH1F>();
-    for (const auto &[pg, h] : histos)
+    auto values = std::vector<TH1F *>();
+    for (auto &[pg, h] : histos)
     {
         if (remove_data)
         {
@@ -285,7 +313,7 @@ inline auto SumAsTH1F(const std::unordered_map<std::string, TH1F> &histos,
                 continue;
             }
         }
-        values.push_back(h);
+        values.emplace_back(&h);
     }
     return SumAsTH1F(values, new_name);
 }
