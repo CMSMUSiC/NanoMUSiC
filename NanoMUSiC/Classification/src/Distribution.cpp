@@ -197,20 +197,18 @@ auto Distribution::make_distributions(const std::vector<std::string> &input_file
     auto pool = BS::thread_pool(pool_size);
 
     fmt::print("[Distribution Factory] Launching tasks ...\n");
-    std::vector<std::future<std::vector<std::unique_ptr<Distribution>>>> future_distributions;
+    std::vector<std::future<void>> future_distributions;
     int analysis_counter = 0;
     std::atomic<int> analysis_done = 0;
-    std::mutex debug_mtx;
+    std::mutex io_mutex;
     for (const auto &analysis_name : analysis_to_plot)
     {
         future_distributions.push_back(pool.submit(
-            [&debug_mtx, &analysis_done, &analysis_counter, &event_class_histograms](
-                const std::string &output_dir,
-                const std::string &analysis_name) -> std::vector<std::unique_ptr<Distribution>>
+            [&io_mutex, &analysis_done, &analysis_counter, &event_class_histograms](
+                const std::string &output_dir, const std::string &analysis_name) -> void
             {
-                std::lock_guard<std::mutex> lock(debug_mtx);
-
-                auto distributions = std::vector<std::unique_ptr<Distribution>>();
+                // auto distributions = std::vector<std::unique_ptr<Distribution>>();
+                auto distributions = std::vector<Distribution>();
                 distributions.reserve(16);
                 for (const auto year_to_plot : years_to_plot())
                 {
@@ -231,14 +229,13 @@ auto Distribution::make_distributions(const std::vector<std::string> &input_file
                                             .find(year_to_string(year_to_plot)) !=
                                         event_class_histograms.at(analysis_name).at("h_" + distribution_name).end())
                                     {
-                                        distributions.emplace_back(
-                                            std::make_unique<Distribution>(event_class_histograms.at(analysis_name)
-                                                                               .at("h_" + distribution_name)
-                                                                               .at(year_to_string(year_to_plot)),
-                                                                           analysis_name,
-                                                                           distribution_name,
-                                                                           allow_rescale_by_width,
-                                                                           year_to_plot));
+                                        distributions.emplace_back(event_class_histograms.at(analysis_name)
+                                                                       .at("h_" + distribution_name)
+                                                                       .at(year_to_string(year_to_plot)),
+                                                                   analysis_name,
+                                                                   distribution_name,
+                                                                   allow_rescale_by_width,
+                                                                   year_to_plot);
                                         // distributions.emplace_back(std::make_unique<Distribution>());
                                     }
                                 }
@@ -247,10 +244,41 @@ auto Distribution::make_distributions(const std::vector<std::string> &input_file
                     }
                 }
 
+                {
+                    std::lock_guard<std::mutex> lock(io_mutex);
+
+                    auto output_root_file =
+                        std::unique_ptr<TFile>(TFile::Open(fmt::format("{}/distribution_{}_{}_{}.root",
+                                                                       output_dir,
+                                                                       distributions.at(0).m_distribution_name,
+                                                                       distributions.at(0).m_event_class_name,
+                                                                       distributions.at(0).m_year_to_plot)
+                                                               .c_str(),
+                                                           "RECREATE"));
+                    for (auto &dist : distributions)
+                    {
+                        auto write_res = output_root_file->WriteObject(&dist,
+                                                                       fmt::format("distribution_{}_{}_{}",
+                                                                                   dist.m_event_class_name,
+                                                                                   dist.m_distribution_name,
+                                                                                   dist.m_year_to_plot)
+                                                                           .c_str());
+                        if (write_res <= 0)
+                        {
+                            fmt::print(stderr,
+                                       "ERROR: Could not write object to file: {} - {} - {}\n",
+                                       dist.m_event_class_name,
+                                       dist.m_distribution_name,
+                                       dist.m_year_to_plot);
+                            std::exit(EXIT_FAILURE);
+                        }
+                    }
+                }
+
                 analysis_done++;
                 fmt::print("Done: {} | {} / {}\n", analysis_name, analysis_done.load(), analysis_counter);
 
-                return distributions;
+                // return distributions;
             },
             output_dir,
             analysis_name));
@@ -260,38 +288,43 @@ auto Distribution::make_distributions(const std::vector<std::string> &input_file
     fmt::print("[Distribution Factory] Collecting results and saving ...\n");
     for (auto &fut : future_distributions)
     {
-        auto distributions = fut.get();
-        {
-            auto output_root_file =
-                std::unique_ptr<TFile>(TFile::Open(fmt::format("{}/distribution_{}_{}_{}.root",
-                                                               output_dir,
-                                                               distributions.at(0)->m_distribution_name,
-                                                               distributions.at(0)->m_event_class_name,
-                                                               distributions.at(0)->m_year_to_plot)
-                                                       .c_str(),
-                                                   "RECREATE"));
-            for (auto &dist : distributions)
-            {
-                auto write_res = output_root_file->WriteObject(dist.get(),
-                                                               fmt::format("distribution_{}_{}_{}",
-                                                                           dist->m_event_class_name,
-                                                                           dist->m_distribution_name,
-                                                                           dist->m_year_to_plot)
-                                                                   .c_str());
-                if (write_res <= 0)
-                {
-                    fmt::print(stderr,
-                               "ERROR: Could not write object to file: {} - {} - {}\n",
-                               dist->m_event_class_name,
-                               dist->m_distribution_name,
-                               dist->m_year_to_plot);
-                    std::exit(EXIT_FAILURE);
-                }
-            }
-        }
-
-        distributions.clear();
+        fut.wait();
     }
+
+    // for (auto &fut : future_distributions)
+    // {
+    //     auto distributions = fut.get();
+    //     {
+    //         auto output_root_file =
+    //             std::unique_ptr<TFile>(TFile::Open(fmt::format("{}/distribution_{}_{}_{}.root",
+    //                                                            output_dir,
+    //                                                            distributions.at(0)->m_distribution_name,
+    //                                                            distributions.at(0)->m_event_class_name,
+    //                                                            distributions.at(0)->m_year_to_plot)
+    //                                                    .c_str(),
+    //                                                "RECREATE"));
+    //         for (auto &dist : distributions)
+    //         {
+    //             auto write_res = output_root_file->WriteObject(dist.get(),
+    //                                                            fmt::format("distribution_{}_{}_{}",
+    //                                                                        dist->m_event_class_name,
+    //                                                                        dist->m_distribution_name,
+    //                                                                        dist->m_year_to_plot)
+    //                                                                .c_str());
+    //             if (write_res <= 0)
+    //             {
+    //                 fmt::print(stderr,
+    //                            "ERROR: Could not write object to file: {} - {} - {}\n",
+    //                            dist->m_event_class_name,
+    //                            dist->m_distribution_name,
+    //                            dist->m_year_to_plot);
+    //                 std::exit(EXIT_FAILURE);
+    //             }
+    //         }
+    //     }
+    //
+    //     distributions.clear();
+    // }
 
     fmt::print("All done.\n");
 }
