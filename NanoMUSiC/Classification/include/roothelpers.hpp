@@ -303,7 +303,7 @@ inline auto SumAsTH1F(std::unordered_map<std::string, TH1F> &histos,
                       bool remove_data = true,
                       const std::optional<std::string> &new_name = std::nullopt) -> TH1F
 {
-    auto values = std::vector<TH1F *>();
+    auto list = TList();
     for (auto &[pg, h] : histos)
     {
         if (remove_data)
@@ -313,10 +313,38 @@ inline auto SumAsTH1F(std::unordered_map<std::string, TH1F> &histos,
                 continue;
             }
         }
-        values.emplace_back(&h);
+        list.Add(&h);
     }
-    return SumAsTH1F(values, new_name);
+
+    auto sum = CloneAndReset(*(static_cast<TH1F *>(list.At(0))));
+    sum.Merge(&list);
+
+    if (new_name)
+    {
+        sum.SetName(new_name->c_str());
+    }
+
+    return sum;
 }
+
+// inline auto SumAsTH1F(std::unordered_map<std::string, TH1F> &histos,
+//                       bool remove_data = true,
+//                       const std::optional<std::string> &new_name = std::nullopt) -> TH1F
+// {
+//     auto values = std::vector<TH1F *>();
+//     for (auto &[pg, h] : histos)
+//     {
+//         if (remove_data)
+//         {
+//             if (pg == "Data")
+//             {
+//                 continue;
+//             }
+//         }
+//         values.emplace_back(&h);
+//     }
+//     return SumAsTH1F(values, new_name);
+// }
 
 ///////////////////
 /// Ref: https://twiki.cern.ch/twiki/bin/view/CMS/PoissonErrorBastruct
