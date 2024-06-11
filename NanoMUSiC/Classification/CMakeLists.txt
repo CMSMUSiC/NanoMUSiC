@@ -44,9 +44,9 @@ pybind11_add_module(classification_imp MODULE
     src/GeneratorFilters.cpp //
     src/NanoAODGenInfo.cpp //
     src/ZToLepLepX.cpp //
-    # src/GammaPlusJet.cpp //
-    # src/TTBarTo1Lep2Bjet2JetMET.cpp //
-    # src/WToLepNuX.cpp //
+    src/GammaPlusJet.cpp //
+    src/TTBarTo1Lep2Bjet2JetMET.cpp //
+    src/WToLepNuX.cpp //
     # src/WToLepNu_eff.cpp //
     # src/ZToTauTauLepX.cpp //
     src/EventClass.cpp //

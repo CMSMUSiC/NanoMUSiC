@@ -1,104 +1,160 @@
 #include "TTBarTo1Lep2Bjet2JetMET.hpp"
-#include "Configs.hpp"
-#include "Histograms.hpp"
-#include "Math/GenVector/VectorUtil.h"
-#include "Math/VectorUtil.h"
-#include "NanoEventClass.hpp"
-#include <filesystem>
+#include <cstdlib>
 #include <fmt/format.h>
-#include <string_view>
+#include <memory>
 
-TTBarTo1Lep2Bjet2JetMET::TTBarTo1Lep2Bjet2JetMET(const std::string &_analysis_name,
-                                                 const std::string &_output_path,
-                                                 const std::map<std::string, int> &_countMap,
-                                                 bool dummy,
-                                                 const std::string _shift,
-                                                 const std::string &_sample,
-                                                 const std::string &_year,
-                                                 const std::string &_process_group,
-                                                 const std::string &_xs_order)
-    : output_path(_output_path),
-      min_bin_width(10.),
-      countMap(_countMap),
-      shift(_shift)
+#include "EventClass.hpp"
+#include "SerializationUtils.hpp"
+
+TTBarTo1Lep2Bjet2JetMET::TTBarTo1Lep2Bjet2JetMET(enum Leptons lepton,
+                                                 const std::string &process_group,
+                                                 const std::string &xs_order,
+                                                 const std::string &sample,
+                                                 const std::string &year)
+    : lepton(lepton)
 {
-    std::vector<double> limits =
-        BinLimits::get_bin_limits("validation_plot", countMap, min_energy, max_energy, min_bin_width, 1);
+    TH1::AddDirectory(kFALSE);
 
-    std::string histo_name = "";
-    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
-                                                          _process_group, //
-                                                          _xs_order,      //
-                                                          _sample,        //
-                                                          _year,          //
-                                                          _shift,         //
-                                                          "h_invariant_mass_jet0_jet1");
-    h_invariant_mass_jet0_jet1 = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
-    h_invariant_mass_jet0_jet1.Sumw2();
+    auto count_map = std::unordered_map<ObjectNames, int>{};
+    if (lepton == Leptons::MUONS)
+    {
+        analysis_name = "ttbar_to_1muon_2bjet_2jet_met";
 
-    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
-                                                          _process_group, //
-                                                          _xs_order,      //
-                                                          _sample,        //
-                                                          _year,          //
-                                                          _shift,         //
-                                                          "h_transverse_mass_lep_MET");
-    h_transverse_mass_lep_MET = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
-    h_transverse_mass_lep_MET.Sumw2();
+        count_map = std::unordered_map<ObjectNames, int>{{ObjectNames::Muon, 1},
+                                                         {ObjectNames::Electron, 0},
+                                                         {ObjectNames::Photon, 0},
+                                                         {ObjectNames::Tau, 0},
+                                                         {ObjectNames::bJet, 2},
+                                                         {ObjectNames::Jet, 2},
+                                                         {ObjectNames::MET, 0}};
+    }
+    else if (lepton == Leptons::ELECTRONS)
+    {
+        analysis_name = "ttbar_to_1electron_2bjet_2jet_met";
 
-    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
-                                                          _process_group, //
-                                                          _xs_order,      //
-                                                          _sample,        //
-                                                          _year,          //
-                                                          _shift,         //
-                                                          "h_ht_had_lep");
-    h_ht_had_lep = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
-    h_ht_had_lep.Sumw2();
+        count_map = std::unordered_map<ObjectNames, int>{{ObjectNames::Muon, 0},
+                                                         {ObjectNames::Electron, 0},
+                                                         {ObjectNames::Photon, 0},
+                                                         {ObjectNames::Tau, 0},
+                                                         {ObjectNames::bJet, 2},
+                                                         {ObjectNames::Jet, 2},
+                                                         {ObjectNames::MET, 0}};
+    }
+    else if (lepton == Leptons::TAUS)
+    {
+        analysis_name = "ttbar_to_1tau_2bjet_2jet_met";
+
+        count_map = std::unordered_map<ObjectNames, int>{{ObjectNames::Muon, 0},
+                                                         {ObjectNames::Electron, 0},
+                                                         {ObjectNames::Photon, 0},
+                                                         {ObjectNames::Tau, 1},
+                                                         {ObjectNames::bJet, 2},
+                                                         {ObjectNames::Jet, 2},
+                                                         {ObjectNames::MET, 0}};
+    }
+    else
+    {
+
+        fmt::print(stderr, "ERROR: Could not set analysis name and bim limits. Lepton flavor not found.\n");
+        std::exit(EXIT_FAILURE);
+    }
+
+    auto bins_limits = BinLimits::limits(
+        count_map, false, Histograms::min_energy, Histograms::max_energy, Histograms::min_bin_size, Histograms::fudge);
+
+    count_map[ObjectNames::MET] = 1;
+    auto bins_limits_MET = BinLimits::limits(
+        count_map, true, Histograms::min_energy, Histograms::max_energy, Histograms::min_bin_size, Histograms::fudge);
+
+    // Loop over all variations
+    for (std::size_t idx_var = 0; idx_var < total_variations; idx_var++)
+    {
+        std::string histo_name = "";
+        histo_name = SerializationUtils::make_histogram_full_name(analysis_name,                        //
+                                                                  process_group,                        //
+                                                                  xs_order,                             //
+                                                                  sample,                               //
+                                                                  year,                                 //
+                                                                  Shifts::variation_to_string(idx_var), //
+                                                                  "h_invariant_mass_jet0_jet1");
+
+        h_invariant_mass_jet0_jet1[idx_var] =
+            TH1F(histo_name.c_str(), histo_name.c_str(), bins_limits.size() - 1, bins_limits.data());
+        h_invariant_mass_jet0_jet1[idx_var].Sumw2();
+
+        histo_name = SerializationUtils::make_histogram_full_name(analysis_name,                        //
+                                                                  process_group,                        //
+                                                                  xs_order,                             //
+                                                                  sample,                               //
+                                                                  year,                                 //
+                                                                  Shifts::variation_to_string(idx_var), //
+                                                                  "h_ht_had_lep");
+
+        h_ht_had_lep[idx_var] =
+            TH1F(histo_name.c_str(), histo_name.c_str(), bins_limits.size() - 1, bins_limits.data());
+        h_ht_had_lep[idx_var].Sumw2();
+
+        histo_name = SerializationUtils::make_histogram_full_name(analysis_name,                        //
+                                                                  process_group,                        //
+                                                                  xs_order,                             //
+                                                                  sample,                               //
+                                                                  year,                                 //
+                                                                  Shifts::variation_to_string(idx_var), //
+                                                                  "h_transverse_mass_lep_MET");
+
+        h_transverse_mass_lep_MET[idx_var] =
+            TH1F(histo_name.c_str(), histo_name.c_str(), bins_limits_MET.size() - 1, bins_limits_MET.data());
+        h_transverse_mass_lep_MET[idx_var].Sumw2();
+    }
 }
 
-auto TTBarTo1Lep2Bjet2JetMET::fill(Math::PtEtaPhiMVector lep,
-                                   Math::PtEtaPhiMVector jet0,
-                                   Math::PtEtaPhiMVector jet1,
-                                   Math::PtEtaPhiMVector bjet0,
-                                   Math::PtEtaPhiMVector bjet1,
-                                   Math::PtEtaPhiMVector met,
-                                   float weight) -> void
+auto TTBarTo1Lep2Bjet2JetMET::fill(const MUSiCObjects &leptons,
+                                   const MUSiCObjects &bjets,
+                                   const MUSiCObjects &jets,
+                                   const MUSiCObjects &met,
+                                   double weight,
+                                   Shifts::Variations shift) -> void
 {
-
-    if ((MUSiCObjects::transverse_mass(lep) + met.Pt()) == 60)
+    auto idx_var = static_cast<std::size_t>(shift);
+    if ((leptons.p4.at(0).M() + met.p4.at(0).Pt()) == 60)
     {
-        h_invariant_mass_jet0_jet1.Fill((jet0 + jet1).mass(), weight);
+        h_invariant_mass_jet0_jet1[idx_var].Fill((jets.p4.at(0) + jets.p4.at(1)).mass(), weight);
     }
 
-    if (((jet0 + jet1).mass() < (PDG::W::Mass + 30)) and ((jet0 + jet1).mass() > (PDG::W::Mass - 30)))
+    if (((jets.p4.at(0) + jets.p4.at(1)).mass() < (PDG::W::Mass + 30)) and
+        ((jets.p4.at(0) + jets.p4.at(1)).mass() > (PDG::W::Mass - 30)))
     {
-        h_transverse_mass_lep_MET.Fill(MUSiCObjects::transverse_mass(lep + met), weight);
+        h_transverse_mass_lep_MET[idx_var].Fill((leptons.p4.at(0) + met.p4.at(0)).M(), weight);
     }
 
-    if (((MUSiCObjects::transverse_mass(lep) + met.Pt()) == 60) and ((jet0 + jet1).mass() < (PDG::W::Mass + 30)) and
-        ((jet0 + jet1).mass() > (PDG::W::Mass - 30)))
+    if (((leptons.p4.at(0).M() + met.p4.at(0).Pt()) == 60) and
+        ((jets.p4.at(0) + jets.p4.at(1)).mass() < (PDG::W::Mass + 30)) and
+        ((jets.p4.at(0) + jets.p4.at(1)).mass() > (PDG::W::Mass - 30)))
     {
-        h_ht_had_lep.Fill((jet0 + jet1 + bjet0 + bjet1).mass());
+        h_ht_had_lep[idx_var].Fill((jets.p4.at(0) + jets.p4.at(1) + bjets.p4.at(0) + bjets.p4.at(1)).mass());
     }
 }
 
-auto TTBarTo1Lep2Bjet2JetMET::dump_outputs(std::unique_ptr<TFile> &output_file) -> void
+auto TTBarTo1Lep2Bjet2JetMET::serialize_to_root(const std::unique_ptr<TFile> &output_file) -> void
 {
-    // auto output_file = std::unique_ptr<TFile>(TFile::Open(output_path.c_str(), "RECREATE"));
-    output_file->cd();
+    for (auto &hist : {h_invariant_mass_jet0_jet1, h_ht_had_lep, h_transverse_mass_lep_MET})
+    {
+        for (std::size_t idx_var = 0; idx_var < total_variations; idx_var++)
+        {
+            output_file->WriteObject(&hist[idx_var], hist[idx_var].GetName());
+        }
+    }
+}
 
-    // h_invariant_mass_jet0_jet1.Scale(min_bin_width, "width");
-    h_invariant_mass_jet0_jet1.SetDirectory(output_file.get());
-    h_invariant_mass_jet0_jet1.Write();
+#define MERGE(h)                                                                                                       \
+    for (std::size_t idx_var = 0; idx_var < total_variations; idx_var++)                                               \
+    {                                                                                                                  \
+        h[idx_var].Add(&other.h[idx_var]);                                                                             \
+    }
 
-    // h_transverse_mass_lep_MET.Scale(min_bin_width, "width");
-    h_transverse_mass_lep_MET.SetDirectory(output_file.get());
-    h_transverse_mass_lep_MET.Write();
-
-    // h_ht_had_lep.Scale(min_bin_width, "width");
-    h_ht_had_lep.SetDirectory(output_file.get());
-    h_ht_had_lep.Write();
-
-    // output_file->Close();
+auto TTBarTo1Lep2Bjet2JetMET::merge_inplace(const TTBarTo1Lep2Bjet2JetMET &other) -> void
+{
+    MERGE(h_invariant_mass_jet0_jet1)
+    MERGE(h_ht_had_lep)
+    MERGE(h_transverse_mass_lep_MET)
 }

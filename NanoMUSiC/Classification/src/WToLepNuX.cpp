@@ -1,328 +1,195 @@
 #include "../include/WToLepNuX.hpp"
-#include "Configs.hpp"
-#include "Histograms.hpp"
-#include "Math/GenVector/VectorUtil.h"
-#include "Math/VectorUtil.h"
-#include "TEfficiency.h"
-#include <filesystem>
+#include <cstdlib>
 #include <fmt/format.h>
-#include <string_view>
+#include <memory>
 
-#include "NanoEventClass.hpp"
+#include "EventClass.hpp"
+#include "SerializationUtils.hpp"
 
-WToLepNuX::WToLepNuX(const std::string &_analysis_name,
-                     const std::string &_output_path,
-                     const std::map<std::string, int> &_countMap,
-                     bool _is_Z_mass_validation,
-                     const std::string _shift,
-                     const std::string &_sample,
-                     const std::string &_year,
-                     const std::string &_process_group,
-                     const std::string &_xs_order)
-    : output_path(_output_path),
-      min_bin_width(10.),
-      countMap(_countMap),
-      is_Z_mass_validation(_is_Z_mass_validation),
-      shift(_shift)
+WToLepNuX::WToLepNuX(enum Leptons lepton,
+                     const std::string &process_group,
+                     const std::string &xs_order,
+                     const std::string &sample,
+                     const std::string &year)
+    : lepton(lepton)
 {
-    std::vector<double> limits =
-        BinLimits::get_bin_limits("validation_plot", countMap, min_energy, max_energy, min_bin_width, 1);
-    std::vector<double> limits_Z_val =
-        BinLimits::get_bin_limits("validation_plot", countMap, PDG::Z::Mass - 20., PDG::Z::Mass + 20., 1, 1);
-    std::vector<double> limits_met =
-        BinLimits::get_bin_limits("MET", countMap, min_energy, max_energy, min_bin_width, 1);
+    TH1::AddDirectory(kFALSE);
 
-    std::string histo_name = "";
-    if (is_Z_mass_validation)
+    auto count_map = std::unordered_map<ObjectNames, int>{};
+    if (lepton == Leptons::MUONS)
     {
+        analysis_name = "w_to_muon_nutrino_x";
 
-        histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
-                                                              _process_group, //
-                                                              _xs_order,      //
-                                                              _sample,        //
-                                                              _year,          //
-                                                              _shift,         //
-                                                              "h_invariant_mass");
-        h_invariant_mass = TH1F(histo_name.c_str(), histo_name.c_str(), limits_Z_val.size() - 1, limits_Z_val.data());
-        h_invariant_mass.Sumw2();
+        count_map = std::unordered_map<ObjectNames, int>{{ObjectNames::Muon, 1},
+                                                         {ObjectNames::Electron, 0},
+                                                         {ObjectNames::Photon, 0},
+                                                         {ObjectNames::Tau, 0},
+                                                         {ObjectNames::bJet, 0},
+                                                         {ObjectNames::Jet, 0},
+                                                         {ObjectNames::MET, 1}};
+    }
+    else if (lepton == Leptons::ELECTRONS)
+    {
+        analysis_name = "w_to_electron_nutrino_x";
+
+        count_map = std::unordered_map<ObjectNames, int>{{ObjectNames::Muon, 0},
+                                                         {ObjectNames::Electron, 1},
+                                                         {ObjectNames::Photon, 0},
+                                                         {ObjectNames::Tau, 0},
+                                                         {ObjectNames::bJet, 0},
+                                                         {ObjectNames::Jet, 0},
+                                                         {ObjectNames::MET, 1}};
+    }
+    else if (lepton == Leptons::TAUS)
+    {
+        analysis_name = "w_to_tau_nutrino_x";
+
+        count_map = std::unordered_map<ObjectNames, int>{{ObjectNames::Muon, 0},
+                                                         {ObjectNames::Electron, 0},
+                                                         {ObjectNames::Photon, 0},
+                                                         {ObjectNames::Tau, 1},
+                                                         {ObjectNames::bJet, 0},
+                                                         {ObjectNames::Jet, 0},
+                                                         {ObjectNames::MET, 1}};
     }
     else
     {
-        histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
-                                                              _process_group, //
-                                                              _xs_order,      //
-                                                              _sample,        //
-                                                              _year,          //
-                                                              _shift,         //
-                                                              "h_invariant_mass");
-        h_invariant_mass = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
-        h_invariant_mass.Sumw2();
+
+        fmt::print(stderr, "ERROR: Could not set analysis name and bim limits. Lepton flavor not found.\n");
+        std::exit(EXIT_FAILURE);
     }
 
-    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
-                                                          _process_group, //
-                                                          _xs_order,      //
-                                                          _sample,        //
-                                                          _year,          //
-                                                          _shift,         //
-                                                          "h_sum_pt");
-    h_sum_pt = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
-    h_sum_pt.Sumw2();
+    auto bins_limits = BinLimits::limits(
+        count_map, false, Histograms::min_energy, Histograms::max_energy, Histograms::min_bin_size, Histograms::fudge);
 
-    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
-                                                          _process_group, //
-                                                          _xs_order,      //
-                                                          _sample,        //
-                                                          _year,          //
-                                                          _shift,         //
-                                                          "h_met");
-    h_met = TH1F(histo_name.c_str(), histo_name.c_str(), limits_met.size() - 1, limits_met.data());
-    h_met.Sumw2();
+    count_map[ObjectNames::MET] = 1;
+    auto bins_limits_MET = BinLimits::limits(
+        count_map, true, Histograms::min_energy, Histograms::max_energy, Histograms::min_bin_size, Histograms::fudge);
 
-    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
-                                                          _process_group, //
-                                                          _xs_order,      //
-                                                          _sample,        //
-                                                          _year,          //
-                                                          _shift,         //
-                                                          "h_lepton_1_pt");
-    h_lepton_1_pt = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
-    h_lepton_1_pt.Sumw2();
+    std::vector<double> bins_limits_eta = {-1.5, -1.25, -1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1, 1.25, 1.5};
+    std::vector<double> bins_limits_phi = {-3.25, -3,    -2.75, -2.5,  -2.25, -2,   -1.75, -1.5, -1.25,
+                                           -1,    -0.75, -0.5,  -0.25, 0,     0.25, 0.5,   0.75, 1,
+                                           1.25,  1.5,   1.75,  2,     2.25,  2.5,  2.75,  3,    3.25};
 
-    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
-                                                          _process_group, //
-                                                          _xs_order,      //
-                                                          _sample,        //
-                                                          _year,          //
-                                                          _shift,         //
-                                                          "h_met_pt");
-    h_met_pt = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
-    h_met_pt.Sumw2();
+    // Loop over all variations
+    for (std::size_t idx_var = 0; idx_var < total_variations; idx_var++)
+    {
+        std::string histo_name = "";
+        histo_name = SerializationUtils::make_histogram_full_name(analysis_name,                        //
+                                                                  process_group,                        //
+                                                                  xs_order,                             //
+                                                                  sample,                               //
+                                                                  year,                                 //
+                                                                  Shifts::variation_to_string(idx_var), //
+                                                                  "h_invariant_mass");
 
-    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
-                                                          _process_group, //
-                                                          _xs_order,      //
-                                                          _sample,        //
-                                                          _year,          //
-                                                          _shift,         //
-                                                          "h_lepton_1_eta");
-    h_lepton_1_eta = TH1F(histo_name.c_str(), histo_name.c_str(), n_eta_bins, min_eta, max_eta);
-    h_lepton_1_eta.Sumw2();
+        h_invariant_mass[idx_var] =
+            TH1F(histo_name.c_str(), histo_name.c_str(), bins_limits.size() - 1, bins_limits.data());
+        h_invariant_mass[idx_var].Sumw2();
 
-    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
-                                                          _process_group, //
-                                                          _xs_order,      //
-                                                          _sample,        //
-                                                          _year,          //
-                                                          _shift,         //
-                                                          "h_met_eta");
-    h_met_eta = TH1F(histo_name.c_str(), histo_name.c_str(), n_eta_bins, min_eta, max_eta);
-    h_met_eta.Sumw2();
+        histo_name = SerializationUtils::make_histogram_full_name(analysis_name,                        //
+                                                                  process_group,                        //
+                                                                  xs_order,                             //
+                                                                  sample,                               //
+                                                                  year,                                 //
+                                                                  Shifts::variation_to_string(idx_var), //
+                                                                  "h_sum_pt");
 
-    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
-                                                          _process_group, //
-                                                          _xs_order,      //
-                                                          _sample,        //
-                                                          _year,          //
-                                                          _shift,         //
-                                                          "h_lepton_1_phi");
-    h_lepton_1_phi = TH1F(histo_name.c_str(), histo_name.c_str(), n_phi_bins, min_phi, max_phi);
-    h_lepton_1_phi.Sumw2();
+        h_sum_pt[idx_var] = TH1F(histo_name.c_str(), histo_name.c_str(), bins_limits.size() - 1, bins_limits.data());
+        h_sum_pt[idx_var].Sumw2();
 
-    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
-                                                          _process_group, //
-                                                          _xs_order,      //
-                                                          _sample,        //
-                                                          _year,          //
-                                                          _shift,         //
-                                                          "h_met_phi");
-    h_met_phi = TH1F(histo_name.c_str(), histo_name.c_str(), n_phi_bins, min_phi, max_phi);
-    h_met_phi.Sumw2();
+        histo_name = SerializationUtils::make_histogram_full_name(analysis_name,                        //
+                                                                  process_group,                        //
+                                                                  xs_order,                             //
+                                                                  sample,                               //
+                                                                  year,                                 //
+                                                                  Shifts::variation_to_string(idx_var), //
+                                                                  "h_lepton_pt");
 
-    // histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
-    //                                                       _process_group, //
-    //                                                       _xs_order,      //
-    //                                                       _sample,        //
-    //                                                       _year,          //
-    //                                                       _shift,         //
-    //                                                       "h_lepton_1_jet_1_dPhi");
-    // h_lepton_1_jet_1_dPhi = TH1F(histo_name.c_str(), histo_name.c_str(), n_phi_bins, min_phi, max_phi);
-    // h_lepton_1_jet_1_dPhi.Sumw2();
+        h_lepton_pt[idx_var] = TH1F(histo_name.c_str(), histo_name.c_str(), bins_limits.size() - 1, bins_limits.data());
+        h_lepton_pt[idx_var].Sumw2();
 
-    // histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
-    //                                                       _process_group, //
-    //                                                       _xs_order,      //
-    //                                                       _sample,        //
-    //                                                       _year,          //
-    //                                                       _shift,         //
-    //                                                       "h_lepton_1_jet_1_dR");
-    // h_lepton_1_jet_1_dR = TH1F(histo_name.c_str(), histo_name.c_str(), n_dR_bins, min_dR, max_dR);
-    // h_lepton_1_jet_1_dR.Sumw2();
+        histo_name = SerializationUtils::make_histogram_full_name(analysis_name,                        //
+                                                                  process_group,                        //
+                                                                  xs_order,                             //
+                                                                  sample,                               //
+                                                                  year,                                 //
+                                                                  Shifts::variation_to_string(idx_var), //
+                                                                  "h_lepton_eta");
 
-    // histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
-    //                                                       _process_group, //
-    //                                                       _xs_order,      //
-    //                                                       _sample,        //
-    //                                                       _year,          //
-    //                                                       _shift,         //
-    //                                                       "h_jet_multiplicity");
-    // h_jet_multiplicity =
-    //     TH1F(histo_name.c_str(), histo_name.c_str(), n_multiplicity_bins, min_multiplicity, max_multiplicity);
-    // h_jet_multiplicity.Sumw2();
+        h_lepton_eta[idx_var] =
+            TH1F(histo_name.c_str(), histo_name.c_str(), bins_limits_eta.size() - 1, bins_limits_eta.data());
+        h_lepton_eta[idx_var].Sumw2();
 
-    // histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
-    //                                                       _process_group, //
-    //                                                       _xs_order,      //
-    //                                                       _sample,        //
-    //                                                       _year,          //
-    //                                                       _shift,         //
-    //                                                       "h_bjet_multiplicity");
-    // h_bjet_multiplicity =
-    //     TH1F(histo_name.c_str(), histo_name.c_str(), n_multiplicity_bins, min_multiplicity, max_multiplicity);
-    // h_bjet_multiplicity.Sumw2();
+        histo_name = SerializationUtils::make_histogram_full_name(analysis_name,                        //
+                                                                  process_group,                        //
+                                                                  xs_order,                             //
+                                                                  sample,                               //
+                                                                  year,                                 //
+                                                                  Shifts::variation_to_string(idx_var), //
+                                                                  "h_lepton_phi");
 
-    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
-                                                          _process_group, //
-                                                          _xs_order,      //
-                                                          _sample,        //
-                                                          _year,          //
-                                                          _shift,         //
-                                                          "h_lepton_1_pt_eta");
-    h_lepton_1_pt_eta = TH2F(histo_name.c_str(),
-                             histo_name.c_str(),
-                             130,
-                             min_energy,
-                             900,
-                             n_multiplicity_bins,
-                             min_multiplicity,
-                             max_multiplicity);
-    h_lepton_1_pt_eta.Sumw2();
+        h_lepton_phi[idx_var] =
+            TH1F(histo_name.c_str(), histo_name.c_str(), bins_limits_phi.size() - 1, bins_limits_phi.data());
+        h_lepton_phi[idx_var].Sumw2();
 
-    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
-                                                          _process_group, //
-                                                          _xs_order,      //
-                                                          _sample,        //
-                                                          _year,          //
-                                                          _shift,         //
-                                                          "h_lepton_1_pt_phi");
-    h_lepton_1_pt_phi =
-        TH2F(histo_name.c_str(), histo_name.c_str(), 130, min_energy, 900, n_phi_bins, min_phi, max_phi);
-    h_lepton_1_pt_phi.Sumw2();
+        histo_name = SerializationUtils::make_histogram_full_name(analysis_name,                        //
+                                                                  process_group,                        //
+                                                                  xs_order,                             //
+                                                                  sample,                               //
+                                                                  year,                                 //
+                                                                  Shifts::variation_to_string(idx_var), //
+                                                                  "h_met");
+
+        h_met[idx_var] =
+            TH1F(histo_name.c_str(), histo_name.c_str(), bins_limits_MET.size() - 1, bins_limits_MET.data());
+        h_met[idx_var].Sumw2();
+    }
 }
 
-auto WToLepNuX::fill(const Math::PtEtaPhiMVector &lepton_1, const RVec<Math::PtEtaPhiMVector> &met, float weight)
-    -> void
+auto WToLepNuX::fill(const MUSiCObjects &leptons,
+                     const MUSiCObjects &bjets,
+                     const MUSiCObjects &jets,
+                     const MUSiCObjects &met,
+                     double weight,
+                     Shifts::Variations shift) -> void
 {
-    h_invariant_mass.Fill(MUSiCObjects::transverse_mass(lepton_1 + met[0]), weight);
-    h_sum_pt.Fill(lepton_1.pt() + met[0].pt(), weight);
-
-    if (met.size() > 0)
+    if (leptons.size() >= 1 and met.size() > 0)
     {
-        h_met.Fill(met[0].pt(), weight);
+        auto idx_var = static_cast<std::size_t>(shift);
+
+        h_invariant_mass[idx_var].Fill(leptons.p4.at(0).mass(), weight);
+        h_sum_pt[idx_var].Fill((leptons.p4.at(0) + met.p4.at(0)).pt(), weight);
+        h_lepton_pt[idx_var].Fill((leptons.p4.at(0)).pt(), weight);
+        h_lepton_eta[idx_var].Fill((leptons.p4.at(0)).eta(), weight);
+        h_lepton_phi[idx_var].Fill((leptons.p4.at(0)).phi(), weight);
+        h_met[idx_var].Fill(met.p4.at(0).pt(), weight);
     }
-
-    h_lepton_1_pt.Fill(lepton_1.pt(), weight);
-    h_met_pt.Fill(met[0].pt(), weight);
-    h_lepton_1_eta.Fill(lepton_1.eta(), weight);
-    h_met_eta.Fill(met[0].eta(), weight);
-    h_lepton_1_phi.Fill(lepton_1.phi(), weight);
-    h_met_phi.Fill(met[0].phi(), weight);
-
-    // if (jets.size() > 0 or bjets.size() > 0)
-    // {
-    //     Math::PtEtaPhiMVector leading_jet = [&]() -> Math::PtEtaPhiMVector
-    //     {
-    //         if (jets.size() > 0 and not(bjets.size() > 0))
-    //         {
-    //             return jets[0];
-    //         }
-    //         if (not(jets.size() > 0) and bjets.size() > 0)
-    //         {
-    //             return bjets[0];
-    //         }
-    //         if ((jets[0]).pt() > (bjets[0]).pt())
-    //         {
-    //             return jets[0];
-    //         }
-    //         return bjets[0];
-    //     }();
-
-    //     h_lepton_1_jet_1_dPhi.Fill(VectorUtil::DeltaPhi(lepton_1, leading_jet), weight);
-    //     h_lepton_1_jet_1_dR.Fill(VectorUtil::DeltaR(lepton_1, leading_jet), weight);
-    // }
-
-    // h_jet_multiplicity.Fill(jets.size(), weight);
-    // h_bjet_multiplicity.Fill(bjets.size(), weight);
-
-    h_lepton_1_pt_eta.Fill(lepton_1.pt(), lepton_1.eta(), weight);
-    h_lepton_1_pt_phi.Fill(lepton_1.pt(), lepton_1.phi(), weight);
 }
 
-auto WToLepNuX::dump_outputs() -> void
+auto WToLepNuX::serialize_to_root(const std::unique_ptr<TFile> &output_file) -> void
 {
-
-    auto output_file = std::unique_ptr<TFile>(TFile::Open(output_path.c_str(), "RECREATE"));
-    output_file->cd();
-
-    // rebin energy-like histograms
-    if (not(is_Z_mass_validation))
+    for (auto &hist : {h_invariant_mass, h_sum_pt, h_lepton_pt, h_lepton_eta, h_lepton_phi, h_met})
     {
-        // h_invariant_mass.Scale(10., "width");
-        h_invariant_mass.SetDirectory(output_file.get());
-        h_invariant_mass.Write();
+        for (std::size_t idx_var = 0; idx_var < total_variations; idx_var++)
+        {
+            output_file->WriteObject(&hist[idx_var], hist[idx_var].GetName());
+        }
     }
-    else
-    {
-        // h_invariant_mass.Scale(10., "width");
-        h_invariant_mass.SetDirectory(output_file.get());
-        h_invariant_mass.Write();
+}
+
+#define MERGE(h)                                                                                                       \
+    for (std::size_t idx_var = 0; idx_var < total_variations; idx_var++)                                               \
+    {                                                                                                                  \
+        h[idx_var].Add(&other.h[idx_var]);                                                                             \
     }
 
-    // h_sum_pt.Scale(min_bin_width, "width");
-    h_sum_pt.SetDirectory(output_file.get());
-    h_sum_pt.Write();
-
-    // h_met.Scale(min_bin_width, "width");
-    h_met.SetDirectory(output_file.get());
-    h_met.Write();
-
-    // h_lepton_1_pt.Scale(min_bin_width, "width");
-    h_lepton_1_pt.SetDirectory(output_file.get());
-    h_lepton_1_pt.Write();
-
-    // h_met_pt.Scale(min_bin_width, "width");
-    h_met_pt.SetDirectory(output_file.get());
-    h_met_pt.Write();
-
-    h_lepton_1_eta.SetDirectory(output_file.get());
-    h_lepton_1_eta.Write();
-
-    h_met_eta.SetDirectory(output_file.get());
-    h_met_eta.Write();
-
-    h_lepton_1_phi.SetDirectory(output_file.get());
-    h_lepton_1_phi.Write();
-
-    h_met_phi.SetDirectory(output_file.get());
-    h_met_phi.Write();
-
-    // h_lepton_1_jet_1_dPhi.SetDirectory(output_file.get());
-    // h_lepton_1_jet_1_dPhi.Write();
-
-    // h_lepton_1_jet_1_dR.SetDirectory(output_file.get());
-    // h_lepton_1_jet_1_dR.Write();
-
-    // h_jet_multiplicity.SetDirectory(output_file.get());
-    // h_jet_multiplicity.Write();
-
-    // h_bjet_multiplicity.SetDirectory(output_file.get());
-    // h_bjet_multiplicity.Write();
-
-    h_lepton_1_pt_eta.SetDirectory(output_file.get());
-    h_lepton_1_pt_eta.Write();
-
-    h_lepton_1_pt_phi.SetDirectory(output_file.get());
-    h_lepton_1_pt_phi.Write();
-
-    output_file->Close();
+auto WToLepNuX::merge_inplace(const WToLepNuX &other) -> void
+{
+    MERGE(h_invariant_mass)
+    MERGE(h_sum_pt)
+    MERGE(h_lepton_pt)
+    MERGE(h_lepton_eta)
+    MERGE(h_lepton_phi)
+    MERGE(h_met)
 }

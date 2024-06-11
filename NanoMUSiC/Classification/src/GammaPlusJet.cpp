@@ -1,89 +1,111 @@
 #include "GammaPlusJet.hpp"
-#include "Configs.hpp"
-#include "Histograms.hpp"
-#include "Math/GenVector/VectorUtil.h"
-#include "Math/VectorUtil.h"
-#include "NanoEventClass.hpp"
-#include <filesystem>
+#include <cstdlib>
 #include <fmt/format.h>
-#include <string_view>
+#include <memory>
 
-GammaPlusJet::GammaPlusJet(const std::string &_analysis_name,
-                           const std::string &_output_path,
-                           const std::map<std::string, int> &_countMap,
-                           bool dummy,
-                           const std::string _shift,
-                           const std::string &_sample,
-                           const std::string &_year,
-                           const std::string &_process_group,
-                           const std::string &_xs_order)
-    : output_path(_output_path),
-      min_bin_width(10.),
-      countMap(_countMap),
-      shift(_shift)
+#include "EventClass.hpp"
+#include "SerializationUtils.hpp"
+
+GammaPlusJet::GammaPlusJet(const std::string &process_group,
+                           const std::string &xs_order,
+                           const std::string &sample,
+                           const std::string &year)
 {
-    std::vector<double> limits =
-        BinLimits::get_bin_limits("validation_plot", countMap, min_energy, max_energy, min_bin_width, 1);
+    TH1::AddDirectory(kFALSE);
 
-    std::string histo_name = "";
+    auto count_map = std::unordered_map<ObjectNames, int>{};
+    analysis_name = "gamma_plus_jets";
 
-    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
-                                                          _process_group, //
-                                                          _xs_order,      //
-                                                          _sample,        //
-                                                          _year,          //
-                                                          _shift,         //
-                                                          "h_gamma_pt");
-    h_gamma_pt = TH1F(histo_name.c_str(), histo_name.c_str(), limits.size() - 1, limits.data());
-    h_gamma_pt.Sumw2();
+    count_map = std::unordered_map<ObjectNames, int>{{ObjectNames::Muon, 2},
+                                                     {ObjectNames::Electron, 0},
+                                                     {ObjectNames::Photon, 0},
+                                                     {ObjectNames::Tau, 0},
+                                                     {ObjectNames::bJet, 0},
+                                                     {ObjectNames::Jet, 0},
+                                                     {ObjectNames::MET, 0}};
 
-    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
-                                                          _process_group, //
-                                                          _xs_order,      //
-                                                          _sample,        //
-                                                          _year,          //
-                                                          _shift,         //
-                                                          "h_gamma_eta");
-    h_gamma_eta = TH1F(histo_name.c_str(), histo_name.c_str(), n_eta_bins, min_eta, max_eta);
-    h_gamma_eta.Sumw2();
+    auto bins_limits = BinLimits::limits(
+        count_map, false, Histograms::min_energy, Histograms::max_energy, Histograms::min_bin_size, Histograms::fudge);
 
-    histo_name = NanoEventHisto::make_histogram_full_name(_analysis_name, //
-                                                          _process_group, //
-                                                          _xs_order,      //
-                                                          _sample,        //
-                                                          _year,          //
-                                                          _shift,         //
-                                                          "h_gamma_phi");
-    h_gamma_phi = TH1F(histo_name.c_str(), histo_name.c_str(), n_phi_bins, min_phi, max_phi);
-    h_gamma_phi.Sumw2();
-}
+    std::vector<double> bins_limits_eta = {-1.5, -1.25, -1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1, 1.25, 1.5};
 
-auto GammaPlusJet::fill(Math::PtEtaPhiMVector gamma, float weight) -> void
-{
-    if (gamma.pt() > 200)
+    std::vector<double> bins_limits_phi = {-3.25, -3,    -2.75, -2.5,  -2.25, -2,   -1.75, -1.5, -1.25,
+                                           -1,    -0.75, -0.5,  -0.25, 0,     0.25, 0.5,   0.75, 1,
+                                           1.25,  1.5,   1.75,  2,     2.25,  2.5,  2.75,  3,    3.25};
+
+    // Loop over all variations
+    for (std::size_t idx_var = 0; idx_var < total_variations; idx_var++)
     {
-        h_gamma_pt.Fill(gamma.pt(), weight);
-        h_gamma_eta.Fill(gamma.eta(), weight);
-        h_gamma_phi.Fill(gamma.phi(), weight);
+        std::string histo_name = "";
+        histo_name = SerializationUtils::make_histogram_full_name(analysis_name,                        //
+                                                                  process_group,                        //
+                                                                  xs_order,                             //
+                                                                  sample,                               //
+                                                                  year,                                 //
+                                                                  Shifts::variation_to_string(idx_var), //
+                                                                  "h_gamma_pt");
+
+        h_gamma_pt[idx_var] = TH1F(histo_name.c_str(), histo_name.c_str(), bins_limits.size() - 1, bins_limits.data());
+        h_gamma_pt[idx_var].Sumw2();
+
+        histo_name = SerializationUtils::make_histogram_full_name(analysis_name,                        //
+                                                                  process_group,                        //
+                                                                  xs_order,                             //
+                                                                  sample,                               //
+                                                                  year,                                 //
+                                                                  Shifts::variation_to_string(idx_var), //
+                                                                  "h_gamma_eta");
+
+        h_gamma_eta[idx_var] =
+            TH1F(histo_name.c_str(), histo_name.c_str(), bins_limits_eta.size() - 1, bins_limits_eta.data());
+        h_gamma_eta[idx_var].Sumw2();
+
+        histo_name = SerializationUtils::make_histogram_full_name(analysis_name,                        //
+                                                                  process_group,                        //
+                                                                  xs_order,                             //
+                                                                  sample,                               //
+                                                                  year,                                 //
+                                                                  Shifts::variation_to_string(idx_var), //
+                                                                  "h_gamma_phi");
+
+        h_gamma_phi[idx_var] =
+            TH1F(histo_name.c_str(), histo_name.c_str(), bins_limits_phi.size() - 1, bins_limits_phi.data());
+        h_gamma_phi[idx_var].Sumw2();
     }
 }
 
-auto GammaPlusJet::dump_outputs(std::unique_ptr<TFile> &output_file) -> void
+auto GammaPlusJet::fill(const MUSiCObjects &jets,
+                        const MUSiCObjects &photons,
+                        double weight,
+                        Shifts::Variations shift) -> void
 {
-    // auto output_file = std::unique_ptr<TFile>(TFile::Open(output_path.c_str(), "RECREATE"));
-    output_file->cd();
+    auto idx_var = static_cast<std::size_t>(shift);
+    if (photons.p4.at(0).pt() > 200)
+    {
+        h_gamma_pt[idx_var].Fill(photons.p4.at(0).pt(), weight);
+        h_gamma_eta[idx_var].Fill(photons.p4.at(0).eta(), weight);
+        h_gamma_phi[idx_var].Fill(photons.p4.at(0).phi(), weight);
+    }
+}
 
-    // h_gamma_pt.Scale(min_bin_width, "width");
-    h_gamma_pt.SetDirectory(output_file.get());
-    h_gamma_pt.Write();
+auto GammaPlusJet::serialize_to_root(const std::unique_ptr<TFile> &output_file) -> void
+{
+    for (auto &hist : {h_gamma_pt, h_gamma_eta, h_gamma_phi})
+    {
+        for (std::size_t idx_var = 0; idx_var < total_variations; idx_var++)
+        {
+            output_file->WriteObject(&hist[idx_var], hist[idx_var].GetName());
+        }
+    }
+}
 
-    // h_gamma_eta.Scale(min_bin_width, "width");
-    h_gamma_eta.SetDirectory(output_file.get());
-    h_gamma_eta.Write();
+#define MERGE(h)                                                                                                       \
+    for (std::size_t idx_var = 0; idx_var < total_variations; idx_var++)                                               \
+    {                                                                                                                  \
+        h[idx_var].Add(&other.h[idx_var]);                                                                             \
+    }
 
-    // h_gamma_phi.Scale(min_bin_width, "width");
-    h_gamma_phi.SetDirectory(output_file.get());
-    h_gamma_phi.Write();
-
-    // output_file->Close();
+auto GammaPlusJet::merge_inplace(const GammaPlusJet &other) -> void
+{
+    MERGE(h_gamma_pt) MERGE(h_gamma_eta) MERGE(h_gamma_phi)
 }

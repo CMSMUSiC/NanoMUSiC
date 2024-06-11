@@ -1,46 +1,39 @@
 #ifndef GAMMAPLUSJETS
 #define GAMMAPLUSJETS
 
-#include "Histograms.hpp"
-#include "Math/Vector4D.h"
+#include "Shifts.hpp"
 #include <TFile.h>
 #include <TH1F.h>
+#include <TH2F.h>
+#include <array>
 #include <memory>
-#include <optional>
-#include <string_view>
+#include <pybind11/detail/common.h>
 
 using namespace ROOT;
-using namespace ROOT::Math;
 
 class GammaPlusJet
 {
   private:
+    static constexpr std::size_t total_variations = static_cast<std::size_t>(Shifts::Variations::kTotalVariations);
+
   public:
-    const std::string output_path;
+    std::string analysis_name;
 
-    TH1F h_gamma_pt;
-    TH1F h_gamma_eta;
-    TH1F h_gamma_phi;
-
-    double min_bin_width;
-    std::map<std::string, int> countMap;
-    std::string shift;
+    std::array<TH1F, total_variations> h_gamma_pt;
+    std::array<TH1F, total_variations> h_gamma_eta;
+    std::array<TH1F, total_variations> h_gamma_phi;
 
     GammaPlusJet() = default;
 
-    GammaPlusJet(const std::string &_analysis_name,
-                 const std::string &_output_path,
-                 const std::map<std::string, int> &_countMap,
-                 bool dummy,
-                 const std::string _shift,
-                 const std::string &_sample,
-                 const std::string &_year,
-                 const std::string &_process_group,
-                 const std::string &_xs_order);
+    GammaPlusJet(const std::string &process_group,
+                 const std::string &xs_order,
+                 const std::string &sample,
+                 const std::string &year);
 
-    auto fill(Math::PtEtaPhiMVector gamma, float weight = 1.) -> void;
+    auto fill(const MUSiCObjects &jets, const MUSiCObjects &photons, double weight, Shifts::Variations shift) -> void;
 
-    auto dump_outputs(std::unique_ptr<TFile> &output_file) -> void;
+    auto serialize_to_root(const std::unique_ptr<TFile> &output_file) -> void;
+    auto merge_inplace(const GammaPlusJet &other) -> void;
 };
 
-#endif
+#endif // !GAMMAPLUSJETS
