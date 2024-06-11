@@ -116,7 +116,7 @@ auto TTBarTo1Lep2Bjet2JetMET::fill(const MUSiCObjects &leptons,
                                    Shifts::Variations shift) -> void
 {
     auto idx_var = static_cast<std::size_t>(shift);
-    if ((leptons.p4.at(0).M() + met.p4.at(0).Pt()) == 60)
+    if ((leptons.p4.at(0).M() + met.p4.at(0).Pt()) >= 60)
     {
         h_invariant_mass_jet0_jet1[idx_var].Fill((jets.p4.at(0) + jets.p4.at(1)).mass(), weight);
     }
@@ -127,7 +127,7 @@ auto TTBarTo1Lep2Bjet2JetMET::fill(const MUSiCObjects &leptons,
         h_transverse_mass_lep_MET[idx_var].Fill((leptons.p4.at(0) + met.p4.at(0)).M(), weight);
     }
 
-    if (((leptons.p4.at(0).M() + met.p4.at(0).Pt()) == 60) and
+    if (((leptons.p4.at(0).M() + met.p4.at(0).Pt()) >= 60) and
         ((jets.p4.at(0) + jets.p4.at(1)).mass() < (PDG::W::Mass + 30)) and
         ((jets.p4.at(0) + jets.p4.at(1)).mass() > (PDG::W::Mass - 30)))
     {
