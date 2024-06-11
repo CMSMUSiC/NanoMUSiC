@@ -1,5 +1,4 @@
 import ROOT
-from glob import glob
 import sys
 import os
 
@@ -12,9 +11,9 @@ ROOT.gSystem.AddIncludePath(
     "-I{}/NanoMUSiC/MUSiC/include".format(os.getenv("MUSIC_BASE"))
 )
 
-if ROOT.gSystem.Load("classification_imp.cpython-39-x86_64-linux-gnu.so") != 0:
+if ROOT.gSystem.Load("libDistribution.so") != 0:
     sys.exit(
-        'ERROR: Could not load Classification shared library. Did you "ninja install"?'
+        'ERROR: Could not load Distribution shared library. Did you "ninja install"?'
     )
 
 ROOT.PyConfig.IgnoreCommandLineOptions = True

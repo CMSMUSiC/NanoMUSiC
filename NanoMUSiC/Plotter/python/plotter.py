@@ -264,47 +264,46 @@ def plotter(
                 Years.years_to_plot()[year]["name"], len(distribution_files)
             ),
         ):
-            if "counts" in f:
-                dist = get_distribution(f)
-                plot = dist.plot_props
-                if dist.m_distribution_name == "counts":
-                    p_value_props = dist.integral_pvalue_props
-                    p_value_data = get_integral_pvalue(
-                        p_value_props.total_data,
-                        p_value_props.total_mc,
-                        p_value_props.sigma_total,
-                        p_value_props.sigma_stat,
-                        p_value_props.total_per_process_group,
-                    )
-                    # print(p_value_data)
-                    p_value = p_value_data["p-value"]
-                    veto_reason = p_value_data["Veto Reason"]
+            dist = get_distribution(f)
+            plot = dist.plot_props
+            if dist.m_distribution_name == "counts":
+                p_value_props = dist.integral_pvalue_props
+                p_value_data = get_integral_pvalue(
+                    p_value_props.total_data,
+                    p_value_props.total_mc,
+                    p_value_props.sigma_total,
+                    p_value_props.sigma_stat,
+                    p_value_props.total_per_process_group,
+                )
+                # print(p_value_data)
+                p_value = p_value_data["p-value"]
+                veto_reason = p_value_data["Veto Reason"]
 
-                    # json for counts plot
-                    plots_data[plot.class_name] = {}
-                    plots_data[plot.class_name]["data_count"] = (
-                        plot.total_data_histogram.GetBinContent(1)
+                # json for counts plot
+                plots_data[plot.class_name] = {}
+                plots_data[plot.class_name]["data_count"] = (
+                    plot.total_data_histogram.GetBinContent(1)
+                )
+                plots_data[plot.class_name]["data_uncert"] = (
+                    plot.total_data_histogram.GetBinError(1)
+                )
+                plots_data[plot.class_name]["mc"] = {}
+                mc_hists = {}
+                for pg, hist in plot.mc_histograms:
+                    mc_hists[pg] = hist
+                mc_hists_keys_sorted = sorted(
+                    filter(lambda pg: pg != "Data", mc_hists),
+                    key=lambda pg: mc_hists[pg].Integral(),
+                )
+                for pg in mc_hists_keys_sorted:
+                    plots_data[plot.class_name]["mc"][pg] = mc_hists[pg].GetBinContent(
+                        1
                     )
-                    plots_data[plot.class_name]["data_uncert"] = (
-                        plot.total_data_histogram.GetBinError(1)
-                    )
-                    plots_data[plot.class_name]["mc"] = {}
-                    mc_hists = {}
-                    for pg, hist in plot.mc_histograms:
-                        mc_hists[pg] = hist
-                    mc_hists_keys_sorted = sorted(
-                        filter(lambda pg: pg != "Data", mc_hists),
-                        key=lambda pg: mc_hists[pg].Integral(),
-                    )
-                    for pg in mc_hists_keys_sorted:
-                        plots_data[plot.class_name]["mc"][pg] = mc_hists[
-                            pg
-                        ].GetBinContent(1)
-                    plots_data[plot.class_name]["mc_uncert"] = (
-                        plot.mc_uncertainty.GetErrorY(0)
-                    )
-                    plots_data[plot.class_name]["p_value"] = p_value
-                    plots_data[plot.class_name]["veto_reason"] = veto_reason
+                plots_data[plot.class_name]["mc_uncert"] = (
+                    plot.mc_uncertainty.GetErrorY(0)
+                )
+                plots_data[plot.class_name]["p_value"] = p_value
+                plots_data[plot.class_name]["veto_reason"] = veto_reason
 
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)

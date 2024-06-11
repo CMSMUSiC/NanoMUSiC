@@ -21,6 +21,7 @@ import subprocess
 import shlex
 from enum import Enum, auto
 from collections import defaultdict
+from multiprocessing import Process
 
 
 class XrdcpResult(Enum):
@@ -710,12 +711,19 @@ def make_distributions_task(
     return analysis_name, year
 
 
+def do_fold(input_files, output_dir, classes_names):
+    clft.Distribution.make_distributions(
+        input_files,
+        output_dir,
+        classes_names,
+    )
+
+
 def make_distributions(
     inputs_dir: str,
     validation_inputs_dir: str,
     class_name_filter_patterns: list[str],
     validation_filter_patterns: list[str],
-    num_cpus: int,
 ) -> None:
     with open("{}/classes_to_files.json".format(inputs_dir), "r") as file:
         classes_to_files = json.load(file)
@@ -765,21 +773,33 @@ def make_distributions(
         input_files = get_input_files("classification_root_files")
         random.shuffle(input_files)
         for this_classes_names in chunk_list(classes_names, n_parts):
-            clft.Distribution.make_distributions(
-                input_files,
-                "classification_distributions",
-                this_classes_names,
-                num_cpus,
+            p = Process(
+                target=do_fold,
+                args=(
+                    input_files,
+                    "classification_distributions",
+                    this_classes_names,
+                ),
             )
+            p.start()
+            p.join()
+            if p.exitcode != 0:
+                print("ERROR: Could not make distribution files for Classification.")
 
     print("Will fold Validation ...")
     validation_names = get_analysis_names(
         validation_to_files, validation_filter_patterns
     )
     if validation_names:
-        clft.Distribution.make_distributions(
-            get_input_files("validation_root_files"),
-            "validation_distributions",
-            validation_names,
-            num_cpus,
+        p = Process(
+            target=do_fold,
+            args=(
+                get_input_files("validation_root_files"),
+                "validation_distributions",
+                validation_names,
+            ),
         )
+        p.start()
+        p.join()
+        if p.exitcode != 0:
+            print("ERROR: Could not make distribution files for Validation.")

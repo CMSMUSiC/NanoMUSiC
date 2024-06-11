@@ -196,6 +196,5 @@ PYBIND11_MODULE(classification_imp, m)
                     Distribution::make_distributions,
                     "input_files"_a,
                     "ouput_dir"_a,
-                    "analysis_to_plot"_a,
-                    "pool_size"_a);
+                    "analysis_to_plot"_a );
 }

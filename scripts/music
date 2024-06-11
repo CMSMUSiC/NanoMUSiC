@@ -95,12 +95,11 @@ def fold(
     validation_inputs_dir: str = "validation_root_files",
     filters: list[str] = ["*"],
     validation_filters: list[str] = ["*"],
-    num_cpus: int = 50,
 ):
     import classification
 
     classification.make_distributions(
-        inputs_dir, validation_inputs_dir, filters, validation_filters, num_cpus
+        inputs_dir, validation_inputs_dir, filters, validation_filters
     )
 
 

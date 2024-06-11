@@ -156,8 +156,8 @@ class Distribution
 
     static auto make_distributions(const std::vector<std::string> &input_files,
                                    const std::string &output_dir,
-                                   std::vector<std::string> &analysis_to_plot,
-                                   unsigned int pool_size) -> void;
+                                   std::vector<std::string> &analysis_to_plot
+                                   ) -> void;
 
     auto get_statistical_uncert() -> RVec<double>;
     auto get_systematics_uncert(const std::array<std::unordered_map<std::string, std::vector<std::shared_ptr<TH1F>>>,
