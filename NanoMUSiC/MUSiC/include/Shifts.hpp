@@ -105,53 +105,92 @@ inline auto contains(std::string &&str, const std::string &substring) -> bool
 /// "xsZZNLO",
 /// "xsZZZNLO",
 
+// Nominal,
+//
+// // Constant
+// PU_Up,
+// PU_Down,
+// Fakes_Up,
+// PDF_As_Up,
+// ScaleFactor_Up,
+// PreFiring_Up,
+// PreFiring_Down,
+// QCDScale_Up,
+// QCDScale_Down,
+//
+// // Differential
+// ElectronResolution_Up,
+// ElectronResolution_Down,
+// ElectronScale_Up,
+// ElectronScale_Down,
+// PhotonResolution_Up,
+// PhotonResolution_Down,
+// PhotonScale_Up,
+// PhotonScale_Down,
+// JetResolution_Up,
+// JetResolution_Down,
+// JetScale_Up,
+// JetScale_Down,
+// UnclusteredEnergy_Up,
+// UnclusteredEnergy_Down,
+// TauEnergy_Up,
+// TauEnergy_Down,
+//
+// // always the last one
+// kTotalVariations,
+//
+// // backup
+// Fakes_Down,
+// PDF_As_Down,
+// ScaleFactor_Down,
+// MuonResolution_Up,
+// MuonResolution_Down,
+// MuonScale_Up,
+// MuonScale_Down,
+#define LIST_OF_SHIFTS                                                                                                 \
+    X(Nominal)                                                                                                         \
+    X(PU_Up)                                                                                                           \
+    X(PU_Down)                                                                                                         \
+    X(Fakes_Up)                                                                                                        \
+    X(PDF_As_Up)                                                                                                       \
+    X(ScaleFactor_Up)                                                                                                  \
+    X(PreFiring_Up)                                                                                                    \
+    X(PreFiring_Down)                                                                                                  \
+    X(QCDScale_Up)                                                                                                     \
+    X(QCDScale_Down)                                                                                                   \
+    X(ElectronResolution_Up)                                                                                           \
+    X(ElectronResolution_Down)                                                                                         \
+    X(ElectronScale_Up)                                                                                                \
+    X(ElectronScale_Down)                                                                                              \
+    X(PhotonResolution_Up)                                                                                             \
+    X(PhotonResolution_Down)                                                                                           \
+    X(PhotonScale_Up)                                                                                                  \
+    X(PhotonScale_Down)                                                                                                \
+    X(JetResolution_Up)                                                                                                \
+    X(JetResolution_Down)                                                                                              \
+    X(JetScale_Up)                                                                                                     \
+    X(JetScale_Down)                                                                                                   \
+    X(UnclusteredEnergy_Up)                                                                                            \
+    X(UnclusteredEnergy_Down)                                                                                          \
+    X(TauEnergy_Up)                                                                                                    \
+    X(TauEnergy_Down)                                                                                                  \
+    X(kTotalVariations)                                                                                                \
+    X(Fakes_Down)                                                                                                      \
+    X(PDF_As_Down)                                                                                                     \
+    X(ScaleFactor_Down)                                                                                                \
+    X(MuonResolution_Up)                                                                                               \
+    X(MuonResolution_Down)                                                                                             \
+    X(MuonScale_Up)                                                                                                    \
+    X(MuonScale_Down)
+
 class Shifts
 {
   public:
     enum class Variations
     {
-        Nominal,
-
-        // Constant
-        PU_Up,
-        PU_Down,
-        Fakes_Up,
-        PDF_As_Up,
-        ScaleFactor_Up,
-        PreFiring_Up,
-        PreFiring_Down,
-        QCDScale_Up,
-        QCDScale_Down,
-
-        // Differential
-        ElectronResolution_Up,
-        ElectronResolution_Down,
-        ElectronScale_Up,
-        ElectronScale_Down,
-        PhotonResolution_Up,
-        PhotonResolution_Down,
-        PhotonScale_Up,
-        PhotonScale_Down,
-        JetResolution_Up,
-        JetResolution_Down,
-        JetScale_Up,
-        JetScale_Down,
-        UnclusteredEnergy_Up,
-        UnclusteredEnergy_Down,
-        TauEnergy_Up,
-        TauEnergy_Down,
-
-        // always the last one
-        kTotalVariations,
-
-        // backup
-        Fakes_Down,
-        PDF_As_Down,
-        ScaleFactor_Down,
-        MuonResolution_Up,
-        MuonResolution_Down,
-        MuonScale_Up,
-        MuonScale_Down,
+#define X(name) name,
+        LIST_OF_SHIFTS
+#undef X
     };
 
     template <typename T>
@@ -160,76 +199,29 @@ class Shifts
         auto var = static_cast<Variations>(_var);
         switch (var)
         {
-        case Variations::Nominal:
-            return "Nominal";
-        case Variations::PU_Up:
-            return "PU_Up";
-        case Variations::PU_Down:
-            return "PU_Down";
-        case Variations::Fakes_Up:
-            return "Fakes_Up";
-        case Variations::Fakes_Down:
-            return "Fakes_Down";
-        case Variations::PDF_As_Up:
-            return "PDF_As_Up";
-        case Variations::PDF_As_Down:
-            return "PDF_As_Down";
-        case Variations::ScaleFactor_Up:
-            return "ScaleFactor_Up";
-        case Variations::ScaleFactor_Down:
-            return "ScaleFactor_Down";
-        case Variations::PreFiring_Up:
-            return "PreFiring_Up";
-        case Variations::PreFiring_Down:
-            return "PreFiring_Down";
-        case Variations::QCDScale_Up:
-            return "QCDScale_Up";
-        case Variations::QCDScale_Down:
-            return "QCDScale_Down";
-        case Variations::MuonResolution_Up:
-            return "MuonResolution_Up";
-        case Variations::MuonResolution_Down:
-            return "MuonResolution_Down";
-        case Variations::MuonScale_Up:
-            return "MuonScale_Up";
-        case Variations::MuonScale_Down:
-            return "MuonScale_Down";
-        case Variations::ElectronResolution_Up:
-            return "ElectronResolution_Up";
-        case Variations::ElectronResolution_Down:
-            return "ElectronResolution_Down";
-        case Variations::ElectronScale_Up:
-            return "ElectronScale_Up";
-        case Variations::ElectronScale_Down:
-            return "ElectronScale_Down";
-        case Variations::PhotonResolution_Up:
-            return "PhotonResolution_Up";
-        case Variations::PhotonResolution_Down:
-            return "PhotonResolution_Down";
-        case Variations::PhotonScale_Up:
-            return "PhotonScale_Up";
-        case Variations::PhotonScale_Down:
-            return "PhotonScale_Down";
-        case Variations::JetResolution_Up:
-            return "JetResolution_Up";
-        case Variations::JetResolution_Down:
-            return "JetResolution_Down";
-        case Variations::JetScale_Up:
-            return "JetScale_Up";
-        case Variations::JetScale_Down:
-            return "JetScale_Down";
-        case Variations::UnclusteredEnergy_Up:
-            return "UnclusteredEnergy_Up";
-        case Variations::UnclusteredEnergy_Down:
-            return "UnclusteredEnergy_Down";
-        case Variations::TauEnergy_Up:
-            return "TauEnergy_Up";
-        case Variations::TauEnergy_Down:
-            return "TauEnergy_Down";
+#define X(name)                                                                                                        \
+    case Variations::name:                                                                                             \
+        return #name;
+            LIST_OF_SHIFTS
+#undef X
         default:
             fmt::print(stderr, "ERROR: Could not convert variation ({}) to string.", var);
             std::exit(EXIT_FAILURE);
         }
+    }
+
+    static auto string_to_variation(const std::string &variation) -> Variations
+    {
+#define X(name)                                                                                                        \
+    if (variation == #name)                                                                                            \
+    {                                                                                                                  \
+        return Variations::name;                                                                                       \
+    }
+        LIST_OF_SHIFTS
+#undef X
+
+        fmt::print(stderr, "ERROR: Could not convert string ({}) to variation.", variation);
+        std::exit(EXIT_FAILURE);
     }
 
   private:
@@ -515,7 +507,6 @@ class Shifts
     //     }
     //     return 1.;
     // }
-
 
     constexpr static auto get_fake_shift(bool x) -> double
     {

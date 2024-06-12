@@ -3,6 +3,7 @@
 
 #include "pybind11/pybind11.h"
 #include "pybind11/stl.h"
+#include <cstdlib>
 #include <pybind11/pytypes.h>
 namespace py = pybind11;
 using namespace pybind11::literals;
@@ -191,10 +192,9 @@ PYBIND11_MODULE(classification_imp, m)
             "ouput_file_path"_a);
 
     py::class_<Distribution>(m, "Distribution")
-        .def(py::init<const std::vector<std::string> &, const std::string &, const std::string &, bool>(),
-             "input_files"_a,
-             "event_class_name"_a,
-             "distribution_name"_a,
-             "allow_rescale_by_width"_a)
-        .def("save", &Distribution::save, "output_file"_a);
+        .def_static("make_distributions",
+                    Distribution::make_distributions,
+                    "input_files"_a,
+                    "ouput_dir"_a,
+                    "analysis_to_plot"_a );
 }

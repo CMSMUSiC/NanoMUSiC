@@ -1,8 +1,3 @@
-# correctionlib compilation and linking flags
-# execute_process(COMMAND correction config --cflags --ldflags --rpath OUTPUT_VARIABLE CORRECTIONLIB_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
-# separate_arguments(CORRECTIONLIB_FLAGS)
-
-# compilation options
 execute_process(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
 separate_arguments(ROOT_CFLAGS)
 add_compile_options(-g)
@@ -32,7 +27,34 @@ add_link_options(
     -lstdc++fs
     -L/cvmfs/sft.cern.ch/lcg/views/LCG_105a/x86_64-el9-gcc12-opt/lib
     -L/cvmfs/sft.cern.ch/lcg/views/LCG_105a/x86_64-el9-gcc12-opt/lib64
+) 
+
+
+add_library(EventClass SHARED
+    src/EventClass.cpp //
+    ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/BinLimits.cpp //
 )
+target_include_directories(EventClass PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(EventClass LINK_PUBLIC ROOT::RIO ROOT::Net)
+install(TARGETS EventClass DESTINATION ${CMAKE_SOURCE_DIR}/lib)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libEventClass_rdict.pcm DESTINATION ${CMAKE_SOURCE_DIR}/lib)
+
+add_library(Distribution SHARED
+	src/Distribution.cpp //
+)
+target_include_directories(Distribution PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(Distribution LINK_PUBLIC ROOT::RIO ROOT::Net)
+install(TARGETS Distribution DESTINATION ${CMAKE_SOURCE_DIR}/lib)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libDistribution_rdict.pcm DESTINATION ${CMAKE_SOURCE_DIR}/lib)
+
+
+message(STATUS "Generating EventClass dictionaries ...")
+ROOT_GENERATE_DICTIONARY(EventClassDict include/EventClass.hpp include/ValidationContainer.hpp include/ZToLepLepX.hpp MODULE EventClass LINKDEF include/EventClassLinkDef.h)
+message(STATUS "Done.")
+
+message(STATUS "Generating Distribution dictionaries ...")
+ROOT_GENERATE_DICTIONARY(DistributionDict include/Distribution.hpp  MODULE Distribution LINKDEF include/DistributionLinkDef.h)
+message(STATUS "Done.")
 
 # python binds
 find_package(pybind11 REQUIRED)
@@ -40,7 +62,6 @@ pybind11_add_module(classification_imp MODULE
     src/classification.cpp //
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/BinLimits.cpp //
     ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/src/JetCorrector.cpp //
-    # ${CMAKE_SOURCE_DIR}/NanoMUSiC/NanoEventClass/src/NanoEventClass.cpp //
     src/GeneratorFilters.cpp //
     src/NanoAODGenInfo.cpp //
     src/ZToLepLepX.cpp //
@@ -49,21 +70,15 @@ pybind11_add_module(classification_imp MODULE
     src/WToLepNuX.cpp //
     # src/WToLepNu_eff.cpp //
     # src/ZToTauTauLepX.cpp //
-    src/EventClass.cpp //
-    src/Distribution.cpp //
+    # src/Distribution.cpp //
     src/pybind_imp.cpp //
 )
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(classification_imp LINK_PUBLIC ROOT::RIO ROOT::Net correctionlib)
+target_link_libraries(classification_imp LINK_PRIVATE EventClass Distribution)
 target_include_directories(classification_imp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 install(TARGETS classification_imp DESTINATION ${CMAKE_SOURCE_DIR}/lib/python)
 
 
-message(STATUS "Generating EventClass dictionaries ...")
-# ROOT_GENERATE_DICTIONARY(EventClassDict include/EventClass.hpp include/ValidationContainer.hpp include/ZToLepLepX.hpp include/Distribution.hpp include/distribution_factory.hpp MODULE classification_imp LINKDEF include/EventClassLinkDef.h)
-ROOT_GENERATE_DICTIONARY(EventClassDict include/EventClass.hpp include/ValidationContainer.hpp include/ZToLepLepX.hpp include/Distribution.hpp  MODULE classification_imp LINKDEF include/EventClassLinkDef.h)
-message(STATUS "Done.")
 
-install(TARGETS EventClassDict DESTINATION ${CMAKE_SOURCE_DIR}/lib)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libclassification_imp_rdict.pcm DESTINATION ${CMAKE_SOURCE_DIR}/lib/python)
 

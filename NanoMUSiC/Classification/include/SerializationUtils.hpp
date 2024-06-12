@@ -22,7 +22,7 @@ inline auto make_histogram_full_name(const std::string &class_name,
         "[{}]_[{}]_[{}]_[{}]_[{}]_[{}]_[{}]", class_name, process_group, xs_order, sample, year, shift, histo_name);
 }
 
-    inline  auto split_histo_name(std::string histo_full_name, const std::string delimiter = "]_[")
+inline auto split_histo_name(std::string histo_full_name, const std::string delimiter = "]_[")
     -> std::tuple<std::string, std::string, std::string, std::string, std::string, std::string, std::string>
 {
     // remove leading and trailing bracket

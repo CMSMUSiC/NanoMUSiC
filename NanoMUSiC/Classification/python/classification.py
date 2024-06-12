@@ -1,4 +1,8 @@
-import ray
+from typing import Optional, Union, Iterator
+import time
+import math
+from itertools import islice
+from multiprocessing.pool import AsyncResult
 import fnmatch
 from multiprocessing import Pool
 from itertools import product
@@ -8,15 +12,16 @@ import json
 from condor_manager import CondorJob, CondorManager
 import os
 import classification_imp as clft
-from typing import Optional, Union
 import sys
-from metadata import Lumi, Years, Process, load_toml
-from rich.progress import track, Progress
+from metadata import Lumi, Years, Process, load_toml, get_distributions
+from rich.progress import Progress
+from rich import print as rprint
 import hashlib
 import subprocess
 import shlex
 from enum import Enum, auto
 from collections import defaultdict
+from multiprocessing import Process
 
 
 class XrdcpResult(Enum):
@@ -25,7 +30,9 @@ class XrdcpResult(Enum):
     TIMEOUT = auto()
 
 
-def xrdcp(src: str, dest: str, redirector: str, timeout: int) -> XrdcpResult:
+def xrdcp(
+    src: str, dest: str, redirector: str, timeout: Union[int, None]
+) -> XrdcpResult:
     if not redirector.endswith("//"):
         redirector += "//"
     try:
@@ -93,7 +100,7 @@ def fetch_file(file):
     return hashed_file_name
 
 
-def download_files(files: list[str]):
+def download_files(files: list[str]) -> Iterator[str]:
     if len(files) == 0:
         print("ERROR: No input file was provided.")
         sys.exit(-1)
@@ -103,7 +110,7 @@ def download_files(files: list[str]):
             yield f
     else:
         with Pool(processes=1) as pool:
-            result = None
+            result: Union[AsyncResult, None] = None
             for i, f in enumerate(files):
                 this_file = None
                 if i == 0:
@@ -111,11 +118,12 @@ def download_files(files: list[str]):
                         result = pool.apply_async(fetch_file, (files[1],))
                     this_file = fetch_file(f)
                 else:
-                    result.wait()
-                    if result.successful():
-                        this_file = result.get()
-                    if i + 1 < len(files):
-                        result = pool.apply_async(fetch_file, (files[i + 1],))
+                    if isinstance(result, AsyncResult):
+                        result.wait()
+                        if result.successful():
+                            this_file = result.get()
+                        if i + 1 < len(files):
+                            result = pool.apply_async(fetch_file, (files[i + 1],))
                 if not this_file:
                     print("ERROR: Could not download input file {}.".format(f))
                     sys.exit(-1)
@@ -134,7 +142,7 @@ def run_classification(
     xs_order: str,
     process_group: str,
     sum_weights_json_filepath: str,
-    input_files: Union[list[str], str],
+    input_files: list[str],
     generator_filter: str,
     first_event: Optional[int] = None,
     last_event: Optional[int] = None,
@@ -249,7 +257,7 @@ print("YAY! Done _o/")
 
 
 def launch_condor(
-    config_file: str,
+    config_file_path: str,
     process_name: Union[str, None] = None,
     year: Union[Years, None] = None,
     max_files: int = sys.maxsize,
@@ -263,7 +271,7 @@ def launch_condor(
             file=sys.stderr,
         )
 
-    config_file = load_toml(config_file)
+    config_file = load_toml(config_file_path)
 
     processes = [
         Process(name=process_name, **config_file[process_name])
@@ -414,19 +422,73 @@ def launch_parallel(
                 if y in j:
                     file.write("../{}\n".format(j))
 
-        parallel_cmd = r"mkdir -p classification_outputs && cd classification_outputs && cp ../sum_weights.json . && /usr/bin/cat ../classification_jobs/inputs_parallel.txt | parallel -j ___NUM_CPUS___ --eta --progress --noswap --retries 4 --joblog job.log 'python3 {} > {/.}.stdout 2> {/.}.stderr' && cd ..".replace(
+        parallel_cmd = r"mkdir -p classification_outputs && cd classification_outputs && cp ../sum_weights.json . && /usr/bin/cat ../classification_jobs/inputs_parallel.txt | parallel -j ___NUM_CPUS___ --eta --progress --noswap --retries 4 --joblog job____YEAR___.log 'python3 {} > {/.}.stdout 2> {/.}.stderr' && cd ..".replace(
             "___NUM_CPUS___", str(num_cpus)
+        ).replace("___YEAR___", y)
+        rprint(
+            "[bold magenta]Parallel command for year {}: [/bold magenta][white]{}[/white]".format(
+                y, parallel_cmd
+            )
         )
-        print("Parallel command: {}".format(parallel_cmd))
 
-        with open("last_parallel_command.txt", "w") as file:
-            file.write("{}\n".format(j))
+        os.system("date")
+        parallel_proc = subprocess.Popen(
+            parallel_cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            shell=True,
+        )
 
-        os.system(parallel_cmd)
+        print()
+        max_line_size = 0
+        for line in iter(parallel_proc.stdout.readline, ""):
+            if line.startswith("ETA"):
+                line = line.replace("\n", "")
+                max_line_size = max(max_line_size, len(line))
+                print(" " * max_line_size, end="\r")
+                print(line.replace("\n", ""), end="\r")
+                sys.stdout.flush()  # Ensure it prints in real-time
+            else:
+                print(line, end="")
+        print()
+
+        parallel_proc.stdout.close()
+        return_code = parallel_proc.wait()
+        os.system("date")
+        if return_code:
+            print(
+                "ERROR: Could not run parallel jobs for year {}.".format(y),
+                file=sys.stderr,
+            )
+            sys.exit(-1)
+
+        parallel_proc = subprocess.run(
+            r"awk '$7 != 0' classification_outputs/job____YEAR___.log | wc -l".replace(
+                "___YEAR___", y
+            ),
+            capture_output=True,
+            shell=True,
+            text=True,
+        )
+        if parallel_proc.returncode != 0:
+            print(
+                "ERROR: Could not status of parallel jobs for year {}.".format(y),
+                file=sys.stderr,
+            )
+            sys.exit(-1)
+        if parallel_proc.stdout.replace("\n", "").replace(" ", "") != "1":
+            print(
+                "ERROR: Could not run parallel jobs for year {}. At least one job have failed.".format(
+                    y
+                ),
+                file=sys.stderr,
+            )
+            sys.exit(-1)
 
 
 def launch_dev(
-    config_file: str,
+    config_file_path: str,
     process_name: Union[str, None] = None,
     year: Union[Years, None] = None,
     max_files: int = sys.maxsize,
@@ -438,7 +500,7 @@ def launch_dev(
         )
         sys.exit(-1)
 
-    config_file = load_toml(config_file)
+    config_file = load_toml(config_file_path)
     process = Process(name=process_name, **config_file[process_name])
 
     run_classification(
@@ -461,128 +523,6 @@ def launch_dev(
     )
 
 
-def launch_local(
-    config_file: str,
-    process_name: Union[str, None] = None,
-    year: Union[Years, None] = None,
-    max_files: int = sys.maxsize,
-    num_cpus: int = 100,
-    split_size: int = sys.maxsize,
-):
-    if process_name or year:
-        print(
-            "WARINING: Launching a Local Classification will run over all samples. Process name and Year will be ignored.",
-            file=sys.stderr,
-        )
-
-    config_file = load_toml(config_file)
-
-    processes = [
-        Process(name=process_name, **config_file[process_name])
-        for process_name in config_file
-    ]
-    random.shuffle(processes)
-
-    def expected_timming(process: Process) -> int:
-        if process.name.startswith("tt") or process.name.startswith("TT"):
-            return 0
-        if process.name.startswith("QCD"):
-            return 100
-        if process.is_data:
-            return sys.maxsize
-        return 10
-
-    processes = sorted(processes, key=expected_timming)
-
-    os.system("rm -rf classification_outputs")
-    os.system("mkdir -p  classification_outputs")
-    os.system("rm -rf ray_spill_objects")
-    os.system("mkdir -p  ray_spill_objects")
-    os.system("rm -rf tmp_ray")
-    os.system("mkdir -p  tmp_ray")
-
-    @ray.remote
-    def run_classification_fwd(*args, **kwargs):
-        return run_classification(*args, **kwargs)
-
-    def chunks(lst: list[str], n: Union[int, None]) -> list[list[str]]:
-        if not n:
-            return [lst]
-        if split_size > len(lst):
-            return [lst]
-        assert n > 0
-        return [lst[i : i + n] for i in range(0, len(lst), n)]
-
-    def launch_imp(
-        description: str, this_processes: list[Process], _num_cpus: int = 100
-    ) -> None:
-        print("Starting ray cluster ...")
-        ray.init(
-            log_to_driver=False,
-            num_cpus=_num_cpus,
-            _system_config={
-                "object_spilling_config": json.dumps(
-                    {
-                        "type": "filesystem",
-                        "params": {
-                            "directory_path": "{}/ray_spill_objects".format(os.getcwd())
-                        },
-                    },
-                )
-            },
-            _temp_dir="{}/tmp_ray".format(os.getcwd()),
-        )
-
-        print("Launching jobs: {}...".format(description))
-        jobs = []
-        for process in this_processes:
-            for year in Years:
-                input_files = chunks(process.get_files(year, max_files), split_size)
-                for split_index, sub_input_files in enumerate(input_files):
-                    if len(sub_input_files):
-                        jobs.append(
-                            run_classification_fwd.remote(
-                                output_file=f"classification_outputs/{process.name}_{year}_{split_index}.root",
-                                process=process.name,
-                                year=year,
-                                is_data=process.is_data,
-                                x_section=process.XSec,
-                                filter_eff=process.FilterEff,
-                                k_factor=process.kFactor,
-                                luminosity=Lumi.lumi[year],
-                                xs_order=process.XSecOrder,
-                                process_group=process.ProcessGroup,
-                                sum_weights_json_filepath="sum_weights.json",
-                                input_files=process.get_files(year, max_files),
-                                generator_filter=process.generator_filter_key,
-                                first_event=None,
-                                last_event=None,
-                                debug=True,
-                            )
-                        )
-
-        def to_iterator(obj_ids):
-            while obj_ids:
-                done, obj_ids = ray.wait(obj_ids)
-                yield ray.get(done[0])
-
-        print("Collecting results ...")
-        for x in track(
-            to_iterator(jobs),
-            description="Processing {} jobs ...".format(len(jobs)),
-            total=len(jobs),
-        ):
-            pass
-
-        ray.shutdown()
-
-    launch_imp(
-        "All",
-        processes,
-        num_cpus,
-    )
-
-
 def merge_task(args):
     files_to_merge, validation_files_to_merge, process, year = args
     clft.EventClassContainer.merge_many(
@@ -598,10 +538,10 @@ def merge_task(args):
 
 
 def merge_classification_outputs(
-    config_file: str,
+    config_file_path: str,
     inputs_dir: str,
 ):
-    config_file = load_toml(config_file)
+    config_file = load_toml(config_file_path)
 
     processes = [
         Process(name=process_name, **config_file[process_name])
@@ -646,7 +586,7 @@ def merge_classification_outputs(
 
 
 def serialize_to_root_task(args):
-    file_to_process, validation_files_to_process, process, year = args
+    file_to_process, validation_file_to_process, process, year = args
     event_classes = clft.EventClassContainer.serialize_to_root(
         file_to_process,
         "classification_root_files/{}_{}.root".format(process.name, year),
@@ -657,7 +597,7 @@ def serialize_to_root_task(args):
         process.is_data,
     )
     validation_analysis = clft.ValidationContainer.serialize_to_root(
-        validation_files_to_process,
+        validation_file_to_process,
         "validation_root_files/validation_{}_{}.root".format(process.name, year),
     )
 
@@ -665,16 +605,15 @@ def serialize_to_root_task(args):
         "{} - {}".format(process.name, year),
         event_classes,
         validation_analysis,
-        file_to_process,
+        "classification_root_files/{}_{}.root".format(process.name, year),
+        "validation_root_files/validation_{}_{}.root".format(process.name, year),
     )
 
 
 def serialize_to_root(
-    config_file: str,
-    inputs_dir: str,
-    validation_inputs_dir: str,
+    config_file_path: str, inputs_dir: str, validation_inputs_dir: str, num_cpus: int
 ):
-    config_file = load_toml(config_file)
+    config_file = load_toml(config_file_path)
 
     processes = [
         Process(name=process_name, **config_file[process_name])
@@ -708,20 +647,28 @@ def serialize_to_root(
 
     random.shuffle(serialization_jobs)
 
-    print("Serializing Classification results to ROOT ...")
+    print("Unwrapping (serializing) Classification results to ROOT ...")
     classes_to_files = defaultdict(list)
     validation_to_files = defaultdict(list)
-    with Pool() as p:
+    with Pool(num_cpus) as p:
         with Progress() as progress:
-            task = progress.add_task("Serializing ...", total=len(serialization_jobs))
+            task = progress.add_task("Unwrapping ...", total=len(serialization_jobs))
             for job in p.imap_unordered(serialize_to_root_task, serialization_jobs):
-                sample_year, event_classes, validation_analysis, file_to_process = job
+                (
+                    sample_year,
+                    event_classes,
+                    validation_analysis,
+                    file_to_process,
+                    validation_file_to_process,
+                ) = job
                 progress.console.print("Done: {}".format(sample_year))
 
                 for ec in event_classes:
                     classes_to_files[ec].append(file_to_process.split("/")[1])
                 for val in validation_analysis:
-                    validation_to_files[val].append(file_to_process.split("/")[1])
+                    validation_to_files[val].append(
+                        validation_file_to_process.split("/")[1]
+                    )
 
                 progress.advance(task)
 
@@ -732,111 +679,127 @@ def serialize_to_root(
         json.dump(dict(validation_to_files), json_file, indent=4)
 
 
-def make_distributions_task(args):
+def make_distributions_task(
+    args: tuple[list[str], str, list[tuple[str, bool]], str, str],
+):
     (
         files_to_process,
         analysis_name,
-        distribution_name,
-        allow_rescale_by_width,
+        distribution_props,
         year,
         output_file_path,
     ) = args
 
-    distribution = clft.Distribution(
-        files_to_process, analysis_name, distribution_name, allow_rescale_by_width
+    start_time = time.time()
+    clft.Distribution.make_distributions(
+        files_to_process,
+        analysis_name,
+        year,
+        distribution_props,
+        output_file_path,
     )
-    distribution.save(output_file_path)
 
-    return analysis_name, distribution_name, year
+    end_time = time.time()
+
+    # clft.Distribution.save(distribution, output_file_path)
+
+    # Calculate the elapsed time
+    elapsed_time = end_time - start_time
+
+    print(f"Elapsed time: {elapsed_time} seconds")
+
+    return analysis_name, year
+
+
+def do_fold(input_files, output_dir, classes_names):
+    clft.Distribution.make_distributions(
+        input_files,
+        output_dir,
+        classes_names,
+    )
 
 
 def make_distributions(
     inputs_dir: str,
     validation_inputs_dir: str,
-):
+    class_name_filter_patterns: list[str],
+    validation_filter_patterns: list[str],
+) -> None:
     with open("{}/classes_to_files.json".format(inputs_dir), "r") as file:
         classes_to_files = json.load(file)
 
     with open("{}/validation_to_files.json".format(validation_inputs_dir), "r") as file:
         validation_to_files = json.load(file)
 
-    os.system("rm -rf classification_distribution_files")
-    os.system("mkdir -p classification_distribution_files")
-    os.system("rm -rf validation_distribution_files")
-    os.system("mkdir -p validation_distribution_files")
+    os.system("rm -rf classification_distributions")
+    os.system("mkdir -p classification_distributions")
+    os.system("rm -rf validation_distributions")
+    os.system("mkdir -p validation_distributions")
 
-    output_dir = "distribution_files"
+    def get_input_files(inputs_dir: str) -> list[str]:
+        return glob.glob("{}/*.root".format(inputs_dir))
 
-    def get_distributions(analysis_name):
-        if analysis_name.startswith("EC_"):
-            return [
-                ("h_counts", False),
-                ("h_sum_pt", True),
-                ("h_invariant_mass", True),
-                ("h_met", True),
-            ]
+    def filter_classes(analysis_name: str, patterns: list[str]) -> bool:
+        return any(fnmatch.fnmatch(analysis_name, pattern) for pattern in patterns)
 
-        print("ERROR: Could not find distributions for {}.".format(analysis_name))
-        sys.exit(-1)
+    def get_analysis_names(
+        analysis_to_files: dict[str, list[str]], patterns: list[str]
+    ) -> Union[list[str], None]:
+        analysis_names = []
+        for analysis in analysis_to_files:
+            if filter_classes(analysis, patterns):
+                analysis_names.append(analysis)
+        if len(analysis_names):
+            return analysis_names
+        print(
+            "WARNING: Could not build distribution jobs. No distributions matches the requirements."
+        )
+        return None
 
-    def make_distribution_jobs(analysis_names):
-        distribution_jobs = []
+    def chunk_list(lst, n_parts):
+        if n_parts <= 0:
+            print("ERROR: n_parts should be > 0.")
+            sys.exit(-1)
 
-        for analysis, year in product(analysis_names, Years.years_to_plot()):
-            files_to_process = fnmatch.filter(
-                analysis_names[analysis], "{}.root".format(year)
+        chunk_size = math.ceil(len(lst) / n_parts)
+        for i in range(0, len(lst), chunk_size):
+            yield lst[i : i + chunk_size]
+
+    print("Will fold Classification ...")
+    n_parts = 3
+    classes_names = get_analysis_names(classes_to_files, class_name_filter_patterns)
+    if classes_names:
+        random.shuffle(classes_names)
+        input_files = get_input_files("classification_root_files")
+        random.shuffle(input_files)
+        for this_classes_names in chunk_list(classes_names, n_parts):
+            p = Process(
+                target=do_fold,
+                args=(
+                    input_files,
+                    "classification_distributions",
+                    this_classes_names,
+                ),
             )
+            p.start()
+            p.join()
+            if p.exitcode != 0:
+                print("ERROR: Could not make distribution files for Classification.")
 
-            for dist, allow_rescale_by_width in get_distributions(analysis):
-                distribution_jobs.append(
-                    (
-                        files_to_process,
-                        analysis,
-                        dist,
-                        allow_rescale_by_width,
-                        year,
-                        "{}/distribution_{}_{}_{}.root".format(
-                            output_dir,
-                            analysis,
-                            dist,
-                            Years.years_to_plot()[year]["name"],
-                        ),
-                    )
-                )
-
-        return distribution_jobs
-
-    print("Building distributions from Classification...")
-    distribution_jobs_classification = make_distribution_jobs(classes_to_files)
-    with Pool() as p:
-        with Progress() as progress:
-            task = progress.add_task(
-                "Folding [Classification] ...",
-                total=len(distribution_jobs_classification),
-            )
-            for job in p.imap_unordered(
-                make_distributions_task, distribution_jobs_classification
-            ):
-                analysis, distribution_name, year = job
-                progress.console.print(
-                    "Done: {} - {} - {}".format(analysis, distribution_name, year)
-                )
-
-                progress.advance(task)
-
-    distribution_jobs_classification = make_distribution_jobs(validation_to_files)
-    with Pool() as p:
-        with Progress() as progress:
-            task = progress.add_task(
-                "Folding [Classification] ...",
-                total=len(distribution_jobs_classification),
-            )
-            for job in p.imap_unordered(
-                make_distributions_task, distribution_jobs_classification
-            ):
-                analysis, distribution_name, year = job
-                progress.console.print(
-                    "Done: {} - {} - {}".format(analysis, distribution_name, year)
-                )
-
-                progress.advance(task)
+    print("Will fold Validation ...")
+    validation_names = get_analysis_names(
+        validation_to_files, validation_filter_patterns
+    )
+    if validation_names:
+        p = Process(
+            target=do_fold,
+            args=(
+                get_input_files("validation_root_files"),
+                "validation_distributions",
+                validation_names,
+            ),
+        )
+        p.start()
+        p.join()
+        if p.exitcode != 0:
+            print("ERROR: Could not make distribution files for Validation.")

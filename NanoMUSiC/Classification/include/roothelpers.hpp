@@ -18,6 +18,7 @@
 #include "TGraphAsymmErrors.h"
 #include "TGraphErrors.h"
 #include "TH1.h"
+#include "TList.h"
 
 using namespace ROOT;
 using namespace ROOT::VecOps;
@@ -63,24 +64,26 @@ inline auto Print(const TH1F &h) -> void
 
 inline auto Clone(const TH1F &h, const std::optional<std::string> &new_name = std::nullopt) -> TH1F
 {
-    auto new_histo = static_cast<TH1F *>(h.Clone());
+    // auto new_histo = *(static_cast<TH1F *>(h.Clone()));
+    auto new_histo = TH1F(h);
     if (new_name)
     {
-        new_histo->SetName(new_name->c_str());
+        new_histo.SetName(new_name->c_str());
     }
-    return *new_histo;
+    return new_histo;
 }
 
 inline auto CloneAndReset(const TH1F &h, const std::optional<std::string> &new_name = std::nullopt) -> TH1F
 {
-    auto new_histo = static_cast<TH1F *>(h.Clone());
+    // auto new_histo = *(static_cast<TH1F *>(h.Clone()));
+    auto new_histo = TH1F(h);
     if (new_name)
     {
-        new_histo->SetName(new_name->c_str());
+        new_histo.SetName(new_name->c_str());
     }
-    new_histo->Reset();
+    new_histo.Reset();
 
-    return *new_histo;
+    return new_histo;
 }
 
 inline auto Counts(const TH1F &h) -> RVec<double>
@@ -206,7 +209,34 @@ inline auto AbsDiff(const TH1F &h1, const TH1F &h2) -> RVec<double>
 
 /////////////////
 /// This is important to sum Data and MC histograms and get the proper errors
-inline auto SumAsTH1F(const std::vector<TH1F> &histos, const std::optional<std::string> &new_name = std::nullopt)
+// inline auto SumAsTH1F(const std::vector<TH1F> &histos, const std::optional<std::string> &new_name = std::nullopt)
+//     -> TH1F
+// {
+//     if (histos.size() == 0)
+//     {
+//         fmt::print(stderr, "ERROR: Could not sum histograms. The provided list is empty.");
+//         std::exit(EXIT_FAILURE);
+//     }
+//
+//     auto sum = Clone(histos[0]);
+//     for (std::size_t i = 1; i < histos.size(); i++)
+//     {
+//         sum.Add(&histos[i]);
+//     }
+//
+//     if (new_name)
+//     {
+//         sum.SetName(new_name->c_str());
+//     }
+//     else
+//     {
+//         sum.SetName(histos[0].GetName());
+//     }
+//
+//     return sum;
+// }
+
+inline auto SumAsTH1F(const std::vector<TH1F *> &histos, const std::optional<std::string> &new_name = std::nullopt)
     -> TH1F
 {
     if (histos.size() == 0)
@@ -215,38 +245,19 @@ inline auto SumAsTH1F(const std::vector<TH1F> &histos, const std::optional<std::
         std::exit(EXIT_FAILURE);
     }
 
-    auto sum = Clone(histos[0]);
+    // auto sum = Clone(*(histos[0]));
+    // for (std::size_t i = 1; i < histos.size(); i++)
+    // {
+    //     sum.Add(histos[i].get());
+    // }
+
+    auto list = TList();
     for (std::size_t i = 1; i < histos.size(); i++)
     {
-        sum.Add(&histos[i]);
+        list.Add(histos[i]);
     }
-
-    if (new_name)
-    {
-        sum.SetName(new_name->c_str());
-    }
-    else
-    {
-        sum.SetName(histos[0].GetName());
-    }
-
-    return sum;
-}
-
-inline auto SumAsTH1F(const std::vector<std::shared_ptr<TH1F>> &histos,
-                      const std::optional<std::string> &new_name = std::nullopt) -> TH1F
-{
-    if (histos.size() == 0)
-    {
-        fmt::print(stderr, "ERROR: Could not sum histograms. The provided list is empty.");
-        std::exit(EXIT_FAILURE);
-    }
-
-    auto sum = Clone(*histos[0]);
-    for (std::size_t i = 1; i < histos.size(); i++)
-    {
-        sum.Add(histos[i].get());
-    }
+    auto sum = Clone(*(histos[0]));
+    sum.Merge(&list);
 
     if (new_name)
     {
@@ -260,12 +271,40 @@ inline auto SumAsTH1F(const std::vector<std::shared_ptr<TH1F>> &histos,
     return sum;
 }
 
-inline auto SumAsTH1F(const std::unordered_map<std::string, TH1F> &histos,
+inline auto SumAsTH1F(const std::vector<std::shared_ptr<TH1F>> &histos,
+                      const std::optional<std::string> &new_name = std::nullopt) -> TH1F
+{
+    if (histos.size() == 0)
+    {
+        fmt::print(stderr, "ERROR: Could not sum histograms. The provided list is empty.");
+        std::exit(EXIT_FAILURE);
+    }
+    auto list = TList();
+    for (std::size_t i = 1; i < histos.size(); i++)
+    {
+        list.Add(histos[i].get());
+    }
+    auto sum = Clone(*(histos[0]));
+    sum.Merge(&list);
+
+    if (new_name)
+    {
+        sum.SetName(new_name->c_str());
+    }
+    else
+    {
+        sum.SetName(histos[0]->GetName());
+    }
+
+    return sum;
+}
+
+inline auto SumAsTH1F(std::unordered_map<std::string, TH1F> &histos,
                       bool remove_data = true,
                       const std::optional<std::string> &new_name = std::nullopt) -> TH1F
 {
-    auto values = std::vector<TH1F>();
-    for (const auto &[pg, h] : histos)
+    auto list = TList();
+    for (auto &[pg, h] : histos)
     {
         if (remove_data)
         {
@@ -274,10 +313,38 @@ inline auto SumAsTH1F(const std::unordered_map<std::string, TH1F> &histos,
                 continue;
             }
         }
-        values.push_back(h);
+        list.Add(&h);
     }
-    return SumAsTH1F(values, new_name);
+
+    auto sum = CloneAndReset(*(static_cast<TH1F *>(list.At(0))));
+    sum.Merge(&list);
+
+    if (new_name)
+    {
+        sum.SetName(new_name->c_str());
+    }
+
+    return sum;
 }
+
+// inline auto SumAsTH1F(std::unordered_map<std::string, TH1F> &histos,
+//                       bool remove_data = true,
+//                       const std::optional<std::string> &new_name = std::nullopt) -> TH1F
+// {
+//     auto values = std::vector<TH1F *>();
+//     for (auto &[pg, h] : histos)
+//     {
+//         if (remove_data)
+//         {
+//             if (pg == "Data")
+//             {
+//                 continue;
+//             }
+//         }
+//         values.emplace_back(&h);
+//     }
+//     return SumAsTH1F(values, new_name);
+// }
 
 ///////////////////
 /// Ref: https://twiki.cern.ch/twiki/bin/view/CMS/PoissonErrorBastruct
