@@ -65,7 +65,7 @@ auto process(const std::vector<std::string> &files, const std::string &year_str,
 {
     // ROOT::EnableImplicitMT();
 
-    fmt::print("Will process: {}", fmt::join(files, ", "));
+    // fmt::print("Will process: {}", fmt::join(files, ", "));
 
     ROOT::RDataFrame raw_df("Events", files);
     auto inflated_df =

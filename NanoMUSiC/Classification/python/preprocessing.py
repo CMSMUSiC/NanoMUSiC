@@ -1,11 +1,12 @@
 import os
+import subprocess
 import ROOT
+from multiprocessing import Pool
 import tomli
 from pathlib import Path
 import json
 import logging
 from rich.logging import RichHandler
-import ray
 from metadata import Years
 import sys
 
@@ -20,6 +21,12 @@ log = logging.getLogger("main")
 
 
 def preamble():
+    # check proxy
+    p = subprocess.run(["voms-proxy-info"], capture_output=True)
+    if p.returncode != 0:
+        log.error("No proxy found.")
+        sys.exit(-1)
+
     log.info("Compiling libraries ...")
 
     ROOT.gSystem.AddIncludePath(
@@ -31,7 +38,6 @@ def preamble():
         f"{os.getenv('MUSIC_BASE')}/NanoMUSiC/Classification/src/GeneratorFilters.cpp",
         "fgO-",
         "",
-        # f"{os.getenv('MUSIC_BASE')}/lib",
         "",
         1,
     )
@@ -40,7 +46,6 @@ def preamble():
         f"{os.getenv('MUSIC_BASE')}/NanoMUSiC/Classification/src/NanoAODGenInfo.cpp",
         "fgO-",
         "",
-        # f"{os.getenv('MUSIC_BASE')}/lib",
         "",
         1,
     )
@@ -49,7 +54,6 @@ def preamble():
         f"{os.getenv('MUSIC_BASE')}/NanoMUSiC/Classification/Utils/PreProcessing/compute_sum_weights.cpp",
         "fgO-",
         "",
-        # f"{os.getenv('MUSIC_BASE')}/lib",
         "",
         1,
     )
@@ -77,8 +81,8 @@ class SumWeights:
         self.has_LHEWeight_originalXWGTUP = has_LHEWeight_originalXWGTUP
 
 
-@ray.remote
-def process(files, year, generator_filter_key):
+def process(args):
+    sample, files, year = args
     import ROOT
 
     ROOT.gSystem.AddIncludePath(
@@ -118,15 +122,19 @@ def process(files, year, generator_filter_key):
     #     res = ROOT.process(files_to_process[:1], year, generator_filter_key)
     # res = ROOT.process(files_to_process[:1], year, ROOT.std.nullopt)
     res = ROOT.process(files_to_process, year, "")
-    return SumWeights(
-        res.sum_genWeight,
-        res.sum_genWeight_pass_generator_filter,
-        res.sum_LHEWeight,
-        res.sum_LHEWeight_pass_generator_filter,
-        res.raw_events,
-        res.pass_generator_filter,
-        res.has_genWeight,
-        res.has_LHEWeight_originalXWGTUP,
+    return (
+        sample,
+        year,
+        SumWeights(
+            res.sum_genWeight,
+            res.sum_genWeight_pass_generator_filter,
+            res.sum_LHEWeight,
+            res.sum_LHEWeight_pass_generator_filter,
+            res.raw_events,
+            res.pass_generator_filter,
+            res.has_genWeight,
+            res.has_LHEWeight_originalXWGTUP,
+        ),
     )
 
 
@@ -138,53 +146,45 @@ def compute_sum_weights(analysis_config: str) -> None:
         if not configs[sample]["is_data"]:
             total_samples += 1
 
-    print("Starting ray cluster ...")
-    ray.init(
-        log_to_driver=False,
-        num_cpus=100,
-        _temp_dir="{}/tmp_ray".format(os.getcwd()),
-    )
-    results = {}
-    for idx_sample, sample in enumerate(configs):
+    args = []
+    for sample in configs:
         if not configs[sample]["is_data"]:
-            results[sample] = {}
             for y in Years:
                 if f"output_files_{y}" in configs[sample]:
                     if len(configs[sample][f"output_files_{y}"]):
-                        results[sample][y] = process.remote(
-                            configs[sample][f"output_files_{y}"],
-                            y,
-                            configs[sample].get("generator_filter_key"),
+                        args.append(
+                            (
+                                sample,
+                                configs[sample][f"output_files_{y}"],
+                                y,
+                            )
                         )
 
     weights = {}
-    for idx_sample, sample in enumerate(configs):
-        if not configs[sample]["is_data"]:
-            weights[sample] = {}
-            for y in Years:
+    with Pool(120) as p:
+        for idx, job in enumerate(p.imap_unordered(process, args)):
+            sample, y, result = job
+            if not sample in weights.keys():
+                weights[sample] = {}
+
+            if not y in weights[sample].keys():
                 weights[sample][y] = {}
-                if f"output_files_{y}" in configs[sample]:
-                    log.info(
-                        f"Collecting results for sample: {sample} [{idx_sample}/{total_samples}] - {y}"
-                    )
-                    if y in results[sample].keys():
-                        _weights = ray.get(results[sample][y])
-                        weights[sample][y]["sum_genWeight"] = _weights.sum_genWeight
-                        weights[sample][y]["sum_genWeight_pass_generator_filter"] = (
-                            _weights.sum_genWeight_pass_generator_filter
-                        )
-                        weights[sample][y]["sum_LHEWeight"] = _weights.sum_LHEWeight
-                        weights[sample][y]["sum_LHEWeight_pass_generator_filter"] = (
-                            _weights.sum_LHEWeight_pass_generator_filter
-                        )
-                        weights[sample][y]["raw_events"] = _weights.raw_events
-                        weights[sample][y]["pass_generator_filter"] = (
-                            _weights.pass_generator_filter
-                        )
-                        weights[sample][y]["has_genWeight"] = _weights.has_genWeight
-                        weights[sample][y]["has_LHEWeight_originalXWGTUP"] = (
-                            _weights.has_LHEWeight_originalXWGTUP
-                        )
+
+            weights[sample][y]["sum_genWeight"] = result.sum_genWeight
+            weights[sample][y]["sum_genWeight_pass_generator_filter"] = (
+                result.sum_genWeight_pass_generator_filter
+            )
+            weights[sample][y]["sum_LHEWeight"] = result.sum_LHEWeight
+            weights[sample][y]["sum_LHEWeight_pass_generator_filter"] = (
+                result.sum_LHEWeight_pass_generator_filter
+            )
+            weights[sample][y]["raw_events"] = result.raw_events
+            weights[sample][y]["pass_generator_filter"] = result.pass_generator_filter
+            weights[sample][y]["has_genWeight"] = result.has_genWeight
+            weights[sample][y]["has_LHEWeight_originalXWGTUP"] = (
+                result.has_LHEWeight_originalXWGTUP
+            )
+            log.info("Done: {} - {} | {}/{}".format(sample, y, idx, len(args)))
 
     with open("sum_weights.json", "w") as outfile:
         json.dump(weights, outfile, indent=4)
