@@ -1,7 +1,6 @@
 from typing import Optional, Union, Iterator
 import time
 import math
-from itertools import islice
 from multiprocessing.pool import AsyncResult
 import fnmatch
 from multiprocessing import Pool
@@ -21,7 +20,7 @@ import subprocess
 import shlex
 from enum import Enum, auto
 from collections import defaultdict
-from multiprocessing import Process
+import multiprocessing
 
 
 class XrdcpResult(Enum):
@@ -773,7 +772,7 @@ def make_distributions(
         input_files = get_input_files("classification_root_files")
         random.shuffle(input_files)
         for this_classes_names in chunk_list(classes_names, n_parts):
-            p = Process(
+            p = multiprocessing.Process(
                 target=do_fold,
                 args=(
                     input_files,
@@ -791,7 +790,7 @@ def make_distributions(
         validation_to_files, validation_filter_patterns
     )
     if validation_names:
-        p = Process(
+        p = multiprocessing.Process(
             target=do_fold,
             args=(
                 get_input_files("validation_root_files"),
