@@ -35,7 +35,6 @@ Distribution::Distribution(const std::vector<ECHistogram> &event_class_histogram
       m_event_class_name(event_class_name),
       m_year_to_plot(year_to_string(year_to_plot))
 {
-    // auto start = std::chrono::high_resolution_clock::now();
     // split the histograms per process group and shift
     std::array<std::unordered_map<std::string, std::vector<std::shared_ptr<TH1F>>>, total_variations>
         unmerged_mc_histograms;
@@ -91,6 +90,22 @@ Distribution::Distribution(const std::vector<ECHistogram> &event_class_histogram
     // auto end = std::chrono::high_resolution_clock::now();
     // auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     // fmt::print("Time taken: {} milliseconds\n", duration.count());
+}
+
+auto replace_all(std::string str, const std::string &from, const std::string &to) -> std::string
+{
+    if (from.empty())
+    {
+        return str;
+    }
+    size_t start_pos = 0;
+    while ((start_pos = str.find(from, start_pos)) != std::string::npos)
+    {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length(); // Advance start_pos to the end of the replacement
+    }
+
+    return str;
 }
 
 auto Distribution::make_distributions(const std::vector<std::string> &input_files,
@@ -232,13 +247,12 @@ auto Distribution::make_distributions(const std::vector<std::string> &input_file
             }
         }
 
-        auto output_root_file = std::unique_ptr<TFile>(TFile::Open(fmt::format("{}/distribution_{}_{}_{}.root",
-                                                                               output_dir,
-                                                                               distributions.at(0).m_distribution_name,
-                                                                               distributions.at(0).m_event_class_name,
-                                                                               distributions.at(0).m_year_to_plot)
-                                                                       .c_str(),
-                                                                   "RECREATE"));
+        auto output_root_file = std::unique_ptr<TFile>(TFile::Open(
+            fmt::format(
+                "{}/distribution_{}.root", output_dir, replace_all(distributions.at(0).m_event_class_name, "+", "_"))
+                .c_str(),
+            "RECREATE"));
+
         for (auto &dist : distributions)
         {
             auto write_res = output_root_file->WriteObject(
@@ -249,7 +263,7 @@ auto Distribution::make_distributions(const std::vector<std::string> &input_file
             if (write_res <= 0)
             {
                 fmt::print(stderr,
-                           "ERROR: Could not write object to file: {} - {} - {}\n",
+                           "ERROR: Could not write distribution to file: {} - {} - {}\n",
                            dist.m_event_class_name,
                            dist.m_distribution_name,
                            dist.m_year_to_plot);

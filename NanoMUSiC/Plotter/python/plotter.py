@@ -11,9 +11,9 @@ from pvalue import get_integral_pvalue
 from tools import to_root_latex
 from rich.progress import Progress, track
 from metadata import Years
-import ROOT
 
-from ROOT import TFile, THStack, gSystem, TLine, gPad, gStyle, Distribution
+import ROOT
+from ROOT import TFile, THStack, TLine, gPad, gStyle
 
 
 def make_plot_task(args):
@@ -219,11 +219,6 @@ def make_plot(
     return "{} - {} - {}".format(class_name, distribution_name, year)
 
 
-def get_distribution(file_path: str) -> Distribution:
-    root_file = TFile.Open(file_path)
-    return root_file.Get("distribution")
-
-
 def plotter(
     input_dir: str,
     patterns: list[str],
@@ -235,39 +230,43 @@ def plotter(
     gStyle.SetMarkerSize(0.5)
     gStyle.SetLabelSize(25, "XYZ")
 
-    def make_distribution_paths(
-        inputs_dir: str, patterns: list[str], year: str
-    ) -> list[str]:
+    os.system("rm -rf {}".format(output_dir))
+    os.system("mkdir {}".format(output_dir))
+
+    def make_distribution_paths(inputs_dir: str, patterns: list[str]) -> list[str]:
         distribution_paths: list[str] = []
         for root, _, files in os.walk(inputs_dir):
             for file in files:
-                if (
-                    any(
-                        fnmatch.fnmatch(file, "*" + pattern.replace("+", "_") + "*")
-                        for pattern in patterns
-                    )
-                    and "{}.root".format(Years.years_to_plot()[year]["name"]) in file
+                if any(
+                    fnmatch.fnmatch(file, "*" + pattern.replace("+", "_") + ".root")
+                    for pattern in patterns
                 ):
                     distribution_paths.append(os.path.join(root, file))
         return distribution_paths
 
-    for year in Years.years_to_plot():
-        distribution_files = make_distribution_paths(input_dir, patterns, year)
-        if len(distribution_files) == 0:
-            print("WARNING: No distribution matches the requirements.")
-            sys.exit(1)
+    distribution_files = make_distribution_paths(input_dir, patterns)
+    if len(distribution_files) == 0:
+        print("WARNING: No distribution matches the requirements.")
+        sys.exit(1)
 
-        plots_data = {}
-        for f in track(
-            distribution_files,
-            description="Calculating p-values for year {} [{} distributions] ...".format(
-                Years.years_to_plot()[year]["name"], len(distribution_files)
-            ),
-        ):
-            dist = get_distribution(f)
-            plot = dist.plot_props
+    plots_data = {}
+    for year in Years.years_to_plot():
+        plots_data[Years.years_to_plot()[year]["name"]] = {}
+
+    for f in track(
+        distribution_files,
+        description="Calculating p-values [{} distributions] ...".format(
+            len(distribution_files)
+        ),
+    ):
+        root_file = TFile.Open(f)
+        distribution_names = [k.GetName() for k in root_file.GetListOfKeys()]
+
+        for dist_name in distribution_names:
+            dist = TFile.Open(f).Get(dist_name)
+            plot = dist.make_plot_props()
             if dist.m_distribution_name == "counts":
-                p_value_props = dist.integral_pvalue_props
+                p_value_props = dist.make_integral_pvalue_props()
                 p_value_data = get_integral_pvalue(
                     p_value_props.total_data,
                     p_value_props.total_mc,
@@ -280,14 +279,14 @@ def plotter(
                 veto_reason = p_value_data["Veto Reason"]
 
                 # json for counts plot
-                plots_data[plot.class_name] = {}
-                plots_data[plot.class_name]["data_count"] = (
+                plots_data[dist.m_year_to_plot][plot.class_name] = {}
+                plots_data[dist.m_year_to_plot][plot.class_name]["data_count"] = (
                     plot.total_data_histogram.GetBinContent(1)
                 )
-                plots_data[plot.class_name]["data_uncert"] = (
+                plots_data[dist.m_year_to_plot][plot.class_name]["data_uncert"] = (
                     plot.total_data_histogram.GetBinError(1)
                 )
-                plots_data[plot.class_name]["mc"] = {}
+                plots_data[dist.m_year_to_plot][plot.class_name]["mc"] = {}
                 mc_hists = {}
                 for pg, hist in plot.mc_histograms:
                     mc_hists[pg] = hist
@@ -296,36 +295,40 @@ def plotter(
                     key=lambda pg: mc_hists[pg].Integral(),
                 )
                 for pg in mc_hists_keys_sorted:
-                    plots_data[plot.class_name]["mc"][pg] = mc_hists[pg].GetBinContent(
-                        1
+                    plots_data[dist.m_year_to_plot][plot.class_name]["mc"][pg] = (
+                        mc_hists[pg].GetBinContent(1)
                     )
-                plots_data[plot.class_name]["mc_uncert"] = (
+                plots_data[dist.m_year_to_plot][plot.class_name]["mc_uncert"] = (
                     plot.mc_uncertainty.GetErrorY(0)
                 )
-                plots_data[plot.class_name]["p_value"] = p_value
-                plots_data[plot.class_name]["veto_reason"] = veto_reason
+                plots_data[dist.m_year_to_plot][plot.class_name]["p_value"] = p_value
+                plots_data[dist.m_year_to_plot][plot.class_name]["veto_reason"] = (
+                    veto_reason
+                )
 
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
 
-        with open(
-            "{}/plot_data_{}.json".format(
-                output_dir, Years.years_to_plot()[year]["name"].replace("+", "_")
-            ),
-            "w",
-            encoding="utf-8",
-        ) as f:
-            json.dump(plots_data, f, ensure_ascii=False, indent=4)
+    with open(
+        "{}/plot_data.json".format(output_dir),
+        "w",
+        encoding="utf-8",
+    ) as f:
+        json.dump(plots_data, f, ensure_ascii=False, indent=4)
 
-        plot_props = []
-        for f in track(
-            distribution_files,
-            description="Building plot jobs for year {} [{} distributions] ...".format(
-                Years.years_to_plot()[year]["name"], len(distribution_files)
-            ),
-        ):
-            dist = get_distribution(f)
-            plot = dist.plot_props
+    plot_props = []
+    for f in track(
+        distribution_files,
+        description="Building plot jobs [{} distributions] ...".format(
+            len(distribution_files)
+        ),
+    ):
+        root_file = TFile.Open(f)
+        distribution_names = [k.GetName() for k in root_file.GetListOfKeys()]
+
+        for dist_name in distribution_names:
+            dist = TFile.Open(f).Get(dist_name)
+            plot = dist.make_plot_props()
             plot_props.append(
                 (
                     plot.class_name,
@@ -342,7 +345,7 @@ def plotter(
                     plot.ratio_mc_error_band,
                     output_dir,
                     plot.year_to_plot,
-                    plots_data[plot.class_name]["p_value"],
+                    plots_data[plot.year_to_plot][plot.class_name]["p_value"],
                 )
             )
 
@@ -351,18 +354,15 @@ def plotter(
             if not os.path.exists("{}/{}".format(output_dir, ec_nice_name)):
                 os.makedirs("{}/{}".format(output_dir, ec_nice_name))
 
-        print("Saving plots for year {}...".format(Years.years_to_plot()[year]["name"]))
-        with Pool(min(len(plot_props), num_cpus)) as p:
-            with Progress() as progress:
-                task = progress.add_task(
-                    "Saving [{} - {} plots]...".format(
-                        Years.years_to_plot()[year]["name"], len(plot_props)
-                    ),
-                    total=len(plot_props),
-                )
-                for job in p.imap_unordered(make_plot_task, plot_props):
-                    progress.console.print("Done: {}".format(job))
-                    progress.advance(task)
+    with Pool(min(len(plot_props), num_cpus)) as p:
+        with Progress() as progress:
+            task = progress.add_task(
+                "Saving {} plots ...".format(len(plot_props)),
+                total=len(plot_props),
+            )
+            for job in p.imap_unordered(make_plot_task, plot_props):
+                progress.console.print("Done: {}".format(job))
+                progress.advance(task)
 
     print("Copying index.php ...")
     os.system(

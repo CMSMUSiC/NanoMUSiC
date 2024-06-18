@@ -130,10 +130,6 @@ class Distribution
 
     std::array<std::unordered_map<std::string, TH1F>, total_variations> m_histogram_per_process_group_and_shift;
 
-    // plotting properties
-    PlotProps plot_props;
-    IntegralPValueProps integral_pvalue_props;
-
     // constructor and methods
     Distribution() = default;
 
