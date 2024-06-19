@@ -126,6 +126,17 @@ auto unwrap(std::optional<TTreeReaderValue<T>> &value, bool allow_nan_or_inf = f
                 std::exit(EXIT_FAILURE);
             }
         }
+        else
+        {
+            if (std::isnan(_this_value) or std::isinf(_this_value))
+            {
+                fmt::print(stderr,
+                           "WARINING: Could not unwrap value: {}. NaN or INF found. Unwraped value: {}.\n",
+                           (*value).GetBranchName(),
+                           _this_value);
+                return T();
+            }
+        }
         return _this_value;
     }
     return T();
@@ -148,6 +159,17 @@ auto unwrap_or(std::optional<TTreeReaderValue<T>> &value, Q &&default_value = Q(
                            (*value).GetBranchName(),
                            _this_value);
                 std::exit(EXIT_FAILURE);
+            }
+        }
+        else
+        {
+            if (std::isnan(_this_value) or std::isinf(_this_value))
+            {
+                fmt::print(stderr,
+                           "WARINING: Could not unwrap value: {}. NaN or INF found. Unwraped value: {}.\n",
+                           (*value).GetBranchName(),
+                           _this_value);
+                return static_cast<T>(default_value);
             }
         }
         return _this_value;

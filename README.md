@@ -1,13 +1,13 @@
 #  NanoMUSiC
 
-![music](https://raw.githubusercontent.com/CMSMUSiC/NanoMUSiC/main/docs/images/music.svg)    	
+![music](https://raw.githubusercontent.com/CMSMUSiC/NanoMUSiC/main/docs/images/music.svg)
 
 
-MUSiC - Model Unspecific Search in CMS 
+MUSiC - Model Unspecific Search in CMS
 
 Run2 - Ultra Legacy and Run3, using NanoAOD
 
-## About 
+## About
 
 
 This repository stands on the shoulders of the work done by many brilliant students and scientists of III. Physikalisches Institut A und B (RWTH Aachen University), that along many years touched this code. Their contributions are mainly hosted in the legacy repositories below:

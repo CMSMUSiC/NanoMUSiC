@@ -906,8 +906,8 @@ auto classification(const std::string process,
             auto met = ObjectFactories::make_met( //
                 unwrap(RawMET_pt),                //
                 unwrap(RawMET_phi),               //
-                unwrap(MET_MetUnclustEnUpDeltaX), //
-                unwrap(MET_MetUnclustEnUpDeltaY), //
+                unwrap_or(MET_MetUnclustEnUpDeltaX ,0.,true), //
+                unwrap_or(MET_MetUnclustEnUpDeltaY, 0.,true), //
                 muons.get_delta_met_x(),          //
                 muons.get_delta_met_y(),          //
                 electrons.get_delta_met_x(),      //
