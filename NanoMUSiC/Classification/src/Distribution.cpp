@@ -10,6 +10,7 @@
 #include <memory>
 #include <mutex>
 #include <numeric>
+#include <optional>
 #include <string>
 #include <unordered_map>
 
@@ -52,7 +53,7 @@ Distribution::Distribution(const std::vector<ECHistogram> &event_class_histogram
         }
     }
 
-    // build Data histogram and graph
+    // build Data histogram and grap
     m_total_data_histogram = TH1F(*(event_class_histograms.at(0).histogram));
     m_total_data_histogram.Reset();
     if (m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::Nominal))
@@ -80,6 +81,9 @@ Distribution::Distribution(const std::vector<ECHistogram> &event_class_histogram
     // total uncertainties
     m_total_uncert =
         ROOT::VecOps::sqrt(ROOT::VecOps::pow(m_statistical_uncert, 2.) + ROOT::VecOps::pow(m_systematics_uncert, 2.));
+
+    m_has_data = ROOT::VecOps::Sum(ROOTHelpers::Counts(m_total_data_histogram)) > 0.;
+    m_has_mc = ROOT::VecOps::Sum(ROOTHelpers::Counts(m_total_mc_histogram)) > 0.;
 
     // // plot properties
     // plot_props = make_plot_props();
@@ -575,7 +579,6 @@ auto Distribution::make_plot_props() -> PlotProps
     auto [_min, _max] = min_max;
     auto [idx_min, min] = _min;
     auto [idx_max, max] = _max;
-
     auto data_graph = ROOTHelpers::MakeDataGraph(m_total_data_histogram, m_scale_to_area, min_max);
 
     auto mc_uncert = ROOTHelpers::MakeErrorBand(m_total_mc_histogram, m_total_uncert, m_scale_to_area);

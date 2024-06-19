@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <cstddef>
+#include <cstdlib>
 #include <fmt/core.h>
 #include <functional>
 #include <iostream>
@@ -382,7 +383,6 @@ inline auto MakeDataGraph(const TH1F &data_histo,
     }
 
     int n_graph_points = idx_max - idx_min + 1;
-    // fmt::print("number of points: {}\n", n_graph_points);
 
     ROOT::VecOps::RVec<double> x;
     ROOT::VecOps::RVec<double> y;
@@ -425,11 +425,18 @@ inline auto GetMinMax(const TH1F &histogram_data, const TH1F &histogram_mc)
     auto histogram = histogram_data;
     auto counts = Counts(histogram);
 
-    // check for empty histogram
+    // check for empty Data histogram
     if (ROOT::VecOps::Sum(counts) == 0)
     {
         histogram = histogram_mc;
         counts = Counts(histogram);
+    }
+
+    // check for empty MC histogram
+    if (ROOT::VecOps::Sum(counts) == 0)
+    {
+        fmt::print(stderr, "ERROR: Could not get min and max for this distribution. No Data nor MC (Nominal) found.");
+        std::exit(EXIT_FAILURE);
     }
 
     int first_nonzero_idx = 0;
@@ -447,8 +454,9 @@ inline auto GetMinMax(const TH1F &histogram_data, const TH1F &histogram_mc)
         }
     }
 
-    return {{first_nonzero_idx, histogram.GetBinLowEdge(first_nonzero_idx)},
-            {last_nonzero_idx, histogram.GetBinLowEdge(last_nonzero_idx + 1)}};
+    return std::pair<std::pair<int, double>, std::pair<int, double>>{
+        {first_nonzero_idx, histogram.GetBinLowEdge(first_nonzero_idx)},
+        {last_nonzero_idx, histogram.GetBinLowEdge(last_nonzero_idx + 1)}};
 }
 
 inline auto GetYMin(const TH1F &histogram,
@@ -520,8 +528,8 @@ inline auto GetYMax(const TH1F &histogram_data,
 
     if (y_max == 0.)
     {
-        fmt::print(stderr, "ERROR: Could not set y_max for {} - {}.\n");
-        exit(-1);
+        fmt::print(stderr, "ERROR: Could not set y_max.\n");
+        std::exit(-1);
     }
 
     return y_max * 1.15;

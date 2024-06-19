@@ -127,6 +127,8 @@ class Distribution
     unsigned long m_n_bins;
     TGraphAsymmErrors m_data_graph;
     TGraphErrors m_error_band;
+    bool m_has_data;
+    bool m_has_mc;
 
     std::array<std::unordered_map<std::string, TH1F>, total_variations> m_histogram_per_process_group_and_shift;
 
@@ -152,15 +154,44 @@ class Distribution
 
     static auto make_distributions(const std::vector<std::string> &input_files,
                                    const std::string &output_dir,
-                                   std::vector<std::string> &analysis_to_plot
-                                   ) -> void;
+                                   std::vector<std::string> &analysis_to_plot) -> void;
 
     auto get_statistical_uncert() -> RVec<double>;
     auto get_systematics_uncert(const std::array<std::unordered_map<std::string, std::vector<std::shared_ptr<TH1F>>>,
                                                  total_variations> &unmerged_mc_histograms) -> RVec<double>;
 
     auto make_plot_props() -> PlotProps;
-    auto make_integral_pvalue_props()  -> IntegralPValueProps;
+    auto make_integral_pvalue_props() -> IntegralPValueProps;
+
+    auto print_me() const -> void
+    {
+        fmt::print("--> Event Class: {}\n", m_event_class_name);
+        fmt::print("--> Distribution: {}\n", m_distribution_name);
+        fmt::print("--> Year: {}\n", m_year_to_plot);
+        fmt::print("--> Should scale to area? {}\n", m_scale_to_area);
+        fmt::print("--> Number of bins: {}\n", m_n_bins);
+        fmt::print("--> Statistical Uncert: [{}]\n", fmt::join(m_statistical_uncert, " - "));
+        fmt::print("--> Systematatic Uncert: [{}]\n", fmt::join(m_systematics_uncert, " - "));
+        fmt::print("--> Total uncert: [{}]\n", fmt::join(m_total_uncert, " - "));
+        fmt::print("--> Total Data histogram:\n");
+        m_total_data_histogram.Print("all");
+        fmt::print("--> Total MC histogram:\n");
+        m_total_mc_histogram.Print("all");
+        fmt::print("--> Has MC: {}\n", m_has_mc);
+        fmt::print("--> Has Data: {}\n", m_has_data);
+        // m_data_graph.Print();
+        // m_error_band.Print();
+    }
+
+    auto has_mc() const -> bool
+    {
+        return m_has_mc;
+    }
+
+    auto has_data() const -> bool
+    {
+        return m_has_data;
+    }
 };
 
 #endif // DISTRIBUTION_HPP

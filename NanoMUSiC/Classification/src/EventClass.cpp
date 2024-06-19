@@ -174,11 +174,11 @@ auto EventClassHistogram::serialize_to_root(const std::unique_ptr<TFile> &output
 //////////////////////////
 auto EventClass::make_event_class(const std::string &ec_name) -> EventClass
 {
-    constexpr auto total_variations = static_cast<std::size_t>(Shifts::Variations::kTotalVariations);
+    // constexpr auto total_variations = static_cast<std::size_t>(Shifts::Variations::kTotalVariations);
 
     auto ec = EventClass{};
     ec.ec_name = ec_name;
-    for (std::size_t var = 0; var < total_variations; var++)
+    for (std::size_t var = 0; var < ec.size(); var++)
     {
         if (var == static_cast<std::size_t>(Shifts::Variations::Nominal))
         {
@@ -189,10 +189,13 @@ auto EventClass::make_event_class(const std::string &ec_name) -> EventClass
             ec.h_met[var] = EventClassHistogram::make_event_class_histogram(
                 Shifts::variation_to_string(Shifts::Variations::Nominal), true);
         }
-        ec.h_sum_pt[var] = EventClassHistogram::make_event_class_histogram(Shifts::variation_to_string(var), false);
-        ec.h_invariant_mass[var] =
-            EventClassHistogram::make_event_class_histogram(Shifts::variation_to_string(var), false);
-        ec.h_met[var] = EventClassHistogram::make_event_class_histogram(Shifts::variation_to_string(var), false);
+        else
+        {
+            ec.h_sum_pt[var] = EventClassHistogram::make_event_class_histogram(Shifts::variation_to_string(var), false);
+            ec.h_invariant_mass[var] =
+                EventClassHistogram::make_event_class_histogram(Shifts::variation_to_string(var), false);
+            ec.h_met[var] = EventClassHistogram::make_event_class_histogram(Shifts::variation_to_string(var), false);
+        }
     }
     return ec;
 }
