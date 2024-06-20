@@ -10,13 +10,13 @@
 #include "ZToLepLepX.hpp"
 #include "fmt/core.h"
 #include <algorithm>
+#include <cstdio>
 #include <cstdlib>
 #include <fmt/format.h>
 #include <memory>
 #include <optional>
 #include <stdlib.h>
 #include <string>
-
 
 auto print_debug(long long global_event_index, bool debug) -> void
 {
@@ -903,25 +903,25 @@ auto classification(const std::string process,
                                                             year,                                        //
                                                             diff_shift);
 
-            auto met = ObjectFactories::make_met( //
-                unwrap(RawMET_pt),                //
-                unwrap(RawMET_phi),               //
-                unwrap_or(MET_MetUnclustEnUpDeltaX ,0.,true), //
-                unwrap_or(MET_MetUnclustEnUpDeltaY, 0.,true), //
-                muons.get_delta_met_x(),          //
-                muons.get_delta_met_y(),          //
-                electrons.get_delta_met_x(),      //
-                electrons.get_delta_met_y(),      //
-                taus.get_delta_met_x(),           //
-                taus.get_delta_met_y(),           //
-                photons.get_delta_met_x(),        //
-                photons.get_delta_met_y(),        //
-                jets.get_delta_met_x(),           //
-                jets.get_delta_met_y(),           //
-                bjets.get_delta_met_x(),          //
-                bjets.get_delta_met_y(),          //
-                is_data,                          //
-                year,                             //
+            auto met = ObjectFactories::make_met(              //
+                unwrap(RawMET_pt),                             //
+                unwrap(RawMET_phi),                            //
+                unwrap_or(MET_MetUnclustEnUpDeltaX, 0., true), //
+                unwrap_or(MET_MetUnclustEnUpDeltaY, 0., true), //
+                muons.get_delta_met_x(),                       //
+                muons.get_delta_met_y(),                       //
+                electrons.get_delta_met_x(),                   //
+                electrons.get_delta_met_y(),                   //
+                taus.get_delta_met_x(),                        //
+                taus.get_delta_met_y(),                        //
+                photons.get_delta_met_x(),                     //
+                photons.get_delta_met_y(),                     //
+                jets.get_delta_met_x(),                        //
+                jets.get_delta_met_y(),                        //
+                bjets.get_delta_met_x(),                       //
+                bjets.get_delta_met_y(),                       //
+                is_data,                                       //
+                year,                                          //
                 diff_shift);
 
             // clear objects
@@ -1048,24 +1048,89 @@ auto classification(const std::string process,
             };
 
             // Here goes the real analysis...
-            auto do_classification = [&](KinematicsBuffer &buffer,
-                                         std::size_t num_muon,
-                                         std::size_t num_electron,
-                                         std::size_t num_tau,
-                                         std::size_t num_photon,
-                                         std::size_t num_bjet,
-                                         std::size_t num_jet,
-                                         std::size_t num_met) -> void
-            {
-                auto [event_class_name_exclusive, event_class_name_inclusive, event_class_name_jetinclusive] =
-                    make_event_class_name({num_muon, muons.size()},         //
-                                          {num_electron, electrons.size()}, //
-                                          {num_tau, taus.size()},           //
-                                          {num_photon, photons.size()},     //
-                                          {num_jet, jets.size()},           //
-                                          {num_bjet, bjets.size()},         //
-                                          {num_met, met.size()});
 
+            auto temp_event_classes = TempEC::make_temp_event_classes(
+                muons.size(), electrons.size(), taus.size(), photons.size(), bjets.size(), jets.size(), met.size());
+            for (auto &temp_ec : temp_event_classes)
+            {
+                for (std::size_t i = 0; i < muons.size(); i++)
+                {
+                    if (i <= temp_ec.max_muon_idx)
+                    {
+                        temp_ec.push(muons.p4[i].pt(),
+                                     0.,
+                                     muons.p4[i].e(),
+                                     muons.p4[i].px(),
+                                     muons.p4[i].py(),
+                                     muons.p4[i].pz());
+                    }
+                }
+                for (std::size_t i = 0; i < electrons.size(); i++)
+                {
+                    if (i <= temp_ec.max_electron_idx)
+                    {
+                        temp_ec.push(electrons.p4[i].pt(),
+                                     0.,
+                                     electrons.p4[i].e(),
+                                     electrons.p4[i].px(),
+                                     electrons.p4[i].py(),
+                                     electrons.p4[i].pz());
+                    }
+                }
+                for (std::size_t i = 0; i < taus.size(); i++)
+                {
+                    if (i <= temp_ec.max_tau_idx)
+                    {
+                        temp_ec.push(
+                            taus.p4[i].pt(), 0., taus.p4[i].e(), taus.p4[i].px(), taus.p4[i].py(), taus.p4[i].pz());
+                    }
+                }
+                for (std::size_t i = 0; i < photons.size(); i++)
+                {
+                    if (i <= temp_ec.max_photon_idx)
+                    {
+                        temp_ec.push(photons.p4[i].pt(),
+                                     0.,
+                                     photons.p4[i].e(),
+                                     photons.p4[i].px(),
+                                     photons.p4[i].py(),
+                                     photons.p4[i].pz());
+                    }
+                }
+                for (std::size_t i = 0; i < bjets.size(); i++)
+                {
+                    if (i <= temp_ec.max_bjet_idx)
+                    {
+                        temp_ec.push(bjets.p4[i].pt(),
+                                     0.,
+                                     bjets.p4[i].e(),
+                                     bjets.p4[i].px(),
+                                     bjets.p4[i].py(),
+                                     bjets.p4[i].pz());
+                    }
+                }
+                for (std::size_t i = 0; i < jets.size(); i++)
+                {
+                    if (i <= temp_ec.max_jet_idx)
+                    {
+                        temp_ec.push(
+                            jets.p4[i].pt(), 0., jets.p4[i].e(), jets.p4[i].px(), jets.p4[i].py(), jets.p4[i].pz());
+                    }
+                }
+                for (std::size_t i = 0; i < met.size(); i++)
+                {
+                    if (i <= temp_ec.max_met_idx)
+                    {
+                        temp_ec.push(met.p4[i].pt(),
+                                     met.p4[i].pt(),
+                                     met.p4[i].e(),
+                                     met.p4[i].px(),
+                                     met.p4[i].py(),
+                                     met.p4[i].pz());
+                    }
+                }
+
+                auto classes_names = temp_ec.make_event_class_name();
                 for (auto &&const_shift : shifts.get_constant_shifts(diff_shift))
                 {
                     if (not(const_shift == Shifts::Variations::Nominal or diff_shift == Shifts::Variations::Nominal))
@@ -1076,8 +1141,9 @@ auto classification(const std::string process,
                     auto shift = Shifts::resolve_shifts(const_shift, diff_shift);
 
                     // fill event classes
-                    for (auto &&class_name :
-                         {event_class_name_exclusive, event_class_name_inclusive, event_class_name_jetinclusive})
+                    for (auto &&class_name : {classes_names.exclusive_class_name,
+                                              classes_names.inclusive_class_name,
+                                              classes_names.jet_inclusive_class_name})
                     {
                         if (not(class_name))
                         {
@@ -1092,17 +1158,21 @@ auto classification(const std::string process,
 
                         // fill class
                         event_classes.unsafe_ec(*class_name)
-                            .push(buffer.sum_pt(),
-                                  buffer.mass(),
-                                  buffer.met(),
-                                  get_effective_weight(
-                                      shift, num_muon, num_electron, num_tau, num_photon, num_bjet, num_jet, num_met),
+                            .push(temp_ec.get_sum_pt(),
+                                  temp_ec.get_mass(),
+                                  temp_ec.get_met(),
+                                  get_effective_weight(shift,
+                                                       temp_ec.num_muons,
+                                                       temp_ec.num_electrons,
+                                                       temp_ec.num_taus,
+                                                       temp_ec.num_photons,
+                                                       temp_ec.num_bjets,
+                                                       temp_ec.num_jets,
+                                                       temp_ec.num_met),
                                   shift);
                     }
                 }
-            };
-
-            loop_over_object_combinations(do_classification, muons, electrons, taus, photons, bjets, jets, met);
+            }
 
             //////////////////////////////////////////////
             /// Validation analysis
@@ -1166,9 +1236,7 @@ auto classification(const std::string process,
         }
     }
 
-
     fmt::print("\n[MUSiC Classification] Done ...\n");
     fmt::print("\n\nProcessed {} events ...\n", global_event_index);
     PrintProcessInfo();
 }
-

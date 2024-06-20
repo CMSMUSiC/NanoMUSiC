@@ -1,10 +1,12 @@
 #ifndef CLASSIFICATION
 #define CLASSIFICATION
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
 #include <functional>
+#include <numeric>
 #include <optional>
 #include <stdexcept>
 #include <sys/time.h>
@@ -755,81 +757,242 @@ inline auto loop_over_object_combinations(F f,
     }
 }
 
-inline auto make_event_class_name(std::pair<std::size_t, std::size_t> muon_counts,
-                                  std::pair<std::size_t, std::size_t> electron_counts,
-                                  std::pair<std::size_t, std::size_t> tau_counts,
-                                  std::pair<std::size_t, std::size_t> photon_counts,
-                                  std::pair<std::size_t, std::size_t> jet_counts,
-                                  std::pair<std::size_t, std::size_t> bjet_counts,
-                                  std::pair<std::size_t, std::size_t> met_counts)
-    -> std::tuple<std::optional<std::string>, std::optional<std::string>, std::optional<std::string>>
+struct FourVec
 {
-    constexpr std::size_t max_allowed_jets_per_class = 6;
+    double e;
+    double px;
+    double py;
+    double pz;
+};
 
-    auto [n_muons, total_muons] = muon_counts;
-    auto [n_electrons, total_electrons] = electron_counts;
-    auto [n_taus, total_taus] = tau_counts;
-    auto [n_photons, total_photons] = photon_counts;
-    auto [n_jets, total_jets] = jet_counts;
-    auto [n_bjets, total_bjets] = bjet_counts;
-    auto [n_met, total_met] = met_counts;
+class TempEC
+{
+  public:
+    static constexpr std::size_t max_allowed_jets_per_class = 6;
 
-    if (n_muons == 0         //
-        and n_electrons == 0 //
-        and n_taus == 0      //
-        and n_photons == 0   //
-        and n_jets == 0      //
-        and n_bjets == 0     //
-        and n_met == 0)
+    const int max_muon_idx;
+    const int max_electron_idx;
+    const int max_tau_idx;
+    const int max_photon_idx;
+    const int max_bjet_idx;
+    const int max_jet_idx;
+    const int max_met_idx;
+
+    const int num_muons;
+    const int num_electrons;
+    const int num_taus;
+    const int num_photons;
+    const int num_bjets;
+    const int num_jets;
+    const int num_met;
+
+    const bool has_exclusive;
+    const bool has_jet_inclusive;
+    const bool has_met;
+
+    double sum_pt;
+    double met;
+    FourVec four_vec;
+
+    TempEC(int max_muon_idx,
+           int max_electron_idx,
+           int max_tau_idx,
+           int max_photon_idx,
+           int max_bjet_idx,
+           int max_jet_idx,
+           int max_met_idx,
+           bool has_exclusive,
+           bool has_jet_inclusive)
+        : max_muon_idx(max_muon_idx),
+          max_electron_idx(max_electron_idx),
+          max_tau_idx(max_tau_idx),
+          max_photon_idx(max_photon_idx),
+          max_bjet_idx(max_bjet_idx),
+          max_jet_idx(max_jet_idx),
+          max_met_idx(max_met_idx),
+          num_muons(max_muon_idx + 1),
+          num_electrons(max_electron_idx + 1),
+          num_taus(max_tau_idx + 1),
+          num_photons(max_photon_idx + 1),
+          num_bjets(max_bjet_idx + 1),
+          num_jets(max_jet_idx + 1),
+          num_met(max_met_idx + 1),
+          has_exclusive(has_exclusive),
+          has_jet_inclusive(has_jet_inclusive),
+          has_met(max_met_idx > 0),
+          sum_pt(0),
+          met(0),
+          four_vec({})
     {
-        return std::make_tuple(std::nullopt, std::nullopt, std::nullopt);
     }
 
-    if (n_muons == 0 and n_electrons == 0 and n_photons == 0 and n_taus == 0)
+    auto to_string() const -> std::string
     {
-        return std::make_tuple(std::nullopt, std::nullopt, std::nullopt);
+        return fmt::format(
+            "Muons: {} - Electrons: {} - Taus: {} - Photons: {} - bJet: {} - "
+            "Jet: {} - MET: {} - Excl: {}",
+            max_muon_idx,
+            max_electron_idx,
+            max_tau_idx,
+            max_photon_idx,
+            max_bjet_idx,
+            max_jet_idx,
+            max_met_idx,
+            has_exclusive);
     }
 
-    if (n_bjets + n_jets > max_allowed_jets_per_class)
+    auto push(double _sum_pt, double _met, double _e, double _px, double _py, double _pz) -> void
     {
-        return std::make_tuple(std::nullopt, std::nullopt, std::nullopt);
+        sum_pt += _sum_pt;
+        if (has_met)
+        {
+            met += _met;
+        }
+        four_vec.e += _e;
+        four_vec.px += _px;
+        four_vec.py += _py;
+        four_vec.pz += _pz;
     }
 
-    std::string class_name = fmt::format("EC_{}Muon_{}Electron_{}Tau_{}Photon_{}bJet_{}Jet_{}MET",
-                                         n_muons,
-                                         n_electrons,
-                                         n_taus,
-                                         n_photons,
-                                         n_bjets,
-                                         n_jets,
-                                         n_met);
-
-    std::optional<std::string> exclusive_class_name = std::nullopt;
-    if (n_muons == total_muons             //
-        and n_electrons == total_electrons //
-        and n_taus == total_taus           //
-        and n_photons == total_photons     //
-        and n_jets == total_jets           //
-        and n_bjets == total_bjets         //
-        and n_met == total_met)
+    auto get_sum_pt() const -> double
     {
-        exclusive_class_name = class_name;
+        return sum_pt;
+    }
+    auto get_met() const -> double
+    {
+        return met;
+    }
+    auto get_mass() const -> double
+    {
+        if (max_met_idx > -1)
+        {
+            return std::sqrt(std::pow(four_vec.e, 2) - std::pow(four_vec.px, 2) - std::pow(four_vec.py, 2));
+        }
+
+        return std::sqrt(std::pow(four_vec.e, 2) - std::pow(four_vec.px, 2) - std::pow(four_vec.py, 2) -
+                         std::pow(four_vec.pz, 2));
     }
 
-    std::optional<std::string> inclusive_class_name = fmt::format("{}+X", class_name);
-
-    std::optional<std::string> jet_inclusive_class_name = std::nullopt;
-    if (n_muons == total_muons             //
-        and n_electrons == total_electrons //
-        and n_taus == total_taus           //
-        and n_photons == total_photons     //
-        and n_met == total_met)
+    struct ClassesNames
     {
-        jet_inclusive_class_name = fmt::format("{}+NJet", class_name);
+        const std::optional<std::string> exclusive_class_name;
+        const std::optional<std::string> inclusive_class_name;
+        const std::optional<std::string> jet_inclusive_class_name;
+    };
+
+    auto make_event_class_name() -> TempEC::ClassesNames
+    {
+        if (num_muons == 0         //
+            and num_electrons == 0 //
+            and num_taus == 0      //
+            and num_photons == 0   //
+            and num_jets == 0      //
+            and num_bjets == 0     //
+            and num_met == 0)
+        {
+            return ClassesNames{std::nullopt, std::nullopt, std::nullopt};
+        }
+
+        if (num_muons == 0 and num_electrons == 0 and num_photons == 0 and num_taus == 0)
+        {
+            return ClassesNames{std::nullopt, std::nullopt, std::nullopt};
+        }
+
+        if (num_bjets + num_jets > max_allowed_jets_per_class)
+        {
+            return ClassesNames{std::nullopt, std::nullopt, std::nullopt};
+        }
+
+        std::string class_name = fmt::format("EC_{}Muonum_{}Electronum_{}Tau_{}Photonum_{}bJet_{}Jet_{}MET",
+                                             num_muons,
+                                             num_electrons,
+                                             num_taus,
+                                             num_photons,
+                                             num_bjets,
+                                             num_jets,
+                                             num_met);
+
+        std::optional<std::string> exclusive_class_name = std::nullopt;
+        if (has_exclusive)
+        {
+            exclusive_class_name = class_name;
+        }
+
+        std::optional<std::string> inclusive_class_name = fmt::format("{}+X", class_name);
+
+        std::optional<std::string> jet_inclusive_class_name = std::nullopt;
+        if (has_jet_inclusive)
+        {
+            jet_inclusive_class_name = fmt::format("{}+NJet", class_name);
+        }
+
+        return ClassesNames{exclusive_class_name, inclusive_class_name, jet_inclusive_class_name};
     }
 
-    return std::make_tuple(exclusive_class_name, inclusive_class_name, jet_inclusive_class_name);
-}
+    static auto make_temp_event_classes(const int total_muons,
+                                        const int total_electrons,
+                                        const int total_taus,
+                                        const int total_photons,
+                                        const int total_bjets,
+                                        const int total_jets,
+                                        const int total_met) -> std::vector<TempEC>
+    {
+        auto temp_event_classes = std::vector<TempEC>{};
+        for (int idx_muon = -1; idx_muon < total_muons; idx_muon++)
+        {
+            for (int idx_electron = -1; idx_electron < total_electrons; idx_electron++)
+            {
+                for (int idx_tau = -1; idx_tau < total_taus; idx_tau++)
+                {
+                    for (int idx_photon = -1; idx_photon < total_photons; idx_photon++)
+                    {
+                        for (int idx_bjet = -1; idx_bjet < total_bjets; idx_bjet++)
+                        {
+                            for (int idx_jet = -1; idx_jet < total_jets; idx_jet++)
+                            {
+                                for (int idx_met = -1; idx_met < total_met; idx_met++)
+                                {
+                                    bool has_exclusive = false;
+                                    if (idx_muon + 1 == total_muons and idx_electron + 1 == total_electrons and
+                                        idx_tau + 1 == total_taus and idx_photon + 1 == total_photons and
+                                        idx_bjet + 1 == total_bjets and idx_jet + 1 == total_jets and
+                                        idx_met + 1 == total_met)
+                                    {
+                                        has_exclusive = true;
+                                    }
+
+                                    bool has_jet_inclusive = false;
+                                    if (idx_muon + 1 == total_muons and idx_electron + 1 == total_electrons and
+                                        idx_tau + 1 == total_taus and idx_photon + 1 == total_photons and
+                                        idx_met + 1 == total_met)
+                                    {
+                                        has_jet_inclusive = true;
+                                    }
+
+                                    if (idx_bjet + 1 + idx_jet + 1 < max_allowed_jets_per_class and
+                                        (idx_muon > -1 or idx_electron > -1 or idx_tau > -1 or idx_photon > -1))
+                                    {
+                                        temp_event_classes.emplace_back(idx_muon,
+                                                                        idx_electron,
+                                                                        idx_tau,
+                                                                        idx_photon,
+                                                                        idx_bjet,
+                                                                        idx_jet,
+                                                                        idx_met,
+                                                                        has_exclusive,
+                                                                        has_jet_inclusive);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return temp_event_classes;
+    }
+};
 
 auto classification(const std::string process,
                     const std::string year,
