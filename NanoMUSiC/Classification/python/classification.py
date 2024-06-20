@@ -13,6 +13,7 @@ import os
 import classification_imp as clft
 import sys
 from metadata import Lumi, Years, Process, load_toml, get_distributions
+from numpy import dot
 from rich.progress import Progress
 from rich import print as rprint
 import hashlib
@@ -263,19 +264,15 @@ def launch_condor(
     split_size: int = sys.maxsize,
     dry_run: bool = False,
     skip_tar: bool = False,
+    do_cleanning: bool = True,
 ):
-    if process_name or year:
-        print(
-            "WARINING: Launching a Condor Classification will run over all samples. Process name and Year will be ignored.",
-            file=sys.stderr,
-        )
-
     config_file = load_toml(config_file_path)
 
     processes = [
-        Process(name=process_name, **config_file[process_name])
-        for process_name in config_file
+        Process(name=process, **config_file[process]) for process in config_file
     ]
+    if process_name:
+        processes = list(filter(lambda proc: proc.name == process_name, processes))
     random.shuffle(processes)
 
     def expected_timming(process: Process) -> int:
@@ -289,9 +286,10 @@ def launch_condor(
 
     processes = sorted(processes, key=expected_timming)
 
-    os.system("rm -rf classification_outputs")
-    os.system("rm -rf classification_jobs && mkdir -p classification_jobs")
-    os.system("rm -rf classification_src.tar.gz")
+    if do_cleanning:
+        os.system("rm -rf classification_outputs")
+        os.system("rm -rf classification_jobs && mkdir -p classification_jobs")
+        os.system("rm -rf classification_src.tar.gz")
 
     if not skip_tar:
         os.system(
@@ -334,29 +332,34 @@ def launch_condor(
             return 2
         return 3
 
+    def year_filter(y: str) -> bool:
+        if year:
+            return y in year
+        return True
+
     jobs = []
     for p in processes:
-        for year in Years:
-            input_files = chunks(p.get_files(year, max_files), split_size)
+        for this_year in filter(year_filter, Years):
+            input_files = chunks(p.get_files(this_year, max_files), split_size)
             for split_index, sub_input_files in enumerate(input_files):
                 if len(sub_input_files):
                     build_classification_job(
-                        p, year, split_index, sub_input_files, max_files
+                        p, this_year, split_index, sub_input_files, max_files
                     )
                     jobs.append(
                         CondorJob(
-                            f"{p.name}_{year}_{split_index}",
+                            f"{p.name}_{this_year}_{split_index}",
                             actions=[
-                                f'echo "--- {p.name} {year}"',
+                                f'echo "--- {p.name} {this_year}"',
                                 r"mkdir -p classification_outputs",
                                 r"ls -lha",
-                                f"python3 run_classification_{p.name}_{year}_{split_index}.py",
-                                f"mv {p.name}_{year}_{split_index}*.root classification_outputs/.",
+                                f"python3 run_classification_{p.name}_{this_year}_{split_index}.py",
+                                f"mv {p.name}_{this_year}_{split_index}*.root classification_outputs/.",
                                 r"ls -lha classification_outputs",
                             ],
                             preamble=preamble,
                             input_files=[
-                                f"classification_jobs/run_classification_{p.name}_{year}_{split_index}.py",
+                                f"classification_jobs/run_classification_{p.name}_{this_year}_{split_index}.py",
                                 "sum_weights.json",
                                 r"classification_src.tar.gz",
                             ],
@@ -379,11 +382,9 @@ def launch_parallel(
     split_size: int = sys.maxsize,
     num_cpus: int = 120,
 ):
-    if process_name or year:
-        print(
-            "WARINING: Launching a Parallel Classification will run over all samples. Process name and Year will be ignored.",
-            file=sys.stderr,
-        )
+    do_cleanning = True
+    if year or process_name:
+        do_cleanning = False
 
     # launch a dry-run of a condor classification
     launch_condor(
@@ -394,28 +395,41 @@ def launch_parallel(
         split_size,
         True,
         True,
+        do_cleanning,
     )
 
-    def expected_timming(job_file: str) -> int:
-        if "_tt" in job_file or "_TT" in job_file:
-            return 0
-        if (
-            "_ZZZ" in job_file
-            or "_WZZ" in job_file
-            or "_WWZ" in job_file
-            or "_tZ" in job_file
-        ):
-            return 5
-        if "_QCD" in job_file:
-            return 100
-        return 10
+    years_to_process = ["2016", "2017", "2018"]
 
-    for y in ["2016", "2017", "2018"]:
-        with open("classification_jobs/inputs_parallel.txt", "w") as file:
-            generated_jobs = sorted(
-                glob.glob(os.path.join("classification_jobs", "*.py")),
-                key=expected_timming,
+    if year:
+        if year == "2016" or year == "2017" or year == "2018":
+            years_to_process = [year]
+        else:
+            print(
+                "ERROR: Could not launch Classification. The requested year ({}) is not valid.".format(
+                    year
+                ),
+                file=sys.stderr,
             )
+            sys.exit(-1)
+    if not process_name:
+        process_name = "*"
+
+    for y in years_to_process:
+        with open("classification_jobs/inputs_parallel.txt", "w") as file:
+            generated_jobs = glob.glob(
+                os.path.join(
+                    "classification_jobs",
+                    "*{}_{}*.py".format(process_name, years_to_process),
+                )
+            )
+            if len(generated_jobs) == 0:
+                print(
+                    "ERROR: Could not launch Classification. The requested combination of sample ({}) and year ({}) is not valid.".format(
+                        process_name, year
+                    ),
+                    file=sys.stderr,
+                )
+                sys.exit(-1)
             random.shuffle(generated_jobs)
             for j in generated_jobs:
                 if y in j:
