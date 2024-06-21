@@ -1048,87 +1048,18 @@ auto classification(const std::string process,
             };
 
             // Here goes the real analysis...
-
             auto temp_event_classes = TempEC::make_temp_event_classes(
                 muons.size(), electrons.size(), taus.size(), photons.size(), bjets.size(), jets.size(), met.size());
             for (auto &temp_ec : temp_event_classes)
             {
-                for (std::size_t i = 0; i < muons.size(); i++)
-                {
-                    if (i <= temp_ec.max_muon_idx)
-                    {
-                        temp_ec.push(muons.p4[i].pt(),
-                                     0.,
-                                     muons.p4[i].e(),
-                                     muons.p4[i].px(),
-                                     muons.p4[i].py(),
-                                     muons.p4[i].pz());
-                    }
-                }
-                for (std::size_t i = 0; i < electrons.size(); i++)
-                {
-                    if (i <= temp_ec.max_electron_idx)
-                    {
-                        temp_ec.push(electrons.p4[i].pt(),
-                                     0.,
-                                     electrons.p4[i].e(),
-                                     electrons.p4[i].px(),
-                                     electrons.p4[i].py(),
-                                     electrons.p4[i].pz());
-                    }
-                }
-                for (std::size_t i = 0; i < taus.size(); i++)
-                {
-                    if (i <= temp_ec.max_tau_idx)
-                    {
-                        temp_ec.push(
-                            taus.p4[i].pt(), 0., taus.p4[i].e(), taus.p4[i].px(), taus.p4[i].py(), taus.p4[i].pz());
-                    }
-                }
-                for (std::size_t i = 0; i < photons.size(); i++)
-                {
-                    if (i <= temp_ec.max_photon_idx)
-                    {
-                        temp_ec.push(photons.p4[i].pt(),
-                                     0.,
-                                     photons.p4[i].e(),
-                                     photons.p4[i].px(),
-                                     photons.p4[i].py(),
-                                     photons.p4[i].pz());
-                    }
-                }
-                for (std::size_t i = 0; i < bjets.size(); i++)
-                {
-                    if (i <= temp_ec.max_bjet_idx)
-                    {
-                        temp_ec.push(bjets.p4[i].pt(),
-                                     0.,
-                                     bjets.p4[i].e(),
-                                     bjets.p4[i].px(),
-                                     bjets.p4[i].py(),
-                                     bjets.p4[i].pz());
-                    }
-                }
-                for (std::size_t i = 0; i < jets.size(); i++)
-                {
-                    if (i <= temp_ec.max_jet_idx)
-                    {
-                        temp_ec.push(
-                            jets.p4[i].pt(), 0., jets.p4[i].e(), jets.p4[i].px(), jets.p4[i].py(), jets.p4[i].pz());
-                    }
-                }
-                for (std::size_t i = 0; i < met.size(); i++)
-                {
-                    if (i <= temp_ec.max_met_idx)
-                    {
-                        temp_ec.push(met.p4[i].pt(),
-                                     met.p4[i].pt(),
-                                     met.p4[i].e(),
-                                     met.p4[i].px(),
-                                     met.p4[i].py(),
-                                     met.p4[i].pz());
-                    }
-                }
+
+                temp_ec.push(muons.p4, temp_ec.max_muon_idx);
+                temp_ec.push(electrons.p4, temp_ec.max_electron_idx);
+                temp_ec.push(taus.p4, temp_ec.max_tau_idx);
+                temp_ec.push(photons.p4, temp_ec.max_photon_idx);
+                temp_ec.push(bjets.p4, temp_ec.max_bjet_idx);
+                temp_ec.push(jets.p4, temp_ec.max_jet_idx);
+                temp_ec.push(met.p4, temp_ec.max_met_idx);
 
                 auto classes_names = temp_ec.make_event_class_name();
                 for (auto &&const_shift : shifts.get_constant_shifts(diff_shift))

@@ -768,7 +768,7 @@ struct FourVec
 class TempEC
 {
   public:
-    static constexpr std::size_t max_allowed_jets_per_class = 6;
+    static constexpr int max_allowed_jets_per_class = 6;
 
     const int max_muon_idx;
     const int max_electron_idx;
@@ -841,17 +841,21 @@ class TempEC
             has_exclusive);
     }
 
-    auto push(double _sum_pt, double _met, double _e, double _px, double _py, double _pz) -> void
+    // auto push(double _sum_pt, double _met, double _e, double _px, double _py, double _pz) -> void
+    auto push(const RVec<Math::PtEtaPhiMVector> &p4, const int max_idx) -> void
     {
-        sum_pt += _sum_pt;
-        if (has_met)
+        if (max_idx > -1)
         {
-            met += _met;
+            for (std::size_t i = 0; i <= max_idx; i++)
+            {
+                sum_pt += p4[i].pt();
+                met += has_met ? p4[i].pt() : 0.;
+                four_vec.e += p4[i].e();
+                four_vec.px += p4[i].px();
+                four_vec.py += p4[i].py();
+                four_vec.pz += p4[i].pz();
+            }
         }
-        four_vec.e += _e;
-        four_vec.px += _px;
-        four_vec.py += _py;
-        four_vec.pz += _pz;
     }
 
     auto get_sum_pt() const -> double
@@ -864,7 +868,7 @@ class TempEC
     }
     auto get_mass() const -> double
     {
-        if (max_met_idx > -1)
+        if (has_met)
         {
             return std::sqrt(std::pow(four_vec.e, 2) - std::pow(four_vec.px, 2) - std::pow(four_vec.py, 2));
         }
@@ -903,7 +907,7 @@ class TempEC
             return ClassesNames{std::nullopt, std::nullopt, std::nullopt};
         }
 
-        std::string class_name = fmt::format("EC_{}Muonum_{}Electronum_{}Tau_{}Photonum_{}bJet_{}Jet_{}MET",
+        std::string class_name = fmt::format("EC_{}Muon_{}Electron_{}Tau_{}Photon_{}bJet_{}Jet_{}MET",
                                              num_muons,
                                              num_electrons,
                                              num_taus,
