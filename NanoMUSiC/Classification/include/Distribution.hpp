@@ -130,7 +130,9 @@ class Distribution
     bool m_has_data;
     bool m_has_mc;
 
-    std::array<std::unordered_map<std::string, TH1F>, total_variations> m_histogram_per_process_group_and_shift;
+    std::unordered_map<std::string, RVec<double>> m_systematics_uncertainties ;
+
+        std::array<std::unordered_map<std::string, TH1F>, total_variations> m_histogram_per_process_group_and_shift;
 
     // constructor and methods
     Distribution() = default;

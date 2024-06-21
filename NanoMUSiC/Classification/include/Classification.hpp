@@ -846,7 +846,7 @@ class TempEC
     {
         if (max_idx > -1)
         {
-            for (std::size_t i = 0; i <= max_idx; i++)
+            for (std::size_t i = 0; i <= static_cast<std::size_t>(max_idx); i++)
             {
                 sum_pt += p4[i].pt();
                 met += has_met ? p4[i].pt() : 0.;
