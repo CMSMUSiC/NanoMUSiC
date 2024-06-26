@@ -1207,7 +1207,6 @@ auto classification(const std::string process,
                 validation_container.gamma_plus_jets.fill(
                     photons,
                     jets,
-                    met,
                     get_effective_weight(shift, 0, 0, 0, 1, 0, 1, met.size()),
                     shift);
             }
