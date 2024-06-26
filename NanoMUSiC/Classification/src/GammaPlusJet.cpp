@@ -16,12 +16,12 @@ GammaPlusJet::GammaPlusJet(const std::string &process_group,
     auto count_map = std::unordered_map<ObjectNames, int>{};
     analysis_name = "gamma_plus_jets";
 
-    count_map = std::unordered_map<ObjectNames, int>{{ObjectNames::Muon, 2},
+    count_map = std::unordered_map<ObjectNames, int>{{ObjectNames::Muon, 0},
                                                      {ObjectNames::Electron, 0},
-                                                     {ObjectNames::Photon, 0},
+                                                     {ObjectNames::Photon, 1},
                                                      {ObjectNames::Tau, 0},
                                                      {ObjectNames::bJet, 0},
-                                                     {ObjectNames::Jet, 0},
+                                                     {ObjectNames::Jet, 1},
                                                      {ObjectNames::MET, 0}};
 
     auto bins_limits = BinLimits::limits(
