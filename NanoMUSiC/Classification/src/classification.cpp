@@ -2,7 +2,6 @@
 
 #include "Configs.hpp"
 #include "GeneratorFilters.hpp"
-#include "Math/GenVector/VectorUtil.h"
 #include "RtypesCore.h"
 #include "RunLumiFilter.hpp"
 #include "TTreeReader.h"
@@ -1057,6 +1056,26 @@ auto classification(const std::string process,
                 year,                                          //
                 diff_shift);
 
+            // check for trigger matching
+            // is_good_trigger is garantied to be filled by the "if" statement above
+            const auto trigger_matches =
+                make_trigger_matches(*is_good_trigger, muons, electrons, taus, photons, get_runyear(year));
+
+            bool has_trigger_match = false;
+            for (auto &&[trigger_path, trigger_match] : trigger_matches)
+            {
+                if (trigger_match)
+                {
+                    has_trigger_match = true;
+                    break;
+                }
+            }
+
+            if (not(has_trigger_match))
+            {
+                continue;
+            }
+
             // clear objects
             auto electrons_idxs = electrons.indexes();
             auto electrons_clear_mask = electrons.clear_mask(muons, 0.4);
@@ -1137,26 +1156,6 @@ auto classification(const std::string process,
                 bjets = bjets.take_as_copy(bjets_clear_mask);
             }
 
-            // check for trigger matching
-            // is_good_trigger is garantied to be filled by the "if" statement above
-            const auto trigger_matches =
-                make_trigger_matches(*is_good_trigger, muons, electrons, taus, photons, get_runyear(year));
-
-            bool has_trigger_match = false;
-            for (auto &&[trigger_path, trigger_match] : trigger_matches)
-            {
-                if (trigger_match)
-                {
-                    has_trigger_match = true;
-                    break;
-                }
-            }
-
-            if (not(has_trigger_match))
-            {
-                continue;
-            }
-
             auto get_effective_weight = [&](Shifts::Variations shift,
                                             std::size_t num_muon,
                                             std::size_t num_electron,
@@ -1224,21 +1223,22 @@ auto classification(const std::string process,
                                                                 {num_bjet, bjets},
                                                                 {num_jet, jets}) *
                              Shifts::get_qcd_scale_weight(shift, unwrap(LHEScaleWeight));
-                }
-                // Check for NaNs
-                if (std::isnan(weight) or std::isinf(weight))
-                {
-                    fmt::print(stderr, "##########################\n");
-                    fmt::print(stderr, "##########################\n");
-                    fmt::print(stderr, "##########################\n");
-                    fmt::print(stderr,
-                               "ERROR: NaN or INF weight found when "
-                               "processing shift: {}!\n",
-                               Shifts::variation_to_string(shift));
-                    fmt::print(stderr, "##########################\n");
-                    fmt::print(stderr, "##########################\n");
-                    fmt::print(stderr, "##########################\n");
-                    std::exit(EXIT_FAILURE);
+
+                    // Check for NaNs
+                    if (std::isnan(weight) or std::isinf(weight))
+                    {
+                        fmt::print(stderr, "##########################\n");
+                        fmt::print(stderr, "##########################\n");
+                        fmt::print(stderr, "##########################\n");
+                        fmt::print(stderr,
+                                   "ERROR: NaN or INF weight found when "
+                                   "processing shift: {}!\n",
+                                   Shifts::variation_to_string(shift));
+                        fmt::print(stderr, "##########################\n");
+                        fmt::print(stderr, "##########################\n");
+                        fmt::print(stderr, "##########################\n");
+                        std::exit(EXIT_FAILURE);
+                    }
                 }
 
                 return weight;

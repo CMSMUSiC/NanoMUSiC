@@ -861,10 +861,16 @@ class TempEC
     {
         return sum_pt;
     }
-    auto get_met() const -> double
+
+    auto get_met() const -> std::optional<double>
     {
-        return met;
+        if (has_met)
+        {
+            return met;
+        }
+        return std::nullopt;
     }
+
     auto get_mass() const -> double
     {
         if (has_met)
