@@ -540,10 +540,10 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
                     muon_sf_iso_low_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "systdown"});
 
                 scale_factors.push_back(sf_reco * sf_id * sf_iso);
-                scale_factor_shift.push_back(std::sqrt(                                                        //
-                    std::pow(std::max(std::fabs(sf_reco - sf_reco_up), std::fabs(sf_reco - sf_reco_down)), 2.) //
-                    + std::pow(std::max(std::fabs(sf_id - sf_id_up), std::fabs(sf_id - sf_id_down)), 2.)       //
-                    + std::pow(std::max(std::fabs(sf_iso - sf_iso_up), std::fabs(sf_iso - sf_iso_down)), 2.)   //
+                scale_factor_shift.push_back(std::sqrt(                                                       //
+                    std::pow(std::max(std::fabs(sf_reco - sf_reco_up), std::fabs(sf_reco - sf_reco_down)), 2) //
+                    + std::pow(std::max(std::fabs(sf_id - sf_id_up), std::fabs(sf_id - sf_id_down)), 2)       //
+                    + std::pow(std::max(std::fabs(sf_iso - sf_iso_up), std::fabs(sf_iso - sf_iso_down)), 2)   //
                     ));
             }
 
@@ -552,44 +552,32 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
                 auto sf_reco = high_pt_reco_scale_factor(year, muon_p4.P(), muon_p4.eta(), "nom");
 
                 auto sf_id = MUSiCObjects::get_scale_factor(
-                    muon_sf_id_high_pt,
-                    is_data,
-                    { std::fabs(muon_p4.eta()), muon_p4.pt(), "nominal"});
+                    muon_sf_id_high_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "nominal"});
 
                 auto sf_iso = MUSiCObjects::get_scale_factor(
-                    muon_sf_iso_high_pt,
-                    is_data,
-                    {std::fabs(muon_p4.eta()), muon_p4.pt(), "nominal"});
+                    muon_sf_iso_high_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "nominal"});
 
                 auto sf_reco_up = high_pt_reco_scale_factor(year, muon_p4.P(), muon_p4.eta(), "up");
 
                 auto sf_id_up = MUSiCObjects::get_scale_factor(
-                    muon_sf_id_high_pt,
-                    is_data,
-                    { std::fabs(muon_p4.eta()), muon_p4.pt(), "systup"});
+                    muon_sf_id_high_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "systup"});
 
                 auto sf_iso_up = MUSiCObjects::get_scale_factor(
-                    muon_sf_iso_high_pt,
-                    is_data,
-                    { std::fabs(muon_p4.eta()), muon_p4.pt(), "systup"});
+                    muon_sf_iso_high_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "systup"});
 
                 auto sf_reco_down = high_pt_reco_scale_factor(year, muon_p4.P(), muon_p4.eta(), "down");
 
                 auto sf_id_down = MUSiCObjects::get_scale_factor(
-                    muon_sf_id_high_pt,
-                    is_data,
-                    { std::fabs(muon_p4.eta()), muon_p4.pt(), "systdown"});
+                    muon_sf_id_high_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "systdown"});
 
                 auto sf_iso_down = MUSiCObjects::get_scale_factor(
-                    muon_sf_iso_high_pt,
-                    is_data,
-                    { std::fabs(muon_p4.eta()), muon_p4.pt(), "systdown"});
+                    muon_sf_iso_high_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "systdown"});
 
                 scale_factors.push_back(sf_reco * sf_id * sf_iso);
                 scale_factor_shift.push_back(std::sqrt(                                                        //
-                    std::pow(std::max(std::fabs(sf_reco - sf_reco_up), std::fabs(sf_reco - sf_reco_down)), 2.) //
-                    + std::pow(std::max(std::fabs(sf_id - sf_id_up), std::fabs(sf_id - sf_id_down)), 2.)       //
-                    + std::pow(std::max(std::fabs(sf_iso - sf_iso_up), std::fabs(sf_iso - sf_iso_down)), 2.)   //
+                    std::pow(std::max(std::fabs(sf_reco - sf_reco_up), std::fabs(sf_reco - sf_reco_down)), 2) //
+                    + std::pow(std::max(std::fabs(sf_id - sf_id_up), std::fabs(sf_id - sf_id_down)), 2)       //
+                    + std::pow(std::max(std::fabs(sf_iso - sf_iso_up), std::fabs(sf_iso - sf_iso_down)), 2)   //
                     ));
             }
 

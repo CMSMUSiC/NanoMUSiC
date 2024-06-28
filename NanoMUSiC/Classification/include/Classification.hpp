@@ -841,7 +841,6 @@ class TempEC
             has_exclusive);
     }
 
-    // auto push(double _sum_pt, double _met, double _e, double _px, double _py, double _pz) -> void
     auto push(const RVec<Math::PtEtaPhiMVector> &p4, const int max_idx) -> void
     {
         if (max_idx > -1)

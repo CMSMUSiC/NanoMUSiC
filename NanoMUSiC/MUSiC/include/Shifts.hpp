@@ -523,9 +523,7 @@ class Shifts
                                            std::pair<std::size_t, const MUSiCObjects &> taus,
                                            std::pair<std::size_t, const MUSiCObjects &> photons,
                                            std::pair<std::size_t, const MUSiCObjects &> bjets,
-                                           std::pair<std::size_t, const MUSiCObjects &> jets
-                                           //    std::pair<std::size_t, const MUSiCObjects &> met//
-                                           ) -> double
+                                           std::pair<std::size_t, const MUSiCObjects &> jets) -> double
     {
         if (shift == Shifts::Variations::Fakes_Up or shift == Shifts::Variations::Fakes_Down)
         {
@@ -542,7 +540,7 @@ class Shifts
                     std::reduce(
                         this_muons.is_fake.cbegin(), this_muons.is_fake.cbegin() + n_muons, 0., std::plus<double>()) *
                         0.5,
-                    2.) +
+                    2) +
                 std::pow(std::reduce(this_electrons.is_fake.cbegin(),
                                      this_electrons.is_fake.cbegin() + n_electrons,
                                      0.,
@@ -553,7 +551,7 @@ class Shifts
                 std::pow(std::reduce(
                              this_taus.is_fake.cbegin(), this_taus.is_fake.cbegin() + n_taus, 0., std::plus<double>()) *
                              0.5,
-                         2.) +
+                         2) +
 
                 std::pow(std::reduce(this_photons.is_fake.cbegin(),
                                      this_photons.is_fake.cbegin() + n_photons,
@@ -565,12 +563,12 @@ class Shifts
                     std::reduce(
                         this_bjets.is_fake.cbegin(), this_bjets.is_fake.cbegin() + n_bjets, 0., std::plus<double>()) *
                         0.5,
-                    2.) +
+                    2) +
 
                 std::pow(std::reduce(
                              this_jets.is_fake.cbegin(), this_jets.is_fake.cbegin() + n_jets, 0., std::plus<double>()) *
                              0.5,
-                         2.);
+                         2);
 
             if (shift == Shifts::Variations::Fakes_Up)
             {
@@ -613,7 +611,7 @@ class Shifts
                                            "Expected to be 8 or 9. \nWeights: [{}]\n",
                                            LHEScaleWeight.size(),
                                            fmt::join(LHEScaleWeight, ", ")));
-                    exit(-1);
+                    std::exit(-1);
                 }
 
                 auto murf_nominal = LHEScaleWeight[4];

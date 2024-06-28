@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <optional>
 #include <stdexcept>
+#include <vdt/exp.h>
 
 #include "Math/GenVector/VectorUtil.h"
 #include "fmt/format.h"
@@ -70,15 +71,24 @@ class MUSiCObjects
                 and p4.size() == is_fake.size()            //
                 ))
         {
-            throw std::runtime_error(fmt::format(
-                "ERROR: Could not create MUSiCObjects. Input vectors have different sizes. \n{} - {} - {} - {}",
-                p4.size(),
-                scale_factor.size(),
-                scale_factor_shift.size(),
-                is_fake.size()));
+            fmt::print(stderr,
+                       "ERROR: Could not create MUSiCObjects. Input vectors have different sizes. \n{} - {} - {} - {}",
+                       p4.size(),
+                       scale_factor.size(),
+                       scale_factor_shift.size(),
+                       is_fake.size());
+            std::exit(EXIT_FAILURE);
         }
 
-        this->reorder();
+        if (not(std::is_sorted(this->p4.cbegin(),
+                               this->p4.cend(),
+                               [](auto p1, auto p2) -> bool
+                               {
+                                   return p1.pt() > p2.pt();
+                               })))
+        {
+            this->reorder();
+        }
     }
 
     auto get_delta_met_x() const -> double
@@ -91,21 +101,57 @@ class MUSiCObjects
         return delta_met_y;
     }
 
-    auto take(const RVec<int> &indexes) -> void
+    auto take_inplace(const RVec<int> &indexes) -> void
     {
-        p4 = ROOT::VecOps::Take(p4, indexes);
         scale_factor = ROOT::VecOps::Take(scale_factor, indexes);
         scale_factor_shift = ROOT::VecOps::Take(scale_factor_shift, indexes);
+        for (std::size_t i = 0; i < this->size(); i++)
+        {
+            if (std::find(indexes.cbegin(), indexes.cend(), static_cast<int>(i)) == indexes.cend())
+            {
+                delta_met_x -= this->p4[i].px();
+                delta_met_y -= this->p4[i].py();
+            }
+        }
         is_fake = ROOT::VecOps::Take(is_fake, indexes);
+        p4 = ROOT::VecOps::Take(p4, indexes);
+    }
+
+    auto indexes() const -> RVec<int>
+    {
+        RVec<int> v(this->size());
+        std::iota(v.begin(), v.end(), 0); // Fills the vector with values from 0 to N-1
+        return v;
+    };
+
+    auto take_as_copy(const RVec<int> &indexes) -> MUSiCObjects
+    {
+        auto new_delta_met_x = delta_met_x;
+        auto new_delta_met_y = delta_met_y;
+        for (std::size_t i = 0; i < this->size(); i++)
+        {
+            if (std::find(indexes.cbegin(), indexes.cend(), static_cast<int>(i)) == indexes.cend())
+            {
+                new_delta_met_x -= this->p4[i].px();
+                new_delta_met_y -= this->p4[i].py();
+            }
+        }
+
+        return MUSiCObjects(ROOT::VecOps::Take(p4, indexes),                 //
+                            ROOT::VecOps::Take(scale_factor, indexes),       //
+                            ROOT::VecOps::Take(scale_factor_shift, indexes), //
+                            new_delta_met_x,                                 //
+                            new_delta_met_y,                                 //
+                            ROOT::VecOps::Take(is_fake, indexes));
     }
 
     auto reorder() -> void
     {
-        this->take(ROOT::VecOps::Argsort(p4,
-                                   [](auto p1, auto p2) -> bool
-                                   {
-                                       return p1.pt() > p2.pt();
-                                   }));
+        this->take_inplace(ROOT::VecOps::Argsort(p4,
+                                                 [](auto p1, auto p2) -> bool
+                                                 {
+                                                     return p1.pt() > p2.pt();
+                                                 }));
     }
 
     // get scale factors from correctionlib
@@ -158,7 +204,7 @@ class MUSiCObjects
         return p4.size();
     }
 
-    auto clear(const MUSiCObjects &other, double max_dr = 0.4, bool debug = false) -> void
+    auto clear_mask(const MUSiCObjects &other, double max_dr = 0.4, bool debug = false) -> RVec<int>
     {
         auto clear_mask = RVec<int>();
 
@@ -185,13 +231,13 @@ class MUSiCObjects
             fmt::print("Cleanning mask: [{}]\n", fmt::join(clear_mask, ", "));
         }
 
-        this->take(clear_mask);
+        return clear_mask;
     }
 
-    auto clear(MUSiCObjects *other, double max_dr = 0.4) -> void
-    {
-        clear(*other, max_dr);
-    }
+    // auto clear(MUSiCObjects *other, double max_dr = 0.4) -> void
+    // {
+    //     clear(*other, max_dr);
+    // }
 
     auto static transverse_mass(const Math::PtEtaPhiMVector &vec) -> double
     {

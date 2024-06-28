@@ -2,6 +2,7 @@
 
 #include "Configs.hpp"
 #include "GeneratorFilters.hpp"
+#include "Math/GenVector/VectorUtil.h"
 #include "RtypesCore.h"
 #include "RunLumiFilter.hpp"
 #include "TTreeReader.h"
@@ -12,6 +13,7 @@
 #include <algorithm>
 #include <cstdio>
 #include <cstdlib>
+#include <ctime>
 #include <fmt/format.h>
 #include <memory>
 #include <optional>
@@ -807,66 +809,185 @@ auto classification(const std::string process,
             continue;
         }
 
+        // build Nominal objects
+        auto nominal_muons = ObjectFactories::make_muons(unwrap(Muon_pt),             //
+                                                         unwrap(Muon_eta),            //
+                                                         unwrap(Muon_phi),            //
+                                                         unwrap(Muon_tightId),        //
+                                                         unwrap(Muon_highPtId),       //
+                                                         unwrap(Muon_pfRelIso04_all), //
+                                                         unwrap(Muon_tkRelIso),       //
+                                                         unwrap(Muon_tunepRelPt),     //
+                                                         unwrap(Muon_highPurity),     //
+                                                         unwrap(Muon_genPartIdx),     //
+                                                         muon_sf_reco,                //
+                                                         muon_sf_id_low_pt,           //
+                                                         muon_sf_id_high_pt,          //
+                                                         muon_sf_iso_low_pt,          //
+                                                         muon_sf_iso_high_pt,         //
+                                                         is_data,                     //
+                                                         year,                        //
+                                                         Shifts::Variations::Nominal);
+
+        auto nominal_electrons = ObjectFactories::make_electrons(unwrap(Electron_pt),               //
+                                                                 unwrap(Electron_eta),              //
+                                                                 unwrap(Electron_phi),              //
+                                                                 unwrap(Electron_deltaEtaSC),       //
+                                                                 unwrap(Electron_cutBased),         //
+                                                                 unwrap(Electron_cutBased_HEEP),    //
+                                                                 unwrap(Electron_scEtOverPt, true), //
+                                                                 unwrap(Electron_dEscaleUp),        //
+                                                                 unwrap(Electron_dEscaleDown),      //
+                                                                 unwrap(Electron_dEsigmaUp),        //
+                                                                 unwrap(Electron_dEsigmaDown),      //
+                                                                 unwrap(Electron_genPartIdx),       //
+                                                                 electron_sf,                       //
+                                                                 is_data,                           //
+                                                                 year,                              //
+                                                                 Shifts::Variations::Nominal);
+
+        auto nominal_taus = ObjectFactories::make_taus(unwrap(Tau_pt),   //
+                                                       unwrap(Tau_eta),  //
+                                                       unwrap(Tau_phi),  //
+                                                       unwrap(Tau_dz),   //
+                                                       unwrap(Tau_mass), //
+                                                       unwrap(Tau_genPartFlav),
+                                                       unwrap(Tau_genPartIdx),             //
+                                                       unwrap(Tau_decayMode),              //
+                                                       unwrap(Tau_idDeepTau2017v2p1VSe),   //
+                                                       unwrap(Tau_idDeepTau2017v2p1VSmu),  //
+                                                       unwrap(Tau_idDeepTau2017v2p1VSjet), //
+                                                       deep_tau_2017_v2_p1_vs_e,           //
+                                                       deep_tau_2017_v2_p1_vs_mu,          //
+                                                       deep_tau_2017_v2_p1_vs_jet,         //
+                                                       tau_energy_scale,                   //
+                                                       is_data,                            //
+                                                       year,                               //
+                                                       Shifts::Variations::Nominal);
+
+        auto nominal_photons = ObjectFactories::make_photons(unwrap(Photon_pt),          //
+                                                             unwrap(Photon_eta),         //
+                                                             unwrap(Photon_phi),         //
+                                                             unwrap(Photon_isScEtaEB),   //
+                                                             unwrap(Photon_isScEtaEE),   //
+                                                             unwrap(Photon_cutBased),    //
+                                                             unwrap(Photon_pixelSeed),   //
+                                                             unwrap(Photon_dEscaleUp),   //
+                                                             unwrap(Photon_dEscaleDown), //
+                                                             unwrap(Photon_dEsigmaUp),   //
+                                                             unwrap(Photon_dEsigmaDown), //
+                                                             unwrap(Photon_genPartIdx),  //
+                                                             photon_sf,                  //
+                                                             pixel_veto_sf,              //
+                                                             is_data,                    //
+                                                             year,                       //
+                                                             Shifts::Variations::Nominal);
+
+        auto [nominal_jets, nominal_bjets] = ObjectFactories::make_jets(unwrap(Jet_pt),                 //
+                                                                        unwrap(Jet_eta),                //
+                                                                        unwrap(Jet_phi),                //
+                                                                        unwrap(Jet_mass),               //
+                                                                        unwrap(Jet_jetId),              //
+                                                                        unwrap(Jet_btagDeepFlavB),      //
+                                                                        unwrap(Jet_rawFactor),          //
+                                                                        unwrap(Jet_area),               //
+                                                                        unwrap(Jet_genJetIdx),          //
+                                                                        unwrap(fixedGridRhoFastjetAll), //
+                                                                        jet_corrections,                //
+                                                                        // btag_sf_Corrector,                    //
+                                                                        NanoAODGenInfo::GenJets(unwrap(GenJet_pt),   //
+                                                                                                unwrap(GenJet_eta),  //
+                                                                                                unwrap(GenJet_phi)), //
+                                                                        is_data,                                     //
+                                                                        year,                                        //
+                                                                        Shifts::Variations::Nominal);
+
         for (auto &&diff_shift : shifts.get_differential_shifts())
         {
-            // build objects
-            // muons
-            auto muons = ObjectFactories::make_muons(unwrap(Muon_pt),             //
-                                                     unwrap(Muon_eta),            //
-                                                     unwrap(Muon_phi),            //
-                                                     unwrap(Muon_tightId),        //
-                                                     unwrap(Muon_highPtId),       //
-                                                     unwrap(Muon_pfRelIso04_all), //
-                                                     unwrap(Muon_tkRelIso),       //
-                                                     unwrap(Muon_tunepRelPt),     //
-                                                     unwrap(Muon_highPurity),     //
-                                                     unwrap(Muon_genPartIdx),     //
-                                                     muon_sf_reco,                //
-                                                     muon_sf_id_low_pt,           //
-                                                     muon_sf_id_high_pt,          //
-                                                     muon_sf_iso_low_pt,          //
-                                                     muon_sf_iso_high_pt,         //
-                                                     is_data,                     //
-                                                     year,                        //
-                                                     diff_shift);
+            auto muons = [&]() -> MUSiCObjects
+            {
+                if (starts_with(Shifts::variation_to_string(diff_shift), "Muon"))
+                {
+                    return ObjectFactories::make_muons(unwrap(Muon_pt),             //
+                                                       unwrap(Muon_eta),            //
+                                                       unwrap(Muon_phi),            //
+                                                       unwrap(Muon_tightId),        //
+                                                       unwrap(Muon_highPtId),       //
+                                                       unwrap(Muon_pfRelIso04_all), //
+                                                       unwrap(Muon_tkRelIso),       //
+                                                       unwrap(Muon_tunepRelPt),     //
+                                                       unwrap(Muon_highPurity),     //
+                                                       unwrap(Muon_genPartIdx),     //
+                                                       muon_sf_reco,                //
+                                                       muon_sf_id_low_pt,           //
+                                                       muon_sf_id_high_pt,          //
+                                                       muon_sf_iso_low_pt,          //
+                                                       muon_sf_iso_high_pt,         //
+                                                       is_data,                     //
+                                                       year,                        //
+                                                       diff_shift);
+                }
 
-            auto electrons = ObjectFactories::make_electrons(unwrap(Electron_pt),               //
-                                                             unwrap(Electron_eta),              //
-                                                             unwrap(Electron_phi),              //
-                                                             unwrap(Electron_deltaEtaSC),       //
-                                                             unwrap(Electron_cutBased),         //
-                                                             unwrap(Electron_cutBased_HEEP),    //
-                                                             unwrap(Electron_scEtOverPt, true), //
-                                                             unwrap(Electron_dEscaleUp),        //
-                                                             unwrap(Electron_dEscaleDown),      //
-                                                             unwrap(Electron_dEsigmaUp),        //
-                                                             unwrap(Electron_dEsigmaDown),      //
-                                                             unwrap(Electron_genPartIdx),       //
-                                                             electron_sf,                       //
-                                                             is_data,                           //
-                                                             year,                              //
-                                                             diff_shift);
+                return nominal_muons;
+            }();
 
-            auto taus = ObjectFactories::make_taus(unwrap(Tau_pt),   //
-                                                   unwrap(Tau_eta),  //
-                                                   unwrap(Tau_phi),  //
-                                                   unwrap(Tau_dz),   //
-                                                   unwrap(Tau_mass), //
-                                                   unwrap(Tau_genPartFlav),
-                                                   unwrap(Tau_genPartIdx),             //
-                                                   unwrap(Tau_decayMode),              //
-                                                   unwrap(Tau_idDeepTau2017v2p1VSe),   //
-                                                   unwrap(Tau_idDeepTau2017v2p1VSmu),  //
-                                                   unwrap(Tau_idDeepTau2017v2p1VSjet), //
-                                                   deep_tau_2017_v2_p1_vs_e,           //
-                                                   deep_tau_2017_v2_p1_vs_mu,          //
-                                                   deep_tau_2017_v2_p1_vs_jet,         //
-                                                   tau_energy_scale,                   //
-                                                   is_data,                            //
-                                                   year,                               //
-                                                   diff_shift);
+            auto electrons = [&]() -> MUSiCObjects
+            {
+                if (starts_with(Shifts::variation_to_string(diff_shift), "Electron"))
+                {
+                    return ObjectFactories::make_electrons(unwrap(Electron_pt),               //
+                                                           unwrap(Electron_eta),              //
+                                                           unwrap(Electron_phi),              //
+                                                           unwrap(Electron_deltaEtaSC),       //
+                                                           unwrap(Electron_cutBased),         //
+                                                           unwrap(Electron_cutBased_HEEP),    //
+                                                           unwrap(Electron_scEtOverPt, true), //
+                                                           unwrap(Electron_dEscaleUp),        //
+                                                           unwrap(Electron_dEscaleDown),      //
+                                                           unwrap(Electron_dEsigmaUp),        //
+                                                           unwrap(Electron_dEsigmaDown),      //
+                                                           unwrap(Electron_genPartIdx),       //
+                                                           electron_sf,                       //
+                                                           is_data,                           //
+                                                           year,                              //
+                                                           diff_shift);
+                }
 
-            auto photons = ObjectFactories::make_photons(unwrap(Photon_pt),          //
+                return nominal_electrons;
+            }();
+
+            auto taus = [&]() -> MUSiCObjects
+            {
+                if (starts_with(Shifts::variation_to_string(diff_shift), "Tau"))
+                {
+                    return ObjectFactories::make_taus(unwrap(Tau_pt),   //
+                                                      unwrap(Tau_eta),  //
+                                                      unwrap(Tau_phi),  //
+                                                      unwrap(Tau_dz),   //
+                                                      unwrap(Tau_mass), //
+                                                      unwrap(Tau_genPartFlav),
+                                                      unwrap(Tau_genPartIdx),             //
+                                                      unwrap(Tau_decayMode),              //
+                                                      unwrap(Tau_idDeepTau2017v2p1VSe),   //
+                                                      unwrap(Tau_idDeepTau2017v2p1VSmu),  //
+                                                      unwrap(Tau_idDeepTau2017v2p1VSjet), //
+                                                      deep_tau_2017_v2_p1_vs_e,           //
+                                                      deep_tau_2017_v2_p1_vs_mu,          //
+                                                      deep_tau_2017_v2_p1_vs_jet,         //
+                                                      tau_energy_scale,                   //
+                                                      is_data,                            //
+                                                      year,                               //
+                                                      diff_shift);
+                }
+
+                return nominal_taus;
+            }();
+
+            auto photons = [&]() -> MUSiCObjects
+            {
+                if (starts_with(Shifts::variation_to_string(diff_shift), "Photon"))
+                {
+                    return ObjectFactories::make_photons(unwrap(Photon_pt),          //
                                                          unwrap(Photon_eta),         //
                                                          unwrap(Photon_phi),         //
                                                          unwrap(Photon_isScEtaEB),   //
@@ -883,25 +1004,37 @@ auto classification(const std::string process,
                                                          is_data,                    //
                                                          year,                       //
                                                          diff_shift);
+                }
 
-            auto [jets, bjets] = ObjectFactories::make_jets(unwrap(Jet_pt),                 //
-                                                            unwrap(Jet_eta),                //
-                                                            unwrap(Jet_phi),                //
-                                                            unwrap(Jet_mass),               //
-                                                            unwrap(Jet_jetId),              //
-                                                            unwrap(Jet_btagDeepFlavB),      //
-                                                            unwrap(Jet_rawFactor),          //
-                                                            unwrap(Jet_area),               //
-                                                            unwrap(Jet_genJetIdx),          //
-                                                            unwrap(fixedGridRhoFastjetAll), //
-                                                            jet_corrections,                //
-                                                            // btag_sf_Corrector,                    //
-                                                            NanoAODGenInfo::GenJets(unwrap(GenJet_pt),   //
-                                                                                    unwrap(GenJet_eta),  //
-                                                                                    unwrap(GenJet_phi)), //
-                                                            is_data,                                     //
-                                                            year,                                        //
-                                                            diff_shift);
+                return nominal_photons;
+            }();
+
+            auto [jets, bjets] = [&]() -> std::pair<MUSiCObjects, MUSiCObjects>
+            {
+                if (starts_with(Shifts::variation_to_string(diff_shift), "Jet"))
+                {
+                    return ObjectFactories::make_jets(unwrap(Jet_pt),                 //
+                                                      unwrap(Jet_eta),                //
+                                                      unwrap(Jet_phi),                //
+                                                      unwrap(Jet_mass),               //
+                                                      unwrap(Jet_jetId),              //
+                                                      unwrap(Jet_btagDeepFlavB),      //
+                                                      unwrap(Jet_rawFactor),          //
+                                                      unwrap(Jet_area),               //
+                                                      unwrap(Jet_genJetIdx),          //
+                                                      unwrap(fixedGridRhoFastjetAll), //
+                                                      jet_corrections,                //
+                                                      // btag_sf_Corrector,                    //
+                                                      NanoAODGenInfo::GenJets(unwrap(GenJet_pt),   //
+                                                                              unwrap(GenJet_eta),  //
+                                                                              unwrap(GenJet_phi)), //
+                                                      is_data,                                     //
+                                                      year,                                        //
+                                                      diff_shift);
+                }
+
+                return {nominal_jets, nominal_bjets};
+            }();
 
             auto met = ObjectFactories::make_met(              //
                 unwrap(RawMET_pt),                             //
@@ -925,20 +1058,84 @@ auto classification(const std::string process,
                 diff_shift);
 
             // clear objects
-            electrons.clear(muons, 0.4);
-            taus.clear(electrons, 0.4);
-            taus.clear(muons, 0.4);
-            photons.clear(taus, 0.4);
-            photons.clear(electrons, 0.4);
-            photons.clear(muons, 0.4);
-            jets.clear(photons, 0.5);
-            bjets.clear(photons, 0.5);
-            jets.clear(taus, 0.5);
-            bjets.clear(taus, 0.5);
-            jets.clear(electrons, 0.5);
-            bjets.clear(electrons, 0.5);
-            jets.clear(muons, 0.5);
-            bjets.clear(muons, 0.5);
+            auto electrons_idxs = electrons.indexes();
+            auto electrons_clear_mask = electrons.clear_mask(muons, 0.4);
+            if (not(std::equal(electrons_clear_mask.cbegin(), electrons_clear_mask.cend(), electrons_idxs.cbegin())))
+            {
+                electrons = electrons.take_as_copy(electrons_clear_mask);
+            }
+
+            auto taus_idxs = taus.indexes();
+            auto taus_clear_mask = taus.clear_mask(electrons, 0.4);
+            if (not(std::equal(taus_clear_mask.cbegin(), taus_clear_mask.cend(), taus_idxs.cbegin())))
+            {
+                taus = taus.take_as_copy(taus_clear_mask);
+            }
+            taus_clear_mask = taus.clear_mask(muons, 0.4);
+            if (not(std::equal(taus_clear_mask.cbegin(), taus_clear_mask.cend(), taus_idxs.cbegin())))
+            {
+                taus = taus.take_as_copy(taus_clear_mask);
+            }
+
+            auto photons_idxs = photons.indexes();
+            auto photons_clear_mask = photons.clear_mask(taus, 0.4);
+            if (not(std::equal(photons_clear_mask.cbegin(), photons_clear_mask.cend(), photons_idxs.cbegin())))
+            {
+                photons = photons.take_as_copy(photons_clear_mask);
+            }
+            photons_clear_mask = photons.clear_mask(electrons, 0.4);
+            if (not(std::equal(photons_clear_mask.cbegin(), photons_clear_mask.cend(), photons_idxs.cbegin())))
+            {
+                photons = photons.take_as_copy(photons_clear_mask);
+            }
+            photons_clear_mask = photons.clear_mask(muons, 0.4);
+            if (not(std::equal(photons_clear_mask.cbegin(), photons_clear_mask.cend(), photons_idxs.cbegin())))
+            {
+                photons = photons.take_as_copy(photons_clear_mask);
+            }
+
+            auto jets_idxs = jets.indexes();
+            auto bjets_idxs = bjets.indexes();
+            auto jets_clear_mask = jets.clear_mask(photons, 0.5);
+            if (not(std::equal(jets_clear_mask.cbegin(), jets_clear_mask.cend(), jets_idxs.cbegin())))
+            {
+                jets = jets.take_as_copy(jets_clear_mask);
+            }
+            auto bjets_clear_mask = bjets.clear_mask(photons, 0.5);
+            if (not(std::equal(bjets_clear_mask.cbegin(), bjets_clear_mask.cend(), bjets_idxs.cbegin())))
+            {
+                bjets = bjets.take_as_copy(bjets_clear_mask);
+            }
+            jets_clear_mask = jets.clear_mask(taus, 0.5);
+            if (not(std::equal(jets_clear_mask.cbegin(), jets_clear_mask.cend(), jets_idxs.cbegin())))
+            {
+                jets = jets.take_as_copy(jets_clear_mask);
+            }
+            bjets_clear_mask = bjets.clear_mask(taus, 0.5);
+            if (not(std::equal(bjets_clear_mask.cbegin(), bjets_clear_mask.cend(), bjets_idxs.cbegin())))
+            {
+                bjets = bjets.take_as_copy(bjets_clear_mask);
+            }
+            jets_clear_mask = jets.clear_mask(electrons, 0.5);
+            if (not(std::equal(jets_clear_mask.cbegin(), jets_clear_mask.cend(), jets_idxs.cbegin())))
+            {
+                jets = jets.take_as_copy(jets_clear_mask);
+            }
+            bjets_clear_mask = bjets.clear_mask(electrons, 0.5);
+            if (not(std::equal(bjets_clear_mask.cbegin(), bjets_clear_mask.cend(), bjets_idxs.cbegin())))
+            {
+                bjets = bjets.take_as_copy(bjets_clear_mask);
+            }
+            jets_clear_mask = jets.clear_mask(muons, 0.5);
+            if (not(std::equal(jets_clear_mask.cbegin(), jets_clear_mask.cend(), jets_idxs.cbegin())))
+            {
+                jets = jets.take_as_copy(jets_clear_mask);
+            }
+            bjets_clear_mask = bjets.clear_mask(muons, 0.5);
+            if (not(std::equal(bjets_clear_mask.cbegin(), bjets_clear_mask.cend(), bjets_idxs.cbegin())))
+            {
+                bjets = bjets.take_as_copy(bjets_clear_mask);
+            }
 
             // check for trigger matching
             // is_good_trigger is garantied to be filled by the "if" statement above
