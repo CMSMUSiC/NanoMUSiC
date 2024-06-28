@@ -80,11 +80,15 @@ auto GammaPlusJet::fill(const MUSiCObjects &jets,
                         Shifts::Variations shift) -> void
 {
     auto idx_var = static_cast<std::size_t>(shift);
-    if (photons.p4.at(0).pt() > 200)
+
+    if(photons.size() > 0)
     {
-        h_gamma_pt[idx_var].Fill(photons.p4.at(0).pt(), weight);
-        h_gamma_eta[idx_var].Fill(photons.p4.at(0).eta(), weight);
-        h_gamma_phi[idx_var].Fill(photons.p4.at(0).phi(), weight);
+        if (photons.p4.at(0).pt() > 200)
+        {
+            h_gamma_pt[idx_var].Fill(photons.p4.at(0).pt(), weight);
+            h_gamma_eta[idx_var].Fill(photons.p4.at(0).eta(), weight);
+            h_gamma_phi[idx_var].Fill(photons.p4.at(0).phi(), weight);
+        }
     }
 }
 
