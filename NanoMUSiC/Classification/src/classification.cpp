@@ -1359,6 +1359,53 @@ auto classification(const std::string process,
                     met,
                     get_effective_weight(shift, 0, 0, std::min(static_cast<int>(taus.size()), 2), 0, 0, 0, met.size()),
                     shift);
+                validation_container.w_to_muon_nutrino_x.fill(
+                    muons,
+                    bjets,
+                    jets,
+                    met,
+                    get_effective_weight(shift, std::min(static_cast<int>(muons.size()), 1), 0, 0, 0, 0, 0, met.size()),
+                    shift);
+                validation_container.w_to_electron_nutrino_x.fill(
+                    electrons,
+                    bjets,
+                    jets,
+                    met,
+                    get_effective_weight(shift, 0, std::min(static_cast<int>(electrons.size()), 1), 0, 0, 0, 0, met.size()),
+                    shift);
+                validation_container.w_to_tau_nutrino_x.fill(
+                    taus,
+                    bjets,
+                    jets,
+                    met,
+                    get_effective_weight(shift, 0, 0, std::min(static_cast<int>(taus.size()), 1), 0, 0, 0, met.size()),
+                    shift);
+                validation_container.ttbar_to_1muon_2bjet_2jet_met.fill(
+                    muons,
+                    bjets,
+                    jets,
+                    met,
+                    get_effective_weight(shift, std::min(static_cast<int>(muons.size()), 1), 0, 0, 0, std::min(static_cast<int>(bjets.size()), 2), std::min(static_cast<int>(jets.size()), 2), met.size()),
+                    shift);
+                validation_container.ttbar_to_1electron_2bjet_2jet_met.fill(
+                    electrons,
+                    bjets,
+                    jets,
+                    met,
+                    get_effective_weight(shift, 0, std::min(static_cast<int>(electrons.size()), 1), 0, 0, std::min(static_cast<int>(bjets.size()), 2), std::min(static_cast<int>(jets.size()), 2), met.size()),
+                    shift);
+                validation_container.ttbar_to_1tau_2bjet_2jet_met.fill(
+                    taus,
+                    bjets,
+                    jets,
+                    met,
+                    get_effective_weight(shift, 0, 0, std::min(static_cast<int>(taus.size()), 1), 0, std::min(static_cast<int>(bjets.size()), 2), std::min(static_cast<int>(jets.size()), 2), met.size()),
+                    shift);
+                validation_container.gamma_plus_jets.fill(
+                    photons,
+                    jets,
+                    get_effective_weight(shift, 0, 0, 0, std::min(static_cast<int>(photons.size()), 1), 0, std::min(static_cast<int>(jets.size()), 1), met.size()),
+                    shift);
             }
             //////////////////////////////////////////////
         }

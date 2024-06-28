@@ -275,3 +275,5 @@ NanoMUSiC/NanoEventClass/src/NanoEventClass_cpp_ACLiC_dictc92d57510f_dictContent
 Session.vim
 /home/home1/institut_3a/seth/MUSiC/NanoMUSiC/build_old
 build_old/
+build_notSoOld/
+.gitignore
