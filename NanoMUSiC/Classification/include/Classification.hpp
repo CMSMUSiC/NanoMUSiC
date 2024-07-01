@@ -707,54 +707,6 @@ class KinematicsBuffer
     }
 };
 
-template <typename F>
-inline auto loop_over_object_combinations(F f,
-                                          const MUSiCObjects &muons,
-                                          const MUSiCObjects &electrons,
-                                          const MUSiCObjects &taus,
-                                          const MUSiCObjects &photons,
-                                          const MUSiCObjects &bjets,
-                                          const MUSiCObjects &jets,
-                                          const MUSiCObjects &met) -> void
-{
-    auto muon_buffer = KinematicsBuffer();
-    for (std::size_t num_muon = 0; num_muon <= muons.size(); num_muon++)
-    {
-        muon_buffer.accumulate(muons, num_muon);
-        auto electron_buffer = muon_buffer;
-        for (std::size_t num_electron = 0; num_electron <= electrons.size(); num_electron++)
-        {
-            electron_buffer.accumulate(electrons, num_electron);
-            auto tau_buffer = electron_buffer;
-            for (std::size_t num_tau = 0; num_tau <= taus.size(); num_tau++)
-            {
-                tau_buffer.accumulate(taus, num_tau);
-                auto photon_buffer = tau_buffer;
-                for (std::size_t num_photon = 0; num_photon <= photons.size(); num_photon++)
-                {
-                    photon_buffer.accumulate(photons, num_photon);
-                    auto bjet_buffer = photon_buffer;
-                    for (std::size_t num_bjet = 0; num_bjet <= bjets.size(); num_bjet++)
-                    {
-                        bjet_buffer.accumulate(bjets, num_bjet);
-                        auto jet_buffer = bjet_buffer;
-                        for (std::size_t num_jet = 0; num_jet <= jets.size(); num_jet++)
-                        {
-                            jet_buffer.accumulate(jets, num_jet);
-                            auto met_buffer = jet_buffer;
-                            for (std::size_t num_met = 0; num_met <= met.size(); num_met++)
-                            {
-                                met_buffer.accumulate(met, num_met, true);
-                                f(met_buffer, num_muon, num_electron, num_tau, num_photon, num_bjet, num_jet, num_met);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
 struct FourVec
 {
     double e;

@@ -8,8 +8,8 @@
 #include "ROOT/RVec.hxx"
 
 #include "Configs.hpp"
-#include "music_objects.hpp"
 #include "Shifts.hpp"
+#include "music_objects.hpp"
 
 using namespace ROOT;
 using namespace ROOT::Math;
@@ -64,7 +64,7 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
     for (std::size_t i = 0; i < Tau_pt.size(); i++)
     {
         bool is_good_tau_pre_filter =
-            ((Tau_idDeepTau2017v2p1VSe[i] & 32) == 32) and ((Tau_idDeepTau2017v2p1VSjet[i] & 32) == 32) and
+            ((Tau_idDeepTau2017v2p1VSe[i] & 64) == 64) and ((Tau_idDeepTau2017v2p1VSjet[i] & 64) == 64) and
             ((Tau_idDeepTau2017v2p1VSmu[i] & 8) == 8) and (Tau_decayMode[i] != 5) and (Tau_decayMode[i] != 6) and
             (std::fabs(Tau_eta[i]) <= 2.1) and (std::fabs(Tau_dz[i]) < 0.2);
 
