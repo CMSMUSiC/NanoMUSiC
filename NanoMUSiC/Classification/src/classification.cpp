@@ -901,6 +901,26 @@ auto classification(const std::string process,
                                                                         year,                                        //
                                                                         Shifts::Variations::Nominal);
 
+        // check for trigger matching
+        // is_good_trigger is garantied to be filled by the "if" statement above
+        const auto trigger_matches = make_trigger_matches(
+            *is_good_trigger, nominal_muons, nominal_electrons, nominal_taus, nominal_photons, get_runyear(year));
+
+        bool has_trigger_match = false;
+        for (auto &&[trigger_path, trigger_match] : trigger_matches)
+        {
+            if (trigger_match)
+            {
+                has_trigger_match = true;
+                break;
+            }
+        }
+
+        if (not(has_trigger_match))
+        {
+            continue;
+        }
+
         for (auto &&diff_shift : shifts.get_differential_shifts())
         {
             auto muons = [&]() -> MUSiCObjects
@@ -1055,26 +1075,6 @@ auto classification(const std::string process,
                 is_data,                                       //
                 year,                                          //
                 diff_shift);
-
-            // check for trigger matching
-            // is_good_trigger is garantied to be filled by the "if" statement above
-            const auto trigger_matches =
-                make_trigger_matches(*is_good_trigger, muons, electrons, taus, photons, get_runyear(year));
-
-            bool has_trigger_match = false;
-            for (auto &&[trigger_path, trigger_match] : trigger_matches)
-            {
-                if (trigger_match)
-                {
-                    has_trigger_match = true;
-                    break;
-                }
-            }
-
-            if (not(has_trigger_match))
-            {
-                continue;
-            }
 
             // clear objects
             auto electrons_idxs = electrons.indexes();
@@ -1371,7 +1371,8 @@ auto classification(const std::string process,
                     bjets,
                     jets,
                     met,
-                    get_effective_weight(shift, 0, std::min(static_cast<int>(electrons.size()), 1), 0, 0, 0, 0, met.size()),
+                    get_effective_weight(
+                        shift, 0, std::min(static_cast<int>(electrons.size()), 1), 0, 0, 0, 0, met.size()),
                     shift);
                 validation_container.w_to_tau_nutrino_x.fill(
                     taus,
@@ -1385,26 +1386,54 @@ auto classification(const std::string process,
                     bjets,
                     jets,
                     met,
-                    get_effective_weight(shift, std::min(static_cast<int>(muons.size()), 1), 0, 0, 0, std::min(static_cast<int>(bjets.size()), 2), std::min(static_cast<int>(jets.size()), 2), met.size()),
+                    get_effective_weight(shift,
+                                         std::min(static_cast<int>(muons.size()), 1),
+                                         0,
+                                         0,
+                                         0,
+                                         std::min(static_cast<int>(bjets.size()), 2),
+                                         std::min(static_cast<int>(jets.size()), 2),
+                                         met.size()),
                     shift);
                 validation_container.ttbar_to_1electron_2bjet_2jet_met.fill(
                     electrons,
                     bjets,
                     jets,
                     met,
-                    get_effective_weight(shift, 0, std::min(static_cast<int>(electrons.size()), 1), 0, 0, std::min(static_cast<int>(bjets.size()), 2), std::min(static_cast<int>(jets.size()), 2), met.size()),
+                    get_effective_weight(shift,
+                                         0,
+                                         std::min(static_cast<int>(electrons.size()), 1),
+                                         0,
+                                         0,
+                                         std::min(static_cast<int>(bjets.size()), 2),
+                                         std::min(static_cast<int>(jets.size()), 2),
+                                         met.size()),
                     shift);
                 validation_container.ttbar_to_1tau_2bjet_2jet_met.fill(
                     taus,
                     bjets,
                     jets,
                     met,
-                    get_effective_weight(shift, 0, 0, std::min(static_cast<int>(taus.size()), 1), 0, std::min(static_cast<int>(bjets.size()), 2), std::min(static_cast<int>(jets.size()), 2), met.size()),
+                    get_effective_weight(shift,
+                                         0,
+                                         0,
+                                         std::min(static_cast<int>(taus.size()), 1),
+                                         0,
+                                         std::min(static_cast<int>(bjets.size()), 2),
+                                         std::min(static_cast<int>(jets.size()), 2),
+                                         met.size()),
                     shift);
                 validation_container.gamma_plus_jets.fill(
                     photons,
                     jets,
-                    get_effective_weight(shift, 0, 0, 0, std::min(static_cast<int>(photons.size()), 1), 0, std::min(static_cast<int>(jets.size()), 1), met.size()),
+                    get_effective_weight(shift,
+                                         0,
+                                         0,
+                                         0,
+                                         std::min(static_cast<int>(photons.size()), 1),
+                                         0,
+                                         std::min(static_cast<int>(jets.size()), 1),
+                                         met.size()),
                     shift);
             }
             //////////////////////////////////////////////
