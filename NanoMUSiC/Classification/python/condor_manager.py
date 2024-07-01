@@ -450,7 +450,7 @@ class CondorManager:
 
 if __name__ == "__main__":
     my_preamble = [
-        r"source /cvmfs/sft.cern.ch/lcg/views/LCG_105a/x86_64-el9-gcc12-opt/setup.sh"
+        r"source /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/setup.sh"
     ]
     my_jobs = [
         CondorJob(

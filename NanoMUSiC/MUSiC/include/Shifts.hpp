@@ -7,7 +7,18 @@
 #include <string>
 #include <vector>
 
-#include <fmt/format.h>
+#include <fmt/core.h>
+template <typename EnumType>
+requires std::is_enum_v<EnumType>
+struct fmt::formatter<EnumType> : fmt::formatter<std::underlying_type_t<EnumType>>
+{
+    // Forwards the formatting by casting the enum to it's underlying type
+    auto format(const EnumType &enumValue, format_context &ctx) const
+    {
+        return fmt::formatter<std::underlying_type_t<EnumType>>::format(
+            static_cast<std::underlying_type_t<EnumType>>(enumValue), ctx);
+    }
+};
 
 #include "ObjectFactories/music_objects.hpp"
 #include "ROOT/RVec.hxx"
@@ -204,7 +215,7 @@ class Shifts
             LIST_OF_SHIFTS
 #undef X
         default:
-            fmt::print(stderr, "ERROR: Could not convert variation ({}) to string.", var);
+            fmt::print(stderr, "ERROR: Could not convert variation ({}) to string.", static_cast<unsigned int>(var));
             std::exit(EXIT_FAILURE);
         }
     }
@@ -606,10 +617,10 @@ class Shifts
                 if (not(LHEScaleWeight.size() == 9 or LHEScaleWeight.size() == 8))
                 {
                     fmt::print(stderr,
-                               fmt::format("ERROR: Unexpected number of QCD scale weights ({}). "
-                                           "Expected to be 8 or 9. \nWeights: [{}]\n",
-                                           LHEScaleWeight.size(),
-                                           fmt::join(LHEScaleWeight, ", ")));
+                               fmt::runtime("ERROR: Unexpected number of QCD scale weights ({}). "
+                                            "Expected to be 8 or 9. \nWeights: [{}]\n"),
+                                            LHEScaleWeight.size(),
+                                            fmt::join(LHEScaleWeight, ", "));
                     std::exit(EXIT_FAILURE);
                 }
 

@@ -297,7 +297,7 @@ def launch_condor(
         )
 
     preamble = [
-        r"source /cvmfs/sft.cern.ch/lcg/views/LCG_105a/x86_64-el9-gcc12-opt/setup.sh",
+        r"source /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/setup.sh",
         r"cd $_CONDOR_SCRATCH_DIR",
         r"tar -zxf classification_src.tar.gz",
         r"mkdir -p lib",

@@ -2,7 +2,7 @@ execute_process(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_CFLAGS OUTPUT_
 separate_arguments(ROOT_CFLAGS)
 add_compile_options(-g)
 
-add_compile_options(-I/cvmfs/sft.cern.ch/lcg/views/LCG_105a/x86_64-el9-gcc12-opt/include)
+add_compile_options(-I/cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/include)
 
 add_compile_options(${ROOT_CFLAGS} -Wall -Wextra -g -O3 -ffast-math -fPIC -fdiagnostics-color=always -MD -MP -O3 -Wall -march=native -pthread -m64 -ffloat-store)
 
@@ -23,8 +23,8 @@ add_link_options(
         -lfmt
         -lz
         -lstdc++fs
-        -L/cvmfs/sft.cern.ch/lcg/views/LCG_105a/x86_64-el9-gcc12-opt/lib
-        -L/cvmfs/sft.cern.ch/lcg/views/LCG_105a/x86_64-el9-gcc12-opt/lib64
+        -L/cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/lib
+        -L/cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/lib64
         -lgsl
         -lgslcblas
         -lm
@@ -36,7 +36,7 @@ add_executable(createLookupTable
         src/ConvolutionLookup.cpp
         src/createLookupTable.cpp)
 
-target_compile_options(createLookupTable PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
+target_compile_options(createLookupTable PUBLIC -Wall -Wextra -std=c++20 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
 
 target_include_directories(createLookupTable PUBLIC include ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/include/external)
 target_include_directories(createLookupTable PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -75,7 +75,7 @@ add_library(scan SHARED
         src/util.cpp
         src/ConvolutionLookup.cpp)
 
-target_compile_options(scan PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
+target_compile_options(scan PUBLIC -Wall -Wextra -std=c++20 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
 target_include_directories(scan PUBLIC include  ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/include/external)
 target_include_directories(scan PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 install(TARGETS scan DESTINATION ${CMAKE_SOURCE_DIR}/lib)
@@ -85,7 +85,7 @@ add_executable(pCalc
         src/ConvolutionLookup.cpp
         src/pCalc.cpp)
 
-target_compile_options(pCalc PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
+target_compile_options(pCalc PUBLIC -Wall -Wextra -std=c++20 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
 target_include_directories(pCalc PUBLIC include  ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/include/external)
 target_include_directories(pCalc PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 install(TARGETS pCalc DESTINATION ${CMAKE_SOURCE_DIR}/bin)
@@ -93,7 +93,7 @@ install(TARGETS pCalc DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 add_library(ConvolutionComputer SHARED
         src/ConvolutionComputer.cpp
 )
-target_compile_options(ConvolutionComputer PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
+target_compile_options(ConvolutionComputer PUBLIC -Wall -Wextra -std=c++20 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
 target_include_directories(ConvolutionComputer PUBLIC include  ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/include/external)
 target_include_directories(ConvolutionComputer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 install(TARGETS ConvolutionComputer DESTINATION ${CMAKE_SOURCE_DIR}/lib)
@@ -102,7 +102,7 @@ add_library(ConvolutionLookup SHARED
         src/ConvolutionLookup.cpp
         src/ConvolutionComputer.cpp
 )
-target_compile_options(ConvolutionLookup PUBLIC -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
+target_compile_options(ConvolutionLookup PUBLIC -Wall -Wextra -std=c++20 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
 target_include_directories(ConvolutionLookup PUBLIC include  ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/include/external)
 target_include_directories(ConvolutionLookup PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 install(TARGETS ConvolutionLookup DESTINATION ${CMAKE_SOURCE_DIR}/lib)

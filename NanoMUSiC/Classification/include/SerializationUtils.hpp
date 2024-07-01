@@ -46,12 +46,11 @@ inline auto split_histo_name(std::string histo_full_name, const std::string deli
     {
         fmt::print(
             stderr,
-            fmt::format("ERROR: Could not split the histogram full name ({}). The number of unpacked parts ({}) does "
-                        "not match the expectation ({}).",
-                        histo_full_name,
-                        parts.size(),
-                        num_histo_name_parts));
-        std::exit(EXIT_FAILURE);
+            fmt::runtime("ERROR: Could not split the histogram full name ({}). The number of unpacked parts ({}) does "
+                         "not match the expectation ({})."),
+            histo_full_name,
+            parts.size(),
+            num_histo_name_parts); std::exit(EXIT_FAILURE);
     }
 
     return std::make_tuple(parts.at(0), parts.at(1), parts.at(2), parts.at(3), parts.at(4), parts.at(5), parts.at(6));

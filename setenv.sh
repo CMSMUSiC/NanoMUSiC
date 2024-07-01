@@ -7,8 +7,8 @@ SCRIPTDIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 # List of available software:
 # https://lcginfo.cern.ch/release_packages/x86_64-centos7-gcc11-opt/104c/
 
-echo "[ LCG View ] Using x86_64-el9-gcc12-opt ..."
-source /cvmfs/sft.cern.ch/lcg/views/LCG_105a/x86_64-el9-gcc12-opt/setup.sh
+echo "[ LCG View ] Using x86_64-el9-gcc13-opt ..."
+source /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/setup.sh
 echo "[ LCG View ] Done ..."
 
 # Set ninja as default CMake generator
@@ -18,7 +18,7 @@ export CMAKE_GENERATOR=Ninja
 export MUSIC_BASE=$SCRIPTDIR
 
 # Set dummy SCRAM_ARCH. needed for LHAPDF.
-export SCRAM_ARCH=el9_amd64_gcc12
+export SCRAM_ARCH=el9_amd64_gcc13
 
 export LD_LIBRARY_PATH=$SCRIPTDIR/lib:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=$SCRIPTDIR/lib/python:$LD_LIBRARY_PATH
@@ -30,7 +30,7 @@ export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/Plotter/python:$PYTHONPATH
 
 
 # add gfal2 to PATH
-export PYTHONPATH="$PYTHONPATH:/usr/lib64/python3.9/site-packages:/usr/lib/python3.9/site-packages"
+export PYTHONPATH="$PYTHONPATH:/usr/lib64/python3.11/site-packages:/usr/lib/python3.11/site-packages"
 
 cd $SCRIPTDIR
 
@@ -50,4 +50,4 @@ export GOBIN="$SCRIPTDIR/bin"
 export RUSTFLAGS="-C linker=$CC"
 
 #pybind11 CMAKE files
-export pybind11_DIR="/cvmfs/sft.cern.ch/lcg/views/LCG_105a/x86_64-el9-gcc12-opt/lib/python3.9/site-packages/pybind11/share/cmake/pybind11"
+export pybind11_DIR="/cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/lib/python3.11/site-packages/pybind11/share/cmake/pybind11"
