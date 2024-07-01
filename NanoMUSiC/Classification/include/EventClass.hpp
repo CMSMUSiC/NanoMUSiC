@@ -149,7 +149,7 @@ class EventClassContainer
 
     auto has_ec(const std::string &ec_name) -> bool
     {
-        return not(classes.find(ec_name) == classes.end());
+        return classes.contains(ec_name);
     }
 
     auto push(const std::string &ec_name) -> void

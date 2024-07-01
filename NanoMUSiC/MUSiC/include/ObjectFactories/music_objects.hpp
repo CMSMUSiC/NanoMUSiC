@@ -101,6 +101,13 @@ class MUSiCObjects
         return delta_met_y;
     }
 
+    auto indexes() const -> RVec<int>
+    {
+        RVec<int> v(this->size());
+        std::iota(v.begin(), v.end(), 0); // Fills the vector with values from 0 to N-1
+        return v;
+    };
+
     auto take_inplace(const RVec<int> &indexes) -> void
     {
         scale_factor = ROOT::VecOps::Take(scale_factor, indexes);
@@ -117,12 +124,6 @@ class MUSiCObjects
         p4 = ROOT::VecOps::Take(p4, indexes);
     }
 
-    auto indexes() const -> RVec<int>
-    {
-        RVec<int> v(this->size());
-        std::iota(v.begin(), v.end(), 0); // Fills the vector with values from 0 to N-1
-        return v;
-    };
 
     auto take_as_copy(const RVec<int> &indexes) -> MUSiCObjects
     {
