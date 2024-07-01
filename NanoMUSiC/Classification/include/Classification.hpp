@@ -527,15 +527,14 @@ inline auto trigger_filter(const std::string &process, //
                 return trigger_filter_res;
             }
         }
-
-        if (year == Year::Run2018)
+        else
         {
             if (starts_with(process, "EGamma"))
             {
                 if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) //
                     and not(pass_double_muon_trigger)                          //
                     and (pass_low_pt_electron_trigger or pass_high_pt_electron_trigger or
-                         pass_double_electron_trigger or pass_photon_trigger))
+                         pass_double_electron_trigger or pass_photon_trigger or pass_double_photon_trigger))
                 {
                     trigger_filter_res = {
                         {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},           //
@@ -557,11 +556,10 @@ inline auto trigger_filter(const std::string &process, //
 
         if (starts_with(process, "Tau"))
         {
-            if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger)             //
-                and not(pass_double_muon_trigger)                                      //
-                and not(pass_low_pt_electron_trigger or pass_high_pt_electron_trigger) //
-                and not(pass_double_electron_trigger)                                  //
-                and not(pass_photon_trigger)                                           //
+            if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) //
+                and not(pass_double_muon_trigger)                          //
+                and not(pass_low_pt_electron_trigger or pass_high_pt_electron_trigger or pass_double_electron_trigger or
+                        pass_photon_trigger or pass_double_photon_trigger) //
                 and (pass_high_pt_tau_trigger or pass_double_tau_trigger))
             {
                 trigger_filter_res = {

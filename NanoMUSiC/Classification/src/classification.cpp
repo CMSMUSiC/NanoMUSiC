@@ -95,6 +95,38 @@ struct EventWeights
     bool should_use_LHEWeight;
 };
 
+inline auto met_filters(bool Flag_goodVertices,
+                        bool Flag_globalSuperTightHalo2016Filter,
+                        bool Flag_HBHENoiseFilter,
+                        bool Flag_HBHENoiseIsoFilter,
+                        bool Flag_EcalDeadCellTriggerPrimitiveFilter,
+                        bool Flag_BadPFMuonFilter,
+                        bool Flag_BadPFMuonDzFilter,
+                        bool Flag_eeBadScFilter,
+                        bool Flag_hfNoisyHitsFilter,
+                        bool Flag_ecalBadCalibFilter,
+                        const std::string &year) -> bool
+{
+    auto _year = get_runyear(year);
+
+    if (_year == Year::Run2016APV or _year == Year::Run2016)
+    {
+        return Flag_goodVertices and Flag_globalSuperTightHalo2016Filter and Flag_HBHENoiseFilter and
+               Flag_HBHENoiseIsoFilter and Flag_EcalDeadCellTriggerPrimitiveFilter and Flag_BadPFMuonFilter and
+               Flag_BadPFMuonDzFilter and Flag_eeBadScFilter and Flag_hfNoisyHitsFilter;
+    }
+
+    if (_year == Year::Run2017 or _year == Year::Run2018)
+    {
+        return Flag_goodVertices and Flag_globalSuperTightHalo2016Filter and Flag_HBHENoiseFilter and
+               Flag_HBHENoiseIsoFilter and Flag_EcalDeadCellTriggerPrimitiveFilter and Flag_BadPFMuonFilter and
+               Flag_BadPFMuonDzFilter and Flag_hfNoisyHitsFilter and Flag_eeBadScFilter and Flag_ecalBadCalibFilter;
+    }
+
+    fmt::print(stderr, "ERROR: Could not define MET filters bits. The requested year ({}) is invalid.", year);
+    std::exit(EXIT_FAILURE);
+};
+
 auto classification(const std::string process,
                     const std::string year,
                     const bool is_data,
@@ -361,6 +393,8 @@ auto classification(const std::string process,
     ADD_VALUE_READER(HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg, bool);
     ADD_VALUE_READER(HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg, bool);
     ADD_VALUE_READER(HLT_DoubleMediumChargedIsoPFTauHPS35_Trk1_eta2p1_Reg, bool);
+    ADD_VALUE_READER(HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90, bool);
+    ADD_VALUE_READER(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90, bool);
 
     ADD_VALUE_READER(genWeight, float);
     ADD_VALUE_READER(LHEWeight_originalXWGTUP, float);
@@ -521,40 +555,17 @@ auto classification(const std::string process,
             continue;
         }
 
-        auto met_filters = [&Flag_goodVertices,
-                            &Flag_globalSuperTightHalo2016Filter,
-                            &Flag_HBHENoiseFilter,
-                            &Flag_HBHENoiseIsoFilter,
-                            &Flag_EcalDeadCellTriggerPrimitiveFilter,
-                            &Flag_BadPFMuonFilter,
-                            &Flag_BadPFMuonDzFilter,
-                            &Flag_eeBadScFilter,
-                            &Flag_hfNoisyHitsFilter,
-                            &Flag_ecalBadCalibFilter](const std::string &year) -> bool
-        {
-            auto _year = get_runyear(year);
-
-            if (_year == Year::Run2016APV or _year == Year::Run2016)
-            {
-                return unwrap(Flag_goodVertices) and unwrap(Flag_globalSuperTightHalo2016Filter) and
-                       unwrap(Flag_HBHENoiseFilter) and unwrap(Flag_HBHENoiseIsoFilter) and
-                       unwrap(Flag_EcalDeadCellTriggerPrimitiveFilter) and unwrap(Flag_BadPFMuonFilter) and
-                       unwrap(Flag_BadPFMuonDzFilter) and unwrap(Flag_eeBadScFilter) and unwrap(Flag_hfNoisyHitsFilter);
-            }
-
-            if (_year == Year::Run2017 or _year == Year::Run2018)
-            {
-                return unwrap(Flag_goodVertices) and unwrap(Flag_globalSuperTightHalo2016Filter) and
-                       unwrap(Flag_HBHENoiseFilter) and unwrap(Flag_HBHENoiseIsoFilter) and
-                       unwrap(Flag_EcalDeadCellTriggerPrimitiveFilter) and unwrap(Flag_BadPFMuonFilter) and
-                       unwrap(Flag_BadPFMuonDzFilter) and unwrap(Flag_hfNoisyHitsFilter) and
-                       unwrap(Flag_eeBadScFilter) and unwrap(Flag_ecalBadCalibFilter);
-            }
-
-            fmt::print(stderr, "ERROR: Could not define MET filters bits. The requested year ({}) is invalid.", year);
-            std::exit(EXIT_FAILURE);
-        };
-        if (not(met_filters(year)))
+        if (not(met_filters(unwrap(Flag_goodVertices),
+                            unwrap(Flag_globalSuperTightHalo2016Filter),
+                            unwrap(Flag_HBHENoiseFilter),
+                            unwrap(Flag_HBHENoiseIsoFilter),
+                            unwrap(Flag_EcalDeadCellTriggerPrimitiveFilter),
+                            unwrap(Flag_BadPFMuonFilter),
+                            unwrap(Flag_BadPFMuonDzFilter),
+                            unwrap(Flag_eeBadScFilter),
+                            unwrap(Flag_hfNoisyHitsFilter),
+                            unwrap(Flag_ecalBadCalibFilter),
+                            year)))
         {
             continue;
         }
@@ -672,21 +683,21 @@ auto classification(const std::string process,
             auto _year = get_runyear(year);
             if (_year == Year::Run2016APV)
             {
-                return unwrap(HLT_Photon175) or unwrap(HLT_Ele115_CaloIdVT_GsfTrkIdT) or unwrap(HLT_Ele27_WPTight_Gsf);
+                return unwrap(HLT_Photon175) or unwrap(HLT_Ele115_CaloIdVT_GsfTrkIdT);
             }
 
             if (_year == Year::Run2016)
             {
-                return unwrap(HLT_Photon175) or unwrap(HLT_Ele115_CaloIdVT_GsfTrkIdT) or unwrap(HLT_Ele27_WPTight_Gsf);
+                return unwrap(HLT_Photon175) or unwrap(HLT_Ele115_CaloIdVT_GsfTrkIdT);
             }
 
             if (_year == Year::Run2017)
             {
-                return unwrap(HLT_Photon200) or unwrap(HLT_Ele115_CaloIdVT_GsfTrkIdT) or unwrap(HLT_Ele35_WPTight_Gsf);
+                return unwrap(HLT_Photon200) or unwrap(HLT_Ele115_CaloIdVT_GsfTrkIdT);
             }
             if (_year == Year::Run2018)
             {
-                return unwrap(HLT_Ele32_WPTight_Gsf) or unwrap(HLT_Photon200) or unwrap(HLT_Ele115_CaloIdVT_GsfTrkIdT);
+                return unwrap(HLT_Photon200) or unwrap(HLT_Ele115_CaloIdVT_GsfTrkIdT);
             }
 
             fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
@@ -735,6 +746,29 @@ auto classification(const std::string process,
             std::exit(EXIT_FAILURE);
         };
 
+        // Source:
+        // https://cmshltinfo.app.cern.ch/summary#state=ff9f9cf5-fecc-49de-8e42-9de74bb45ed6&session_state=bc67d35b-00fe-4c35-b107-24a35b8e9fb5&code=d14fac8b-5b46-49d2-8889-0adfe5f52145.bc67d35b-00fe-4c35-b107-24a35b8e9fb5.1363e04b-e180-4d83-92b3-3aca653d1d8d
+        auto pass_double_photon_trigger = [&](const std::string &year) -> bool
+        {
+            auto _year = get_runyear(year);
+            if (_year == Year::Run2016APV or _year == Year::Run2016)
+            {
+                return unwrap(HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90);
+            }
+            if (_year == Year::Run2017)
+            {
+                return unwrap(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90);
+            }
+
+            if (_year == Year::Run2018)
+            {
+                return unwrap(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90);
+            }
+
+            fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
+            std::exit(EXIT_FAILURE);
+        };
+
         auto pass_high_pt_tau_trigger = [&](const std::string &year) -> bool
         {
             auto _year = get_runyear(year);
@@ -756,7 +790,6 @@ auto classification(const std::string process,
             fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
             std::exit(EXIT_FAILURE);
         };
-        (void)pass_high_pt_tau_trigger;
 
         auto pass_double_tau_trigger = [&](const std::string &year) -> bool
         {
@@ -786,7 +819,6 @@ auto classification(const std::string process,
                 stderr, "ERROR: Could not define double tau trigger bits. The requested year ({}) is invalid.", year);
             std::exit(EXIT_FAILURE);
         };
-        (void)pass_double_tau_trigger;
 
         // Trigger
         auto is_good_trigger = trigger_filter(process,           //
@@ -798,11 +830,10 @@ auto classification(const std::string process,
                                               pass_low_pt_electron_trigger(year),
                                               pass_high_pt_electron_trigger(year),
                                               pass_double_electron_trigger(year),
-                                              false, // pass_high_pt_tau_trigger(year), //
-                                              false, // pass_double_tau_trigger(year),  //
+                                              pass_high_pt_tau_trigger(year), //
+                                              pass_double_tau_trigger(year),  //
                                               pass_photon_trigger(year),
-                                              false // pass_double_photon_trigger(year)
-        );
+                                              pass_double_photon_trigger(year));
         if (not(is_good_trigger))
         {
             continue;

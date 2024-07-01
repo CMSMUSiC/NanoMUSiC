@@ -98,13 +98,21 @@ inline auto make_trigger_matches(const std::unordered_map<std::string, bool> &is
         auto good_muons = VecOps::Filter(muons.p4,
                                          [](const auto &muon)
                                          {
-                                             return muon.pt() > 21.;
+                                             // sub-leading
+                                             return muon.pt() > 12.;
                                          });
         if (good_muons.size() >= 2)
         {
-            matches.insert(
-                {"pass_double_muon_trigger",
-                 TriggerMatch({good_muons[0].pt(), good_muons[1].pt()}, {good_muons[0].eta(), good_muons[1].eta()})});
+            if (good_muons[0].pt() > 21.)
+            {
+                matches.insert({"pass_double_muon_trigger",
+                                TriggerMatch({good_muons[0].pt(), good_muons[1].pt()},
+                                             {good_muons[0].eta(), good_muons[1].eta()})});
+            }
+            else
+            {
+                matches.insert({"pass_double_muon_trigger", std::nullopt});
+            }
         }
         else
         {
@@ -229,6 +237,38 @@ inline auto make_trigger_matches(const std::unordered_map<std::string, bool> &is
         matches.insert({"pass_photon_trigger", std::nullopt});
     }
 
+    // double photon trigger
+    if (is_good_trigger_map.at("pass_double_photon_trigger") //
+        and photons.size() >= 2)
+    {
+        auto good_photons = VecOps::Filter(photons.p4,
+                                           [](const auto &photon)
+                                           {
+                                               return photon.pt() > 30.;
+                                           });
+        if (good_photons.size() >= 2)
+        {
+            if (good_photons[0].pt() > 40.)
+            {
+                matches.insert({"pass_double_photon_trigger",
+                                TriggerMatch({good_photons[0].pt(), good_photons[1].pt()},
+                                             {good_photons[0].eta(), good_photons[1].eta()})});
+            }
+            else
+            {
+                matches.insert({"pass_double_photon_trigger", std::nullopt});
+            }
+        }
+        else
+        {
+            matches.insert({"pass_double_photon_trigger", std::nullopt});
+        }
+    }
+    else
+    {
+        matches.insert({"pass_double_photon_trigger", std::nullopt});
+    }
+
     // tau trigger
     if (is_good_trigger_map.at("pass_high_pt_tau_trigger") //
         and taus.size() >= 1)
@@ -290,45 +330,6 @@ inline auto make_trigger_matches(const std::unordered_map<std::string, bool> &is
     }
 
     return matches;
-}
-
-inline auto has_good_match(const std::unordered_map<std::string, std::optional<TriggerMatch>> &trigger_matches,
-                           std::size_t n_muons,
-                           std::size_t n_electrons,
-                           std::size_t n_photons) -> bool
-{
-    if (n_muons == 1)
-    {
-        return (trigger_matches.at("pass_low_pt_muon_trigger") //
-                or trigger_matches.at("pass_high_pt_muon_trigger"));
-    }
-
-    if (n_muons >= 2)
-    {
-        return (trigger_matches.at("pass_low_pt_muon_trigger")     //
-                or trigger_matches.at("pass_high_pt_muon_trigger") //
-                or trigger_matches.at("pass_double_muon_trigger"));
-    }
-
-    if (n_electrons == 1)
-    {
-        return (trigger_matches.at("pass_low_pt_electron_trigger") or //
-                trigger_matches.at("pass_high_pt_electron_trigger"));
-    }
-
-    if (n_electrons >= 2)
-    {
-        return (trigger_matches.at("pass_low_pt_electron_trigger") or  //
-                trigger_matches.at("pass_high_pt_electron_trigger") or //
-                trigger_matches.at("pass_double_electron_trigger"));
-    }
-
-    if (n_photons >= 1)
-    {
-        return trigger_matches.at("pass_photon_trigger").has_value();
-    }
-
-    return false;
 }
 
 #endif // !TRIGGER_MATCH_HPP
