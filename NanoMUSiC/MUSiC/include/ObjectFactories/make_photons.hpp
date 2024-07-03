@@ -8,8 +8,8 @@
 #include "ROOT/RVec.hxx"
 
 #include "Configs.hpp"
-#include "music_objects.hpp"
 #include "Shifts.hpp"
+#include "music_objects.hpp"
 
 using namespace ROOT;
 using namespace ROOT::Math;
@@ -117,6 +117,7 @@ inline auto make_photons(const RVec<float> &Photon_pt,  //
     auto delta_met_x = 0.;
     auto delta_met_y = 0.;
     auto is_fake = RVec<bool>{};
+    auto id_score = RVec<MUSiCObjects::IdScore>{};
 
     for (std::size_t i = 0; i < Photon_pt.size(); i++)
     {
@@ -168,6 +169,7 @@ inline auto make_photons(const RVec<float> &Photon_pt,  //
 
                 photons_p4.push_back(photon_p4);
                 is_fake.push_back(is_data ? false : Photon_genPartIdx[i] < 0);
+                id_score.push_back(MUSiCObjects::IdScore::Medium);
             }
         }
     }
@@ -177,7 +179,7 @@ inline auto make_photons(const RVec<float> &Photon_pt,  //
                         scale_factor_shift, //
                         delta_met_x,        //
                         delta_met_y,        //
-                        is_fake);
+                        is_fake, id_score);
 }
 
 } // namespace ObjectFactories

@@ -472,6 +472,7 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
     auto delta_met_x = 0.;
     auto delta_met_y = 0.;
     auto is_fake = RVec<bool>{};
+    auto id_score = RVec<MUSiCObjects::IdScore>{};
 
     for (std::size_t i = 0; i < Muon_pt.size(); i++)
     {
@@ -574,7 +575,7 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
                     muon_sf_iso_high_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "systdown"});
 
                 scale_factors.push_back(sf_reco * sf_id * sf_iso);
-                scale_factor_shift.push_back(std::sqrt(                                                        //
+                scale_factor_shift.push_back(std::sqrt(                                                       //
                     std::pow(std::max(std::fabs(sf_reco - sf_reco_up), std::fabs(sf_reco - sf_reco_down)), 2) //
                     + std::pow(std::max(std::fabs(sf_id - sf_id_up), std::fabs(sf_id - sf_id_down)), 2)       //
                     + std::pow(std::max(std::fabs(sf_iso - sf_iso_up), std::fabs(sf_iso - sf_iso_down)), 2)   //
@@ -585,6 +586,14 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
             {
                 muons_p4.push_back(muon_p4);
                 is_fake.push_back(is_data ? false : Muon_genPartIdx[i] < 0);
+                if (is_good_low_pt_muon)
+                {
+                    id_score.push_back(MUSiCObjects::IdScore::Medium);
+                }
+                if (is_good_high_pt_muon)
+                {
+                    id_score.push_back(MUSiCObjects::IdScore::Tight);
+                }
             }
         }
     }
@@ -594,7 +603,7 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
                         scale_factor_shift, //
                         delta_met_x,        //
                         delta_met_y,        //
-                        is_fake);
+                        is_fake, id_score);
 }
 
 } // namespace ObjectFactories

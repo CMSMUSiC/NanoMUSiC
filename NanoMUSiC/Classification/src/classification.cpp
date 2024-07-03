@@ -1280,55 +1280,61 @@ auto classification(const std::string process,
                 muons.size(), electrons.size(), taus.size(), photons.size(), bjets.size(), jets.size(), met.size());
             for (auto &temp_ec : temp_event_classes)
             {
+                auto classes_names = temp_ec.make_event_class_name(muons.id_score, electrons.id_score, taus.id_score, photons.id_score, bjets.id_score, jets.id_score, met.id_score);
 
-                temp_ec.push(muons.p4, temp_ec.max_muon_idx);
-                temp_ec.push(electrons.p4, temp_ec.max_electron_idx);
-                temp_ec.push(taus.p4, temp_ec.max_tau_idx);
-                temp_ec.push(photons.p4, temp_ec.max_photon_idx);
-                temp_ec.push(bjets.p4, temp_ec.max_bjet_idx);
-                temp_ec.push(jets.p4, temp_ec.max_jet_idx);
-                temp_ec.push(met.p4, temp_ec.max_met_idx);
-
-                auto classes_names = temp_ec.make_event_class_name();
-                for (auto &&const_shift : shifts.get_constant_shifts(diff_shift))
+                // at least one class type should be valid
+                if (classes_names.exclusive_class_name or classes_names.inclusive_class_name or
+                    classes_names.jet_inclusive_class_name)
                 {
-                    if (not(const_shift == Shifts::Variations::Nominal or diff_shift == Shifts::Variations::Nominal))
-                    {
-                        continue;
-                    }
+                    temp_ec.push(muons.p4, temp_ec.max_muon_idx);
+                    temp_ec.push(electrons.p4, temp_ec.max_electron_idx);
+                    temp_ec.push(taus.p4, temp_ec.max_tau_idx);
+                    temp_ec.push(photons.p4, temp_ec.max_photon_idx);
+                    temp_ec.push(bjets.p4, temp_ec.max_bjet_idx);
+                    temp_ec.push(jets.p4, temp_ec.max_jet_idx);
+                    temp_ec.push(met.p4, temp_ec.max_met_idx);
 
-                    auto shift = Shifts::resolve_shifts(const_shift, diff_shift);
-
-                    // fill event classes
-                    for (auto &&class_name : {classes_names.exclusive_class_name,
-                                              classes_names.inclusive_class_name,
-                                              classes_names.jet_inclusive_class_name})
+                    for (auto &&const_shift : shifts.get_constant_shifts(diff_shift))
                     {
-                        if (not(class_name))
+                        if (not(const_shift == Shifts::Variations::Nominal or
+                                diff_shift == Shifts::Variations::Nominal))
                         {
                             continue;
                         }
 
-                        // create event class, if does not exists
-                        if (not(event_classes.has_ec(*class_name)))
-                        {
-                            event_classes.push(*class_name);
-                        }
+                        auto shift = Shifts::resolve_shifts(const_shift, diff_shift);
 
-                        // fill class
-                        event_classes.unsafe_ec(*class_name)
-                            .push(temp_ec.get_sum_pt(),
-                                  temp_ec.get_mass(),
-                                  temp_ec.get_met(),
-                                  get_effective_weight(shift,
-                                                       temp_ec.num_muons,
-                                                       temp_ec.num_electrons,
-                                                       temp_ec.num_taus,
-                                                       temp_ec.num_photons,
-                                                       temp_ec.num_bjets,
-                                                       temp_ec.num_jets,
-                                                       temp_ec.num_met),
-                                  shift);
+                        // fill event classes
+                        for (auto &&class_name : {classes_names.exclusive_class_name,
+                                                  classes_names.inclusive_class_name,
+                                                  classes_names.jet_inclusive_class_name})
+                        {
+                            if (not(class_name))
+                            {
+                                continue;
+                            }
+
+                            // create event class, if does not exists
+                            if (not(event_classes.has_ec(*class_name)))
+                            {
+                                event_classes.push(*class_name);
+                            }
+
+                            // fill class
+                            event_classes.unsafe_ec(*class_name)
+                                .push(temp_ec.get_sum_pt(),
+                                      temp_ec.get_mass(),
+                                      temp_ec.get_met(),
+                                      get_effective_weight(shift,
+                                                           temp_ec.num_muons,
+                                                           temp_ec.num_electrons,
+                                                           temp_ec.num_taus,
+                                                           temp_ec.num_photons,
+                                                           temp_ec.num_bjets,
+                                                           temp_ec.num_jets,
+                                                           temp_ec.num_met),
+                                      shift);
+                        }
                     }
                 }
             }

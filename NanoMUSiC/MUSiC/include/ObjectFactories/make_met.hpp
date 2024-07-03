@@ -61,6 +61,7 @@ inline auto make_met(const double raw_met_pt,                  //
     auto delta_met_x = 0.;
     auto delta_met_y = 0.;
     auto is_fake = RVec<bool>{};
+    auto id_score = RVec<MUSiCObjects::IdScore>{};
 
     auto met_px = raw_met_pt * std::cos(raw_met_phi) //
                   - delta_met_px_from_muons          //
@@ -91,6 +92,7 @@ inline auto make_met(const double raw_met_pt,                  //
         met_p4.push_back(Math::PtEtaPhiMVector(this_met));
 
         is_fake.push_back(false);
+        id_score.push_back(MUSiCObjects::IdScore::Medium);
     }
 
     return MUSiCObjects(met_p4,             //
@@ -98,7 +100,7 @@ inline auto make_met(const double raw_met_pt,                  //
                         scale_factor_shift, //
                         delta_met_x,        //
                         delta_met_y,        //
-                        is_fake);
+                        is_fake, id_score);
 }
 
 } // namespace ObjectFactories

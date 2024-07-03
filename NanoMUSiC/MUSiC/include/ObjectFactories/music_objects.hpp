@@ -3,6 +3,7 @@
 
 #include <any>
 #include <cstdlib>
+#include <numeric>
 #include <optional>
 #include <stdexcept>
 #include <vdt/exp.h>
@@ -34,12 +35,32 @@ using CorrectionlibRef_t = correction::Correction::Ref;
 class MUSiCObjects
 {
   public:
+    enum class IdScore
+    {
+        Loose,
+        Medium,
+        Tight,
+        VeryTight
+    };
+
+    static constexpr unsigned int accum_score(const auto scores, const auto num_obj)
+    {
+        return std::accumulate(scores.cbegin(),
+                               scores.cbegin() + num_obj,
+                               0,
+                               [](auto accum, auto s) -> auto
+                               {
+                                   return accum + static_cast<unsigned int>(s);
+                               });
+    };
+
     RVec<Math::PtEtaPhiMVector> p4;
     RVec<double> scale_factor;
     RVec<double> scale_factor_shift;
     double delta_met_x;
     double delta_met_y;
     RVec<bool> is_fake;
+    RVec<IdScore> id_score;
 
     MUSiCObjects()
         : p4({}),
@@ -47,7 +68,8 @@ class MUSiCObjects
           scale_factor_shift({}),
           delta_met_x(0.),
           delta_met_y(0.),
-          is_fake({})
+          is_fake({}),
+          id_score({})
     {
     }
 
@@ -56,13 +78,15 @@ class MUSiCObjects
                  const RVec<double> &_scale_factor_shift,
                  double _delta_met_x,
                  double _delta_met_y,
-                 const RVec<bool> &_is_fake)
+                 const RVec<bool> &_is_fake,
+                 const RVec<IdScore> &_tightness)
         : p4(_p4),
           scale_factor(_scale_factor),
           scale_factor_shift(_scale_factor_shift),
           delta_met_x(_delta_met_x),
           delta_met_y(_delta_met_y),
-          is_fake(_is_fake)
+          is_fake(_is_fake),
+          id_score(_tightness)
     {
 
         if (not(                                           //
@@ -124,7 +148,6 @@ class MUSiCObjects
         p4 = ROOT::VecOps::Take(p4, indexes);
     }
 
-
     auto take_as_copy(const RVec<int> &indexes) -> MUSiCObjects
     {
         auto new_delta_met_x = delta_met_x;
@@ -143,7 +166,8 @@ class MUSiCObjects
                             ROOT::VecOps::Take(scale_factor_shift, indexes), //
                             new_delta_met_x,                                 //
                             new_delta_met_y,                                 //
-                            ROOT::VecOps::Take(is_fake, indexes));
+                            ROOT::VecOps::Take(is_fake, indexes),
+                            ROOT::VecOps::Take(id_score, indexes));
     }
 
     auto reorder() -> void

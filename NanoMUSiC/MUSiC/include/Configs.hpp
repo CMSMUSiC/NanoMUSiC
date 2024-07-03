@@ -3,6 +3,7 @@
 
 #include "fmt/format.h"
 #include <array>
+#include <fmt/core.h>
 #include <limits>
 #include <stdexcept>
 
@@ -180,6 +181,8 @@ inline auto get_runyear(const std::string &year_str) -> Year
 
 namespace ObjConfig
 {
+constexpr unsigned int MIN_ID_SCORE_PER_CLASS = 0;
+
 /// Muons
 /// References:
 /// https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonUL2017

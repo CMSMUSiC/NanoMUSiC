@@ -839,7 +839,13 @@ class TempEC
         const std::optional<std::string> jet_inclusive_class_name;
     };
 
-    auto make_event_class_name() -> TempEC::ClassesNames
+    auto make_event_class_name(const RVec<MUSiCObjects::IdScore> &muons_id_score,
+                               const RVec<MUSiCObjects::IdScore> &electrons_id_score,
+                               const RVec<MUSiCObjects::IdScore> &taus_id_score,
+                               const RVec<MUSiCObjects::IdScore> &photons_id_score,
+                               const RVec<MUSiCObjects::IdScore> &bjets_id_score,
+                               const RVec<MUSiCObjects::IdScore> &jets_id_score,
+                               const RVec<MUSiCObjects::IdScore> &met_id_score) -> TempEC::ClassesNames
     {
         if (num_muons == 0         //
             and num_electrons == 0 //
@@ -858,6 +864,17 @@ class TempEC
         }
 
         if (num_bjets + num_jets > max_allowed_jets_per_class)
+        {
+            return ClassesNames{std::nullopt, std::nullopt, std::nullopt};
+        }
+
+        if (MUSiCObjects::accum_score(muons_id_score, num_muons) +
+                MUSiCObjects::accum_score(electrons_id_score, num_electrons) +
+                MUSiCObjects::accum_score(taus_id_score, num_taus) +
+                MUSiCObjects::accum_score(photons_id_score, num_photons) +
+                MUSiCObjects::accum_score(bjets_id_score, num_bjets) +
+                MUSiCObjects::accum_score(jets_id_score, num_jets) + MUSiCObjects::accum_score(met_id_score, num_met) <
+            ObjConfig::MIN_ID_SCORE_PER_CLASS)
         {
             return ClassesNames{std::nullopt, std::nullopt, std::nullopt};
         }

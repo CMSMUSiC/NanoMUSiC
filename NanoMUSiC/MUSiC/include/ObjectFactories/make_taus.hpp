@@ -60,6 +60,7 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
     auto delta_met_x = 0.;
     auto delta_met_y = 0.;
     auto is_fake = RVec<bool>{};
+    auto id_score = RVec<MUSiCObjects::IdScore>{};
 
     for (std::size_t i = 0; i < Tau_pt.size(); i++)
     {
@@ -133,6 +134,7 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
 
                 taus_p4.push_back(tau_p4);
                 is_fake.push_back(is_data ? false : Tau_genPartIdx[i] < 0);
+                id_score.push_back(MUSiCObjects::IdScore::Medium);
             }
         }
     }
@@ -142,7 +144,8 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
                         scale_factor_shift, //
                         delta_met_x,        //
                         delta_met_y,        //
-                        is_fake);
+                        is_fake,
+                        id_score);
 }
 
 } // namespace ObjectFactories

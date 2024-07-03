@@ -112,6 +112,8 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
     auto bjets_delta_met_y = 0.;
     auto jets_is_fake = RVec<bool>{};
     auto bjets_is_fake = RVec<bool>{};
+    auto jets_id_score = RVec<MUSiCObjects::IdScore>{};
+    auto bjets_id_score = RVec<MUSiCObjects::IdScore>{};
 
     for (std::size_t i = 0; i < Jet_pt.size(); i++)
     {
@@ -167,19 +169,26 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
 
                 bjets_p4.push_back(jet_p4);
                 bjets_is_fake.push_back(is_data ? false : Jet_genJetIdx[i] < 0);
+                jets_id_score.push_back(MUSiCObjects::IdScore::Medium);
+                bjets_id_score.push_back(MUSiCObjects::IdScore::Medium);
             }
         }
     }
 
-    return std::make_pair(
-        MUSiCObjects(
-            jets_p4, jets_scale_factors, jets_scale_factor_shift, jets_delta_met_x, jets_delta_met_y, jets_is_fake),
-        MUSiCObjects(bjets_p4,
-                     bjets_scale_factors,
-                     bjets_scale_factor_shift,
-                     bjets_delta_met_x,
-                     bjets_delta_met_y,
-                     bjets_is_fake));
+    return std::make_pair(MUSiCObjects(jets_p4,
+                                       jets_scale_factors,
+                                       jets_scale_factor_shift,
+                                       jets_delta_met_x,
+                                       jets_delta_met_y,
+                                       jets_is_fake,
+                                       jets_id_score
+                                       ),
+                          MUSiCObjects(bjets_p4,
+                                       bjets_scale_factors,
+                                       bjets_scale_factor_shift,
+                                       bjets_delta_met_x,
+                                       bjets_delta_met_y,
+                                       bjets_is_fake, bjets_id_score));
 }
 
 } // namespace ObjectFactories
