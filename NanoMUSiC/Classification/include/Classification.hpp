@@ -839,14 +839,22 @@ class TempEC
         const std::optional<std::string> jet_inclusive_class_name;
     };
 
-    auto make_event_class_name(const RVec<MUSiCObjects::IdScore> &muons_id_score,
-                               const RVec<MUSiCObjects::IdScore> &electrons_id_score,
-                               const RVec<MUSiCObjects::IdScore> &taus_id_score,
-                               const RVec<MUSiCObjects::IdScore> &photons_id_score,
-                               const RVec<MUSiCObjects::IdScore> &bjets_id_score,
-                               const RVec<MUSiCObjects::IdScore> &jets_id_score,
-                               const RVec<MUSiCObjects::IdScore> &met_id_score) -> TempEC::ClassesNames
+    auto make_event_class_name(const RVec<unsigned int> &muons_id_score,
+                               const RVec<unsigned int> &electrons_id_score,
+                               const RVec<unsigned int> &taus_id_score,
+                               const RVec<unsigned int> &photons_id_score,
+                               const RVec<unsigned int> &bjets_id_score,
+                               const RVec<unsigned int> &jets_id_score,
+                               const RVec<unsigned int> &met_id_score) -> TempEC::ClassesNames
     {
+        /////////////////////////////////
+        // CUSTOM
+        if (not(num_muons <= 2 and num_electrons <= 2 and num_taus == 0 and num_photons == 0  and num_bjets == 0))
+        {
+            return ClassesNames{std::nullopt, std::nullopt, std::nullopt};
+        }
+        /////////////////////////////////
+
         if (num_muons == 0         //
             and num_electrons == 0 //
             and num_taus == 0      //
@@ -868,13 +876,29 @@ class TempEC
             return ClassesNames{std::nullopt, std::nullopt, std::nullopt};
         }
 
-        if (MUSiCObjects::accum_score(muons_id_score, num_muons) +
-                MUSiCObjects::accum_score(electrons_id_score, num_electrons) +
-                MUSiCObjects::accum_score(taus_id_score, num_taus) +
-                MUSiCObjects::accum_score(photons_id_score, num_photons) +
-                MUSiCObjects::accum_score(bjets_id_score, num_bjets) +
-                MUSiCObjects::accum_score(jets_id_score, num_jets) + MUSiCObjects::accum_score(met_id_score, num_met) <
-            ObjConfig::MIN_ID_SCORE_PER_CLASS)
+        auto total_id_score = MUSiCObjects::IdScore::accum_score(muons_id_score, num_muons) +
+                              MUSiCObjects::IdScore::accum_score(electrons_id_score, num_electrons) +
+                              MUSiCObjects::IdScore::accum_score(taus_id_score, num_taus) +
+                              MUSiCObjects::IdScore::accum_score(photons_id_score, num_photons) +
+                              MUSiCObjects::IdScore::accum_score(bjets_id_score, num_bjets) +
+                              MUSiCObjects::IdScore::accum_score(jets_id_score, num_jets) +
+                              MUSiCObjects::IdScore::accum_score(met_id_score, num_met);
+        if (not(total_id_score.num_medium >= 1 and total_id_score.num_loose == 0))
+        {
+            return ClassesNames{std::nullopt, std::nullopt, std::nullopt};
+        }
+
+        if (not(total_id_score.num_tight >= 1))
+        {
+            return ClassesNames{std::nullopt, std::nullopt, std::nullopt};
+        }
+
+        if (not(total_id_score.num_medium >= 2))
+        {
+            return ClassesNames{std::nullopt, std::nullopt, std::nullopt};
+        }
+
+        if (not(total_id_score.num_loose >= 3))
         {
             return ClassesNames{std::nullopt, std::nullopt, std::nullopt};
         }

@@ -220,7 +220,7 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
     auto delta_met_x = 0.;
     auto delta_met_y = 0.;
     auto is_fake = RVec<bool>{};
-    auto id_score = RVec<MUSiCObjects::IdScore>{};
+    auto id_score = RVec<unsigned int>{};
 
     for (std::size_t i = 0; i < Electron_pt.size(); i++)
     {
@@ -238,7 +238,7 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
 
         float pt_correction_factor = 1.f;
         float eta_correction_factor = 0.f;
-        if (Electron_pt.at(i) >= ObjConfig::Electrons[year].MaxLowPt)
+        if (Electron_pt.at(i) >= ObjConfig::Electrons[year].HighPt)
         {
             pt_correction_factor = 1.f;
             if (not(std::isnan(Electron_scEtOverPt[i]) or std::isinf(Electron_scEtOverPt[i])))
@@ -268,27 +268,34 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
 
         if (is_good_low_pt_electron_pre_filter or is_good_high_pt_electron_pre_filter)
         {
-
             // Low pT Electrons
-            bool is_good_low_pt_electron = ((electron_p4.pt() >= ObjConfig::Electrons[year].MinLowPt) and
-                                            (electron_p4.pt() < ObjConfig::Electrons[year].MaxLowPt)) and
+            bool is_good_low_pt_electron = ((electron_p4.pt() >= ObjConfig::Electrons[year].LowPt) and
+                                            (electron_p4.pt() < ObjConfig::Electrons[year].HighPt)) and
                                            is_good_low_pt_electron_pre_filter;
 
             // High pT Electrons
             bool is_good_high_pt_electron =
-                (electron_p4.pt() >= ObjConfig::Electrons[year].MaxLowPt) and is_good_high_pt_electron_pre_filter;
+                (electron_p4.pt() >= ObjConfig::Electrons[year].HighPt) and is_good_high_pt_electron_pre_filter;
 
             // calculate scale factors per object (particle)
             // follow the previous MUSiC analysis, the SFs are set before the energy scale and resolution
             if (is_good_low_pt_electron)
             {
-                auto sf_reco = MUSiCObjects::get_scale_factor(electron_sf,
-                                                              is_data,
-                                                              {get_year_for_electron_sf(year),
-                                                               "sf",
-                                                               "RecoAbove20",
-                                                               Electron_eta.at(i) + Electron_deltaEtaSC.at(i),
-                                                               electron_p4.pt()});
+                auto sf_reco = electron_p4.pt() > 20.
+                                   ? MUSiCObjects::get_scale_factor(electron_sf,
+                                                                    is_data,
+                                                                    {get_year_for_electron_sf(year),
+                                                                     "sf",
+                                                                     "RecoAbove20",
+                                                                     Electron_eta.at(i) + Electron_deltaEtaSC.at(i),
+                                                                     electron_p4.pt()})
+                                   : MUSiCObjects::get_scale_factor(electron_sf,
+                                                                    is_data,
+                                                                    {get_year_for_electron_sf(year),
+                                                                     "sf",
+                                                                     "RecoBelow20",
+                                                                     Electron_eta.at(i) + Electron_deltaEtaSC.at(i),
+                                                                     electron_p4.pt()});
                 auto sf_id = MUSiCObjects::get_scale_factor(electron_sf,
                                                             is_data,
                                                             {get_year_for_electron_sf(year),
@@ -297,13 +304,22 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
                                                              Electron_eta.at(i) + Electron_deltaEtaSC.at(i),
                                                              electron_p4.pt()});
 
-                auto sf_reco_up = MUSiCObjects::get_scale_factor(electron_sf,
-                                                                 is_data,
-                                                                 {get_year_for_electron_sf(year),
-                                                                  "sfup",
-                                                                  "RecoAbove20",
-                                                                  Electron_eta.at(i) + Electron_deltaEtaSC.at(i),
-                                                                  electron_p4.pt()});
+                auto sf_reco_up = electron_p4.pt() > 20.
+                                      ? MUSiCObjects::get_scale_factor(electron_sf,
+                                                                       is_data,
+                                                                       {get_year_for_electron_sf(year),
+                                                                        "sfup",
+                                                                        "RecoAbove20",
+                                                                        Electron_eta.at(i) + Electron_deltaEtaSC.at(i),
+                                                                        electron_p4.pt()})
+                                      : MUSiCObjects::get_scale_factor(electron_sf,
+                                                                       is_data,
+                                                                       {get_year_for_electron_sf(year),
+                                                                        "sfup",
+                                                                        "RecoBelow20",
+                                                                        Electron_eta.at(i) + Electron_deltaEtaSC.at(i),
+                                                                        electron_p4.pt()});
+
                 auto sf_id_up = MUSiCObjects::get_scale_factor(electron_sf,
                                                                is_data,
                                                                {get_year_for_electron_sf(year),
@@ -312,13 +328,23 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
                                                                 Electron_eta.at(i) + Electron_deltaEtaSC.at(i),
                                                                 electron_p4.pt()});
 
-                auto sf_reco_down = MUSiCObjects::get_scale_factor(electron_sf,
-                                                                   is_data,
-                                                                   {get_year_for_electron_sf(year),
-                                                                    "sfdown",
-                                                                    "RecoAbove20",
-                                                                    Electron_eta.at(i) + Electron_deltaEtaSC.at(i),
-                                                                    electron_p4.pt()});
+                auto sf_reco_down =
+                    electron_p4.pt() > 20.
+                        ? MUSiCObjects::get_scale_factor(electron_sf,
+                                                         is_data,
+                                                         {get_year_for_electron_sf(year),
+                                                          "sfdown",
+                                                          "RecoAbove20",
+                                                          Electron_eta.at(i) + Electron_deltaEtaSC.at(i),
+                                                          electron_p4.pt()})
+                        : MUSiCObjects::get_scale_factor(electron_sf,
+                                                         is_data,
+                                                         {get_year_for_electron_sf(year),
+                                                          "sfdown",
+                                                          "RecoBelow20",
+                                                          Electron_eta.at(i) + Electron_deltaEtaSC.at(i),
+                                                          electron_p4.pt()});
+
                 auto sf_id_down = MUSiCObjects::get_scale_factor(electron_sf,
                                                                  is_data,
                                                                  {get_year_for_electron_sf(year),
@@ -367,7 +393,14 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
                 is_fake.push_back(is_data ? false : Electron_genPartIdx[i] < 0);
                 if (is_good_low_pt_electron)
                 {
-                    id_score.push_back(MUSiCObjects::IdScore::Medium);
+                    if (electron_p4.pt() < ObjConfig::Electrons[year].MediumPt)
+                    {
+                        id_score.push_back(MUSiCObjects::IdScore::Loose);
+                    }
+                    else
+                    {
+                        id_score.push_back(MUSiCObjects::IdScore::Medium);
+                    }
                 }
                 if (is_good_high_pt_electron)
                 {
@@ -382,7 +415,8 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
                         scale_factor_shift, //
                         delta_met_x,        //
                         delta_met_y,        //
-                        is_fake,id_score);
+                        is_fake,
+                        id_score);
 }
 
 } // namespace ObjectFactories

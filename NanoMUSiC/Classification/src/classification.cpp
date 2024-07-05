@@ -198,15 +198,19 @@ auto classification(const std::string process,
     auto high_pt_muon_trigger_sf = correctionlib_utils.make_correctionlib_ref("SingleMuonHighPt", year);
 
     auto muon_sf_reco = correctionlib_utils.make_correctionlib_ref("MuonReco", year);
+    auto muon_sf_reco_high_pt = correctionlib_utils.make_correctionlib_ref("MuonRecoHighPt", year);
+
     auto muon_sf_id_low_pt = correctionlib_utils.make_correctionlib_ref("MuonIdLowPt", year);
+    auto muon_sf_id_medium_pt = correctionlib_utils.make_correctionlib_ref("MuonIdMediumPt", year);
     auto muon_sf_id_high_pt = correctionlib_utils.make_correctionlib_ref("MuonIdHighPt", year);
-    auto muon_sf_iso_low_pt = correctionlib_utils.make_correctionlib_ref("MuonIsoLowPt", year);
+
+    auto muon_sf_iso_medium_pt = correctionlib_utils.make_correctionlib_ref("MuonIsoMediumPt", year);
     auto muon_sf_iso_high_pt = correctionlib_utils.make_correctionlib_ref("MuonIsoHighPt", year);
 
     auto electron_sf = correctionlib_utils.make_correctionlib_ref("ElectronSF", year);
 
     auto photon_sf = correctionlib_utils.make_correctionlib_ref("PhotonSF", year);
-    auto pixel_veto_sf = correctionlib_utils.make_correctionlib_ref("PixelVetoSF", year);
+    auto photon_csev_sf = correctionlib_utils.make_correctionlib_ref("CSEVSF", year);
 
     auto deep_tau_2017_v2_p1_vs_e = correctionlib_utils.make_correctionlib_ref("TauVSe", year);
     auto deep_tau_2017_v2_p1_vs_mu = correctionlib_utils.make_correctionlib_ref("TauVSmu", year);
@@ -473,6 +477,8 @@ auto classification(const std::string process,
     ADD_ARRAY_READER(Photon_isScEtaEE, bool);
     ADD_ARRAY_READER(Photon_cutBased, Int_t);
     ADD_ARRAY_READER(Photon_pixelSeed, bool);
+    ADD_ARRAY_READER(Photon_mvaID_WP90, bool);
+    ADD_ARRAY_READER(Photon_electronVeto, bool);
     ADD_ARRAY_READER(Photon_dEscaleUp, float);
     ADD_ARRAY_READER(Photon_dEscaleDown, float);
     ADD_ARRAY_READER(Photon_dEsigmaUp, float);
@@ -851,9 +857,11 @@ auto classification(const std::string process,
                                                          unwrap(Muon_highPurity),     //
                                                          unwrap(Muon_genPartIdx),     //
                                                          muon_sf_reco,                //
+                                                         muon_sf_reco_high_pt,        //
                                                          muon_sf_id_low_pt,           //
+                                                         muon_sf_id_medium_pt,        //
                                                          muon_sf_id_high_pt,          //
-                                                         muon_sf_iso_low_pt,          //
+                                                         muon_sf_iso_medium_pt,       //
                                                          muon_sf_iso_high_pt,         //
                                                          is_data,                     //
                                                          year,                        //
@@ -895,22 +903,22 @@ auto classification(const std::string process,
                                                        year,                               //
                                                        Shifts::Variations::Nominal);
 
-        auto nominal_photons = ObjectFactories::make_photons(unwrap(Photon_pt),          //
-                                                             unwrap(Photon_eta),         //
-                                                             unwrap(Photon_phi),         //
-                                                             unwrap(Photon_isScEtaEB),   //
-                                                             unwrap(Photon_isScEtaEE),   //
-                                                             unwrap(Photon_cutBased),    //
-                                                             unwrap(Photon_pixelSeed),   //
-                                                             unwrap(Photon_dEscaleUp),   //
-                                                             unwrap(Photon_dEscaleDown), //
-                                                             unwrap(Photon_dEsigmaUp),   //
-                                                             unwrap(Photon_dEsigmaDown), //
-                                                             unwrap(Photon_genPartIdx),  //
-                                                             photon_sf,                  //
-                                                             pixel_veto_sf,              //
-                                                             is_data,                    //
-                                                             year,                       //
+        auto nominal_photons = ObjectFactories::make_photons(unwrap(Photon_pt),           //
+                                                             unwrap(Photon_eta),          //
+                                                             unwrap(Photon_phi),          //
+                                                             unwrap(Photon_isScEtaEB),    //
+                                                             unwrap(Photon_isScEtaEE),    //
+                                                             unwrap(Photon_mvaID_WP90),   //
+                                                             unwrap(Photon_electronVeto), //
+                                                             unwrap(Photon_dEscaleUp),    //
+                                                             unwrap(Photon_dEscaleDown),  //
+                                                             unwrap(Photon_dEsigmaUp),    //
+                                                             unwrap(Photon_dEsigmaDown),  //
+                                                             unwrap(Photon_genPartIdx),   //
+                                                             photon_sf,                   //
+                                                             photon_csev_sf,              //
+                                                             is_data,                     //
+                                                             year,                        //
                                                              Shifts::Variations::Nominal);
 
         auto [nominal_jets, nominal_bjets] = ObjectFactories::make_jets(unwrap(Jet_pt),                 //
@@ -969,9 +977,11 @@ auto classification(const std::string process,
                                                        unwrap(Muon_highPurity),     //
                                                        unwrap(Muon_genPartIdx),     //
                                                        muon_sf_reco,                //
+                                                       muon_sf_reco_high_pt,        //
                                                        muon_sf_id_low_pt,           //
+                                                       muon_sf_id_medium_pt,        //
                                                        muon_sf_id_high_pt,          //
-                                                       muon_sf_iso_low_pt,          //
+                                                       muon_sf_iso_medium_pt,       //
                                                        muon_sf_iso_high_pt,         //
                                                        is_data,                     //
                                                        year,                        //
@@ -1037,22 +1047,22 @@ auto classification(const std::string process,
             {
                 if (starts_with(Shifts::variation_to_string(diff_shift), "Photon"))
                 {
-                    return ObjectFactories::make_photons(unwrap(Photon_pt),          //
-                                                         unwrap(Photon_eta),         //
-                                                         unwrap(Photon_phi),         //
-                                                         unwrap(Photon_isScEtaEB),   //
-                                                         unwrap(Photon_isScEtaEE),   //
-                                                         unwrap(Photon_cutBased),    //
-                                                         unwrap(Photon_pixelSeed),   //
-                                                         unwrap(Photon_dEscaleUp),   //
-                                                         unwrap(Photon_dEscaleDown), //
-                                                         unwrap(Photon_dEsigmaUp),   //
-                                                         unwrap(Photon_dEsigmaDown), //
-                                                         unwrap(Photon_genPartIdx),  //
-                                                         photon_sf,                  //
-                                                         pixel_veto_sf,              //
-                                                         is_data,                    //
-                                                         year,                       //
+                    return ObjectFactories::make_photons(unwrap(Photon_pt),           //
+                                                         unwrap(Photon_eta),          //
+                                                         unwrap(Photon_phi),          //
+                                                         unwrap(Photon_isScEtaEB),    //
+                                                         unwrap(Photon_isScEtaEE),    //
+                                                         unwrap(Photon_mvaID_WP90),   //
+                                                         unwrap(Photon_electronVeto), //
+                                                         unwrap(Photon_dEscaleUp),    //
+                                                         unwrap(Photon_dEscaleDown),  //
+                                                         unwrap(Photon_dEsigmaUp),    //
+                                                         unwrap(Photon_dEsigmaDown),  //
+                                                         unwrap(Photon_genPartIdx),   //
+                                                         photon_sf,                   //
+                                                         photon_csev_sf,              //
+                                                         is_data,                     //
+                                                         year,                        //
                                                          diff_shift);
                 }
 
@@ -1280,7 +1290,13 @@ auto classification(const std::string process,
                 muons.size(), electrons.size(), taus.size(), photons.size(), bjets.size(), jets.size(), met.size());
             for (auto &temp_ec : temp_event_classes)
             {
-                auto classes_names = temp_ec.make_event_class_name(muons.id_score, electrons.id_score, taus.id_score, photons.id_score, bjets.id_score, jets.id_score, met.id_score);
+                auto classes_names = temp_ec.make_event_class_name(muons.id_score,
+                                                                   electrons.id_score,
+                                                                   taus.id_score,
+                                                                   photons.id_score,
+                                                                   bjets.id_score,
+                                                                   jets.id_score,
+                                                                   met.id_score);
 
                 // at least one class type should be valid
                 if (classes_names.exclusive_class_name or classes_names.inclusive_class_name or

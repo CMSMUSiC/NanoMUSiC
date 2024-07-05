@@ -619,8 +619,8 @@ class Shifts
                     fmt::print(stderr,
                                fmt::runtime("ERROR: Unexpected number of QCD scale weights ({}). "
                                             "Expected to be 8 or 9. \nWeights: [{}]\n"),
-                                            LHEScaleWeight.size(),
-                                            fmt::join(LHEScaleWeight, ", "));
+                               LHEScaleWeight.size(),
+                               fmt::join(LHEScaleWeight, ", "));
                     std::exit(EXIT_FAILURE);
                 }
 

@@ -181,16 +181,15 @@ inline auto get_runyear(const std::string &year_str) -> Year
 
 namespace ObjConfig
 {
-constexpr unsigned int MIN_ID_SCORE_PER_CLASS = 0;
-
 /// Muons
 /// References:
 /// https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonUL2017
 /// https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2#Tracker_based_Isolation
 struct MuonConfig
 {
-    float MinLowPt = 25.;
-    float MaxLowPt = 200.;
+    float LowPt = 8.;
+    float MediumPt = 25.;
+    float HighPt = 200.;
     float MaxAbsEta = 2.4;
     float MaxDeltaRTriggerMatch = 0.1;
     // REF:
@@ -208,8 +207,10 @@ constexpr std::array<MuonConfig, Year::kTotalYears> Muons = {Muon2016APV, Muon20
 // Electrons
 struct ElectronConfig
 {
-    float MinLowPt = 25;
-    float MaxLowPt = 100;
+    float LowPt = 10.001;
+    // float MediumPt = 25.;
+    float MediumPt = 40.;
+    float HighPt = 100.;
     float MaxAbsEta = 2.5;
     float MaxDeltaRTriggerMatch = 0.3;
     int cutBasedId = 4; // (tight) greater than this
@@ -227,7 +228,9 @@ constexpr std::array<ElectronConfig, Year::kTotalYears> Electrons = {Electron201
 // Photons
 struct PhotonConfig
 {
-    float MinPt = 25;
+    float LowPt = 25.;
+    float MediumPt = 40.;
+    float HighPt = 200.;
     int cutBasedId = 3; // (tight) greater than this
 };
 
@@ -240,7 +243,6 @@ constexpr std::array<PhotonConfig, Year::kTotalYears> Photons = {Photon2016APV, 
 // Taus
 struct TauConfig
 {
-    // FIXME: change this once we have Taus in the workflow.
     float MinPt = std::numeric_limits<float>::max();
 };
 
@@ -254,7 +256,9 @@ constexpr std::array<TauConfig, Year::kTotalYears> Taus = {Tau2016APV, Tau2016, 
 // REF: https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL17#AK4_b_tagging
 struct BjetsConfig
 {
-    float MinPt = 50;
+    // float LowPt = 50.;
+    float MediumPt = 50.;
+    float HighPt = 500.;
     float MaxAbsEta = 2.4;
     int MinJetID = 2;              // equal or greater than this
     float MinBTagWPTight = 0.6502; // equal or greater than this
@@ -269,7 +273,9 @@ constexpr std::array<BjetsConfig, Year::kTotalYears> BJets = {Bjets2016APV, Bjet
 // Jets
 struct JetConfig
 {
-    float MinPt = 50;
+    // float LowPt = 50.;
+    float MediumPt = 50.;
+    float HighPt = 500.;
     float MaxAbsEta = 2.4;
     int MinJetID = 2;              // equal or greater than this
     float MaxBTagWPTight = 0.6502; // smaller than this

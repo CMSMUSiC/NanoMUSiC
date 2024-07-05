@@ -61,7 +61,7 @@ inline auto make_met(const double raw_met_pt,                  //
     auto delta_met_x = 0.;
     auto delta_met_y = 0.;
     auto is_fake = RVec<bool>{};
-    auto id_score = RVec<MUSiCObjects::IdScore>{};
+    auto id_score = RVec<unsigned int>{};
 
     auto met_px = raw_met_pt * std::cos(raw_met_phi) //
                   - delta_met_px_from_muons          //
@@ -100,7 +100,8 @@ inline auto make_met(const double raw_met_pt,                  //
                         scale_factor_shift, //
                         delta_met_x,        //
                         delta_met_y,        //
-                        is_fake, id_score);
+                        is_fake,
+                        id_score);
 }
 
 } // namespace ObjectFactories

@@ -112,8 +112,8 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
     auto bjets_delta_met_y = 0.;
     auto jets_is_fake = RVec<bool>{};
     auto bjets_is_fake = RVec<bool>{};
-    auto jets_id_score = RVec<MUSiCObjects::IdScore>{};
-    auto bjets_id_score = RVec<MUSiCObjects::IdScore>{};
+    auto jets_id_score = RVec<unsigned int>{};
+    auto bjets_id_score = RVec<unsigned int>{};
 
     for (std::size_t i = 0; i < Jet_pt.size(); i++)
     {
@@ -148,8 +148,8 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
 
         if (is_good_jet_pre_filter or is_good_bjet_pre_filter)
         {
-            auto is_good_jet = (jet_p4.pt() >= ObjConfig::Jets[year].MinPt) and is_good_jet_pre_filter;
-            auto is_good_bjet = (jet_p4.pt() >= ObjConfig::Jets[year].MinPt) and is_good_bjet_pre_filter;
+            auto is_good_jet = (jet_p4.pt() >= ObjConfig::Jets[year].MediumPt) and is_good_jet_pre_filter;
+            auto is_good_bjet = (jet_p4.pt() >= ObjConfig::Jets[year].MediumPt) and is_good_bjet_pre_filter;
 
             if (is_good_jet)
             {
@@ -158,6 +158,14 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
 
                 jets_p4.push_back(jet_p4);
                 jets_is_fake.push_back(is_data ? false : Jet_genJetIdx[i] < 0);
+                if (jet_p4.pt() < ObjConfig::Jets[year].HighPt)
+                {
+                    jets_id_score.push_back(MUSiCObjects::IdScore::Medium);
+                }
+                else
+                {
+                    jets_id_score.push_back(MUSiCObjects::IdScore::Tight);
+                }
             }
 
             if (is_good_bjet)
@@ -169,8 +177,14 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
 
                 bjets_p4.push_back(jet_p4);
                 bjets_is_fake.push_back(is_data ? false : Jet_genJetIdx[i] < 0);
-                jets_id_score.push_back(MUSiCObjects::IdScore::Medium);
-                bjets_id_score.push_back(MUSiCObjects::IdScore::Medium);
+                if (jet_p4.pt() < ObjConfig::Jets[year].HighPt)
+                {
+                    bjets_id_score.push_back(MUSiCObjects::IdScore::Medium);
+                }
+                else
+                {
+                    bjets_id_score.push_back(MUSiCObjects::IdScore::Tight);
+                }
             }
         }
     }
@@ -181,14 +195,14 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
                                        jets_delta_met_x,
                                        jets_delta_met_y,
                                        jets_is_fake,
-                                       jets_id_score
-                                       ),
+                                       jets_id_score),
                           MUSiCObjects(bjets_p4,
                                        bjets_scale_factors,
                                        bjets_scale_factor_shift,
                                        bjets_delta_met_x,
                                        bjets_delta_met_y,
-                                       bjets_is_fake, bjets_id_score));
+                                       bjets_is_fake,
+                                       bjets_id_score));
 }
 
 } // namespace ObjectFactories

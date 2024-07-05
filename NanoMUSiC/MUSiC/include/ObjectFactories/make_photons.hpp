@@ -96,17 +96,17 @@ inline auto make_photons(const RVec<float> &Photon_pt,  //
                          const RVec<float> &Photon_phi, //
                          const RVec<bool> &Photon_isScEtaEB,
                          const RVec<bool> &Photon_isScEtaEE,
-                         const RVec<Int_t> &Photon_cutBased,             //
-                         const RVec<bool> &Photon_pixelSeed,             //
-                         const RVec<float> &Photon_dEscaleUp,            //
-                         const RVec<float> &Photon_dEscaleDown,          //
-                         const RVec<float> &Photon_dEsigmaUp,            //
-                         const RVec<float> &Photon_dEsigmaDown,          //
-                         const RVec<int> &Photon_genPartIdx,             //
-                         const CorrectionlibRef_t &photon_sf,            //
-                         const CorrectionlibRef_t &photon_pixel_veto_sf, //
-                         bool is_data,                                   //
-                         const std::string &_year,                       //
+                         const RVec<Int_t> &Photon_mvaID_WP90,     //
+                         const RVec<bool> &Photon_electronVeto,    //
+                         const RVec<float> &Photon_dEscaleUp,      //
+                         const RVec<float> &Photon_dEscaleDown,    //
+                         const RVec<float> &Photon_dEsigmaUp,      //
+                         const RVec<float> &Photon_dEsigmaDown,    //
+                         const RVec<int> &Photon_genPartIdx,       //
+                         const CorrectionlibRef_t &photon_sf,      //
+                         const CorrectionlibRef_t &photon_csev_sf, //
+                         bool is_data,                             //
+                         const std::string &_year,                 //
                          const Shifts::Variations shift) -> MUSiCObjects
 {
     auto year = get_runyear(_year);
@@ -117,14 +117,14 @@ inline auto make_photons(const RVec<float> &Photon_pt,  //
     auto delta_met_x = 0.;
     auto delta_met_y = 0.;
     auto is_fake = RVec<bool>{};
-    auto id_score = RVec<MUSiCObjects::IdScore>{};
+    auto id_score = RVec<unsigned int>{};
 
     for (std::size_t i = 0; i < Photon_pt.size(); i++)
     {
         bool is_good_photon_pre_filter = (Photon_isScEtaEB[i])         //
                                          and (not Photon_isScEtaEE[i]) // only EB photons
-                                         and (Photon_cutBased[i] >= ObjConfig::Photons[year].cutBasedId) //
-                                         and (Photon_pixelSeed[i] == false);
+                                         and (Photon_mvaID_WP90[i])    //
+                                         and (Photon_electronVeto[i]);
 
         auto photon_p4 = Math::PtEtaPhiMVector(Photon_pt[i], Photon_eta[i], Photon_phi[i], PDG::Photon::Mass);
         photon_p4 = photon_p4 * get_photon_energy_corrections(shift,
@@ -138,28 +138,31 @@ inline auto make_photons(const RVec<float> &Photon_pt,  //
 
         if (is_good_photon_pre_filter)
         {
-            bool is_good_photon = (photon_p4.pt() >= ObjConfig::Photons[year].MinPt) and is_good_photon_pre_filter;
+            bool is_good_photon = (photon_p4.pt() >= ObjConfig::Photons[year].LowPt) and is_good_photon_pre_filter;
 
             if (is_good_photon)
             {
                 auto sf_id = MUSiCObjects::get_scale_factor(
-                    photon_sf, is_data, {get_year_for_photon_sf(year), "sf", "Tight", photon_p4.eta(), photon_p4.pt()});
+                    photon_sf, is_data, {get_year_for_photon_sf(year), "sf", "wp90", photon_p4.eta(), photon_p4.pt()});
+
                 auto sf_veto = MUSiCObjects::get_scale_factor(
-                    photon_pixel_veto_sf, is_data, {get_year_for_photon_sf(year), "sf", "Tight", "EBInc"});
+                    photon_csev_sf, is_data, {get_year_for_photon_sf(year), "sf", "MVA", "EBInc"});
 
                 auto sf_id_up = MUSiCObjects::get_scale_factor(
                     photon_sf,
                     is_data,
-                    {get_year_for_photon_sf(year), "sfup", "Tight", photon_p4.eta(), photon_p4.pt()});
+                    {get_year_for_photon_sf(year), "sfup", "wp90", photon_p4.eta(), photon_p4.pt()});
+
                 auto sf_veto_up = MUSiCObjects::get_scale_factor(
-                    photon_pixel_veto_sf, is_data, {get_year_for_photon_sf(year), "sfup", "Tight", "EBInc"});
+                    photon_csev_sf, is_data, {get_year_for_photon_sf(year), "sfup", "MVA", "EBInc"});
 
                 auto sf_id_down = MUSiCObjects::get_scale_factor(
                     photon_sf,
                     is_data,
-                    {get_year_for_photon_sf(year), "sfdown", "Tight", photon_p4.eta(), photon_p4.pt()});
+                    {get_year_for_photon_sf(year), "sfdown", "wp90", photon_p4.eta(), photon_p4.pt()});
+
                 auto sf_veto_down = MUSiCObjects::get_scale_factor(
-                    photon_pixel_veto_sf, is_data, {get_year_for_photon_sf(year), "sfdown", "Tight", "EBInc"});
+                    photon_csev_sf, is_data, {get_year_for_photon_sf(year), "sfdown", "MVA", "EBInc"});
 
                 scale_factors.push_back(sf_veto * sf_id);
                 scale_factor_shift.push_back(std::sqrt(                                                        //
@@ -169,7 +172,19 @@ inline auto make_photons(const RVec<float> &Photon_pt,  //
 
                 photons_p4.push_back(photon_p4);
                 is_fake.push_back(is_data ? false : Photon_genPartIdx[i] < 0);
-                id_score.push_back(MUSiCObjects::IdScore::Medium);
+                if (photon_p4.pt() < ObjConfig::Photons[year].MediumPt)
+                {
+                    id_score.push_back(MUSiCObjects::IdScore::Loose);
+                }
+                if (photon_p4.pt() >= ObjConfig::Photons[year].MediumPt and
+                    photon_p4.pt() < ObjConfig::Photons[year].HighPt)
+                {
+                    id_score.push_back(MUSiCObjects::IdScore::Medium);
+                }
+                if (photon_p4.pt() > ObjConfig::Photons[year].HighPt)
+                {
+                    id_score.push_back(MUSiCObjects::IdScore::Tight);
+                }
             }
         }
     }
@@ -179,7 +194,8 @@ inline auto make_photons(const RVec<float> &Photon_pt,  //
                         scale_factor_shift, //
                         delta_met_x,        //
                         delta_met_y,        //
-                        is_fake, id_score);
+                        is_fake,
+                        id_score);
 }
 
 } // namespace ObjectFactories

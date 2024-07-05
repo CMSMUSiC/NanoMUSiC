@@ -445,23 +445,25 @@ inline auto get_year_for_muon_sf(Year year) -> std::string
     }
 }
 
-inline auto make_muons(const RVec<float> &Muon_pt,                   //
-                       const RVec<float> &Muon_eta,                  //
-                       const RVec<float> &Muon_phi,                  //
-                       const RVec<bool> &Muon_tightId,               //
-                       const RVec<UChar_t> &Muon_highPtId,           //
-                       const RVec<float> &Muon_pfRelIso04_all,       //
-                       const RVec<float> &Muon_tkRelIso,             //
-                       const RVec<float> &Muon_tunepRelPt,           //
-                       const RVec<float> &Muon_highPurity,           //
-                       const RVec<int> &Muon_genPartIdx,             //
-                       const CorrectionlibRef_t &muon_sf_reco,       //
-                       const CorrectionlibRef_t &muon_sf_id_low_pt,  //
-                       const CorrectionlibRef_t &muon_sf_id_high_pt, //
-                       const CorrectionlibRef_t &muon_sf_iso_low_pt, //
-                       const CorrectionlibRef_t &muon_sf_iso_high_pt,
-                       bool is_data,             //
-                       const std::string &_year, //
+inline auto make_muons(const RVec<float> &Muon_pt,                      //
+                       const RVec<float> &Muon_eta,                     //
+                       const RVec<float> &Muon_phi,                     //
+                       const RVec<bool> &Muon_tightId,                  //
+                       const RVec<UChar_t> &Muon_highPtId,              //
+                       const RVec<float> &Muon_pfRelIso04_all,          //
+                       const RVec<float> &Muon_tkRelIso,                //
+                       const RVec<float> &Muon_tunepRelPt,              //
+                       const RVec<float> &Muon_highPurity,              //
+                       const RVec<int> &Muon_genPartIdx,                //
+                       const CorrectionlibRef_t &muon_sf_reco,          //
+                       const CorrectionlibRef_t &muon_sf_reco_high_pt,  //
+                       const CorrectionlibRef_t &muon_sf_id_low_pt,     //
+                       const CorrectionlibRef_t &muon_sf_id_medium_pt,  //
+                       const CorrectionlibRef_t &muon_sf_id_high_pt,    //
+                       const CorrectionlibRef_t &muon_sf_iso_medium_pt, //
+                       const CorrectionlibRef_t &muon_sf_iso_high_pt,   //
+                       bool is_data,                                    //
+                       const std::string &_year,                        //
                        const Shifts::Variations shift) -> MUSiCObjects
 {
     auto year = get_runyear(_year);
@@ -472,7 +474,7 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
     auto delta_met_x = 0.;
     auto delta_met_y = 0.;
     auto is_fake = RVec<bool>{};
-    auto id_score = RVec<MUSiCObjects::IdScore>{};
+    auto id_score = RVec<unsigned int>{};
 
     for (std::size_t i = 0; i < Muon_pt.size(); i++)
     {
@@ -487,7 +489,7 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
                                                     and Muon_highPurity.at(i));
 
         float pt_correction_factor = 1.f;
-        if (Muon_pt.at(i) >= ObjConfig::Muons[year].MaxLowPt)
+        if (Muon_pt.at(i) >= ObjConfig::Muons[year].HighPt)
         {
             pt_correction_factor = Muon_tunepRelPt.at(i);
         }
@@ -502,43 +504,67 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
 
         if (is_good_low_pt_muon_pre_filter or is_good_high_pt_muon_pre_filter)
         {
-            auto is_good_low_pt_muon = (muon_p4.pt() >= ObjConfig::Muons[year].MinLowPt) and
-                                       (muon_p4.pt() < ObjConfig::Muons[year].MaxLowPt) and
+            auto is_good_low_pt_muon = (muon_p4.pt() >= ObjConfig::Muons[year].LowPt) and
+                                       (muon_p4.pt() < ObjConfig::Muons[year].HighPt) and
                                        is_good_low_pt_muon_pre_filter;
             auto is_good_high_pt_muon =
-                (muon_p4.pt() >= ObjConfig::Muons[year].MaxLowPt) and is_good_high_pt_muon_pre_filter;
+                (muon_p4.pt() >= ObjConfig::Muons[year].HighPt) and is_good_high_pt_muon_pre_filter;
 
             // calculate scale factors per object (particle)
             if (is_good_low_pt_muon)
             {
-
                 auto sf_reco = muon_p4.pt() > 40.
                                    ? MUSiCObjects::get_scale_factor(
                                          muon_sf_reco, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "nominal"})
                                    : 1.0;
-                auto sf_id = MUSiCObjects::get_scale_factor(
-                    muon_sf_id_low_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "nominal"});
-                auto sf_iso = MUSiCObjects::get_scale_factor(
-                    muon_sf_iso_low_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "nominal"});
-
+                auto sf_id = muon_p4.pt() < ObjConfig::Muons[year].MediumPt
+                                 ? MUSiCObjects::get_scale_factor(
+                                       muon_sf_id_low_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "nominal"})
+                                 : MUSiCObjects::get_scale_factor(muon_sf_id_medium_pt,
+                                                                  is_data,
+                                                                  {std::fabs(muon_p4.eta()), muon_p4.pt(), "nominal"});
+                // auto sf_iso = MUSiCObjects::get_scale_factor(
+                //     muon_sf_iso_low_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "nominal"});
+                auto sf_iso = muon_p4.pt() < ObjConfig::Muons[year].MediumPt
+                                  ? 1.
+                                  : MUSiCObjects::get_scale_factor(muon_sf_iso_medium_pt,
+                                                                   is_data,
+                                                                   {std::fabs(muon_p4.eta()), muon_p4.pt(), "nominal"});
                 auto sf_reco_up = muon_p4.pt() > 40.
                                       ? MUSiCObjects::get_scale_factor(
                                             muon_sf_reco, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "systup"})
                                       : 1.0;
-                auto sf_id_up = MUSiCObjects::get_scale_factor(
-                    muon_sf_id_low_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "systup"});
-                auto sf_iso_up = MUSiCObjects::get_scale_factor(
-                    muon_sf_iso_low_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "systup"});
+                auto sf_id_up =
+                    muon_p4.pt() < ObjConfig::Muons[year].MediumPt
+                        ? MUSiCObjects::get_scale_factor(
+                              muon_sf_id_low_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "systup"})
+                        : MUSiCObjects::get_scale_factor(
+                              muon_sf_id_medium_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "systup"});
+
+                auto sf_iso_up =
+                    muon_p4.pt() < ObjConfig::Muons[year].MediumPt
+                        ? 1.
+                        : MUSiCObjects::get_scale_factor(
+                              muon_sf_iso_medium_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "systup"});
 
                 auto sf_reco_down =
                     muon_p4.pt() > 40.
                         ? MUSiCObjects::get_scale_factor(
                               muon_sf_reco, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "systdown"})
                         : 1.0;
-                auto sf_id_down = MUSiCObjects::get_scale_factor(
-                    muon_sf_id_low_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "systdown"});
-                auto sf_iso_down = MUSiCObjects::get_scale_factor(
-                    muon_sf_iso_low_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "systdown"});
+
+                auto sf_id_down =
+                    muon_p4.pt() < ObjConfig::Muons[year].MediumPt
+                        ? MUSiCObjects::get_scale_factor(
+                              muon_sf_id_low_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "systdown"})
+                        : MUSiCObjects::get_scale_factor(
+                              muon_sf_id_medium_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "systdown"});
+
+                auto sf_iso_down =
+                    muon_p4.pt() < ObjConfig::Muons[year].MediumPt
+                        ? 1.
+                        : MUSiCObjects::get_scale_factor(
+                              muon_sf_iso_medium_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "systdown"});
 
                 scale_factors.push_back(sf_reco * sf_id * sf_iso);
                 scale_factor_shift.push_back(std::sqrt(                                                       //
@@ -550,7 +576,9 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
 
             if (is_good_high_pt_muon)
             {
-                auto sf_reco = high_pt_reco_scale_factor(year, muon_p4.P(), muon_p4.eta(), "nom");
+                // auto sf_reco = high_pt_reco_scale_factor(year, muon_p4.P(), muon_p4.eta(), "nom");
+                auto sf_reco = MUSiCObjects::get_scale_factor(
+                    muon_sf_reco_high_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "nominal"});
 
                 auto sf_id = MUSiCObjects::get_scale_factor(
                     muon_sf_id_high_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "nominal"});
@@ -558,7 +586,9 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
                 auto sf_iso = MUSiCObjects::get_scale_factor(
                     muon_sf_iso_high_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "nominal"});
 
-                auto sf_reco_up = high_pt_reco_scale_factor(year, muon_p4.P(), muon_p4.eta(), "up");
+                // auto sf_reco_up = high_pt_reco_scale_factor(year, muon_p4.P(), muon_p4.eta(), "up");
+                auto sf_reco_up = MUSiCObjects::get_scale_factor(
+                    muon_sf_reco_high_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "systup"});
 
                 auto sf_id_up = MUSiCObjects::get_scale_factor(
                     muon_sf_id_high_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "systup"});
@@ -566,7 +596,9 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
                 auto sf_iso_up = MUSiCObjects::get_scale_factor(
                     muon_sf_iso_high_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "systup"});
 
-                auto sf_reco_down = high_pt_reco_scale_factor(year, muon_p4.P(), muon_p4.eta(), "down");
+                // auto sf_reco_down = high_pt_reco_scale_factor(year, muon_p4.P(), muon_p4.eta(), "down");
+                auto sf_reco_down = MUSiCObjects::get_scale_factor(
+                    muon_sf_reco_high_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "systdown"});
 
                 auto sf_id_down = MUSiCObjects::get_scale_factor(
                     muon_sf_id_high_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "systdown"});
@@ -585,10 +617,19 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
             if (is_good_low_pt_muon or is_good_high_pt_muon)
             {
                 muons_p4.push_back(muon_p4);
+
                 is_fake.push_back(is_data ? false : Muon_genPartIdx[i] < 0);
+
                 if (is_good_low_pt_muon)
                 {
-                    id_score.push_back(MUSiCObjects::IdScore::Medium);
+                    if (muon_p4.pt() < ObjConfig::Muons[year].MediumPt)
+                    {
+                        id_score.push_back(MUSiCObjects::IdScore::Loose);
+                    }
+                    else
+                    {
+                        id_score.push_back(MUSiCObjects::IdScore::Medium);
+                    }
                 }
                 if (is_good_high_pt_muon)
                 {
@@ -603,7 +644,8 @@ inline auto make_muons(const RVec<float> &Muon_pt,                   //
                         scale_factor_shift, //
                         delta_met_x,        //
                         delta_met_y,        //
-                        is_fake, id_score);
+                        is_fake,
+                        id_score);
 }
 
 } // namespace ObjectFactories

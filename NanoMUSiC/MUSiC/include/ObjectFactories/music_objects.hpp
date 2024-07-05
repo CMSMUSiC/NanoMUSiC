@@ -35,23 +35,54 @@ using CorrectionlibRef_t = correction::Correction::Ref;
 class MUSiCObjects
 {
   public:
-    enum class IdScore
+    class IdScore
     {
-        Loose,
-        Medium,
-        Tight,
-        VeryTight
-    };
+      public:
+        static constexpr unsigned int Loose = 1;
+        static constexpr unsigned int Medium = 2 | 1;
+        static constexpr unsigned int Tight = 4 | 2 | 1;
+        static constexpr unsigned int VTight = 8 | 4 | 2 | 1;
 
-    static constexpr unsigned int accum_score(const auto scores, const auto num_obj)
-    {
-        return std::accumulate(scores.cbegin(),
-                               scores.cbegin() + num_obj,
-                               0,
-                               [](auto accum, auto s) -> auto
-                               {
-                                   return accum + static_cast<unsigned int>(s);
-                               });
+        unsigned int num_loose = 0;
+        unsigned int num_medium = 0;
+        unsigned int num_tight = 0;
+        unsigned int num_vtight = 0;
+
+        auto operator+(const IdScore &other) const -> IdScore
+        {
+            return IdScore{.num_loose = num_loose + other.num_loose,
+                           .num_medium = num_medium + other.num_medium,
+                           .num_tight = num_tight + other.num_tight,
+                           .num_vtight = num_vtight + other.num_vtight};
+        }
+
+        static auto accum_score(const RVec<unsigned int> &scores, const unsigned int num_obj) -> IdScore
+        {
+            return std::accumulate(scores.cbegin(),
+                                   scores.cbegin() + num_obj,
+                                   IdScore{},
+                                   [](IdScore accum, auto s) -> IdScore
+                                   {
+                                       if ((s & Loose) == Loose)
+                                       {
+                                           accum.num_loose += 1;
+                                       }
+                                       if ((s & Medium) == Medium)
+                                       {
+                                           accum.num_medium += 1;
+                                       }
+                                       if ((s & Tight) == Tight)
+                                       {
+                                           accum.num_tight += 1;
+                                       }
+                                       if ((s & VTight) == VTight)
+                                       {
+                                           accum.num_vtight += 1;
+                                       }
+
+                                       return accum;
+                                   });
+        };
     };
 
     RVec<Math::PtEtaPhiMVector> p4;
@@ -60,7 +91,7 @@ class MUSiCObjects
     double delta_met_x;
     double delta_met_y;
     RVec<bool> is_fake;
-    RVec<IdScore> id_score;
+    RVec<unsigned int> id_score;
 
     MUSiCObjects()
         : p4({}),
@@ -79,14 +110,14 @@ class MUSiCObjects
                  double _delta_met_x,
                  double _delta_met_y,
                  const RVec<bool> &_is_fake,
-                 const RVec<IdScore> &_tightness)
+                 const RVec<unsigned int> &_id_score)
         : p4(_p4),
           scale_factor(_scale_factor),
           scale_factor_shift(_scale_factor_shift),
           delta_met_x(_delta_met_x),
           delta_met_y(_delta_met_y),
           is_fake(_is_fake),
-          id_score(_tightness)
+          id_score(_id_score)
     {
 
         if (not(                                           //

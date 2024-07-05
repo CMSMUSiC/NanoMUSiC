@@ -60,7 +60,7 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
     auto delta_met_x = 0.;
     auto delta_met_y = 0.;
     auto is_fake = RVec<bool>{};
-    auto id_score = RVec<MUSiCObjects::IdScore>{};
+    auto id_score = RVec<unsigned int>{};
 
     for (std::size_t i = 0; i < Tau_pt.size(); i++)
     {
@@ -91,8 +91,7 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
 
         if (is_good_tau_pre_filter)
         {
-            bool is_good_tau =
-                (tau_p4.pt() >= 25.) and is_good_tau_pre_filter; // 25 our studies 20 official recommondation
+            bool is_good_tau = (tau_p4.pt() >= 20.) and is_good_tau_pre_filter;
 
             if (is_good_tau)
             {
@@ -134,7 +133,18 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
 
                 taus_p4.push_back(tau_p4);
                 is_fake.push_back(is_data ? false : Tau_genPartIdx[i] < 0);
-                id_score.push_back(MUSiCObjects::IdScore::Medium);
+                if (tau_p4.pt() < 40.)
+                {
+                    id_score.push_back(MUSiCObjects::IdScore::Loose);
+                }
+                else if (tau_p4.pt() > 40. and tau_p4.pt() < 142.)
+                {
+                    id_score.push_back(MUSiCObjects::IdScore::Medium);
+                }
+                else
+                {
+                    id_score.push_back(MUSiCObjects::IdScore::Tight);
+                }
             }
         }
     }
