@@ -10,6 +10,7 @@
 #include "Configs.hpp"
 #include "Shifts.hpp"
 #include "music_objects.hpp"
+#include <cstdlib>
 
 using namespace ROOT;
 using namespace ROOT::Math;
@@ -62,26 +63,6 @@ inline auto get_electron_energy_corrections(const Shifts::Variations shift,
 /// ID: Tight
 /// ISO: No recomendations (already incorporated).
 ///
-/// TODO: High Pt - Doesn't use the Correctionlib
-/// RECO: Same as Low Pt.
-/// ID: Example:
-/// https://github.com/CMSLQ/rootNtupleAnalyzerV2/blob/2dd8f9415e7a9c3465c7e28916eb68866ff337ff/src/ElectronScaleFactors.C
-/// 2016 prompt: 0.971±0.001 (stat) (EB), 0.983±0.001 (stat) (EE)
-///              uncertainty (syst?): EB ET < 90 GeV: 1% else min(1+(ET-90)*0.0022)%,3%)
-///              uncertainty (syst?): EE ET < 90 GeV: 1% else min(1+(ET-90)*0.0143)%,4%)
-///
-/// 2016 legacy: 0.983±0.000 (stat) (EB), 0.991±0.001 (stat) (EE) (taken from slide 10 of [0])
-///              uncertainty (syst?): EB ET < 90 GeV: 1% else min(1+(ET-90)*0.0022)%,3%)
-///              uncertainty (syst?): EE ET < 90 GeV: 2% else min(1+(ET-90)*0.0143)%,5%)
-///
-/// 2017 prompt: 0.968±0.001 (stat) (EB), 0.973±0.002 (stat) (EE)
-///              uncertainty (syst?): EB ET < 90 GeV: 1% else min(1+(ET-90)*0.0022)%,3%)
-///              uncertainty (syst?): EE ET < 90 GeV: 2% else min(1+(ET-90)*0.0143)%,5%)
-///
-/// 2018 rereco (Autumn 18): 0.969 +/- 0.000 (stat) (EB), and 0.984 +/- 0.001 (stat) (EE).
-///                          uncertainty (syst?): EB ET < 90 GeV: 1% else min(1+(ET-90)*0.0022)%,3%)
-///                          uncertainty (syst?): EE ET < 90 GeV: 2% else min(1+(ET-90)*0.0143)%,5%)
-
 /// For more details see here https://twiki.cern.ch/twiki/bin/view/CMS/HEEPElectronIdentificationRun2#Scale_Factor.
 /// As always, HEEP ID SF are just two numbers, one for EB and one for EE.
 ///
@@ -137,7 +118,8 @@ inline auto get_high_pt_sf(bool is_data, const Year &year, const std::string &va
         {
             return -1.;
         }
-        throw std::runtime_error(fmt::format("Invalid variation parameter ({}).", variation));
+        fmt::print(stderr, "Invalid variation parameter ({}).", variation);
+        std::exit(EXIT_FAILURE);
     };
 
     switch (year)
@@ -171,8 +153,9 @@ inline auto get_high_pt_sf(bool is_data, const Year &year, const std::string &va
         return 0.980 + syst_multiplier() * std::sqrt(std::pow(0.002, 2) + std::pow(0.011, 2));
 
     default:
-        throw std::runtime_error("Year (" + std::to_string(year) +
-                                 ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
+        fmt::print("Year ({}) not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).",
+                   std::to_string(year));
+        std::exit(EXIT_FAILURE);
     }
 }
 
@@ -191,8 +174,9 @@ inline auto get_year_for_electron_sf(Year year) -> std::string
     case Year::Run2018:
         return "2018"s;
     default:
-        throw std::runtime_error("Year (" + std::to_string(year) +
-                                 ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
+        fmt::print("Year ({}) not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).",
+                   std::to_string(year));
+        std::exit(EXIT_FAILURE);
     }
 }
 
@@ -281,7 +265,7 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
             // follow the previous MUSiC analysis, the SFs are set before the energy scale and resolution
             if (is_good_low_pt_electron)
             {
-                auto sf_reco = electron_p4.pt() > 20.
+                auto sf_reco = electron_p4.pt() >= 20.
                                    ? MUSiCObjects::get_scale_factor(electron_sf,
                                                                     is_data,
                                                                     {get_year_for_electron_sf(year),
@@ -304,7 +288,7 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
                                                              Electron_eta.at(i) + Electron_deltaEtaSC.at(i),
                                                              electron_p4.pt()});
 
-                auto sf_reco_up = electron_p4.pt() > 20.
+                auto sf_reco_up = electron_p4.pt() >= 20.
                                       ? MUSiCObjects::get_scale_factor(electron_sf,
                                                                        is_data,
                                                                        {get_year_for_electron_sf(year),
@@ -329,7 +313,7 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
                                                                 electron_p4.pt()});
 
                 auto sf_reco_down =
-                    electron_p4.pt() > 20.
+                    electron_p4.pt() >= 20.
                         ? MUSiCObjects::get_scale_factor(electron_sf,
                                                          is_data,
                                                          {get_year_for_electron_sf(year),

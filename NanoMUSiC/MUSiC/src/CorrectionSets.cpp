@@ -472,91 +472,91 @@ ElectronSFCorrector::ElectronSFCorrector(const Year _year, bool _is_data)
     }
 }
 
-//////////////////////////////////
-/// Get HEEP Id SF
-/// Full 2016:
-/// Barrel : 0.980 +/- 0.001 (stat) +/- 0.005 (syst)
-/// Endcap: 0.989 +/- 0.004 (stat) +/- 0.007 (syst)
-/// 2017:
-/// Barrel :  0.979 +/- 0.001 (stat) +/- 0.005 (syst)
-/// Endcap: 0.987 +/- 0.002 (stat) +/- 0.010 (syst)
-/// 2018:
-/// Barrel : 0.973 +/- 0.001 (stat) +/- 0.004 (syst)
-/// Endcap: 0.980 +/- 0.002 (stat) +/- 0.011 (syst)
-/// For more details, see:
-/// https://indico.cern.ch/event/1255216/contributions/5273071/attachments/2594851/4478919/HEEP%20ID%202016UL%20for%20EGamma.pdf
-/// Reference: https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaUL2016To2018
-auto ElectronSFCorrector::get_high_pt_sf(const Year &year,
-                                         const std::string &variation,
-                                         const float &pt,
-                                         const float &eta) const -> float
-{
-    bool is_EB = false;
-    if (std::fabs(eta) < 1.566)
-    {
-        is_EB = true;
-    }
-    else if (std::fabs(eta) <= 2.5)
-    {
-        is_EB = false;
-    }
-    else
-    {
-        throw std::runtime_error(fmt::format("The Eta SC ({}) value is out of range.", eta));
-    }
-
-    auto syst_multiplier = [&]() -> float
-    {
-        if (variation == "sf")
-        {
-            return 0.;
-        }
-        if (variation == "sfup")
-        {
-            return 1.;
-        }
-        if (variation == "sfdown")
-        {
-            return -1.;
-        }
-        throw std::runtime_error(fmt::format("Invalid variation parameter ({}).", variation));
-    };
-
-    switch (year)
-    {
-    case Year::Run2016APV:
-        if (is_EB)
-        {
-            return 0.98 + syst_multiplier() * std::sqrt(std::pow(0.001, 2) + std::pow(0.005, 2));
-        }
-        return 0.989 + syst_multiplier() * std::sqrt(std::pow(0.004, 2) + std::pow(0.007, 2));
-
-    case Year::Run2016:
-        if (is_EB)
-        {
-            return 0.98 + syst_multiplier() * std::sqrt(std::pow(0.001, 2) + std::pow(0.005, 2));
-        }
-        return 0.989 + syst_multiplier() * std::sqrt(std::pow(0.004, 2) + std::pow(0.007, 2));
-
-    case Year::Run2017:
-        if (is_EB)
-        {
-            return 0.979 + syst_multiplier() * std::sqrt(std::pow(0.001, 2) + std::pow(0.005, 2));
-        }
-        return 0.987 + syst_multiplier() * std::sqrt(std::pow(0.002, 2) + std::pow(0.010, 2));
-
-    case Year::Run2018:
-        if (is_EB)
-        {
-            return 0.973 + syst_multiplier() * std::sqrt(std::pow(0.001, 2) + std::pow(0.004, 2));
-        }
-        return 0.980 + syst_multiplier() * std::sqrt(std::pow(0.002, 2) + std::pow(0.011, 2));
-
-    default:
-        throw std::runtime_error("Year (" + std::to_string(year) +
-                                 ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
-    }
-}
+// //////////////////////////////////
+// /// Get HEEP Id SF
+// /// Full 2016:
+// /// Barrel : 0.980 +/- 0.001 (stat) +/- 0.005 (syst)
+// /// Endcap: 0.989 +/- 0.004 (stat) +/- 0.007 (syst)
+// /// 2017:
+// /// Barrel :  0.979 +/- 0.001 (stat) +/- 0.005 (syst)
+// /// Endcap: 0.987 +/- 0.002 (stat) +/- 0.010 (syst)
+// /// 2018:
+// /// Barrel : 0.973 +/- 0.001 (stat) +/- 0.004 (syst)
+// /// Endcap: 0.980 +/- 0.002 (stat) +/- 0.011 (syst)
+// /// For more details, see:
+// /// https://indico.cern.ch/event/1255216/contributions/5273071/attachments/2594851/4478919/HEEP%20ID%202016UL%20for%20EGamma.pdf
+// /// Reference: https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaUL2016To2018
+// auto ElectronSFCorrector::get_high_pt_sf(const Year &year,
+//                                          const std::string &variation,
+//                                          const float &pt,
+//                                          const float &eta) const -> float
+// {
+//     bool is_EB = false;
+//     if (std::fabs(eta) < 1.566)
+//     {
+//         is_EB = true;
+//     }
+//     else if (std::fabs(eta) <= 2.5)
+//     {
+//         is_EB = false;
+//     }
+//     else
+//     {
+//         throw std::runtime_error(fmt::format("The Eta SC ({}) value is out of range.", eta));
+//     }
+//
+//     auto syst_multiplier = [&]() -> float
+//     {
+//         if (variation == "sf")
+//         {
+//             return 0.;
+//         }
+//         if (variation == "sfup")
+//         {
+//             return 1.;
+//         }
+//         if (variation == "sfdown")
+//         {
+//             return -1.;
+//         }
+//         throw std::runtime_error(fmt::format("Invalid variation parameter ({}).", variation));
+//     };
+//
+//     switch (year)
+//     {
+//     case Year::Run2016APV:
+//         if (is_EB)
+//         {
+//             return 0.98 + syst_multiplier() * std::sqrt(std::pow(0.001, 2) + std::pow(0.005, 2));
+//         }
+//         return 0.989 + syst_multiplier() * std::sqrt(std::pow(0.004, 2) + std::pow(0.007, 2));
+//
+//     case Year::Run2016:
+//         if (is_EB)
+//         {
+//             return 0.98 + syst_multiplier() * std::sqrt(std::pow(0.001, 2) + std::pow(0.005, 2));
+//         }
+//         return 0.989 + syst_multiplier() * std::sqrt(std::pow(0.004, 2) + std::pow(0.007, 2));
+//
+//     case Year::Run2017:
+//         if (is_EB)
+//         {
+//             return 0.979 + syst_multiplier() * std::sqrt(std::pow(0.001, 2) + std::pow(0.005, 2));
+//         }
+//         return 0.987 + syst_multiplier() * std::sqrt(std::pow(0.002, 2) + std::pow(0.010, 2));
+//
+//     case Year::Run2018:
+//         if (is_EB)
+//         {
+//             return 0.973 + syst_multiplier() * std::sqrt(std::pow(0.001, 2) + std::pow(0.004, 2));
+//         }
+//         return 0.980 + syst_multiplier() * std::sqrt(std::pow(0.002, 2) + std::pow(0.011, 2));
+//
+//     default:
+//         throw std::runtime_error("Year (" + std::to_string(year) +
+//                                  ") not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).");
+//     }
+// }
 
 PhotonSFCorrector::PhotonSFCorrector(const std::string &_correction_type, const Year _year, bool _is_data)
     : correction_type(_correction_type),

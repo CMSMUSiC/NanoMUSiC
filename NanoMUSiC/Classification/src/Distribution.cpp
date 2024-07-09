@@ -211,7 +211,7 @@ auto Distribution::make_distributions(const std::vector<std::string> &input_file
     fmt::print("\n");
 
     fmt::print("[Distribution Factory] Collecting results and saving ...\n");
-    std::vector<std::future<void>> future_distributions;
+    // std::vector<std::future<void>> future_distributions;
     int analysis_counter = analysis_to_plot.size();
     int analysis_done = 0;
     for (const auto &analysis_name : analysis_to_plot)

@@ -22,6 +22,7 @@ import shlex
 from enum import Enum, auto
 from collections import defaultdict
 import multiprocessing
+from skimmer import skim
 
 
 class XrdcpResult(Enum):
@@ -146,6 +147,7 @@ def run_classification(
     generator_filter: str,
     first_event: Optional[int] = None,
     last_event: Optional[int] = None,
+    is_dev_job: bool = False,
     debug: bool = False,
 ) -> None:
     if not output_file.endswith(".root"):
@@ -157,49 +159,52 @@ def run_classification(
 
     os.system("mkdir -p root_files_buffer")
     for idx, _file in enumerate(download_files(input_files)):
-        event_classes = clft.EventClassContainer()
+        if not is_data:
+            _file = skim(_file, process, year, is_dev_job)
 
-        if is_data:
-            process_group = "Data"
-            xs_order = "DUMMY"
-        validation_container = clft.ValidationContainer(
-            process_group, xs_order, process, year
-        )
-
-        clft.classification(
-            process,
-            year,
-            is_data,
-            x_section,
-            filter_eff,
-            k_factor,
-            luminosity,
-            xs_order,
-            process_group,
-            sum_weights_json_filepath,
-            _file,
-            generator_filter,
-            event_classes,
-            validation_container,
-            first_event,
-            last_event,
-            # 100,
-            debug,
-        )
-        _output_file = "{}_{}.root".format(output_file.split(".root")[0], idx)
-
-        if input_files[0].startswith("/store"):
-            os.system("rm {}".format(_file))
-
-        print("Saving output file: {}.".format(_output_file))
-        clft.EventClassContainer.save(
-            event_classes, "{}_{}".format(process, year), _output_file
-        )
-
-        print("Saving validation output file: validation_{}.".format(_output_file))
-        clft.ValidationContainer.save(
-            validation_container, "validation_{}".format(_output_file)
-        )
+        # event_classes = clft.EventClassContainer()
+        #
+        # if is_data:
+        #     process_group = "Data"
+        #     xs_order = "DUMMY"
+        # validation_container = clft.ValidationContainer(
+        #     process_group, xs_order, process, year
+        # )
+        #
+        # clft.classification(
+        #     process,
+        #     year,
+        #     is_data,
+        #     x_section,
+        #     filter_eff,
+        #     k_factor,
+        #     luminosity,
+        #     xs_order,
+        #     process_group,
+        #     sum_weights_json_filepath,
+        #     _file,
+        #     generator_filter,
+        #     event_classes,
+        #     validation_container,
+        #     first_event,
+        #     last_event,
+        #     # 100,
+        #     debug,
+        # )
+        # _output_file = "{}_{}.root".format(output_file.split(".root")[0], idx)
+        #
+        # if input_files[0].startswith("/store"):
+        #     os.system("rm {}".format(_file))
+        #
+        # print("Saving output file: {}.".format(_output_file))
+        # clft.EventClassContainer.save(
+        #     event_classes, "{}_{}".format(process, year), _output_file
+        # )
+        #
+        # print("Saving validation output file: validation_{}.".format(_output_file))
+        # clft.ValidationContainer.save(
+        #     validation_container, "validation_{}".format(_output_file)
+        # )
         print("Done.")
 
 
@@ -237,7 +242,7 @@ print("YAY! Done _o/")
     """.format(
         f"{process.name}_{year}_{split_index}.root",
         process.name,
-        year,
+        year.value,
         process.is_data,
         process.XSec,
         process.FilterEff,
@@ -249,9 +254,7 @@ print("YAY! Done _o/")
         process.generator_filter_key,
     )
 
-    output_path = (
-        f"classification_jobs/run_classification_{process.name}_{year}_{split_index}.py"
-    )
+    output_path = f"classification_jobs/run_classification_{process.name}_{year.value}_{split_index}.py"
     with open(output_path, "w") as f:
         f.write(template)
 
@@ -532,6 +535,7 @@ def launch_dev(
         generator_filter=process.generator_filter_key,
         first_event=None,
         last_event=None,
+        is_dev_job=True,
         debug=True,
     )
 

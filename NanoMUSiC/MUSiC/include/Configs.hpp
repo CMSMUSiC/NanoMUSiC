@@ -160,7 +160,7 @@ inline auto get_runyear(const std::string &year_str) -> Year
     // check year
     if (year_str != "2016APV" and year_str != "2016" and year_str != "2017" and year_str != "2018")
     {
-        fmt::print(stderr, "ERROR: year should be 2016APV, 2016, 2017 or 2018");
+        fmt::print(stderr, "ERROR: year should be 2016APV, 2016, 2017 or 2018\n");
     }
 
     // return year as enum
@@ -208,8 +208,8 @@ constexpr std::array<MuonConfig, Year::kTotalYears> Muons = {Muon2016APV, Muon20
 struct ElectronConfig
 {
     float LowPt = 10.001;
-    // float MediumPt = 25.;
-    float MediumPt = 40.;
+    float MediumPt = 25.;
+    // float MediumPt = 40.;
     float HighPt = 100.;
     float MaxAbsEta = 2.5;
     float MaxDeltaRTriggerMatch = 0.3;

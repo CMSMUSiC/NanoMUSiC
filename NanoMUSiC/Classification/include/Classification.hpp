@@ -849,7 +849,8 @@ class TempEC
     {
         /////////////////////////////////
         // CUSTOM
-        if (not(num_muons <= 2 and num_electrons <= 2 and num_taus == 0 and num_photons == 0  and num_bjets == 0))
+        if (not(num_muons <= 2 and num_electrons == 0 and num_taus == 0 and num_photons == 0 and num_bjets == 0 and
+                num_jets == 0))
         {
             return ClassesNames{std::nullopt, std::nullopt, std::nullopt};
         }
