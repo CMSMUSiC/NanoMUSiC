@@ -151,6 +151,26 @@ class Distribution
             return {{"counts", false}, {"sum_pt", true}, {"invariant_mass", true}, {"met", true}};
         }
 
+        else if (analysis_name.find("z_to") != std::string::npos)
+        {
+            return {{"invariant_mass", true}, {"met", true}};
+        }
+
+        else if (analysis_name.find("w_to") != std::string::npos)
+        {
+            return {{"invariant_mass", true}, {"sum_pt", true}, {"lepton_pt", true}, {"lepton_eta", true}, {"lepton_phi", true}, {"met", true}};
+        }
+
+        else if (analysis_name.find("ttbar_to") != std::string::npos)
+        {
+            return {{"invariant_mass_jet0_jet1", true}, {"ht_had_lep", true}, {"transverse_mass_lep_MET", true}};
+        }
+
+        else if (analysis_name.find("gamma_plus_jets") != std::string::npos)
+        {
+            return {{"gamma_pt", true}, {"gamma_eta", true}, {"gamma_phi", true}};
+        }
+
         return {{"invariant_mass", true}};
     }
 

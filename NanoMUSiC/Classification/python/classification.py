@@ -807,6 +807,8 @@ def make_distributions(
     validation_names = get_analysis_names(
         validation_to_files, validation_filter_patterns
     )
+
+    print (validation_names)
     if validation_names:
         p = multiprocessing.Process(
             target=do_fold,

@@ -27,7 +27,6 @@ inline auto split_histo_name(std::string histo_full_name, const std::string deli
 {
     // remove leading and trailing bracket
     histo_full_name = histo_full_name.substr(1, histo_full_name.length() - 2);
-
     size_t pos_start = 0, pos_end, delim_len = delimiter.length();
     std::string token;
     auto parts = std::vector<std::string>();

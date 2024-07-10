@@ -143,12 +143,13 @@ auto Distribution::make_distributions(const std::vector<std::string> &input_file
                 {
                     const std::string name = key->GetName();
                     const auto [analysis_name, //
-                                process_group, //
-                                xs_order,      //
-                                sample,        //
-                                year,          //
-                                shift,         //
-                                histo_name] = SerializationUtils::split_histo_name(name);
+                               process_group, //
+                               xs_order,      //
+                               sample,        //
+                               year,          //
+                               shift,         //
+                               histo_name] = SerializationUtils::split_histo_name(name);
+
                     if (std::binary_search(analysis_to_plot.cbegin(), analysis_to_plot.cend(), analysis_name))
                     {
                         auto hist_ptr = std::shared_ptr<TH1F>(static_cast<TH1F *>(key->ReadObj()));
@@ -209,7 +210,6 @@ auto Distribution::make_distributions(const std::vector<std::string> &input_file
         std::exit(EXIT_FAILURE);
     }
     fmt::print("\n");
-
     fmt::print("[Distribution Factory] Collecting results and saving ...\n");
     // std::vector<std::future<void>> future_distributions;
     int analysis_counter = analysis_to_plot.size();
