@@ -50,9 +50,9 @@ class ValidationContainer
         w_to_electron_nutrino_x = WToLepNuX(WToLepNuX::Leptons::ELECTRONS, process_group, xs_order, process, year);
         w_to_tau_nutrino_x = WToLepNuX(WToLepNuX::Leptons::TAUS, process_group, xs_order, process, year);
 
-        ttbar_to_1tau_2bjet_2jet_met =
+        ttbar_to_1muon_2bjet_2jet_met =
             TTBarTo1Lep2Bjet2JetMET(TTBarTo1Lep2Bjet2JetMET::Leptons::MUONS, process_group, xs_order, process, year);
-        ttbar_to_1tau_2bjet_2jet_met = TTBarTo1Lep2Bjet2JetMET(
+        ttbar_to_1electron_2bjet_2jet_met = TTBarTo1Lep2Bjet2JetMET(
             TTBarTo1Lep2Bjet2JetMET::Leptons::ELECTRONS, process_group, xs_order, process, year);
         ttbar_to_1tau_2bjet_2jet_met =
             TTBarTo1Lep2Bjet2JetMET(TTBarTo1Lep2Bjet2JetMET::Leptons::TAUS, process_group, xs_order, process, year);

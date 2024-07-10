@@ -33,7 +33,7 @@ TTBarTo1Lep2Bjet2JetMET::TTBarTo1Lep2Bjet2JetMET(enum Leptons lepton,
         analysis_name = "ttbar_to_1electron_2bjet_2jet_met";
 
         count_map = std::unordered_map<ObjectNames, int>{{ObjectNames::Muon, 0},
-                                                         {ObjectNames::Electron, 0},
+                                                         {ObjectNames::Electron, 1},
                                                          {ObjectNames::Photon, 0},
                                                          {ObjectNames::Tau, 0},
                                                          {ObjectNames::bJet, 2},
