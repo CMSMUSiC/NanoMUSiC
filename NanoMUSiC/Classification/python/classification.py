@@ -12,8 +12,7 @@ from condor_manager import CondorJob, CondorManager
 import os
 import classification_imp as clft
 import sys
-from metadata import Lumi, Years, Process, load_toml, get_distributions
-from numpy import dot
+from metadata import Lumi, Years, Process, load_toml
 from rich.progress import Progress
 from rich import print as rprint
 import hashlib
@@ -22,7 +21,6 @@ import shlex
 from enum import Enum, auto
 from collections import defaultdict
 import multiprocessing
-from skimmer import skim
 
 
 class XrdcpResult(Enum):
@@ -159,52 +157,54 @@ def run_classification(
 
     os.system("mkdir -p root_files_buffer")
     for idx, _file in enumerate(download_files(input_files)):
-        if not is_data:
-            _file = skim(_file, process, year, is_dev_job)
+        # this is failed tentative to preprocess the MC files, filtering by trigger and reducing the amount of stored branches.
+        # there is not enough local storage in the music machine to do so. Also, sending to dCache would take forever.
+        # if not is_data:
+        #     _file = skim(_file, process, year, is_dev_job)
 
-        # event_classes = clft.EventClassContainer()
-        #
-        # if is_data:
-        #     process_group = "Data"
-        #     xs_order = "DUMMY"
-        # validation_container = clft.ValidationContainer(
-        #     process_group, xs_order, process, year
-        # )
-        #
-        # clft.classification(
-        #     process,
-        #     year,
-        #     is_data,
-        #     x_section,
-        #     filter_eff,
-        #     k_factor,
-        #     luminosity,
-        #     xs_order,
-        #     process_group,
-        #     sum_weights_json_filepath,
-        #     _file,
-        #     generator_filter,
-        #     event_classes,
-        #     validation_container,
-        #     first_event,
-        #     last_event,
-        #     # 100,
-        #     debug,
-        # )
-        # _output_file = "{}_{}.root".format(output_file.split(".root")[0], idx)
-        #
-        # if input_files[0].startswith("/store"):
-        #     os.system("rm {}".format(_file))
-        #
-        # print("Saving output file: {}.".format(_output_file))
-        # clft.EventClassContainer.save(
-        #     event_classes, "{}_{}".format(process, year), _output_file
-        # )
-        #
-        # print("Saving validation output file: validation_{}.".format(_output_file))
-        # clft.ValidationContainer.save(
-        #     validation_container, "validation_{}".format(_output_file)
-        # )
+        event_classes = clft.EventClassContainer()
+
+        if is_data:
+            process_group = "Data"
+            xs_order = "DUMMY"
+        validation_container = clft.ValidationContainer(
+            process_group, xs_order, process, year
+        )
+
+        clft.classification(
+            process,
+            year,
+            is_data,
+            x_section,
+            filter_eff,
+            k_factor,
+            luminosity,
+            xs_order,
+            process_group,
+            sum_weights_json_filepath,
+            _file,
+            generator_filter,
+            event_classes,
+            validation_container,
+            first_event,
+            last_event,
+            # 100,
+            debug,
+        )
+        _output_file = "{}_{}.root".format(output_file.split(".root")[0], idx)
+
+        if input_files[0].startswith("/store"):
+            os.system("rm {}".format(_file))
+
+        print("Saving output file: {}.".format(_output_file))
+        clft.EventClassContainer.save(
+            event_classes, "{}_{}".format(process, year), _output_file
+        )
+
+        print("Saving validation output file: validation_{}.".format(_output_file))
+        clft.ValidationContainer.save(
+            validation_container, "validation_{}".format(_output_file)
+        )
         print("Done.")
 
 
@@ -557,7 +557,7 @@ def merge_task(args):
 def merge_classification_outputs(
     config_file_path: str,
     inputs_dir: str,
-):
+) -> None:
     config_file = load_toml(config_file_path)
 
     processes = [
@@ -569,30 +569,31 @@ def merge_classification_outputs(
     os.system("mkdir -p classification_merged_results")
     os.system("rm -rf validation_merged_results")
     os.system("mkdir -p validation_merged_results")
-    # os.system("rm -rf /tmp/ray")
 
     def do_merge(year: Years):
         merge_jobs = []
         for process in processes:
             files_to_merge = glob.glob(
-                "{}/{}_{}_*.root".format(inputs_dir, process.name, year)
+                "{}/{}_{}_*.root".format(inputs_dir, process.name, year.value)
             )
             validation_files_to_merge = glob.glob(
-                "{}/validation_{}_{}_*.root".format(inputs_dir, process.name, year)
+                "{}/validation_{}_{}_*.root".format(
+                    inputs_dir, process.name, year.value
+                )
             )
 
             if len(files_to_merge):
                 merge_jobs.append(
-                    (files_to_merge, validation_files_to_merge, process, year)
+                    (files_to_merge, validation_files_to_merge, process, year.value)
                 )
 
         random.shuffle(merge_jobs)
 
-        print("Merging Classification results for {}...".format(year))
+        print("Merging Classification results for {}...".format(year.value))
         with Pool(30) as p:
             with Progress() as progress:
                 task = progress.add_task(
-                    "Merging {} ...".format(year), total=len(merge_jobs)
+                    "Merging {} ...".format(year.value), total=len(merge_jobs)
                 )
                 for job in p.imap_unordered(merge_task, merge_jobs):
                     progress.console.print("Done: {}".format(job))
@@ -646,17 +647,16 @@ def serialize_to_root(
     os.system("mkdir -p classification_root_files")
     os.system("rm -rf validation_root_files")
     os.system("mkdir -p validation_root_files")
-    # os.system("rm -rf /tmp/ray")
 
     serialization_jobs = []
     for process, year in product(processes, Years):
-        file_to_process = "{}/{}_{}.root".format(inputs_dir, process.name, year)
+        file_to_process = "{}/{}_{}.root".format(inputs_dir, process.name, year.value)
         validation_files_to_process = "{}/validation_{}_{}.root".format(
-            validation_inputs_dir, process.name, year
+            validation_inputs_dir, process.name, year.value
         )
         if os.path.exists(file_to_process):
             serialization_jobs.append(
-                (file_to_process, validation_files_to_process, process, year)
+                (file_to_process, validation_files_to_process, process, year.value)
             )
         else:
             if not process.is_data:

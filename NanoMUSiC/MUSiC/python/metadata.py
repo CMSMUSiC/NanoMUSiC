@@ -17,6 +17,9 @@ class Years(str, Enum):
     Run2017 = "2017"
     Run2018 = "2018"
 
+    def __str__(self):
+        return self.value
+
     @staticmethod
     def years_to_plot() -> dict[str, dict[str, str]]:
         return {

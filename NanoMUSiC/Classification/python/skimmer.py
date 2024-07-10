@@ -207,12 +207,13 @@ def get_trigger_and_branches_lists(input_file: str):
     return (" or ".join(available_triggers), available_branches)
 
 
-def skim_imp(input_file: str, skimmed_file_path: str) -> str:
+def skim_imp(input_file: str, skimmed_file_path: str) -> None:
     triggers, branches = get_trigger_and_branches_lists(input_file)
 
     opts = RDF.RSnapshotOptions()
     # opts.fCompressionLevel = 207
-    opts.fCompressionLevel = 0
+    # opts.fCompressionLevel = 100
+    opts.fCompressionLevel = 102
 
     df = RDataFrame("Events", input_file)
     if triggers and branches:
@@ -227,7 +228,7 @@ def skim(
     process: str,
     year: str,
     is_dev_job: bool,
-    skimmed_files_dir: str = "skimmed_files_buffer",
+    skimmed_files_dir: str = "skimmed_files",
 ) -> str:
     if not is_dev_job:
         skimmed_files_dir = "../" + skimmed_files_dir
