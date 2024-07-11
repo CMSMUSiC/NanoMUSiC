@@ -98,19 +98,6 @@ auto make_array_reader(TTreeReader &tree_reader, const std::string &leaf) -> Opt
     input_ttree->SetBranchStatus(#VAR, true);                                                                          \
     auto VAR = make_array_reader<TYPE>(tree_reader, #VAR)
 
-#define INITIALIZE_ANALYSIS(TYPE, ANALYSIS, COUNT_MAP)                                                                 \
-    ANALYSIS.insert({shift,                                                                                            \
-                     TYPE(#ANALYSIS,                                                                                   \
-                          get_output_file_path(                                                                        \
-                              #ANALYSIS, output_path, process, year, process_group, xs_order, is_data, buffer_index),  \
-                          COUNT_MAP,                                                                                   \
-                          false,                                                                                       \
-                          shift,                                                                                       \
-                          process,                                                                                     \
-                          year,                                                                                        \
-                          process_group,                                                                               \
-                          xs_order)})
-
 template <typename T>
 auto unwrap(std::optional<TTreeReaderValue<T>> &value, bool allow_nan_or_inf = false) -> T
 {
@@ -388,7 +375,7 @@ inline auto starts_with(const std::string &str, std::string &&prefix) -> bool
 }
 
 // check if an event pass any trigger
-inline auto trigger_filter(const std::string &process, //
+inline auto trigger_filter(const std::string &process,         //
                            bool is_data,
                            Year year,                          //
                            bool pass_low_pt_muon_trigger,      //
@@ -849,23 +836,12 @@ class TempEC
     {
         /////////////////////////////////
         // CUSTOM
-        if (not(num_muons <= 2 and num_electrons == 0 and num_taus == 0 and num_photons == 0 and num_bjets == 0 and
-                num_jets == 0))
-        {
-            return ClassesNames{std::nullopt, std::nullopt, std::nullopt};
-        }
+        // if (not((num_muons <= 2 or num_muons == 4) and num_electrons == 0 and num_taus == 0 and num_photons == 0 and
+        //         num_bjets == 0 and num_jets == 0))
+        // {
+        //     return ClassesNames{std::nullopt, std::nullopt, std::nullopt};
+        // }
         /////////////////////////////////
-
-        if (num_muons == 0         //
-            and num_electrons == 0 //
-            and num_taus == 0      //
-            and num_photons == 0   //
-            and num_jets == 0      //
-            and num_bjets == 0     //
-            and num_met == 0)
-        {
-            return ClassesNames{std::nullopt, std::nullopt, std::nullopt};
-        }
 
         if (num_muons == 0 and num_electrons == 0 and num_photons == 0 and num_taus == 0)
         {
@@ -884,50 +860,36 @@ class TempEC
                               MUSiCObjects::IdScore::accum_score(bjets_id_score, num_bjets) +
                               MUSiCObjects::IdScore::accum_score(jets_id_score, num_jets) +
                               MUSiCObjects::IdScore::accum_score(met_id_score, num_met);
-        if (not(total_id_score.num_medium >= 1 and total_id_score.num_loose == 0))
+
+        if (total_id_score.num_medium >= 1 or total_id_score.num_loose >= 3)
         {
-            return ClassesNames{std::nullopt, std::nullopt, std::nullopt};
+            std::string class_name = fmt::format("EC_{}Muon_{}Electron_{}Tau_{}Photon_{}bJet_{}Jet_{}MET",
+                                                 num_muons,
+                                                 num_electrons,
+                                                 num_taus,
+                                                 num_photons,
+                                                 num_bjets,
+                                                 num_jets,
+                                                 num_met);
+
+            std::optional<std::string> exclusive_class_name = std::nullopt;
+            if (has_exclusive)
+            {
+                exclusive_class_name = class_name;
+            }
+
+            std::optional<std::string> inclusive_class_name = fmt::format("{}+X", class_name);
+
+            std::optional<std::string> jet_inclusive_class_name = std::nullopt;
+            if (has_jet_inclusive)
+            {
+                jet_inclusive_class_name = fmt::format("{}+NJet", class_name);
+            }
+
+            return ClassesNames{exclusive_class_name, inclusive_class_name, jet_inclusive_class_name};
         }
 
-        if (not(total_id_score.num_tight >= 1))
-        {
-            return ClassesNames{std::nullopt, std::nullopt, std::nullopt};
-        }
-
-        if (not(total_id_score.num_medium >= 2))
-        {
-            return ClassesNames{std::nullopt, std::nullopt, std::nullopt};
-        }
-
-        if (not(total_id_score.num_loose >= 3))
-        {
-            return ClassesNames{std::nullopt, std::nullopt, std::nullopt};
-        }
-
-        std::string class_name = fmt::format("EC_{}Muon_{}Electron_{}Tau_{}Photon_{}bJet_{}Jet_{}MET",
-                                             num_muons,
-                                             num_electrons,
-                                             num_taus,
-                                             num_photons,
-                                             num_bjets,
-                                             num_jets,
-                                             num_met);
-
-        std::optional<std::string> exclusive_class_name = std::nullopt;
-        if (has_exclusive)
-        {
-            exclusive_class_name = class_name;
-        }
-
-        std::optional<std::string> inclusive_class_name = fmt::format("{}+X", class_name);
-
-        std::optional<std::string> jet_inclusive_class_name = std::nullopt;
-        if (has_jet_inclusive)
-        {
-            jet_inclusive_class_name = fmt::format("{}+NJet", class_name);
-        }
-
-        return ClassesNames{exclusive_class_name, inclusive_class_name, jet_inclusive_class_name};
+        return ClassesNames{std::nullopt, std::nullopt, std::nullopt};
     }
 
     static auto make_temp_event_classes(const int total_muons,

@@ -1,9 +1,9 @@
 #ifndef MUSIC_CONFIG
 #define MUSIC_CONFIG
 
-#include "fmt/format.h"
 #include <array>
-#include <fmt/core.h>
+#include <cstdlib>
+#include <fmt/format.h>
 #include <limits>
 #include <stdexcept>
 
@@ -152,7 +152,20 @@ enum Year
 
 inline auto format_as(Year y)
 {
-    return fmt::underlying(y);
+    switch (y)
+    {
+    case Run2016APV:
+        return "Run2016APV";
+    case Run2016:
+        return "Run2016";
+    case Run2017:
+        return "Run2017";
+    case Run2018:
+        return "Run2018";
+    default:
+        fmt::print(stderr, "ERROR: Could not format Year.");
+        std::exit(EXIT_FAILURE);
+    }
 }
 
 inline auto get_runyear(const std::string &year_str) -> Year

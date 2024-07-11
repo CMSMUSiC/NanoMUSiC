@@ -48,6 +48,12 @@ class MUSiCObjects
         unsigned int num_tight = 0;
         unsigned int num_vtight = 0;
 
+        auto to_string() const -> std::string
+        {
+            return fmt::format(
+                "Loose: {} - Medium: {} - Tight: {} - Very Tight: {}", num_loose, num_medium, num_tight, num_vtight);
+        }
+
         auto operator+(const IdScore &other) const -> IdScore
         {
             return IdScore{.num_loose = num_loose + other.num_loose,
