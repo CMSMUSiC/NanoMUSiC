@@ -130,20 +130,20 @@ auto Distribution::make_distributions(const std::vector<std::string> &input_file
     fmt::print("[Distribution Factory] Opening ROOT files and getting histograms...\n");
     std::vector<std::future<std::vector<ECHistogram>>> future_ec_histograms;
     std::atomic<int> file_counter = 0;
-    const auto pattern_file_to_process = std::regex(R"(^([A-Z]+)_.*)");
+    const auto pattern_file_to_process = std::regex(R"(.*_root_files\/(.*)(_2016APV|_2016|_2017|_2018)\.root)");
     for (std::size_t i = 0; i < input_files.size(); i++)
     {
-        std::smatch match;
-        if (not(std::regex_search(input_files[i], match, pattern_file_to_process) and match.size() > 1))
-        {
-            fmt::print(stderr, "ERROR: Could not match file file name ({}) to process name.", input_files[i]);
-            std::exit(EXIT_FAILURE);
-        }
-        const auto scale = rescaling.at(match[1].str());
-
         future_ec_histograms.push_back(load_histograms_pool.submit(
             [&](std::size_t i) -> std::vector<ECHistogram>
             {
+                std::smatch match;
+                if (not(std::regex_search(input_files[i], match, pattern_file_to_process) and match.size() > 1))
+                {
+                    fmt::print(stderr, "ERROR: Could not match file name ({}) to process name.\n", input_files[i]);
+                    std::exit(EXIT_FAILURE);
+                }
+                const auto scaling = rescaling.at(match[1].str());
+
                 auto root_file = std::unique_ptr<TFile>(TFile::Open(input_files[i].c_str()));
                 auto this_event_class_histograms = std::vector<ECHistogram>();
                 this_event_class_histograms.reserve(root_file->GetListOfKeys()->GetSize());
@@ -172,9 +172,9 @@ auto Distribution::make_distributions(const std::vector<std::string> &input_file
                             std::exit(EXIT_FAILURE);
                         }
 
-                        if (scale != 1.0)
+                        if (scaling != 1.)
                         {
-                            hist_ptr->Scale(scale);
+                            hist_ptr->Scale(scaling);
                         }
 
                         this_event_class_histograms.push_back(

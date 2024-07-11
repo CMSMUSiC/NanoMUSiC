@@ -53,9 +53,9 @@ class Lumi:
 
 class Process(BaseModel):
     name: str
-    XSec: NonNegativeFloat
-    FilterEff: NonNegativeFloat
-    kFactor: NonNegativeFloat
+    XSec: NonNegativeFloat = Field(default_factory=lambda: 1.0)
+    FilterEff: NonNegativeFloat = Field(default_factory=lambda: 1.0)
+    kFactor: NonNegativeFloat = Field(default_factory=lambda: 1.0)
     AltXSec: Optional[NonNegativeFloat] = None
     AltFilterEff: Optional[NonNegativeFloat] = None
     AltkFactor: Optional[NonNegativeFloat] = None
