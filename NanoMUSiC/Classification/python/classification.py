@@ -827,6 +827,12 @@ def make_distributions(
             if p.exitcode != 0:
                 print("ERROR: Could not make distribution files for Classification.")
 
+    os.system(
+        "cp {} classification.distributions/analysis_config.toml".format(
+            config_file_path
+        )
+    )
+
     print("Will fold Validation ...")
     validation_names = get_analysis_names(
         validation_to_files, validation_filter_patterns
@@ -846,3 +852,7 @@ def make_distributions(
         p.join()
         if p.exitcode != 0:
             print("ERROR: Could not make distribution files for Validation.")
+
+    os.system(
+        "cp {} validation_distributions/analysis_config.toml".format(config_file_path)
+    )

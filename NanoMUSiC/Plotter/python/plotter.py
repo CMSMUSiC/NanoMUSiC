@@ -75,14 +75,18 @@ def plotter(
                     veto_reason = p_value_data["Veto Reason"]
 
                     # json for counts plot
-                    plots_data[dist.m_year_to_plot][plot.class_name] = {}
-                    plots_data[dist.m_year_to_plot][plot.class_name]["data_count"] = (
-                        plot.total_data_histogram.GetBinContent(1)
-                    )
-                    plots_data[dist.m_year_to_plot][plot.class_name]["data_uncert"] = (
-                        plot.total_data_histogram.GetBinError(1)
-                    )
-                    plots_data[dist.m_year_to_plot][plot.class_name]["mc"] = {}
+                    plots_data[dist.m_year_to_plot][
+                        plot.class_name.decode("utf-8")
+                    ] = {}
+                    plots_data[dist.m_year_to_plot][plot.class_name.decode("utf-8")][
+                        "data_count"
+                    ] = plot.total_data_histogram.GetBinContent(1)
+                    plots_data[dist.m_year_to_plot][plot.class_name.decode("utf-8")][
+                        "data_uncert"
+                    ] = plot.total_data_histogram.GetBinError(1)
+                    plots_data[dist.m_year_to_plot][plot.class_name.decode("utf-8")][
+                        "mc"
+                    ] = {}
                     mc_hists = {}
                     for pg, hist in plot.mc_histograms:
                         mc_hists[pg] = hist
@@ -91,18 +95,18 @@ def plotter(
                         key=lambda pg: mc_hists[pg].Integral(),
                     )
                     for pg in mc_hists_keys_sorted:
-                        plots_data[dist.m_year_to_plot][plot.class_name]["mc"][pg] = (
-                            mc_hists[pg].GetBinContent(1)
-                        )
-                    plots_data[dist.m_year_to_plot][plot.class_name]["mc_uncert"] = (
-                        plot.mc_uncertainty.GetErrorY(0)
-                    )
-                    plots_data[dist.m_year_to_plot][plot.class_name]["p_value"] = (
-                        p_value
-                    )
-                    plots_data[dist.m_year_to_plot][plot.class_name]["veto_reason"] = (
-                        veto_reason
-                    )
+                        plots_data[dist.m_year_to_plot][
+                            plot.class_name.decode("utf-8")
+                        ]["mc"][pg.decode("utf-8")] = mc_hists[pg].GetBinContent(1)
+                    plots_data[dist.m_year_to_plot][plot.class_name.decode("utf-8")][
+                        "mc_uncert"
+                    ] = plot.mc_uncertainty.GetErrorY(0)
+                    plots_data[dist.m_year_to_plot][plot.class_name.decode("utf-8")][
+                        "p_value"
+                    ] = p_value
+                    plots_data[dist.m_year_to_plot][plot.class_name.decode("utf-8")][
+                        "veto_reason"
+                    ] = veto_reason
 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
