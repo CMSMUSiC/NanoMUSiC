@@ -2,7 +2,7 @@ from enum import Enum
 import random
 import sys
 import tomli
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, NonNegativeFloat
 from typing import Any, Optional
 
 
@@ -53,9 +53,12 @@ class Lumi:
 
 class Process(BaseModel):
     name: str
-    XSec: float = Field(default_factory=float)
-    FilterEff: float = Field(default_factory=float)
-    kFactor: float = Field(default_factory=float)
+    XSec: NonNegativeFloat
+    FilterEff: NonNegativeFloat
+    kFactor: NonNegativeFloat
+    AltXSec: Optional[NonNegativeFloat] = None
+    AltFilterEff: Optional[NonNegativeFloat] = None
+    AltkFactor: Optional[NonNegativeFloat] = None
     XSecOrder: str = Field(default_factory=str)
     ProcessGroup: str = Field(default_factory=str)
     generator_filter_key: str = Field(default_factory=str)

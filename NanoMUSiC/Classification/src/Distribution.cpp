@@ -11,6 +11,7 @@
 #include <mutex>
 #include <numeric>
 #include <optional>
+#include <regex>
 #include <string>
 #include <unordered_map>
 
@@ -114,7 +115,8 @@ auto replace_all(std::string str, const std::string &from, const std::string &to
 
 auto Distribution::make_distributions(const std::vector<std::string> &input_files,
                                       const std::string &output_dir,
-                                      std::vector<std::string> &analysis_to_plot) -> void
+                                      std::vector<std::string> &analysis_to_plot,
+                                      const std::unordered_map<std::string, double> &rescaling) -> void
 {
     TH1::AddDirectory(false);
     TDirectory::AddDirectory(false);
@@ -128,8 +130,17 @@ auto Distribution::make_distributions(const std::vector<std::string> &input_file
     fmt::print("[Distribution Factory] Opening ROOT files and getting histograms...\n");
     std::vector<std::future<std::vector<ECHistogram>>> future_ec_histograms;
     std::atomic<int> file_counter = 0;
+    const auto pattern_file_to_process = std::regex(R"(^([A-Z]+)_.*)");
     for (std::size_t i = 0; i < input_files.size(); i++)
     {
+        std::smatch match;
+        if (not(std::regex_search(input_files[i], match, pattern_file_to_process) and match.size() > 1))
+        {
+            fmt::print(stderr, "ERROR: Could not match file file name ({}) to process name.", input_files[i]);
+            std::exit(EXIT_FAILURE);
+        }
+        const auto scale = rescaling.at(match[1].str());
+
         future_ec_histograms.push_back(load_histograms_pool.submit(
             [&](std::size_t i) -> std::vector<ECHistogram>
             {
@@ -143,12 +154,12 @@ auto Distribution::make_distributions(const std::vector<std::string> &input_file
                 {
                     const std::string name = key->GetName();
                     const auto [analysis_name, //
-                               process_group, //
-                               xs_order,      //
-                               sample,        //
-                               year,          //
-                               shift,         //
-                               histo_name] = SerializationUtils::split_histo_name(name);
+                                process_group, //
+                                xs_order,      //
+                                sample,        //
+                                year,          //
+                                shift,         //
+                                histo_name] = SerializationUtils::split_histo_name(name);
 
                     if (std::binary_search(analysis_to_plot.cbegin(), analysis_to_plot.cend(), analysis_name))
                     {
@@ -159,6 +170,11 @@ auto Distribution::make_distributions(const std::vector<std::string> &input_file
                                        "ERROR: Could not load histogram for EventClass/Validation Analysis {}.\n",
                                        name);
                             std::exit(EXIT_FAILURE);
+                        }
+
+                        if (scale != 1.0)
+                        {
+                            hist_ptr->Scale(scale);
                         }
 
                         this_event_class_histograms.push_back(
@@ -209,9 +225,9 @@ auto Distribution::make_distributions(const std::vector<std::string> &input_file
         fmt::print(stderr, "ERROR: Could not load any histogram for EventClass/Validation Analysis.\n");
         std::exit(EXIT_FAILURE);
     }
+
     fmt::print("\n");
     fmt::print("[Distribution Factory] Collecting results and saving ...\n");
-    // std::vector<std::future<void>> future_distributions;
     int analysis_counter = analysis_to_plot.size();
     int analysis_done = 0;
     for (const auto &analysis_name : analysis_to_plot)
@@ -226,15 +242,13 @@ auto Distribution::make_distributions(const std::vector<std::string> &input_file
                 const bool allow_rescale_by_width = _allow_rescale_by_width;
                 if (not(distribution_name == "met" and analysis_name.find("1MET") == std::string::npos))
                 {
-                    if (event_class_histograms.find(analysis_name) != event_class_histograms.end())
+                    if (event_class_histograms.contains(analysis_name))
                     {
-                        if (event_class_histograms.at(analysis_name).find("h_" + distribution_name) !=
-                            event_class_histograms.at(analysis_name).end())
+                        if (event_class_histograms.at(analysis_name).contains("h_" + distribution_name))
                         {
                             if (event_class_histograms.at(analysis_name)
                                     .at("h_" + distribution_name)
-                                    .find(year_to_string(year_to_plot)) !=
-                                event_class_histograms.at(analysis_name).at("h_" + distribution_name).end())
+                                    .contains(year_to_string(year_to_plot)))
                             {
                                 distributions.emplace_back(event_class_histograms.at(analysis_name)
                                                                .at("h_" + distribution_name)

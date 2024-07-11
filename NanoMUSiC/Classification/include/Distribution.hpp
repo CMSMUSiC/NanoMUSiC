@@ -130,9 +130,9 @@ class Distribution
     bool m_has_data;
     bool m_has_mc;
 
-    std::unordered_map<std::string, RVec<double>> m_systematics_uncertainties ;
+    std::unordered_map<std::string, RVec<double>> m_systematics_uncertainties;
 
-        std::array<std::unordered_map<std::string, TH1F>, total_variations> m_histogram_per_process_group_and_shift;
+    std::array<std::unordered_map<std::string, TH1F>, total_variations> m_histogram_per_process_group_and_shift;
 
     // constructor and methods
     Distribution() = default;
@@ -158,7 +158,12 @@ class Distribution
 
         else if (analysis_name.find("w_to") != std::string::npos)
         {
-            return {{"invariant_mass", true}, {"sum_pt", true}, {"lepton_pt", true}, {"lepton_eta", true}, {"lepton_phi", true}, {"met", true}};
+            return {{"invariant_mass", true},
+                    {"sum_pt", true},
+                    {"lepton_pt", true},
+                    {"lepton_eta", true},
+                    {"lepton_phi", true},
+                    {"met", true}};
         }
 
         else if (analysis_name.find("ttbar_to") != std::string::npos)
@@ -176,7 +181,8 @@ class Distribution
 
     static auto make_distributions(const std::vector<std::string> &input_files,
                                    const std::string &output_dir,
-                                   std::vector<std::string> &analysis_to_plot) -> void;
+                                   std::vector<std::string> &analysis_to_plot,
+                                   const std::unordered_map<std::string, double> &rescaling) -> void;
 
     auto get_statistical_uncert() -> RVec<double>;
     auto get_systematics_uncert(const std::array<std::unordered_map<std::string, std::vector<std::shared_ptr<TH1F>>>,

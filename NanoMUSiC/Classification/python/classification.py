@@ -728,20 +728,43 @@ def make_distributions_task(
     return analysis_name, year
 
 
-def do_fold(input_files, output_dir, classes_names):
+def do_fold(input_files, output_dir, classes_names, rescaling):
     clft.Distribution.make_distributions(
-        input_files,
-        output_dir,
-        classes_names,
+        input_files, output_dir, classes_names, rescaling
     )
 
 
 def make_distributions(
+    config_file_path: str,
     inputs_dir: str,
     validation_inputs_dir: str,
     class_name_filter_patterns: list[str],
     validation_filter_patterns: list[str],
 ) -> None:
+    config_file = load_toml(config_file_path)
+
+    rescaling = {}
+    for process_name in config_file:
+        process = Process(name=process_name, **config_file[process_name])
+        if process.is_data:
+            process.ProcessGroup = "Data"
+            process.XSecOrder = "DUMMY"
+            rescaling[process.name] = 1.0
+        else:
+            if process.AltXSec or process.AltkFactor or process.AltFilterEff:
+                if not process.AltXSec:
+                    process.AltXSec = 1.0
+                if not process.AltkFactor:
+                    process.AltkFactor = 1.0
+                if not process.AltFilterEff:
+                    process.AltFilterEff = 1.0
+
+                rescaling[process.name] = (
+                    process.AltXSec * process.AltkFactor * process.AltFilterEff
+                ) / (process.XSec * process.kFactor * process.FilterEff)
+            else:
+                rescaling[process.name] = 1.0
+
     with open("{}/classes_to_files.json".format(inputs_dir), "r") as file:
         classes_to_files = json.load(file)
 
@@ -796,6 +819,7 @@ def make_distributions(
                     input_files,
                     "classification_distributions",
                     this_classes_names,
+                    rescaling,
                 ),
             )
             p.start()
