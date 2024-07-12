@@ -1,4 +1,4 @@
-#include "../include/WToLepNuX.hpp"
+#include "WToLepNuX.hpp"
 #include <cstdlib>
 #include <fmt/format.h>
 #include <memory>
@@ -18,7 +18,7 @@ WToLepNuX::WToLepNuX(enum Leptons lepton,
     auto count_map = std::unordered_map<ObjectNames, int>{};
     if (lepton == Leptons::MUONS)
     {
-        analysis_name = "w_to_muon_nutrino_x";
+        analysis_name = "w_to_muon_neutrino_x";
 
         count_map = std::unordered_map<ObjectNames, int>{{ObjectNames::Muon, 1},
                                                          {ObjectNames::Electron, 0},
@@ -30,7 +30,7 @@ WToLepNuX::WToLepNuX(enum Leptons lepton,
     }
     else if (lepton == Leptons::ELECTRONS)
     {
-        analysis_name = "w_to_electron_nutrino_x";
+        analysis_name = "w_to_electron_neutrino_x";
 
         count_map = std::unordered_map<ObjectNames, int>{{ObjectNames::Muon, 0},
                                                          {ObjectNames::Electron, 1},
@@ -42,7 +42,7 @@ WToLepNuX::WToLepNuX(enum Leptons lepton,
     }
     else if (lepton == Leptons::TAUS)
     {
-        analysis_name = "w_to_tau_nutrino_x";
+        analysis_name = "w_to_tau_neutrino_x";
 
         count_map = std::unordered_map<ObjectNames, int>{{ObjectNames::Muon, 0},
                                                          {ObjectNames::Electron, 0},
@@ -60,10 +60,6 @@ WToLepNuX::WToLepNuX(enum Leptons lepton,
     }
 
     auto bins_limits = BinLimits::limits(
-        count_map, false, Histograms::min_energy, Histograms::max_energy, Histograms::min_bin_size, Histograms::fudge);
-
-    count_map[ObjectNames::MET] = 1;
-    auto bins_limits_MET = BinLimits::limits(
         count_map, true, Histograms::min_energy, Histograms::max_energy, Histograms::min_bin_size, Histograms::fudge);
 
     std::vector<double> bins_limits_eta = {-1.5, -1.25, -1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1, 1.25, 1.5};
@@ -81,11 +77,11 @@ WToLepNuX::WToLepNuX(enum Leptons lepton,
                                                                   sample,                               //
                                                                   year,                                 //
                                                                   Shifts::variation_to_string(idx_var), //
-                                                                  "h_invariant_mass");
+                                                                  "h_transverse_mass");
 
-        h_invariant_mass[idx_var] =
+        h_transverse_mass[idx_var] =
             TH1F(histo_name.c_str(), histo_name.c_str(), bins_limits.size() - 1, bins_limits.data());
-        h_invariant_mass[idx_var].Sumw2();
+        h_transverse_mass[idx_var].Sumw2();
 
         histo_name = SerializationUtils::make_histogram_full_name(analysis_name,                        //
                                                                   process_group,                        //
@@ -141,8 +137,7 @@ WToLepNuX::WToLepNuX(enum Leptons lepton,
                                                                   Shifts::variation_to_string(idx_var), //
                                                                   "h_met");
 
-        h_met[idx_var] =
-            TH1F(histo_name.c_str(), histo_name.c_str(), bins_limits_MET.size() - 1, bins_limits_MET.data());
+        h_met[idx_var] = TH1F(histo_name.c_str(), histo_name.c_str(), bins_limits.size() - 1, bins_limits.data());
         h_met[idx_var].Sumw2();
     }
 }
@@ -154,11 +149,13 @@ auto WToLepNuX::fill(const MUSiCObjects &leptons,
                      double weight,
                      Shifts::Variations shift) -> void
 {
-    if (leptons.size() >= 1 and met.size() > 0)
+    if (leptons.size() >= 1 and met.size() >= 1)
     {
         auto idx_var = static_cast<std::size_t>(shift);
 
-        h_invariant_mass[idx_var].Fill(leptons.p4.at(0).mass(), weight);
+        h_transverse_mass[idx_var].Fill(std::sqrt(std::pow(leptons.p4.at(0).px() + met.p4.at(0).px(), 2) +
+                                                  std::pow(leptons.p4.at(0).py() + met.p4.at(0).py(), 2)),
+                                        weight);
         h_sum_pt[idx_var].Fill((leptons.p4.at(0) + met.p4.at(0)).pt(), weight);
         h_lepton_pt[idx_var].Fill((leptons.p4.at(0)).pt(), weight);
         h_lepton_eta[idx_var].Fill((leptons.p4.at(0)).eta(), weight);
@@ -169,7 +166,7 @@ auto WToLepNuX::fill(const MUSiCObjects &leptons,
 
 auto WToLepNuX::serialize_to_root(const std::unique_ptr<TFile> &output_file) -> void
 {
-    for (auto &hist : {h_invariant_mass, h_sum_pt, h_lepton_pt, h_lepton_eta, h_lepton_phi, h_met})
+    for (auto &hist : {h_transverse_mass, h_sum_pt, h_lepton_pt, h_lepton_eta, h_lepton_phi, h_met})
     {
         for (std::size_t idx_var = 0; idx_var < total_variations; idx_var++)
         {
@@ -186,7 +183,7 @@ auto WToLepNuX::serialize_to_root(const std::unique_ptr<TFile> &output_file) -> 
 
 auto WToLepNuX::merge_inplace(const WToLepNuX &other) -> void
 {
-    MERGE(h_invariant_mass)
+    MERGE(h_transverse_mass)
     MERGE(h_sum_pt)
     MERGE(h_lepton_pt)
     MERGE(h_lepton_eta)

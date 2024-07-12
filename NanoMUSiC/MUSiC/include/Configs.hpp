@@ -223,6 +223,7 @@ struct ElectronConfig
     float LowPt = 10.001;
     float MediumPt = 25.;
     // float MediumPt = 40.;
+
     float HighPt = 100.;
     float MaxAbsEta = 2.5;
     float MaxDeltaRTriggerMatch = 0.3;

@@ -3,6 +3,7 @@
 
 #include <cstdlib>
 #include <memory>
+#include <optional>
 #include <unordered_map>
 
 #include "TGraphAsymmErrors.h"
@@ -182,7 +183,7 @@ class Distribution
     static auto make_distributions(const std::vector<std::string> &input_files,
                                    const std::string &output_dir,
                                    std::vector<std::string> &analysis_to_plot,
-                                   const std::unordered_map<std::string, double> &rescaling) -> void;
+                                   const std::optional<std::unordered_map<std::string, double>> &rescaling) -> void;
 
     auto get_statistical_uncert() -> RVec<double>;
     auto get_systematics_uncert(const std::array<std::unordered_map<std::string, std::vector<std::shared_ptr<TH1F>>>,

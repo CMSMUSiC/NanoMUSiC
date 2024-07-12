@@ -15,8 +15,7 @@ ZToLepLepX::ZToLepLepX(enum Leptons lepton,
     : lepton(lepton),
       around_to_Z_mass(around_to_Z_mass)
 {
-    // TH1::AddDirectory(kFALSE);
-
+    TH1::AddDirectory(kFALSE);
     auto count_map = std::unordered_map<ObjectNames, int>{};
     if (lepton == Leptons::MUONS)
     {
@@ -78,24 +77,24 @@ ZToLepLepX::ZToLepLepX(enum Leptons lepton,
     {
         std::string histo_name = "";
         histo_name = SerializationUtils::make_histogram_full_name(analysis_name,                        //
-                                                              process_group,                        //
-                                                              xs_order,                             //
-                                                              sample,                               //
-                                                              year,                                 //
-                                                              Shifts::variation_to_string(idx_var), //
-                                                              "h_invariant_mass");
+                                                                  process_group,                        //
+                                                                  xs_order,                             //
+                                                                  sample,                               //
+                                                                  year,                                 //
+                                                                  Shifts::variation_to_string(idx_var), //
+                                                                  "h_invariant_mass");
 
         h_invariant_mass[idx_var] =
             TH1F(histo_name.c_str(), histo_name.c_str(), bins_limits.size() - 1, bins_limits.data());
         h_invariant_mass[idx_var].Sumw2();
 
         histo_name = SerializationUtils::make_histogram_full_name(analysis_name,                        //
-                                                              process_group,                        //
-                                                              xs_order,                             //
-                                                              sample,                               //
-                                                              year,                                 //
-                                                              Shifts::variation_to_string(idx_var), //
-                                                              "h_met");
+                                                                  process_group,                        //
+                                                                  xs_order,                             //
+                                                                  sample,                               //
+                                                                  year,                                 //
+                                                                  Shifts::variation_to_string(idx_var), //
+                                                                  "h_met");
 
         h_met[idx_var] =
             TH1F(histo_name.c_str(), histo_name.c_str(), bins_limits_MET.size() - 1, bins_limits_MET.data());

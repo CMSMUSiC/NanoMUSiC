@@ -74,16 +74,22 @@ GammaPlusJet::GammaPlusJet(const std::string &process_group,
     }
 }
 
-auto GammaPlusJet::fill(const MUSiCObjects &jets,
+auto GammaPlusJet::fill(const MUSiCObjects &muons,
+                        const MUSiCObjects &electrons,
+                        const MUSiCObjects &taus,
                         const MUSiCObjects &photons,
+                        const MUSiCObjects &bjets,
+                        const MUSiCObjects &jets,
+                        const MUSiCObjects &met,
                         double weight,
                         Shifts::Variations shift) -> void
 {
     auto idx_var = static_cast<std::size_t>(shift);
 
-    if(photons.size() > 0)
+    if (photons.size() == 1 and (jets.size() + bjets.size()) == 1 and
+        (muons.size() + electrons.size() + taus.size()) == 0 and met.size() == 0)
     {
-        if (photons.p4.at(0).pt() > 200)
+        if (photons.p4.at(0).pt() > 220.)
         {
             h_gamma_pt[idx_var].Fill(photons.p4.at(0).pt(), weight);
             h_gamma_eta[idx_var].Fill(photons.p4.at(0).eta(), weight);

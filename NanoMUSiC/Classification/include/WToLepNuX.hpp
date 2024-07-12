@@ -26,7 +26,7 @@ class WToLepNuX
     Leptons lepton;
     std::string analysis_name;
 
-    std::array<TH1F, total_variations> h_invariant_mass;
+    std::array<TH1F, total_variations> h_transverse_mass;
     std::array<TH1F, total_variations> h_sum_pt;
     std::array<TH1F, total_variations> h_met;
     std::array<TH1F, total_variations> h_lepton_pt;

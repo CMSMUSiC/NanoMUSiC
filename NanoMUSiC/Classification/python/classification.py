@@ -1,4 +1,4 @@
-from typing import Optional, Union, Iterator
+from typing import Optional, Union, Iterator, Any
 import time
 import math
 from multiprocessing.pool import AsyncResult
@@ -734,36 +734,62 @@ def do_fold(input_files, output_dir, classes_names, rescaling):
     )
 
 
+def make_rescaling(
+    config_file: dict[str, Any] | None, alternative_config_file: dict[str, Any] | None
+) -> dict[str, float] | None:
+    if config_file and alternative_config_file:
+        processes: dict[str, Process] = {}
+        for process_name in config_file:
+            process = Process(name=process_name, **config_file[process_name])
+            if process.is_data:
+                process.ProcessGroup = "Data"
+                process.XSecOrder = "DUMMY"
+            processes[process.name] = process
+
+        alt_processes: dict[str, Process] = {}
+        for process_name in alternative_config_file:
+            alt_process = Process(
+                name=process_name, **alternative_config_file[process_name]
+            )
+            if alt_process.is_data:
+                alt_process.ProcessGroup = "Data"
+                alt_process.XSecOrder = "DUMMY"
+            alt_processes[alt_process.name] = alt_process
+
+        rescaling = {}
+        for proc in processes:
+            rescaling[proc] = (
+                alt_processes[proc].XSec
+                * alt_processes[proc].FilterEff
+                * alt_processes[proc].kFactor
+            ) / (
+                alt_processes[proc].XSec
+                * alt_processes[proc].FilterEff
+                * alt_processes[proc].kFactor
+            )
+
+        return rescaling
+
+    return None
+
+
 def make_distributions(
-    config_file_path: str,
+    config_file_path: str | None,
+    alternative_config_file_path: str | None,
     inputs_dir: str,
     validation_inputs_dir: str,
     class_name_filter_patterns: list[str],
     validation_filter_patterns: list[str],
 ) -> None:
-    config_file = load_toml(config_file_path)
+    config_file = None
+    if config_file_path:
+        config_file = load_toml(config_file_path)
 
-    rescaling = {}
-    for process_name in config_file:
-        process = Process(name=process_name, **config_file[process_name])
-        if process.is_data:
-            process.ProcessGroup = "Data"
-            process.XSecOrder = "DUMMY"
-            rescaling[process.name] = 1.0
-        else:
-            if process.AltXSec or process.AltkFactor or process.AltFilterEff:
-                if not process.AltXSec:
-                    process.AltXSec = 1.0
-                if not process.AltkFactor:
-                    process.AltkFactor = 1.0
-                if not process.AltFilterEff:
-                    process.AltFilterEff = 1.0
+    alternative_config_file = None
+    if alternative_config_file_path:
+        alternative_config_file = load_toml(alternative_config_file_path)
 
-                rescaling[process.name] = (
-                    process.AltXSec * process.AltkFactor * process.AltFilterEff
-                ) / (process.XSec * process.kFactor * process.FilterEff)
-            else:
-                rescaling[process.name] = 1.0
+    rescaling = make_rescaling(config_file, alternative_config_file)
 
     with open("{}/classes_to_files.json".format(inputs_dir), "r") as file:
         classes_to_files = json.load(file)

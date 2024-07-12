@@ -25,8 +25,8 @@ def plotter(
     gStyle.SetMarkerSize(0.5)
     gStyle.SetLabelSize(25, "XYZ")
 
-    os.system("rm -rf {}".format(output_dir))
-    os.system("mkdir {}".format(output_dir))
+    # os.system("rm -rf {}".format(output_dir))
+    os.system("mkdir -p {}".format(output_dir))
 
     def make_distribution_paths(inputs_dir: str, patterns: list[str]) -> list[str]:
         distribution_paths: list[str] = []

@@ -107,7 +107,8 @@ def unwrap(
 
 @classification_app.command()
 def fold(
-    config_file: Annotated[str, typer.Argument(help="analysis_config.toml file path, as build by parse_sample_list_nanoaod.py")],
+    config_file: Annotated[str, typer.Argument(help="analysis_config.toml file path, as build by parse_sample_list_nanoaod.py")]|None=None,
+    alternative_config_file: Annotated[str, typer.Argument(help="Altrernative analysis_config.toml file path, as build by parse_sample_list_nanoaod.py, with different cross-sections")]|None=None,
     inputs_dir: str = "classification_root_files",
     validation_inputs_dir: str = "validation_root_files",
     filters: list[str] = ["*"],
@@ -118,7 +119,7 @@ def fold(
     """
     import classification
 
-    classification.make_distributions(config_file, inputs_dir, validation_inputs_dir, filters, validation_filters
+    classification.make_distributions(config_file, alternative_config_file, inputs_dir, validation_inputs_dir, filters, validation_filters
     )
 
 

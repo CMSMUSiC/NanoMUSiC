@@ -118,22 +118,13 @@ auto TTBarTo1Lep2Bjet2JetMET::fill(const MUSiCObjects &leptons,
     auto idx_var = static_cast<std::size_t>(shift);
     if ((leptons.size() > 0) and (bjets.size() >= 2) and (jets.size() >= 2) and (met.size() > 0))
     {
-
-        if ((leptons.p4.at(0).M() + met.p4.at(0).Pt()) >= 60)
+        if ((std::sqrt(std::pow(leptons.p4.at(0).px() + met.p4.at(0).px(), 2) +
+                       std::pow(leptons.p4.at(0).py() + met.p4.at(0).py(), 2)) >= 60.) and
+            ((jets.p4.at(0) + jets.p4.at(1)).mass() < (PDG::W::Mass + 30.)) and
+            ((jets.p4.at(0) + jets.p4.at(1)).mass() > (PDG::W::Mass - 30.)))
         {
             h_invariant_mass_jet0_jet1[idx_var].Fill((jets.p4.at(0) + jets.p4.at(1)).mass(), weight);
-        }
-
-        if (((jets.p4.at(0) + jets.p4.at(1)).mass() < (PDG::W::Mass + 30)) and
-            ((jets.p4.at(0) + jets.p4.at(1)).mass() > (PDG::W::Mass - 30)))
-        {
             h_transverse_mass_lep_MET[idx_var].Fill((leptons.p4.at(0) + met.p4.at(0)).M(), weight);
-        }
-
-        if (((leptons.p4.at(0).M() + met.p4.at(0).Pt()) >= 60) and
-            ((jets.p4.at(0) + jets.p4.at(1)).mass() < (PDG::W::Mass + 30)) and
-            ((jets.p4.at(0) + jets.p4.at(1)).mass() > (PDG::W::Mass - 30)))
-        {
             h_ht_had_lep[idx_var].Fill((jets.p4.at(0) + jets.p4.at(1) + bjets.p4.at(0) + bjets.p4.at(1)).mass());
         }
     }

@@ -20,9 +20,9 @@ class ValidationContainer
     ZToLepLepX z_to_tau_tau_x;
     ZToLepLepX z_to_tau_tau_x_z_mass;
 
-    WToLepNuX w_to_muon_nutrino_x;
-    WToLepNuX w_to_electron_nutrino_x;
-    WToLepNuX w_to_tau_nutrino_x;
+    WToLepNuX w_to_muon_neutrino_x;
+    WToLepNuX w_to_electron_neutrino_x;
+    WToLepNuX w_to_tau_neutrino_x;
 
     TTBarTo1Lep2Bjet2JetMET ttbar_to_1muon_2bjet_2jet_met;
     TTBarTo1Lep2Bjet2JetMET ttbar_to_1electron_2bjet_2jet_met;
@@ -46,9 +46,9 @@ class ValidationContainer
         z_to_tau_tau_x = ZToLepLepX(ZToLepLepX::Leptons::TAUS, false, process_group, xs_order, process, year);
         z_to_tau_tau_x_z_mass = ZToLepLepX(ZToLepLepX::Leptons::TAUS, true, process_group, xs_order, process, year);
 
-        w_to_muon_nutrino_x = WToLepNuX(WToLepNuX::Leptons::MUONS, process_group, xs_order, process, year);
-        w_to_electron_nutrino_x = WToLepNuX(WToLepNuX::Leptons::ELECTRONS, process_group, xs_order, process, year);
-        w_to_tau_nutrino_x = WToLepNuX(WToLepNuX::Leptons::TAUS, process_group, xs_order, process, year);
+        w_to_muon_neutrino_x = WToLepNuX(WToLepNuX::Leptons::MUONS, process_group, xs_order, process, year);
+        w_to_electron_neutrino_x = WToLepNuX(WToLepNuX::Leptons::ELECTRONS, process_group, xs_order, process, year);
+        w_to_tau_neutrino_x = WToLepNuX(WToLepNuX::Leptons::TAUS, process_group, xs_order, process, year);
 
         ttbar_to_1muon_2bjet_2jet_met =
             TTBarTo1Lep2Bjet2JetMET(TTBarTo1Lep2Bjet2JetMET::Leptons::MUONS, process_group, xs_order, process, year);
@@ -85,14 +85,14 @@ class ValidationContainer
         z_to_tau_tau_x_z_mass.serialize_to_root(output_file);
         analysis_names.push_back(z_to_tau_tau_x_z_mass.analysis_name);
 
-        w_to_muon_nutrino_x.serialize_to_root(output_file);
-        analysis_names.push_back(w_to_muon_nutrino_x.analysis_name);
+        w_to_muon_neutrino_x.serialize_to_root(output_file);
+        analysis_names.push_back(w_to_muon_neutrino_x.analysis_name);
 
-        w_to_electron_nutrino_x.serialize_to_root(output_file);
-        analysis_names.push_back(w_to_electron_nutrino_x.analysis_name);
+        w_to_electron_neutrino_x.serialize_to_root(output_file);
+        analysis_names.push_back(w_to_electron_neutrino_x.analysis_name);
 
-        w_to_tau_nutrino_x.serialize_to_root(output_file);
-        analysis_names.push_back(w_to_tau_nutrino_x.analysis_name);
+        w_to_tau_neutrino_x.serialize_to_root(output_file);
+        analysis_names.push_back(w_to_tau_neutrino_x.analysis_name);
 
         ttbar_to_1muon_2bjet_2jet_met.serialize_to_root(output_file);
         analysis_names.push_back(ttbar_to_1muon_2bjet_2jet_met.analysis_name);
@@ -117,9 +117,9 @@ class ValidationContainer
         MERGE(z_to_electron_electron_x_z_mass);
         MERGE(z_to_tau_tau_x);
         MERGE(z_to_tau_tau_x_z_mass);
-        MERGE(w_to_muon_nutrino_x);
-        MERGE(w_to_electron_nutrino_x);
-        MERGE(w_to_tau_nutrino_x);
+        MERGE(w_to_muon_neutrino_x);
+        MERGE(w_to_electron_neutrino_x);
+        MERGE(w_to_tau_neutrino_x);
         MERGE(ttbar_to_1muon_2bjet_2jet_met);
         MERGE(ttbar_to_1electron_2bjet_2jet_met);
         MERGE(ttbar_to_1tau_2bjet_2jet_met);

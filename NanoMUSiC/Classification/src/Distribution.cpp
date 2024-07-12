@@ -113,10 +113,11 @@ auto replace_all(std::string str, const std::string &from, const std::string &to
     return str;
 }
 
-auto Distribution::make_distributions(const std::vector<std::string> &input_files,
-                                      const std::string &output_dir,
-                                      std::vector<std::string> &analysis_to_plot,
-                                      const std::unordered_map<std::string, double> &rescaling) -> void
+ auto Distribution::make_distributions(const std::vector<std::string> &input_files,
+                                             const std::string &output_dir,
+                                             std::vector<std::string> &analysis_to_plot,
+                                             const std::optional<std::unordered_map<std::string, double>> &rescaling)
+    -> void
 {
     TH1::AddDirectory(false);
     TDirectory::AddDirectory(false);
@@ -142,7 +143,14 @@ auto Distribution::make_distributions(const std::vector<std::string> &input_file
                     fmt::print(stderr, "ERROR: Could not match file name ({}) to process name.\n", input_files[i]);
                     std::exit(EXIT_FAILURE);
                 }
-                const auto scaling = rescaling.at(match[1].str());
+                const auto scaling = [&match, &rescaling]() -> double
+                {
+                    if (rescaling)
+                    {
+                        return (*rescaling).at(match[1].str());
+                    }
+                    return 1.;
+                }();
 
                 auto root_file = std::unique_ptr<TFile>(TFile::Open(input_files[i].c_str()));
                 auto this_event_class_histograms = std::vector<ECHistogram>();
@@ -197,7 +205,7 @@ auto Distribution::make_distributions(const std::vector<std::string> &input_file
     }
 
     fmt::print("[Distribution Factory] Harversting histograms ... \n");
-    
+
     // analysis_name [distribution_name[year,ec_histogram]]]
     auto event_class_histograms = std::unordered_map<
         std::string,
