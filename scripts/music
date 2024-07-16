@@ -136,11 +136,8 @@ plot_app = typer.Typer(help="Produce different MUSiC plots.")
 def distribution(
     input_dir: str="classification_distributions",
     output_dir: str = "classification_plots",
-    validation_input_dir: str="validation_distributions",
-    validation_output_dir: str = "validation_plots",
     filters:list[str]=["*"],
-    validation_filters:list[str]=["*"],
-    num_cpus:int=120
+    num_cpus:int=120,
 ):
     """
     Produce plots all distribution, matching (glob matching) the different filters.
@@ -148,8 +145,20 @@ def distribution(
     from plotter import plotter
 
     plotter(input_dir, filters, output_dir, num_cpus)
-    plotter(validation_input_dir, validation_filters, validation_output_dir, num_cpus)
 
+
+def validation(
+    input_dir: str="validation_distributions",
+    output_dir: str = "validation_plots",
+    filters:list[str]=["*"],
+    num_cpus:int=120,
+):
+    """
+    Produce plots all validation, matching (glob matching) the different filters.
+    """
+    from plotter import plotter
+
+    plotter(input_dir,filters, output_dir, num_cpus)
 
 # @plot_app.command()
 # def summary(config: str):

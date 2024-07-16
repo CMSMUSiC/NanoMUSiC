@@ -5,13 +5,13 @@ import fnmatch
 import atlasplots as aplt
 import json
 from multiprocessing import Pool
-from pvalue import get_integral_pvalue
-from rich.progress import Progress, track
+from rich.progress import Progress
 from metadata import Years
+from typing import Any
 
-from ROOT import TFile, gStyle
+from ROOT import gStyle
 
-from distribution_plot import make_plot_task
+from distribution_plot import make_plot_task, p_value_task, build_plot_jobs_task
 
 
 def plotter(
@@ -20,6 +20,10 @@ def plotter(
     output_dir: str = "classification_plots",
     num_cpus: int = 120,
 ):
+    if not os.path.isdir(input_dir):
+        print("ERROR: Input directory does not exists.")
+        sys.exit(-1)
+
     aplt.set_atlas_style()
     tdrstyle.setTDRStyle()
     gStyle.SetMarkerSize(0.5)
@@ -44,119 +48,53 @@ def plotter(
         print("WARNING: No distribution matches the requirements.")
         sys.exit(1)
 
-    plots_data = {}
+    # Will calculate p-values
+    integral_pvalues_data = {}
     for year in Years.years_to_plot():
-        plots_data[Years.years_to_plot()[year]["name"]] = {}
+        integral_pvalues_data[Years.years_to_plot()[year]["name"]] = {}
 
-    for f in track(
-        distribution_files,
-        description="Calculating p-values [{} distributions] ...".format(
-            len(distribution_files)
-        ),
-    ):
-        root_file = TFile.Open(f)
-        distribution_names = [k.GetName() for k in root_file.GetListOfKeys()]
-
-        for dist_name in distribution_names:
-            dist = TFile.Open(f).Get(dist_name)
-            if dist.has_mc():
-                if dist.m_distribution_name == "counts":
-                    plot = dist.make_plot_props()
-                    p_value_props = dist.make_integral_pvalue_props()
-                    p_value_data = get_integral_pvalue(
-                        p_value_props.total_data,
-                        p_value_props.total_mc,
-                        p_value_props.sigma_total,
-                        p_value_props.sigma_stat,
-                        p_value_props.total_per_process_group,
-                    )
-                    # print(p_value_data)
-                    p_value = p_value_data["p-value"]
-                    veto_reason = p_value_data["Veto Reason"]
-
-                    # json for counts plot
-                    plots_data[dist.m_year_to_plot][
-                        plot.class_name.decode("utf-8")
-                    ] = {}
-                    plots_data[dist.m_year_to_plot][plot.class_name.decode("utf-8")][
-                        "data_count"
-                    ] = plot.total_data_histogram.GetBinContent(1)
-                    plots_data[dist.m_year_to_plot][plot.class_name.decode("utf-8")][
-                        "data_uncert"
-                    ] = plot.total_data_histogram.GetBinError(1)
-                    plots_data[dist.m_year_to_plot][plot.class_name.decode("utf-8")][
-                        "mc"
-                    ] = {}
-                    mc_hists = {}
-                    for pg, hist in plot.mc_histograms:
-                        mc_hists[pg] = hist
-                    mc_hists_keys_sorted = sorted(
-                        filter(lambda pg: pg != "Data", mc_hists),
-                        key=lambda pg: mc_hists[pg].Integral(),
-                    )
-                    for pg in mc_hists_keys_sorted:
-                        plots_data[dist.m_year_to_plot][
-                            plot.class_name.decode("utf-8")
-                        ]["mc"][pg.decode("utf-8")] = mc_hists[pg].GetBinContent(1)
-                    plots_data[dist.m_year_to_plot][plot.class_name.decode("utf-8")][
-                        "mc_uncert"
-                    ] = plot.mc_uncertainty.GetErrorY(0)
-                    plots_data[dist.m_year_to_plot][plot.class_name.decode("utf-8")][
-                        "p_value"
-                    ] = p_value
-                    plots_data[dist.m_year_to_plot][plot.class_name.decode("utf-8")][
-                        "veto_reason"
-                    ] = veto_reason
+    with Pool(min(len(distribution_files), num_cpus)) as p:
+        with Progress() as progress:
+            task = progress.add_task(
+                "Calculating p-values [{} distribution files] ...".format(
+                    len(distribution_files)
+                ),
+                total=len(distribution_files),
+            )
+            for counts, _ in p.imap_unordered(p_value_task, distribution_files):
+                for year in counts:
+                    for ec in counts[year]:
+                        integral_pvalues_data[year][ec] = counts[year][ec]
+                progress.advance(task)
 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
     with open(
-        "{}/plot_data.json".format(output_dir),
+        "{}/integral_pvalues_data.json".format(output_dir),
         "w",
         encoding="utf-8",
     ) as f:
-        json.dump(plots_data, f, ensure_ascii=False, indent=4)
+        json.dump(integral_pvalues_data, f, ensure_ascii=False, indent=4)
 
-    plot_props = []
-    for f in track(
-        distribution_files,
-        description="Building plot jobs [{} distributions] ...".format(
-            len(distribution_files)
-        ),
-    ):
-        root_file = TFile.Open(f)
-        distribution_names = [k.GetName() for k in root_file.GetListOfKeys()]
+    # Will build plot jobs
+    plot_props: list[Any] = []
+    with Pool(min(len(distribution_files), num_cpus)) as p:
+        with Progress() as progress:
+            task = progress.add_task(
+                "Building plot jobs [{} distribution files] ...".format(
+                    len(distribution_files)
+                ),
+                total=len(distribution_files),
+            )
+            for this_plot_props in p.imap_unordered(
+                build_plot_jobs_task,
+                [(output_dir, integral_pvalues_data, d) for d in distribution_files],
+            ):
+                plot_props += this_plot_props
+                progress.advance(task)
 
-        for dist_name in distribution_names:
-            dist = TFile.Open(f).Get(dist_name)
-            if dist.has_mc():
-                plot = dist.make_plot_props()
-                plot_props.append(
-                    (
-                        plot.class_name,
-                        plot.distribution_name,
-                        plot.x_min,
-                        plot.x_max,
-                        plot.y_min,
-                        plot.y_max,
-                        plot.total_data_histogram.GetBinContent(1),
-                        plot.data_graph,
-                        plot.mc_histograms,
-                        plot.mc_uncertainty,
-                        plot.ratio_graph,
-                        plot.ratio_mc_error_band,
-                        output_dir,
-                        plot.year_to_plot,
-                        plots_data[plot.year_to_plot][plot.class_name]["p_value"],
-                    )
-                )
-
-                # prepare output area
-                ec_nice_name = plot.class_name.replace("+", "_")
-                if not os.path.exists("{}/{}".format(output_dir, ec_nice_name)):
-                    os.makedirs("{}/{}".format(output_dir, ec_nice_name))
-
+    # Will save plots
     with Pool(min(len(plot_props), num_cpus)) as p:
         with Progress() as progress:
             task = progress.add_task(

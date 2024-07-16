@@ -81,20 +81,10 @@ Distribution::Distribution(const std::vector<ECHistogram> &event_class_histogram
 
     // total uncertainties
     m_total_uncert =
-        ROOT::VecOps::sqrt(ROOT::VecOps::pow(m_statistical_uncert, 2) + ROOT::VecOps::pow(m_systematics_uncert, 2));
+        ROOT::VecOps::sqrt(ROOT::VecOps::pow(m_statistical_uncert, 2.) + ROOT::VecOps::pow(m_systematics_uncert, 2.));
 
     m_has_data = ROOT::VecOps::Sum(ROOTHelpers::Counts(m_total_data_histogram)) > 0.;
     m_has_mc = ROOT::VecOps::Sum(ROOTHelpers::Counts(m_total_mc_histogram)) > 0.;
-
-    // // plot properties
-    // plot_props = make_plot_props();
-    // if (m_distribution_name == "counts")
-    // {
-    //     integral_pvalue_props = make_integral_pvalue_props();
-    // }
-    // auto end = std::chrono::high_resolution_clock::now();
-    // auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    // fmt::print("Time taken: {} milliseconds\n", duration.count());
 }
 
 auto replace_all(std::string str, const std::string &from, const std::string &to) -> std::string
@@ -113,11 +103,10 @@ auto replace_all(std::string str, const std::string &from, const std::string &to
     return str;
 }
 
- auto Distribution::make_distributions(const std::vector<std::string> &input_files,
-                                             const std::string &output_dir,
-                                             std::vector<std::string> &analysis_to_plot,
-                                             const std::optional<std::unordered_map<std::string, double>> &rescaling)
-    -> void
+auto Distribution::make_distributions(const std::vector<std::string> &input_files,
+                                      const std::string &output_dir,
+                                      std::vector<std::string> &analysis_to_plot,
+                                      const std::optional<std::unordered_map<std::string, double>> &rescaling) -> void
 {
     TH1::AddDirectory(false);
     TDirectory::AddDirectory(false);
@@ -245,29 +234,29 @@ auto replace_all(std::string str, const std::string &from, const std::string &to
         distributions.reserve(16);
         for (const auto year_to_plot : years_to_plot())
         {
-            for (const auto &[_distribution_name, _allow_rescale_by_width] : get_distribution_props(analysis_name))
+            for (const auto &[distribution_name, allow_rescale_by_width] : get_distribution_props(analysis_name))
             {
-                const std::string distribution_name = _distribution_name;
-                const bool allow_rescale_by_width = _allow_rescale_by_width;
-                if (not(distribution_name == "met" and analysis_name.find("1MET") == std::string::npos))
+                if (distribution_name == "met" and analysis_name.find("1MET") == std::string::npos)
                 {
-                    if (event_class_histograms.contains(analysis_name))
+                    continue;
+                }
+
+                if (event_class_histograms.contains(analysis_name))
+                {
+                    if (event_class_histograms.at(analysis_name).contains("h_" + distribution_name))
                     {
-                        if (event_class_histograms.at(analysis_name).contains("h_" + distribution_name))
+                        if (event_class_histograms.at(analysis_name)
+                                .at("h_" + distribution_name)
+                                .contains(year_to_string(year_to_plot)))
                         {
-                            if (event_class_histograms.at(analysis_name)
-                                    .at("h_" + distribution_name)
-                                    .contains(year_to_string(year_to_plot)))
-                            {
-                                distributions.emplace_back(event_class_histograms.at(analysis_name)
-                                                               .at("h_" + distribution_name)
-                                                               .at(year_to_string(year_to_plot)),
-                                                           analysis_name,
-                                                           distribution_name,
-                                                           allow_rescale_by_width,
-                                                           year_to_plot);
-                                // distributions.emplace_back();
-                            }
+                            distributions.emplace_back(event_class_histograms.at(analysis_name)
+                                                           .at("h_" + distribution_name)
+                                                           .at(year_to_string(year_to_plot)),
+                                                       analysis_name,
+                                                       distribution_name,
+                                                       allow_rescale_by_width,
+                                                       year_to_plot);
+                            // distributions.emplace_back();
                         }
                     }
                 }
@@ -314,7 +303,7 @@ auto Distribution::get_statistical_uncert() -> RVec<double>
     {
         if (pg != "Data")
         {
-            statistical_uncertainties += ROOT::VecOps::pow(ROOTHelpers::Errors(histo), 2);
+            statistical_uncertainties += ROOT::VecOps::pow(ROOTHelpers::Errors(histo), 2.);
         }
     }
 
@@ -376,8 +365,8 @@ auto Distribution::get_systematics_uncert(
     auto xsec_uncert = RVec<double>(m_n_bins, 0.);
     for (const auto &[pg, uncert] : xsec_order_uncert_LO_samples)
     {
-        xsec_uncert += ROOT::VecOps::pow(xsec_order_uncert_LO_samples.at(pg), 2) +
-                       ROOT::VecOps::pow(xsec_order_uncert_non_LO_samples.at(pg), 2);
+        xsec_uncert += ROOT::VecOps::pow(xsec_order_uncert_LO_samples.at(pg), 2.) +
+                       ROOT::VecOps::pow(xsec_order_uncert_non_LO_samples.at(pg), 2.);
         // fmt::print("=== EC: {} - DIST: {} - PG: {} -- [{}]\n",
         //    m_event_class_name,
         //    m_distribution_name,
@@ -567,13 +556,13 @@ auto Distribution::get_systematics_uncert(
     };
 
     return ROOT::VecOps::sqrt(std::accumulate(
-        m_systematics_uncertainties.begin(),
-        m_systematics_uncertainties.end(),
+        m_systematics_uncertainties.cbegin(),
+        m_systematics_uncertainties.cend(),
         RVec<double>(m_n_bins, 0.),
         [](const RVec<double> &acc_vec, const std::pair<std::string, RVec<double>> &next_key_val) -> RVec<double>
         {
             auto [src, next_vec] = next_key_val;
-            return acc_vec + ROOT::VecOps::pow(next_vec, 2);
+            return acc_vec + ROOT::VecOps::pow(next_vec, 2.);
         }));
 }
 
@@ -590,17 +579,15 @@ auto Distribution::make_integral_pvalue_props() -> IntegralPValueProps
             .total_data = -1., .total_mc = -1., .sigma_total = -1., .sigma_stat = -1., .total_per_process_group = {}};
     }
 
-    auto total_per_process_group = std::vector<double>();
-    for (const auto &[pg, hist] :
-         m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::Nominal)))
-    {
-        if (pg != "Data")
-        {
-            total_per_process_group.push_back(hist.GetBinContent(1));
-        }
-    }
-
-    // fmt::print("DEBUG {} === {}\n", fmt::join(m_total_uncert, " - "), fmt::join(m_statistical_uncert, " - "));
+    // auto total_per_process_group = std::vector<double>();
+    // for (const auto &[pg, hist] :
+    //      m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::Nominal)))
+    // {
+    //     if (pg != "Data")
+    //     {
+    //         total_per_process_group.push_back(hist.GetBinContent(1));
+    //     }
+    // }
 
     return IntegralPValueProps{
         .total_data = m_total_data_histogram.GetBinContent(1), //

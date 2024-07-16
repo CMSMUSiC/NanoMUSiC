@@ -833,7 +833,11 @@ def make_distributions(
 
     print("Will fold Classification ...")
     n_parts = 3
+
     classes_names = get_analysis_names(classes_to_files, class_name_filter_patterns)
+    if classes_names and len(classes_names) < 5000:
+        n_parts = 1
+
     if classes_names:
         random.shuffle(classes_names)
         input_files = get_input_files("classification_root_files")
@@ -853,11 +857,19 @@ def make_distributions(
             if p.exitcode != 0:
                 print("ERROR: Could not make distribution files for Classification.")
 
-    os.system(
-        "cp {} classification.distributions/analysis_config.toml".format(
-            config_file_path
+    if config_file_path:
+        os.system(
+            "cp {} classification_distributions/analysis_config.toml".format(
+                config_file_path
+            )
         )
-    )
+
+    if alternative_config_file_path:
+        os.system(
+            "cp {} classification_distributions/alternative_config_analysis_config.toml".format(
+                config_file_path
+            )
+        )
 
     print("Will fold Validation ...")
     validation_names = get_analysis_names(
@@ -879,6 +891,16 @@ def make_distributions(
         if p.exitcode != 0:
             print("ERROR: Could not make distribution files for Validation.")
 
-    os.system(
-        "cp {} validation_distributions/analysis_config.toml".format(config_file_path)
-    )
+    if config_file_path:
+        os.system(
+            "cp {} validation_distributions/analysis_config.toml".format(
+                config_file_path
+            )
+        )
+
+    if alternative_config_file_path:
+        os.system(
+            "cp {} validation_distributions/alternative_config_analysis_config.toml".format(
+                config_file_path
+            )
+        )

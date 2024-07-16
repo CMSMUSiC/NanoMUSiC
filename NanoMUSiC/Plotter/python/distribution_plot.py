@@ -5,12 +5,159 @@ from colors import PROCESS_GROUP_STYLES
 from decimal import Decimal
 from tools import to_root_latex
 from metadata import Years
+from pvalue import get_integral_pvalue
+from typing import Any
+import os
 
-from ROOT import THStack, TLine, gPad
+from ROOT import TFile, THStack, TLine, gPad
+
+
+def p_value_task(distribution_file: str):
+    counts = {}
+    for year in Years.years_to_plot():
+        counts[Years.years_to_plot()[year]["name"]] = {}
+
+    root_file = TFile.Open(distribution_file)
+    distribution_names = [k.GetName() for k in root_file.GetListOfKeys()]
+
+    for dist_name in distribution_names:
+        dist = root_file.Get(dist_name)
+        if dist.has_mc():
+            if dist.m_distribution_name == "counts":
+                plot = dist.make_plot_props()
+                p_value_props = dist.make_integral_pvalue_props()
+                try:
+                    p_value_data = get_integral_pvalue(
+                        p_value_props.total_data,
+                        p_value_props.total_mc,
+                        p_value_props.sigma_total,
+                        p_value_props.sigma_stat,
+                        p_value_props.total_per_process_group,
+                    )
+                except ZeroDivisionError:
+                    print("ZeroDivisionError caught.")
+                    print(
+                        "ERROR: Could not calculate p-value for {}.".format(dist_name)
+                    )
+                    print("ZeroDivisionError caugth. Details:")
+                    sys.exit(-1)
+                except:
+                    print(
+                        "ERROR: Could not calculate p-value for {} ({}).".format(
+                            dist_name, distribution_file
+                        )
+                    )
+                    sys.exit(-1)
+
+                # print(p_value_data)
+                p_value = p_value_data["p-value"]
+                veto_reason = p_value_data["Veto Reason"]
+
+                # json for counts plot
+                counts[dist.m_year_to_plot][plot.class_name.decode("utf-8")] = {}
+                counts[dist.m_year_to_plot][plot.class_name.decode("utf-8")][
+                    "data_count"
+                ] = plot.total_data_histogram.GetBinContent(1)
+                counts[dist.m_year_to_plot][plot.class_name.decode("utf-8")][
+                    "data_uncert"
+                ] = plot.total_data_histogram.GetBinError(1)
+                counts[dist.m_year_to_plot][plot.class_name.decode("utf-8")]["mc"] = {}
+                mc_hists = {}
+                for pg, hist in plot.mc_histograms:
+                    mc_hists[pg] = hist
+                mc_hists_keys_sorted = sorted(
+                    filter(lambda pg: pg != "Data", mc_hists),
+                    key=lambda pg: mc_hists[pg].Integral(),
+                )
+                for pg in mc_hists_keys_sorted:
+                    counts[dist.m_year_to_plot][plot.class_name.decode("utf-8")]["mc"][
+                        pg.decode("utf-8")
+                    ] = mc_hists[pg].GetBinContent(1)
+                counts[dist.m_year_to_plot][plot.class_name.decode("utf-8")][
+                    "mc_uncert"
+                ] = plot.mc_uncertainty.GetErrorY(0)
+                counts[dist.m_year_to_plot][plot.class_name.decode("utf-8")][
+                    "p_value"
+                ] = p_value
+                counts[dist.m_year_to_plot][plot.class_name.decode("utf-8")][
+                    "veto_reason"
+                ] = veto_reason
+
+    root_file.Close()
+
+    return counts, distribution_file
+
+
+def build_plot_jobs_task(args: tuple[str, dict[str, Any], str]) -> list[Any]:
+    output_dir, plots_data, distribution_file = args
+
+    temp_plot_props: list[Any] = []
+
+    root_file = TFile.Open(distribution_file)
+    distribution_names = [k.GetName() for k in root_file.GetListOfKeys()]
+
+    for dist_name in distribution_names:
+        dist = root_file.Get(dist_name)
+        if dist.has_mc():
+            plot = dist.make_plot_props()
+            temp_plot_props.append(
+                (
+                    plot.class_name,
+                    plot.distribution_name,
+                    plot.x_min,
+                    plot.x_max,
+                    plot.y_min,
+                    plot.y_max,
+                    plot.total_data_histogram.GetBinContent(1),
+                    plot.data_graph,
+                    plot.mc_histograms,
+                    plot.mc_uncertainty,
+                    plot.ratio_graph,
+                    plot.ratio_mc_error_band,
+                    output_dir,
+                    plot.year_to_plot,
+                    plots_data[plot.year_to_plot][plot.class_name]["p_value"],
+                )
+            )
+            # print(plot.class_name, plot.distribution_name, plot.year_to_plot)
+
+            # prepare output area
+            ec_nice_name = plot.class_name.replace("+", "_")
+            if not os.path.exists("{}/{}".format(output_dir, ec_nice_name)):
+                os.makedirs("{}/{}".format(output_dir, ec_nice_name))
+
+    root_file.Close()
+
+    return temp_plot_props
 
 
 def make_plot_task(args):
-    return make_plot(*args)
+    try:
+        return make_plot(*args)
+    except:
+        (
+            class_name,
+            distribution_name,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            _,
+            year,
+            _,
+        ) = args
+        print(
+            "--> ERROR: Could not make plot.\nEC: {}, Distribution: {}, Year: {}".format(
+                class_name, distribution_name, year
+            )
+        )
+        sys.exit(-1)
 
 
 def make_plot(
@@ -30,11 +177,10 @@ def make_plot(
     year,
     p_value,
 ) -> str:
-    # print("--> ", class_name, distribution_name, x_min, x_max, y_min, y_max)
     # skip MET histogram for non-MET classes
-    if distribution_name == "met" and "MET" not in class_name:
-        print(f"[INFO] Skipping MET distribution for {class_name} ...")
-        return "{} - {} - {}".format(class_name, distribution_name, year)
+    # if distribution_name == "met" and "MET" not in class_name:
+    #     print(f"[INFO] Skipping MET distribution for {class_name} ...")
+    #     return "{} - {} - {}".format(class_name, distribution_name, year)
 
     # Create a figure and axes
     fig, (ax1, ax2) = aplt.ratio_plot(
@@ -113,19 +259,20 @@ def make_plot(
 
     bkg_stack = THStack("bkg", "")
     for pg in mc_hists_keys_sorted:
-        # mc_hists[pg].Print("all")
         mc_hists[pg].SetFillColor(PROCESS_GROUP_STYLES[pg].color)
         mc_hists[pg].SetLineWidth(0)
         bkg_stack.Add(mc_hists[pg])
 
     # Draw the stacked histogram on the axes
-    ax1.plot(bkg_stack)
-    ax1.plot(mc_uncertainty, "2", fillcolor=13, fillstyle=3254, linewidth=0)
+    ax1.plot(bkg_stack, expand=False)
+    ax1.plot(
+        mc_uncertainty, "2", fillcolor=13, fillstyle=3254, linewidth=0, expand=False
+    )
 
     ax1.set_yscale("log")  # uncomment to use log scale for y axis
 
     # print("##### Plotting data graph")
-    ax1.plot(data_graph, "P0")
+    ax1.plot(data_graph, "P0", expand=False)
 
     ax1.set_xlim(x_min, x_max)
 
@@ -141,11 +288,23 @@ def make_plot(
 
     ax2.plot(ratio_graph, "P0")
 
+    def ylimits(y_min: float, y_max: float) -> tuple[float, float]:
+        LOWEST_LEVEL = 1e-8
+        if y_min / 1000.0 < LOWEST_LEVEL:
+            y_min = LOWEST_LEVEL
+        else:
+            y_min = y_min / 1000.0
+
+        if y_min > y_max:
+            y_max = y_min * 1.1
+
+        return y_min, y_max
+
     if distribution_name != "counts":
-        ax1.set_ylim(y_min / 1000, y_max)
+        ax1.set_ylim(*ylimits(y_min, y_max))
     else:
         try:
-            ax1.set_ylim(ax1.get_ylim()[0], y_max)
+            ax1.set_ylim(*ylimits(y_min, y_max))
         except ValueError as e:
             print(
                 "Error [ {} - {} - {} ]: {}".format(
@@ -153,12 +312,12 @@ def make_plot(
                 )
             )
             sys.exit(-1)
+    # print("DEBUG: ", ax1.get_ylim())
 
     # add extra space at top of plot to make room for labels
     ax1.add_margins(top=0.15)
 
     ax2.set_ylim(0, 2.5)
-    # ax2.set_ylim(0, 3)
 
     ax2.draw_arrows_outside_range(ratio_graph)
 
