@@ -130,7 +130,7 @@ constexpr float MAX_FLOAT = std::numeric_limits<float>::max();
 
 using Filter_t = std::function<bool(const NanoAODGenInfo::LHEParticles &lhe_particles,
                                     const NanoAODGenInfo::GenParticles &gen_particles,
-                                     Year &year,
+                                    Year &year,
                                     debugger_t &h_debug)>;
 auto get_filter(const std::string &filter_name) -> Filter_t;
 
@@ -164,6 +164,14 @@ const std::map<std::string, Filter_t> filters = {
      {
          return dy_filter(lhe_particles, 50., 120., 0., MAX_FLOAT, h_debug);
      }},
+    {"dyjets_mass_less_120"s,
+     [](const NanoAODGenInfo::LHEParticles &lhe_particles,
+        const NanoAODGenInfo::GenParticles &gen_particles,
+        Year &year,
+        debugger_t &h_debug) -> bool
+     {
+         return dy_filter(lhe_particles, 0., 120., 0., MAX_FLOAT, h_debug);
+     }},
 
     //  DY Jets - Very Low Mass
     {"dyjets_mass_less_10"s,
@@ -182,7 +190,7 @@ const std::map<std::string, Filter_t> filters = {
         Year &year,
         debugger_t &h_debug) -> bool
      {
-         return dy_filter(lhe_particles, 0., 120., 0., 50, h_debug);
+         return dy_filter(lhe_particles, 0., 120., 0., 50., h_debug);
      }},
 
     // WW full-leptonic sample - inclusive
@@ -315,47 +323,7 @@ const std::map<std::string, Filter_t> filters = {
      {
          return wlnujets_mass_binned_filter(lhe_particles, gen_particles, year, 0., 4000., 0, MAX_FLOAT, h_debug);
      }},
-
-    // {"DYJetsToLL_M-10To50_13TeV_AM"s,
-    //  // {"DoLL_M-10To50_13TeV_AM"s,
-    //  [](const NanoAODGenInfo::LHEParticles &lhe_particles, Year &year, debugger_t &h_debug) -> bool
-    //  {
-    //      return dy_filter(lhe_particles, 0., MAX_FLOAT, 0., 100.);
-    //  }},
-    // {"DYJetsToLL_M-50_13TeV_AM"s,
-    //  [](const NanoAODGenInfo::LHEParticles &lhe_particles, Year &year, debugger_t &h_debug) -> bool
-    //  {
-    //      return dy_filter(lhe_particles, 0., 120., 0., 100.);
-    //  }},
-    // {"DYJetsToLL_LHEFilterPtZ-400To650"s,
-    //  [](const NanoAODGenInfo::LHEParticles &lhe_particles, Year &year, debugger_t &h_debug) -> bool
-    //  {
-    //      return dy_filter(lhe_particles, 0., 120., 100., MAX_FLOAT);
-    //  }},
-    // {"DYToEE_M-120To200_TuneCP5_13TeV-powheg-pythia8"s,
-    //  [](const NanoAODGenInfo::LHEParticles &lhe_particles, Year &year, debugger_t &h_debug) -> bool
-    //  {
-    //      return dy_filter(lhe_particles, 120., MAX_FLOAT, 0., MAX_FLOAT);
-    //  }},
-    // Not needed for now. Samples have to be requested/followed-up.
-    // {"ZG"s, [](const NanoAODGenInfo::LHEParticles &lhe_particles) -> bool { return zg_filter(lhe_particles,
-    // 500.);
 };
-
-// }
-// ,
-//     {"WWTo2L2Nu_13TeV_PH"s,
-//      [](const NanoAODGenInfo::LHEParticles &lhe_particles) -> bool
-//      {
-//          return wwto2l2nu_filter(lhe_particles, 200.);
-//      }},
-//     {"WJets"s,
-//      [](const NanoAODGenInfo::LHEParticles &lhe_particles) -> bool
-//      {
-//          return wlnujets_filter(lhe_particles, 0., 120., 0., 500.);
-//      }},
-// }
-// ;
 
 } // namespace GeneratorFilters
 

@@ -128,6 +128,10 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
 
         auto jet_p4 = Math::PtEtaPhiMVector(Jet_pt[i], Jet_eta[i], Jet_phi[i], Jet_mass[i]);
 
+        // first we accumulate the correction that was already aplied
+        jets_delta_met_x -= (jet_p4.pt() - Jet_pt[i] * (1. - Jet_rawFactor[i])) * std::cos(Jet_phi[i]);
+        jets_delta_met_y -= (jet_p4.pt() - Jet_pt[i] * (1. - Jet_rawFactor[i])) * std::sin(Jet_phi[i]);
+
         if (jet_p4.pt() * (1. - Jet_rawFactor[i]) > 10. and std::fabs(jet_p4.eta()) < 5.2)
         {
             auto jet_energy_corrections = get_jet_energy_corrections(shift,
@@ -140,8 +144,10 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
                                                                      fixedGridRhoFastjetAll,
                                                                      jet_corrections,
                                                                      gen_jets);
+
             jet_p4 = jet_p4 * jet_energy_corrections;
 
+            // then we accumulate the new correction
             jets_delta_met_x += (jet_p4.pt() - Jet_pt[i]) * std::cos(Jet_phi[i]);
             jets_delta_met_y += (jet_p4.pt() - Jet_pt[i]) * std::sin(Jet_phi[i]);
         }

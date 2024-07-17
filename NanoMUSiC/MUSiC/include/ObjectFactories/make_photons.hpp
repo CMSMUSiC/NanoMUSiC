@@ -94,6 +94,7 @@ inline auto get_year_for_photon_sf(Year year) -> std::string
 inline auto make_photons(const RVec<float> &Photon_pt,  //
                          const RVec<float> &Photon_eta, //
                          const RVec<float> &Photon_phi, //
+                         const RVec<float> &Photon_mass, //
                          const RVec<bool> &Photon_isScEtaEB,
                          const RVec<bool> &Photon_isScEtaEE,
                          const RVec<Int_t> &Photon_mvaID_WP90,     //
@@ -126,7 +127,7 @@ inline auto make_photons(const RVec<float> &Photon_pt,  //
                                          and (Photon_mvaID_WP90[i])    //
                                          and (Photon_electronVeto[i]);
 
-        auto photon_p4 = Math::PtEtaPhiMVector(Photon_pt[i], Photon_eta[i], Photon_phi[i], PDG::Photon::Mass);
+        auto photon_p4 = Math::PtEtaPhiMVector(Photon_pt[i], Photon_eta[i], Photon_phi[i], Photon_mass[i]);
         photon_p4 = photon_p4 * get_photon_energy_corrections(shift,
                                                               Photon_dEscaleUp[i],
                                                               Photon_dEscaleDown[i],

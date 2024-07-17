@@ -89,9 +89,7 @@ auto pass_generator_filter(const std::string &generator_filter,
 struct EventWeights
 {
     double sum_weights;
-    double sum_pass_filter;
     double total_events;
-    double total_events_pass_filter;
     bool should_use_LHEWeight;
 };
 
@@ -267,12 +265,8 @@ auto classification(const std::string process,
         if (not(is_data))
         {
             double sum_genWeight = sum_weights_json[process][year]["sum_genWeight"];
-            double sum_genWeight_pass_filter = sum_weights_json[process][year]["sum_genWeight_pass_generator_filter"];
             double sum_LHEWeight_originalXWGTUP = sum_weights_json[process][year]["sum_LHEWeight"];
-            double sum_LHEWeight_originalXWGTUP_pass_filter =
-                sum_weights_json[process][year]["sum_LHEWeight_pass_generator_filter"];
             long long raw_events = sum_weights_json[process][year]["raw_events"];
-            long long raw_events_pass_filters = sum_weights_json[process][year]["pass_generator_filter"];
             int _has_genWeight = sum_weights_json[process][year]["has_genWeight"];
             bool has_genWeight = static_cast<bool>(_has_genWeight);
             int _has_LHEWeight_originalXWGTUP = sum_weights_json[process][year]["has_LHEWeight_originalXWGTUP"];
@@ -281,23 +275,22 @@ auto classification(const std::string process,
             bool should_use_LHEWeight = false;
             if (has_genWeight and has_LHEWeight_originalXWGTUP)
             {
-                if (sum_genWeight / static_cast<double>(raw_events) != 1.)
-                {
-                    should_use_LHEWeight = false;
-                }
-                else
+                if (sum_genWeight / static_cast<double>(raw_events) == 1.)
                 {
                     should_use_LHEWeight = true;
                 }
             }
+
             if (has_genWeight and not(has_LHEWeight_originalXWGTUP))
             {
                 should_use_LHEWeight = false;
             }
+
             if (not(has_genWeight) and has_LHEWeight_originalXWGTUP)
             {
                 should_use_LHEWeight = true;
             }
+
             if (not(has_genWeight) and not(has_LHEWeight_originalXWGTUP))
             {
                 fmt::print(stderr,
@@ -311,25 +304,17 @@ auto classification(const std::string process,
             if (should_use_LHEWeight)
             {
                 return EventWeights{.sum_weights = sum_LHEWeight_originalXWGTUP,
-                                    .sum_pass_filter = sum_LHEWeight_originalXWGTUP_pass_filter,
                                     .total_events = static_cast<double>(raw_events),
-                                    .total_events_pass_filter = static_cast<double>(raw_events_pass_filters),
                                     .should_use_LHEWeight = should_use_LHEWeight};
             }
             else
             {
                 return EventWeights{.sum_weights = sum_genWeight,
-                                    .sum_pass_filter = sum_genWeight_pass_filter,
                                     .total_events = static_cast<double>(raw_events),
-                                    .total_events_pass_filter = static_cast<double>(raw_events_pass_filters),
                                     .should_use_LHEWeight = should_use_LHEWeight};
             }
         }
-        return EventWeights{.sum_weights = 1.,
-                            .sum_pass_filter = 1.,
-                            .total_events = 1.,
-                            .total_events_pass_filter = 1.,
-                            .should_use_LHEWeight = false};
+        return EventWeights{.sum_weights = 1., .total_events = 1., .should_use_LHEWeight = false};
     }();
 
     auto input_root_file = std::unique_ptr<TFile>(TFile::Open(input_file.c_str()));
@@ -437,6 +422,7 @@ auto classification(const std::string process,
     ADD_ARRAY_READER(Muon_pt, float);
     ADD_ARRAY_READER(Muon_eta, float);
     ADD_ARRAY_READER(Muon_phi, float);
+    ADD_ARRAY_READER(Muon_mass, float);
     ADD_ARRAY_READER(Muon_tightId, bool);
     ADD_ARRAY_READER(Muon_highPtId, UChar_t);
     ADD_ARRAY_READER(Muon_pfRelIso04_all, float);
@@ -448,6 +434,7 @@ auto classification(const std::string process,
     ADD_ARRAY_READER(Electron_pt, float);
     ADD_ARRAY_READER(Electron_eta, float);
     ADD_ARRAY_READER(Electron_phi, float);
+    ADD_ARRAY_READER(Electron_mass, float);
     ADD_ARRAY_READER(Electron_deltaEtaSC, float);
     ADD_ARRAY_READER(Electron_cutBased, int);
     ADD_ARRAY_READER(Electron_cutBased_HEEP, bool);
@@ -473,6 +460,7 @@ auto classification(const std::string process,
     ADD_ARRAY_READER(Photon_pt, float);
     ADD_ARRAY_READER(Photon_eta, float);
     ADD_ARRAY_READER(Photon_phi, float);
+    ADD_ARRAY_READER(Photon_mass, float);
     ADD_ARRAY_READER(Photon_isScEtaEB, bool);
     ADD_ARRAY_READER(Photon_isScEtaEE, bool);
     ADD_ARRAY_READER(Photon_cutBased, Int_t);
@@ -501,8 +489,8 @@ auto classification(const std::string process,
     ADD_ARRAY_READER(Jet_area, float);
     ADD_ARRAY_READER(Jet_genJetIdx, Int_t);
 
-    ADD_VALUE_READER(RawMET_pt, float);
-    ADD_VALUE_READER(RawMET_phi, float);
+    ADD_VALUE_READER(MET_pt, float);
+    ADD_VALUE_READER(MET_phi, float);
     ADD_VALUE_READER(MET_MetUnclustEnUpDeltaX, float);
     ADD_VALUE_READER(MET_MetUnclustEnUpDeltaY, float);
 
@@ -850,6 +838,7 @@ auto classification(const std::string process,
         auto nominal_muons = ObjectFactories::make_muons(unwrap(Muon_pt),             //
                                                          unwrap(Muon_eta),            //
                                                          unwrap(Muon_phi),            //
+                                                         unwrap(Muon_mass),           //
                                                          unwrap(Muon_tightId),        //
                                                          unwrap(Muon_highPtId),       //
                                                          unwrap(Muon_pfRelIso04_all), //
@@ -871,6 +860,7 @@ auto classification(const std::string process,
         auto nominal_electrons = ObjectFactories::make_electrons(unwrap(Electron_pt),               //
                                                                  unwrap(Electron_eta),              //
                                                                  unwrap(Electron_phi),              //
+                                                                 unwrap(Electron_mass),             //
                                                                  unwrap(Electron_deltaEtaSC),       //
                                                                  unwrap(Electron_cutBased),         //
                                                                  unwrap(Electron_cutBased_HEEP),    //
@@ -907,6 +897,7 @@ auto classification(const std::string process,
         auto nominal_photons = ObjectFactories::make_photons(unwrap(Photon_pt),           //
                                                              unwrap(Photon_eta),          //
                                                              unwrap(Photon_phi),          //
+                                                             unwrap(Photon_mass),         //
                                                              unwrap(Photon_isScEtaEB),    //
                                                              unwrap(Photon_isScEtaEE),    //
                                                              unwrap(Photon_mvaID_WP90),   //
@@ -970,6 +961,7 @@ auto classification(const std::string process,
                     return ObjectFactories::make_muons(unwrap(Muon_pt),             //
                                                        unwrap(Muon_eta),            //
                                                        unwrap(Muon_phi),            //
+                                                       unwrap(Muon_mass),           //
                                                        unwrap(Muon_tightId),        //
                                                        unwrap(Muon_highPtId),       //
                                                        unwrap(Muon_pfRelIso04_all), //
@@ -999,6 +991,7 @@ auto classification(const std::string process,
                     return ObjectFactories::make_electrons(unwrap(Electron_pt),               //
                                                            unwrap(Electron_eta),              //
                                                            unwrap(Electron_phi),              //
+                                                           unwrap(Electron_mass),             //
                                                            unwrap(Electron_deltaEtaSC),       //
                                                            unwrap(Electron_cutBased),         //
                                                            unwrap(Electron_cutBased_HEEP),    //
@@ -1051,6 +1044,7 @@ auto classification(const std::string process,
                     return ObjectFactories::make_photons(unwrap(Photon_pt),           //
                                                          unwrap(Photon_eta),          //
                                                          unwrap(Photon_phi),          //
+                                                         unwrap(Photon_mass),         //
                                                          unwrap(Photon_isScEtaEB),    //
                                                          unwrap(Photon_isScEtaEE),    //
                                                          unwrap(Photon_mvaID_WP90),   //
@@ -1098,8 +1092,8 @@ auto classification(const std::string process,
             }();
 
             auto met = ObjectFactories::make_met(              //
-                unwrap(RawMET_pt),                             //
-                unwrap(RawMET_phi),                            //
+                unwrap(MET_pt),                                //
+                unwrap(MET_phi),                               //
                 unwrap_or(MET_MetUnclustEnUpDeltaX, 0., true), //
                 unwrap_or(MET_MetUnclustEnUpDeltaY, 0., true), //
                 muons.get_delta_met_x(),                       //
@@ -1234,17 +1228,13 @@ auto classification(const std::string process,
                                                 // unwrap_or(LHEWeight_originalXWGTUP,
                                                 //                                                                1.f)
                         );
-                    double mc_weight = [is_data, &genWeight, &LHEWeight_originalXWGTUP, &event_weights]() -> double
+                    double mc_weight = [&genWeight, &LHEWeight_originalXWGTUP, &event_weights]() -> double
                     {
-                        if (not(is_data))
+                        if (event_weights.should_use_LHEWeight)
                         {
-                            if (event_weights.should_use_LHEWeight)
-                            {
-                                return unwrap(LHEWeight_originalXWGTUP);
-                            }
-                            return unwrap(genWeight);
+                            return unwrap(LHEWeight_originalXWGTUP);
                         }
-                        return 1.;
+                        return unwrap(genWeight);
                     }();
 
                     weight = mc_weight * pu_weight * prefiring_weight * trigger_sf / event_weights.sum_weights *
@@ -1358,143 +1348,143 @@ auto classification(const std::string process,
 
             //////////////////////////////////////////////
             /// Validation analysis
-            for (auto &&const_shift : shifts.get_constant_shifts(diff_shift))
-            {
-                if (not(const_shift == Shifts::Variations::Nominal or diff_shift == Shifts::Variations::Nominal))
-                {
-                    continue;
-                }
-
-                auto shift = Shifts::resolve_shifts(const_shift, diff_shift);
-
-                validation_container.z_to_muon_muon_x.fill(
-                    muons,
-                    bjets,
-                    jets,
-                    met,
-                    get_effective_weight(shift, std::min(static_cast<int>(muons.size()), 2), 0, 0, 0, 0, 0, met.size()),
-                    shift);
-                validation_container.z_to_muon_muon_x_z_mass.fill(
-                    muons,
-                    bjets,
-                    jets,
-                    met,
-                    get_effective_weight(
-                        shift, 0, std::min(static_cast<int>(electrons.size()), 2), 0, 0, 0, 0, met.size()),
-                    shift);
-
-                validation_container.z_to_electron_electron_x.fill(
-                    electrons,
-                    bjets,
-                    jets,
-                    met,
-                    get_effective_weight(
-                        shift, 0, std::min(static_cast<int>(electrons.size()), 2), 0, 0, 0, 0, met.size()),
-                    shift);
-                validation_container.z_to_electron_electron_x_z_mass.fill(
-                    electrons,
-                    bjets,
-                    jets,
-                    met,
-                    get_effective_weight(shift, std::min(static_cast<int>(muons.size()), 2), 0, 0, 0, 0, 0, met.size()),
-                    shift);
-
-                validation_container.z_to_tau_tau_x.fill(
-                    taus,
-                    bjets,
-                    jets,
-                    met,
-                    get_effective_weight(shift, 0, 0, std::min(static_cast<int>(taus.size()), 2), 0, 0, 0, met.size()),
-                    shift);
-                validation_container.z_to_tau_tau_x_z_mass.fill(
-                    taus,
-                    bjets,
-                    jets,
-                    met,
-                    get_effective_weight(shift, 0, 0, std::min(static_cast<int>(taus.size()), 2), 0, 0, 0, met.size()),
-                    shift);
-                validation_container.w_to_muon_neutrino_x.fill(
-                    muons,
-                    bjets,
-                    jets,
-                    met,
-                    get_effective_weight(shift, std::min(static_cast<int>(muons.size()), 1), 0, 0, 0, 0, 0, met.size()),
-                    shift);
-                validation_container.w_to_electron_neutrino_x.fill(
-                    electrons,
-                    bjets,
-                    jets,
-                    met,
-                    get_effective_weight(
-                        shift, 0, std::min(static_cast<int>(electrons.size()), 1), 0, 0, 0, 0, met.size()),
-                    shift);
-                validation_container.w_to_tau_neutrino_x.fill(
-                    taus,
-                    bjets,
-                    jets,
-                    met,
-                    get_effective_weight(shift, 0, 0, std::min(static_cast<int>(taus.size()), 1), 0, 0, 0, met.size()),
-                    shift);
-                validation_container.ttbar_to_1muon_2bjet_2jet_met.fill(
-                    muons,
-                    bjets,
-                    jets,
-                    met,
-                    get_effective_weight(shift,
-                                         std::min(static_cast<int>(muons.size()), 1),
-                                         0,
-                                         0,
-                                         0,
-                                         std::min(static_cast<int>(bjets.size()), 2),
-                                         std::min(static_cast<int>(jets.size()), 2),
-                                         met.size()),
-                    shift);
-                validation_container.ttbar_to_1electron_2bjet_2jet_met.fill(
-                    electrons,
-                    bjets,
-                    jets,
-                    met,
-                    get_effective_weight(shift,
-                                         0,
-                                         std::min(static_cast<int>(electrons.size()), 1),
-                                         0,
-                                         0,
-                                         std::min(static_cast<int>(bjets.size()), 2),
-                                         std::min(static_cast<int>(jets.size()), 2),
-                                         met.size()),
-                    shift);
-                validation_container.ttbar_to_1tau_2bjet_2jet_met.fill(
-                    taus,
-                    bjets,
-                    jets,
-                    met,
-                    get_effective_weight(shift,
-                                         0,
-                                         0,
-                                         std::min(static_cast<int>(taus.size()), 1),
-                                         0,
-                                         std::min(static_cast<int>(bjets.size()), 2),
-                                         std::min(static_cast<int>(jets.size()), 2),
-                                         met.size()),
-                    shift);
-                validation_container.gamma_plus_jets.fill(
-                    muons,
-                    electrons,
-                    taus,
-                    photons,
-                    bjets,
-                    jets,
-                    met,
-                    get_effective_weight(shift,
-                                         0,
-                                         0,
-                                         0,
-                                         std::min(static_cast<int>(photons.size()), 1),
-                                         0,
-                                         std::min(static_cast<int>(jets.size()), 1),
-                                         met.size()),
-                    shift);
-            }
+            // for (auto &&const_shift : shifts.get_constant_shifts(diff_shift))
+            // {
+            //     if (not(const_shift == Shifts::Variations::Nominal or diff_shift == Shifts::Variations::Nominal))
+            //     {
+            //         continue;
+            //     }
+            //
+            //     auto shift = Shifts::resolve_shifts(const_shift, diff_shift);
+            //
+            //     validation_container.z_to_muon_muon_x.fill(
+            //         muons,
+            //         bjets,
+            //         jets,
+            //         met,
+            //         get_effective_weight(shift, std::min(static_cast<int>(muons.size()), 2), 0, 0, 0, 0, 0,
+            //         met.size()), shift);
+            //     validation_container.z_to_muon_muon_x_z_mass.fill(
+            //         muons,
+            //         bjets,
+            //         jets,
+            //         met,
+            //         get_effective_weight(
+            //             shift, 0, std::min(static_cast<int>(electrons.size()), 2), 0, 0, 0, 0, met.size()),
+            //         shift);
+            //
+            //     validation_container.z_to_electron_electron_x.fill(
+            //         electrons,
+            //         bjets,
+            //         jets,
+            //         met,
+            //         get_effective_weight(
+            //             shift, 0, std::min(static_cast<int>(electrons.size()), 2), 0, 0, 0, 0, met.size()),
+            //         shift);
+            //     validation_container.z_to_electron_electron_x_z_mass.fill(
+            //         electrons,
+            //         bjets,
+            //         jets,
+            //         met,
+            //         get_effective_weight(shift, std::min(static_cast<int>(muons.size()), 2), 0, 0, 0, 0, 0,
+            //         met.size()), shift);
+            //
+            //     validation_container.z_to_tau_tau_x.fill(
+            //         taus,
+            //         bjets,
+            //         jets,
+            //         met,
+            //         get_effective_weight(shift, 0, 0, std::min(static_cast<int>(taus.size()), 2), 0, 0, 0,
+            //         met.size()), shift);
+            //     validation_container.z_to_tau_tau_x_z_mass.fill(
+            //         taus,
+            //         bjets,
+            //         jets,
+            //         met,
+            //         get_effective_weight(shift, 0, 0, std::min(static_cast<int>(taus.size()), 2), 0, 0, 0,
+            //         met.size()), shift);
+            //     validation_container.w_to_muon_neutrino_x.fill(
+            //         muons,
+            //         bjets,
+            //         jets,
+            //         met,
+            //         get_effective_weight(shift, std::min(static_cast<int>(muons.size()), 1), 0, 0, 0, 0, 0,
+            //         met.size()), shift);
+            //     validation_container.w_to_electron_neutrino_x.fill(
+            //         electrons,
+            //         bjets,
+            //         jets,
+            //         met,
+            //         get_effective_weight(
+            //             shift, 0, std::min(static_cast<int>(electrons.size()), 1), 0, 0, 0, 0, met.size()),
+            //         shift);
+            //     validation_container.w_to_tau_neutrino_x.fill(
+            //         taus,
+            //         bjets,
+            //         jets,
+            //         met,
+            //         get_effective_weight(shift, 0, 0, std::min(static_cast<int>(taus.size()), 1), 0, 0, 0,
+            //         met.size()), shift);
+            //     validation_container.ttbar_to_1muon_2bjet_2jet_met.fill(
+            //         muons,
+            //         bjets,
+            //         jets,
+            //         met,
+            //         get_effective_weight(shift,
+            //                              std::min(static_cast<int>(muons.size()), 1),
+            //                              0,
+            //                              0,
+            //                              0,
+            //                              std::min(static_cast<int>(bjets.size()), 2),
+            //                              std::min(static_cast<int>(jets.size()), 2),
+            //                              met.size()),
+            //         shift);
+            //     validation_container.ttbar_to_1electron_2bjet_2jet_met.fill(
+            //         electrons,
+            //         bjets,
+            //         jets,
+            //         met,
+            //         get_effective_weight(shift,
+            //                              0,
+            //                              std::min(static_cast<int>(electrons.size()), 1),
+            //                              0,
+            //                              0,
+            //                              std::min(static_cast<int>(bjets.size()), 2),
+            //                              std::min(static_cast<int>(jets.size()), 2),
+            //                              met.size()),
+            //         shift);
+            //     validation_container.ttbar_to_1tau_2bjet_2jet_met.fill(
+            //         taus,
+            //         bjets,
+            //         jets,
+            //         met,
+            //         get_effective_weight(shift,
+            //                              0,
+            //                              0,
+            //                              std::min(static_cast<int>(taus.size()), 1),
+            //                              0,
+            //                              std::min(static_cast<int>(bjets.size()), 2),
+            //                              std::min(static_cast<int>(jets.size()), 2),
+            //                              met.size()),
+            //         shift);
+            //     validation_container.gamma_plus_jets.fill(
+            //         muons,
+            //         electrons,
+            //         taus,
+            //         photons,
+            //         bjets,
+            //         jets,
+            //         met,
+            //         get_effective_weight(shift,
+            //                              0,
+            //                              0,
+            //                              0,
+            //                              std::min(static_cast<int>(photons.size()), 1),
+            //                              0,
+            //                              std::min(static_cast<int>(jets.size()), 1),
+            //                              met.size()),
+            //         shift);
+            // }
             //////////////////////////////////////////////
         }
     }

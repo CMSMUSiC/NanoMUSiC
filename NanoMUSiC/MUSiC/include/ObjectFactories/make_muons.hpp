@@ -448,6 +448,7 @@ inline auto get_year_for_muon_sf(Year year) -> std::string
 inline auto make_muons(const RVec<float> &Muon_pt,                      //
                        const RVec<float> &Muon_eta,                     //
                        const RVec<float> &Muon_phi,                     //
+                       const RVec<float> &Muon_mass,                    //
                        const RVec<bool> &Muon_tightId,                  //
                        const RVec<UChar_t> &Muon_highPtId,              //
                        const RVec<float> &Muon_pfRelIso04_all,          //
@@ -496,7 +497,7 @@ inline auto make_muons(const RVec<float> &Muon_pt,                      //
 
         // build a muon and apply energy corrections
         auto muon_p4 =
-            Math::PtEtaPhiMVector(Muon_pt[i] * pt_correction_factor, Muon_eta[i], Muon_phi[i], PDG::Muon::Mass) *
+            Math::PtEtaPhiMVector(Muon_pt[i] * pt_correction_factor, Muon_eta[i], Muon_phi[i], Muon_mass[i]) *
             get_muon_energy_corrections(shift);
 
         delta_met_x += (muon_p4.pt() - Muon_pt[i]) * std::cos(Muon_phi[i]);

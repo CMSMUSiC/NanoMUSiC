@@ -180,9 +180,10 @@ inline auto get_year_for_electron_sf(Year year) -> std::string
     }
 }
 
-inline auto make_electrons(const RVec<float> &Electron_pt,  //
-                           const RVec<float> &Electron_eta, //
-                           const RVec<float> &Electron_phi, //
+inline auto make_electrons(const RVec<float> &Electron_pt,           //
+                           const RVec<float> &Electron_eta,          //
+                           const RVec<float> &Electron_phi,          //
+                           const RVec<float> &Electron_mass,         //
                            const RVec<float> &Electron_deltaEtaSC,
                            const RVec<Int_t> &Electron_cutBased,     //
                            const RVec<bool> &Electron_cutBased_HEEP, //
@@ -239,7 +240,7 @@ inline auto make_electrons(const RVec<float> &Electron_pt,  //
             Math::PtEtaPhiMVector(Electron_pt[i] * pt_correction_factor,
                                   Electron_eta[i] + eta_correction_factor,
                                   Electron_phi[i],
-                                  PDG::Electron::Mass);
+                                  Electron_mass[i]);
         electron_p4 = electron_p4 * get_electron_energy_corrections(shift,
                                                                     Electron_dEscaleUp[i],
                                                                     Electron_dEscaleDown[i],

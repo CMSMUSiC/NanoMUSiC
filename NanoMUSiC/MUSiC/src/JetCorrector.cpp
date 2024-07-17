@@ -1,5 +1,6 @@
 #include "JetCorrector.hpp"
 
+#include <cstdlib>
 #include <stdexcept>
 #include <string>
 
@@ -163,7 +164,6 @@ auto is_good_match(float pt,
     if (genjet_idx >= 0 and static_cast<std::size_t>(genjet_idx) < gen_jets.size)
     {
         const double radius = 0.4;
-        // fmt::print("gen_jets.eta.size() - genjet_idx: {} - {}\n", gen_jets.eta.size(), genjet_idx);
         const double dr = VecOps::DeltaR(eta, gen_jets.eta.at(genjet_idx), phi, gen_jets.phi.at(genjet_idx));
         const double dpt = std::fabs(pt - gen_jets.pt.at(genjet_idx));
         if ((dr < radius / 2.) and (dpt < 3 * resolution * pt))
@@ -247,7 +247,8 @@ auto JetCorrector::get_scale_correction(float pt,
             return correction_factor * (1. - correction_uncertainty);
         }
 
-        throw(std::runtime_error(fmt::format("The requested variation ({}) is not available.", variation)));
+	fmt::print(stderr, "The requested variation ({}) is not available.", variation);
+	std::exit(EXIT_FAILURE);
     }
     return correction_factor;
 }

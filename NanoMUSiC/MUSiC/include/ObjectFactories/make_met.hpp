@@ -33,8 +33,8 @@ inline auto get_unclustered_energy_shift(const Shifts::Variations shift, const d
     return 0.;
 }
 
-inline auto make_met(const double raw_met_pt,                  //
-                     const double raw_met_phi,                 //
+inline auto make_met(const double pf_met_pt,                  //
+                     const double pf_met_phi,                 //
                      const double MET_MetUnclustEnUpDeltaX,    //
                      const double MET_MetUnclustEnUpDeltaY,    //
                      const double delta_met_px_from_muons,     //
@@ -63,7 +63,7 @@ inline auto make_met(const double raw_met_pt,                  //
     auto is_fake = RVec<bool>{};
     auto id_score = RVec<unsigned int>{};
 
-    auto met_px = raw_met_pt * std::cos(raw_met_phi) //
+    auto met_px = pf_met_pt * std::cos(pf_met_phi) //
                   - delta_met_px_from_muons          //
                   - delta_met_px_from_electrons      //
                   - delta_met_px_from_taus           //
@@ -72,7 +72,7 @@ inline auto make_met(const double raw_met_pt,                  //
                   - delta_met_px_from_bjets          //
                   + get_unclustered_energy_shift(shift, MET_MetUnclustEnUpDeltaX);
 
-    auto met_py = raw_met_pt * std::sin(raw_met_phi) //
+    auto met_py = pf_met_pt * std::sin(pf_met_phi) //
                   - delta_met_py_from_muons          //
                   - delta_met_py_from_electrons      //
                   - delta_met_py_from_taus           //
