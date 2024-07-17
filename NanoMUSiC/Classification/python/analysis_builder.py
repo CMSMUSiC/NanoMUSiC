@@ -25,7 +25,7 @@ def get_files(dataset: str) -> list[str]:
     return list(proc.stdout.splitlines())
 
 
-def rwth_has(dataset: str) -> list[str]:
+def rwth_has(dataset: str) -> bool:
     proc = subprocess.run(
         shlex.split(
             'dasgoclient -query="site dataset={}"'.format(dataset),
@@ -50,7 +50,7 @@ def build_analysis_config(input_file: str) -> None:
         total=len(samples_list),
     ):
         for year in Years:
-            samples_list[sample]["output_files_{}".format(year)] = []
+            samples_list[sample]["input_files_{}".format(year)] = []
             for dataset in samples_list[sample].get("das_name_{}".format(year), []):
                 files_per_dataset = get_files(dataset)
                 is_at_rwth = rwth_has(dataset)
@@ -62,11 +62,10 @@ def build_analysis_config(input_file: str) -> None:
                                     f
                                 )
                             )
-                    samples_list[sample]["output_files_{}".format(year)] += (
+                    samples_list[sample]["input_files_{}".format(year)] += (
                         files_per_dataset
                     )
 
-    # print(samples_list)
     # dump new config to string
     os.system("rm analysis_config.toml > /dev/null 2>&1")
     with open("analysis_config.toml", "w") as f:

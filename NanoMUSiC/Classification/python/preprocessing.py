@@ -117,12 +117,12 @@ def compute_sum_weights(analysis_config: str) -> None:
     for sample in configs:
         if not configs[sample]["is_data"]:
             for y in Years:
-                if f"output_files_{y}" in configs[sample]:
-                    if len(configs[sample][f"output_files_{y}"]):
+                if f"input_files_{y}" in configs[sample]:
+                    if len(configs[sample][f"input_files_{y}"]):
                         args.append(
                             (
                                 sample,
-                                configs[sample][f"output_files_{y}"],
+                                configs[sample][f"input_files_{y}"],
                                 y,
                             )
                         )

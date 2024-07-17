@@ -15,6 +15,14 @@ import os
 ############################################################################
 classification_app = typer.Typer(help="Launch and control the Classification steps. Expected workflow: build -> preprocess -> launch -> merge -> unwrap -> fold.")
 
+@classification_app.command()
+def parse(samples_list: Annotated[str, typer.Argument(help="File with DAS names of all samples (one per line).")]):
+    """
+    Will parse the list of DAS names and format it in the MUSiC format, including x-sections.
+    """
+    import parse_sample_list
+
+    parse_sample_list.parse(samples_list)
 
 @classification_app.command()
 def build(config_file: Annotated[str, typer.Argument(help="analysis_config.toml file path, as build by parse_sample_list_nanoaod.py")]):

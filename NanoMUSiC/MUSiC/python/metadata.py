@@ -64,34 +64,28 @@ class Process(BaseModel):
     das_name_2016: list[str] = Field(default_factory=list)
     das_name_2017: list[str] = Field(default_factory=list)
     das_name_2018: list[str] = Field(default_factory=list)
-    output_files_2016APV: list[str] = Field(default_factory=list)
-    output_files_2016: list[str] = Field(default_factory=list)
-    output_files_2017: list[str] = Field(default_factory=list)
-    output_files_2018: list[str] = Field(default_factory=list)
+    input_files_2016APV: list[str] = Field(default_factory=list)
+    input_files_2016: list[str] = Field(default_factory=list)
+    input_files_2017: list[str] = Field(default_factory=list)
+    input_files_2018: list[str] = Field(default_factory=list)
 
     def get_files(self, year: Years, max_files: int = sys.maxsize) -> list[str]:
         if year == Years.Run2016APV:
-            files = self.output_files_2016APV[
-                : min(max_files, len(self.output_files_2016APV))
+            files = self.input_files_2016APV[
+                : min(max_files, len(self.input_files_2016APV))
             ]
             random.shuffle(files)
             return files
         if year == Years.Run2016:
-            files = self.output_files_2016[
-                : min(max_files, len(self.output_files_2016))
-            ]
+            files = self.input_files_2016[: min(max_files, len(self.input_files_2016))]
             random.shuffle(files)
             return files
         if year == Years.Run2017:
-            files = self.output_files_2017[
-                : min(max_files, len(self.output_files_2017))
-            ]
+            files = self.input_files_2017[: min(max_files, len(self.input_files_2017))]
             random.shuffle(files)
             return files
         if year == Years.Run2018:
-            files = self.output_files_2018[
-                : min(max_files, len(self.output_files_2018))
-            ]
+            files = self.input_files_2018[: min(max_files, len(self.input_files_2018))]
             random.shuffle(files)
             return files
 
