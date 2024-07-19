@@ -213,7 +213,6 @@ def build_classification_job(
     year: Years,
     split_index: int,
     sub_input_files: list[str],
-    max_files: int = sys.maxsize,
 ):
     template = r"""
 import classification
@@ -346,9 +345,7 @@ def launch_condor(
             input_files = chunks(p.get_files(this_year, max_files), split_size)
             for split_index, sub_input_files in enumerate(input_files):
                 if len(sub_input_files):
-                    build_classification_job(
-                        p, this_year, split_index, sub_input_files, max_files
-                    )
+                    build_classification_job(p, this_year, split_index, sub_input_files)
                     jobs.append(
                         CondorJob(
                             f"{p.name}_{this_year}_{split_index}",
@@ -458,18 +455,20 @@ def launch_parallel(
 
         print()
         max_line_size = 0
-        for line in iter(parallel_proc.stdout.readline, ""):
-            if line.startswith("ETA"):
-                line = line.replace("\n", "")
-                max_line_size = max(max_line_size, len(line))
-                print(" " * max_line_size, end="\r")
-                print(line.replace("\n", ""), end="\r")
-                sys.stdout.flush()  # Ensure it prints in real-time
-            else:
-                print(line, end="")
+        if parallel_proc.stdout:
+            for line in iter(parallel_proc.stdout.readline, ""):
+                if line.startswith("ETA"):
+                    line = line.replace("\n", "")
+                    max_line_size = max(max_line_size, len(line))
+                    print(" " * max_line_size, end="\r")
+                    print(line.replace("\n", ""), end="\r")
+                    sys.stdout.flush()  # Ensure it prints in real-time
+                else:
+                    print(line, end="")
         print()
 
-        parallel_proc.stdout.close()
+        if parallel_proc.stdout:
+            parallel_proc.stdout.close()
         return_code = parallel_proc.wait()
         os.system("date")
         if return_code:
@@ -778,8 +777,8 @@ def make_distributions(
     alternative_config_file_path: str | None,
     inputs_dir: str,
     validation_inputs_dir: str,
-    class_name_filter_patterns: list[str],
-    validation_filter_patterns: list[str],
+    class_name_filter_pattern: str | None,
+    validation_filter_pattern: str | None,
 ) -> None:
     config_file = None
     if config_file_path:
@@ -805,11 +804,11 @@ def make_distributions(
     def get_input_files(inputs_dir: str) -> list[str]:
         return glob.glob("{}/*.root".format(inputs_dir))
 
-    def filter_classes(analysis_name: str, patterns: list[str]) -> bool:
-        return any(fnmatch.fnmatch(analysis_name, pattern) for pattern in patterns)
+    def filter_classes(analysis_name: str, pattern: str) -> bool:
+        return fnmatch.fnmatch(analysis_name, pattern)
 
     def get_analysis_names(
-        analysis_to_files: dict[str, list[str]], patterns: list[str]
+        analysis_to_files: dict[str, list[str]], patterns: str
     ) -> Union[list[str], None]:
         analysis_names = []
         for analysis in analysis_to_files:
@@ -831,76 +830,80 @@ def make_distributions(
         for i in range(0, len(lst), chunk_size):
             yield lst[i : i + chunk_size]
 
-    print("Will fold Classification ...")
-    n_parts = 3
+    if class_name_filter_pattern:
+        print("Will fold Classification ...")
+        n_parts = 3
+        classes_names = get_analysis_names(classes_to_files, class_name_filter_pattern)
 
-    classes_names = get_analysis_names(classes_to_files, class_name_filter_patterns)
-    if classes_names and len(classes_names) < 5000:
-        n_parts = 1
+        if classes_names and len(classes_names) < 5000:
+            n_parts = 1
 
-    if classes_names:
-        random.shuffle(classes_names)
-        input_files = get_input_files("classification_root_files")
-        random.shuffle(input_files)
-        for this_classes_names in chunk_list(classes_names, n_parts):
+        if classes_names:
+            random.shuffle(classes_names)
+            input_files = get_input_files("classification_root_files")
+            random.shuffle(input_files)
+            for this_classes_names in chunk_list(classes_names, n_parts):
+                p = multiprocessing.Process(
+                    target=do_fold,
+                    args=(
+                        input_files,
+                        "classification_distributions",
+                        this_classes_names,
+                        rescaling,
+                    ),
+                )
+                p.start()
+                p.join()
+                if p.exitcode != 0:
+                    print(
+                        "ERROR: Could not make distribution files for Classification."
+                    )
+
+        if config_file_path:
+            os.system(
+                "cp {} classification_distributions/analysis_config.toml".format(
+                    config_file_path
+                )
+            )
+
+        if alternative_config_file_path:
+            os.system(
+                "cp {} classification_distributions/alternative_config_analysis_config.toml".format(
+                    config_file_path
+                )
+            )
+
+    if validation_filter_pattern:
+        print("Will fold Validation ...")
+        validation_names = get_analysis_names(
+            validation_to_files, validation_filter_pattern
+        )
+
+        print(validation_names)
+        if validation_names:
             p = multiprocessing.Process(
                 target=do_fold,
                 args=(
-                    input_files,
-                    "classification_distributions",
-                    this_classes_names,
-                    rescaling,
+                    get_input_files("validation_root_files"),
+                    "validation_distributions",
+                    validation_names,
                 ),
             )
             p.start()
             p.join()
             if p.exitcode != 0:
-                print("ERROR: Could not make distribution files for Classification.")
+                print("ERROR: Could not make distribution files for Validation.")
 
-    if config_file_path:
-        os.system(
-            "cp {} classification_distributions/analysis_config.toml".format(
-                config_file_path
+        if config_file_path:
+            os.system(
+                "cp {} validation_distributions/analysis_config.toml".format(
+                    config_file_path
+                )
             )
-        )
 
-    if alternative_config_file_path:
-        os.system(
-            "cp {} classification_distributions/alternative_config_analysis_config.toml".format(
-                config_file_path
+        if alternative_config_file_path:
+            os.system(
+                "cp {} validation_distributions/alternative_config_analysis_config.toml".format(
+                    config_file_path
+                )
             )
-        )
-
-    print("Will fold Validation ...")
-    validation_names = get_analysis_names(
-        validation_to_files, validation_filter_patterns
-    )
-
-    print(validation_names)
-    if validation_names:
-        p = multiprocessing.Process(
-            target=do_fold,
-            args=(
-                get_input_files("validation_root_files"),
-                "validation_distributions",
-                validation_names,
-            ),
-        )
-        p.start()
-        p.join()
-        if p.exitcode != 0:
-            print("ERROR: Could not make distribution files for Validation.")
-
-    if config_file_path:
-        os.system(
-            "cp {} validation_distributions/analysis_config.toml".format(
-                config_file_path
-            )
-        )
-
-    if alternative_config_file_path:
-        os.system(
-            "cp {} validation_distributions/alternative_config_analysis_config.toml".format(
-                config_file_path
-            )
-        )

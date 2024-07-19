@@ -756,7 +756,7 @@ class TempEC
           num_met(max_met_idx + 1),
           has_exclusive(has_exclusive),
           has_jet_inclusive(has_jet_inclusive),
-          has_met(max_met_idx > 0),
+          has_met(max_met_idx >= 0),
           sum_pt(0),
           met(0),
           four_vec({})
@@ -861,7 +861,8 @@ class TempEC
                               MUSiCObjects::IdScore::accum_score(jets_id_score, num_jets) +
                               MUSiCObjects::IdScore::accum_score(met_id_score, num_met);
 
-        if (total_id_score.num_medium >= 1 or total_id_score.num_loose >= 3)
+        // if (total_id_score.num_medium >= 1 or total_id_score.num_loose >= 3)
+        if (total_id_score.num_medium >= 1)
         {
             std::string class_name = fmt::format("EC_{}Muon_{}Electron_{}Tau_{}Photon_{}bJet_{}Jet_{}MET",
                                                  num_muons,

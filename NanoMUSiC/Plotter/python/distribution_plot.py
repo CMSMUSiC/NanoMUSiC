@@ -98,6 +98,14 @@ def build_plot_jobs_task(args: tuple[str, dict[str, Any], str]) -> list[Any]:
 
     for dist_name in distribution_names:
         dist = root_file.Get(dist_name)
+        if dist.m_distribution_name == "met":
+            print(
+                "DEBUG: {} - {}".format(
+                    dist.m_event_class_name, dist.m_distribution_name, dist.has_mc()
+                ),
+            )
+            dist.m_total_mc_histogram.Print("all")
+
         if dist.has_mc():
             plot = dist.make_plot_props()
             temp_plot_props.append(

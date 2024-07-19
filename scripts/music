@@ -112,6 +112,9 @@ def unwrap(
         config_file, inputs_dir, validation_inputs_dir, num_cpus
     )
 
+class FoldTarget(str, Enum):
+    Classification = "classification"
+    Validation = "validation"
 
 @classification_app.command()
 def fold(
@@ -119,16 +122,18 @@ def fold(
     alternative_config_file: Annotated[str, typer.Argument(help="Altrernative analysis_config.toml file path, as build by parse_sample_list_nanoaod.py, with different cross-sections")]|None=None,
     inputs_dir: str = "classification_root_files",
     validation_inputs_dir: str = "validation_root_files",
-    filters: list[str] = ["*"],
-    validation_filters: list[str] = ["*"],
+    name_filter: str = "*",
+    target:FoldTarget = FoldTarget.Classification
 ):
     """
     Will merge related histograms (TH1F) into Distributions (usefull data format for plotting and scan).
     """
     import classification
 
-    classification.make_distributions(config_file, alternative_config_file, inputs_dir, validation_inputs_dir, filters, validation_filters
-    )
+    if target == FoldTarget.Classification:
+        classification.make_distributions(config_file, alternative_config_file, inputs_dir, validation_inputs_dir, name_filter, None)
+    if target == FoldTarget.Validation:
+        classification.make_distributions(config_file, alternative_config_file, inputs_dir, validation_inputs_dir, None, name_filter)
 
 
 
