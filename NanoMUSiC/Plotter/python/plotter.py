@@ -94,7 +94,7 @@ def plotter(
                 plot_props += this_plot_props
                 progress.advance(task)
 
-    # Will save plots
+    # Will make and save plots
     with Pool(min(len(plot_props), num_cpus)) as p:
         with Progress() as progress:
             task = progress.add_task(

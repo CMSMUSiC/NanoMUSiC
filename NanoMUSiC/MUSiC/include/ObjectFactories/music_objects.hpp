@@ -62,6 +62,26 @@ class MUSiCObjects
                            .num_vtight = num_vtight + other.num_vtight};
         }
 
+        static auto is_loose(unsigned int score) -> bool
+        {
+            return (score & Loose) == Loose;
+        }
+
+        static auto is_medium(unsigned int score) -> bool
+        {
+            return (score & Medium) == Medium;
+        }
+
+        static auto is_tight(unsigned int score) -> bool
+        {
+            return (score & Tight) == Tight;
+        }
+
+        static auto is_vtight(unsigned int score) -> bool
+        {
+            return (score & VTight) == VTight;
+        }
+
         static auto accum_score(const RVec<unsigned int> &scores, const unsigned int num_obj) -> IdScore
         {
             return std::accumulate(scores.cbegin(),

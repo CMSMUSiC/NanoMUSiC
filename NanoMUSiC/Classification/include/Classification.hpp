@@ -584,6 +584,7 @@ inline auto trigger_filter(const std::string &process,         //
         or pass_high_pt_tau_trigger      //
         or pass_double_tau_trigger       //
         or pass_photon_trigger           //
+        or pass_double_photon_trigger    //
     )
     {
         trigger_filter_res = {
@@ -603,96 +604,7 @@ inline auto trigger_filter(const std::string &process,         //
     return trigger_filter_res;
 };
 
-// template <typename F>
-// inline auto loop_over_object_combinations(F f,
-//                                           std::size_t muons_size,
-//                                           std::size_t electrons_size,
-//                                           std::size_t taus_size,
-//                                           std::size_t photons_size,
-//                                           std::size_t bjets_size,
-//                                           std::size_t jets_size,
-//                                           std::size_t met_size) -> void
-// {
-//     for (std::size_t idx_muon = 0; idx_muon <= muons_size; idx_muon++)
-//     {
-//         for (std::size_t idx_electron = 0; idx_electron <= electrons_size; idx_electron++)
-//         {
-//             for (std::size_t idx_tau = 0; idx_tau <= taus_size; idx_tau++)
-//             {
-//                 for (std::size_t idx_photon = 0; idx_photon <= photons_size; idx_photon++)
-//                 {
-//                     for (std::size_t idx_bjet = 0; idx_bjet <= bjets_size; idx_bjet++)
-//                     {
-//                         for (std::size_t idx_jet = 0; idx_jet <= jets_size; idx_jet++)
-//                         {
-//                             for (std::size_t idx_met = 0; idx_met <= met_size; idx_met++)
-//                             {
-//                                 f(idx_muon, idx_electron, idx_tau, idx_photon, idx_bjet, idx_jet, idx_met);
-//                             }
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
 
-class KinematicsBuffer
-{
-    double _sum_pt = 0.;
-    double _met = 0.;
-    double e = 0.;
-    double px = 0.;
-    double py = 0.;
-    double pz = 0.;
-
-  public:
-    auto accumulate(const MUSiCObjects &objs, std::size_t num, bool is_met = false) -> void
-    {
-        if (num > 0)
-        {
-            auto p4 = objs.p4[num - 1];
-            update(p4.pt(), (is_met ? p4.pt() : 0.), p4.e(), p4.px(), p4.py(), p4.pz());
-        }
-        else
-        {
-            update(0., 0., 0., 0., 0., 0.);
-        }
-    }
-
-    auto update(double other_sum_pt,
-                double other_met,
-                double other_e,
-                double other_px,
-                double other_py,
-                double other_pz) -> void
-    {
-        _sum_pt += other_sum_pt;
-        _met += other_met;
-        e += other_e;
-        px += other_px;
-        py += other_py;
-        pz += other_pz;
-    }
-
-    auto sum_pt() -> double
-    {
-        return _sum_pt;
-    }
-    auto met() -> double
-    {
-        return _met;
-    }
-    auto mass(bool has_met = false) -> double
-    {
-        if (has_met)
-        {
-            return std::sqrt(std::pow(e, 2) - std::pow(px, 2) - std::pow(py, 2));
-        }
-
-        return std::sqrt(std::pow(e, 2) - std::pow(px, 2) - std::pow(py, 2) - std::pow(pz, 2));
-    }
-};
 
 struct FourVec
 {

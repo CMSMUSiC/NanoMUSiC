@@ -5,11 +5,18 @@ from colors import PROCESS_GROUP_STYLES
 from decimal import Decimal
 from tools import to_root_latex
 from metadata import Years
-from pvalue import get_integral_pvalue
+from pvalue import get_integral_pvalue, np
 from typing import Any
 import os
+import math
 
 from ROOT import TFile, THStack, TLine, gPad
+
+import matplotlib as mpl
+
+mpl.use("Agg")
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 def p_value_task(distribution_file: str):
@@ -98,14 +105,6 @@ def build_plot_jobs_task(args: tuple[str, dict[str, Any], str]) -> list[Any]:
 
     for dist_name in distribution_names:
         dist = root_file.Get(dist_name)
-        if dist.m_distribution_name == "met":
-            print(
-                "DEBUG: {} - {}".format(
-                    dist.m_event_class_name, dist.m_distribution_name, dist.has_mc()
-                ),
-            )
-            dist.m_total_mc_histogram.Print("all")
-
         if dist.has_mc():
             plot = dist.make_plot_props()
             temp_plot_props.append(
@@ -125,9 +124,11 @@ def build_plot_jobs_task(args: tuple[str, dict[str, Any], str]) -> list[Any]:
                     output_dir,
                     plot.year_to_plot,
                     plots_data[plot.year_to_plot][plot.class_name]["p_value"],
+                    dist.m_systematics_uncertainties,
+                    dist.m_statistical_uncert,
+                    dist.m_total_mc_histogram,
                 )
             )
-            # print(plot.class_name, plot.distribution_name, plot.year_to_plot)
 
             # prepare output area
             ec_nice_name = plot.class_name.replace("+", "_")
@@ -140,6 +141,7 @@ def build_plot_jobs_task(args: tuple[str, dict[str, Any], str]) -> list[Any]:
 
 
 def make_plot_task(args):
+    # make_uncertainties_plot(*args)
     try:
         return make_plot(*args)
     except:
@@ -159,6 +161,9 @@ def make_plot_task(args):
             _,
             year,
             _,
+            _,
+            _,
+            _,
         ) = args
         print(
             "--> ERROR: Could not make plot.\nEC: {}, Distribution: {}, Year: {}".format(
@@ -166,6 +171,72 @@ def make_plot_task(args):
             )
         )
         sys.exit(-1)
+
+
+# def make_uncertainties_plot(
+#     class_name,
+#     distribution_name,
+#     x_min,
+#     x_max,
+#     y_min,
+#     y_max,
+#     total_data_histogram_first_bin_content,
+#     data_graph,
+#     mc_histograms,
+#     mc_uncertainty,
+#     ratio_graph,
+#     ratio_mc_error,
+#     output_path,
+#     year,
+#     p_value,
+#     systematic_uncertainties,
+#     statistical_uncertainties,
+#     total_mc_histogram,
+# ) -> None:
+#     x = []
+#     for _, hist in mc_histograms:
+#         for i in range(1, hist.GetNbinsX() + 2):
+#             x.append(hist.GetXaxis().GetBinLowEdge(i))
+#         break
+#
+#     grid_dim = math.ceil(math.sqrt(systematic_uncertainties.size() + 1))
+#     fig, axs = plt.subplots(grid_dim, grid_dim, figsize=(grid_dim * 6, grid_dim * 2))
+#     for i, data in enumerate(systematic_uncertainties):
+#         syst_name, values = data
+#         y_to_plot = [
+#             v / total_mc_histogram.GetBinContent(i + 1) for i, v in enumerate(values)
+#         ]
+#         y_to_plot = [y_to_plot[0]] + y_to_plot
+#         axs[int(i / grid_dim)][int(i % grid_dim)].step(x, y_to_plot, label=syst_name)
+#         axs[int(i / grid_dim)][int(i % grid_dim)].set_ylabel("Relative Uncert.")
+#         axs[int(i / grid_dim)][int(i % grid_dim)].legend()
+#         # axs[int(i / grid_dim)][int(i % grid_dim)].set_yscale("log")
+#
+#     y_to_plot = []
+#     for i, v in enumerate(statistical_uncertainties):
+#         if total_mc_histogram.GetBinContent(i + 1) > 0:
+#             y_to_plot.append(v / total_mc_histogram.GetBinContent(i + 1))
+#
+#         else:
+#             y_to_plot.append(0)
+#     y_to_plot = [y_to_plot[0]] + y_to_plot
+#     i = systematic_uncertainties.size()
+#     axs[int(i / grid_dim)][int(i % grid_dim)].step(x, y_to_plot, label="Statist.")
+#     axs[int(i / grid_dim)][int(i % grid_dim)].set_ylabel("Relative Uncert.")
+#     axs[int(i / grid_dim)][int(i % grid_dim)].legend()
+#     # axs[int(i / grid_dim)][int(i % grid_dim)].set_yscale("log")
+#
+#     plt.tight_layout()
+#     year_label = year
+#     if year_label == "Run2":
+#         year_label = ""
+#     output_file_path = f"{output_path}/{class_name}/Uncerts_{class_name}_{distribution_name}{(lambda x: f'_{x}' if x!='' else '_Run2') (year_label)}"
+#     output_file_path = output_file_path.replace("+", "_")
+#
+#     fig.savefig(f"{output_file_path}.png")
+#     fig.savefig(f"{output_file_path}.pdf")
+#     fig.savefig(f"{output_file_path}.svg")
+#
 
 
 def make_plot(
@@ -184,6 +255,9 @@ def make_plot(
     output_path,
     year,
     p_value,
+    _systematic_uncertainties,
+    _statistical_uncertainties,
+    _total_mc_histogram,
 ) -> str:
     # skip MET histogram for non-MET classes
     # if distribution_name == "met" and "MET" not in class_name:
@@ -320,7 +394,6 @@ def make_plot(
                 )
             )
             sys.exit(-1)
-    # print("DEBUG: ", ax1.get_ylim())
 
     # add extra space at top of plot to make room for labels
     ax1.add_margins(top=0.15)

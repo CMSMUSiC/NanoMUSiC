@@ -33,10 +33,12 @@ inline auto get_unclustered_energy_shift(const Shifts::Variations shift, const d
     return 0.;
 }
 
-inline auto make_met(const double pf_met_pt,                  //
-                     const double pf_met_phi,                 //
-                     const double MET_MetUnclustEnUpDeltaX,    //
-                     const double MET_MetUnclustEnUpDeltaY,    //
+inline auto make_met(double PuppiMET_pt,                       //
+                     double PuppiMET_phi,                      //
+                     const double PuppiMET_phiUnclusteredDown, //
+                     const double PuppiMET_phiUnclusteredUp,   //
+                     const double PuppiMET_ptUnclusteredDown,  //
+                     const double PuppiMET_ptUnclusteredUp,    //
                      const double delta_met_px_from_muons,     //
                      const double delta_met_py_from_muons,     //
                      const double delta_met_px_from_electrons, //
@@ -63,23 +65,34 @@ inline auto make_met(const double pf_met_pt,                  //
     auto is_fake = RVec<bool>{};
     auto id_score = RVec<unsigned int>{};
 
-    auto met_px = pf_met_pt * std::cos(pf_met_phi) //
-                  - delta_met_px_from_muons          //
-                  - delta_met_px_from_electrons      //
-                  - delta_met_px_from_taus           //
-                  - delta_met_px_from_photons        //
-                  - delta_met_px_from_jets           //
-                  - delta_met_px_from_bjets          //
-                  + get_unclustered_energy_shift(shift, MET_MetUnclustEnUpDeltaX);
+    if (shift == Shifts::Variations::UnclusteredEnergy_Up)
+    {
+        PuppiMET_pt = PuppiMET_ptUnclusteredUp;
+        PuppiMET_phi = PuppiMET_phiUnclusteredUp;
+    }
+    if (shift == Shifts::Variations::UnclusteredEnergy_Up)
+    {
+        PuppiMET_pt = PuppiMET_ptUnclusteredDown;
+        PuppiMET_phi = PuppiMET_phiUnclusteredDown;
+    }
 
-    auto met_py = pf_met_pt * std::sin(pf_met_phi) //
-                  - delta_met_py_from_muons          //
-                  - delta_met_py_from_electrons      //
-                  - delta_met_py_from_taus           //
-                  - delta_met_py_from_photons        //
-                  - delta_met_py_from_jets           //
-                  - delta_met_py_from_bjets          //
-                  + get_unclustered_energy_shift(shift, MET_MetUnclustEnUpDeltaY);
+    auto met_px = PuppiMET_pt * std::cos(PuppiMET_phi) //
+                  - delta_met_px_from_muons            //
+                  - delta_met_px_from_electrons        //
+                  - delta_met_px_from_taus             //
+                  - delta_met_px_from_photons          //
+                  - delta_met_px_from_jets             //
+                  - delta_met_px_from_bjets;           //
+    // + get_unclustered_energy_shift(shift, MET_MetUnclustEnUpDeltaX);
+
+    auto met_py = PuppiMET_pt * std::sin(PuppiMET_phi) //
+                  - delta_met_py_from_muons            //
+                  - delta_met_py_from_electrons        //
+                  - delta_met_py_from_taus             //
+                  - delta_met_py_from_photons          //
+                  - delta_met_py_from_jets             //
+                  - delta_met_py_from_bjets;           //
+    // + get_unclustered_energy_shift(shift, MET_MetUnclustEnUpDeltaY);
 
     auto this_met = Math::PxPyPzMVector(met_px, met_py, 0., 0.);
 

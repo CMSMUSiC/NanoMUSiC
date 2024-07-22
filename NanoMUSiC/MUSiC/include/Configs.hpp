@@ -257,7 +257,9 @@ constexpr std::array<PhotonConfig, Year::kTotalYears> Photons = {Photon2016APV, 
 // Taus
 struct TauConfig
 {
-    float MinPt = std::numeric_limits<float>::max();
+    float LowPt = 20.;
+    float MediumPt = 40.;
+    float HighPt = 142.;
 };
 
 constexpr auto Tau2016APV = TauConfig{};

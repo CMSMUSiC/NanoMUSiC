@@ -25,7 +25,7 @@ def parse(samples_list: Annotated[str, typer.Argument(help="File with DAS names 
     parse_sample_list.parse(samples_list)
 
 @classification_app.command()
-def build(config_file: Annotated[str, typer.Argument(help="analysis_config.toml file path, as build by parse_sample_list_nanoaod.py")]):
+def build(config_file: Annotated[str, typer.Argument(help="parsed_sample_list.toml file path, as build by the parser.")]):
     """
     Will query all files LFN, for each sample and add it to the analysis_config.toml.
     """
@@ -35,7 +35,7 @@ def build(config_file: Annotated[str, typer.Argument(help="analysis_config.toml 
 
 
 @classification_app.command()
-def preprocess(config_file: Annotated[str, typer.Argument(help="analysis_config.toml file path, as build by parse_sample_list_nanoaod.py")]):
+def preprocess(config_file: Annotated[str, typer.Argument(help="analysis_config.toml file path, as provided by builder.")]):
     """
     Will scan all MC input files and collect the total MC weight per sample.
     """

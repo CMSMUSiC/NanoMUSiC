@@ -322,7 +322,7 @@ auto Distribution::get_systematics_uncert(
     {
         if (pg != "Data")
         {
-            if (xsec_order_uncert_LO_samples.find(pg) == xsec_order_uncert_LO_samples.end())
+            if (not( xsec_order_uncert_LO_samples.contains(pg)  ))
             {
                 xsec_order_uncert_LO_samples.insert({pg, RVec<double>(m_n_bins, 0.)});
                 xsec_order_uncert_non_LO_samples.insert({pg, RVec<double>(m_n_bins, 0.)});

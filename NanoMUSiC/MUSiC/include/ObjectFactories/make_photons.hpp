@@ -91,9 +91,9 @@ inline auto get_year_for_photon_sf(Year year) -> std::string
     }
 }
 
-inline auto make_photons(const RVec<float> &Photon_pt,  //
-                         const RVec<float> &Photon_eta, //
-                         const RVec<float> &Photon_phi, //
+inline auto make_photons(const RVec<float> &Photon_pt,   //
+                         const RVec<float> &Photon_eta,  //
+                         const RVec<float> &Photon_phi,  //
                          const RVec<float> &Photon_mass, //
                          const RVec<bool> &Photon_isScEtaEB,
                          const RVec<bool> &Photon_isScEtaEE,
@@ -139,7 +139,7 @@ inline auto make_photons(const RVec<float> &Photon_pt,  //
 
         if (is_good_photon_pre_filter)
         {
-            bool is_good_photon = (photon_p4.pt() >= ObjConfig::Photons[year].LowPt) and is_good_photon_pre_filter;
+            bool is_good_photon = (photon_p4.pt() >= ObjConfig::Photons[year].MediumPt) and is_good_photon_pre_filter;
 
             if (is_good_photon)
             {

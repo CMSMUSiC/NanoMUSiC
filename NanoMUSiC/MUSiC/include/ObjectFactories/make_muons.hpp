@@ -505,7 +505,7 @@ inline auto make_muons(const RVec<float> &Muon_pt,                      //
 
         if (is_good_low_pt_muon_pre_filter or is_good_high_pt_muon_pre_filter)
         {
-            auto is_good_low_pt_muon = (muon_p4.pt() >= ObjConfig::Muons[year].LowPt) and
+            auto is_good_low_pt_muon = (muon_p4.pt() >= ObjConfig::Muons[year].MediumPt) and
                                        (muon_p4.pt() < ObjConfig::Muons[year].HighPt) and
                                        is_good_low_pt_muon_pre_filter;
             auto is_good_high_pt_muon =

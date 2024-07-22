@@ -2,7 +2,6 @@
 
 import tomli
 from helpers import *
-import argparse
 import os
 import re
 from collections import OrderedDict
@@ -109,9 +108,11 @@ def readSamplesFromFile(filename):
         ]
 
 
-def parse(sample_list_path:str):
-    xsection_file_path="d{}/configs/xsections_and_lumi/xSections.toml".format(os.getenv("MUSIC_BASE"))
-    output_filename="parsed_sample_list.toml"
+def parse(sample_list_path: str):
+    xsection_file_path = "{}/configs/xsections_and_lumi/xSections.toml".format(
+        os.getenv("MUSIC_BASE")
+    )
+    output_filename = "parsed_sample_list.toml"
 
     global error_count
 
@@ -234,4 +235,3 @@ def parse(sample_list_path:str):
 
     else:
         print("\nOutput file not saved")
-

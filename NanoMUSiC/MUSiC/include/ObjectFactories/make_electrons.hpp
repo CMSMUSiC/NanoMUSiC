@@ -254,7 +254,7 @@ inline auto make_electrons(const RVec<float> &Electron_pt,           //
         if (is_good_low_pt_electron_pre_filter or is_good_high_pt_electron_pre_filter)
         {
             // Low pT Electrons
-            bool is_good_low_pt_electron = ((electron_p4.pt() >= ObjConfig::Electrons[year].LowPt) and
+            bool is_good_low_pt_electron = ((electron_p4.pt() >= ObjConfig::Electrons[year].MediumPt) and
                                             (electron_p4.pt() < ObjConfig::Electrons[year].HighPt)) and
                                            is_good_low_pt_electron_pre_filter;
 

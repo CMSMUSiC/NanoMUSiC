@@ -148,8 +148,8 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
             jet_p4 = jet_p4 * jet_energy_corrections;
 
             // then we accumulate the new correction
-            jets_delta_met_x += (jet_p4.pt() - Jet_pt[i]) * std::cos(Jet_phi[i]);
-            jets_delta_met_y += (jet_p4.pt() - Jet_pt[i]) * std::sin(Jet_phi[i]);
+            // jets_delta_met_x += (jet_p4.pt() - Jet_pt[i]) * std::cos(Jet_phi[i]);
+            // jets_delta_met_y += (jet_p4.pt() - Jet_pt[i]) * std::sin(Jet_phi[i]);
         }
 
         if (is_good_jet_pre_filter or is_good_bjet_pre_filter)
