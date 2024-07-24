@@ -2,41 +2,51 @@
 #include <algorithm>
 #include <numeric>
 
-#define RAPIDJSON_HAS_STDSTRING 1
-#include "document.h"
+#include "json.hpp"
+using json = nlohmann::json;
 
-namespace rs = rapidjson;
-
-ScanResult::ScanResult(const MCBin &mcbin, double data, double score, bool integralScan, bool skippedScan,
-                       const std::vector<double> &dicedData, double totalMc, double totalMcUncert)
-    : mcbin(mcbin), data(data), totalMc(totalMc), totalMcUncert(totalMcUncert), score(score),
-      integralScan(integralScan), skippedScan(skippedScan), dicedData(dicedData)
+ScanResult::ScanResult(const MCBin &mcbin,
+                       double data,
+                       double score,
+                       bool integralScan,
+                       bool skippedScan,
+                       const std::vector<double> &dicedData,
+                       double totalMc,
+                       double totalMcUncert)
+    : mcbin(mcbin),
+      data(data),
+      totalMc(totalMc),
+      totalMcUncert(totalMcUncert),
+      score(score),
+      integralScan(integralScan),
+      skippedScan(skippedScan),
+      dicedData(dicedData)
 {
     totalData = std::accumulate(dicedData.begin(), dicedData.end(), 0.0);
 }
 
-rs::Value ScanResult::rapidjsonValue(rs::Document::AllocatorType &allocator, bool verbose) const
+json ScanResult::jsonValue(bool verbose) const
 {
-    rs::Value resultObject(rs::kObjectType);
+    json resultObject;
 
-    resultObject.AddMember("mcEvents", mcbin.getTotalMcEvents(), allocator);
-    resultObject.AddMember("mcStatUncert", mcbin.getTotalMcStatUncert(), allocator);
-    resultObject.AddMember("mcSystUncert", mcbin.getTotalMcSystUncert(), allocator);
-    resultObject.AddMember("mcTotalUncert", mcbin.getTotalMcUncert(), allocator);
-    resultObject.AddMember("dataEvents", data, allocator);
-    resultObject.AddMember("totalMcEventsEC", totalMc, allocator);
-    resultObject.AddMember("totalMcUncertEC", totalMcUncert, allocator);
-    resultObject.AddMember("totalDataEventsEC", totalData, allocator);
-    resultObject.AddMember("lowerEdge", mcbin.lowerEdge, allocator);
-    resultObject.AddMember("width", mcbin.width, allocator);
-    resultObject.AddMember("CompareScore", score, allocator);
-    resultObject.AddMember("integralScan", integralScan, allocator);
-    resultObject.AddMember("skippedScan", skippedScan, allocator);
+    resultObject["mcEvents"] = mcbin.getTotalMcEvents();
+    resultObject["mcStatUncert"] = mcbin.getTotalMcStatUncert();
+    resultObject["mcSystUncert"] = mcbin.getTotalMcSystUncert();
+    resultObject["mcTotalUncert"] = mcbin.getTotalMcUncert();
+    resultObject["dataEvents"] = data;
+    resultObject["totalMcEventsEC"] = totalMc;
+    resultObject["totalMcUncertEC"] = totalMcUncert;
+    resultObject["totalDataEventsEC"] = totalData;
+    resultObject["lowerEdge"] = mcbin.lowerEdge;
+    resultObject["width"] = mcbin.width;
+    resultObject["CompareScore"] = score;
+    resultObject["integralScan"] = integralScan;
+    resultObject["skippedScan"] = skippedScan;
 
     if (verbose)
     {
         // Add systematic errors
-        rs::Value mcSysUncertsObj(rs::kObjectType);
+        json mcSysUncertsObj;
 
         for (size_t i = 0; i < mcbin.mcSysUncerts.size(); i++)
         {
@@ -48,39 +58,39 @@ rs::Value ScanResult::rapidjsonValue(rs::Document::AllocatorType &allocator, boo
             {
                 // Non-symmetric errors, append -Down and -Up to the systematic name
                 const std::string downName = name + "Down";
-                mcSysUncertsObj.AddMember(rs::Value(downName, allocator).Move(), downValue, allocator);
+                mcSysUncertsObj[downName] = downValue;
 
                 const std::string upName = name + "Up";
-                mcSysUncertsObj.AddMember(rs::Value(upName, allocator).Move(), upValue, allocator);
+                mcSysUncertsObj[upName] = upValue;
             }
             else
             {
                 // Symmetric error, just add to document
-                mcSysUncertsObj.AddMember(rs::Value(name, allocator).Move(), upValue, allocator);
+                mcSysUncertsObj[name] = upValue;
             }
         }
-        resultObject.AddMember("mcSysUncerts", mcSysUncertsObj, allocator);
+        resultObject["mcSysUncerts"] = mcSysUncertsObj;
 
-        rs::Value mcEventsPerProcessObj(rs::kObjectType);
-        rs::Value mcStatUncertsObj(rs::kObjectType);
+        json mcEventsPerProcessObj;
+        json mcStatUncertsObj;
 
         for (size_t i = 0; i < mcbin.mcEventsPerProcessGroup.size(); i++)
         {
             const std::string name = mcbin.mcProcessGroupNames[i];
             const double events = mcbin.mcEventsPerProcessGroup[i];
             const double statUncert = mcbin.mcStatUncertPerProcessGroup[i];
-            mcEventsPerProcessObj.AddMember(rs::Value(name, allocator).Move(), events, allocator);
-            mcStatUncertsObj.AddMember(rs::Value(name, allocator).Move(), statUncert, allocator);
+            mcEventsPerProcessObj[name] = events;
+            mcStatUncertsObj[name] = statUncert;
         }
-        resultObject.AddMember("mcEventsPerProcessGroup", mcEventsPerProcessObj, allocator);
-        resultObject.AddMember("mcStatUncertPerProcessGroup", mcStatUncertsObj, allocator);
+        resultObject["mcEventsPerProcessGroup"] = mcEventsPerProcessObj;
+        resultObject["mcStatUncertPerProcessGroup"] = mcStatUncertsObj;
 
-        rs::Value dicedDataArray(rs::kArrayType);
+        json dicedDataArray;
         for (double n : dicedData)
         {
-            dicedDataArray.PushBack(n, allocator);
+            dicedDataArray.push_back(n);
         }
-        resultObject.AddMember("dicedData", dicedDataArray, allocator);
+        resultObject["dicedData"] = dicedDataArray;
     }
 
     return resultObject;

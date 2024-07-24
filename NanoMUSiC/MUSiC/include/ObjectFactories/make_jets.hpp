@@ -11,6 +11,8 @@
 #include "music_objects.hpp"
 
 #include "NanoAODGenInfo.hpp"
+#include <algorithm>
+#include <cmath>
 
 using namespace ROOT;
 using namespace ROOT::Math;
@@ -88,14 +90,20 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
                       const RVec<float> &Jet_btagDeepFlavB,    //
                       const RVec<float> &Jet_rawFactor,        //
                       const RVec<float> &Jet_area,             //
+                      const RVec<float> &Jet_chEmEF,           //
+                      const RVec<Int_t> &Jet_puId,             //
+                      const RVec<float> &Muon_eta,             //
+                      const RVec<float> &Muon_phi,             //
+                      const RVec<bool> &Muon_isPFcand,         //
                       const RVec<Int_t> &Jet_genJetIdx,        //
                       float fixedGridRhoFastjetAll,            //
                       JetCorrector &jet_corrections,           //
                                                                //   BTagSFCorrector &btag_sf_Corrector,   //
                       const NanoAODGenInfo::GenJets &gen_jets, //
+                      const CorrectionlibRef_t &jet_veto_map,  //
                       bool is_data,                            //
                       const std::string &_year,                //
-                      const Shifts::Variations shift) -> std::pair<MUSiCObjects, MUSiCObjects>
+                      const Shifts::Variations shift) -> std::tuple<MUSiCObjects, MUSiCObjects, bool>
 {
     auto year = get_runyear(_year);
     auto jets = RVec<Math::PtEtaPhiMVector>{};
@@ -115,8 +123,43 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
     auto jets_id_score = RVec<unsigned int>{};
     auto bjets_id_score = RVec<unsigned int>{};
 
+    bool has_vetoed_jets = false;
     for (std::size_t i = 0; i < Jet_pt.size(); i++)
     {
+        // check for vetoed jets
+        // apply recemmended loose selection
+        // https://cms-jerc.web.cern.ch/Recommendations/#jet-veto-maps
+        // https://github.com/columnflow/columnflow/blob/1161b414ba536e93a9f532e8c6078e0b92b2a87e/columnflow/selection/cms/jets.py#L108
+        if (shift == Shifts::Variations::Nominal)
+        {
+            if (Jet_pt[i] > 15. and Jet_jetId[i] >= 2 and Jet_chEmEF[i] < 0.9 and
+                (Jet_puId[i] >= 4 or Jet_pt[i] >= 50.))
+            {
+                bool has_muon_overlap = false;
+                for (std::size_t muon_idx = 0; muon_idx < Muon_eta.size(); muon_idx++)
+                {
+                    if (Muon_isPFcand[i])
+                    {
+                        if (ROOT::VecOps::DeltaR(Jet_eta[i], Muon_eta[muon_idx], Jet_phi[i], Muon_phi[muon_idx]) < 0.2)
+                        {
+                            has_muon_overlap = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (not(has_muon_overlap))
+                {
+                    if (jet_veto_map->evaluate({"jetvetomap",
+                                                std::max(-5.1905f, std::min(Jet_eta[i], 5.1905f)),
+                                                std::max(-3.14158f, std::min(Jet_phi[i], 3.14158f))}) != 0.)
+                    {
+                        has_vetoed_jets = true;
+                        break;
+                    }
+                }
+            }
+        }
 
         auto is_good_jet_pre_filter = (std::fabs(Jet_eta[i]) <= ObjConfig::Jets[year].MaxAbsEta) //
                                       and (Jet_jetId[i] >= ObjConfig::Jets[year].MinJetID)       //
@@ -148,8 +191,8 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
             jet_p4 = jet_p4 * jet_energy_corrections;
 
             // then we accumulate the new correction
-            // jets_delta_met_x += (jet_p4.pt() - Jet_pt[i]) * std::cos(Jet_phi[i]);
-            // jets_delta_met_y += (jet_p4.pt() - Jet_pt[i]) * std::sin(Jet_phi[i]);
+            jets_delta_met_x += (jet_p4.pt() - Jet_pt[i]) * std::cos(Jet_phi[i]);
+            jets_delta_met_y += (jet_p4.pt() - Jet_pt[i]) * std::sin(Jet_phi[i]);
         }
 
         if (is_good_jet_pre_filter or is_good_bjet_pre_filter)
@@ -195,20 +238,21 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
         }
     }
 
-    return std::make_pair(MUSiCObjects(jets_p4,
-                                       jets_scale_factors,
-                                       jets_scale_factor_shift,
-                                       jets_delta_met_x,
-                                       jets_delta_met_y,
-                                       jets_is_fake,
-                                       jets_id_score),
-                          MUSiCObjects(bjets_p4,
-                                       bjets_scale_factors,
-                                       bjets_scale_factor_shift,
-                                       bjets_delta_met_x,
-                                       bjets_delta_met_y,
-                                       bjets_is_fake,
-                                       bjets_id_score));
+    return {MUSiCObjects(jets_p4,
+                         jets_scale_factors,
+                         jets_scale_factor_shift,
+                         jets_delta_met_x,
+                         jets_delta_met_y,
+                         jets_is_fake,
+                         jets_id_score),
+            MUSiCObjects(bjets_p4,
+                         bjets_scale_factors,
+                         bjets_scale_factor_shift,
+                         bjets_delta_met_x,
+                         bjets_delta_met_y,
+                         bjets_is_fake,
+                         bjets_id_score),
+            has_vetoed_jets};
 }
 
 } // namespace ObjectFactories

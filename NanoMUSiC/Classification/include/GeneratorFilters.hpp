@@ -74,50 +74,49 @@ namespace GeneratorFilters
 auto no_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, debugger_t &h_debug) -> bool;
 
 auto dy_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
-               const float &mass_min,
-               const float &mass_max,
-               const float &pt_min,
-               const float &pt_max,
+               float mass_min,
+               float mass_max,
+               float pt_min,
+               float pt_max,
                debugger_t &h_debug) -> bool;
 
 auto ttbar_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
-                  const float &mass_min,
-                  const float &mass_max,
+                  float mass_min,
+                  float mass_max,
                   debugger_t &h_debug) -> bool;
 
-auto wg_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, const float &pt_max, debugger_t &h_debug) -> bool;
+auto wg_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, float pt_max, debugger_t &h_debug) -> bool;
 
-auto zg_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, const float &pt_max, debugger_t &h_debug) -> bool;
+auto zg_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, float pt_max, debugger_t &h_debug) -> bool;
 
-auto wwto2l2nu_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, const float &mass_max, debugger_t &h_debug)
-    -> bool;
+auto wwto2l2nu_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, float mass_max, debugger_t &h_debug) -> bool;
 
 auto wlnujets_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
-                     const float &mass_min,
-                     const float &mass_max,
-                     const float &pt_min,
-                     const float &pt_max,
+                     float mass_min,
+                     float mass_max,
+                     float pt_min,
+                     float pt_max,
                      debugger_t &h_debug) -> bool;
 
 auto wlnujets_mass_binned_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
                                  const NanoAODGenInfo::GenParticles &gen_particles,
                                  const Year &year,
-                                 const float &mass_min,
-                                 const float &mass_max,
-                                 const float &pt_min,
-                                 const float &pt_max,
+                                 float mass_min,
+                                 float mass_max,
+                                 float pt_min,
+                                 float pt_max,
                                  debugger_t &h_debug) -> bool;
 
 auto wlnujets_mass_binned_sherpa_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
                                         const NanoAODGenInfo::GenParticles &gen_particles,
                                         const Year &year,
-                                        const float &mass_min,
-                                        const float &mass_max,
-                                        const float &pt_min,
-                                        const float &pt_max,
+                                        float mass_min,
+                                        float mass_max,
+                                        float pt_min,
+                                        float pt_max,
                                         debugger_t &h_debug) -> bool;
 
-auto ww_2l2v_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, const float &mass_max, debugger_t &h_debug)
+auto ww_2l2v_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,  float mass_max, debugger_t &h_debug)
     -> bool;
 
 auto gamma_jet_cleanner_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, float dr_max, debugger_t &h_debug)

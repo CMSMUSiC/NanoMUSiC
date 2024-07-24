@@ -227,7 +227,7 @@ std::vector<size_t> MCBin::leadingBackgrounds(const double threshold) const
     }
 
     // sort indices based on their processes event counts
-    auto comparator = [=](size_t i1, size_t i2)
+    auto comparator = [&](size_t i1, size_t i2)
     {
         return mcEventsPerProcessGroup[i1] > mcEventsPerProcessGroup[i2];
     };

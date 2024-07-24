@@ -22,8 +22,12 @@ class MCBin
     MCBin();
 
     // overloaded constructor
-    MCBin(const yield_vector &mcEventsPerProcessGroup, const yield_vector &mcStatUncertPerProcessGroup,
-          const name_vector &mcProcessGroupNames, double lowerEdge, double width, const uncert_vector &mcSysUncerts,
+    MCBin(const yield_vector &mcEventsPerProcessGroup,
+          const yield_vector &mcStatUncertPerProcessGroup,
+          const name_vector &mcProcessGroupNames,
+          double lowerEdge,
+          double width,
+          const uncert_vector &mcSysUncerts,
           const name_vector &mcSysUncertNames);
 
     // Add another MCBin to this MCBin, adding all events and errors in the right way.

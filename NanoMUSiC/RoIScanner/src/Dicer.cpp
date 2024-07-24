@@ -11,7 +11,7 @@ Dicer::Dicer()
     reset();
 }
 
-void Dicer::setSystematicShifts(const std::map<std::string, std::vector<double>> &shifts)
+void Dicer::setSystematicShifts(const std::unordered_map<std::string, std::vector<double>> &shifts)
 {
     m_systematicShifts = shifts;
 }

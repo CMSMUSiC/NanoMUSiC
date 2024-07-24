@@ -14,6 +14,7 @@
 #include "BS_thread_pool.hpp"
 
 #include <chrono>
+
 // https://github.com/p-ranav/indicators
 #include "indicators.hpp"
 #include <thread>

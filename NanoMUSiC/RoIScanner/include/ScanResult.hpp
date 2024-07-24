@@ -3,22 +3,23 @@
 
 #include <ostream>
 
+#include "json.hpp"
+using json = nlohmann::json;
+
 #include "MCBin.hpp"
 
-#define RAPIDJSON_HAS_STDSTRING 1
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wclass-memaccess"
-#include "document.h"
-#pragma GCC diagnostic pop
-
-namespace rs = rapidjson;
 
 class ScanResult
 {
   public:
-    ScanResult(const MCBin &mcbin = MCBin(), double data = 0, double score = 0, bool integralScan = false,
-               bool skippedScan = false, const std::vector<double> &dicedData = std::vector<double>(),
-               double totalMc = 0, double totalMcUncert = 0);
+    ScanResult(const MCBin &mcbin = MCBin(),
+               double data = 0,
+               double score = 0,
+               bool integralScan = false,
+               bool skippedScan = false,
+               const std::vector<double> &dicedData = std::vector<double>(),
+               double totalMc = 0,
+               double totalMcUncert = 0);
 
     // Significance comparison:
     // returns true if this result is more significant than 'other'
@@ -28,7 +29,7 @@ class ScanResult
     }
 
     // serialize this to json using rapidjson
-    rs::Value rapidjsonValue(rs::Document::AllocatorType &allocator, bool verbose = true) const;
+    json jsonValue(bool verbose = true) const;
 
     static void writeCsvHeader(std::ostream &out);
     void writeCsvLine(std::ostream &out) const;

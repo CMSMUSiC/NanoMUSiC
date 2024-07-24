@@ -290,8 +290,9 @@ def launch_condor(
 
     if do_cleanning:
         os.system("rm -rf classification_outputs")
-        os.system("rm -rf classification_jobs && mkdir -p classification_jobs")
+        os.system("rm -rf classification_jobs")
         os.system("rm -rf classification_src.tar.gz")
+    os.system("mkdir -p classification_jobs")
 
     if not skip_tar:
         os.system(
@@ -431,6 +432,10 @@ def launch_parallel(
                 )
                 sys.exit(-1)
             random.shuffle(generated_jobs)
+            # generated_jobs = sorted(generated_jobs, reverse=True)
+            # generated_jobs = [j for j in generated_jobs if "classification_T" in j] + [
+            #     j for j in generated_jobs if "classification_T" not in j
+            # ]
             for j in generated_jobs:
                 if y in j:
                     file.write("../{}\n".format(j))
@@ -589,7 +594,7 @@ def merge_classification_outputs(
         random.shuffle(merge_jobs)
 
         print("Merging Classification results for {}...".format(year.value))
-        with Pool(30) as p:
+        with Pool(100) as p:
             with Progress() as progress:
                 task = progress.add_task(
                     "Merging {} ...".format(year.value), total=len(merge_jobs)

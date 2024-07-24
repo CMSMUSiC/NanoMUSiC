@@ -5,7 +5,9 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdlib>
 #include <fstream>
+#include <unordered_map>
 
 #include <TCanvas.h>
 #include <TColor.h>
@@ -15,15 +17,11 @@
 #include <TPave.h>
 #include <TStyle.h>
 
-// defined in ECScanner.hpp: RAPIDJSON_HAS_STDSTRING=1
-#include "error/en.h"
-#include "filereadstream.h"
-#include "filewritestream.h"
-#include "prettywriter.h"
+#include "json.hpp"
+using json = nlohmann::json;
 
 #include "ConvolutionComputer.hpp"
 
-namespace rs = rapidjson;
 namespace ph = std::placeholders;
 ////////////////////////////////////////////////
 //     Init functions
@@ -652,8 +650,8 @@ void ECScanner::readLookupTable(const std::string filename)
 //
 void ECScanner::readMCBinInfo()
 {
-    assert(m_jsonDocument.HasMember("MCBins"));
-    const rs::Value &binVals = m_jsonDocument["MCBins"];
+    assert(m_jsonDocument.contains("MCBins"));
+    const json &binVals = m_jsonDocument["MCBins"];
 
     // construct empty bin on stack and pass as out-pointer to readMcBinArray
     MCBin integralBin;
@@ -689,15 +687,15 @@ void ECScanner::readMCBinInfo()
 
 void ECScanner::readSignalBinInfo()
 {
-    assert(m_jsonDocument.HasMember("SignalBins"));
-    const rs::Value &binVals = m_jsonDocument["SignalBins"];
+    assert(m_jsonDocument.contains("SignalBins"));
+    const json &binVals = m_jsonDocument["SignalBins"];
     m_signalBins = readMCBinArray(binVals);
 }
 
 // static
-std::vector<MCBin> ECScanner::readMCBinArray(const rs::Value &jsonArray, MCBin *integralBinOut)
+std::vector<MCBin> ECScanner::readMCBinArray(const json &jsonArray, MCBin *integralBinOut)
 {
-    assert(jsonArray.IsArray());
+    assert(jsonArray.is_array());
     std::vector<MCBin> result;
 
     if (integralBinOut != nullptr)
@@ -706,61 +704,57 @@ std::vector<MCBin> ECScanner::readMCBinArray(const rs::Value &jsonArray, MCBin *
     }
 
     // iterate over all MC Bin entries
-    for (rs::SizeType i = 0; i < jsonArray.Size(); i++)
+    for (std::size_t i = 0; i < jsonArray.size(); i++)
     { // Uses SizeType instead of size_t
-        const rs::Value &jsonObject = jsonArray[i];
+        const json &jsonObject = jsonArray[i];
 
-        const double lowerEdge = jsonObject["lowerEdge"].GetDouble();
-        const double width = jsonObject["width"].GetDouble();
+        const double lowerEdge = jsonObject["lowerEdge"].get<double>();
+        const double width = jsonObject["width"].get<double>();
 
         // Handle event yield (per process group)
-        assert(jsonObject["mcEventsPerProcessGroup"].IsObject());
-        const rs::Value &mcEventsPerProcessObj = jsonObject["mcEventsPerProcessGroup"];
+        assert(jsonObject["mcEventsPerProcessGroup"].is_object());
+        const json &mcEventsPerProcessObj = jsonObject["mcEventsPerProcessGroup"];
 
         MCBin::name_vector mcProcessGroupNames;
         MCBin::yield_vector mcEventsPerProcessGroup;
         int j = 0;
-        for (rs::Value::ConstMemberIterator itr = mcEventsPerProcessObj.MemberBegin();
-             itr != mcEventsPerProcessObj.MemberEnd();
-             ++j, ++itr)
+        for (auto itr = mcEventsPerProcessObj.begin(); itr != mcEventsPerProcessObj.end(); ++j, ++itr)
         {
-            mcEventsPerProcessGroup.push_back(itr->value.GetDouble());
+            mcEventsPerProcessGroup.push_back(itr->get<double>());
 
             // Store process names
-            mcProcessGroupNames.push_back(itr->name.GetString());
+            mcProcessGroupNames.push_back(itr.key());
             if (i > 0)
             {
                 // check against the last bin
-                assert(itr->name.GetString() == result[i - 1].mcProcessGroupNames[j]);
+                assert(itr.key() == result[i - 1].mcProcessGroupNames[j]);
             }
         }
         assert(mcEventsPerProcessGroup.size() > 0);
 
         // Handle statistical uncertainty (also per process group)
-        assert(jsonObject["mcStatUncertPerProcessGroup"].IsObject());
-        const rs::Value &mcStatUncertsObj = jsonObject["mcStatUncertPerProcessGroup"];
+        assert(jsonObject["mcStatUncertPerProcessGroup"].is_object());
+        const json &mcStatUncertsObj = jsonObject["mcStatUncertPerProcessGroup"];
         MCBin::yield_vector mcStatUncertPerProcessGroup;
         j = 0;
-        for (rs::Value::ConstMemberIterator itr = mcStatUncertsObj.MemberBegin(); itr != mcStatUncertsObj.MemberEnd();
-             ++j, ++itr)
+        for (auto itr = mcStatUncertsObj.begin(); itr != mcStatUncertsObj.end(); ++j, ++itr)
         {
-            const double uncert = std::abs(itr->value.GetDouble());
+            const double uncert = std::abs(itr->get<double>());
             mcStatUncertPerProcessGroup.push_back(uncert);
-            assert(itr->name.GetString() == mcProcessGroupNames[j]);
+            assert(itr.key() == mcProcessGroupNames[j]);
         }
 
         // Handle systematic uncertainties
-        assert(jsonObject["mcSysUncerts"].IsObject());
-        const rs::Value &mcSysUncertsObj = jsonObject["mcSysUncerts"];
-
-        // First, store raw values in a STL map, which we can query later.
-        std::map<std::string, double> mcSysUncertsSingle;
-        for (rs::Value::ConstMemberIterator itr = mcSysUncertsObj.MemberBegin(); itr != mcSysUncertsObj.MemberEnd();
-             ++itr)
+        assert(jsonObject["mcSysUncerts"].is_object());
+        const json &mcSysUncertsObj = jsonObject["mcSysUncerts"];
+        // First, store raw values in a STL map,
+        // which we can query later.
+        std::unordered_map<std::string, double> mcSysUncertsSingle;
+        for (auto itr = mcSysUncertsObj.begin(); itr != mcSysUncertsObj.end(); ++itr)
         {
             //~ const double uncert = std::abs( itr->value.GetDouble() );
-            const double uncert = itr->value.GetDouble();
-            mcSysUncertsSingle.emplace(itr->name.GetString(), uncert);
+            const double uncert = itr->get<double>();
+            mcSysUncertsSingle.emplace(itr.key(), uncert);
         }
 
         MCBin::uncert_vector mcSysUncerts;
@@ -819,28 +813,25 @@ std::vector<MCBin> ECScanner::readMCBinArray(const rs::Value &jsonArray, MCBin *
 //
 void ECScanner::readSystematicShiftsFile(const std::string filename)
 {
-    rs::Document document = readJsonDocument(filename);
+    auto document = readJsonDocument(filename);
 
-    assert(document.IsObject());
+    assert(document.is_object());
     m_dicer.reset();
 
-    std::map<std::string, std::vector<double>> shifts;
+    std::unordered_map<std::string, std::vector<double>> shifts;
 
-    for (rs::Value::ConstMemberIterator itr = document.MemberBegin(); itr != document.MemberEnd(); ++itr)
+    for (auto &[key, values] : document.items())
     {
+        assert(values.is_array());
 
-        const rs::Value &rsShiftVals = itr->value;
-        assert(rsShiftVals.IsArray());
+        std::vector<double> shiftVals(values.size());
 
-        std::vector<double> shiftVals(rsShiftVals.Size());
-
-        for (rs::SizeType i = 0; i < rsShiftVals.Size(); i++)
+        for (std::size_t i = 0; i < values.size(); i++)
         {
-            shiftVals[i] = rsShiftVals[i].GetDouble();
+            shiftVals[i] = values[i];
         }
 
-        const char *name = itr->name.GetString();
-        shifts[name] = shiftVals;
+        shifts[key] = shiftVals;
     }
 
     m_dicer.setSystematicShifts(shifts);
@@ -849,13 +840,13 @@ void ECScanner::readSystematicShiftsFile(const std::string filename)
 // read bin infos in m_dataBins
 void ECScanner::readDataBinInfo()
 {
-    assert(m_jsonDocument.HasMember("DataBins"));
-    const rs::Value &binVals = m_jsonDocument["DataBins"];
-    assert(binVals.IsArray());
+    assert(m_jsonDocument.contains("DataBins"));
+    const json &binVals = m_jsonDocument["DataBins"];
+    assert(binVals.is_array());
     m_dataBins.clear();
-    for (rs::SizeType i = 0; i < binVals.Size(); i++)
+    for (std::size_t i = 0; i < binVals.size(); i++)
     { // Uses SizeType instead of size_t
-        m_dataBins.push_back(binVals[i].GetDouble());
+        m_dataBins.push_back(binVals[i].get<double>());
     }
 }
 
@@ -876,17 +867,17 @@ void ECScanner::readInputJson(const std::string jsonFilePath)
     m_jsonDocument = readJsonDocument(jsonFilePath);
 
     // make sure we sourced a valid json with a object as root
-    assert(m_jsonDocument.IsObject());
+    assert(m_jsonDocument.is_object());
 
     m_scanType = ScanType::mc;
 
     // decide on the type of scan
-    if (m_jsonDocument.HasMember("SignalBins"))
+    if (m_jsonDocument.contains("SignalBins"))
     {
         m_scanType = ScanType::signal;
         readSignalBinInfo();
     }
-    if (m_jsonDocument.HasMember("DataBins"))
+    if (m_jsonDocument.contains("DataBins"))
     {
         m_scanType = ScanType::data;
         readDataBinInfo();
@@ -928,9 +919,9 @@ void ECScanner::readInputJson(const std::string jsonFilePath)
     m_p_prior = static_cast<PriorMode>(tmp_prior);
 
     // check if we should use a alternative core function
-    if (m_jsonDocument.HasMember("ScoreFunction"))
+    if (m_jsonDocument.contains("ScoreFunction"))
     {
-        m_scoreFunc = m_jsonDocument["ScoreFunction"].GetString();
+        m_scoreFunc = m_jsonDocument["ScoreFunction"].get<std::string>();
         if (m_scoreFuncMap.find(m_scoreFunc) == m_scoreFuncMap.end())
         {
             std::cerr << "Error: No score function " << m_scoreFunc << " available" << std::endl;
@@ -939,10 +930,10 @@ void ECScanner::readInputJson(const std::string jsonFilePath)
     }
 
     // check if we should use filtering of regions
-    if (m_jsonDocument.HasMember("Filter"))
+    if (m_jsonDocument.contains("Filter"))
     {
         m_doFilter = true;
-        m_filterFunc = m_jsonDocument["Filter"].GetString();
+        m_filterFunc = m_jsonDocument["Filter"].get<std::string>();
         if (m_filterFuncMap.find(m_filterFunc) == m_filterFuncMap.end())
         {
             std::cerr << "Error: No filter function " << m_filterFunc << " available" << std::endl;
@@ -950,9 +941,9 @@ void ECScanner::readInputJson(const std::string jsonFilePath)
         }
     }
 
-    if (m_jsonDocument.HasMember("poissonSeed"))
+    if (m_jsonDocument.contains("poissonSeed"))
     {
-        const int external_seed = m_jsonDocument["poissonSeed"].GetInt();
+        const int external_seed = m_jsonDocument["poissonSeed"].get<int>();
         const int class_seed = std::hash<std::string>()(m_ECName);
 
         // combining the two seeds a la http://stackoverflow.com/a/2595226/489345
@@ -965,140 +956,79 @@ void ECScanner::readInputJson(const std::string jsonFilePath)
     }
 }
 
-rs::Document ECScanner::readJsonDocument(const std::string filename)
+json ECScanner::readJsonDocument(const std::string &filename)
 {
-    FILE *fp = fopen(filename.c_str(), "r"); // non-Windows use "r"
-
-    char buffer[8192]; // 8 kB, Stack size on lxcluster currently ~10MB.
-    if (fp == nullptr)
+    std::ifstream f(filename);
+    if (!f.is_open())
     {
-        const char *cwd = getcwd(buffer, sizeof(buffer));
-        std::cerr << "Error: JSON input file '" << cwd << "/" << filename << "' cannot be opened for reading."
-                  << std::endl;
-        exit(1);
+        fmt::print(stderr, "Unable to open JSON file: {}", filename);
+        std::exit(EXIT_FAILURE);
     }
-
-    rs::Document document;
-
-    rs::FileReadStream stream(fp, buffer, sizeof(buffer));
-
-    document.ParseStream(stream);
-
-    if (document.HasParseError())
-    {
-        std::string error_message = rs::GetParseError_En(document.GetParseError());
-        std::cerr << "Parse error while parsing JSON input file: " << error_message << std::endl;
-        exit(1);
-    }
-
-    fclose(fp);
-
-    return document;
+    return json::parse(f);
 }
 
-void ECScanner::writeJsonDocument(const std::string filename, const rs::Document &document)
+void ECScanner::writeJsonDocument(const std::string filename, const json &document)
 {
-    FILE *fp = fopen(filename.c_str(), "wb");
-
-    char buffer[8192]; // 8kB
-    if (fp == nullptr)
+    std::ofstream outfile(filename);
+    if (outfile.is_open())
     {
-        const char *cwd = getcwd(buffer, sizeof(buffer));
-        std::cerr << "Error: JSON output file '" << cwd << "/" << filename << "' cannot be opened for writing."
-                  << std::endl;
+        outfile << std::setw(4) << document << std::endl;
+        outfile.close();
         return;
     }
 
-    rs::FileWriteStream stream(fp, buffer, sizeof(buffer));
-
-    rs::PrettyWriter<rs::FileWriteStream> writer(stream);
-
-    document.Accept(writer);
-
-    fclose(fp);
+    fmt::print(stderr, "ERROR: Could not open json file for writing.");
+    std::exit(EXIT_FAILURE);
 }
 
 template <typename T>
 void ECScanner::checkAndSetConfig(const std::string name, T &config)
 {
-    if (m_jsonDocument.HasMember(name.c_str()))
+    if (m_jsonDocument.contains(name))
     {
-        auto &member = m_jsonDocument[name.c_str()];
-        config = member.Get<T>();
+        config = m_jsonDocument[name].get<T>();
     }
     std::cout << name << " = " << std::boolalpha << config << std::endl;
 }
 
 //// Write all scan results to member m_jsonDocument
-//
-//
 void ECScanner::writeOutputFiles(const std::string outputDirectory)
 {
     const std::string nameBase = outputDirectory + "/" + m_ECName + "_" + m_distribution;
-
-    // CSV file for immediate results
-    std::ofstream resultCsvFile(nameBase + "_output.csv");
-
-    // Write CSV header
-    resultCsvFile << "hash,"
-                  << "event_class,"
-                  << "distribution,"
-                  << "round,";
-    ScanResult::writeCsvHeader(resultCsvFile);
-    resultCsvFile << std::endl;
-
-    // Use new document object
-    rs::Document infoJsonDocument;
-    infoJsonDocument.SetObject();
-
-    // get a reference to the object allocator
-    auto &allocator = infoJsonDocument.GetAllocator();
+    json infoJsonDocument;
 
     // Add scan results
-    rs::Value scanResultArray(rs::kArrayType);
-    for (size_t i = 0; i < m_scanResults.size(); i++)
+    std::vector<json> scanResults;
+    for (const auto &result : m_scanResults)
     {
-        const ScanResult &result = m_scanResults[i];
-
-        // initialize rapidjson object for each result
-        rs::Value resultObject = result.rapidjsonValue(allocator);
-
-        // Add object to list of scan results
-        scanResultArray.PushBack(resultObject, allocator);
-
-        // Append line to CSV file: first 4 general fields, then info about the result
-        resultCsvFile << m_submissionHash << "," << m_ECName << "," << m_distribution << "," << (m_firstDicingRound + i)
-                      << ",";
-        result.writeCsvLine(resultCsvFile);
-        resultCsvFile << std::endl;
+        scanResults.emplace_back(result.jsonValue());
     }
-    resultCsvFile.close();
-
-    // Add list of results to rapidjson member document
-    infoJsonDocument.AddMember("ScanResults", scanResultArray, allocator);
+    infoJsonDocument["ScanResults"] = scanResults;
 
     // Add timing results
-    rs::Value timingObj(rs::kObjectType);
-    infoJsonDocument.AddMember("timing", timingObj, allocator);
+    json timingObj;
+    infoJsonDocument["timing"] = timingObj;
 
     // Add stats results
-    rs::Value statsObj(rs::kObjectType);
+    json statsObj;
     for (std::pair<std::string, int> pair : m_regionStatistics)
     {
-        statsObj.AddMember(rs::Value(pair.first, allocator).Move(), pair.second, allocator);
+        statsObj[pair.first] = pair.second;
     }
-    infoJsonDocument.AddMember("stats", statsObj, allocator);
+    infoJsonDocument["stats"] = statsObj;
 
     // Add EC name and scanned distribution
-    infoJsonDocument.AddMember("name", rs::Value(m_ECName, allocator).Move(), allocator);
-    infoJsonDocument.AddMember("distribution", rs::Value(m_distribution, allocator).Move(), allocator);
-    infoJsonDocument.AddMember("hash", rs::Value(m_submissionHash, allocator).Move(), allocator);
-    infoJsonDocument.AddMember("key", rs::Value(m_submissionKey, allocator).Move(), allocator);
+    infoJsonDocument["name"] = m_ECName;
+    infoJsonDocument["distribution"] = m_distribution;
+    infoJsonDocument["hash"] = m_submissionHash;
+    infoJsonDocument["key"] = m_submissionKey;
+
     // Add starting round within global list of rounds
-    infoJsonDocument.AddMember("firstRound", m_firstDicingRound, allocator);
+    infoJsonDocument["firstRound"] = m_firstDicingRound;
+
     // Add reference to input json file
-    infoJsonDocument.AddMember("JsonFile", rs::Value(m_lastJsonFilePath, allocator).Move(), allocator);
-    infoJsonDocument.AddMember("prior", m_p_prior, allocator);
+    infoJsonDocument["JsonFile"] = m_lastJsonFilePath;
+    infoJsonDocument["prior"] = m_p_prior;
 
     // Add flag to identify data/signal scans
     std::string typeIdentifier;
@@ -1117,7 +1047,7 @@ void ECScanner::writeOutputFiles(const std::string outputDirectory)
         typeIdentifier = "unknown";
         break;
     }
-    infoJsonDocument.AddMember("ScanType", rs::Value(typeIdentifier, allocator).Move(), allocator);
+    infoJsonDocument["ScanType"] = typeIdentifier;
 
     const std::string infoJsonFilePath = nameBase + "_info.json";
     writeJsonDocument(infoJsonFilePath, infoJsonDocument);

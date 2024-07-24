@@ -33,27 +33,128 @@ inline auto get_unclustered_energy_shift(const Shifts::Variations shift, const d
     return 0.;
 }
 
-inline auto make_met(double PuppiMET_pt,                       //
-                     double PuppiMET_phi,                      //
-                     const double PuppiMET_phiUnclusteredDown, //
-                     const double PuppiMET_phiUnclusteredUp,   //
-                     const double PuppiMET_ptUnclusteredDown,  //
-                     const double PuppiMET_ptUnclusteredUp,    //
-                     const double delta_met_px_from_muons,     //
-                     const double delta_met_py_from_muons,     //
-                     const double delta_met_px_from_electrons, //
-                     const double delta_met_py_from_electrons, //
-                     const double delta_met_px_from_taus,      //
-                     const double delta_met_py_from_taus,      //
-                     const double delta_met_px_from_photons,   //
-                     const double delta_met_py_from_photons,   //
-                     const double delta_met_px_from_jets,      //
-                     const double delta_met_py_from_jets,      //
-                     const double delta_met_px_from_bjets,     //
-                     const double delta_met_py_from_bjets,     //
-                     bool is_data,                             //
-                     const std::string &_year,                 //
-                     const Shifts::Variations shift) -> MUSiCObjects
+struct METXYCorr
+{
+    double pt;
+    double phi;
+
+    METXYCorr(const CorrectionlibRef_t &met_xy_corr_pt_data,
+              const CorrectionlibRef_t &met_xy_corr_phi_data,
+              const CorrectionlibRef_t &met_xy_corr_pt_mc,
+              const CorrectionlibRef_t &met_xy_corr_phi_mc,
+              float pt,
+              float phi,
+              float npvs,
+              float run,
+              bool is_data)
+    {
+        const auto met_xy_corr_pt = met_xy_corr_pt_mc;
+        const auto met_xy_corr_phi = met_xy_corr_phi_mc;
+        if (is_data)
+        {
+            const auto met_xy_corr_pt = met_xy_corr_pt_data;
+            const auto met_xy_corr_phi = met_xy_corr_phi_data;
+        }
+
+        try
+        {
+            pt = met_xy_corr_pt->evaluate({pt, phi, npvs, run});
+        }
+        catch (const std::exception &e)
+        {
+            // Catch any other unexpected exceptions
+            auto inputs = std::vector<std::string>{};
+            for (auto &&var : met_xy_corr_pt->inputs())
+            {
+                inputs.push_back(fmt::format("({} as {})", var.name(), var.typeStr()));
+            }
+            fmt::print(stderr,
+                       "ERROR: Caught an exception when trying to evaluate a scale factor from "
+                       "correctionlib. Exception: {}. Correctionlib Ref: {}. Expected inputs: [{}].\n",
+                       e.what(),
+                       met_xy_corr_pt->name(),
+                       fmt::join(inputs, " - "));
+            std::exit(EXIT_FAILURE);
+        }
+        // Catch any other unexpected exceptions
+        catch (...)
+        {
+            auto inputs = std::vector<std::string>{};
+            for (auto &&var : met_xy_corr_pt->inputs())
+            {
+                inputs.push_back(fmt::format("({} as {})", var.name(), var.typeStr()));
+            }
+            fmt::print(stderr,
+                       "ERROR: Caught an unkown exception when trying to evaluate a scale factor from "
+                       "correctionlib. Correctionlib Ref: {}. Expected inputs: [{}].\n",
+                       met_xy_corr_pt->name(),
+                       fmt::join(inputs, " - "));
+            std::exit(EXIT_FAILURE);
+        }
+
+        try
+        {
+            phi = met_xy_corr_phi->evaluate({pt, phi, npvs, run});
+        }
+        catch (const std::exception &e)
+        {
+            // Catch any other unexpected exceptions
+            auto inputs = std::vector<std::string>{};
+            for (auto &&var : met_xy_corr_phi->inputs())
+            {
+                inputs.push_back(fmt::format("({} as {})", var.name(), var.typeStr()));
+            }
+            fmt::print(stderr,
+                       "ERROR: Caught an exception when trying to evaluate a scale factor from "
+                       "correctionlib. Exception: {}. Correctionlib Ref: {}. Expected inputs: [{}].\n",
+                       e.what(),
+                       met_xy_corr_phi->name(),
+                       fmt::join(inputs, " - "));
+            std::exit(EXIT_FAILURE);
+        }
+        // Catch any other unexpected exceptions
+        catch (...)
+        {
+            auto inputs = std::vector<std::string>{};
+            for (auto &&var : met_xy_corr_phi->inputs())
+            {
+                inputs.push_back(fmt::format("({} as {})", var.name(), var.typeStr()));
+            }
+            fmt::print(stderr,
+                       "ERROR: Caught an unkown exception when trying to evaluate a scale factor from "
+                       "correctionlib. Correctionlib Ref: {}. Expected inputs: [{}].\n",
+                       met_xy_corr_phi->name(),
+                       fmt::join(inputs, " - "));
+            std::exit(EXIT_FAILURE);
+        }
+    }
+};
+
+inline auto make_met(const double MET_pt,                            //
+                     const double MET_phi,                           //
+                     const double MET_MetUnclustEnUpDeltaX,          //
+                     const double MET_MetUnclustEnUpDeltaY,          //
+                     const double delta_met_px_from_muons,           //
+                     const double delta_met_py_from_muons,           //
+                     const double delta_met_px_from_electrons,       //
+                     const double delta_met_py_from_electrons,       //
+                     const double delta_met_px_from_taus,            //
+                     const double delta_met_py_from_taus,            //
+                     const double delta_met_px_from_photons,         //
+                     const double delta_met_py_from_photons,         //
+                     const double delta_met_px_from_jets,            //
+                     const double delta_met_py_from_jets,            //
+                     const double delta_met_px_from_bjets,           //
+                     const double delta_met_py_from_bjets,           //
+                     const CorrectionlibRef_t &met_xy_corr_pt_data,  //
+                     const CorrectionlibRef_t &met_xy_corr_phi_data, //
+                     const CorrectionlibRef_t &met_xy_corr_pt_mc,    //
+                     const CorrectionlibRef_t &met_xy_corr_phi_mc,   //
+                     const int npvs,                                 //
+                     unsigned int run,                               //
+                     bool is_data,                                   //
+                     const std::string &_year,                       //
+                     const Shifts::Variations shift) -> std::pair<MUSiCObjects, bool>
 {
 
     auto year = get_runyear(_year);
@@ -65,56 +166,65 @@ inline auto make_met(double PuppiMET_pt,                       //
     auto is_fake = RVec<bool>{};
     auto id_score = RVec<unsigned int>{};
 
-    if (shift == Shifts::Variations::UnclusteredEnergy_Up)
+    bool is_fake_met = false;
+    if (MET_pt > 6500.)
     {
-        PuppiMET_pt = PuppiMET_ptUnclusteredUp;
-        PuppiMET_phi = PuppiMET_phiUnclusteredUp;
-    }
-    if (shift == Shifts::Variations::UnclusteredEnergy_Up)
-    {
-        PuppiMET_pt = PuppiMET_ptUnclusteredDown;
-        PuppiMET_phi = PuppiMET_phiUnclusteredDown;
+        is_fake_met = true;
     }
 
-    auto met_px = PuppiMET_pt * std::cos(PuppiMET_phi) //
-                  - delta_met_px_from_muons            //
-                  - delta_met_px_from_electrons        //
-                  - delta_met_px_from_taus             //
-                  - delta_met_px_from_photons          //
-                  - delta_met_px_from_jets             //
-                  - delta_met_px_from_bjets;           //
-    // + get_unclustered_energy_shift(shift, MET_MetUnclustEnUpDeltaX);
-
-    auto met_py = PuppiMET_pt * std::sin(PuppiMET_phi) //
-                  - delta_met_py_from_muons            //
-                  - delta_met_py_from_electrons        //
-                  - delta_met_py_from_taus             //
-                  - delta_met_py_from_photons          //
-                  - delta_met_py_from_jets             //
-                  - delta_met_py_from_bjets;           //
-    // + get_unclustered_energy_shift(shift, MET_MetUnclustEnUpDeltaY);
-
-    auto this_met = Math::PxPyPzMVector(met_px, met_py, 0., 0.);
-
-    bool is_good_met = this_met.pt() >= ObjConfig::MET[year].MinPt;
-
-    if (is_good_met)
+    if (not(is_fake_met))
     {
-        scale_factors.push_back(1.);
-        scale_factor_shift.push_back(0.);
-        met_p4.push_back(Math::PtEtaPhiMVector(this_met));
+        auto corrected_xy_met = METXYCorr(met_xy_corr_pt_data,
+                                          met_xy_corr_phi_data,
+                                          met_xy_corr_pt_mc,
+                                          met_xy_corr_phi_mc,
+                                          MET_pt,
+                                          MET_phi,
+                                          static_cast<float>(npvs),
+                                          static_cast<float>(run),
+                                          is_data);
 
-        is_fake.push_back(false);
-        id_score.push_back(MUSiCObjects::IdScore::Medium);
+        auto met_px = corrected_xy_met.pt * std::cos(corrected_xy_met.phi) //
+                      - delta_met_px_from_muons                            //
+                      - delta_met_px_from_electrons                        //
+                      - delta_met_px_from_taus                             //
+                      - delta_met_px_from_photons                          //
+                      - delta_met_px_from_jets                             //
+                      - delta_met_px_from_bjets                            //
+                      + get_unclustered_energy_shift(shift, MET_MetUnclustEnUpDeltaX);
+
+        auto met_py = corrected_xy_met.pt * std::sin(corrected_xy_met.phi) //
+                      - delta_met_py_from_muons                            //
+                      - delta_met_py_from_electrons                        //
+                      - delta_met_py_from_taus                             //
+                      - delta_met_py_from_photons                          //
+                      - delta_met_py_from_jets                             //
+                      - delta_met_py_from_bjets                            //
+                      + get_unclustered_energy_shift(shift, MET_MetUnclustEnUpDeltaY);
+
+        auto this_met = Math::PxPyPzMVector(met_px, met_py, 0., 0.);
+
+        bool is_good_met = this_met.pt() >= ObjConfig::MET[year].MinPt;
+
+        if (is_good_met)
+        {
+            scale_factors.push_back(1.);
+            scale_factor_shift.push_back(0.);
+            met_p4.push_back(Math::PtEtaPhiMVector(this_met));
+
+            is_fake.push_back(false);
+            id_score.push_back(MUSiCObjects::IdScore::Medium);
+        }
     }
 
-    return MUSiCObjects(met_p4,             //
-                        scale_factors,      //
-                        scale_factor_shift, //
-                        delta_met_x,        //
-                        delta_met_y,        //
-                        is_fake,
-                        id_score);
+    return {MUSiCObjects(met_p4,             //
+                         scale_factors,      //
+                         scale_factor_shift, //
+                         delta_met_x,        //
+                         delta_met_y,        //
+                         is_fake,
+                         id_score),
+            is_fake_met};
 }
 
 } // namespace ObjectFactories

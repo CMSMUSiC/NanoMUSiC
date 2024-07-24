@@ -11,18 +11,13 @@
 #include <TH3.h>
 #include <TStyle.h>
 
-#define RAPIDJSON_HAS_STDSTRING 1
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wclass-memaccess"
-#include "document.h"
-#pragma GCC diagnostic pop
+#include "json.hpp"
+using json = nlohmann::json;
 
 #include "ConvolutionLookup.hpp"
 #include "Dicer.hpp"
 #include "MCBin.hpp"
 #include "ScanResult.hpp"
-
-namespace rs = rapidjson;
 
 class ECScanner
 {
@@ -84,7 +79,7 @@ class ECScanner
 
     // private member functions
     void initScoreFuncMap();
-    static std::vector<MCBin> readMCBinArray(const rs::Value &jsonArray, MCBin *integralBinOut = nullptr);
+    static std::vector<MCBin> readMCBinArray(const json &jsonArray, MCBin *integralBinOut = nullptr);
     void initFilterFuncMap();
     void significanceFilter();
     bool vetoRegion(const MCBin &mcbin,
@@ -111,8 +106,8 @@ class ECScanner
                                        std::vector<MCBin>::iterator minIter,
                                        std::vector<MCBin>::iterator maxIter);
 
-    static rs::Document readJsonDocument(const std::string filename);
-    static void writeJsonDocument(const std::string filename, const rs::Document &document);
+    static json readJsonDocument(const std::string &filename);
+    static void writeJsonDocument(const std::string filename, const json &document);
     static std::string replaceExtension(const std::string filename, const std::string newExtension);
 
     // private variables
@@ -121,7 +116,7 @@ class ECScanner
     std::string m_submissionHash;
     std::string m_submissionKey;
 
-    rs::Document m_jsonDocument;
+    json m_jsonDocument;
     std::string m_lastJsonFilePath;
 
     enum class ScanType

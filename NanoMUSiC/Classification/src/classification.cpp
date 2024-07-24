@@ -215,6 +215,13 @@ auto classification(const std::string process,
     auto deep_tau_2017_v2_p1_vs_jet = correctionlib_utils.make_correctionlib_ref("TauVSjet", year);
     auto tau_energy_scale = correctionlib_utils.make_correctionlib_ref("TauEnergyScale", year);
 
+    auto met_xy_corr_pt_data = correctionlib_utils.make_correctionlib_ref("METXYCorrDataPt", year);
+    auto met_xy_corr_phi_data = correctionlib_utils.make_correctionlib_ref("METXYCorrDataPhi", year);
+    auto met_xy_corr_pt_mc = correctionlib_utils.make_correctionlib_ref("METXYCorrMCPt", year);
+    auto met_xy_corr_phi_mc = correctionlib_utils.make_correctionlib_ref("METXYCorrMCPhi", year);
+
+    auto jet_veto_map = correctionlib_utils.make_correctionlib_ref("JetVetoMap", year);
+
     /////////////////////////////////////////////
     /////////////////////////////////////////////
     // [ BEGIN ]  LHAPDF
@@ -336,6 +343,7 @@ auto classification(const std::string process,
     ADD_VALUE_READER(luminosityBlock, unsigned int);
 
     ADD_VALUE_READER(PV_npvsGood, int);
+    ADD_VALUE_READER(PV_npvs, int);
 
     // https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2
     ADD_VALUE_READER(Flag_goodVertices, bool);
@@ -431,6 +439,7 @@ auto classification(const std::string process,
     ADD_ARRAY_READER(Muon_tunepRelPt, float);
     ADD_ARRAY_READER(Muon_highPurity, bool);
     ADD_ARRAY_READER(Muon_genPartIdx, int);
+    ADD_ARRAY_READER(Muon_isPFcand, bool);
 
     ADD_ARRAY_READER(Electron_pt, float);
     ADD_ARRAY_READER(Electron_eta, float);
@@ -488,14 +497,14 @@ auto classification(const std::string process,
     ADD_ARRAY_READER(Jet_btagDeepFlavB, float);
     ADD_ARRAY_READER(Jet_rawFactor, float);
     ADD_ARRAY_READER(Jet_area, float);
+    ADD_ARRAY_READER(Jet_chEmEF, float);
+    ADD_ARRAY_READER(Jet_puId, Int_t);
     ADD_ARRAY_READER(Jet_genJetIdx, Int_t);
 
-    ADD_VALUE_READER(PuppiMET_pt, float);
-    ADD_VALUE_READER(PuppiMET_phi, float);
-    ADD_VALUE_READER(PuppiMET_phiUnclusteredDown, float);
-    ADD_VALUE_READER(PuppiMET_phiUnclusteredUp, float);
-    ADD_VALUE_READER(PuppiMET_ptUnclusteredDown, float);
-    ADD_VALUE_READER(PuppiMET_ptUnclusteredUp, float);
+    ADD_VALUE_READER(MET_pt, float);
+    ADD_VALUE_READER(MET_phi, float);
+    ADD_VALUE_READER(MET_MetUnclustEnUpDeltaX, float);
+    ADD_VALUE_READER(MET_MetUnclustEnUpDeltaY, float);
 
     //  launch event loop for Data or MC
     fmt::print("\n[MUSiC Classification] Starting event loop ...\n");
@@ -692,6 +701,7 @@ auto classification(const std::string process,
             {
                 return unwrap(HLT_Photon200) or unwrap(HLT_Ele115_CaloIdVT_GsfTrkIdT);
             }
+
             if (_year == Year::Run2018)
             {
                 return unwrap(HLT_Photon200) or unwrap(HLT_Ele115_CaloIdVT_GsfTrkIdT);
@@ -709,10 +719,12 @@ auto classification(const std::string process,
             {
                 return unwrap(HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW) or unwrap(HLT_DoubleEle33_CaloIdL_MW);
             }
+
             if (_year == Year::Run2017)
             {
                 return unwrap(HLT_DoubleEle33_CaloIdL_MW) or unwrap(HLT_DoubleEle25_CaloIdL_MW);
             }
+
             if (_year == Year::Run2018)
             {
                 return unwrap(HLT_DoubleEle25_CaloIdL_MW);
@@ -753,14 +765,17 @@ auto classification(const std::string process,
             {
                 return unwrap(HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90);
             }
+
             if (_year == Year::Run2017)
             {
-                return unwrap(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90) or unwrap(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass95);
+                return unwrap(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90) or
+                       unwrap(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass95);
             }
 
             if (_year == Year::Run2018)
             {
-                return unwrap(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90) or unwrap(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass95);
+                return unwrap(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90) or
+                       unwrap(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass95);
             }
 
             fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
@@ -775,6 +790,7 @@ auto classification(const std::string process,
             {
                 return unwrap(HLT_VLooseIsoPFTau120_Trk50_eta2p1) or unwrap(HLT_VLooseIsoPFTau140_Trk50_eta2p1);
             }
+
             if (_year == Year::Run2017)
             {
                 return unwrap(HLT_MediumChargedIsoPFTau180HighPtRelaxedIso_Trk50_eta2p1);
@@ -799,12 +815,14 @@ auto classification(const std::string process,
                 return unwrap(HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg) or
                        unwrap(HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg);
             }
+
             if (_year == Year::Run2017)
             {
                 return unwrap(HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg) or
                        unwrap(HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg) or
                        (HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg);
             }
+
             if (_year == Year::Run2018)
             {
                 return unwrap(HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg) or
@@ -916,24 +934,35 @@ auto classification(const std::string process,
                                                              year,                        //
                                                              Shifts::Variations::Nominal);
 
-        auto [nominal_jets, nominal_bjets] = ObjectFactories::make_jets(unwrap(Jet_pt),                 //
-                                                                        unwrap(Jet_eta),                //
-                                                                        unwrap(Jet_phi),                //
-                                                                        unwrap(Jet_mass),               //
-                                                                        unwrap(Jet_jetId),              //
-                                                                        unwrap(Jet_btagDeepFlavB),      //
-                                                                        unwrap(Jet_rawFactor),          //
-                                                                        unwrap(Jet_area),               //
-                                                                        unwrap(Jet_genJetIdx),          //
-                                                                        unwrap(fixedGridRhoFastjetAll), //
-                                                                        jet_corrections,                //
-                                                                        // btag_sf_Corrector,                    //
-                                                                        NanoAODGenInfo::GenJets(unwrap(GenJet_pt),   //
-                                                                                                unwrap(GenJet_eta),  //
-                                                                                                unwrap(GenJet_phi)), //
-                                                                        is_data,                                     //
-                                                                        year,                                        //
-                                                                        Shifts::Variations::Nominal);
+        auto [nominal_jets, nominal_bjets, has_vetoed_jet] =
+            ObjectFactories::make_jets(unwrap(Jet_pt),                 //
+                                       unwrap(Jet_eta),                //
+                                       unwrap(Jet_phi),                //
+                                       unwrap(Jet_mass),               //
+                                       unwrap(Jet_jetId),              //
+                                       unwrap(Jet_btagDeepFlavB),      //
+                                       unwrap(Jet_rawFactor),          //
+                                       unwrap(Jet_area),               //
+                                       unwrap(Jet_chEmEF),             //
+                                       unwrap(Jet_puId),               //
+                                       unwrap(Muon_eta),               //
+                                       unwrap(Muon_phi),               //
+                                       unwrap(Muon_isPFcand),          //
+                                       unwrap(Jet_genJetIdx),          //
+                                       unwrap(fixedGridRhoFastjetAll), //
+                                       jet_corrections,                //
+                                       // btag_sf_Corrector,                    //
+                                       NanoAODGenInfo::GenJets(unwrap(GenJet_pt),   //
+                                                               unwrap(GenJet_eta),  //
+                                                               unwrap(GenJet_phi)), //
+                                       jet_veto_map,                                //
+                                       is_data,                                     //
+                                       year,                                        //
+                                       Shifts::Variations::Nominal);
+        if (has_vetoed_jet)
+        {
+            continue;
+        }
 
         // check for trigger matching
         // is_good_trigger is garantied to be filled by the "if" statement above
@@ -1067,7 +1096,7 @@ auto classification(const std::string process,
                 return nominal_photons;
             }();
 
-            auto [jets, bjets] = [&]() -> std::pair<MUSiCObjects, MUSiCObjects>
+            auto [jets, bjets, has_vetoed_jet] = [&]() -> std::tuple<MUSiCObjects, MUSiCObjects, bool>
             {
                 if (starts_with(Shifts::variation_to_string(diff_shift), "Jet"))
                 {
@@ -1079,6 +1108,11 @@ auto classification(const std::string process,
                                                       unwrap(Jet_btagDeepFlavB),      //
                                                       unwrap(Jet_rawFactor),          //
                                                       unwrap(Jet_area),               //
+                                                      unwrap(Jet_chEmEF),             //
+                                                      unwrap(Jet_puId),               //
+                                                      unwrap(Muon_eta),               //
+                                                      unwrap(Muon_phi),               //
+                                       unwrap(Muon_isPFcand),          //
                                                       unwrap(Jet_genJetIdx),          //
                                                       unwrap(fixedGridRhoFastjetAll), //
                                                       jet_corrections,                //
@@ -1086,36 +1120,46 @@ auto classification(const std::string process,
                                                       NanoAODGenInfo::GenJets(unwrap(GenJet_pt),   //
                                                                               unwrap(GenJet_eta),  //
                                                                               unwrap(GenJet_phi)), //
+                                                      jet_veto_map,                                //
                                                       is_data,                                     //
                                                       year,                                        //
                                                       diff_shift);
                 }
 
-                return {nominal_jets, nominal_bjets};
+                return {nominal_jets, nominal_bjets, false};
             }();
 
-            auto met = ObjectFactories::make_met(    //
-                unwrap(PuppiMET_pt),                 //
-                unwrap(PuppiMET_phi),                //
-                unwrap(PuppiMET_phiUnclusteredDown), //
-                unwrap(PuppiMET_phiUnclusteredUp),   //
-                unwrap(PuppiMET_ptUnclusteredDown),  //
-                unwrap(PuppiMET_ptUnclusteredUp),    //
-                muons.get_delta_met_x(),             //
-                muons.get_delta_met_y(),             //
-                electrons.get_delta_met_x(),         //
-                electrons.get_delta_met_y(),         //
-                taus.get_delta_met_x(),              //
-                taus.get_delta_met_y(),              //
-                photons.get_delta_met_x(),           //
-                photons.get_delta_met_y(),           //
-                jets.get_delta_met_x(),              //
-                jets.get_delta_met_y(),              //
-                bjets.get_delta_met_x(),             //
-                bjets.get_delta_met_y(),             //
-                is_data,                             //
-                year,                                //
+            auto [met, is_fake_met] = ObjectFactories::make_met( //
+                unwrap(MET_pt),                                  //
+                unwrap(MET_phi),                                 //
+                unwrap_or(MET_MetUnclustEnUpDeltaX, 0., true),   //
+                unwrap_or(MET_MetUnclustEnUpDeltaY, 0., true),   //
+                muons.get_delta_met_x(),                         //
+                muons.get_delta_met_y(),                         //
+                electrons.get_delta_met_x(),                     //
+                electrons.get_delta_met_y(),                     //
+                taus.get_delta_met_x(),                          //
+                taus.get_delta_met_y(),                          //
+                photons.get_delta_met_x(),                       //
+                photons.get_delta_met_y(),                       //
+                jets.get_delta_met_x(),                          //
+                jets.get_delta_met_y(),                          //
+                bjets.get_delta_met_x(),                         //
+                bjets.get_delta_met_y(),                         //
+                met_xy_corr_pt_data,                             //
+                met_xy_corr_phi_data,                            //
+                met_xy_corr_pt_mc,                               //
+                met_xy_corr_phi_mc,                              //
+                unwrap(PV_npvs),                                 //
+                unwrap(run),                                     //
+                is_data,                                         //
+                year,                                            //
                 diff_shift);
+
+            if (is_fake_met)
+            {
+                break;
+            }
 
             // clear objects
             auto electrons_idxs = electrons.indexes();

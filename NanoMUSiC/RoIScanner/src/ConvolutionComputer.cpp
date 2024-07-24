@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdlib>
 #include <iostream>
 #include <limits>
 #include <sstream>
@@ -498,13 +499,12 @@ double compute_p_convolution(const double N_obs,
 
     if (convolution < 0.)
     {
-
         std::cerr << "[ERROR] Convolution < 0 ! " << std::endl;
         std::cerr << "   convolution = " << convolution << std::endl;
         std::cerr << "   N_SM = " << N_SM << std::endl;
         std::cerr << "   N_obs = " << N_obs << std::endl;
         std::cerr << "   sigma_MC = " << sigma_MC << std::endl;
-        exit(1);
+        std::exit(EXIT_FAILURE);
     }
     else if (convolution > 0)
     {
@@ -513,8 +513,8 @@ double compute_p_convolution(const double N_obs,
         {
             // calculate normalization
             const double sigmas = N_SM / sigma_MC;
-            // const double normalisation = gsl_sf_erf_Q(-sigmas) * sigma_MC * SQRT2PI;
-            const double normalisation = 1.0;
+            const double normalisation = gsl_sf_erf_Q(-sigmas) * sigma_MC * SQRT2PI;
+            // const double normalisation = 1.0;
 
             if (debugLevel > 2)
             {
@@ -537,7 +537,7 @@ double compute_p_convolution(const double N_obs,
                 std::cerr << "   N_SM = " << N_SM << std::endl;
                 std::cerr << "   N_obs = " << N_obs << std::endl;
                 std::cerr << "   sigma_MC = " << sigma_MC << std::endl;
-                exit(1);
+                std::exit(EXIT_FAILURE);
             }
         }
     }
