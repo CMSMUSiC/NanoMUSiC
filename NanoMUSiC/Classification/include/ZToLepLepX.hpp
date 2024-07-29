@@ -30,19 +30,17 @@ class ZToLepLepX
 
     std::array<TH1F, total_variations> h_invariant_mass;
     std::array<TH1F, total_variations> h_met;
-    // TH1F h_sum_pt;
-    // TH1F h_lepton_1_pt;
-    // TH1F h_lepton_2_pt;
-    // TH1F h_lepton_1_eta;
-    // TH1F h_lepton_2_eta;
-    // TH1F h_lepton_1_phi;
-    // TH1F h_lepton_2_phi;
-    // TH1F h_lepton_1_jet_1_dPhi;
-    // TH1F h_lepton_1_jet_1_dR;
-    // TH1F h_jet_multiplicity;
-    // TH1F h_bjet_multiplicity;
-    // TH2F h_lepton_1_pt_eta;
-    // TH2F h_lepton_1_pt_phi;
+    std::array<TH1F, total_variations> h_sum_pt;
+    std::array<TH1F, total_variations> h_lepton_1_pt;
+    std::array<TH1F, total_variations> h_lepton_2_pt;
+    std::array<TH1F, total_variations> h_lepton_1_eta;
+    std::array<TH1F, total_variations> h_lepton_2_eta;
+    std::array<TH1F, total_variations> h_lepton_1_phi;
+    std::array<TH1F, total_variations> h_lepton_2_phi;
+    std::array<TH1F, total_variations> h_lepton_1_jet_1_dPhi;
+    std::array<TH1F, total_variations> h_lepton_1_jet_1_dR;
+    std::array<TH1F, total_variations> h_jet_multiplicity;
+    std::array<TH1F, total_variations> h_bjet_multiplicity;
 
     ZToLepLepX() = default;
 
