@@ -172,8 +172,8 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
         auto jet_p4 = Math::PtEtaPhiMVector(Jet_pt[i], Jet_eta[i], Jet_phi[i], Jet_mass[i]);
 
         // first we accumulate the correction that was already aplied
-        jets_delta_met_x -= (jet_p4.pt() - Jet_pt[i] * (1. - Jet_rawFactor[i])) * std::cos(Jet_phi[i]);
-        jets_delta_met_y -= (jet_p4.pt() - Jet_pt[i] * (1. - Jet_rawFactor[i])) * std::sin(Jet_phi[i]);
+        double jets_delta_met_x_type_1 = (jet_p4.pt() - Jet_pt[i] * (1. - Jet_rawFactor[i])) * std::cos(Jet_phi[i]);
+        double jets_delta_met_y_type_1 = (jet_p4.pt() - Jet_pt[i] * (1. - Jet_rawFactor[i])) * std::sin(Jet_phi[i]);
 
         if (jet_p4.pt() * (1. - Jet_rawFactor[i]) > 10. and std::fabs(jet_p4.eta()) < 5.2)
         {
@@ -189,10 +189,6 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
                                                                      gen_jets);
 
             jet_p4 = jet_p4 * jet_energy_corrections;
-
-            // then we accumulate the new correction
-            jets_delta_met_x += (jet_p4.pt() - Jet_pt[i]) * std::cos(Jet_phi[i]);
-            jets_delta_met_y += (jet_p4.pt() - Jet_pt[i]) * std::sin(Jet_phi[i]);
         }
 
         if (is_good_jet_pre_filter or is_good_bjet_pre_filter)
@@ -204,6 +200,10 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
             {
                 jets_scale_factors.push_back(1.);
                 jets_scale_factor_shift.push_back(0.);
+
+                // then we accumulate the new correction
+                jets_delta_met_x += (jet_p4.pt() - Jet_pt[i]) * std::cos(Jet_phi[i]) - jets_delta_met_x_type_1;
+                jets_delta_met_y += (jet_p4.pt() - Jet_pt[i]) * std::sin(Jet_phi[i]) - jets_delta_met_y_type_1;
 
                 jets_p4.push_back(jet_p4);
                 jets_is_fake.push_back(is_data ? false : Jet_genJetIdx[i] < 0);
@@ -223,6 +223,10 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
                 // Reference: BTagSFCorrector::BTagSFCorrector @ CorrectionSets.cpp
                 bjets_scale_factors.push_back(1.);
                 bjets_scale_factor_shift.push_back(0.);
+
+                // then we accumulate the new correction
+                bjets_delta_met_x += (jet_p4.pt() - Jet_pt[i]) * std::cos(Jet_phi[i]) - jets_delta_met_x_type_1;
+                bjets_delta_met_y += (jet_p4.pt() - Jet_pt[i]) * std::sin(Jet_phi[i]) - jets_delta_met_y_type_1;
 
                 bjets_p4.push_back(jet_p4);
                 bjets_is_fake.push_back(is_data ? false : Jet_genJetIdx[i] < 0);

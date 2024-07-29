@@ -431,11 +431,11 @@ def launch_parallel(
                     file=sys.stderr,
                 )
                 sys.exit(-1)
-            random.shuffle(generated_jobs)
-            # generated_jobs = sorted(generated_jobs, reverse=True)
-            # generated_jobs = [j for j in generated_jobs if "classification_T" in j] + [
-            #     j for j in generated_jobs if "classification_T" not in j
-            # ]
+            # random.shuffle(generated_jobs)
+            generated_jobs = sorted(generated_jobs, reverse=True)
+            generated_jobs = [j for j in generated_jobs if "classification_T" in j] + [
+                j for j in generated_jobs if "classification_T" not in j
+            ]
             for j in generated_jobs:
                 if y in j:
                     file.write("../{}\n".format(j))
@@ -537,7 +537,7 @@ def launch_dev(
         sum_weights_json_filepath="sum_weights.json",
         input_files=process.get_files(year, max_files),
         generator_filter=process.generator_filter_key,
-        first_event=None,
+        first_event=700000,
         last_event=None,
         is_dev_job=True,
         debug=True,
@@ -837,32 +837,25 @@ def make_distributions(
 
     if class_name_filter_pattern:
         print("Will fold Classification ...")
-        n_parts = 3
         classes_names = get_analysis_names(classes_to_files, class_name_filter_pattern)
-
-        if classes_names and len(classes_names) < 5000:
-            n_parts = 1
 
         if classes_names:
             random.shuffle(classes_names)
             input_files = get_input_files("classification_root_files")
             random.shuffle(input_files)
-            for this_classes_names in chunk_list(classes_names, n_parts):
-                p = multiprocessing.Process(
-                    target=do_fold,
-                    args=(
-                        input_files,
-                        "classification_distributions",
-                        this_classes_names,
-                        rescaling,
-                    ),
-                )
-                p.start()
-                p.join()
-                if p.exitcode != 0:
-                    print(
-                        "ERROR: Could not make distribution files for Classification."
-                    )
+            p = multiprocessing.Process(
+                target=do_fold,
+                args=(
+                    input_files,
+                    "classification_distributions",
+                    classes_names,
+                    rescaling,
+                ),
+            )
+            p.start()
+            p.join()
+            if p.exitcode != 0:
+                print("ERROR: Could not make distribution files for Classification.")
 
         if config_file_path:
             os.system(

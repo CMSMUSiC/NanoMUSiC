@@ -443,7 +443,7 @@ auto Distribution::get_systematics_uncert(
         {"trigger", Uncertanties::IntegralUncert(m_total_mc_histogram, 0.03)},
 
         // luminosity
-        {"luminosity", Uncertanties::IntegralUncert(m_total_mc_histogram, 0.025)},
+        {"luminosity", Uncertanties::IntegralUncert(m_total_mc_histogram, 0.016)},
 
         // XSecOrder + QCD Scale
         {"xsec_order_qcd_scale", xsec_uncert},

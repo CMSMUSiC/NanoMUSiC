@@ -86,9 +86,6 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
             tau_p4 = tau_p4 * energy_correction;
         }
 
-        delta_met_x += (tau_p4.pt() - Tau_pt[i]) * std::cos(Tau_phi[i]);
-        delta_met_y += (tau_p4.pt() - Tau_pt[i]) * std::sin(Tau_phi[i]);
-
         if (is_good_tau_pre_filter)
         {
             // bool is_good_tau = (tau_p4.pt() >= ObjConfig::Taus[year].LowPt) and is_good_tau_pre_filter;
@@ -132,8 +129,13 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
                     std::pow(std::max(std::fabs(sf_vs_jet - sf_vsjet_up), std::fabs(sf_vs_jet - sf_vsjet_down)), 2.) //
                     ));
 
+                delta_met_x += (tau_p4.pt() - Tau_pt[i]) * std::cos(Tau_phi[i]);
+                delta_met_y += (tau_p4.pt() - Tau_pt[i]) * std::sin(Tau_phi[i]);
+
                 taus_p4.push_back(tau_p4);
+
                 is_fake.push_back(is_data ? false : Tau_genPartIdx[i] < 0);
+
                 if (tau_p4.pt() < ObjConfig::Taus[year].MediumPt)
                 {
                     id_score.push_back(MUSiCObjects::IdScore::Loose);

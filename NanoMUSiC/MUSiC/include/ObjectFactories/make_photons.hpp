@@ -134,8 +134,6 @@ inline auto make_photons(const RVec<float> &Photon_pt,   //
                                                               Photon_dEsigmaUp[i],
                                                               Photon_dEsigmaDown[i],
                                                               photon_p4.energy());
-        delta_met_x += (photon_p4.pt() - Photon_pt[i]) * std::cos(Photon_phi[i]);
-        delta_met_y += (photon_p4.pt() - Photon_pt[i]) * std::sin(Photon_phi[i]);
 
         if (is_good_photon_pre_filter)
         {
@@ -171,8 +169,13 @@ inline auto make_photons(const RVec<float> &Photon_pt,   //
                     + std::pow(std::max(std::fabs(sf_id - sf_id_up), std::fabs(sf_id - sf_id_down)), 2.)       //
                     ));
 
+                delta_met_x += (photon_p4.pt() - Photon_pt[i]) * std::cos(Photon_phi[i]);
+                delta_met_y += (photon_p4.pt() - Photon_pt[i]) * std::sin(Photon_phi[i]);
+
                 photons_p4.push_back(photon_p4);
+
                 is_fake.push_back(is_data ? false : Photon_genPartIdx[i] < 0);
+
                 if (photon_p4.pt() < ObjConfig::Photons[year].MediumPt)
                 {
                     id_score.push_back(MUSiCObjects::IdScore::Loose);

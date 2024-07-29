@@ -470,7 +470,7 @@ inline auto trigger_filter(const std::string &process,         //
                 if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger)             //
                     and not(pass_double_muon_trigger)                                      //
                     and not(pass_low_pt_electron_trigger or pass_high_pt_electron_trigger) //
-                    and pass_double_electron_trigger)
+                    and (pass_double_electron_trigger or pass_double_photon_trigger))
                 {
                     trigger_filter_res = {
                         {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},           //
@@ -494,7 +494,7 @@ inline auto trigger_filter(const std::string &process,         //
                 if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger)             //
                     and not(pass_double_muon_trigger)                                      //
                     and not(pass_low_pt_electron_trigger or pass_high_pt_electron_trigger) //
-                    and not(pass_double_electron_trigger)                                  //
+                    and not(pass_double_electron_trigger or pass_double_photon_trigger)    //
                     and pass_photon_trigger)
                 {
                     trigger_filter_res = {
@@ -603,8 +603,6 @@ inline auto trigger_filter(const std::string &process,         //
 
     return trigger_filter_res;
 };
-
-
 
 struct FourVec
 {

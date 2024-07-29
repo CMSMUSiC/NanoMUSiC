@@ -10,6 +10,7 @@
 #include "Configs.hpp"
 #include "Shifts.hpp"
 #include "music_objects.hpp"
+#include <cstdlib>
 
 using namespace ROOT;
 using namespace ROOT::Math;
@@ -42,8 +43,8 @@ struct METXYCorr
               const CorrectionlibRef_t &met_xy_corr_phi_data,
               const CorrectionlibRef_t &met_xy_corr_pt_mc,
               const CorrectionlibRef_t &met_xy_corr_phi_mc,
-              float pt,
-              float phi,
+              float original_pt,
+              float original_phi,
               float npvs,
               float run,
               bool is_data)
@@ -58,7 +59,7 @@ struct METXYCorr
 
         try
         {
-            pt = met_xy_corr_pt->evaluate({pt, phi, npvs, run});
+            pt = met_xy_corr_pt->evaluate({original_pt, original_phi, npvs, run});
         }
         catch (const std::exception &e)
         {
@@ -94,7 +95,7 @@ struct METXYCorr
 
         try
         {
-            phi = met_xy_corr_phi->evaluate({pt, phi, npvs, run});
+            phi = met_xy_corr_phi->evaluate({original_pt, original_phi, npvs, run});
         }
         catch (const std::exception &e)
         {

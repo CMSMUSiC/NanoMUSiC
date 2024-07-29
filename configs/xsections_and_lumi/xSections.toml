@@ -357,14 +357,14 @@ ProcessGroup = "DrellYan"
 XSec = 306.8
 FilterEff = 1.0
 kFactor = 1.0
-XSecOrder = "NLO"
+XSecOrder = "LO"
 ProcessGroup = "GG"
 
 [DiPhotonJetsBox_MGG-80toInf_13TeV_SP]
 XSec = 88.36
 FilterEff = 1.0
 kFactor = 1.0
-XSecOrder = "NLO"
+XSecOrder = "LO"
 ProcessGroup = "GG"
 
 [DiPhotonJets_MGG-80toInf_13TeV_AM]
@@ -427,56 +427,56 @@ ProcessGroup = "HIG"
 XSec = 0.0462
 FilterEff = 1.0
 kFactor = 1.0
-XSecOrder = "NLO"
+XSecOrder = "LO"
 ProcessGroup = "GG"
 
 [DiPhotonJetsBox_MGG-2000to4000_13TeV_SP]
 XSec = 0.003153
 FilterEff = 1.0
 kFactor = 1.0
-XSecOrder = "NLO"
+XSecOrder = "LO"
 ProcessGroup = "GG"
 
 [DiPhotonJetsBox_MGG-200to500_13TeV_SP]
 XSec = 6.916	
 FilterEff = 1.0
 kFactor = 1.0
-XSecOrder = "NLO"
+XSecOrder = "LO"
 ProcessGroup = "GG"
 
 [DiPhotonJetsBox_MGG-4000to8000_13TeV_SP]
 XSec = 0.00004851
 FilterEff = 1.0
 kFactor = 1.0
-XSecOrder = "NLO"
+XSecOrder = "LO"
 ProcessGroup = "GG"
 
 [DiPhotonJetsBox_MGG-500to1000_13TeV_SP]
 XSec = 0.4305
 FilterEff = 1.0
 kFactor = 1.0
-XSecOrder = "NLO"
+XSecOrder = "LO"
 ProcessGroup = "GG"
 
 [DiPhotonJetsBox_MGG-8000toInf_13TeV_SP]
 XSec = 7.204e-9
 FilterEff = 1.0
 kFactor = 1.0
-XSecOrder = "NLO"
+XSecOrder = "LO"
 ProcessGroup = "GG"
 
 [DiPhotonJetsBox_MGG-0to40_13TeV_SP]
 XSec = 754.6
 FilterEff = 1.0
 kFactor = 1.0
-XSecOrder = "NLO"
+XSecOrder = "LO"
 ProcessGroup = "GG"
 
 [DiPhotonJetsBox_MGG-80to200_13TeV_SP]
 XSec = 76.3
 FilterEff = 1.0
 kFactor = 1.0
-XSecOrder = "NLO"
+XSecOrder = "LO"
 ProcessGroup = "GG"
 
 [GJets_DR-0p4_HT-600ToInf_13TeV_MG]

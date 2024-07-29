@@ -561,16 +561,16 @@ auto classification(const std::string process,
             continue;
         }
 
-        if (not(met_filters(unwrap(Flag_goodVertices),
-                            unwrap(Flag_globalSuperTightHalo2016Filter),
-                            unwrap(Flag_HBHENoiseFilter),
-                            unwrap(Flag_HBHENoiseIsoFilter),
-                            unwrap(Flag_EcalDeadCellTriggerPrimitiveFilter),
-                            unwrap(Flag_BadPFMuonFilter),
-                            unwrap(Flag_BadPFMuonDzFilter),
-                            unwrap(Flag_eeBadScFilter),
-                            unwrap(Flag_hfNoisyHitsFilter),
-                            unwrap(Flag_ecalBadCalibFilter),
+        if (not(met_filters(unwrap_or(Flag_goodVertices, true),
+                            unwrap_or(Flag_globalSuperTightHalo2016Filter, true),
+                            unwrap_or(Flag_HBHENoiseFilter, true),
+                            unwrap_or(Flag_HBHENoiseIsoFilter, true),
+                            unwrap_or(Flag_EcalDeadCellTriggerPrimitiveFilter, true),
+                            unwrap_or(Flag_BadPFMuonFilter, true),
+                            unwrap_or(Flag_BadPFMuonDzFilter, true),
+                            unwrap_or(Flag_eeBadScFilter, true),
+                            unwrap_or(Flag_hfNoisyHitsFilter, true),
+                            unwrap_or(Flag_ecalBadCalibFilter, true),
                             year)))
         {
             continue;
@@ -1112,7 +1112,7 @@ auto classification(const std::string process,
                                                       unwrap(Jet_puId),               //
                                                       unwrap(Muon_eta),               //
                                                       unwrap(Muon_phi),               //
-                                       unwrap(Muon_isPFcand),          //
+                                                      unwrap(Muon_isPFcand),          //
                                                       unwrap(Jet_genJetIdx),          //
                                                       unwrap(fixedGridRhoFastjetAll), //
                                                       jet_corrections,                //
