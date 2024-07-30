@@ -54,6 +54,7 @@ class ClassificationTarget(str, Enum):
 @classification_app.command()
 def launch(
     config_file: Annotated[str, typer.Argument(help="analysis_config.toml file path, as build by parse_sample_list_nanoaod.py")],
+    description:str,
     target: ClassificationTarget = ClassificationTarget.Condor,
     process: Union[str, None] = None,
     year: Union[metadata.Years, None] = None,
@@ -65,6 +66,22 @@ def launch(
     """
     Launch the classification jobs for a given target.
     """
+
+    if description =="":
+        print("ERROR: Could not set description. Description should not be empty.", file=sys.stderr)
+        sys.exit(-1)
+    
+    if description.endswith(".txt"):
+        if os.path.isfile(description):
+            os.system("cp {} description.txt".format(description))
+        else:
+            print("ERROR: Could not set description. File ({}) not found.".format(description), file=sys.stderr)
+            sys.exit(-1)
+
+    else:
+        with open("description.txt", "w") as file:
+            file.write(description+"\n")
+
     import classification
 
     if not os.path.exists("sum_weights.json"):
