@@ -444,8 +444,7 @@ inline auto trigger_filter(const std::string &process,         //
         {
             if (starts_with(process, "SingleElectron"))
             {
-                if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) //
-                    and not(pass_double_muon_trigger)                          //
+                if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger or pass_double_muon_trigger) //
                     and (pass_low_pt_electron_trigger or pass_high_pt_electron_trigger))
                 {
                     trigger_filter_res = {
@@ -467,9 +466,8 @@ inline auto trigger_filter(const std::string &process,         //
 
             if (starts_with(process, "DoubleEG"))
             {
-                if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger)             //
-                    and not(pass_double_muon_trigger)                                      //
-                    and not(pass_low_pt_electron_trigger or pass_high_pt_electron_trigger) //
+                if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger or pass_double_muon_trigger or
+                        pass_low_pt_electron_trigger or pass_high_pt_electron_trigger) //
                     and (pass_double_electron_trigger or pass_double_photon_trigger))
                 {
                     trigger_filter_res = {
@@ -491,11 +489,10 @@ inline auto trigger_filter(const std::string &process,         //
 
             if (starts_with(process, "SinglePhoton"))
             {
-                if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger)             //
-                    and not(pass_double_muon_trigger)                                      //
-                    and not(pass_low_pt_electron_trigger or pass_high_pt_electron_trigger) //
-                    and not(pass_double_electron_trigger or pass_double_photon_trigger)    //
-                    and pass_photon_trigger)
+                if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger or pass_double_muon_trigger or
+                        pass_low_pt_electron_trigger or pass_high_pt_electron_trigger or pass_double_electron_trigger or
+                        pass_double_photon_trigger) and
+                    pass_photon_trigger)
                 {
                     trigger_filter_res = {
                         {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},           //
@@ -518,8 +515,7 @@ inline auto trigger_filter(const std::string &process,         //
         {
             if (starts_with(process, "EGamma"))
             {
-                if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) //
-                    and not(pass_double_muon_trigger)                          //
+                if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger or pass_double_muon_trigger) //
                     and (pass_low_pt_electron_trigger or pass_high_pt_electron_trigger or
                          pass_double_electron_trigger or pass_photon_trigger or pass_double_photon_trigger))
                 {
@@ -543,10 +539,9 @@ inline auto trigger_filter(const std::string &process,         //
 
         if (starts_with(process, "Tau"))
         {
-            if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) //
-                and not(pass_double_muon_trigger)                          //
-                and not(pass_low_pt_electron_trigger or pass_high_pt_electron_trigger or pass_double_electron_trigger or
-                        pass_photon_trigger or pass_double_photon_trigger) //
+            if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger or pass_double_muon_trigger or
+                    pass_low_pt_electron_trigger or pass_high_pt_electron_trigger or pass_double_electron_trigger or
+                    pass_photon_trigger or pass_double_photon_trigger) //
                 and (pass_high_pt_tau_trigger or pass_double_tau_trigger))
             {
                 trigger_filter_res = {
@@ -763,42 +758,42 @@ class TempEC
             return ClassesNames{std::nullopt, std::nullopt, std::nullopt};
         }
 
-        auto total_id_score = MUSiCObjects::IdScore::accum_score(muons_id_score, num_muons) +
-                              MUSiCObjects::IdScore::accum_score(electrons_id_score, num_electrons) +
-                              MUSiCObjects::IdScore::accum_score(taus_id_score, num_taus) +
-                              MUSiCObjects::IdScore::accum_score(photons_id_score, num_photons) +
-                              MUSiCObjects::IdScore::accum_score(bjets_id_score, num_bjets) +
-                              MUSiCObjects::IdScore::accum_score(jets_id_score, num_jets) +
-                              MUSiCObjects::IdScore::accum_score(met_id_score, num_met);
+        // auto total_id_score = MUSiCObjects::IdScore::accum_score(muons_id_score, num_muons) +
+        //                       MUSiCObjects::IdScore::accum_score(electrons_id_score, num_electrons) +
+        //                       MUSiCObjects::IdScore::accum_score(taus_id_score, num_taus) +
+        //                       MUSiCObjects::IdScore::accum_score(photons_id_score, num_photons) +
+        //                       MUSiCObjects::IdScore::accum_score(bjets_id_score, num_bjets) +
+        //                       MUSiCObjects::IdScore::accum_score(jets_id_score, num_jets) +
+        //                       MUSiCObjects::IdScore::accum_score(met_id_score, num_met);
 
         // if (total_id_score.num_medium >= 1 or total_id_score.num_loose >= 3)
-        if (total_id_score.num_medium >= 1)
+        // if (total_id_score.num_medium >= 1)
+        // {
+        std::string class_name = fmt::format("EC_{}Muon_{}Electron_{}Tau_{}Photon_{}bJet_{}Jet_{}MET",
+                                             num_muons,
+                                             num_electrons,
+                                             num_taus,
+                                             num_photons,
+                                             num_bjets,
+                                             num_jets,
+                                             num_met);
+
+        std::optional<std::string> exclusive_class_name = std::nullopt;
+        if (has_exclusive)
         {
-            std::string class_name = fmt::format("EC_{}Muon_{}Electron_{}Tau_{}Photon_{}bJet_{}Jet_{}MET",
-                                                 num_muons,
-                                                 num_electrons,
-                                                 num_taus,
-                                                 num_photons,
-                                                 num_bjets,
-                                                 num_jets,
-                                                 num_met);
-
-            std::optional<std::string> exclusive_class_name = std::nullopt;
-            if (has_exclusive)
-            {
-                exclusive_class_name = class_name;
-            }
-
-            std::optional<std::string> inclusive_class_name = fmt::format("{}+X", class_name);
-
-            std::optional<std::string> jet_inclusive_class_name = std::nullopt;
-            if (has_jet_inclusive)
-            {
-                jet_inclusive_class_name = fmt::format("{}+NJet", class_name);
-            }
-
-            return ClassesNames{exclusive_class_name, inclusive_class_name, jet_inclusive_class_name};
+            exclusive_class_name = class_name;
         }
+
+        std::optional<std::string> inclusive_class_name = fmt::format("{}+X", class_name);
+
+        std::optional<std::string> jet_inclusive_class_name = std::nullopt;
+        if (has_jet_inclusive)
+        {
+            jet_inclusive_class_name = fmt::format("{}+NJet", class_name);
+        }
+
+        return ClassesNames{exclusive_class_name, inclusive_class_name, jet_inclusive_class_name};
+        // }
 
         return ClassesNames{std::nullopt, std::nullopt, std::nullopt};
     }

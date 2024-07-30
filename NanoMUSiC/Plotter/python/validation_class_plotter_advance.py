@@ -347,7 +347,10 @@ if __name__ == "__main__":
         histograms_to_plot = {args.histogram: histograms_to_plot[args.histogram]}
 
     validation_classes = EventClassCollection(
-        get_source_files(args.input, year), val_classes, histograms_to_plot, hist_to_validate,
+        get_source_files(args.input, year),
+        val_classes,
+        histograms_to_plot,
+        hist_to_validate,
     )
 
     for histogram_name in histograms_to_plot:

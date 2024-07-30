@@ -537,7 +537,7 @@ def launch_dev(
         sum_weights_json_filepath="sum_weights.json",
         input_files=process.get_files(year, max_files),
         generator_filter=process.generator_filter_key,
-        first_event=700000,
+        first_event=None,
         last_event=None,
         is_dev_job=True,
         debug=True,

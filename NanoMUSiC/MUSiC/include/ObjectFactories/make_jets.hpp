@@ -114,10 +114,10 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
     auto bjets_scale_factors = RVec<double>{};
     auto jets_scale_factor_shift = RVec<double>{};
     auto bjets_scale_factor_shift = RVec<double>{};
-    auto jets_delta_met_x = 0.;
-    auto bjets_delta_met_x = 0.;
-    auto jets_delta_met_y = 0.;
-    auto bjets_delta_met_y = 0.;
+    auto jets_delta_met_x = RVec<double>{};
+    auto bjets_delta_met_x = RVec<double>{};
+    auto jets_delta_met_y = RVec<double>{};
+    auto bjets_delta_met_y = RVec<double>{};
     auto jets_is_fake = RVec<bool>{};
     auto bjets_is_fake = RVec<bool>{};
     auto jets_id_score = RVec<unsigned int>{};
@@ -172,8 +172,10 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
         auto jet_p4 = Math::PtEtaPhiMVector(Jet_pt[i], Jet_eta[i], Jet_phi[i], Jet_mass[i]);
 
         // first we accumulate the correction that was already aplied
-        double jets_delta_met_x_type_1 = (jet_p4.pt() - Jet_pt[i] * (1. - Jet_rawFactor[i])) * std::cos(Jet_phi[i]);
-        double jets_delta_met_y_type_1 = (jet_p4.pt() - Jet_pt[i] * (1. - Jet_rawFactor[i])) * std::sin(Jet_phi[i]);
+        const double jets_delta_met_x_type_1 =
+            (jet_p4.pt() - Jet_pt[i] * (1. - Jet_rawFactor[i])) * std::cos(Jet_phi[i]);
+        const double jets_delta_met_y_type_1 =
+            (jet_p4.pt() - Jet_pt[i] * (1. - Jet_rawFactor[i])) * std::sin(Jet_phi[i]);
 
         if (jet_p4.pt() * (1. - Jet_rawFactor[i]) > 10. and std::fabs(jet_p4.eta()) < 5.2)
         {
@@ -202,8 +204,8 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
                 jets_scale_factor_shift.push_back(0.);
 
                 // then we accumulate the new correction
-                jets_delta_met_x += (jet_p4.pt() - Jet_pt[i]) * std::cos(Jet_phi[i]) - jets_delta_met_x_type_1;
-                jets_delta_met_y += (jet_p4.pt() - Jet_pt[i]) * std::sin(Jet_phi[i]) - jets_delta_met_y_type_1;
+                jets_delta_met_x.push_back((jet_p4.pt() - Jet_pt[i]) * std::cos(Jet_phi[i]) - jets_delta_met_x_type_1);
+                jets_delta_met_y.push_back((jet_p4.pt() - Jet_pt[i]) * std::sin(Jet_phi[i]) - jets_delta_met_y_type_1);
 
                 jets_p4.push_back(jet_p4);
                 jets_is_fake.push_back(is_data ? false : Jet_genJetIdx[i] < 0);
@@ -225,8 +227,8 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
                 bjets_scale_factor_shift.push_back(0.);
 
                 // then we accumulate the new correction
-                bjets_delta_met_x += (jet_p4.pt() - Jet_pt[i]) * std::cos(Jet_phi[i]) - jets_delta_met_x_type_1;
-                bjets_delta_met_y += (jet_p4.pt() - Jet_pt[i]) * std::sin(Jet_phi[i]) - jets_delta_met_y_type_1;
+                bjets_delta_met_x.push_back((jet_p4.pt() - Jet_pt[i]) * std::cos(Jet_phi[i]) - jets_delta_met_x_type_1);
+                bjets_delta_met_y.push_back((jet_p4.pt() - Jet_pt[i]) * std::sin(Jet_phi[i]) - jets_delta_met_y_type_1);
 
                 bjets_p4.push_back(jet_p4);
                 bjets_is_fake.push_back(is_data ? false : Jet_genJetIdx[i] < 0);

@@ -472,8 +472,8 @@ inline auto make_muons(const RVec<float> &Muon_pt,                      //
     auto muons_p4 = RVec<Math::PtEtaPhiMVector>{};
     auto scale_factors = RVec<double>{};
     auto scale_factor_shift = RVec<double>{};
-    auto delta_met_x = 0.;
-    auto delta_met_y = 0.;
+    auto delta_met_x = RVec<double>{};
+    auto delta_met_y = RVec<double>{};
     auto is_fake = RVec<bool>{};
     auto id_score = RVec<unsigned int>{};
 
@@ -614,8 +614,8 @@ inline auto make_muons(const RVec<float> &Muon_pt,                      //
 
             if (is_good_low_pt_muon or is_good_high_pt_muon)
             {
-                delta_met_x += (muon_p4.pt() - Muon_pt[i]) * std::cos(Muon_phi[i]);
-                delta_met_y += (muon_p4.pt() - Muon_pt[i]) * std::sin(Muon_phi[i]);
+                delta_met_x.push_back((muon_p4.pt() - Muon_pt[i]) * std::cos(Muon_phi[i]));
+                delta_met_y.push_back((muon_p4.pt() - Muon_pt[i]) * std::sin(Muon_phi[i]));
 
                 muons_p4.push_back(muon_p4);
 

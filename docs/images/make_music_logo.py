@@ -45,6 +45,8 @@ palette = [
     # red
     (156, 29, 44, 1),
 ]
+
+
 # palette.reverse()
 def get_color(_char):
     try:

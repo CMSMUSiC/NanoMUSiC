@@ -318,7 +318,9 @@ class EventClass:
 
 
 class EventClassCollection:
-    def __init__(self, source_files, event_class_pattern, histograms_to_plot, hist_to_validate):
+    def __init__(
+        self, source_files, event_class_pattern, histograms_to_plot, hist_to_validate
+    ):
         self.classes: dict[EventClass] = {}
         self.root_files = []
         histograms_per_class = {key: defaultdict(list) for key in event_class_pattern}
@@ -339,7 +341,10 @@ class EventClassCollection:
                                     key.GetName(), root_file
                                 )
                                 if histogram in hist_to_validate[class_name]:
-                                    if root_file.Get(key.GetName()).ClassName() != "TH2F":
+                                    if (
+                                        root_file.Get(key.GetName()).ClassName()
+                                        != "TH2F"
+                                    ):
                                         histograms_per_class[histo.class_name][
                                             histogram
                                         ].append(histo)

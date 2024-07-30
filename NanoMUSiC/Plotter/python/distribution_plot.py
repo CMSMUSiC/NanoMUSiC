@@ -95,6 +95,21 @@ def p_value_task(distribution_file: str):
     return counts, distribution_file
 
 
+def make_ec_nice_name(s):
+    parts = s.split("_")
+    result = []
+
+    for i, p in enumerate(parts):
+        if i == 0:
+            continue
+
+        count = p[0]
+        if count != "0":
+            result.append(p)
+
+    return "EC_" + "_".join(result).replace("+", "_")
+
+
 def build_plot_jobs_task(args: tuple[str, dict[str, Any], str]) -> list[Any]:
     output_dir, plots_data, distribution_file = args
 
@@ -131,7 +146,7 @@ def build_plot_jobs_task(args: tuple[str, dict[str, Any], str]) -> list[Any]:
             )
 
             # prepare output area
-            ec_nice_name = plot.class_name.replace("+", "_")
+            ec_nice_name = make_ec_nice_name(plot.class_name)
             if not os.path.exists("{}/{}".format(output_dir, ec_nice_name)):
                 os.makedirs("{}/{}".format(output_dir, ec_nice_name))
 

@@ -202,8 +202,8 @@ inline auto make_electrons(const RVec<float> &Electron_pt,           //
     auto electrons_p4 = RVec<Math::PtEtaPhiMVector>{};
     auto scale_factors = RVec<double>{};
     auto scale_factor_shift = RVec<double>{};
-    auto delta_met_x = 0.;
-    auto delta_met_y = 0.;
+    auto delta_met_x = RVec<double>{};
+    auto delta_met_y = RVec<double>{};
     auto is_fake = RVec<bool>{};
     auto id_score = RVec<unsigned int>{};
 
@@ -371,8 +371,8 @@ inline auto make_electrons(const RVec<float> &Electron_pt,           //
 
             if (is_good_low_pt_electron or is_good_high_pt_electron)
             {
-                delta_met_x += (electron_p4.pt() - Electron_pt[i]) * std::cos(Electron_phi[i]);
-                delta_met_y += (electron_p4.pt() - Electron_pt[i]) * std::sin(Electron_phi[i]);
+                delta_met_x.push_back((electron_p4.pt() - Electron_pt[i]) * std::cos(Electron_phi[i]));
+                delta_met_y.push_back((electron_p4.pt() - Electron_pt[i]) * std::sin(Electron_phi[i]));
 
                 electrons_p4.push_back(electron_p4);
 

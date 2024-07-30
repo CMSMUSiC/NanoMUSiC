@@ -57,8 +57,8 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
     auto taus_p4 = RVec<Math::PtEtaPhiMVector>{};
     auto scale_factors = RVec<double>{};
     auto scale_factor_shift = RVec<double>{};
-    auto delta_met_x = 0.;
-    auto delta_met_y = 0.;
+    auto delta_met_x = RVec<double>{};
+    auto delta_met_y = RVec<double>{};
     auto is_fake = RVec<bool>{};
     auto id_score = RVec<unsigned int>{};
 
@@ -129,8 +129,8 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
                     std::pow(std::max(std::fabs(sf_vs_jet - sf_vsjet_up), std::fabs(sf_vs_jet - sf_vsjet_down)), 2.) //
                     ));
 
-                delta_met_x += (tau_p4.pt() - Tau_pt[i]) * std::cos(Tau_phi[i]);
-                delta_met_y += (tau_p4.pt() - Tau_pt[i]) * std::sin(Tau_phi[i]);
+                delta_met_x.push_back((tau_p4.pt() - Tau_pt[i]) * std::cos(Tau_phi[i]));
+                delta_met_y.push_back((tau_p4.pt() - Tau_pt[i]) * std::sin(Tau_phi[i]));
 
                 taus_p4.push_back(tau_p4);
 

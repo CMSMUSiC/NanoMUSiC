@@ -7,16 +7,42 @@ import typer
 import metadata
 import sys
 import os
+import time
+import subprocess
+from functools import wraps
+
+
+def execution_time(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        formatted_time = time.strftime("%H:%M:%S", time.gmtime(elapsed_time))
+        print(f"Execution time of {func.__name__}: {formatted_time}")
+        return result
+
+    return wrapper
+
 
 ############################################################################
 ############################################################################
 # Classification
 ############################################################################
 ############################################################################
-classification_app = typer.Typer(help="Launch and control the Classification steps. Expected workflow: build -> preprocess -> launch -> merge -> unwrap -> fold.")
+classification_app = typer.Typer(
+    help="Launch and control the Classification steps. Expected workflow: build -> preprocess -> launch -> merge -> unwrap -> fold."
+)
+
 
 @classification_app.command()
-def parse(samples_list: Annotated[str, typer.Argument(help="File with DAS names of all samples (one per line).")]):
+@execution_time
+def parse(
+    samples_list: Annotated[
+        str, typer.Argument(help="File with DAS names of all samples (one per line).")
+    ] = "samples.txt",
+):
     """
     Will parse the list of DAS names and format it in the MUSiC format, including x-sections.
     """
@@ -24,8 +50,17 @@ def parse(samples_list: Annotated[str, typer.Argument(help="File with DAS names 
 
     parse_sample_list.parse(samples_list)
 
+
 @classification_app.command()
-def build(config_file: Annotated[str, typer.Argument(help="parsed_sample_list.toml file path, as build by the parser.")]):
+@execution_time
+def build(
+    config_file: Annotated[
+        str,
+        typer.Argument(
+            help="parsed_sample_list.toml file path, as build by the parser."
+        ),
+    ] = "parsed_sample_list.toml",
+):
     """
     Will query all files LFN, for each sample and add it to the analysis_config.toml.
     """
@@ -35,7 +70,13 @@ def build(config_file: Annotated[str, typer.Argument(help="parsed_sample_list.to
 
 
 @classification_app.command()
-def preprocess(config_file: Annotated[str, typer.Argument(help="analysis_config.toml file path, as provided by builder.")]):
+@execution_time
+def preprocess(
+    config_file: Annotated[
+        str,
+        typer.Argument(help="analysis_config.toml file path, as provided by builder."),
+    ],
+):
     """
     Will scan all MC input files and collect the total MC weight per sample.
     """
@@ -52,9 +93,18 @@ class ClassificationTarget(str, Enum):
 
 
 @classification_app.command()
+@execution_time
 def launch(
-    config_file: Annotated[str, typer.Argument(help="analysis_config.toml file path, as build by parse_sample_list_nanoaod.py")],
-    description:str,
+    config_file: Annotated[
+        str,
+        typer.Argument(help="analysis_config.toml file path"),
+    ],
+    description: Annotated[
+        Union[str, None],
+        typer.Argument(
+            help="description file path of the classification being launched"
+        ),
+    ] = None,
     target: ClassificationTarget = ClassificationTarget.Condor,
     process: Union[str, None] = None,
     year: Union[metadata.Years, None] = None,
@@ -67,20 +117,80 @@ def launch(
     Launch the classification jobs for a given target.
     """
 
-    if description =="":
-        print("ERROR: Could not set description. Description should not be empty.", file=sys.stderr)
-        sys.exit(-1)
-    
-    if description.endswith(".txt"):
-        if os.path.isfile(description):
-            os.system("cp {} description.txt".format(description))
+    # Read the file content and remove whitespace characters
+    def normalize_content(file_path):
+        with open(file_path, "r") as file:
+            content = file.read()
+            normalized_content = "".join(content.split())
+        return normalized_content
+
+    if not description:
+        description_template_file = (
+            "{}/NanoMUSiC/Classification/assets/description_template.txt".format(
+                os.getenv("MUSIC_BASE")
+            )
+        )
+
+        os.system("cp {} description.txt".format(description_template_file))
+        os.system("/usr/bin/vim +normal\\ G description.txt")
+
+        if normalize_content(description_template_file) == normalize_content(
+            "description.txt"
+        ):
+            print(
+                "ERROR: Could not set description. Description should not be empty.",
+                file=sys.stderr,
+            )
+            sys.exit(-1)
+    else:
+        if description.endswith(".txt"):
+            if os.path.isfile(description):
+                proc = subprocess.run(
+                    "cp {} description.txt".format(description),
+                    shell=True,
+                    capture_output=True,
+                    text=True,
+                )
+                if proc.returncode != 0:
+                    print(
+                        "ERROR: Could not copy description file.\n{}\n{}".format(
+                            proc.stdout, proc.stderr
+                        ),
+                        file=sys.stderr,
+                    )
+                    sys.exit(-1)
+            else:
+                print(
+                    "ERROR: Could not set description. File ({}) not found.".format(
+                        description
+                    ),
+                    file=sys.stderr,
+                )
+                sys.exit(-1)
+
         else:
-            print("ERROR: Could not set description. File ({}) not found.".format(description), file=sys.stderr)
+            print(
+                "ERROR: Could not copy description file. Description file should end with .txt",
+                file=sys.stderr,
+            )
             sys.exit(-1)
 
-    else:
-        with open("description.txt", "w") as file:
-            file.write(description+"\n")
+    print("Creating source code tarball ...")
+    os.system("rm -rf classification_src.tar.gz ")
+    proc = subprocess.run(
+        "tar --exclude-from=$MUSIC_BASE/.gitignore --exclude=build --exclude=.git --exclude=.ruff_cache --exclude=.rucio_seth --exclude=.rucio_silva --exclude=Legacy --exclude=opt --exclude=bin --exclude=lib -czvf classification_src.tar.gz -C $MUSIC_BASE .",
+        shell=True,
+        capture_output=True,
+        text=True,
+    )
+    if proc.returncode != 0:
+        print(
+            "ERROR: Could create source code tarball.\n{}\n{}".format(
+                proc.stdout, proc.stderr
+            ),
+            file=sys.stderr,
+        )
+        sys.exit(-1)
 
     import classification
 
@@ -101,8 +211,12 @@ def launch(
 
 
 @classification_app.command()
+@execution_time
 def merge(
-    config_file: Annotated[str, typer.Argument(help="analysis_config.toml file path, as build by parse_sample_list_nanoaod.py")],
+    config_file: Annotated[
+        str,
+        typer.Argument(help="analysis_config.toml file path"),
+    ],
     inputs_dir: str = "classification_outputs",
 ):
     """
@@ -114,8 +228,12 @@ def merge(
 
 
 @classification_app.command()
+@execution_time
 def unwrap(
-    config_file: Annotated[str, typer.Argument(help="analysis_config.toml file path, as build by parse_sample_list_nanoaod.py")],
+    config_file: Annotated[
+        str,
+        typer.Argument(help="analysis_config.toml file path"),
+    ],
     inputs_dir: str = "classification_merged_results",
     validation_inputs_dir: str = "validation_merged_results",
     num_cpus: int = 120,
@@ -129,18 +247,31 @@ def unwrap(
         config_file, inputs_dir, validation_inputs_dir, num_cpus
     )
 
+
 class FoldTarget(str, Enum):
     Classification = "classification"
     Validation = "validation"
 
+
 @classification_app.command()
+@execution_time
 def fold(
-    config_file: Annotated[str, typer.Argument(help="analysis_config.toml file path, as build by parse_sample_list_nanoaod.py")]|None=None,
-    alternative_config_file: Annotated[str, typer.Argument(help="Altrernative analysis_config.toml file path, as build by parse_sample_list_nanoaod.py, with different cross-sections")]|None=None,
+    config_file: Annotated[
+        str,
+        typer.Argument(help="analysis_config.toml file path"),
+    ]
+    | None = None,
+    alternative_config_file: Annotated[
+        str,
+        typer.Argument(
+            help="Altrernative analysis_config.toml file path, with different cross-sections"
+        ),
+    ]
+    | None = None,
     inputs_dir: str = "classification_root_files",
     validation_inputs_dir: str = "validation_root_files",
     name_filter: str = "*",
-    target:FoldTarget = FoldTarget.Classification
+    target: FoldTarget = FoldTarget.Classification,
 ):
     """
     Will merge related histograms (TH1F) into Distributions (usefull data format for plotting and scan).
@@ -148,10 +279,23 @@ def fold(
     import classification
 
     if target == FoldTarget.Classification:
-        classification.make_distributions(config_file, alternative_config_file, inputs_dir, validation_inputs_dir, name_filter, None)
+        classification.make_distributions(
+            config_file,
+            alternative_config_file,
+            inputs_dir,
+            validation_inputs_dir,
+            name_filter,
+            None,
+        )
     if target == FoldTarget.Validation:
-        classification.make_distributions(config_file, alternative_config_file, inputs_dir, validation_inputs_dir, None, name_filter)
-
+        classification.make_distributions(
+            config_file,
+            alternative_config_file,
+            inputs_dir,
+            validation_inputs_dir,
+            None,
+            name_filter,
+        )
 
 
 ############################################################################
@@ -163,11 +307,12 @@ plot_app = typer.Typer(help="Produce different MUSiC plots.")
 
 
 @plot_app.command()
+@execution_time
 def distribution(
-    input_dir: str="classification_distributions",
+    input_dir: str = "classification_distributions",
     output_dir: str = "classification_plots",
-    filters:list[str]=["*"],
-    num_cpus:int=120,
+    filters: list[str] = ["*"],
+    num_cpus: int = 120,
 ):
     """
     Produce plots all distribution, matching (glob matching) the different filters.
@@ -177,20 +322,24 @@ def distribution(
     plotter(input_dir, filters, output_dir, num_cpus)
 
 
+@plot_app.command()
+@execution_time
 def validation(
-    input_dir: str="validation_distributions",
+    input_dir: str = "validation_distributions",
     output_dir: str = "validation_plots",
-    filters:list[str]=["*"],
-    num_cpus:int=120,
+    filters: list[str] = ["*"],
+    num_cpus: int = 120,
 ):
     """
     Produce plots all validation, matching (glob matching) the different filters.
     """
     from plotter import plotter
 
-    plotter(input_dir,filters, output_dir, num_cpus)
+    plotter(input_dir, filters, output_dir, num_cpus)
+
 
 # @plot_app.command()
+# @execution_time
 # def summary(config: str):
 #     pass
 
@@ -204,11 +353,13 @@ scan_app = typer.Typer()
 
 
 # @scan_app.command()
+# @execution_time
 # def integral(config: str):
 #     pass
 #
 #
 # @scan_app.command()
+# @execution_time
 # def scan(config: str):
 #     pass
 

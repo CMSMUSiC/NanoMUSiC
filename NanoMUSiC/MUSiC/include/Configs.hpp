@@ -293,7 +293,8 @@ struct JetConfig
     float MediumPt = 50.;
     float HighPt = 500.;
     float MaxAbsEta = 2.4;
-    int MinJetID = 2;              // equal or greater than this
+    // int MinJetID = 2;              // Tight - equal or greater than this
+    int MinJetID = 4;              // tightLepVeto - equal or greater than this
     float MaxBTagWPTight = 0.6502; // smaller than this
 };
 

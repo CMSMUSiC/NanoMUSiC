@@ -114,8 +114,8 @@ class MUSiCObjects
     RVec<Math::PtEtaPhiMVector> p4;
     RVec<double> scale_factor;
     RVec<double> scale_factor_shift;
-    double delta_met_x;
-    double delta_met_y;
+    RVec<double> delta_met_x;
+    RVec<double> delta_met_y;
     RVec<bool> is_fake;
     RVec<unsigned int> id_score;
 
@@ -123,8 +123,8 @@ class MUSiCObjects
         : p4({}),
           scale_factor({}),
           scale_factor_shift({}),
-          delta_met_x(0.),
-          delta_met_y(0.),
+          delta_met_x({}),
+          delta_met_y({}),
           is_fake({}),
           id_score({})
     {
@@ -133,8 +133,8 @@ class MUSiCObjects
     MUSiCObjects(const RVec<Math::PtEtaPhiMVector> &_p4,
                  const RVec<double> &_scale_factor,
                  const RVec<double> &_scale_factor_shift,
-                 double _delta_met_x,
-                 double _delta_met_y,
+                 const RVec<double> &_delta_met_x,
+                 const RVec<double> &_delta_met_y,
                  const RVec<bool> &_is_fake,
                  const RVec<unsigned int> &_id_score)
         : p4(_p4),
@@ -145,19 +145,21 @@ class MUSiCObjects
           is_fake(_is_fake),
           id_score(_id_score)
     {
-
         if (not(                                           //
                 p4.size() == scale_factor.size()           //
                 and p4.size() == scale_factor_shift.size() //
                 and p4.size() == is_fake.size()            //
+                and p4.size() == id_score.size()           //
                 ))
         {
-            fmt::print(stderr,
-                       "ERROR: Could not create MUSiCObjects. Input vectors have different sizes. \n{} - {} - {} - {}",
-                       p4.size(),
-                       scale_factor.size(),
-                       scale_factor_shift.size(),
-                       is_fake.size());
+            fmt::print(
+                stderr,
+                "ERROR: Could not create MUSiCObjects. Input vectors have different sizes. \n{} - {} - {} - {} - {}",
+                p4.size(),
+                scale_factor.size(),
+                scale_factor_shift.size(),
+                is_fake.size(),
+                id_score.size());
             std::exit(EXIT_FAILURE);
         }
 
@@ -174,12 +176,12 @@ class MUSiCObjects
 
     auto get_delta_met_x() const -> double
     {
-        return delta_met_x;
+        return ROOT::VecOps::Sum(delta_met_x);
     }
 
     auto get_delta_met_y() const -> double
     {
-        return delta_met_y;
+        return ROOT::VecOps::Sum(delta_met_y);
     }
 
     auto indexes() const -> RVec<int>
@@ -193,36 +195,20 @@ class MUSiCObjects
     {
         scale_factor = ROOT::VecOps::Take(scale_factor, indexes);
         scale_factor_shift = ROOT::VecOps::Take(scale_factor_shift, indexes);
-        for (std::size_t i = 0; i < this->size(); i++)
-        {
-            if (std::find(indexes.cbegin(), indexes.cend(), static_cast<int>(i)) == indexes.cend())
-            {
-                delta_met_x -= this->p4[i].px();
-                delta_met_y -= this->p4[i].py();
-            }
-        }
+        delta_met_x = ROOT::VecOps::Take(delta_met_x, indexes);
+        delta_met_y = ROOT::VecOps::Take(delta_met_y, indexes);
         is_fake = ROOT::VecOps::Take(is_fake, indexes);
         p4 = ROOT::VecOps::Take(p4, indexes);
+        id_score = ROOT::VecOps::Take(id_score, indexes);
     }
 
     auto take_as_copy(const RVec<int> &indexes) -> MUSiCObjects
     {
-        auto new_delta_met_x = delta_met_x;
-        auto new_delta_met_y = delta_met_y;
-        for (std::size_t i = 0; i < this->size(); i++)
-        {
-            if (std::find(indexes.cbegin(), indexes.cend(), static_cast<int>(i)) == indexes.cend())
-            {
-                new_delta_met_x -= this->p4[i].px();
-                new_delta_met_y -= this->p4[i].py();
-            }
-        }
-
         return MUSiCObjects(ROOT::VecOps::Take(p4, indexes),                 //
                             ROOT::VecOps::Take(scale_factor, indexes),       //
                             ROOT::VecOps::Take(scale_factor_shift, indexes), //
-                            new_delta_met_x,                                 //
-                            new_delta_met_y,                                 //
+                            ROOT::VecOps::Take(delta_met_x, indexes),
+                            ROOT::VecOps::Take(delta_met_y, indexes),
                             ROOT::VecOps::Take(is_fake, indexes),
                             ROOT::VecOps::Take(id_score, indexes));
     }

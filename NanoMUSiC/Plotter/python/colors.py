@@ -207,7 +207,6 @@ PROCESS_GROUP_STYLES = {
     "proc7": HistStyle(label=r"proc7", color=ROOT.TColor.GetColor("#c194ee")),
     "proc8": HistStyle(label=r"proc8", color=ROOT.TColor.GetColor("#984ee3")),
     "proc9": HistStyle(label=r"proc9", color=ROOT.TColor.GetColor("#9f1213")),
-
     # patrick's signal
     "ZprimeToTauTau": HistStyle(
         label=r"ZprimeToTauTau",

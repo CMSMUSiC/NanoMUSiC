@@ -74,8 +74,8 @@ inline auto make_trigger_matches(const std::unordered_map<std::string, bool> &is
         auto good_muons = VecOps::Filter(muons.p4,
                                          [](const auto &muon)
                                          {
-                                             return muon.pt() > 53.;
-                                             // return muon.pt() > 205.;
+                                             // return muon.pt() > 53.;
+                                             return muon.pt() > 205.;
                                          });
         if (good_muons.size() >= 1)
         {
@@ -304,7 +304,7 @@ inline auto make_trigger_matches(const std::unordered_map<std::string, bool> &is
                                         {
                                             if (year == Year::Run2016APV or year == Year::Run2016)
                                             {
-                                                return tau.pt() > 45.;
+                                                return tau.pt() > 50.;
                                             }
 
                                             if (year == Year::Run2017)

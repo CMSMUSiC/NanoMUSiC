@@ -72,8 +72,8 @@ FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"
 ProcessGroup = "DrellYan"
-# generator_filter_key = "dyjets_mass_less_120_mass_greater_50"
-generator_filter_key = "dyjets_mass_less_120"
+generator_filter_key = "dyjets_mass_less_120_mass_greater_50"
+# generator_filter_key = "dyjets_mass_less_120"
 
 [DYJetsToLL_LHEFilterPtZ-100To250_MatchEWPDG20_13TeV_AM]
 XSec = 84.97
@@ -81,8 +81,8 @@ FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"
 ProcessGroup = "DrellYan"
-# generator_filter_key = "dyjets_mass_less_120_mass_greater_50"
-generator_filter_key = "dyjets_mass_less_120"
+generator_filter_key = "dyjets_mass_less_120_mass_greater_50"
+# generator_filter_key = "dyjets_mass_less_120"
 
 [DYJetsToLL_LHEFilterPtZ-250To400_MatchEWPDG20_13TeV_AM]
 XSec = 2.906
@@ -90,8 +90,8 @@ FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"
 ProcessGroup = "DrellYan"
-# generator_filter_key = "dyjets_mass_less_120_mass_greater_50"
-generator_filter_key = "dyjets_mass_less_120"
+generator_filter_key = "dyjets_mass_less_120_mass_greater_50"
+# generator_filter_key = "dyjets_mass_less_120"
 
 [DYJetsToLL_LHEFilterPtZ-400To650_MatchEWPDG20_13TeV_AM]
 XSec = 0.4352
@@ -99,8 +99,8 @@ FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"
 ProcessGroup = "DrellYan"
-# generator_filter_key = "dyjets_mass_less_120_mass_greater_50"
-generator_filter_key = "dyjets_mass_less_120"
+generator_filter_key = "dyjets_mass_less_120_mass_greater_50"
+# generator_filter_key = "dyjets_mass_less_120"
 
 [DYJetsToLL_LHEFilterPtZ-50To100_MatchEWPDG20_13TeV_AM]
 XSec = 361.7
@@ -108,8 +108,8 @@ FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"
 ProcessGroup = "DrellYan"
-# generator_filter_key = "dyjets_mass_less_120_mass_greater_50"
-generator_filter_key = "dyjets_mass_less_120"
+generator_filter_key = "dyjets_mass_less_120_mass_greater_50"
+# generator_filter_key = "dyjets_mass_less_120"
 
 [DYJetsToLL_LHEFilterPtZ-650ToInf_MatchEWPDG20_13TeV_AM]
 XSec = 0.05448
@@ -117,8 +117,8 @@ FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"
 ProcessGroup = "DrellYan"
-# generator_filter_key = "dyjets_mass_less_120_mass_greater_50"
-generator_filter_key = "dyjets_mass_less_120"
+generator_filter_key = "dyjets_mass_less_120_mass_greater_50"
+# generator_filter_key = "dyjets_mass_less_120"
 
 
 [DYJetsToLL_M-4to50_HT-100to200_13TeV_MG]
@@ -167,7 +167,7 @@ FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"
 ProcessGroup = "DrellYan"
-generator_filter_key = "dyjets_pt_less_50"
+# generator_filter_key = "dyjets_pt_less_50"
 
 [DYJetsToLL_M-10to50_13TeV_MG]
 XSec = 18610.0
@@ -175,7 +175,7 @@ FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"
 ProcessGroup = "DrellYan"
-generator_filter_key = "dyjets_pt_less_50"
+# generator_filter_key = "dyjets_pt_less_50"
 
 
 [DYJetsToLL_M-50_13TeV_AM]

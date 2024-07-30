@@ -10,6 +10,7 @@ def _dumps_value(value):
     else:
         raise TypeError(f"{type(value).__name__} {value!r} is not supported")
 
+
 def to_toml_dumps(toml_dict, table=""):
     toml = []
     for key, value in toml_dict.items():

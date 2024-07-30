@@ -32,7 +32,7 @@ auto print_debug(long long global_event_index, bool debug) -> void
             (global_event_index >= 100000 and global_event_index % 100000 == 0)  //
         )
         {
-            fmt::print("\n\nProcessed {} events ...\n", global_event_index + 1);
+            fmt::print("\n\nProcessed {} events ...\n", global_event_index);
             PrintProcessInfo();
         }
     }
@@ -581,22 +581,22 @@ auto classification(const std::string process,
             auto _year = get_runyear(year);
             if (_year == Year::Run2016APV)
             {
-                return unwrap(HLT_IsoMu24) or unwrap(HLT_IsoTkMu24);
+                return unwrap_or(HLT_IsoMu24, false) or unwrap_or(HLT_IsoTkMu24, false);
             }
 
             if (_year == Year::Run2016)
             {
-                return unwrap(HLT_IsoMu24) or unwrap(HLT_IsoTkMu24);
+                return unwrap_or(HLT_IsoMu24, false) or unwrap_or(HLT_IsoTkMu24, false);
             }
 
             if (_year == Year::Run2017)
             {
-                return unwrap(HLT_IsoMu27);
+                return unwrap_or(HLT_IsoMu27, false);
             }
 
             if (_year == Year::Run2018)
             {
-                return unwrap(HLT_IsoMu24);
+                return unwrap_or(HLT_IsoMu24, false);
             }
 
             fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
@@ -608,22 +608,22 @@ auto classification(const std::string process,
             auto _year = get_runyear(year);
             if (_year == Year::Run2016APV)
             {
-                return unwrap(HLT_Mu50) or unwrap(HLT_TkMu50);
+                return unwrap_or(HLT_Mu50, false) or unwrap_or(HLT_TkMu50, false);
             }
 
             if (_year == Year::Run2016)
             {
-                return unwrap(HLT_Mu50) or unwrap(HLT_TkMu50);
+                return unwrap_or(HLT_Mu50, false) or unwrap_or(HLT_TkMu50, false);
             }
 
             if (_year == Year::Run2017)
             {
-                return unwrap(HLT_Mu50) or unwrap(HLT_TkMu100) or unwrap(HLT_OldMu100);
+                return unwrap_or(HLT_Mu50, false) or unwrap_or(HLT_TkMu100, false) or unwrap_or(HLT_OldMu100, false);
             }
 
             if (_year == Year::Run2018)
             {
-                return unwrap(HLT_Mu50) or unwrap(HLT_TkMu100) or unwrap(HLT_OldMu100);
+                return unwrap_or(HLT_Mu50, false) or unwrap_or(HLT_TkMu100, false) or unwrap_or(HLT_OldMu100, false);
             }
 
             fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
@@ -636,21 +636,23 @@ auto classification(const std::string process,
             std::vector<std::string> double_muon_triggers = {};
             if (_year == Year::Run2016APV or _year == Year::Run2016)
             {
-                return unwrap(HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ) or
-                       unwrap(HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ) or unwrap(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ) or
-                       unwrap(HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL) or unwrap(HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL) or
-                       unwrap(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL);
+                return unwrap_or(HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ, false) or
+                       unwrap_or(HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ, false) or
+                       unwrap_or(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ, false) or
+                       unwrap_or(HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL, false) or
+                       unwrap_or(HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL, false) or
+                       unwrap_or(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL, false);
             }
 
             if (_year == Year::Run2017)
             {
-                return unwrap(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8) or
-                       unwrap(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8);
+                return unwrap_or(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8, false) or
+                       unwrap_or(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8, false);
             }
 
             if (_year == Year::Run2018)
             {
-                return unwrap(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8);
+                return unwrap_or(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8, false);
             }
 
             fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
@@ -662,22 +664,22 @@ auto classification(const std::string process,
             auto _year = get_runyear(year);
             if (_year == Year::Run2016APV)
             {
-                return unwrap(HLT_Ele27_WPTight_Gsf);
+                return unwrap_or(HLT_Ele27_WPTight_Gsf, false);
             }
 
             if (_year == Year::Run2016)
             {
-                return unwrap(HLT_Ele27_WPTight_Gsf);
+                return unwrap_or(HLT_Ele27_WPTight_Gsf, false);
             }
 
             if (_year == Year::Run2017)
             {
-                return unwrap(HLT_Ele35_WPTight_Gsf);
+                return unwrap_or(HLT_Ele35_WPTight_Gsf, false);
             }
 
             if (_year == Year::Run2018)
             {
-                return unwrap(HLT_Ele32_WPTight_Gsf);
+                return unwrap_or(HLT_Ele32_WPTight_Gsf, false);
             }
 
             fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
@@ -689,22 +691,22 @@ auto classification(const std::string process,
             auto _year = get_runyear(year);
             if (_year == Year::Run2016APV)
             {
-                return unwrap(HLT_Photon175) or unwrap(HLT_Ele115_CaloIdVT_GsfTrkIdT);
+                return unwrap_or(HLT_Photon175, false) or unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
             }
 
             if (_year == Year::Run2016)
             {
-                return unwrap(HLT_Photon175) or unwrap(HLT_Ele115_CaloIdVT_GsfTrkIdT);
+                return unwrap_or(HLT_Photon175, false) or unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
             }
 
             if (_year == Year::Run2017)
             {
-                return unwrap(HLT_Photon200) or unwrap(HLT_Ele115_CaloIdVT_GsfTrkIdT);
+                return unwrap_or(HLT_Photon200, false) or unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
             }
 
             if (_year == Year::Run2018)
             {
-                return unwrap(HLT_Photon200) or unwrap(HLT_Ele115_CaloIdVT_GsfTrkIdT);
+                return unwrap_or(HLT_Photon200, false) or unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
             }
 
             fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
@@ -717,17 +719,18 @@ auto classification(const std::string process,
 
             if (_year == Year::Run2016APV or _year == Year::Run2016)
             {
-                return unwrap(HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW) or unwrap(HLT_DoubleEle33_CaloIdL_MW);
+                return unwrap_or(HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW, false) or
+                       unwrap_or(HLT_DoubleEle33_CaloIdL_MW, false);
             }
 
             if (_year == Year::Run2017)
             {
-                return unwrap(HLT_DoubleEle33_CaloIdL_MW) or unwrap(HLT_DoubleEle25_CaloIdL_MW);
+                return unwrap_or(HLT_DoubleEle33_CaloIdL_MW, false) or unwrap_or(HLT_DoubleEle25_CaloIdL_MW, false);
             }
 
             if (_year == Year::Run2018)
             {
-                return unwrap(HLT_DoubleEle25_CaloIdL_MW);
+                return unwrap_or(HLT_DoubleEle25_CaloIdL_MW, false);
             }
 
             fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
@@ -739,17 +742,17 @@ auto classification(const std::string process,
             auto _year = get_runyear(year);
             if (_year == Year::Run2016APV or _year == Year::Run2016)
             {
-                return unwrap(HLT_Photon175);
+                return unwrap_or(HLT_Photon175, false);
             }
 
             if (_year == Year::Run2017)
             {
-                return unwrap(HLT_Photon200);
+                return unwrap_or(HLT_Photon200, false);
             }
 
             if (_year == Year::Run2018)
             {
-                return unwrap(HLT_Photon200);
+                return unwrap_or(HLT_Photon200, false);
             }
 
             fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
@@ -763,19 +766,19 @@ auto classification(const std::string process,
             auto _year = get_runyear(year);
             if (_year == Year::Run2016APV or _year == Year::Run2016)
             {
-                return unwrap(HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90);
+                return unwrap_or(HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90, false);
             }
 
             if (_year == Year::Run2017)
             {
-                return unwrap(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90) or
-                       unwrap(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass95);
+                return unwrap_or(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90, false) or
+                       unwrap_or(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass95, false);
             }
 
             if (_year == Year::Run2018)
             {
-                return unwrap(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90) or
-                       unwrap(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass95);
+                return unwrap_or(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90, false) or
+                       unwrap_or(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass95, false);
             }
 
             fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
@@ -788,17 +791,18 @@ auto classification(const std::string process,
             std::vector<std::string> high_pt_tau_triggers = {};
             if (_year == Year::Run2016APV or _year == Year::Run2016)
             {
-                return unwrap(HLT_VLooseIsoPFTau120_Trk50_eta2p1) or unwrap(HLT_VLooseIsoPFTau140_Trk50_eta2p1);
+                return unwrap_or(HLT_VLooseIsoPFTau120_Trk50_eta2p1, false) or
+                       unwrap_or(HLT_VLooseIsoPFTau140_Trk50_eta2p1, false);
             }
 
             if (_year == Year::Run2017)
             {
-                return unwrap(HLT_MediumChargedIsoPFTau180HighPtRelaxedIso_Trk50_eta2p1);
+                return unwrap_or(HLT_MediumChargedIsoPFTau180HighPtRelaxedIso_Trk50_eta2p1, false);
             }
 
             if (_year == Year::Run2018)
             {
-                return unwrap(HLT_MediumChargedIsoPFTau180HighPtRelaxedIso_Trk50_eta2p1);
+                return unwrap_or(HLT_MediumChargedIsoPFTau180HighPtRelaxedIso_Trk50_eta2p1, false);
             }
 
             fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
@@ -812,23 +816,23 @@ auto classification(const std::string process,
 
             if (_year == Year::Run2016APV or _year == Year::Run2016)
             {
-                return unwrap(HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg) or
-                       unwrap(HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg);
+                return unwrap_or(HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg, false) or
+                       unwrap_or(HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg, false);
             }
 
             if (_year == Year::Run2017)
             {
-                return unwrap(HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg) or
-                       unwrap(HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg) or
-                       (HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg);
+                return unwrap_or(HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg, false) or
+                       unwrap_or(HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg, false) or
+                       unwrap_or(HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg, false);
             }
 
             if (_year == Year::Run2018)
             {
-                return unwrap(HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg) or
-                       unwrap(HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg) or
-                       unwrap(HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg) or
-                       unwrap(HLT_DoubleMediumChargedIsoPFTauHPS35_Trk1_eta2p1_Reg);
+                return unwrap_or(HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg, false) or
+                       unwrap_or(HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg, false) or
+                       unwrap_or(HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg, false) or
+                       unwrap_or(HLT_DoubleMediumChargedIsoPFTauHPS35_Trk1_eta2p1_Reg, false);
             }
 
             fmt::print(
@@ -970,7 +974,7 @@ auto classification(const std::string process,
             *is_good_trigger, nominal_muons, nominal_electrons, nominal_taus, nominal_photons, get_runyear(year));
 
         bool has_trigger_match = false;
-        for (auto &&[trigger_path, trigger_match] : trigger_matches)
+        for (const auto &[trigger_path, trigger_match] : trigger_matches)
         {
             if (trigger_match)
             {
@@ -1328,6 +1332,7 @@ auto classification(const std::string process,
             // Here goes the real analysis...
             auto temp_event_classes = TempEC::make_temp_event_classes(
                 muons.size(), electrons.size(), taus.size(), photons.size(), bjets.size(), jets.size(), met.size());
+
             for (auto &temp_ec : temp_event_classes)
             {
                 auto classes_names = temp_ec.make_event_class_name(muons.id_score,
@@ -1397,143 +1402,154 @@ auto classification(const std::string process,
 
             //////////////////////////////////////////////
             /// Validation analysis
-            // for (auto &&const_shift : shifts.get_constant_shifts(diff_shift))
-            // {
-            //     if (not(const_shift == Shifts::Variations::Nominal or diff_shift == Shifts::Variations::Nominal))
-            //     {
-            //         continue;
-            //     }
-            //
-            //     auto shift = Shifts::resolve_shifts(const_shift, diff_shift);
-            //
-            //     validation_container.z_to_muon_muon_x.fill(
-            //         muons,
-            //         bjets,
-            //         jets,
-            //         met,
-            //         get_effective_weight(shift, std::min(static_cast<int>(muons.size()), 2), 0, 0, 0, 0, 0,
-            //         met.size()), shift);
-            //     validation_container.z_to_muon_muon_x_z_mass.fill(
-            //         muons,
-            //         bjets,
-            //         jets,
-            //         met,
-            //         get_effective_weight(
-            //             shift, 0, std::min(static_cast<int>(electrons.size()), 2), 0, 0, 0, 0, met.size()),
-            //         shift);
-            //
-            //     validation_container.z_to_electron_electron_x.fill(
-            //         electrons,
-            //         bjets,
-            //         jets,
-            //         met,
-            //         get_effective_weight(
-            //             shift, 0, std::min(static_cast<int>(electrons.size()), 2), 0, 0, 0, 0, met.size()),
-            //         shift);
-            //     validation_container.z_to_electron_electron_x_z_mass.fill(
-            //         electrons,
-            //         bjets,
-            //         jets,
-            //         met,
-            //         get_effective_weight(shift, std::min(static_cast<int>(muons.size()), 2), 0, 0, 0, 0, 0,
-            //         met.size()), shift);
-            //
-            //     validation_container.z_to_tau_tau_x.fill(
-            //         taus,
-            //         bjets,
-            //         jets,
-            //         met,
-            //         get_effective_weight(shift, 0, 0, std::min(static_cast<int>(taus.size()), 2), 0, 0, 0,
-            //         met.size()), shift);
-            //     validation_container.z_to_tau_tau_x_z_mass.fill(
-            //         taus,
-            //         bjets,
-            //         jets,
-            //         met,
-            //         get_effective_weight(shift, 0, 0, std::min(static_cast<int>(taus.size()), 2), 0, 0, 0,
-            //         met.size()), shift);
-            //     validation_container.w_to_muon_neutrino_x.fill(
-            //         muons,
-            //         bjets,
-            //         jets,
-            //         met,
-            //         get_effective_weight(shift, std::min(static_cast<int>(muons.size()), 1), 0, 0, 0, 0, 0,
-            //         met.size()), shift);
-            //     validation_container.w_to_electron_neutrino_x.fill(
-            //         electrons,
-            //         bjets,
-            //         jets,
-            //         met,
-            //         get_effective_weight(
-            //             shift, 0, std::min(static_cast<int>(electrons.size()), 1), 0, 0, 0, 0, met.size()),
-            //         shift);
-            //     validation_container.w_to_tau_neutrino_x.fill(
-            //         taus,
-            //         bjets,
-            //         jets,
-            //         met,
-            //         get_effective_weight(shift, 0, 0, std::min(static_cast<int>(taus.size()), 1), 0, 0, 0,
-            //         met.size()), shift);
-            //     validation_container.ttbar_to_1muon_2bjet_2jet_met.fill(
-            //         muons,
-            //         bjets,
-            //         jets,
-            //         met,
-            //         get_effective_weight(shift,
-            //                              std::min(static_cast<int>(muons.size()), 1),
-            //                              0,
-            //                              0,
-            //                              0,
-            //                              std::min(static_cast<int>(bjets.size()), 2),
-            //                              std::min(static_cast<int>(jets.size()), 2),
-            //                              met.size()),
-            //         shift);
-            //     validation_container.ttbar_to_1electron_2bjet_2jet_met.fill(
-            //         electrons,
-            //         bjets,
-            //         jets,
-            //         met,
-            //         get_effective_weight(shift,
-            //                              0,
-            //                              std::min(static_cast<int>(electrons.size()), 1),
-            //                              0,
-            //                              0,
-            //                              std::min(static_cast<int>(bjets.size()), 2),
-            //                              std::min(static_cast<int>(jets.size()), 2),
-            //                              met.size()),
-            //         shift);
-            //     validation_container.ttbar_to_1tau_2bjet_2jet_met.fill(
-            //         taus,
-            //         bjets,
-            //         jets,
-            //         met,
-            //         get_effective_weight(shift,
-            //                              0,
-            //                              0,
-            //                              std::min(static_cast<int>(taus.size()), 1),
-            //                              0,
-            //                              std::min(static_cast<int>(bjets.size()), 2),
-            //                              std::min(static_cast<int>(jets.size()), 2),
-            //                              met.size()),
-            //         shift);
-            //     validation_container.gamma_plus_jets.fill(
-            //         muons,
-            //         electrons,
-            //         taus,
-            //         photons,
-            //         bjets,
-            //         jets,
-            //         met,
-            //         get_effective_weight(shift,
-            //                              0,
-            //                              0,
-            //                              0,
-            //                              std::min(static_cast<int>(photons.size()), 1),
-            //                              0,
-            //                              std::min(static_cast<int>(jets.size()), 1),
-            //                              met.size()),
-            //         shift);
-            // }
+            for (auto &&const_shift : shifts.get_constant_shifts(diff_shift))
+            {
+                if (not(const_shift == Shifts::Variations::Nominal or diff_shift == Shifts::Variations::Nominal))
+                {
+                    continue;
+                }
+
+                auto shift = Shifts::resolve_shifts(const_shift, diff_shift);
+
+                validation_container.z_to_muon_muon_x.fill(
+                    muons,
+                    bjets,
+                    jets,
+                    met,
+                    get_effective_weight(shift, std::min(static_cast<int>(muons.size()), 2), 0, 0, 0, 0, 0, met.size()),
+                    shift);
+
+                validation_container.z_to_muon_muon_x_z_mass.fill(
+                    muons,
+                    bjets,
+                    jets,
+                    met,
+                    get_effective_weight(
+                        shift, 0, std::min(static_cast<int>(electrons.size()), 2), 0, 0, 0, 0, met.size()),
+                    shift);
+
+                validation_container.z_to_electron_electron_x.fill(
+                    electrons,
+                    bjets,
+                    jets,
+                    met,
+                    get_effective_weight(
+                        shift, 0, std::min(static_cast<int>(electrons.size()), 2), 0, 0, 0, 0, met.size()),
+                    shift);
+
+                validation_container.z_to_electron_electron_x_z_mass.fill(
+                    electrons,
+                    bjets,
+                    jets,
+                    met,
+                    get_effective_weight(shift, std::min(static_cast<int>(muons.size()), 2), 0, 0, 0, 0, 0, met.size()),
+                    shift);
+
+                validation_container.z_to_tau_tau_x.fill(
+                    taus,
+                    bjets,
+                    jets,
+                    met,
+                    get_effective_weight(shift, 0, 0, std::min(static_cast<int>(taus.size()), 2), 0, 0, 0, met.size()),
+                    shift);
+
+                validation_container.z_to_tau_tau_x_z_mass.fill(
+                    taus,
+                    bjets,
+                    jets,
+                    met,
+                    get_effective_weight(shift, 0, 0, std::min(static_cast<int>(taus.size()), 2), 0, 0, 0, met.size()),
+                    shift);
+
+                validation_container.w_to_muon_neutrino_x.fill(
+                    muons,
+                    bjets,
+                    jets,
+                    met,
+                    get_effective_weight(shift, std::min(static_cast<int>(muons.size()), 1), 0, 0, 0, 0, 0, met.size()),
+                    shift);
+
+                validation_container.w_to_electron_neutrino_x.fill(
+                    electrons,
+                    bjets,
+                    jets,
+                    met,
+                    get_effective_weight(
+                        shift, 0, std::min(static_cast<int>(electrons.size()), 1), 0, 0, 0, 0, met.size()),
+                    shift);
+
+                validation_container.w_to_tau_neutrino_x.fill(
+                    taus,
+                    bjets,
+                    jets,
+                    met,
+                    get_effective_weight(shift, 0, 0, std::min(static_cast<int>(taus.size()), 1), 0, 0, 0, met.size()),
+                    shift);
+
+                validation_container.ttbar_to_1muon_2bjet_2jet_met.fill(
+                    muons,
+                    bjets,
+                    jets,
+                    met,
+                    get_effective_weight(shift,
+                                         std::min(static_cast<int>(muons.size()), 1),
+                                         0,
+                                         0,
+                                         0,
+                                         std::min(static_cast<int>(bjets.size()), 2),
+                                         std::min(static_cast<int>(jets.size()), 2),
+                                         met.size()),
+                    shift);
+
+                validation_container.ttbar_to_1electron_2bjet_2jet_met.fill(
+                    electrons,
+                    bjets,
+                    jets,
+                    met,
+                    get_effective_weight(shift,
+                                         0,
+                                         std::min(static_cast<int>(electrons.size()), 1),
+                                         0,
+                                         0,
+                                         std::min(static_cast<int>(bjets.size()), 2),
+                                         std::min(static_cast<int>(jets.size()), 2),
+                                         met.size()),
+                    shift);
+
+                validation_container.ttbar_to_1tau_2bjet_2jet_met.fill(
+                    taus,
+                    bjets,
+                    jets,
+                    met,
+                    get_effective_weight(shift,
+                                         0,
+                                         0,
+                                         std::min(static_cast<int>(taus.size()), 1),
+                                         0,
+                                         std::min(static_cast<int>(bjets.size()), 2),
+                                         std::min(static_cast<int>(jets.size()), 2),
+                                         met.size()),
+                    shift);
+
+                validation_container.gamma_plus_jets.fill(
+                    muons,
+                    electrons,
+                    taus,
+                    photons,
+                    bjets,
+                    jets,
+                    met,
+                    get_effective_weight(shift,
+                                         0,
+                                         0,
+                                         0,
+                                         std::min(static_cast<int>(photons.size()), 1),
+                                         0,
+                                         std::min(static_cast<int>(jets.size()), 1),
+                                         met.size()),
+                    shift);
+            }
+            /// [END] Validation
             //////////////////////////////////////////////
         }
     }

@@ -162,8 +162,8 @@ inline auto make_met(const double MET_pt,                            //
     auto met_p4 = RVec<Math::PtEtaPhiMVector>{};
     auto scale_factors = RVec<double>{};
     auto scale_factor_shift = RVec<double>{};
-    auto delta_met_x = 0.;
-    auto delta_met_y = 0.;
+    auto delta_met_x = RVec<double>{};
+    auto delta_met_y = RVec<double>{};
     auto is_fake = RVec<bool>{};
     auto id_score = RVec<unsigned int>{};
 

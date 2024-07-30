@@ -1,4 +1,6 @@
-.ruff_cache/
+.rucio_silva
+.rucio_seth
+.ruff_cache
 **/*ACLiC*.h
 **/*ACLiC_dict*
 NanoMUSiC/Legacy

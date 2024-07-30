@@ -91,12 +91,12 @@ inline auto get_year_for_photon_sf(Year year) -> std::string
     }
 }
 
-inline auto make_photons(const RVec<float> &Photon_pt,   //
-                         const RVec<float> &Photon_eta,  //
-                         const RVec<float> &Photon_phi,  //
-                         const RVec<float> &Photon_mass, //
-                         const RVec<bool> &Photon_isScEtaEB,
-                         const RVec<bool> &Photon_isScEtaEE,
+inline auto make_photons(const RVec<float> &Photon_pt,             //
+                         const RVec<float> &Photon_eta,            //
+                         const RVec<float> &Photon_phi,            //
+                         const RVec<float> &Photon_mass,           //
+                         const RVec<bool> &Photon_isScEtaEB,       //
+                         const RVec<bool> &Photon_isScEtaEE,       //
                          const RVec<Int_t> &Photon_mvaID_WP90,     //
                          const RVec<bool> &Photon_electronVeto,    //
                          const RVec<float> &Photon_dEscaleUp,      //
@@ -115,8 +115,8 @@ inline auto make_photons(const RVec<float> &Photon_pt,   //
     auto photons_p4 = RVec<Math::PtEtaPhiMVector>{};
     auto scale_factors = RVec<double>{};
     auto scale_factor_shift = RVec<double>{};
-    auto delta_met_x = 0.;
-    auto delta_met_y = 0.;
+    auto delta_met_x = RVec<double>{};
+    auto delta_met_y = RVec<double>{};
     auto is_fake = RVec<bool>{};
     auto id_score = RVec<unsigned int>{};
 
@@ -169,8 +169,8 @@ inline auto make_photons(const RVec<float> &Photon_pt,   //
                     + std::pow(std::max(std::fabs(sf_id - sf_id_up), std::fabs(sf_id - sf_id_down)), 2.)       //
                     ));
 
-                delta_met_x += (photon_p4.pt() - Photon_pt[i]) * std::cos(Photon_phi[i]);
-                delta_met_y += (photon_p4.pt() - Photon_pt[i]) * std::sin(Photon_phi[i]);
+                delta_met_x.push_back((photon_p4.pt() - Photon_pt[i]) * std::cos(Photon_phi[i]));
+                delta_met_y.push_back((photon_p4.pt() - Photon_pt[i]) * std::sin(Photon_phi[i]));
 
                 photons_p4.push_back(photon_p4);
 
@@ -198,7 +198,7 @@ inline auto make_photons(const RVec<float> &Photon_pt,   //
                         scale_factor_shift, //
                         delta_met_x,        //
                         delta_met_y,        //
-                        is_fake,
+                        is_fake,//
                         id_score);
 }
 
