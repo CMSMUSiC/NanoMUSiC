@@ -17,8 +17,9 @@ from distribution_plot import make_plot_task, p_value_task, build_plot_jobs_task
 def plotter(
     input_dir: str,
     patterns: list[str],
-    output_dir: str = "classification_plots",
-    num_cpus: int = 120,
+    output_dir: str,
+    num_cpus: int = 128,
+    is_validation=False,
 ):
     if not os.path.isdir(input_dir):
         print("ERROR: Input directory does not exists.")
@@ -48,42 +49,47 @@ def plotter(
         print("WARNING: No distribution matches the requirements.")
         sys.exit(1)
 
-    # Will calculate p-values
-    integral_pvalues_data = {}
-    for year in Years.years_to_plot():
-        integral_pvalues_data[Years.years_to_plot()[year]["name"]] = {}
-
-    with Pool(min(len(distribution_files), num_cpus)) as p:
-        with Progress() as progress:
-            task = progress.add_task(
-                "Calculating p-values [{} distribution files] ...".format(
-                    len(distribution_files)
-                ),
-                total=len(distribution_files),
-            )
-            for counts, _ in p.imap_unordered(p_value_task, distribution_files):
-                for year in counts:
-                    for ec in counts[year]:
-                        integral_pvalues_data[year][ec] = counts[year][ec]
-                progress.advance(task)
-
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    with open(
-        "{}/integral_pvalues_data.json".format(output_dir),
-        "w",
-        encoding="utf-8",
-    ) as f:
-        json.dump(integral_pvalues_data, f, ensure_ascii=False, indent=4)
+    # Will calculate p-values
+    # for validation, it should be None
+    integral_pvalues_data = None
+
+    if not is_validation:
+        integral_pvalues_data = {}
+        for year in Years.years_to_plot():
+            integral_pvalues_data[Years.years_to_plot()[year]["name"]] = {}
+
+        with Pool(min(len(distribution_files), num_cpus)) as p:
+            with Progress() as progress:
+                task = progress.add_task(
+                    "Calculating p-values [{} distribution files] ...".format(
+                        len(distribution_files)
+                    ),
+                    total=len(distribution_files),
+                )
+                for counts, _ in p.imap_unordered(p_value_task, distribution_files):
+                    for year in counts:
+                        for ec in counts[year]:
+                            integral_pvalues_data[year][ec] = counts[year][ec]
+                    progress.advance(task)
+
+        with open(
+            "{}/integral_pvalues_data.json".format(output_dir),
+            "w",
+            encoding="utf-8",
+        ) as f:
+            json.dump(integral_pvalues_data, f, ensure_ascii=False, indent=4)
 
     # Will build plot jobs
     plot_props: list[Any] = []
     with Pool(min(len(distribution_files), num_cpus)) as p:
         with Progress() as progress:
             task = progress.add_task(
-                "Building plot jobs [{} distribution files] ...".format(
-                    len(distribution_files)
+                "Building plot jobs [{} {} files] ...".format(
+                    len(distribution_files),
+                    "validation" if is_validation else "distribution",
                 ),
                 total=len(distribution_files),
             )
@@ -102,7 +108,8 @@ def plotter(
                 total=len(plot_props),
             )
             for job in p.imap_unordered(make_plot_task, plot_props):
-                progress.console.print("Done: {}".format(job))
+                if is_validation:
+                    progress.console.print("Done: {}".format(job))
                 progress.advance(task)
 
     print("Copying index.php ...")

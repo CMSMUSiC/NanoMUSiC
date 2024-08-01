@@ -99,7 +99,7 @@ unsigned int ECScanner::getFirstDicingRound() const
 //// Find and store the Region of Interest (RoI)
 //
 //
-void ECScanner::findRoI(const std::string scoreType, const bool filtered)
+void ECScanner::findRoI(const std::string &scoreType, const bool filtered)
 {
     const int maxBin = getMaxFilledBin();
 
@@ -632,7 +632,7 @@ std::vector<double> ECScanner::diceMcPseudoDataMT(const unsigned int round)
 //        IO functions
 ////////////////////////////////////////////////
 
-void ECScanner::readLookupTable(const std::string filename)
+void ECScanner::readLookupTable(const std::string &filename)
 {
     if (not m_skipLookupTable)
     {
@@ -811,7 +811,7 @@ std::vector<MCBin> ECScanner::readMCBinArray(const json &jsonArray, MCBin *integ
 //// read in seeds and initalize map of random generators for each error
 //
 //
-void ECScanner::readSystematicShiftsFile(const std::string filename)
+void ECScanner::readSystematicShiftsFile(const std::string &filename)
 {
     auto document = readJsonDocument(filename);
 
@@ -851,7 +851,7 @@ void ECScanner::readDataBinInfo()
 }
 
 // Open and parse json file using rapidjson
-void ECScanner::readInputJson(const std::string jsonFilePath)
+void ECScanner::readInputJson(const std::string &jsonFilePath)
 {
     // NOTE: This function does NOT reset the scanner before reading
     // the new configuration. If readInputJson(...) is called a second time,
@@ -992,9 +992,9 @@ void ECScanner::checkAndSetConfig(const std::string name, T &config)
 }
 
 //// Write all scan results to member m_jsonDocument
-void ECScanner::writeOutputFiles(const std::string outputDirectory)
+void ECScanner::writeOutputFiles(const std::string &outputDirectory, const std::string &scanType)
 {
-    const std::string nameBase = outputDirectory + "/" + m_ECName + "_" + m_distribution;
+    const std::string nameBase = outputDirectory + "/" + m_ECName + "_" + m_distribution + "_" + scanType;
     json infoJsonDocument;
 
     // Add scan results

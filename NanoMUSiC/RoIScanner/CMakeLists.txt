@@ -65,7 +65,24 @@ add_custom_target(lut
         DEPENDS ${CMAKE_SOURCE_DIR}/bin/lookuptable.bin
 )
 
-add_library(scan SHARED
+# add_library(scan SHARED
+#         src/ConvolutionComputer.cpp
+#         src/ECScanner.cpp
+#         src/Dicer.cpp
+#         src/MCBin.cpp
+#         src/ScanResult.cpp
+#         src/scan.cpp
+#         src/util.cpp
+#         src/ConvolutionLookup.cpp)
+#
+# target_compile_options(scan PUBLIC -Wall -Wextra -std=c++20 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
+# target_include_directories(scan PUBLIC include  ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/include/external)
+# target_include_directories(scan PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+# install(TARGETS scan DESTINATION ${CMAKE_SOURCE_DIR}/lib)
+
+# python binds
+find_package(pybind11 REQUIRED)
+pybind11_add_module(scanner_imp MODULE
         src/ConvolutionComputer.cpp
         src/ECScanner.cpp
         src/Dicer.cpp
@@ -73,12 +90,17 @@ add_library(scan SHARED
         src/ScanResult.cpp
         src/scan.cpp
         src/util.cpp
-        src/ConvolutionLookup.cpp)
+        src/ConvolutionLookup.cpp
+	src/pybind_imp.cpp 
+)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+target_include_directories(scanner_imp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(scanner_imp PUBLIC include  ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/include/external)
+install(TARGETS scanner_imp DESTINATION ${CMAKE_SOURCE_DIR}/lib/python)
+target_compile_options(scanner_imp PUBLIC -Wall -Wextra -std=c++20 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
 
-target_compile_options(scan PUBLIC -Wall -Wextra -std=c++20 -g -O3 -ffast-math -MD -MP -fPIC -pthread)
-target_include_directories(scan PUBLIC include  ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/include/external)
-target_include_directories(scan PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
-install(TARGETS scan DESTINATION ${CMAKE_SOURCE_DIR}/lib)
+
+
 
 add_executable(pCalc
         src/ConvolutionComputer.cpp

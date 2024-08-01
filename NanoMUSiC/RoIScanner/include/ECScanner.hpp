@@ -26,15 +26,15 @@ class ECScanner
     ~ECScanner();
     void finalize();
     // public member functions
-    void readInputJson(const std::string jsonFilePath);
-    void readLookupTable(const std::string lookupTablePath = "");
-    void writeOutputFiles(const std::string outputDirectory);
+    void readInputJson(const std::string &jsonFilePath);
+    void readLookupTable(const std::string &lookupTablePath = "");
+    void writeOutputFiles(const std::string &outputDirectory, const std::string &scanType);
 
     void readMCBinInfo();
     void readSignalBinInfo();
     void readDataBinInfo();
 
-    void readSystematicShiftsFile(const std::string filename);
+    void readSystematicShiftsFile(const std::string &filename);
 
     int getMaxFilledBin();
 
@@ -42,7 +42,7 @@ class ECScanner
     std::vector<double> diceMcPseudoDataMT(const unsigned int round);
     void diceSignalPseudoData(const unsigned int round);
 
-    void findRoI(const std::string scoreType, const bool filtered);
+    void findRoI(const std::string &scoreType, const bool filtered);
     void findRoI();
 
     double calcPvalMUSiC(const MCBin &bin, const double data) const;

@@ -180,12 +180,12 @@ inline auto make_photons(const RVec<float> &Photon_pt,             //
                 {
                     id_score.push_back(MUSiCObjects::IdScore::Loose);
                 }
-                if (photon_p4.pt() >= ObjConfig::Photons[year].MediumPt and
+                if (ObjConfig::Photons[year].MediumPt <= photon_p4.pt() and
                     photon_p4.pt() < ObjConfig::Photons[year].HighPt)
                 {
                     id_score.push_back(MUSiCObjects::IdScore::Medium);
                 }
-                if (photon_p4.pt() > ObjConfig::Photons[year].HighPt)
+		else
                 {
                     id_score.push_back(MUSiCObjects::IdScore::Tight);
                 }
@@ -198,7 +198,7 @@ inline auto make_photons(const RVec<float> &Photon_pt,             //
                         scale_factor_shift, //
                         delta_met_x,        //
                         delta_met_y,        //
-                        is_fake,//
+                        is_fake,            //
                         id_score);
 }
 

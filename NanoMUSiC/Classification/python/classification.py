@@ -826,15 +826,6 @@ def make_distributions(
         )
         return None
 
-    def chunk_list(lst, n_parts):
-        if n_parts <= 0:
-            print("ERROR: n_parts should be > 0.")
-            sys.exit(-1)
-
-        chunk_size = math.ceil(len(lst) / n_parts)
-        for i in range(0, len(lst), chunk_size):
-            yield lst[i : i + chunk_size]
-
     if class_name_filter_pattern:
         print("Will fold Classification ...")
         classes_names = get_analysis_names(classes_to_files, class_name_filter_pattern)
@@ -877,7 +868,6 @@ def make_distributions(
             validation_to_files, validation_filter_pattern
         )
 
-        print(validation_names)
         if validation_names:
             p = multiprocessing.Process(
                 target=do_fold,
@@ -885,6 +875,7 @@ def make_distributions(
                     get_input_files("validation_root_files"),
                     "validation_distributions",
                     validation_names,
+                    rescaling,
                 ),
             )
             p.start()

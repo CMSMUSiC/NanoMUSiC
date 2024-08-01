@@ -140,7 +140,7 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
                 {
                     id_score.push_back(MUSiCObjects::IdScore::Loose);
                 }
-                else if (tau_p4.pt() >= ObjConfig::Taus[year].MediumPt and tau_p4.pt() < ObjConfig::Taus[year].HighPt)
+                else if (ObjConfig::Taus[year].MediumPt <= tau_p4.pt() and tau_p4.pt() < ObjConfig::Taus[year].HighPt)
                 {
                     id_score.push_back(MUSiCObjects::IdScore::Medium);
                 }

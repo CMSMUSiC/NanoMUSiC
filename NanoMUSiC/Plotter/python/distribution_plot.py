@@ -18,6 +18,71 @@ mpl.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
+# def make_uncertainties_plot(
+#     class_name,
+#     distribution_name,
+#     x_min,
+#     x_max,
+#     y_min,
+#     y_max,
+#     total_data_histogram_first_bin_content,
+#     data_graph,
+#     mc_histograms,
+#     mc_uncertainty,
+#     ratio_graph,
+#     ratio_mc_error,
+#     output_path,
+#     year,
+#     p_value,
+#     systematic_uncertainties,
+#     statistical_uncertainties,
+#     total_mc_histogram,
+# ) -> None:
+#     x = []
+#     for _, hist in mc_histograms:
+#         for i in range(1, hist.GetNbinsX() + 2):
+#             x.append(hist.GetXaxis().GetBinLowEdge(i))
+#         break
+#
+#     grid_dim = math.ceil(math.sqrt(systematic_uncertainties.size() + 1))
+#     fig, axs = plt.subplots(grid_dim, grid_dim, figsize=(grid_dim * 6, grid_dim * 2))
+#     for i, data in enumerate(systematic_uncertainties):
+#         syst_name, values = data
+#         y_to_plot = [
+#             v / total_mc_histogram.GetBinContent(i + 1) for i, v in enumerate(values)
+#         ]
+#         y_to_plot = [y_to_plot[0]] + y_to_plot
+#         axs[int(i / grid_dim)][int(i % grid_dim)].step(x, y_to_plot, label=syst_name)
+#         axs[int(i / grid_dim)][int(i % grid_dim)].set_ylabel("Relative Uncert.")
+#         axs[int(i / grid_dim)][int(i % grid_dim)].legend()
+#         # axs[int(i / grid_dim)][int(i % grid_dim)].set_yscale("log")
+#
+#     y_to_plot = []
+#     for i, v in enumerate(statistical_uncertainties):
+#         if total_mc_histogram.GetBinContent(i + 1) > 0:
+#             y_to_plot.append(v / total_mc_histogram.GetBinContent(i + 1))
+#
+#         else:
+#             y_to_plot.append(0)
+#     y_to_plot = [y_to_plot[0]] + y_to_plot
+#     i = systematic_uncertainties.size()
+#     axs[int(i / grid_dim)][int(i % grid_dim)].step(x, y_to_plot, label="Statist.")
+#     axs[int(i / grid_dim)][int(i % grid_dim)].set_ylabel("Relative Uncert.")
+#     axs[int(i / grid_dim)][int(i % grid_dim)].legend()
+#     # axs[int(i / grid_dim)][int(i % grid_dim)].set_yscale("log")
+#
+#     plt.tight_layout()
+#     year_label = year
+#     if year_label == "Run2":
+#         year_label = ""
+#     output_file_path = f"{output_path}/{class_name}/Uncerts_{class_name}_{distribution_name}{(lambda x: f'_{x}' if x!='' else '_Run2') (year_label)}"
+#     output_file_path = output_file_path.replace("+", "_")
+#
+#     fig.savefig(f"{output_file_path}.png")
+#     fig.savefig(f"{output_file_path}.pdf")
+#     fig.savefig(f"{output_file_path}.svg")
+#
+
 
 def p_value_task(distribution_file: str):
     counts = {}
@@ -95,22 +160,30 @@ def p_value_task(distribution_file: str):
     return counts, distribution_file
 
 
-def make_ec_nice_name(s):
-    parts = s.split("_")
-    result = []
+def make_ec_nice_name(s: str) -> str:
+    if s.startswith("EC_"):
+        parts = s.replace("+X", "").replace("+NJet", "").split("_")
+        result = []
 
-    for i, p in enumerate(parts):
-        if i == 0:
-            continue
+        for i, p in enumerate(parts):
+            if i == 0:
+                continue
 
-        count = p[0]
-        if count != "0":
-            result.append(p)
+            count = p[0]
+            if count != "0":
+                result.append(p)
 
-    return "EC_" + "_".join(result).replace("+", "_")
+        class_modifier = ""
+        if s.endswith("+X"):
+            class_modifier = "+X"
+        if s.endswith("+NJet"):
+            class_modifier = "+NJet"
+        return ("EC_" + "_".join(result) + class_modifier).replace("+", "_")
+
+    return s
 
 
-def build_plot_jobs_task(args: tuple[str, dict[str, Any], str]) -> list[Any]:
+def build_plot_jobs_task(args: tuple[str, dict[str, Any] | None, str]) -> list[Any]:
     output_dir, plots_data, distribution_file = args
 
     temp_plot_props: list[Any] = []
@@ -138,7 +211,9 @@ def build_plot_jobs_task(args: tuple[str, dict[str, Any], str]) -> list[Any]:
                     plot.ratio_mc_error_band,
                     output_dir,
                     plot.year_to_plot,
-                    plots_data[plot.year_to_plot][plot.class_name]["p_value"],
+                    plots_data[plot.year_to_plot][plot.class_name]["p_value"]
+                    if plots_data
+                    else None,
                     dist.m_systematics_uncertainties,
                     dist.m_statistical_uncert,
                     dist.m_total_mc_histogram,
@@ -157,6 +232,7 @@ def build_plot_jobs_task(args: tuple[str, dict[str, Any], str]) -> list[Any]:
 
 def make_plot_task(args):
     # make_uncertainties_plot(*args)
+    return make_plot(*args)
     try:
         return make_plot(*args)
     except:
@@ -188,72 +264,6 @@ def make_plot_task(args):
         sys.exit(-1)
 
 
-# def make_uncertainties_plot(
-#     class_name,
-#     distribution_name,
-#     x_min,
-#     x_max,
-#     y_min,
-#     y_max,
-#     total_data_histogram_first_bin_content,
-#     data_graph,
-#     mc_histograms,
-#     mc_uncertainty,
-#     ratio_graph,
-#     ratio_mc_error,
-#     output_path,
-#     year,
-#     p_value,
-#     systematic_uncertainties,
-#     statistical_uncertainties,
-#     total_mc_histogram,
-# ) -> None:
-#     x = []
-#     for _, hist in mc_histograms:
-#         for i in range(1, hist.GetNbinsX() + 2):
-#             x.append(hist.GetXaxis().GetBinLowEdge(i))
-#         break
-#
-#     grid_dim = math.ceil(math.sqrt(systematic_uncertainties.size() + 1))
-#     fig, axs = plt.subplots(grid_dim, grid_dim, figsize=(grid_dim * 6, grid_dim * 2))
-#     for i, data in enumerate(systematic_uncertainties):
-#         syst_name, values = data
-#         y_to_plot = [
-#             v / total_mc_histogram.GetBinContent(i + 1) for i, v in enumerate(values)
-#         ]
-#         y_to_plot = [y_to_plot[0]] + y_to_plot
-#         axs[int(i / grid_dim)][int(i % grid_dim)].step(x, y_to_plot, label=syst_name)
-#         axs[int(i / grid_dim)][int(i % grid_dim)].set_ylabel("Relative Uncert.")
-#         axs[int(i / grid_dim)][int(i % grid_dim)].legend()
-#         # axs[int(i / grid_dim)][int(i % grid_dim)].set_yscale("log")
-#
-#     y_to_plot = []
-#     for i, v in enumerate(statistical_uncertainties):
-#         if total_mc_histogram.GetBinContent(i + 1) > 0:
-#             y_to_plot.append(v / total_mc_histogram.GetBinContent(i + 1))
-#
-#         else:
-#             y_to_plot.append(0)
-#     y_to_plot = [y_to_plot[0]] + y_to_plot
-#     i = systematic_uncertainties.size()
-#     axs[int(i / grid_dim)][int(i % grid_dim)].step(x, y_to_plot, label="Statist.")
-#     axs[int(i / grid_dim)][int(i % grid_dim)].set_ylabel("Relative Uncert.")
-#     axs[int(i / grid_dim)][int(i % grid_dim)].legend()
-#     # axs[int(i / grid_dim)][int(i % grid_dim)].set_yscale("log")
-#
-#     plt.tight_layout()
-#     year_label = year
-#     if year_label == "Run2":
-#         year_label = ""
-#     output_file_path = f"{output_path}/{class_name}/Uncerts_{class_name}_{distribution_name}{(lambda x: f'_{x}' if x!='' else '_Run2') (year_label)}"
-#     output_file_path = output_file_path.replace("+", "_")
-#
-#     fig.savefig(f"{output_file_path}.png")
-#     fig.savefig(f"{output_file_path}.pdf")
-#     fig.savefig(f"{output_file_path}.svg")
-#
-
-
 def make_plot(
     class_name,
     distribution_name,
@@ -269,16 +279,11 @@ def make_plot(
     ratio_mc_error,
     output_path,
     year,
-    p_value,
+    p_value: float | None,
     _systematic_uncertainties,
     _statistical_uncertainties,
     _total_mc_histogram,
 ) -> str:
-    # skip MET histogram for non-MET classes
-    # if distribution_name == "met" and "MET" not in class_name:
-    #     print(f"[INFO] Skipping MET distribution for {class_name} ...")
-    #     return "{} - {} - {}".format(class_name, distribution_name, year)
-
     # Create a figure and axes
     fig, (ax1, ax2) = aplt.ratio_plot(
         name=f"ratio_{class_name}_{distribution_name}",
@@ -306,10 +311,11 @@ def make_plot(
     elif distribution_name == "counts":
         x_label_text = r""
     else:
-        print(
-            f"ERROR: Could not set x axis label. Invalid option ({distribution_name})."
-        )
-        sys.exit(-1)
+        x_label_text = str(distribution_name)
+        # print(
+        #     f"ERROR: Could not set x axis label. Invalid option ({distribution_name})."
+        # )
+        # sys.exit(-1)
 
     ax2.text(
         0.85,
@@ -328,10 +334,13 @@ def make_plot(
     )
 
     # print class name
-    event_class_str = "Event class: {}".format(to_root_latex(class_name))
+    event_class_str = str(class_name)
+    if class_name.startswith("EC_"):
+        event_class_str = "Event class: {}".format(to_root_latex(class_name))
     if p_value and distribution_name == "counts":
         if p_value > 0:
             event_class_str += f" (p = {p_value:.2g})"
+
     ax1.text(
         0.19,
         0.9,
@@ -464,7 +473,8 @@ def make_plot(
     )
 
     # Save the plot
-    output_file_path = f"{output_path}/{class_name}/{class_name}_{distribution_name}{(lambda x: f'_{x}' if x!='' else '_Run2') (year_label)}"
+    ec_nice_name = make_ec_nice_name(class_name)
+    output_file_path = f"{output_path}/{ec_nice_name}/{ec_nice_name}_{distribution_name}{(lambda x: f'_{x}' if x!='' else '_Run2') (year_label)}"
     output_file_path = output_file_path.replace("+", "_")
 
     fig.savefig(f"{output_file_path}.png")

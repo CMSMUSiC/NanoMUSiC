@@ -148,18 +148,22 @@ class MUSiCObjects
         if (not(                                           //
                 p4.size() == scale_factor.size()           //
                 and p4.size() == scale_factor_shift.size() //
+                and p4.size() == delta_met_x.size()        //
+                and p4.size() == delta_met_y.size()        //
                 and p4.size() == is_fake.size()            //
                 and p4.size() == id_score.size()           //
                 ))
         {
-            fmt::print(
-                stderr,
-                "ERROR: Could not create MUSiCObjects. Input vectors have different sizes. \n{} - {} - {} - {} - {}",
-                p4.size(),
-                scale_factor.size(),
-                scale_factor_shift.size(),
-                is_fake.size(),
-                id_score.size());
+            fmt::print(stderr,
+                       "ERROR: Could not create MUSiCObjects. Input vectors have different sizes. {} - {} - {} - {} - "
+                       "{} - {} - {}\n",
+                       p4.size(),
+                       scale_factor.size(),
+                       scale_factor_shift.size(),
+                       delta_met_x.size(),
+                       delta_met_y.size(),
+                       is_fake.size(),
+                       id_score.size());
             std::exit(EXIT_FAILURE);
         }
 

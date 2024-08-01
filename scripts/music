@@ -111,7 +111,7 @@ def launch(
     max_files: int = sys.maxsize,
     split_size: int = sys.maxsize,
     dry_run: bool = False,
-    num_cpus: int = 100,
+    num_cpus: int = 128,
 ):
     """
     Launch the classification jobs for a given target.
@@ -202,7 +202,7 @@ def launch(
         classification.launch_dev(config_file, process, year, max_files)
     elif target == ClassificationTarget.Parallel:
         classification.launch_parallel(
-            config_file, process, year, max_files, split_size, num_cpus
+            config_file, process, year, max_files, 1, num_cpus
         )
     else:
         classification.launch_condor(
@@ -236,7 +236,7 @@ def unwrap(
     ],
     inputs_dir: str = "classification_merged_results",
     validation_inputs_dir: str = "validation_merged_results",
-    num_cpus: int = 120,
+    num_cpus: int = 128,
 ):
     """
     Will serialize to ROOT (TH1F) all recorded EventClasses.
@@ -248,7 +248,7 @@ def unwrap(
     )
 
 
-class FoldTarget(str, Enum):
+class FoldAndPlotTarget(str, Enum):
     Classification = "classification"
     Validation = "validation"
 
@@ -271,14 +271,14 @@ def fold(
     inputs_dir: str = "classification_root_files",
     validation_inputs_dir: str = "validation_root_files",
     name_filter: str = "*",
-    target: FoldTarget = FoldTarget.Classification,
+    target: FoldAndPlotTarget = FoldAndPlotTarget.Classification,
 ):
     """
     Will merge related histograms (TH1F) into Distributions (usefull data format for plotting and scan).
     """
     import classification
 
-    if target == FoldTarget.Classification:
+    if target == FoldAndPlotTarget.Classification:
         classification.make_distributions(
             config_file,
             alternative_config_file,
@@ -287,7 +287,7 @@ def fold(
             name_filter,
             None,
         )
-    if target == FoldTarget.Validation:
+    if target == FoldAndPlotTarget.Validation:
         classification.make_distributions(
             config_file,
             alternative_config_file,
@@ -312,7 +312,7 @@ def distribution(
     input_dir: str = "classification_distributions",
     output_dir: str = "classification_plots",
     filters: list[str] = ["*"],
-    num_cpus: int = 120,
+    num_cpus: int = 128,
 ):
     """
     Produce plots all distribution, matching (glob matching) the different filters.
@@ -328,14 +328,36 @@ def validation(
     input_dir: str = "validation_distributions",
     output_dir: str = "validation_plots",
     filters: list[str] = ["*"],
-    num_cpus: int = 120,
+    num_cpus: int = 128,
 ):
     """
     Produce plots all validation, matching (glob matching) the different filters.
     """
     from plotter import plotter
 
-    plotter(input_dir, filters, output_dir, num_cpus)
+    plotter(input_dir, filters, output_dir, num_cpus, True)
+
+
+@plot_app.command()
+@execution_time
+def most_occupied(
+    input_file: str = "classification_plots/integral_pvalues_data.json",
+    output_dir: str = "classification_most_occupied",
+):
+    """
+    Plot the occupancy and p_integral of most occupied classes.
+    """
+    from most_occupied_classes import most_occupied_classes
+
+    most_occupied_classes(
+        input_file,
+        output_dir,
+        year="Run2",
+        num_classes=20,
+        most_occupied=True,
+        most_occupied_objects=True,
+        most_occupied_exclusive=True,
+    )
 
 
 # @plot_app.command()

@@ -9,8 +9,10 @@ auto scan(const std::string &jsonFilePath,
           int startRound,
           const std::string &shiftsFilePath,
           const std::string &lutFilePath,
-          const bool is_debug) -> void
+          const std::string &scanType,
+          const bool is_debug) -> bool
 {
+
     // Create ECScanner object
     ECScanner scanner(rounds, startRound);
 
@@ -19,7 +21,8 @@ auto scan(const std::string &jsonFilePath,
     scanner.readLookupTable(lutFilePath);
 
     // Check if input contains data info ( we don't want to perform pseudo scan)
-    if (scanner.isDataScan())
+    // if (scanner.isDataScan())
+    if (scanType == "data")
     {
         scanner.findRoI();
     }
@@ -41,7 +44,8 @@ auto scan(const std::string &jsonFilePath,
             unsigned int real_round_index = i + scanner.getFirstDicingRound();
 
             // Dice pseudo experiment...
-            if (scanner.isSignalScan())
+            // if (scanner.isSignalScan())
+            if (scanType == "signal")
             {
                 // Dice around the signal expectation.
                 // Note that the dicing result is still scanned against the *SM* expectation,
@@ -68,9 +72,10 @@ auto scan(const std::string &jsonFilePath,
     }
 
     // Write result to CSV file
-    scanner.writeOutputFiles(outputDirectory);
+    scanner.writeOutputFiles(outputDirectory, scanType);
 
     scanner.finalize();
 
     fmt::print("Scan complete\n");
+    return true;
 }

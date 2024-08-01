@@ -211,6 +211,8 @@ inline auto make_met(const double MET_pt,                            //
         {
             scale_factors.push_back(1.);
             scale_factor_shift.push_back(0.);
+                         delta_met_x.push_back(0.);
+                         delta_met_y.push_back(0.);
             met_p4.push_back(Math::PtEtaPhiMVector(this_met));
 
             is_fake.push_back(false);

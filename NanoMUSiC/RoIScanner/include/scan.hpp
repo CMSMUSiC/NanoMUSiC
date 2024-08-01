@@ -9,6 +9,7 @@ auto scan(const std::string &jsonFilePath,
           const int startRound,
           const std::string &shiftsFilePath,
           const std::string &lutFilePath,
-          const bool is_debug) -> void;
+          const std::string &scanType,
+          const bool is_debug) -> bool;
 
 #endif // SCAN_HPP
