@@ -104,3 +104,26 @@ def get_distributions(analysis_name: str) -> list[tuple[str, bool]]:
     ]
     # print("ERROR: Could not find distributions for {}.".format(analysis_name))
     # sys.exit(-1)
+
+
+def make_ec_nice_name(s: str) -> str:
+    if s.startswith("EC_"):
+        parts = s.replace("+X", "").replace("+NJet", "").split("_")
+        result = []
+
+        for i, p in enumerate(parts):
+            if i == 0:
+                continue
+
+            count = p[0]
+            if count != "0":
+                result.append(p)
+
+        class_modifier = ""
+        if s.endswith("+X"):
+            class_modifier = "+X"
+        if s.endswith("+NJet"):
+            class_modifier = "+NJet"
+        return "EC_" + "_".join(result) + class_modifier
+
+    return s

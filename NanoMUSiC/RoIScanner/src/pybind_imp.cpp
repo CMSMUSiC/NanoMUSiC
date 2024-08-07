@@ -9,7 +9,7 @@ using namespace pybind11::literals;
 
 PYBIND11_MODULE(scanner_imp, m)
 {
-    m.def("scanner",
+    m.def("scan",
           &scan,
           "json_file_path"_a,
           "output_directory"_a,

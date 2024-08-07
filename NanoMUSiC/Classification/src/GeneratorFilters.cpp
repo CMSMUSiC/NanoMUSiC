@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <limits>
 
 namespace GeneratorFilters
 {
@@ -304,8 +305,15 @@ auto dy_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
                float mass_max,
                float pt_min,
                float pt_max,
+               FilterTaus filter_taus,
                debugger_t &h_debug) -> bool
 {
+    auto do_filter_taus = true;
+    if (filter_taus == FilterTaus::DoNotFilterTaus)
+    {
+        do_filter_taus = false;
+    }
+
     bool filter_result = false;
     float mass = -999.;
     float pt = -999.;
@@ -353,6 +361,7 @@ auto dy_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
             if (idx_lepton_plus and idx_lepton_minus)
             {
                 mass = LorentzVectorHelper::mass(lhe_particles.pt[*idx_lepton_plus],
+
                                                  lhe_particles.eta[*idx_lepton_plus],
                                                  lhe_particles.phi[*idx_lepton_plus],
                                                  PDG::get_mass_by_id(lhe_particles.pdgId[*idx_lepton_plus]),
@@ -373,16 +382,17 @@ auto dy_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
                 // allow Taus decay to leak to the high mass region
                 // this covers the high mass phase-space,
                 // since we do no include tau simulation in the POWHEG samples
-                float actual_max_mass = mass_max;
+                if (std::abs(lhe_particles.pdgId[*idx_lepton_minus]) == PDG::Tau::Id and not(do_filter_taus))
+                {
+                    mass_max = std::numeric_limits<double>::max();
+                }
+                else
+                {
+                    mass_max = mass_max + 0.5;
+                }
 
-                // skip this for now ... will be re-evaluated after presentation at 22/02/2023.
-                // if (lhe_particles.pdgId[*idx_lepton_minus] == PDG::Tau::Id)
-                // {
-                //     actual_max_mass = max_float;
-                // }
-
-                if ((mass >= mass_min - .5 and mass <= actual_max_mass + .5) //
-                    and (pt >= pt_min - .5 and pt <= pt_max + .5))
+                if ((mass_min - .5 <= mass and mass <= mass_max + .5) //
+                    and (pt_min - .5 <= pt and pt <= pt_max + .5))
                 {
                     filter_result = true;
                 }
@@ -454,8 +464,7 @@ auto wg_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, float pt_max, 
     return filter_result;
 }
 
-auto ww_2l2v_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,  float mass_max, debugger_t &h_debug)
-    -> bool
+auto ww_2l2v_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, float mass_max, debugger_t &h_debug) -> bool
 {
     bool filter_result = false;
     float mass = -99.;

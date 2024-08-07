@@ -32,7 +32,8 @@ def execution_time(func):
 ############################################################################
 ############################################################################
 classification_app = typer.Typer(
-    help="Launch and control the Classification steps. Expected workflow: build -> preprocess -> launch -> merge -> unwrap -> fold."
+    help="Launch and control the Classification steps. Expected workflow: build -> preprocess -> launch -> merge -> unwrap -> fold.",
+    pretty_exceptions_show_locals=False,
 )
 
 
@@ -303,7 +304,9 @@ def fold(
 # Plotter
 ############################################################################
 ############################################################################
-plot_app = typer.Typer(help="Produce different MUSiC plots.")
+plot_app = typer.Typer(
+    help="Produce different MUSiC plots.", pretty_exceptions_show_locals=False
+)
 
 
 @plot_app.command()
@@ -343,6 +346,7 @@ def validation(
 def most_occupied(
     input_file: str = "classification_plots/integral_pvalues_data.json",
     output_dir: str = "classification_most_occupied",
+    year="Run2",
 ):
     """
     Plot the occupancy and p_integral of most occupied classes.
@@ -352,7 +356,7 @@ def most_occupied(
     most_occupied_classes(
         input_file,
         output_dir,
-        year="Run2",
+        year=year,
         num_classes=20,
         most_occupied=True,
         most_occupied_objects=True,
@@ -371,19 +375,60 @@ def most_occupied(
 # Scanner
 ############################################################################
 ############################################################################
-scan_app = typer.Typer()
+scan_app = typer.Typer(pretty_exceptions_show_locals=False)
 
 
-# @scan_app.command()
-# @execution_time
-# def integral(config: str):
-#     pass
-#
-#
-# @scan_app.command()
-# @execution_time
-# def scan(config: str):
-#     pass
+class DistributionsType(str, Enum):
+    InvariantMass = "invariant_mass"
+    SumPt = "sum_pt"
+    MET = "met"
+
+
+@scan_app.command()
+@execution_time
+def start(
+    distribution: DistributionsType,
+    input_dir: str = "classification_distributions",
+    filters: list[str] = ["*"],
+    output_dir: str = "scan_results",
+    num_cpus: int = 128,
+    do_clean: bool = False,
+    n_round: int = 100_000,
+):
+    """
+    Launch RoIScan.
+    """
+    from scan import launch_scan
+
+    launch_scan(input_dir, filters, distribution.value, output_dir, num_cpus, do_clean, n_round)
+
+
+@scan_app.command()
+@execution_time
+def p_tilde(
+    class_name: str,
+    distribution: str,
+    output_dir: str = "scan_results",
+):
+    """
+    Calculate p-tilde for a given class and distribution.
+    """
+    from scan import get_p_tilde
+
+    get_p_tilde(
+        "{}/{}/{}_{}_data_info.json".format(
+            output_dir,
+            class_name.replace("+", "_"),
+            class_name.replace("+", "_"),
+            distribution,
+        ),
+        "{}/{}/{}_{}_mc_info.json".format(
+            output_dir,
+            class_name.replace("+", "_"),
+            class_name.replace("+", "_"),
+            distribution,
+        ),
+    )
 
 
 ############################################################################
@@ -391,10 +436,10 @@ scan_app = typer.Typer()
 # Main
 ############################################################################
 ############################################################################
-app = typer.Typer()
+app = typer.Typer(pretty_exceptions_show_locals=False)
 app.add_typer(classification_app, name="classification")
-app.add_typer(scan_app, name="scan")
 app.add_typer(plot_app, name="plot")
+app.add_typer(scan_app, name="scan")
 
 if __name__ == "__main__":
     app()

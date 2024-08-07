@@ -231,12 +231,13 @@ auto Distribution::make_distributions(const std::vector<std::string> &input_file
     for (const auto &analysis_name : analysis_to_plot)
     {
         auto distributions = std::vector<Distribution>();
-        distributions.reserve(16);
+        // distributions.reserve(16);
         for (const auto year_to_plot : years_to_plot())
         {
             for (const auto &[distribution_name, allow_rescale_by_width] : get_distribution_props(analysis_name))
             {
-                if (distribution_name == "met" and analysis_name.find("1MET") == std::string::npos)
+                if (distribution_name == "met" and analysis_name.find("1MET") == std::string::npos and
+                    analysis_name.find("EC_") != std::string::npos)
                 {
                     continue;
                 }
@@ -322,7 +323,7 @@ auto Distribution::get_systematics_uncert(
     {
         if (pg != "Data")
         {
-            if (not( xsec_order_uncert_LO_samples.contains(pg)  ))
+            if (not(xsec_order_uncert_LO_samples.contains(pg)))
             {
                 xsec_order_uncert_LO_samples.insert({pg, RVec<double>(m_n_bins, 0.)});
                 xsec_order_uncert_non_LO_samples.insert({pg, RVec<double>(m_n_bins, 0.)});

@@ -3,20 +3,20 @@ import tdrstyle
 import atlasplots as aplt
 from colors import PROCESS_GROUP_STYLES
 from decimal import Decimal
-from tools import to_root_latex
+from tools import to_root_latex, configure_root
 from metadata import Years
-from pvalue import get_integral_pvalue, np
+from pvalue import get_integral_pvalue
 from typing import Any
 import os
-import math
+from metadata import make_ec_nice_name
 
 from ROOT import TFile, THStack, TLine, gPad
 
 import matplotlib as mpl
 
+
+configure_root()
 mpl.use("Agg")
-import matplotlib.pyplot as plt
-import numpy as np
 
 # def make_uncertainties_plot(
 #     class_name,
@@ -160,29 +160,6 @@ def p_value_task(distribution_file: str):
     return counts, distribution_file
 
 
-def make_ec_nice_name(s: str) -> str:
-    if s.startswith("EC_"):
-        parts = s.replace("+X", "").replace("+NJet", "").split("_")
-        result = []
-
-        for i, p in enumerate(parts):
-            if i == 0:
-                continue
-
-            count = p[0]
-            if count != "0":
-                result.append(p)
-
-        class_modifier = ""
-        if s.endswith("+X"):
-            class_modifier = "+X"
-        if s.endswith("+NJet"):
-            class_modifier = "+NJet"
-        return ("EC_" + "_".join(result) + class_modifier).replace("+", "_")
-
-    return s
-
-
 def build_plot_jobs_task(args: tuple[str, dict[str, Any] | None, str]) -> list[Any]:
     output_dir, plots_data, distribution_file = args
 
@@ -221,7 +198,7 @@ def build_plot_jobs_task(args: tuple[str, dict[str, Any] | None, str]) -> list[A
             )
 
             # prepare output area
-            ec_nice_name = make_ec_nice_name(plot.class_name)
+            ec_nice_name = make_ec_nice_name(plot.class_name).replace("+", "_")
             if not os.path.exists("{}/{}".format(output_dir, ec_nice_name)):
                 os.makedirs("{}/{}".format(output_dir, ec_nice_name))
 
@@ -233,35 +210,6 @@ def build_plot_jobs_task(args: tuple[str, dict[str, Any] | None, str]) -> list[A
 def make_plot_task(args):
     # make_uncertainties_plot(*args)
     return make_plot(*args)
-    try:
-        return make_plot(*args)
-    except:
-        (
-            class_name,
-            distribution_name,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-            year,
-            _,
-            _,
-            _,
-            _,
-        ) = args
-        print(
-            "--> ERROR: Could not make plot.\nEC: {}, Distribution: {}, Year: {}".format(
-                class_name, distribution_name, year
-            )
-        )
-        sys.exit(-1)
 
 
 def make_plot(

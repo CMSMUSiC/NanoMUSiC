@@ -1,8 +1,7 @@
 from pydantic import BaseModel, NonNegativeFloat, NonNegativeInt, root_validator
 from enum import Enum
+import os
 from typing import Optional
-
-DEFAULT_NUM_ROUNDS: int = 100_000
 
 
 class ScanYear(str, Enum):
@@ -25,28 +24,44 @@ class DistributionType(str, Enum):
 
 
 class MCBin(BaseModel):
-    mcEventsPerProcessGroup: dict[str, float]
-    mcStatUncertPerProcessGroup: dict[str, NonNegativeFloat]
     lowerEdge: float
     width: float
+    mcEventsPerProcessGroup: dict[str, float]
+    mcStatUncertPerProcessGroup: dict[str, NonNegativeFloat]
     mcSysUncerts: dict[str, float]
 
 
-class MCBinBuilder:
-    def __init__(self) -> None:
-        self.mc_bin = MCBin(
-            mcEventsPerProcessGroup={},
-            mcStatUncertPerProcessGroup={},
-            lowerEdge=100.0,
-            width=10.0,
-            mcSysUncerts={},
-        )
+class MCBinsBuilder:
+    def __init__(self, mc_bin_props) -> None:
+        self.mc_bins = []
+
+        for prop in mc_bin_props:
+            mcEventsPerProcessGroup = {}
+            for process_group, count in prop.mcEventsPerProcessGroup:
+                mcEventsPerProcessGroup[str(process_group)] = count
+
+            mcStatUncertPerProcessGroup = {}
+            for process_group, count in prop.mcStatUncertPerProcessGroup:
+                mcStatUncertPerProcessGroup[str(process_group)] = count
+
+            mcSysUncerts = {}
+            for variation, uncert in prop.mcSysUncerts:
+                mcSysUncerts[str(variation)] = uncert
+
+            this_bin = MCBin(
+                mcEventsPerProcessGroup=mcEventsPerProcessGroup,
+                mcStatUncertPerProcessGroup=mcStatUncertPerProcessGroup,
+                lowerEdge=prop.lowerEdge,
+                width=prop.width,
+                mcSysUncerts=mcSysUncerts,
+            )
+            self.mc_bins.append(this_bin)
 
     def build(self):
-        return self.mc_bin
+        return self.mc_bins
 
 
-class Distribution(BaseModel):
+class ScanDistribution(BaseModel):
     name: str
     distribution: DistributionType
     year: ScanYear
@@ -80,18 +95,31 @@ class Distribution(BaseModel):
 
         return values
 
-    def save(self, output_directory):
+    def save(self, output_directory) -> str:
+        os.system(
+            "mkdir -p {}/{}".format(
+                output_directory,
+                self.name.replace("+", "_"),
+            )
+        )
+
+        output_file = "{}/{}/{}_{}_{}.json".format(
+            output_directory,
+            self.name.replace("+", "_"),
+            self.name.replace("+", "_"),
+            self.distribution,
+            self.year,
+        )
         with open(
-            "{}/{}_{}_{}.json".format(
-                output_directory, self.name, self.distribution, self.year
-            ),
+            output_file,
             "w",
         ) as f:
             f.write(self.json(indent=4))
+        return output_file
 
 
 def main():
-    dist = Distribution(
+    dist = ScanDistribution(
         name="FooEC",
         distribution=DistributionType.sum_pt,
         year=ScanYear.Run2018,

@@ -2,25 +2,27 @@ import ROOT
 import sys
 import os
 
-ROOT.gErrorIgnoreLevel = 6000
 
-ROOT.gSystem.AddIncludePath(
-    "-I{}/NanoMUSiC/Classification/include".format(os.getenv("MUSIC_BASE"))
-)
-ROOT.gSystem.AddIncludePath(
-    "-I{}/NanoMUSiC/MUSiC/include".format(os.getenv("MUSIC_BASE"))
-)
+def configure_root() -> None:
+    ROOT.gErrorIgnoreLevel = 6000
 
-if ROOT.gSystem.Load("libDistribution.so") != 0:
-    sys.exit(
-        'ERROR: Could not load Distribution shared library. Did you "ninja install"?'
+    ROOT.gSystem.AddIncludePath(
+        "-I{}/NanoMUSiC/Classification/include".format(os.getenv("MUSIC_BASE"))
+    )
+    ROOT.gSystem.AddIncludePath(
+        "-I{}/NanoMUSiC/MUSiC/include".format(os.getenv("MUSIC_BASE"))
     )
 
-ROOT.PyConfig.IgnoreCommandLineOptions = True
-ROOT.TH1.AddDirectory(False)
-ROOT.TDirectory.AddDirectory(False)
-ROOT.gROOT.SetBatch(True)
-ROOT.EnableThreadSafety()
+    if ROOT.gSystem.Load("libDistribution.so") != 0:
+        sys.exit(
+            'ERROR: Could not load Distribution shared library. Did you "ninja install"?'
+        )
+
+    ROOT.PyConfig.IgnoreCommandLineOptions = True
+    ROOT.TH1.AddDirectory(False)
+    ROOT.TDirectory.AddDirectory(False)
+    ROOT.gROOT.SetBatch(True)
+    ROOT.EnableThreadSafety()
 
 
 def to_root_latex(class_name):

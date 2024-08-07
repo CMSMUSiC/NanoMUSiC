@@ -23,14 +23,14 @@ using namespace std::string_literals;
 namespace LorentzVectorHelper
 {
 
-inline auto mass(const float &pt1,
-                 const float &eta1,
-                 const float &phi1,
-                 const float &mass1,
-                 const float &pt2,
-                 const float &eta2,
-                 const float &phi2,
-                 const float &mass2) -> float
+inline auto mass(const double &pt1,
+                 const double &eta1,
+                 const double &phi1,
+                 const double &mass1,
+                 const double &pt2,
+                 const double &eta2,
+                 const double &phi2,
+                 const double &mass2) -> double
 {
     // Conversion from (pt, eta, phi, mass) to (x, y, z, e) coordinate system
     const auto x1 = pt1 * std::cos(phi1);
@@ -52,7 +52,7 @@ inline auto mass(const float &pt1,
     return std::sqrt(e * e - x * x - y * y - z * z);
 }
 
-inline auto pt(const float &pt1, const float &phi1, const float &pt2, const float &phi2) -> float
+inline auto pt(const double &pt1, const double &phi1, const double &pt2, const double &phi2) -> double
 {
     const auto x1 = pt1 * std::cos(phi1);
     const auto y1 = pt1 * std::sin(phi1);
@@ -73,11 +73,17 @@ namespace GeneratorFilters
 {
 auto no_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, debugger_t &h_debug) -> bool;
 
+enum class FilterTaus
+{
+    DoFilterTaus,
+    DoNotFilterTaus
+};
 auto dy_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
                float mass_min,
                float mass_max,
                float pt_min,
                float pt_max,
+               FilterTaus filter_taus,
                debugger_t &h_debug) -> bool;
 
 auto ttbar_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
@@ -116,8 +122,7 @@ auto wlnujets_mass_binned_sherpa_filter(const NanoAODGenInfo::LHEParticles &lhe_
                                         float pt_max,
                                         debugger_t &h_debug) -> bool;
 
-auto ww_2l2v_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,  float mass_max, debugger_t &h_debug)
-    -> bool;
+auto ww_2l2v_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, float mass_max, debugger_t &h_debug) -> bool;
 
 auto gamma_jet_cleanner_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, float dr_max, debugger_t &h_debug)
     -> bool;
@@ -151,7 +156,7 @@ const std::map<std::string, Filter_t> filters = {
         Year &year,
         debugger_t &h_debug) -> bool
      {
-         return dy_filter(lhe_particles, 0., MAX_FLOAT, 0., 50., h_debug);
+         return dy_filter(lhe_particles, 0., MAX_FLOAT, 0., 50., FilterTaus::DoNotFilterTaus, h_debug);
      }},
 
     //  DY Jets - pT binned
@@ -161,7 +166,7 @@ const std::map<std::string, Filter_t> filters = {
         Year &year,
         debugger_t &h_debug) -> bool
      {
-         return dy_filter(lhe_particles, 50., 120., 0., MAX_FLOAT, h_debug);
+         return dy_filter(lhe_particles, 50., 120., 0., MAX_FLOAT, FilterTaus::DoNotFilterTaus, h_debug);
      }},
     {"dyjets_mass_less_120"s,
      [](const NanoAODGenInfo::LHEParticles &lhe_particles,
@@ -169,7 +174,7 @@ const std::map<std::string, Filter_t> filters = {
         Year &year,
         debugger_t &h_debug) -> bool
      {
-         return dy_filter(lhe_particles, 0., 120., 0., MAX_FLOAT, h_debug);
+         return dy_filter(lhe_particles, 0., 120., 0., MAX_FLOAT, FilterTaus::DoNotFilterTaus, h_debug);
      }},
 
     //  DY Jets - Very Low Mass
@@ -179,7 +184,7 @@ const std::map<std::string, Filter_t> filters = {
         Year &year,
         debugger_t &h_debug) -> bool
      {
-         return dy_filter(lhe_particles, 0., 10., 0., MAX_FLOAT, h_debug);
+         return dy_filter(lhe_particles, 0., 10., 0., MAX_FLOAT, FilterTaus::DoNotFilterTaus, h_debug);
      }},
 
     // DY Jets - Inclusive
@@ -189,7 +194,7 @@ const std::map<std::string, Filter_t> filters = {
         Year &year,
         debugger_t &h_debug) -> bool
      {
-         return dy_filter(lhe_particles, 0., 120., 0., 50., h_debug);
+         return dy_filter(lhe_particles, 0., 120., 0., 50., FilterTaus::DoNotFilterTaus, h_debug);
      }},
 
     // WW full-leptonic sample - inclusive

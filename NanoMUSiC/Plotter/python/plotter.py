@@ -49,9 +49,6 @@ def plotter(
         print("WARNING: No distribution matches the requirements.")
         sys.exit(1)
 
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-
     # Will calculate p-values
     # for validation, it should be None
     integral_pvalues_data = None

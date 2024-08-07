@@ -991,10 +991,32 @@ void ECScanner::checkAndSetConfig(const std::string name, T &config)
     std::cout << name << " = " << std::boolalpha << config << std::endl;
 }
 
+std::string replace_substring(const std::string &original, const std::string &old_substr, const std::string &new_substr)
+{
+    // Make a copy of the original string to work on
+    std::string modified_string = original;
+
+    // Find the first occurrence of the old substring
+    size_t pos = modified_string.find(old_substr);
+
+    // Loop until no more occurrences are found
+    while (pos != std::string::npos)
+    {
+        // Replace the old substring with the new one
+        modified_string.replace(pos, old_substr.length(), new_substr);
+
+        // Find the next occurrence starting from after the last replaced position
+        pos = modified_string.find(old_substr, pos + new_substr.length());
+    }
+
+    return modified_string;
+}
+
 //// Write all scan results to member m_jsonDocument
 void ECScanner::writeOutputFiles(const std::string &outputDirectory, const std::string &scanType)
 {
-    const std::string nameBase = outputDirectory + "/" + m_ECName + "_" + m_distribution + "_" + scanType;
+    const std::string nameBase =
+        outputDirectory + "/" + replace_substring(m_ECName, "+", "_") + "_" + m_distribution + "_" + scanType;
     json infoJsonDocument;
 
     // Add scan results

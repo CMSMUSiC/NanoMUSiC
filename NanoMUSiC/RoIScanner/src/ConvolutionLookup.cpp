@@ -196,6 +196,8 @@ void LookupTable::readFile(std::string filename)
         }
     }
 
+    std::cout << "LUT path: " << filename << std::endl;
+
     std::ifstream file(filename, std::ios::binary | std::ios::in);
     if (!file.good())
     {

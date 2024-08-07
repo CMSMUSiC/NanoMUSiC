@@ -27,6 +27,7 @@ export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/Classification:$PYTHONPATH
 export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/Classification/python:$PYTHONPATH
 export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/MUSiC/python:$PYTHONPATH
 export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/Plotter/python:$PYTHONPATH
+export PYTHONPATH=$SCRIPTDIR/NanoMUSiC/RoIScanner/python:$PYTHONPATH
 
 
 # add gfal2 to PATH

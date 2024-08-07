@@ -14,6 +14,8 @@
 #include "ROOT/RVec.hxx"
 #include "TH1.h"
 
+#include "roothelpers.hpp"
+
 using namespace ROOT;
 using namespace ROOT::VecOps;
 
@@ -130,9 +132,7 @@ class Distribution
     TGraphErrors m_error_band;
     bool m_has_data;
     bool m_has_mc;
-
     std::unordered_map<std::string, RVec<double>> m_systematics_uncertainties;
-
     std::array<std::unordered_map<std::string, TH1F>, total_variations> m_histogram_per_process_group_and_shift;
 
     // constructor and methods
@@ -154,7 +154,22 @@ class Distribution
 
         else if (analysis_name.find("z_to") != std::string::npos)
         {
-            return {{"invariant_mass", true}, {"met", true}};
+            return {
+                {"invariant_mass", true},
+                {"met", true},
+                {"sum_pt", true},
+                {"lepton_1_pt", true},
+                {"lepton_2_pt", true},
+                {"lepton_1_eta", false},
+                {"lepton_2_eta", false},
+                {"lepton_1_phi", false},
+                {"lepton_2_phi", false},
+                {"lepton_1_jet_1_dPhi", false},
+                {"lepton_1_jet_1_dR", false},
+                {"jet_multiplicity", false},
+                {"bjet_multiplicity", false},
+
+            };
         }
 
         else if (analysis_name.find("w_to") != std::string::npos)
@@ -162,8 +177,8 @@ class Distribution
             return {{"invariant_mass", true},
                     {"sum_pt", true},
                     {"lepton_pt", true},
-                    {"lepton_eta", true},
-                    {"lepton_phi", true},
+                    {"lepton_eta", false},
+                    {"lepton_phi", false},
                     {"met", true}};
         }
 
@@ -174,10 +189,11 @@ class Distribution
 
         else if (analysis_name.find("gamma_plus_jets") != std::string::npos)
         {
-            return {{"gamma_pt", true}, {"gamma_eta", true}, {"gamma_phi", true}};
+            return {{"gamma_pt", true}, {"gamma_eta", false}, {"gamma_phi", false}};
         }
 
-        return {{"invariant_mass", true}};
+        fmt::print(stderr, "ERROR: Could not find distribution props for given analysis name ({}).", analysis_name);
+        std::exit(EXIT_FAILURE);
     }
 
     static auto make_distributions(const std::vector<std::string> &input_files,
@@ -220,6 +236,64 @@ class Distribution
     auto has_data() const -> bool
     {
         return m_has_data;
+    }
+
+    auto get_data_counts() const -> RVec<double>
+    {
+        return ROOTHelpers::Counts(m_total_data_histogram);
+    }
+
+    struct MCBinProps
+    {
+        std::unordered_map<std::string, double> mcEventsPerProcessGroup;
+        std::unordered_map<std::string, double> mcStatUncertPerProcessGroup;
+        float lowerEdge;
+        float width;
+        std::unordered_map<std::string, double> mcSysUncerts;
+    };
+
+    auto get_mcbins_props() const -> std::vector<MCBinProps>
+    {
+        auto props = std::vector<MCBinProps>(m_n_bins);
+        auto has_edges_and_syst = false;
+
+        for (std::size_t shift = 0; shift < static_cast<std::size_t>(Shifts::Variations::kTotalVariations); shift++)
+        {
+            for (const auto &[pg, histo] : m_histogram_per_process_group_and_shift[shift])
+            {
+                if (pg != "Data")
+                {
+                    if (shift == static_cast<std::size_t>(Shifts::Variations::Nominal))
+                    {
+                        if (not(has_edges_and_syst))
+                        {
+                            auto edges = ROOTHelpers::Edges(histo);
+                            auto widths = ROOTHelpers::Widths(histo);
+                            for (std::size_t idx=0; idx < m_n_bins; idx++)
+                            {
+                                props[idx].lowerEdge = edges[idx];
+                                props[idx].width = widths[idx];
+                                for (const auto &[var, syst] : m_systematics_uncertainties)
+                                {
+                                    props[idx].mcSysUncerts[var] = syst[idx];
+                                }
+
+                                has_edges_and_syst = true;
+                            }
+                        }
+
+                        auto counts = ROOTHelpers::Counts(histo);
+                        auto errors = ROOTHelpers::Errors(histo);
+                        for (std::size_t idx=0; idx < m_n_bins; idx++)
+                        {
+                            props[idx].mcEventsPerProcessGroup[pg] = counts[idx];
+                            props[idx].mcStatUncertPerProcessGroup[pg] = errors[idx];
+                        }
+                    }
+                }
+            }
+        }
+        return props;
     }
 };
 

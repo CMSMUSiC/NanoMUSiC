@@ -691,22 +691,26 @@ auto classification(const std::string process,
             auto _year = get_runyear(year);
             if (_year == Year::Run2016APV)
             {
-                return unwrap_or(HLT_Photon175, false) or unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
+                // return unwrap_or(HLT_Photon175, false) or unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
+                return unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
             }
 
             if (_year == Year::Run2016)
             {
-                return unwrap_or(HLT_Photon175, false) or unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
+                // return unwrap_or(HLT_Photon175, false) or unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
+                return unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
             }
 
             if (_year == Year::Run2017)
             {
-                return unwrap_or(HLT_Photon200, false) or unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
+                // return unwrap_or(HLT_Photon200, false) or unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
+                return unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
             }
 
             if (_year == Year::Run2018)
             {
-                return unwrap_or(HLT_Photon200, false) or unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
+                // return unwrap_or(HLT_Photon200, false) or unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
+                return unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
             }
 
             fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);

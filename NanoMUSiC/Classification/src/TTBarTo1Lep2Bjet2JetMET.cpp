@@ -125,7 +125,8 @@ auto TTBarTo1Lep2Bjet2JetMET::fill(const MUSiCObjects &leptons,
         {
             h_invariant_mass_jet0_jet1[idx_var].Fill((jets.p4.at(0) + jets.p4.at(1)).mass(), weight);
             h_transverse_mass_lep_MET[idx_var].Fill((leptons.p4.at(0) + met.p4.at(0)).M(), weight);
-            h_ht_had_lep[idx_var].Fill((jets.p4.at(0) + jets.p4.at(1) + bjets.p4.at(0) + bjets.p4.at(1)).mass());
+            h_ht_had_lep[idx_var].Fill(jets.p4.at(0).pt() + jets.p4.at(1).pt() + bjets.p4.at(0).pt() +
+                                       bjets.p4.at(1).pt());
         }
     }
 }
