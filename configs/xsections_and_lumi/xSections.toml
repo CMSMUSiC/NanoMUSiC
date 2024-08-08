@@ -1188,16 +1188,19 @@ ProcessGroup = "WG"
 
 
 [WGToLNuG_01J_5f_13TeV_AM]
-XSec = 0.0412
+# XSec = 0.0412
+XSec = 192.3
 FilterEff = 1.0
 kFactor = 1.0
-XSecOrder = "LO"
+# XSecOrder = "LO"
+XSecOrder = "NLO"
 ProcessGroup = "WG"
 generator_filter_key = "pt_gamma_less_130"
 
 
 [WGToLNuG_01J_5f_PtG_130_13TeV_AM]
-XSec = 1.031
+# XSec = 1.031
+XSec = 1.019
 FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"
@@ -1206,7 +1209,8 @@ generator_filter_key = "pt_gamma_less_300"
 
 
 [WGToLNuG_01J_5f_PtG_300_13TeV_AM]
-XSec = 0.00711
+# XSec = 0.00711
+XSec = 0.07074
 FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"
@@ -1215,7 +1219,8 @@ generator_filter_key = "pt_gamma_less_500"
 
 
 [WGToLNuG_01J_5f_PtG_500_13TeV_AM]
-XSec = 0.000983
+# XSec = 0.000983
+XSec = 0.009251
 FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"
