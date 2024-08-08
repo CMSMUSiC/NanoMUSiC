@@ -190,13 +190,13 @@ void LookupTable::readFile(std::string filename)
     if (filename.empty())
     {
         filename = getDefaultLutPath();
-        if (debug)
-        {
-            std::cerr << "Falling back to default file path " << filename << "." << std::endl;
-        }
+        // if (debug)
+        // {
+        //     std::cerr << "Falling back to default file path " << filename << "." << std::endl;
+        // }
     }
 
-    std::cout << "LUT path: " << filename << std::endl;
+    // std::cout << "LUT path: " << filename << std::endl;
 
     std::ifstream file(filename, std::ios::binary | std::ios::in);
     if (!file.good())

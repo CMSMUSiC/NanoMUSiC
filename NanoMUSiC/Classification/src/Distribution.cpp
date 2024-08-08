@@ -84,7 +84,6 @@ Distribution::Distribution(const std::vector<ECHistogram> &event_class_histogram
         ROOT::VecOps::sqrt(ROOT::VecOps::pow(m_statistical_uncert, 2.) + ROOT::VecOps::pow(m_systematics_uncert, 2.));
 
     m_has_data = ROOT::VecOps::Sum(ROOTHelpers::Counts(m_total_data_histogram)) > 0.;
-    m_has_mc = ROOT::VecOps::Sum(ROOTHelpers::Counts(m_total_mc_histogram)) > 0.;
 }
 
 auto replace_all(std::string str, const std::string &from, const std::string &to) -> std::string

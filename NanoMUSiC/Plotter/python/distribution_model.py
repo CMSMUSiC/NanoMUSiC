@@ -77,7 +77,7 @@ class ScanDistribution(BaseModel):
     widthLowStatsRegions: NonNegativeInt = 4
     thresholdLowStatsDominant: NonNegativeFloat = 0.95
     FirstRound: Optional[NonNegativeInt] = 0
-    NumRounds: Optional[NonNegativeInt] = DEFAULT_NUM_ROUNDS
+    NumRounds: Optional[NonNegativeInt]
 
     @root_validator(pre=True)
     def check_bins_length(cls, values):
@@ -116,19 +116,3 @@ class ScanDistribution(BaseModel):
         ) as f:
             f.write(self.json(indent=4))
         return output_file
-
-
-def main():
-    dist = ScanDistribution(
-        name="FooEC",
-        distribution=DistributionType.sum_pt,
-        year=ScanYear.Run2018,
-        MCBins=[MCBinBuilder().build()],
-        DataBins=[12.0],
-        sigmaThreshold=0.0,
-    )
-    dist.save(".")
-
-
-if __name__ == "__main__":
-    main()

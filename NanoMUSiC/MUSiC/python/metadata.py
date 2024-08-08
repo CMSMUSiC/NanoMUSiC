@@ -3,7 +3,7 @@ import random
 import sys
 import tomli
 from pydantic import BaseModel, Field, NonNegativeFloat
-from typing import Any, Optional
+from typing import Any
 
 
 def load_toml(path: str) -> dict[str, Any]:
@@ -127,3 +127,58 @@ def make_ec_nice_name(s: str) -> str:
         return "EC_" + "_".join(result) + class_modifier
 
     return s
+
+
+def make_raw_ec_name(nice_name: str) -> str:
+    parts = nice_name.replace("+X", "").replace("+NJet", "").split("_")
+
+    n_muons = 0
+    n_electrons = 0
+    n_taus = 0
+    n_photons = 0
+    n_bjets = 0
+    n_jets = 0
+    n_met = 0
+
+    for i, p in enumerate(parts):
+        if i == 0:
+            continue
+
+        count = p[0]
+        if p[1:] == "Muon":
+            n_muons = count
+            continue
+        if p[1:] == "Electron":
+            n_electrons = count
+            continue
+        if p[1:] == "Tau":
+            n_taus = count
+            continue
+        if p[1:] == "Photon":
+            n_photons = count
+            continue
+        if p[1:] == "bJet":
+            n_bjets = count
+            continue
+        if p[1:] == "Jet":
+            n_jets = count
+            continue
+        if p[1:] == "MET":
+            n_met = count
+            continue
+
+        print(
+            "ERROR: Could not create raw EC name from nice name ({})".format(nice_name),
+            file=sys.stderr,
+        )
+        sys.exit(-1)
+
+    class_modifier = ""
+    if nice_name.endswith("+X"):
+        class_modifier = "+X"
+    if nice_name.endswith("+NJet"):
+        class_modifier = "+NJet"
+
+    return "EC_{}Muon_{}Electron_{}Tau_{}bJet_{}Jet_{}MET{}".format(
+        n_muons, n_electrons, n_taus, n_photons, n_bjets, n_jets, n_met, class_modifier
+    )

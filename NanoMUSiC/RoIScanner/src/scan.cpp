@@ -24,7 +24,6 @@ auto scan(const std::string &jsonFilePath,
     if (scanType == "data")
     {
         scanner.findRoI();
-        fmt::print("\n--> Data scan done. Will save output file.\n");
     }
     else
     {
@@ -36,8 +35,6 @@ auto scan(const std::string &jsonFilePath,
         // around 0. The normalized values will later be scaled and shifted to represent an
         // uncertainty on the bin count.
         scanner.readSystematicShiftsFile(shiftsFilePath);
-
-        fmt::print("\n--> Read systematic shifts file.\n");
 
         // loops over toy rounds
         for (unsigned int i = 0; i < scanner.getDicingRounds(); i++)
@@ -58,14 +55,11 @@ auto scan(const std::string &jsonFilePath,
             {
                 // Dice around the SM expectation
                 scanner.diceMcPseudoData(real_round_index);
-
-                fmt::print("\n--> MC Scan: dicing pseudodata for round {} done.\n", i);
             }
             // auto toy_sampled_data = scanner.diceMcPseudoDataMT(real_round_index);
 
             // find roi in pseudo data
             scanner.findRoI();
-            fmt::print("\n--> MC Scan: round {}/{} done.\n", i, scanner.getDicingRounds());
 
             // print progress
             if (is_debug and
@@ -79,8 +73,7 @@ auto scan(const std::string &jsonFilePath,
     // Write result to CSV file
     scanner.writeOutputFiles(outputDirectory, scanType);
 
-    scanner.finalize();
+    // scanner.finalize();
 
-    fmt::print("Scan complete\n");
     return true;
 }

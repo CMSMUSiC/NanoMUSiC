@@ -21,6 +21,8 @@ from ROOT import TFile
 
 configure_root()
 
+MC_THRESHOLD = 0.1
+
 
 def make_shifts(num_rounds: int, variations: list[str]) -> None:
     shifts = dict(
@@ -81,8 +83,6 @@ def do_scan(scan_props: ScanProps) -> str | None:
         print("ERROR: Could not perform Data scan.", file=sys.stderr)
         sys.exit(-1)
 
-    print("++> Data scan done.")
-
     mc_scan: bool = scanner.scan(
         scan_props.json_file_path,
         "{}/{}".format(
@@ -98,7 +98,6 @@ def do_scan(scan_props: ScanProps) -> str | None:
         print("ERROR: Could not perform MC scan.", file=sys.stderr)
         sys.exit(-1)
 
-    print("++> MC scan done.")
     if data_scan and mc_scan:
         return "{} - {} - {}".format(
             distribution.name, distribution.distribution, distribution.year
@@ -124,7 +123,7 @@ def build_scan_jobs_task(
             and distribution_type in dist_name
         ):
             dist = root_file.Get(dist_name)
-            if dist.has_mc() and dist.has_data():
+            if dist.has_mc(MC_THRESHOLD) and dist.has_data():
                 this_variations = [
                     str(var) for var, _ in dist.m_systematics_uncertainties
                 ]
@@ -274,7 +273,7 @@ def get_p_tilde(scan_result_data_file_path: str, scan_mc_data_file_path: str) ->
     print()
     print("Event class: {}".format(name))
     print("Distribution: {}".format(distribution))
-    print("RoI: [{}-{}]".format(lower_edge, lower_edge + width))
+    print("RoI: [{} - {}]".format(lower_edge, lower_edge + width))
     print("p-value: {}".format(p_val_data))
 
     p_tilde = np.sum(np.array(p_val_mc) < p_val_data) / float(len(p_val_mc))
@@ -283,15 +282,3 @@ def get_p_tilde(scan_result_data_file_path: str, scan_mc_data_file_path: str) ->
 
     print("p-tilde: {}".format(p_tilde))
     print()
-
-
-def main():
-    do_scan(
-        ScanProps(
-            json_file_path="demo.json", output_directory="scan_results", rounds=10
-        ),
-    )
-
-
-if __name__ == "__main__":
-    main()

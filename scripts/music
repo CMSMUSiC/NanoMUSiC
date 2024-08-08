@@ -387,20 +387,22 @@ class DistributionsType(str, Enum):
 @scan_app.command()
 @execution_time
 def start(
-    distribution: DistributionsType,
+    distribution: DistributionsType = DistributionsType.InvariantMass,
     input_dir: str = "classification_distributions",
     filters: list[str] = ["*"],
     output_dir: str = "scan_results",
     num_cpus: int = 128,
     do_clean: bool = False,
-    n_round: int = 100_000,
+    n_rounds: int = 100_000,
 ):
     """
     Launch RoIScan.
     """
     from scan import launch_scan
 
-    launch_scan(input_dir, filters, distribution.value, output_dir, num_cpus, do_clean, n_round)
+    launch_scan(
+        input_dir, filters, distribution.value, output_dir, num_cpus, do_clean, n_rounds
+    )
 
 
 @scan_app.command()

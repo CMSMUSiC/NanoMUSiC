@@ -131,7 +131,6 @@ class Distribution
     TGraphAsymmErrors m_data_graph;
     TGraphErrors m_error_band;
     bool m_has_data;
-    bool m_has_mc;
     std::unordered_map<std::string, RVec<double>> m_systematics_uncertainties;
     std::array<std::unordered_map<std::string, TH1F>, total_variations> m_histogram_per_process_group_and_shift;
 
@@ -222,15 +221,15 @@ class Distribution
         m_total_data_histogram.Print("all");
         fmt::print("--> Total MC histogram:\n");
         m_total_mc_histogram.Print("all");
-        fmt::print("--> Has MC: {}\n", m_has_mc);
+        fmt::print("--> Has MC: {}\n", has_mc());
         fmt::print("--> Has Data: {}\n", m_has_data);
         // m_data_graph.Print();
         // m_error_band.Print();
     }
 
-    auto has_mc() const -> bool
+    auto has_mc(double threshold = 0.) const -> bool
     {
-        return m_has_mc;
+        return ROOT::VecOps::Sum(ROOTHelpers::Counts(m_total_mc_histogram)) > threshold;
     }
 
     auto has_data() const -> bool
@@ -269,7 +268,7 @@ class Distribution
                         {
                             auto edges = ROOTHelpers::Edges(histo);
                             auto widths = ROOTHelpers::Widths(histo);
-                            for (std::size_t idx=0; idx < m_n_bins; idx++)
+                            for (std::size_t idx = 0; idx < m_n_bins; idx++)
                             {
                                 props[idx].lowerEdge = edges[idx];
                                 props[idx].width = widths[idx];
@@ -284,7 +283,7 @@ class Distribution
 
                         auto counts = ROOTHelpers::Counts(histo);
                         auto errors = ROOTHelpers::Errors(histo);
-                        for (std::size_t idx=0; idx < m_n_bins; idx++)
+                        for (std::size_t idx = 0; idx < m_n_bins; idx++)
                         {
                             props[idx].mcEventsPerProcessGroup[pg] = counts[idx];
                             props[idx].mcStatUncertPerProcessGroup[pg] = errors[idx];

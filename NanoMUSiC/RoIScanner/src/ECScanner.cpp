@@ -326,8 +326,8 @@ bool ECScanner::vetoRegion(const MCBin &mcbin,
 
     if (data > no_data_threshold and mcbin.isEmpty())
     {
-        std::cerr << "Warning: Region with data but without MC!" << std::endl;
-        std::cerr << mcbin << std::endl;
+        // std::cerr << "Warning: Region with data but without MC!" << std::endl;
+        // std::cerr << mcbin << std::endl;
         m_regionStatistics["skip: data but no MC"]++;
         fillRegionControlPlot(mcbin, SkipReason::DATA_NO_MC);
         return true;
@@ -637,12 +637,12 @@ void ECScanner::readLookupTable(const std::string &filename)
     if (not m_skipLookupTable)
     {
         m_lookupTable.readFile(filename);
-        std::cout << "Loaded LUT from " << m_lookupTable.lastLoadedFilename() << std::endl;
+        // std::cout << "Loaded LUT from " << m_lookupTable.lastLoadedFilename() << std::endl;
     }
-    else
-    {
-        std::cout << "LUT skipped." << std::endl;
-    }
+    // else
+    // {
+    // std::cout << "LUT skipped." << std::endl;
+    // }
 }
 
 //// read bin infos  and uncertainties in m_mcBins
@@ -950,7 +950,7 @@ void ECScanner::readInputJson(const std::string &jsonFilePath)
         const int combined_seed =
             external_seed ^ (class_seed + 0x9e3779b9 + (external_seed << 6) + (external_seed >> 2));
 
-        std::cout << "Fixing poisson random seed for this class to " << combined_seed << "." << std::endl;
+        // std::cout << "Fixing poisson random seed for this class to " << combined_seed << "." << std::endl;
 
         m_dicer.setPoissonSeed(combined_seed);
     }
@@ -988,7 +988,7 @@ void ECScanner::checkAndSetConfig(const std::string name, T &config)
     {
         config = m_jsonDocument[name].get<T>();
     }
-    std::cout << name << " = " << std::boolalpha << config << std::endl;
+    // std::cout << name << " = " << std::boolalpha << config << std::endl;
 }
 
 std::string replace_substring(const std::string &original, const std::string &old_substr, const std::string &new_substr)
