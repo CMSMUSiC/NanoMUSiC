@@ -108,6 +108,11 @@ TTBarTo1Lep2Bjet2JetMET::TTBarTo1Lep2Bjet2JetMET(enum Leptons lepton,
     }
 }
 
+inline auto transverse_mass(double et, double px, double py) -> double
+{
+    return std::sqrt(std::pow(et, 2) - std::pow(px, 2) - std::pow(py, 2));
+}
+
 auto TTBarTo1Lep2Bjet2JetMET::fill(const MUSiCObjects &leptons,
                                    const MUSiCObjects &bjets,
                                    const MUSiCObjects &jets,
@@ -116,15 +121,25 @@ auto TTBarTo1Lep2Bjet2JetMET::fill(const MUSiCObjects &leptons,
                                    Shifts::Variations shift) -> void
 {
     auto idx_var = static_cast<std::size_t>(shift);
-    if ((leptons.size() > 0) and (bjets.size() >= 2) and (jets.size() >= 2) and (met.size() > 0))
+    if ((leptons.size() >= 1) and (bjets.size() >= 2) and (jets.size() >= 2) and (met.size() >= 1))
     {
-        if ((std::sqrt(std::pow(leptons.p4.at(0).px() + met.p4.at(0).px(), 2) +
-                       std::pow(leptons.p4.at(0).py() + met.p4.at(0).py(), 2)) >= 60.) and
-            ((jets.p4.at(0) + jets.p4.at(1)).mass() < (PDG::W::Mass + 30.)) and
-            ((jets.p4.at(0) + jets.p4.at(1)).mass() > (PDG::W::Mass - 30.)))
+        auto jet_12_mass = (jets.p4.at(0) + jets.p4.at(1)).mass();
+        auto tranv_mass_lep_met = transverse_mass(leptons.p4.at(0).Et() + met.p4.at(0).Et(),
+                                                  leptons.p4.at(0).px() + met.p4.at(0).px(),
+                                                  leptons.p4.at(0).py() + met.p4.at(0).py());
+
+        if (tranv_mass_lep_met >= 60.)
         {
-            h_invariant_mass_jet0_jet1[idx_var].Fill((jets.p4.at(0) + jets.p4.at(1)).mass(), weight);
-            h_transverse_mass_lep_MET[idx_var].Fill((leptons.p4.at(0) + met.p4.at(0)).M(), weight);
+            h_invariant_mass_jet0_jet1[idx_var].Fill(jet_12_mass, weight);
+        }
+
+        if (PDG::W::Mass - 30. < jet_12_mass and jet_12_mass < PDG::W::Mass + 30.)
+        {
+            h_transverse_mass_lep_MET[idx_var].Fill(tranv_mass_lep_met, weight);
+        }
+
+        if (tranv_mass_lep_met >= 60. and (PDG::W::Mass - 30. < jet_12_mass and jet_12_mass < PDG::W::Mass + 30.))
+        {
             h_ht_had_lep[idx_var].Fill(jets.p4.at(0).pt() + jets.p4.at(1).pt() + bjets.p4.at(0).pt() +
                                        bjets.p4.at(1).pt());
         }

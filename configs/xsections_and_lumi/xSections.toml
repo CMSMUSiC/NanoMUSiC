@@ -1251,6 +1251,7 @@ ProcessGroup = "WG"
 
 [WJetsToLNu_012JetsNLO_34JetsLO_EWNLOcorr_13TeV_SP]
 XSec = 60290.0
+# XSec = 62070.0 #XSDB
 FilterEff = 1.0
 kFactor = 1.02
 XSecOrder = "NNLO"
@@ -1272,7 +1273,6 @@ kFactor = 1.02
 XSecOrder = "NNLO"
 ProcessGroup = "W"
 generator_filter_key = "w_plus_jets_pt_less_100_mass_less_200"
-
 
 [WJetsToLNu_HT-100To200_13TeV_MG]
 XSec = 1345.0
@@ -1374,7 +1374,8 @@ generator_filter_key = "w_plus_jets_mass_less_200"
 
 [WJetsToLNu_Pt-400To600_MatchEWPDG20_13TeV_AM]
 # XSec = 3.0563
-XSec = 5.03                                        # XSDB
+# XSec = 5.03                                        # XSDB
+XSec = 3.477                                        # XSDB
 FilterEff = 1.0
 kFactor = 1.02
 XSecOrder = "NNLO"

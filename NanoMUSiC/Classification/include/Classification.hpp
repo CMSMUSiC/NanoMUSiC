@@ -602,6 +602,7 @@ inline auto trigger_filter(const std::string &process,         //
 struct FourVec
 {
     double e;
+    double et;
     double px;
     double py;
     double pz;
@@ -692,6 +693,7 @@ class TempEC
                 sum_pt += p4[i].pt();
                 met += has_met ? p4[i].pt() : 0.;
                 four_vec.e += p4[i].e();
+                four_vec.et += p4[i].Et();
                 four_vec.px += p4[i].px();
                 four_vec.py += p4[i].py();
                 four_vec.pz += p4[i].pz();
@@ -717,7 +719,7 @@ class TempEC
     {
         if (has_met)
         {
-            return std::sqrt(std::pow(four_vec.e, 2) - std::pow(four_vec.px, 2) - std::pow(four_vec.py, 2));
+            return std::sqrt(std::pow(four_vec.et, 2) - std::pow(four_vec.px, 2) - std::pow(four_vec.py, 2));
         }
 
         return std::sqrt(std::pow(four_vec.e, 2) - std::pow(four_vec.px, 2) - std::pow(four_vec.py, 2) -

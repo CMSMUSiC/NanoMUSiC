@@ -153,7 +153,8 @@ auto WToLepNuX::fill(const MUSiCObjects &leptons,
     {
         auto idx_var = static_cast<std::size_t>(shift);
 
-        h_transverse_mass[idx_var].Fill(std::sqrt(std::pow(leptons.p4.at(0).px() + met.p4.at(0).px(), 2) +
+        h_transverse_mass[idx_var].Fill(std::sqrt(std::pow(leptons.p4.at(0).Et() + met.p4.at(0).Et(), 2) -
+                                                  std::pow(leptons.p4.at(0).px() + met.p4.at(0).px(), 2) -
                                                   std::pow(leptons.p4.at(0).py() + met.p4.at(0).py(), 2)),
                                         weight);
         h_sum_pt[idx_var].Fill((leptons.p4.at(0) + met.p4.at(0)).pt(), weight);

@@ -107,8 +107,8 @@ auto Distribution::make_distributions(const std::vector<std::string> &input_file
                                       std::vector<std::string> &analysis_to_plot,
                                       const std::optional<std::unordered_map<std::string, double>> &rescaling) -> void
 {
-    TH1::AddDirectory(false);
-    TDirectory::AddDirectory(false);
+    TH1::AddDirectory(true);
+    TDirectory::AddDirectory(true);
     ROOT::EnableThreadSafety();
 
     std::sort(analysis_to_plot.begin(), analysis_to_plot.end());

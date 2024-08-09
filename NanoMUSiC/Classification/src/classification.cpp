@@ -1535,23 +1535,26 @@ auto classification(const std::string process,
                                          met.size()),
                     shift);
 
-                validation_container.gamma_plus_jets.fill(
-                    muons,
-                    electrons,
-                    taus,
-                    photons,
-                    bjets,
-                    jets,
-                    met,
-                    get_effective_weight(shift,
-                                         0,
-                                         0,
-                                         0,
-                                         std::min(static_cast<int>(photons.size()), 1),
-                                         0,
-                                         std::min(static_cast<int>(jets.size()), 1),
-                                         met.size()),
-                    shift);
+                if (trigger_matches.at("pass_photon_trigger"))
+                {
+                    validation_container.gamma_plus_jets.fill(
+                        muons,
+                        electrons,
+                        taus,
+                        photons,
+                        bjets,
+                        jets,
+                        met,
+                        get_effective_weight(shift,
+                                             0,
+                                             0,
+                                             0,
+                                             std::min(static_cast<int>(photons.size()), 1),
+                                             0,
+                                             std::min(static_cast<int>(jets.size()), 1),
+                                             met.size()),
+                        shift);
+                }
             }
             /// [END] Validation
             //////////////////////////////////////////////

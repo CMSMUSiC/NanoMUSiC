@@ -62,6 +62,8 @@ ZToLepLepX::ZToLepLepX(enum Leptons lepton,
 
     auto bins_limits = BinLimits::limits(
         count_map, false, Histograms::min_energy, Histograms::max_energy, Histograms::min_bin_size, Histograms::fudge);
+    auto bins_limits_wide = BinLimits::limits(
+        count_map, false, Histograms::min_energy, Histograms::max_energy, Histograms::min_bin_size, Histograms::fudge);
     if (around_to_Z_mass)
     {
         bins_limits =
@@ -127,7 +129,7 @@ ZToLepLepX::ZToLepLepX(enum Leptons lepton,
                                                                   Shifts::variation_to_string(idx_var), //
                                                                   "h_lepton_1_pt");
         h_lepton_1_pt[idx_var] =
-            TH1F(histo_name.c_str(), histo_name.c_str(), bins_limits.size() - 1, bins_limits.data());
+            TH1F(histo_name.c_str(), histo_name.c_str(), bins_limits_wide.size() - 1, bins_limits_wide.data());
         h_lepton_1_pt[idx_var].Sumw2();
 
         histo_name = SerializationUtils::make_histogram_full_name(analysis_name,                        //
@@ -138,7 +140,7 @@ ZToLepLepX::ZToLepLepX(enum Leptons lepton,
                                                                   Shifts::variation_to_string(idx_var), //
                                                                   "h_lepton_2_pt");
         h_lepton_2_pt[idx_var] =
-            TH1F(histo_name.c_str(), histo_name.c_str(), bins_limits.size() - 1, bins_limits.data());
+            TH1F(histo_name.c_str(), histo_name.c_str(), bins_limits_wide.size() - 1, bins_limits_wide.data());
         h_lepton_2_pt[idx_var].Sumw2();
 
         histo_name = SerializationUtils::make_histogram_full_name(analysis_name,                        //

@@ -306,14 +306,9 @@ class MUSiCObjects
         return clear_mask;
     }
 
-    // auto clear(MUSiCObjects *other, double max_dr = 0.4) -> void
-    // {
-    //     clear(*other, max_dr);
-    // }
-
     auto static transverse_mass(const Math::PtEtaPhiMVector &vec) -> double
     {
-        return std::sqrt(std::pow(vec.e(), 2) - std::pow(vec.px(), 2) - std::pow(vec.py(), 2));
+        return std::sqrt(std::pow(vec.Et(), 2) - std::pow(vec.px(), 2) - std::pow(vec.py(), 2));
     }
 };
 

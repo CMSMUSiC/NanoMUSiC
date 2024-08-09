@@ -12,6 +12,7 @@ import subprocess
 from functools import wraps
 
 
+
 def execution_time(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -252,6 +253,7 @@ def unwrap(
 class FoldAndPlotTarget(str, Enum):
     Classification = "classification"
     Validation = "validation"
+    All = "all"
 
 
 @classification_app.command()
@@ -272,14 +274,14 @@ def fold(
     inputs_dir: str = "classification_root_files",
     validation_inputs_dir: str = "validation_root_files",
     name_filter: str = "*",
-    target: FoldAndPlotTarget = FoldAndPlotTarget.Classification,
+    target: FoldAndPlotTarget = FoldAndPlotTarget.All,
 ):
     """
     Will merge related histograms (TH1F) into Distributions (usefull data format for plotting and scan).
     """
     import classification
 
-    if target == FoldAndPlotTarget.Classification:
+    if target == FoldAndPlotTarget.Classification or target == FoldAndPlotTarget.All :
         classification.make_distributions(
             config_file,
             alternative_config_file,
@@ -288,7 +290,7 @@ def fold(
             name_filter,
             None,
         )
-    if target == FoldAndPlotTarget.Validation:
+    if target == FoldAndPlotTarget.Validation or target == FoldAndPlotTarget.All:
         classification.make_distributions(
             config_file,
             alternative_config_file,
@@ -346,22 +348,90 @@ def validation(
 def most_occupied(
     input_file: str = "classification_plots/integral_pvalues_data.json",
     output_dir: str = "classification_most_occupied",
-    year="Run2",
 ):
     """
     Plot the occupancy and p_integral of most occupied classes.
     """
-    from most_occupied_classes import most_occupied_classes
+    from integral_pvalues import integral_pvalues
 
-    most_occupied_classes(
-        input_file,
-        output_dir,
-        year=year,
-        num_classes=20,
-        most_occupied=True,
-        most_occupied_objects=True,
-        most_occupied_exclusive=True,
-    )
+    os.system("rm -rf {}".format(output_dir))
+    os.system("mkdir -p {}".format(output_dir))
+
+    for y in ["2016", "2017", "2018", "Run2"]:
+        integral_pvalues(
+            input_file,
+            output_dir,
+            year=y,
+            num_classes=20,
+            plot_all=True,
+            plot_per_objects=True,
+            plot_exclusive=True,
+        )
+        integral_pvalues(
+            input_file,
+            output_dir,
+            year=y,
+            num_classes=40,
+            plot_all=True,
+            plot_per_objects=True,
+            plot_exclusive=True,
+        )
+        integral_pvalues(
+            input_file,
+            output_dir,
+            year=y,
+            num_classes=100,
+            plot_all=True,
+            plot_per_objects=True,
+            plot_exclusive=True,
+        )
+
+
+@plot_app.command()
+@execution_time
+def most_discrepant(
+    input_file: str = "classification_plots/integral_pvalues_data.json",
+    output_dir: str = "classification_most_discrepant",
+):
+    """
+    Plot the occupancy and p_integral of most discrepant classes.
+    """
+    from integral_pvalues import integral_pvalues, IntegralPValuePlotType
+
+    os.system("rm -rf {}".format(output_dir))
+    os.system("mkdir -p {}".format(output_dir))
+
+    for y in ["2016", "2017", "2018", "Run2"]:
+        integral_pvalues(
+            input_file,
+            output_dir,
+            year=y,
+            num_classes=20,
+            plot_all=True,
+            plot_per_objects=True,
+            plot_exclusive=True,
+            plot_type=IntegralPValuePlotType.MostDiscrepant,
+        )
+        integral_pvalues(
+            input_file,
+            output_dir,
+            year=y,
+            num_classes=40,
+            plot_all=True,
+            plot_per_objects=True,
+            plot_exclusive=True,
+            plot_type=IntegralPValuePlotType.MostDiscrepant,
+        )
+        integral_pvalues(
+            input_file,
+            output_dir,
+            year=y,
+            num_classes=100,
+            plot_all=True,
+            plot_per_objects=True,
+            plot_exclusive=True,
+            plot_type=IntegralPValuePlotType.MostDiscrepant,
+        )
 
 
 # @plot_app.command()

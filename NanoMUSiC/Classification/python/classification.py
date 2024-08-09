@@ -291,7 +291,6 @@ def launch_condor(
     if do_cleanning:
         os.system("rm -rf classification_outputs")
         os.system("rm -rf classification_jobs")
-        os.system("rm -rf classification_src.tar.gz")
     os.system("mkdir -p classification_jobs")
 
     if not skip_tar:
