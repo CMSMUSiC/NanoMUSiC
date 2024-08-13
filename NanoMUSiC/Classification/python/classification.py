@@ -1,6 +1,6 @@
 from typing import Optional, Union, Iterator, Any
 import time
-import math
+from pydantic import BaseModel
 from multiprocessing.pool import AsyncResult
 import fnmatch
 from multiprocessing import Pool
@@ -731,10 +731,21 @@ def make_distributions_task(
     return analysis_name, year
 
 
-def do_fold(input_files, output_dir, classes_names, rescaling):
-    clft.Distribution.make_distributions(
-        input_files, output_dir, classes_names, rescaling
-    )
+def do_fold(input_files: list[list[str]], output_dir: str, classes_names: list[str]):
+    clft.Distribution.fold(input_files, output_dir, classes_names)
+
+
+class MakeDistributionsInputs(BaseModel):
+    input_file: str
+    output_dir: str
+    class_name: str
+    rescaling: None | dict[str, float]
+
+
+def do_make_distributions(inputs: MakeDistributionsInputs) -> tuple[bool, str]:
+    return clft.Distribution.make_distributions(
+        inputs.input_file, inputs.output_dir, inputs.class_name, inputs.rescaling
+    ), inputs.class_name
 
 
 def make_rescaling(
@@ -776,6 +787,77 @@ def make_rescaling(
     return None
 
 
+def fold(
+    inputs_dir: str,
+    validation_inputs_dir: str,
+) -> None:
+    os.system("rm -rf classification_folded_files")
+    os.system("mkdir -p classification_folded_files")
+    os.system("rm -rf validation_folded_files")
+    os.system("mkdir -p validation_folded_files")
+
+    with open("{}/classes_to_files.json".format(inputs_dir), "r") as file:
+        classes_to_files: dict[str, list[str]] = json.load(file)
+
+    with open("{}/validation_to_files.json".format(validation_inputs_dir), "r") as file:
+        validation_to_files: dict[str, list[str]] = json.load(file)
+
+    def get_input_files(inputs_dir: str) -> list[str]:
+        return glob.glob("{}/*.root".format(inputs_dir))
+
+    print("Will fold Classification ...")
+    classes_names = [name for name in classes_to_files.keys()]
+
+    if classes_names:
+        p = multiprocessing.Process(
+            target=do_fold,
+            args=(
+                get_input_files(inputs_dir),
+                "classification_folded_files",
+                classes_names,
+            ),
+        )
+        p.start()
+        p.join()
+        if p.exitcode != 0:
+            print(
+                "ERROR: Could not fold files for Classification.",
+                file=sys.stderr,
+            )
+            sys.exit(-1)
+
+    print("Will fold Validation ...")
+    validation_names = [name for name in validation_to_files.keys()]
+
+    if validation_names:
+        p = multiprocessing.Process(
+            target=do_fold,
+            args=(
+                get_input_files(validation_inputs_dir),
+                "validation_folded_files",
+                validation_names,
+            ),
+        )
+        p.start()
+        p.join()
+        if p.exitcode != 0:
+            print(
+                "ERROR: Could not make distribution files for Validation.",
+                file=sys.stderr,
+            )
+            sys.exit(-1)
+
+    os.system(
+        "cp {}/classes_to_files.json classification_folded_files/.".format(inputs_dir)
+    )
+
+    os.system(
+        "cp {}/validation_to_files.json validation_folded_files/.".format(
+            validation_inputs_dir
+        )
+    )
+
+
 def make_distributions(
     config_file_path: str | None,
     alternative_config_file_path: str | None,
@@ -808,9 +890,6 @@ def make_distributions(
         os.system("rm -rf validation_distributions")
         os.system("mkdir -p validation_distributions")
 
-    def get_input_files(inputs_dir: str) -> list[str]:
-        return glob.glob("{}/*.root".format(inputs_dir))
-
     def filter_classes(analysis_name: str, pattern: str) -> bool:
         return fnmatch.fnmatch(analysis_name, pattern)
 
@@ -841,42 +920,42 @@ def make_distributions(
 
     if class_name_filter_pattern:
         print("Will fold Classification ...")
-        classes_names = chunks(
-            get_analysis_names(classes_to_files, class_name_filter_pattern)
-        )
+        classes_names = get_analysis_names(classes_to_files, class_name_filter_pattern)
 
         if classes_names:
-            for sub_classes_names in classes_names:
-                input_files = get_input_files("classification_root_files")
-                p = multiprocessing.Process(
-                    target=do_fold,
-                    args=(
-                        input_files,
-                        "classification_distributions",
-                        sub_classes_names,
-                        rescaling,
+            distribution_jobs = [
+                MakeDistributionsInputs(
+                    input_file="{}/folded_histograms_{}.root".format(
+                        inputs_dir, name.replace("+", "_")
                     ),
+                    output_dir="classification_distributions",
+                    class_name=name,
+                    rescaling=rescaling,
                 )
-                p.start()
-                p.join()
-                if p.exitcode != 0:
-                    print(
-                        "ERROR: Could not make distribution files for Classification."
+                for name in classes_names
+            ]
+
+            with Pool(min(multiprocessing.cpu_count(), len(distribution_jobs))) as p:
+                with Progress() as progress:
+                    task = progress.add_task(
+                        "Making Classification distribution files ...",
+                        total=len(classes_names),
                     )
+                    for job in p.imap_unordered(
+                        do_make_distributions, distribution_jobs
+                    ):
+                        status, analysis_name = job
+                        if not status:
+                            print(
+                                "ERROR: Could not process class: {}".format(
+                                    analysis_name
+                                ),
+                                file=sys.stderr,
+                            )
+                            sys.exit(-1)
 
-        if config_file_path:
-            os.system(
-                "cp {} classification_distributions/analysis_config.toml".format(
-                    config_file_path
-                )
-            )
-
-        if alternative_config_file_path:
-            os.system(
-                "cp {} classification_distributions/alternative_config_analysis_config.toml".format(
-                    config_file_path
-                )
-            )
+                        progress.console.print("Done: {}".format(analysis_name))
+                        progress.advance(task)
 
     if validation_filter_pattern:
         print("Will fold Validation ...")
@@ -885,30 +964,81 @@ def make_distributions(
         )
 
         if validation_names:
-            p = multiprocessing.Process(
-                target=do_fold,
-                args=(
-                    get_input_files("validation_root_files"),
-                    "validation_distributions",
-                    validation_names,
-                    rescaling,
-                ),
-            )
-            p.start()
-            p.join()
-            if p.exitcode != 0:
-                print("ERROR: Could not make distribution files for Validation.")
-
-        if config_file_path:
-            os.system(
-                "cp {} validation_distributions/analysis_config.toml".format(
-                    config_file_path
+            distribution_jobs = [
+                MakeDistributionsInputs(
+                    input_file="{}/folded_histograms_{}.root".format(
+                        validation_inputs_dir, name.replace("+", "_")
+                    ),
+                    output_dir="validation_distributions",
+                    class_name=name,
+                    rescaling=rescaling,
                 )
-            )
+                for name in validation_names
+            ]
 
-        if alternative_config_file_path:
-            os.system(
-                "cp {} validation_distributions/alternative_config_analysis_config.toml".format(
-                    config_file_path
-                )
+            with Pool(min(multiprocessing.cpu_count(), len(distribution_jobs))) as p:
+                with Progress() as progress:
+                    task = progress.add_task(
+                        "Making Validation distribution files ...",
+                        total=len(validation_names),
+                    )
+                    for job in p.imap_unordered(
+                        do_make_distributions, distribution_jobs
+                    ):
+                        analysis_name = job
+                        progress.console.print("Done: {}".format(analysis_name))
+                        progress.advance(task)
+
+    if config_file_path:
+        os.system(
+            "cp {} classification_distributions/analysis_config.toml".format(
+                config_file_path
             )
+        )
+
+    if alternative_config_file_path:
+        os.system(
+            "cp {} classification_distributions/alternative_config_analysis_config.toml".format(
+                config_file_path
+            )
+        )
+
+    #
+    # if validation_filter_pattern:
+    #     print("Will fold Validation ...")
+    #     validation_names = get_analysis_names(
+    #         validation_to_files, validation_filter_pattern
+    #     )
+    #
+    #     if validation_names:
+    #         p = multiprocessing.Process(
+    #             target=do_fold,
+    #             args=(
+    #                 get_input_files(inputs_dir),
+    #                 "validation_distributions",
+    #                 validation_names,
+    #                 rescaling,
+    #             ),
+    #         )
+    #         p.start()
+    #         p.join()
+    #         if p.exitcode != 0:
+    #             print(
+    #                 "ERROR: Could not make distribution files for Validation.",
+    #                 file=sys.stderr,
+    #             )
+    #             sys.exit(-1)
+    #
+    #     if config_file_path:
+    #         os.system(
+    #             "cp {} validation_distributions/analysis_config.toml".format(
+    #                 config_file_path
+    #             )
+    #         )
+    #
+    #     if alternative_config_file_path:
+    #         os.system(
+    #             "cp {} validation_distributions/alternative_config_analysis_config.toml".format(
+    #                 config_file_path
+    #             )
+    #         )

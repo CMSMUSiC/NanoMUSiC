@@ -195,10 +195,14 @@ class Distribution
         std::exit(EXIT_FAILURE);
     }
 
-    static auto make_distributions(const std::vector<std::string> &input_files,
+    static auto fold(const std::vector<std::string> &input_files,
+                     const std::string &output_dir,
+                     std::vector<std::string> &analyses_to_fold) -> void;
+
+    static auto make_distributions(const std::string &input_file,
                                    const std::string &output_dir,
-                                   std::vector<std::string> &analysis_to_plot,
-                                   const std::optional<std::unordered_map<std::string, double>> &rescaling) -> void;
+                                   std::string &analysis_to_plot,
+                                   const std::optional<std::unordered_map<std::string, double>> &rescaling) -> bool;
 
     auto get_statistical_uncert() -> RVec<double>;
     auto get_systematics_uncert(const std::array<std::unordered_map<std::string, std::vector<std::shared_ptr<TH1F>>>,

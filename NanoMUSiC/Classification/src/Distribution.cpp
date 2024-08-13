@@ -2,16 +2,20 @@
 #include "BS_thread_pool.hpp"
 
 #include <algorithm>
+#include <algorithm> // For std::shuffle
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
 #include <fmt/core.h>
 #include <fnmatch.h>
+#include <future>
 #include <memory>
 #include <mutex>
 #include <numeric>
 #include <optional>
+#include <random> // For std::random_device and std::mt19937
 #include <regex>
+#include <set>
 #include <string>
 #include <unordered_map>
 
@@ -102,44 +106,25 @@ auto replace_all(std::string str, const std::string &from, const std::string &to
     return str;
 }
 
-auto Distribution::make_distributions(const std::vector<std::string> &input_files,
-                                      const std::string &output_dir,
-                                      std::vector<std::string> &analysis_to_plot,
-                                      const std::optional<std::unordered_map<std::string, double>> &rescaling) -> void
+auto Distribution::fold(const std::vector<std::string> &input_files,
+                        const std::string &output_dir,
+                        std::vector<std::string> &analyses_to_fold) -> void
 {
-    TH1::AddDirectory(true);
-    TDirectory::AddDirectory(true);
+    TH1::AddDirectory(false);
+    TDirectory::AddDirectory(false);
     ROOT::EnableThreadSafety();
 
-    std::sort(analysis_to_plot.begin(), analysis_to_plot.end());
-
-    fmt::print("[Distribution Factory] Starting pool: will launch {} threads ...\n", input_files.size());
+    fmt::print("[Distribution Folder] Starting pool: will launch {} threads ...\n", input_files.size());
     auto load_histograms_pool = BS::thread_pool(input_files.size());
 
-    fmt::print("[Distribution Factory] Opening ROOT files and getting histograms...\n");
+    fmt::print("[Distribution Folder] Opening ROOT files and getting histograms...\n");
     std::vector<std::future<std::vector<ECHistogram>>> future_ec_histograms;
     std::atomic<int> file_counter = 0;
-    const auto pattern_file_to_process = std::regex(R"(.*_root_files\/(.*)(_2016APV|_2016|_2017|_2018)\.root)");
     for (std::size_t i = 0; i < input_files.size(); i++)
     {
         future_ec_histograms.push_back(load_histograms_pool.submit(
             [&](std::size_t i) -> std::vector<ECHistogram>
             {
-                std::smatch match;
-                if (not(std::regex_search(input_files[i], match, pattern_file_to_process) and match.size() > 1))
-                {
-                    fmt::print(stderr, "ERROR: Could not match file name ({}) to process name.\n", input_files[i]);
-                    std::exit(EXIT_FAILURE);
-                }
-                const auto scaling = [&match, &rescaling]() -> double
-                {
-                    if (rescaling)
-                    {
-                        return (*rescaling).at(match[1].str());
-                    }
-                    return 1.;
-                }();
-
                 auto root_file = std::unique_ptr<TFile>(TFile::Open(input_files[i].c_str()));
                 auto this_event_class_histograms = std::vector<ECHistogram>();
                 this_event_class_histograms.reserve(root_file->GetListOfKeys()->GetSize());
@@ -157,32 +142,23 @@ auto Distribution::make_distributions(const std::vector<std::string> &input_file
                                 shift,         //
                                 histo_name] = SerializationUtils::split_histo_name(name);
 
-                    if (std::binary_search(analysis_to_plot.cbegin(), analysis_to_plot.cend(), analysis_name))
+                    auto hist_ptr = std::shared_ptr<TH1F>(static_cast<TH1F *>(key->ReadObj()));
+                    if (not(hist_ptr.get()) or hist_ptr->IsZombie())
                     {
-                        auto hist_ptr = std::shared_ptr<TH1F>(static_cast<TH1F *>(key->ReadObj()));
-                        if (not(hist_ptr.get()))
-                        {
-                            fmt::print(stderr,
-                                       "ERROR: Could not load histogram for EventClass/Validation Analysis {}.\n",
-                                       name);
-                            std::exit(EXIT_FAILURE);
-                        }
-
-                        if (scaling != 1.)
-                        {
-                            hist_ptr->Scale(scaling);
-                        }
-
-                        this_event_class_histograms.push_back(
-                            ECHistogram{.analysis_name = analysis_name,
-                                        .process_group = process_group,
-                                        .xs_order = xs_order,
-                                        .sample = sample,
-                                        .year = year,
-                                        .shift = static_cast<std::size_t>(Shifts::string_to_variation(shift)),
-                                        .histo_name = histo_name,
-                                        .histogram = hist_ptr});
+                        fmt::print(
+                            stderr, "ERROR: Could not load histogram for EventClass/Validation Analysis {}.\n", name);
+                        std::exit(EXIT_FAILURE);
                     }
+
+                    this_event_class_histograms.push_back(
+                        ECHistogram{.analysis_name = analysis_name,
+                                    .process_group = process_group,
+                                    .xs_order = xs_order,
+                                    .sample = sample,
+                                    .year = year,
+                                    .shift = static_cast<std::size_t>(Shifts::string_to_variation(shift)),
+                                    .histo_name = histo_name,
+                                    .histogram = hist_ptr});
                 }
 
                 file_counter++;
@@ -192,21 +168,16 @@ auto Distribution::make_distributions(const std::vector<std::string> &input_file
             i));
     }
 
-    fmt::print("[Distribution Factory] Harversting histograms ... \n");
+    fmt::print("[Distribution Folder] Harversting histograms ... \n");
 
-    // analysis_name [distribution_name[year,ec_histogram]]]
-    auto event_class_histograms = std::unordered_map<
-        std::string,
-        std::unordered_map<std::string, std::unordered_map<std::string, std::vector<ECHistogram>>>>();
+    auto event_class_histograms = std::unordered_map<std::string, std::vector<ECHistogram>>();
     unsigned int collected_jobs = 0;
     for (auto &fut : future_ec_histograms)
     {
         auto this_histos = fut.get();
         for (const auto &ec_hist : this_histos)
         {
-            event_class_histograms[ec_hist.analysis_name][ec_hist.histo_name][ec_hist.year].push_back(ec_hist);
-            event_class_histograms[ec_hist.analysis_name][ec_hist.histo_name][year_to_string(YearToPlot::Run2)]
-                .push_back(ec_hist);
+            event_class_histograms[ec_hist.analysis_name].push_back(ec_hist);
         }
         this_histos.clear();
         collected_jobs++;
@@ -223,75 +194,157 @@ auto Distribution::make_distributions(const std::vector<std::string> &input_file
         std::exit(EXIT_FAILURE);
     }
 
-    fmt::print("\n");
-    fmt::print("[Distribution Factory] Collecting results and saving ...\n");
-    int analysis_counter = analysis_to_plot.size();
-    int analysis_done = 0;
-    for (const auto &analysis_name : analysis_to_plot)
+    unsigned int analysis_done = 0;
+    for (const auto &[name, histograms] : event_class_histograms)
     {
-        auto distributions = std::vector<Distribution>();
-        // distributions.reserve(16);
-        for (const auto year_to_plot : years_to_plot())
+        auto output_root_file = std::unique_ptr<TFile>(
+            TFile::Open(fmt::format("{}/folded_histograms_{}.root", output_dir, replace_all(name, "+", "_")).c_str(),
+                        "RECREATE",
+                        name.c_str(),
+                        0));
+
+        for (auto &hist : histograms)
         {
-            for (const auto &[distribution_name, allow_rescale_by_width] : get_distribution_props(analysis_name))
-            {
-                if (distribution_name == "met" and analysis_name.find("1MET") == std::string::npos and
-                    analysis_name.find("EC_") != std::string::npos)
-                {
-                    continue;
-                }
-
-                if (event_class_histograms.contains(analysis_name))
-                {
-                    if (event_class_histograms.at(analysis_name).contains("h_" + distribution_name))
-                    {
-                        if (event_class_histograms.at(analysis_name)
-                                .at("h_" + distribution_name)
-                                .contains(year_to_string(year_to_plot)))
-                        {
-                            distributions.emplace_back(event_class_histograms.at(analysis_name)
-                                                           .at("h_" + distribution_name)
-                                                           .at(year_to_string(year_to_plot)),
-                                                       analysis_name,
-                                                       distribution_name,
-                                                       allow_rescale_by_width,
-                                                       year_to_plot);
-                            // distributions.emplace_back();
-                        }
-                    }
-                }
-            }
-        }
-
-        auto output_root_file = std::unique_ptr<TFile>(TFile::Open(
-            fmt::format(
-                "{}/distribution_{}.root", output_dir, replace_all(distributions.at(0).m_event_class_name, "+", "_"))
-                .c_str(),
-            "RECREATE"));
-
-        for (auto &dist : distributions)
-        {
-            auto write_res = output_root_file->WriteObject(
-                &dist,
-                fmt::format(
-                    "distribution_{}_{}_{}", dist.m_event_class_name, dist.m_distribution_name, dist.m_year_to_plot)
-                    .c_str());
+            auto write_res = output_root_file->WriteObject(hist.histogram.get(), hist.histogram->GetName());
             if (write_res <= 0)
             {
-                fmt::print(stderr,
-                           "ERROR: Could not write distribution to file: {} - {} - {}\n",
-                           dist.m_event_class_name,
-                           dist.m_distribution_name,
-                           dist.m_year_to_plot);
+                fmt::print(stderr, "ERROR: Could not write histogram to file: {}\n", hist.histogram->GetName());
                 std::exit(EXIT_FAILURE);
             }
         }
-
         analysis_done++;
-        fmt::print("Done: {} | {} / {}\n", analysis_name, analysis_done, analysis_counter);
+        fmt::print("Done: {} | {} / {}\n", name, analysis_done, event_class_histograms.size());
     }
 
     fmt::print("All done.\n");
+}
+
+auto Distribution::make_distributions(const std::string &input_file,
+                                      const std::string &output_dir,
+                                      std::string &analysis_to_plot,
+                                      const std::optional<std::unordered_map<std::string, double>> &rescaling) -> bool
+{
+    TH1::AddDirectory(false);
+    TDirectory::AddDirectory(false);
+
+    std::vector<std::future<std::vector<ECHistogram>>> future_ec_histograms;
+
+    auto input_root_file = std::unique_ptr<TFile>(TFile::Open(input_file.c_str()));
+
+    //  [distribution_name[year,ec_histogram]]]
+    auto event_class_histograms =
+        std::unordered_map<std::string, std::unordered_map<std::string, std::vector<ECHistogram>>>();
+
+    TIter keyList(input_root_file->GetListOfKeys());
+    TKey *key;
+    while ((key = (TKey *)keyList()))
+    {
+        const std::string name = key->GetName();
+        const auto [analysis_name, //
+                    process_group, //
+                    xs_order,      //
+                    sample,        //
+                    year,          //
+                    shift,         //
+                    histo_name] = SerializationUtils::split_histo_name(name);
+
+        auto hist_ptr = std::shared_ptr<TH1F>(static_cast<TH1F *>(key->ReadObj()));
+        if (not(hist_ptr.get()))
+        {
+            fmt::print(stderr, "ERROR: Could not load histogram for EventClass/Validation Analysis {}.\n", name);
+            return false;
+        }
+
+        const auto scaling = [&sample, &rescaling]() -> double
+        {
+            if (rescaling)
+            {
+                return (*rescaling).at(sample);
+            }
+            return 1.;
+        }();
+
+        if (scaling != 1.)
+        {
+            hist_ptr->Scale(scaling);
+        }
+
+        event_class_histograms[histo_name][year].push_back(
+            ECHistogram{.analysis_name = analysis_name,
+                        .process_group = process_group,
+                        .xs_order = xs_order,
+                        .sample = sample,
+                        .year = year,
+                        .shift = static_cast<std::size_t>(Shifts::string_to_variation(shift)),
+                        .histo_name = histo_name,
+                        .histogram = hist_ptr});
+        event_class_histograms[histo_name][year_to_string(YearToPlot::Run2)].push_back(
+            ECHistogram{.analysis_name = analysis_name,
+                        .process_group = process_group,
+                        .xs_order = xs_order,
+                        .sample = sample,
+                        .year = year,
+                        .shift = static_cast<std::size_t>(Shifts::string_to_variation(shift)),
+                        .histo_name = histo_name,
+                        .histogram = hist_ptr});
+    }
+
+    if (event_class_histograms.size() == 0)
+    {
+        fmt::print(stderr, "ERROR: Could not load any histogram for EventClass/Validation Analysis.\n");
+        return false;
+    }
+
+    auto distributions = std::vector<Distribution>();
+    for (const auto year_to_plot : years_to_plot())
+    {
+        for (const auto &[distribution_name, allow_rescale_by_width] : get_distribution_props(analysis_to_plot))
+        {
+            if (distribution_name == "met" and analysis_to_plot.find("1MET") == std::string::npos and
+                analysis_to_plot.find("EC_") != std::string::npos)
+            {
+                continue;
+            }
+
+            if (event_class_histograms.contains("h_" + distribution_name))
+            {
+                if (event_class_histograms.at("h_" + distribution_name).contains(year_to_string(year_to_plot)))
+                {
+                    distributions.emplace_back(
+                        event_class_histograms.at("h_" + distribution_name).at(year_to_string(year_to_plot)),
+                        analysis_to_plot,
+                        distribution_name,
+                        allow_rescale_by_width,
+                        year_to_plot);
+                    // distributions.emplace_back();
+                }
+            }
+        }
+    }
+
+    auto output_root_file = std::unique_ptr<TFile>(TFile::Open(
+        fmt::format(
+            "{}/distribution_{}.root", output_dir, replace_all(distributions.at(0).m_event_class_name, "+", "_"))
+            .c_str(),
+        "RECREATE"));
+
+    for (auto &dist : distributions)
+    {
+        auto write_res = output_root_file->WriteObject(
+            &dist,
+            fmt::format("distribution_{}_{}_{}", dist.m_event_class_name, dist.m_distribution_name, dist.m_year_to_plot)
+                .c_str());
+        if (write_res <= 0)
+        {
+            fmt::print(stderr,
+                       "ERROR: Could not write distribution to file: {} - {} - {}\n",
+                       dist.m_event_class_name,
+                       dist.m_distribution_name,
+                       dist.m_year_to_plot);
+            return false;
+        }
+    }
+    return true;
 }
 
 auto Distribution::get_statistical_uncert() -> RVec<double>

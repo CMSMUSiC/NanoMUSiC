@@ -33,7 +33,7 @@ def execution_time(func):
 ############################################################################
 ############################################################################
 classification_app = typer.Typer(
-    help="Launch and control the Classification steps. Expected workflow: build -> preprocess -> launch -> merge -> unwrap -> fold.",
+    help="Launch and control the Classification steps. Expected workflow: build -> preprocess -> launch -> merge -> unwrap -> fold -> make-distributions.",
     pretty_exceptions_show_locals=False,
 )
 
@@ -107,7 +107,7 @@ def launch(
             help="description file path of the classification being launched"
         ),
     ] = None,
-    target: ClassificationTarget = ClassificationTarget.Condor,
+    target: ClassificationTarget = ClassificationTarget.Parallel,
     process: Union[str, None] = None,
     year: Union[metadata.Years, None] = None,
     max_files: int = sys.maxsize,
@@ -250,6 +250,22 @@ def unwrap(
     )
 
 
+@classification_app.command()
+@execution_time
+def fold(
+    inputs_dir: str = "classification_root_files",
+    validation_inputs_dir: str = "validation_root_files",
+):
+    """
+    Will merge related histograms (TH1F) into one ROOT file per event class.
+    """
+    import classification
+
+    classification.fold(
+        inputs_dir,
+        validation_inputs_dir,
+    )
+
 class FoldAndPlotTarget(str, Enum):
     Classification = "classification"
     Validation = "validation"
@@ -258,7 +274,7 @@ class FoldAndPlotTarget(str, Enum):
 
 @classification_app.command()
 @execution_time
-def fold(
+def make_distributions(
     config_file: Annotated[
         str,
         typer.Argument(help="analysis_config.toml file path"),
@@ -271,8 +287,8 @@ def fold(
         ),
     ]
     | None = None,
-    inputs_dir: str = "classification_root_files",
-    validation_inputs_dir: str = "validation_root_files",
+    inputs_dir: str = "classification_folded_files",
+    validation_inputs_dir: str = "validation_folded_files",
     name_filter: str = "*",
     target: FoldAndPlotTarget = FoldAndPlotTarget.All,
 ):
@@ -297,7 +313,7 @@ def fold(
             inputs_dir,
             validation_inputs_dir,
             None,
-            name_filter,
+            "*" if target==FoldAndPlotTarget.All else name_filter,
         )
 
 
