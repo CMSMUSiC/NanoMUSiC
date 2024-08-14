@@ -231,7 +231,7 @@ auto Distribution::make_distributions(const std::string &input_file,
 
     auto input_root_file = std::unique_ptr<TFile>(TFile::Open(input_file.c_str()));
 
-    //  [distribution_name[year,ec_histogram]]]
+    //  [distribution_name[year,ec_histograms]]]
     auto event_class_histograms =
         std::unordered_map<std::string, std::unordered_map<std::string, std::vector<ECHistogram>>>();
 
@@ -251,7 +251,7 @@ auto Distribution::make_distributions(const std::string &input_file,
         auto hist_ptr = std::shared_ptr<TH1F>(static_cast<TH1F *>(key->ReadObj()));
         if (not(hist_ptr.get()))
         {
-            fmt::print(stderr, "ERROR: Could not load histogram for EventClass/Validation Analysis {}.\n", name);
+            fmt::print(stderr, "ERROR: Could not load histogram for EventClass/Validation Analysis {}.\n\n\n", name);
             return false;
         }
 
@@ -291,7 +291,7 @@ auto Distribution::make_distributions(const std::string &input_file,
 
     if (event_class_histograms.size() == 0)
     {
-        fmt::print(stderr, "ERROR: Could not load any histogram for EventClass/Validation Analysis.\n");
+        fmt::print(stderr, "ERROR: Could not load any histogram for EventClass/Validation Analysis.\n\n\n");
         return false;
     }
 
@@ -310,38 +310,46 @@ auto Distribution::make_distributions(const std::string &input_file,
             {
                 if (event_class_histograms.at("h_" + distribution_name).contains(year_to_string(year_to_plot)))
                 {
-                    distributions.emplace_back(
-                        event_class_histograms.at("h_" + distribution_name).at(year_to_string(year_to_plot)),
-                        analysis_to_plot,
-                        distribution_name,
-                        allow_rescale_by_width,
-                        year_to_plot);
-                    // distributions.emplace_back();
+                    if (Distribution::is_valid(
+                            event_class_histograms.at("h_" + distribution_name).at(year_to_string(year_to_plot))))
+                    {
+                        distributions.emplace_back(
+                            event_class_histograms.at("h_" + distribution_name).at(year_to_string(year_to_plot)),
+                            analysis_to_plot,
+                            distribution_name,
+                            allow_rescale_by_width,
+                            year_to_plot);
+                        // distributions.emplace_back(); }
+                    }
                 }
             }
         }
     }
 
-    auto output_root_file = std::unique_ptr<TFile>(TFile::Open(
-        fmt::format(
-            "{}/distribution_{}.root", output_dir, replace_all(distributions.at(0).m_event_class_name, "+", "_"))
-            .c_str(),
-        "RECREATE"));
-
-    for (auto &dist : distributions)
+    if (distributions.size() > 0)
     {
-        auto write_res = output_root_file->WriteObject(
-            &dist,
-            fmt::format("distribution_{}_{}_{}", dist.m_event_class_name, dist.m_distribution_name, dist.m_year_to_plot)
-                .c_str());
-        if (write_res <= 0)
+        auto output_root_file = std::unique_ptr<TFile>(TFile::Open(
+            fmt::format(
+                "{}/distribution_{}.root", output_dir, replace_all(distributions.at(0).m_event_class_name, "+", "_"))
+                .c_str(),
+            "RECREATE"));
+
+        for (auto &dist : distributions)
         {
-            fmt::print(stderr,
-                       "ERROR: Could not write distribution to file: {} - {} - {}\n",
-                       dist.m_event_class_name,
-                       dist.m_distribution_name,
-                       dist.m_year_to_plot);
-            return false;
+            auto write_res = output_root_file->WriteObject(
+                &dist,
+                fmt::format(
+                    "distribution_{}_{}_{}", dist.m_event_class_name, dist.m_distribution_name, dist.m_year_to_plot)
+                    .c_str());
+            if (write_res <= 0)
+            {
+                fmt::print(stderr,
+                           "ERROR: Could not write distribution to file: {} - {} - {}\n\n\n",
+                           dist.m_event_class_name,
+                           dist.m_distribution_name,
+                           dist.m_year_to_plot);
+                return false;
+            }
         }
     }
     return true;

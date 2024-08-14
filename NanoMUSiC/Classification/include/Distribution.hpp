@@ -137,6 +137,27 @@ class Distribution
     // constructor and methods
     Distribution() = default;
 
+    /// A valid class should have some data and some MC
+    static auto is_valid(const std::vector<ECHistogram> &event_class_histograms) -> bool
+    {
+        bool has_data = false;
+        bool has_mc = false;
+        for (const auto &hist : event_class_histograms)
+        {
+            if (hist.process_group == "Data")
+            {
+                has_data = true;
+            }
+
+            if (hist.process_group != "Data")
+            {
+                has_mc = true;
+            }
+        }
+
+        return has_mc and has_data;
+    }
+
     // Distribution(const std::vector<std::unique_ptr<TFile>> &input_root_files,
     Distribution(const std::vector<ECHistogram> &event_class_histograms,
                  const std::string &event_class_name,

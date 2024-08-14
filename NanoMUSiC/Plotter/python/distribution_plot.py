@@ -90,8 +90,15 @@ def p_value_task(distribution_file: str):
         counts[Years.years_to_plot()[year]["name"]] = {}
 
     root_file = TFile.Open(distribution_file)
-    distribution_names = [k.GetName() for k in root_file.GetListOfKeys()]
+    if root_file.GetListOfKeys().GetEntries() == 0:
+        print(
+            "ERROR: Could not collect keys from input file: {}.".format(
+                distribution_file
+            )
+        )
+        sys.exit(-1)
 
+    distribution_names = [k.GetName() for k in root_file.GetListOfKeys()]
     for dist_name in distribution_names:
         dist = root_file.Get(dist_name)
         if dist.has_mc():
@@ -106,17 +113,17 @@ def p_value_task(distribution_file: str):
                         p_value_props.sigma_stat,
                         p_value_props.total_per_process_group,
                     )
-                except ZeroDivisionError:
+                except ZeroDivisionError as e:
                     print("ZeroDivisionError caught.")
                     print(
                         "ERROR: Could not calculate p-value for {}.".format(dist_name)
                     )
-                    print("ZeroDivisionError caugth. Details:")
+                    print("ZeroDivisionError caugth. Details: {}".format(e))
                     sys.exit(-1)
-                except:
+                except Exception as e:
                     print(
-                        "ERROR: Could not calculate p-value for {} ({}).".format(
-                            dist_name, distribution_file
+                        "ERROR: Could not calculate p-value for {} ({}).\n{}".format(
+                            dist_name, distribution_file, e
                         )
                     )
                     sys.exit(-1)

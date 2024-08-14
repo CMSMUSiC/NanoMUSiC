@@ -743,9 +743,16 @@ class MakeDistributionsInputs(BaseModel):
 
 
 def do_make_distributions(inputs: MakeDistributionsInputs) -> tuple[bool, str]:
-    return clft.Distribution.make_distributions(
-        inputs.input_file, inputs.output_dir, inputs.class_name, inputs.rescaling
-    ), inputs.class_name
+    try:
+        if clft.Distribution.make_distributions(
+            inputs.input_file, inputs.output_dir, inputs.class_name, inputs.rescaling
+        ):
+            return True, inputs.class_name
+
+        return False, inputs.class_name
+    except Exception as e:
+        print("Exception: {}".format(e))
+        return False, inputs.class_name
 
 
 def make_rescaling(
@@ -938,7 +945,9 @@ def make_distributions(
             with Pool(min(multiprocessing.cpu_count(), len(distribution_jobs))) as p:
                 with Progress() as progress:
                     task = progress.add_task(
-                        "Making Classification distribution files ...",
+                        "Making Classification distribution files [{}] ...".format(
+                            len(distribution_jobs)
+                        ),
                         total=len(classes_names),
                     )
                     for job in p.imap_unordered(
@@ -947,14 +956,14 @@ def make_distributions(
                         status, analysis_name = job
                         if not status:
                             print(
-                                "ERROR: Could not process class: {}".format(
+                                "ERROR: Could not process event class: {}".format(
                                     analysis_name
                                 ),
                                 file=sys.stderr,
                             )
                             sys.exit(-1)
 
-                        progress.console.print("Done: {}".format(analysis_name))
+                        # progress.console.print("Done: {}".format(analysis_name))
                         progress.advance(task)
 
     if validation_filter_pattern:
@@ -979,14 +988,25 @@ def make_distributions(
             with Pool(min(multiprocessing.cpu_count(), len(distribution_jobs))) as p:
                 with Progress() as progress:
                     task = progress.add_task(
-                        "Making Validation distribution files ...",
+                        "Making Validation distribution files [{}] ...".format(
+                            len(distribution_jobs)
+                        ),
                         total=len(validation_names),
                     )
                     for job in p.imap_unordered(
                         do_make_distributions, distribution_jobs
                     ):
-                        analysis_name = job
-                        progress.console.print("Done: {}".format(analysis_name))
+                        status, analysis_name = job
+                        if not status:
+                            print(
+                                "ERROR: Could not process validation analysis: {}".format(
+                                    analysis_name
+                                ),
+                                file=sys.stderr,
+                            )
+                            sys.exit(-1)
+
+                        # progress.console.print("Done: {}".format(analysis_name))
                         progress.advance(task)
 
     if config_file_path:
@@ -1002,43 +1022,3 @@ def make_distributions(
                 config_file_path
             )
         )
-
-    #
-    # if validation_filter_pattern:
-    #     print("Will fold Validation ...")
-    #     validation_names = get_analysis_names(
-    #         validation_to_files, validation_filter_pattern
-    #     )
-    #
-    #     if validation_names:
-    #         p = multiprocessing.Process(
-    #             target=do_fold,
-    #             args=(
-    #                 get_input_files(inputs_dir),
-    #                 "validation_distributions",
-    #                 validation_names,
-    #                 rescaling,
-    #             ),
-    #         )
-    #         p.start()
-    #         p.join()
-    #         if p.exitcode != 0:
-    #             print(
-    #                 "ERROR: Could not make distribution files for Validation.",
-    #                 file=sys.stderr,
-    #             )
-    #             sys.exit(-1)
-    #
-    #     if config_file_path:
-    #         os.system(
-    #             "cp {} validation_distributions/analysis_config.toml".format(
-    #                 config_file_path
-    #             )
-    #         )
-    #
-    #     if alternative_config_file_path:
-    #         os.system(
-    #             "cp {} validation_distributions/alternative_config_analysis_config.toml".format(
-    #                 config_file_path
-    #             )
-    #         )

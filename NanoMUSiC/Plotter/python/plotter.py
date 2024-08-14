@@ -70,6 +70,7 @@ def plotter(
                     for year in counts:
                         for ec in counts[year]:
                             integral_pvalues_data[year][ec] = counts[year][ec]
+                    # progress.console.print(dist_file)
                     progress.advance(task)
 
         with open(

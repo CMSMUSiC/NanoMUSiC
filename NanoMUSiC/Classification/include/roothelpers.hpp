@@ -286,6 +286,12 @@ inline auto SumAsTH1F(std::unordered_map<std::string, TH1F> &histos,
         list.Add(&h);
     }
 
+    if (list.GetEntries() == 0)
+    {
+        fmt::print(stderr, "\nERROR: Could not sum histograms. List is empty.\n");
+        std::exit(EXIT_FAILURE);
+    }
+
     auto sum = CloneAndReset(*(static_cast<TH1F *>(list.At(0))));
     sum.Merge(&list);
 

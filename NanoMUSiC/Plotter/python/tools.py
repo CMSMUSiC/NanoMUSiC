@@ -19,8 +19,8 @@ def configure_root() -> None:
         )
 
     ROOT.PyConfig.IgnoreCommandLineOptions = True
-    # ROOT.TH1.AddDirectory(False)
-    # ROOT.TDirectory.AddDirectory(False)
+    ROOT.TH1.AddDirectory(False)
+    ROOT.TDirectory.AddDirectory(False)
     ROOT.gROOT.SetBatch(True)
     ROOT.EnableThreadSafety()
 

@@ -7,6 +7,7 @@ import string
 import tqdm
 from multiprocessing import Pool
 from functools import partial
+from typing import Any
 
 
 NORMAL_PRIOR = 1
@@ -70,13 +71,13 @@ def veto_region(n_obs, n_exp, sigma_exp, sigma_stat, yield_per_process_group):
 
 def compute_p_value(
     n_obs, n_exp, sigma_exp, sigma_stat, yield_per_process_group, prior=DEFAULT_PRIOR
-):
+) -> tuple[float | None, list[Any]]:
     veto, veto_reason = veto_region(
         n_obs, n_exp, sigma_exp, sigma_stat, yield_per_process_group
     )
 
     if veto:
-        return [None, veto_reason]
+        return (None, veto_reason)
     if prior == NORMAL_PRIOR:
         prior_func = lambda theta: np.exp(
             -np.power((theta - n_exp) / sigma_exp, 2) / 2.0
