@@ -1,3 +1,5 @@
+from enum import Enum
+import glob
 import scanner_imp as scanner
 from multiprocessing import Pool
 from rich.progress import Progress
@@ -45,7 +47,21 @@ class ScanProps(BaseModel):
     start_round: int = 0
 
 
-def do_scan(scan_props: ScanProps) -> str | None:
+class ScanType(Enum):
+    Data = 0
+    Toys = 1
+    Signal = 2
+
+
+def do_scan_data(scan_props: ScanProps) -> str | None:
+    return do_scan(scan_props, ScanType.Data)
+
+
+def do_scan_toys(scan_props: ScanProps) -> str | None:
+    return do_scan(scan_props, ScanType.Toys)
+
+
+def do_scan(scan_props: ScanProps, scan_type: ScanType) -> str | None:
     lut_file_path = "{}/bin/lookuptable.bin".format(os.getenv("MUSIC_BASE"))
     shifts_file_path = "shifts.json"
 
@@ -67,47 +83,73 @@ def do_scan(scan_props: ScanProps) -> str | None:
         data = json.load(json_file)
     distribution = ScanDistribution(**data)
 
-    data_scan: bool = scanner.scan(
-        scan_props.json_file_path,
-        "{}/{}".format(
-            scan_props.output_directory, distribution.name.replace("+", "_")
-        ),
-        scan_props.rounds,
-        scan_props.start_round,
-        shifts_file_path,
-        lut_file_path,
-        scan_type="data",
-    )
+    data_scan_status = False
+    if scan_type == ScanType.Data:
+        data_scan_status = scanner.scan(
+            scan_props.json_file_path,
+            "{}/{}".format(
+                scan_props.output_directory, distribution.name.replace("+", "_")
+            ),
+            scan_props.rounds,
+            scan_props.start_round,
+            shifts_file_path,
+            lut_file_path,
+            scan_type="data",
+        )
 
-    if not data_scan:
-        print("ERROR: Could not perform Data scan.", file=sys.stderr)
-        sys.exit(-1)
+        if not data_scan_status:
+            print("ERROR: Could not perform Data scan.", file=sys.stderr)
+            sys.exit(-1)
 
-    mc_scan: bool = scanner.scan(
-        scan_props.json_file_path,
-        "{}/{}".format(
-            scan_props.output_directory, distribution.name.replace("+", "_")
-        ),
-        scan_props.rounds,
-        scan_props.start_round,
-        shifts_file_path,
-        lut_file_path,
-        scan_type="mc",
-    )
-    if not mc_scan:
-        print("ERROR: Could not perform MC scan.", file=sys.stderr)
-        sys.exit(-1)
+    mc_scan_status = False
+    if scan_type == ScanType.Toys:
+        mc_scan_status = scanner.scan(
+            scan_props.json_file_path,
+            "{}/{}".format(
+                scan_props.output_directory, distribution.name.replace("+", "_")
+            ),
+            scan_props.rounds,
+            scan_props.start_round,
+            shifts_file_path,
+            lut_file_path,
+            scan_type="mc",
+        )
+        if not mc_scan_status:
+            print("ERROR: Could not perform MC scan.", file=sys.stderr)
+            sys.exit(-1)
 
-    if data_scan and mc_scan:
-        return "{} - {} - {}".format(
-            distribution.name, distribution.distribution, distribution.year
+    if data_scan_status:
+        return "Distribution: {} - {} - {}".format(
+            distribution.name,
+            distribution.distribution,
+            distribution.year,
+        )
+
+    if mc_scan_status:
+        return "Distribution: {} - {} - {} | Start round: {}/{}".format(
+            distribution.name,
+            distribution.distribution,
+            distribution.year,
+            scan_props.start_round,
+            scan_props.rounds,
         )
 
 
+def make_starting_rounds(total: int, chunk_size: int) -> list[tuple[int, int]]:
+    start = 0
+    # # Generate the interval range
+    interval = list(range(start, total))
+
+    # Split the interval into chunks
+    chunks = [interval[i : i + chunk_size] for i in range(0, len(interval), chunk_size)]
+
+    return [(c[0], len(c)) for c in chunks]
+
+
 def build_scan_jobs_task(
-    args: tuple[str, str, str, int],
+    args: tuple[str, str, str, int, int],
 ) -> tuple[list[ScanProps], list[str]]:
-    distribution_file, output_dir, distribution_type, n_rounds = args
+    distribution_file, output_dir, distribution_type, n_rounds, split_size = args
     temp_scan_props: list[ScanProps] = []
     this_variations: list[str] = []
 
@@ -143,19 +185,22 @@ def build_scan_jobs_task(
                 for i in range(raw_data_counts.size()):
                     data_counts.append(raw_data_counts[i])
 
-                temp_scan_props.append(
-                    ScanProps(
-                        json_file_path=ScanDistribution(
-                            name=ec_nice_name,
-                            distribution=scan_distribution_type,
-                            year=ScanYear.Run2,
-                            MCBins=MCBinsBuilder(dist.get_mcbins_props()).build(),
-                            DataBins=data_counts,
-                        ).save(output_dir),
-                        output_directory=output_dir,
-                        rounds=n_rounds,
+                for start_round, n_rds in make_starting_rounds(n_rounds, split_size):
+                    temp_scan_props.append(
+                        ScanProps(
+                            json_file_path=ScanDistribution(
+                                name=ec_nice_name,
+                                distribution=scan_distribution_type,
+                                year=ScanYear.Run2,
+                                MCBins=MCBinsBuilder(dist.get_mcbins_props()).build(),
+                                DataBins=data_counts,
+                                FirstRound=start_round,
+                            ).save(output_dir),
+                            output_directory=output_dir,
+                            rounds=n_rds,
+                            start_round=start_round,
+                        )
                     )
-                )
 
                 # prepare output area
                 if not os.path.exists(
@@ -178,6 +223,7 @@ def launch_scan(
     num_cpus: int = 128,
     do_clean: bool = False,
     n_rounds: int = 100_000,
+    split_size: int = 1000,
 ):
     if not os.path.isdir(input_dir):
         print("ERROR: Input directory does not exists.")
@@ -218,7 +264,7 @@ def launch_scan(
             for this_scan_props, this_variations in p.imap_unordered(
                 build_scan_jobs_task,
                 [
-                    (dist, output_dir, distribution_type, n_rounds)
+                    (dist, output_dir, distribution_type, n_rounds, split_size)
                     for dist in distribution_files
                 ],
             ):
@@ -229,15 +275,41 @@ def launch_scan(
     make_shifts(n_rounds, variations)
 
     # Will make launch scan and save results
-    with Pool(min(len(scan_props), num_cpus)) as p:
-        with Progress() as progress:
-            task = progress.add_task(
-                "Performing {} scans ...".format(len(scan_props)),
-                total=len(scan_props),
-            )
-            for job in p.imap_unordered(do_scan, scan_props):
-                progress.console.print("Done: {}".format(job))
-                progress.advance(task)
+    data_scan_props = [scan for scan in scan_props if scan.start_round == 0]
+    with Pool(max(1, min(max(len(data_scan_props), len(scan_props)), num_cpus))) as p:
+        if len(data_scan_props) > 0:
+            with Progress() as progress:
+                task = progress.add_task(
+                    "Performing {} scans (Data)...".format(len(data_scan_props)),
+                    total=len(data_scan_props),
+                )
+                for job in p.imap_unordered(do_scan_data, data_scan_props):
+                    if job:
+                        progress.console.print("Done: {}".format(job))
+                        progress.advance(task)
+                    else:
+                        print(
+                            "ERROR: Could not run the scanner (Data). Unknown error.",
+                            file=sys.stderr,
+                        )
+                        sys.exit(-1)
+
+        if len(scan_props) > 0:
+            with Progress() as progress:
+                task = progress.add_task(
+                    "Performing {} scans (toys)...".format(len(scan_props)),
+                    total=len(scan_props),
+                )
+                for job in p.imap_unordered(do_scan_toys, scan_props):
+                    if job:
+                        progress.console.print("Done: {}".format(job))
+                        progress.advance(task)
+                    else:
+                        print(
+                            "ERROR: Could not run the scanner (Toys). Unknown error.",
+                            file=sys.stderr,
+                        )
+                        sys.exit(-1)
 
     print("Copying index.php ...")
     os.system(
@@ -249,7 +321,7 @@ def launch_scan(
     print("Done.")
 
 
-def get_p_tilde(scan_result_data_file_path: str, scan_mc_data_file_path: str) -> None:
+def get_p_tilde(scan_result_data_file_path: str, scan_mc_data_files: str) -> None:
     print("Loading data results ...")
     with open(scan_result_data_file_path, "r") as file:
         data = json.load(file)
@@ -263,11 +335,14 @@ def get_p_tilde(scan_result_data_file_path: str, scan_mc_data_file_path: str) ->
 
     p_val_mc = []
     print("Loading MC results ...")
-    with open(scan_mc_data_file_path, "r") as file:
-        data = json.load(file)
-        for item in data["ScanResults"]:
-            if not item["skippedScan"]:
-                p_val_mc.append(item["CompareScore"])
+    for f in glob.glob(scan_mc_data_files):
+        with open(f, "r") as file:
+            mc = json.load(file)
+            for item in mc["ScanResults"]:
+                if not item["skippedScan"]:
+                    p_val_mc.append(item["CompareScore"])
+
+    print(p_val_mc, len(p_val_mc))
     print("... done.")
 
     print()

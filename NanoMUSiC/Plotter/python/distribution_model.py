@@ -77,7 +77,7 @@ class ScanDistribution(BaseModel):
     widthLowStatsRegions: NonNegativeInt = 4
     thresholdLowStatsDominant: NonNegativeFloat = 0.95
     FirstRound: Optional[NonNegativeInt] = 0
-    NumRounds: Optional[NonNegativeInt]
+    NumRounds: Optional[NonNegativeInt] = 100_000
 
     @root_validator(pre=True)
     def check_bins_length(cls, values):
@@ -103,12 +103,13 @@ class ScanDistribution(BaseModel):
             )
         )
 
-        output_file = "{}/{}/{}_{}_{}.json".format(
+        output_file = "{}/{}/{}_{}_{}_{}.json".format(
             output_directory,
             self.name.replace("+", "_"),
             self.name.replace("+", "_"),
             self.distribution,
             self.year,
+            self.FirstRound,
         )
         with open(
             output_file,

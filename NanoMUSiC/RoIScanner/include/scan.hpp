@@ -6,7 +6,7 @@
 auto scan(const std::string &jsonFilePath,
           const std::string &outputDirectory,
           const int rounds,
-          const int startRound,
+          const int start_round,
           const std::string &shiftsFilePath,
           const std::string &lutFilePath,
           const std::string &scanType,

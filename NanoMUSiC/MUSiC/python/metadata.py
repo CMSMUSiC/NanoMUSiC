@@ -3,7 +3,7 @@ import random
 import sys
 import tomli
 from pydantic import BaseModel, Field, NonNegativeFloat
-from typing import Any
+from typing import Any, Callable
 
 
 def load_toml(path: str) -> dict[str, Any]:
@@ -182,3 +182,14 @@ def make_raw_ec_name(nice_name: str) -> str:
     return "EC_{}Muon_{}Electron_{}Tau_{}bJet_{}Jet_{}MET{}".format(
         n_muons, n_electrons, n_taus, n_photons, n_bjets, n_jets, n_met, class_modifier
     )
+
+
+class PTildeProps(BaseModel):
+    p_data: float
+    p_toys: list[float]
+
+
+def make_p_tilde_props(
+    filters: list[Callable[[str], bool]],
+) -> tuple[int, dict[str, PTildeProps]]:
+    return 1, {}

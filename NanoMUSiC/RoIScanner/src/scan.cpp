@@ -6,14 +6,14 @@
 auto scan(const std::string &jsonFilePath,
           const std::string &outputDirectory,
           int rounds,
-          int startRound,
+          int start_round,
           const std::string &shiftsFilePath,
           const std::string &lutFilePath,
           const std::string &scanType,
           const bool is_debug) -> bool
 {
     // Create ECScanner object
-    ECScanner scanner(rounds, startRound);
+    ECScanner scanner(rounds, start_round);
 
     // Read and parse JSON
     scanner.readInputJson(jsonFilePath);
@@ -70,8 +70,8 @@ auto scan(const std::string &jsonFilePath,
         }
     }
 
-    // Write result to CSV file
-    scanner.writeOutputFiles(outputDirectory, scanType);
+    // Write result to JSON file
+    scanner.writeOutputFiles(outputDirectory, scanType, start_round);
 
     // scanner.finalize();
 

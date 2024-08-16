@@ -1013,10 +1013,13 @@ std::string replace_substring(const std::string &original, const std::string &ol
 }
 
 //// Write all scan results to member m_jsonDocument
-void ECScanner::writeOutputFiles(const std::string &outputDirectory, const std::string &scanType)
+void ECScanner::writeOutputFiles(const std::string &outputDirectory,
+                                 const std::string &scanType,
+                                 unsigned int start_round)
 {
-    const std::string nameBase =
-        outputDirectory + "/" + replace_substring(m_ECName, "+", "_") + "_" + m_distribution + "_" + scanType;
+    const std::string nameBase = outputDirectory + "/" + replace_substring(m_ECName, "+", "_") + "_" + m_distribution +
+                                 "_" + scanType + "_" + std::to_string(start_round);
+
     json infoJsonDocument;
 
     // Add scan results

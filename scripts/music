@@ -2,6 +2,8 @@
 
 from enum import Enum
 from typing import Union
+from distribution_model import DistributionType
+from matplotlib import is_interactive
 from typing_extensions import Annotated
 import typer
 import metadata
@@ -10,7 +12,6 @@ import os
 import time
 import subprocess
 from functools import wraps
-
 
 
 def execution_time(func):
@@ -266,6 +267,7 @@ def fold(
         validation_inputs_dir,
     )
 
+
 class FoldAndPlotTarget(str, Enum):
     Classification = "classification"
     Validation = "validation"
@@ -297,7 +299,7 @@ def make_distributions(
     """
     import classification
 
-    if target == FoldAndPlotTarget.Classification or target == FoldAndPlotTarget.All :
+    if target == FoldAndPlotTarget.Classification or target == FoldAndPlotTarget.All:
         classification.make_distributions(
             config_file,
             alternative_config_file,
@@ -313,7 +315,7 @@ def make_distributions(
             inputs_dir,
             validation_inputs_dir,
             None,
-            "*" if target==FoldAndPlotTarget.All else name_filter,
+            "*" if target == FoldAndPlotTarget.All else name_filter,
         )
 
 
@@ -368,13 +370,13 @@ def most_occupied(
     """
     Plot the occupancy and p_integral of most occupied classes.
     """
-    from integral_pvalues import integral_pvalues
+    from integral_pvalues import integral_pvalues_summary
 
     os.system("rm -rf {}".format(output_dir))
     os.system("mkdir -p {}".format(output_dir))
 
     for y in ["2016", "2017", "2018", "Run2"]:
-        integral_pvalues(
+        integral_pvalues_summary(
             input_file,
             output_dir,
             year=y,
@@ -383,7 +385,7 @@ def most_occupied(
             plot_per_objects=True,
             plot_exclusive=True,
         )
-        integral_pvalues(
+        integral_pvalues_summary(
             input_file,
             output_dir,
             year=y,
@@ -392,7 +394,7 @@ def most_occupied(
             plot_per_objects=True,
             plot_exclusive=True,
         )
-        integral_pvalues(
+        integral_pvalues_summary(
             input_file,
             output_dir,
             year=y,
@@ -412,13 +414,13 @@ def most_discrepant(
     """
     Plot the occupancy and p_integral of most discrepant classes.
     """
-    from integral_pvalues import integral_pvalues, IntegralPValuePlotType
+    from integral_pvalues import integral_pvalues_summary, IntegralPValuePlotType
 
     os.system("rm -rf {}".format(output_dir))
     os.system("mkdir -p {}".format(output_dir))
 
     for y in ["2016", "2017", "2018", "Run2"]:
-        integral_pvalues(
+        integral_pvalues_summary(
             input_file,
             output_dir,
             year=y,
@@ -428,7 +430,7 @@ def most_discrepant(
             plot_exclusive=True,
             plot_type=IntegralPValuePlotType.MostDiscrepant,
         )
-        integral_pvalues(
+        integral_pvalues_summary(
             input_file,
             output_dir,
             year=y,
@@ -438,7 +440,7 @@ def most_discrepant(
             plot_exclusive=True,
             plot_type=IntegralPValuePlotType.MostDiscrepant,
         )
-        integral_pvalues(
+        integral_pvalues_summary(
             input_file,
             output_dir,
             year=y,
@@ -450,10 +452,111 @@ def most_discrepant(
         )
 
 
-# @plot_app.command()
-# @execution_time
-# def summary(config: str):
-#     pass
+@plot_app.command()
+@execution_time
+def summary(output_dir: str = "scan_summary_plots"):
+    from p_tilde import plot_ptilde
+    from metadata import make_p_tilde_props
+
+    def is_met(ec_name: str) -> bool:
+        return "MET" in ec_name
+
+    def is_sum_pt(ec_name: str) -> bool:
+        return "sum_pt" in ec_name
+
+    def is_invariant_mass(ec_name: str) -> bool:
+        return "invariant_mass" in ec_name
+
+    n_rounds, p_tilde_props = make_p_tilde_props(filters=[is_met])
+    plot_ptilde(p_tilde_props, n_rounds, output_dir, "all_met", "All classes")
+
+    n_rounds, p_tilde_props = make_p_tilde_props(filters=[is_sum_pt])
+    plot_ptilde(p_tilde_props, n_rounds, output_dir, "all_sum_pt", "All classes")
+
+    n_rounds, p_tilde_props = make_p_tilde_props(filters=[is_invariant_mass])
+    plot_ptilde(
+        p_tilde_props, n_rounds, output_dir, "all_invariant_mass", "All classes"
+    )
+
+    n_rounds, p_tilde_props = make_p_tilde_props(filters=[is_met])
+    plot_ptilde(
+        p_tilde_props, n_rounds, output_dir, "exclusive_met", "All exclusive classes"
+    )
+
+    n_rounds, p_tilde_props = make_p_tilde_props(filters=[is_sum_pt])
+    plot_ptilde(
+        p_tilde_props, n_rounds, output_dir, "exclusive_sum_pt", "All exclusive classes"
+    )
+
+    n_rounds, p_tilde_props = make_p_tilde_props(filters=[is_invariant_mass])
+    plot_ptilde(
+        p_tilde_props,
+        n_rounds,
+        output_dir,
+        "exclusive_invariant_mass",
+        "All exclusive classes",
+    )
+
+    n_rounds, p_tilde_props = make_p_tilde_props(filters=[is_met])
+    plot_ptilde(
+        p_tilde_props, n_rounds, output_dir, "inclusive_met", "All inclusive classes"
+    )
+
+    n_rounds, p_tilde_props = make_p_tilde_props(filters=[is_sum_pt])
+    plot_ptilde(
+        p_tilde_props, n_rounds, output_dir, "inclusive_sum_pt", "All inclusive classes"
+    )
+
+    n_rounds, p_tilde_props = make_p_tilde_props(filters=[is_invariant_mass])
+    plot_ptilde(
+        p_tilde_props,
+        n_rounds,
+        output_dir,
+        "inclusive_invariant_mass",
+        "All inclusive classes",
+    )
+
+    n_rounds, p_tilde_props = make_p_tilde_props(filters=[is_met])
+    plot_ptilde(
+        p_tilde_props,
+        n_rounds,
+        output_dir,
+        "jet_inclusive_met",
+        "All jet inclusive classes",
+    )
+
+    n_rounds, p_tilde_props = make_p_tilde_props(filters=[is_sum_pt])
+    plot_ptilde(
+        p_tilde_props,
+        n_rounds,
+        output_dir,
+        "jet_inclusive_sum_pt",
+        "All jet inclusive classes",
+    )
+
+    n_rounds, p_tilde_props = make_p_tilde_props(filters=[is_invariant_mass])
+    plot_ptilde(
+        p_tilde_props,
+        n_rounds,
+        output_dir,
+        "jet_inclusive_invariant_mass",
+        "All jet inclusive classes",
+    )
+
+
+@plot_app.command()
+@execution_time
+def web_summary():
+    """
+    Make web summary of file contents.
+    """
+    from web_summary import make_web_summary
+
+    make_web_summary("./classification_most_occupied")
+    make_web_summary("./classification_most_discrepant")
+    make_web_summary("./classification_plots")
+    make_web_summary("./validation_plots")
+    make_web_summary("./scan_summary_plots")
 
 
 ############################################################################
@@ -473,27 +576,75 @@ class DistributionsType(str, Enum):
 @scan_app.command()
 @execution_time
 def start(
-    distribution: DistributionsType = DistributionsType.InvariantMass,
+    distribution: Union[DistributionsType, None] = None,
     input_dir: str = "classification_distributions",
     filters: list[str] = ["*"],
     output_dir: str = "scan_results",
     num_cpus: int = 128,
     do_clean: bool = False,
     n_rounds: int = 100_000,
+    split_size: int = 1_000,
 ):
     """
     Launch RoIScan.
     """
+    if split_size < 1:
+        print("ERROR: Could not start scan. split_size should be > 0.", file=sys.stderr)
+        sys.exit(1)
+
+    if n_rounds < 1:
+        print("ERROR: Could not start scan. n_rounds should be > 0.", file=sys.stderr)
+        sys.exit(1)
+
     from scan import launch_scan
 
-    launch_scan(
-        input_dir, filters, distribution.value, output_dir, num_cpus, do_clean, n_rounds
-    )
+    if distribution:
+        launch_scan(
+            input_dir,
+            filters,
+            distribution.value,
+            output_dir,
+            num_cpus,
+            do_clean,
+            n_rounds,
+            split_size,
+        )
+    else:
+        launch_scan(
+            input_dir,
+            filters,
+            DistributionsType.InvariantMass.value,
+            output_dir,
+            num_cpus,
+            do_clean,
+            n_rounds,
+            split_size,
+        )
+        launch_scan(
+            input_dir,
+            filters,
+            DistributionsType.SumPt.value,
+            output_dir,
+            num_cpus,
+            do_clean,
+            n_rounds,
+            split_size,
+        )
+        launch_scan(
+            input_dir,
+            filters,
+            DistributionsType.MET.value,
+            output_dir,
+            num_cpus,
+            do_clean,
+            n_rounds,
+            split_size,
+        )
 
 
 @scan_app.command()
 @execution_time
-def p_tilde(
+def get_p_tilde(
     class_name: str,
     distribution: str,
     output_dir: str = "scan_results",
@@ -504,13 +655,13 @@ def p_tilde(
     from scan import get_p_tilde
 
     get_p_tilde(
-        "{}/{}/{}_{}_data_info.json".format(
+        "{}/{}/{}_{}_data_0_info.json".format(
             output_dir,
             class_name.replace("+", "_"),
             class_name.replace("+", "_"),
             distribution,
         ),
-        "{}/{}/{}_{}_mc_info.json".format(
+        "{}/{}/{}_{}_mc_*_info.json".format(
             output_dir,
             class_name.replace("+", "_"),
             class_name.replace("+", "_"),

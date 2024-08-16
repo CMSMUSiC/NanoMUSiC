@@ -198,7 +198,15 @@ class IntegralPValuePlotType(str, Enum):
     MostDiscrepant = "discrepant"
 
 
-def integral_pvalues(
+def get_total_mc(counts):
+    total = 0
+    for process in counts["mc"]:
+        total += counts["mc"][process]
+
+    return total
+
+
+def integral_pvalues_summary(
     input_file_path: str,
     output_dir: str,
     year: str = "Run2",
@@ -208,14 +216,15 @@ def integral_pvalues(
     plot_exclusive: bool = True,
     plot_type: IntegralPValuePlotType = IntegralPValuePlotType.MostOccupied,
 ) -> None:
-    print("\n\n[ MUSiC p-value - Plotter ]\n")
-
     plot_size = PlotSize.Medium
     if num_classes >= 100:
         plot_size = PlotSize.Large
 
     with open(input_file_path) as input_file:
         ec_data_json = json.load(input_file)
+
+    mc_threshold = 0.1
+    data_threshold = 1
 
     def select_most_occupied_class(event_class: str):
         return ec_data_json[year][event_class]["data_count"]
@@ -246,13 +255,18 @@ def integral_pvalues(
         return -1
 
     def select_most_discrepant_class(event_class: str):
-        if ec_data_json[year][event_class]["data_count"] >= 1:
+        if (
+            ec_data_json[year][event_class]["data_count"] >= data_threshold
+            and get_total_mc(ec_data_json[year][event_class]) >= mc_threshold
+        ):
             return ec_data_json[year][event_class]["p_value"]
+        return sys.float_info.max
 
     def select_most_discrepant_muon_class(event_class: str):
         if (
             r"$\mu$" in get_ec_name(event_class)
-            and ec_data_json[year][event_class]["data_count"] >= 1
+            and ec_data_json[year][event_class]["data_count"] >= data_threshold
+            and get_total_mc(ec_data_json[year][event_class]) >= mc_threshold
         ):
             return ec_data_json[year][event_class]["p_value"]
         return sys.float_info.max
@@ -260,7 +274,8 @@ def integral_pvalues(
     def select_most_discrepant_electron_class(event_class: str):
         if (
             r"$e$" in get_ec_name(event_class)
-            and ec_data_json[year][event_class]["data_count"] >= 1
+            and ec_data_json[year][event_class]["data_count"] >= data_threshold
+            and get_total_mc(ec_data_json[year][event_class]) >= mc_threshold
         ):
             return ec_data_json[year][event_class]["p_value"]
         return sys.float_info.max
@@ -268,7 +283,8 @@ def integral_pvalues(
     def select_most_discrepant_tau_class(event_class: str):
         if (
             r"$\tau$" in get_ec_name(event_class)
-            and ec_data_json[year][event_class]["data_count"] >= 1
+            and ec_data_json[year][event_class]["data_count"] >= data_threshold
+            and get_total_mc(ec_data_json[year][event_class]) >= mc_threshold
         ):
             return ec_data_json[year][event_class]["p_value"]
         return sys.float_info.max
@@ -276,7 +292,8 @@ def integral_pvalues(
     def select_most_discrepant_photon_class(event_class: str):
         if (
             r"$\gamma$" in get_ec_name(event_class)
-            and ec_data_json[year][event_class]["data_count"] >= 1
+            and ec_data_json[year][event_class]["data_count"] >= data_threshold
+            and get_total_mc(ec_data_json[year][event_class]) >= mc_threshold
         ):
             return ec_data_json[year][event_class]["p_value"]
         return sys.float_info.max
@@ -284,7 +301,8 @@ def integral_pvalues(
     def select_most_discrepant_exc_class(event_class: str):
         if (
             "exc" in get_ec_name(event_class)
-            and ec_data_json[year][event_class]["data_count"] >= 1
+            and ec_data_json[year][event_class]["data_count"] >= data_threshold
+            and get_total_mc(ec_data_json[year][event_class]) >= mc_threshold
         ):
             return ec_data_json[year][event_class]["p_value"]
         return sys.float_info.max
@@ -301,6 +319,7 @@ def integral_pvalues(
         selected_ec = sorted(
             ec_data_json[year].keys(), key=class_selector, reverse=is_reverse
         )
+
         plot_classes(
             (selected_ec)[0:num_classes],
             year,

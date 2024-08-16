@@ -28,7 +28,7 @@ class ECScanner
     // public member functions
     void readInputJson(const std::string &jsonFilePath);
     void readLookupTable(const std::string &lookupTablePath = "");
-    void writeOutputFiles(const std::string &outputDirectory, const std::string &scanType);
+    void writeOutputFiles(const std::string &outputDirectory, const std::string &scanType, unsigned int start_round);
 
     void readMCBinInfo();
     void readSignalBinInfo();
