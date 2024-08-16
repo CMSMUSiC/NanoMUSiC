@@ -41,6 +41,7 @@ def make_shifts(num_rounds: int, variations: list[str]) -> None:
 
 
 class ScanProps(BaseModel):
+    ec_name: str
     json_file_path: str
     output_directory: str
     rounds: int
@@ -126,12 +127,11 @@ def do_scan(scan_props: ScanProps, scan_type: ScanType) -> str | None:
         )
 
     if mc_scan_status:
-        return "Distribution: {} - {} - {} | Start round: {}/{}".format(
+        return "Distribution: {} - {} - {} | Start round: {}".format(
             distribution.name,
             distribution.distribution,
             distribution.year,
             scan_props.start_round,
-            scan_props.rounds,
         )
 
 
@@ -188,6 +188,7 @@ def build_scan_jobs_task(
                 for start_round, n_rds in make_starting_rounds(n_rounds, split_size):
                     temp_scan_props.append(
                         ScanProps(
+                            ec_name=ec_nice_name,
                             json_file_path=ScanDistribution(
                                 name=ec_nice_name,
                                 distribution=scan_distribution_type,
@@ -276,6 +277,8 @@ def launch_scan(
 
     # Will make launch scan and save results
     data_scan_props = [scan for scan in scan_props if scan.start_round == 0]
+    data_scan_props = sorted(data_scan_props, key=lambda scan: len(scan.ec_name))
+    scan_props = sorted(scan_props, key=lambda scan: len(scan.ec_name))
     with Pool(max(1, min(max(len(data_scan_props), len(scan_props)), num_cpus))) as p:
         if len(data_scan_props) > 0:
             with Progress() as progress:
