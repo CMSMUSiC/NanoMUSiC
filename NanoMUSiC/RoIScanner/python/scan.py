@@ -20,6 +20,8 @@ from tools import configure_root
 
 from ROOT import TFile
 
+from scan_results import ScanResults
+
 
 configure_root()
 
@@ -325,38 +327,18 @@ def launch_scan(
 
 
 def get_p_tilde(scan_result_data_file_path: str, scan_mc_data_files: str) -> None:
-    print("Loading data results ...")
-    with open(scan_result_data_file_path, "r") as file:
-        data = json.load(file)
-    p_val_data = data["ScanResults"][0]["CompareScore"]
-    name = data["name"]
-    distribution = data["distribution"]
-    lower_edge = data["ScanResults"][0]["lowerEdge"]
-    width = data["ScanResults"][0]["width"]
-    assert data["ScanResults"][0]["skippedScan"] == False
-    print("... done.")
+    scan_results = ScanResults.make_scan_results(
+        scan_result_data_file_path, scan_mc_data_files
+    )
 
-    p_val_mc = []
-    print("Loading MC results ...")
-    for f in glob.glob(scan_mc_data_files):
-        with open(f, "r") as file:
-            mc = json.load(file)
-            for item in mc["ScanResults"]:
-                if not item["skippedScan"]:
-                    p_val_mc.append(item["CompareScore"])
+    print("Event class: {}".format(scan_results.class_name))
+    print("Distribution: {}".format(scan_results.distribution))
+    print(
+        "RoI: [{} - {}]".format(
+            scan_results.lower_edge, scan_results.lower_edge + scan_results.width
+        )
+    )
+    print("p-value: {}".format(scan_results.p_value_data))
 
-    print(p_val_mc, len(p_val_mc))
-    print("... done.")
-
-    print()
-    print("Event class: {}".format(name))
-    print("Distribution: {}".format(distribution))
-    print("RoI: [{} - {}]".format(lower_edge, lower_edge + width))
-    print("p-value: {}".format(p_val_data))
-
-    p_tilde = np.sum(np.array(p_val_mc) < p_val_data) / float(len(p_val_mc))
-    if np.sum(np.array(p_val_mc) <= p_val_data) == 0.0:
-        p_tilde = 1 / float(len(p_val_mc))
-
-    print("p-tilde: {}".format(p_tilde))
+    print("p-tilde: {}".format(scan_results.p_tilde()))
     print()

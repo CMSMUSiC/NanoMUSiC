@@ -1,10 +1,9 @@
 import matplotlib.pyplot as plt  # matplotlib library
 import matplotlib as mpl
 import mplhep as hep  # HEP (CMS) extensions/styling on top of mpl
+from scan import ScanResults
 import scipy
-from pydantic import BaseModel
 import numpy as np
-from metadata import PTildeProps
 from numpy.typing import NDArray
 
 mpl.use("Agg")
@@ -22,7 +21,7 @@ ylabel = "number of classes"
 
 
 def plot_ptilde(
-    props: dict[str, PTildeProps],
+    props: dict[str, ScanResults],
     n_rounds: int,
     output_dir: str,
     file_name: str,
@@ -164,7 +163,7 @@ def plot_ptilde(
     ax.set_ylim(y_min_visible, y_max)
 
     ax.text(
-        0.0,
+        0.15,
         y_max * 0.65,
         title,
         fontsize=24,

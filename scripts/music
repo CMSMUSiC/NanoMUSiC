@@ -454,9 +454,9 @@ def most_discrepant(
 
 @plot_app.command()
 @execution_time
-def summary(output_dir: str = "scan_summary_plots"):
+def summary(input_dir: str = "scan_results", output_dir: str = "scan_summary_plots"):
     from p_tilde import plot_ptilde
-    from metadata import make_p_tilde_props
+    from scan_results import ScanResults
 
     def is_met(ec_name: str) -> bool:
         return "MET" in ec_name
@@ -647,7 +647,7 @@ def start(
 def get_p_tilde(
     class_name: str,
     distribution: str,
-    output_dir: str = "scan_results",
+    input_dir: str = "scan_results",
 ):
     """
     Calculate p-tilde for a given class and distribution.
@@ -656,13 +656,13 @@ def get_p_tilde(
 
     get_p_tilde(
         "{}/{}/{}_{}_data_0_info.json".format(
-            output_dir,
+            input_dir,
             class_name.replace("+", "_"),
             class_name.replace("+", "_"),
             distribution,
         ),
         "{}/{}/{}_{}_mc_*_info.json".format(
-            output_dir,
+            input_dir,
             class_name.replace("+", "_"),
             class_name.replace("+", "_"),
             distribution,
