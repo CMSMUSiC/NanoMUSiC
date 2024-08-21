@@ -12,6 +12,7 @@ class ScanResults(BaseModel):
     width: float
     p_value_data: float
     p_values_mc: list[float]
+    skipped_scan: bool
 
     @staticmethod
     def make_scan_results(
@@ -24,7 +25,8 @@ class ScanResults(BaseModel):
         distribution = data["distribution"]
         lower_edge = data["ScanResults"][0]["lowerEdge"]
         width = data["ScanResults"][0]["width"]
-        assert data["ScanResults"][0]["skippedScan"] == False
+
+        skipped_scan = data["ScanResults"][0]["skippedScan"]
 
         p_values_toys = []
         for f in glob.glob(scan_mc_data_files):
@@ -41,9 +43,13 @@ class ScanResults(BaseModel):
             width=width,
             p_value_data=p_value_data,
             p_values_mc=p_values_toys,
+            skipped_scan=skipped_scan,
         )
 
-    def p_tilde(self) -> float:
+    def p_tilde(self) -> float | None:
+        if self.skipped_scan:
+            return None
+
         if np.sum(np.array(self.p_values_mc) <= self.p_value_data) == 0.0:
             p_tilde = 1 / float(len(self.p_values_mc))
 

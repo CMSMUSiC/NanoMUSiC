@@ -564,7 +564,10 @@ def web_summary():
 # Scanner
 ############################################################################
 ############################################################################
-scan_app = typer.Typer(pretty_exceptions_show_locals=False)
+scan_app = typer.Typer(
+    help="Start and monitor Region of Interest scans.",
+    pretty_exceptions_show_locals=False,
+)
 
 
 class DistributionsType(str, Enum):
