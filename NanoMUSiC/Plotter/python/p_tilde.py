@@ -33,22 +33,32 @@ def plot_ptilde(
     bin_widths: NDArray[np.float64] = np.diff(bins)
     n_dist: int = len(props)
 
+    print(f"Building p-tilde toys for {title}...")
     temp_ptildes: list[list[float]] = []
+    
     for ec in props:
-        temp_ptildes.append(props[ec].p_toys)
+        if not props[ec].skipped_scan:
+            temp_ptildes.append(props[ec].p_tilde_toys())
     ptildes: NDArray[np.float64] = -np.log10(np.array(temp_ptildes))
+    ptildes = np.transpose(ptildes)
+    print(ptildes.shape)
+    print(n_rounds)
 
+    print(f"Building p-tilde data for {title}...")
     temp_pdata: list[float] = []
     for ec in props:
-        temp_pdata.append(props[ec].p_data)
-    p_data: NDArray[np.float64] = -np.log10(np.array(temp_pdata))
+        if not props[ec].skipped_scan:
+            temp_pdata.append(props[ec].p_tilde())
+    p_tilde_data: NDArray[np.float64] = -np.log10(np.array(temp_pdata))
 
+    print(f"Building p-tilde histograms for {title}...")
     list_of_histograms: list[NDArray[np.float64]] = []
     for r in range(n_rounds):
         list_of_histograms.append((np.histogram(ptildes[r], bins)[0]))
 
     histograms: NDArray[np.float64] = np.array(list_of_histograms)
 
+    print(f"Plotting {title}...")
     fig, ax = plt.subplots()
     ax.set_yscale("log", nonpositive="clip")
     hep.cms.label(label="Preliminary", data=True, loc=0, ax=ax, lumi=138)
@@ -97,26 +107,26 @@ def plot_ptilde(
         label="Median SM expectation",
     )
 
-    yerr = np.abs(2 * np.random.normal(0, 1, N_BINS))
-    ax.errorbar(
-        bin_centers,
-        np.percentile(histograms, 50, axis=0) + yerr,
-        xerr=bin_widths / 2,
-        yerr=yerr,
-        fmt="o",
-        color="purple",
-        ecolor="#7a21dd",
-        elinewidth=2,
-        capsize=0,
-        capthick=2,
-        linestyle="None",
-        label="Signal",
-    )
+    # yerr = np.abs(2 * np.random.normal(0, 1, N_BINS))
+    # ax.errorbar(
+    #     bin_centers,
+    #     np.percentile(histograms, 50, axis=0) + yerr,
+    #     xerr=bin_widths / 2,
+    #     yerr=yerr,
+    #     fmt="o",
+    #     color="purple",
+    #     ecolor="#7a21dd",
+    #     elinewidth=2,
+    #     capsize=0,
+    #     capthick=2,
+    #     linestyle="None",
+    #     label="Signal",
+    # )
 
     ax.plot(
         bin_centers,
         np.histogram(
-            p_data,
+            p_tilde_data,
             bins=bins,
         )[0],
         "o",
@@ -126,7 +136,7 @@ def plot_ptilde(
     # ax.errorbar(
     #     bin_centers,
     #     np.histogram(
-    #         p_data,
+    #         p_tilde_data,
     #         bins=bins,
     #     )[0],
     #     xerr=bin_widths / 2,
@@ -174,6 +184,7 @@ def plot_ptilde(
 
     ax.set_xlim(0, (N_BINS + 1) * bin_width)
 
+    print(f"Saving plots  for {title}")
     fig.savefig("{}/{}.pdf".format(output_dir, file_name))
     fig.savefig("{}/{}.png".format(output_dir, file_name))
     fig.savefig("{}/{}.svg".format(output_dir, file_name))

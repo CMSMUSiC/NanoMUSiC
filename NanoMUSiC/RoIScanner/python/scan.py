@@ -327,23 +327,20 @@ def launch_scan(
 
 
 def get_p_tilde(scan_result_data_file_path: str, scan_mc_data_files: str):
+    
     scan_results = ScanResults.make_scan_results(
-        scan_result_data_file_path, scan_mc_data_files
-    )
+        scan_result_data_file_path, scan_mc_data_files)
 
-    print(f"scan_result_data_file_path: {scan_result_data_file_path}")
-    print(f"scan_mc_data_files: {scan_mc_data_files}")
+    # print("Event class: {}".format(scan_results.class_name))
+    # print("Distribution: {}".format(scan_results.distribution))
+    # print(
+    #     "RoI: [{} - {}]".format(
+    #         scan_results.lower_edge, scan_results.lower_edge + scan_results.width
+    #     )
+    # )
+    # print("p-value: {}".format(scan_results.p_value_data))
 
-    print("Event class: {}".format(scan_results.class_name))
-    print("Distribution: {}".format(scan_results.distribution))
-    print(
-        "RoI: [{} - {}]".format(
-            scan_results.lower_edge, scan_results.lower_edge + scan_results.width
-        )
-    )
-    print("p-value: {}".format(scan_results.p_value_data))
-
-    print("p-tilde: {}".format(scan_results.p_tilde()))
-    print()
+    # print("p-tilde: {}".format(scan_results.p_tilde()))
+    # print()
 
     return scan_results

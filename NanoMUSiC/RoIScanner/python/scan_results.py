@@ -52,6 +52,7 @@ class ScanResults(BaseModel):
 
         if np.sum(np.array(self.p_values_mc) <= self.p_value_data) == 0.0:
             p_tilde = 1 / float(len(self.p_values_mc))
+            return p_tilde
 
         if np.sum(np.array(self.p_values_mc) <= self.p_value_data) < 0.0:
             print(
@@ -64,3 +65,29 @@ class ScanResults(BaseModel):
             len(self.p_values_mc)
         )
         return float(p_tilde)
+
+
+
+    def p_tilde_toys(self):
+        if self.skipped_scan:
+            return None
+
+        p_tilde_toys = []
+
+        # for p_val in self.p_values_mc:
+            # if np.sum(np.array(self.p_values_mc) <= p_val) - 1 == 0.0:
+            #     p_tilde = 1 / float(len(self.p_values_mc) - 1)
+            #     p_tilde_toys.append(p_tilde)
+            #     continue
+
+            # p_tilde = np.sum(np.array(self.p_values_mc) <= self.p_value_data) - 1/ float(len(self.p_values_mc) - 1 )
+            # p_tilde_toys.append(p_tilde)
+
+        p_values_mc = np.array(self.p_values_mc)
+        counts = np.sum(p_values_mc[:, None] <= p_values_mc, axis=0) - 1
+        p_tilde_toys = counts / float(len(p_values_mc)-1)
+        p_tilde_toys[p_tilde_toys == 0.0] = 1 / float(len(self.p_values_mc)-1)
+
+
+        return p_tilde_toys
+
