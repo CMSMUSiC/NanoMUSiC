@@ -134,118 +134,6 @@ def do_scan(scan_props: ScanProps, scan_type: ScanType) -> str | None:
         )
 
 
-# def do_cmssw_scan_data(scan_props: ScanProps) -> str | None:
-#     return do_cmssw_scan(scan_props, ScanType.Data)
-#
-#
-# def do_cmssw_scan_toys(scan_props: ScanProps) -> str | None:
-#     return do_cmssw_scan(scan_props, ScanType.Toys)
-#
-#
-# def do_cmssw_scan(scan_props: ScanProps, scan_type: ScanType) -> str | None:
-#     lut_file_path = "{}/bin/lookuptable.bin".format(os.getenv("MUSIC_BASE"))
-#     shifts_file_path = "shifts.json"
-#
-#     if not os.path.exists("{}/".format(os.getenv("MUSIC_BASE"))):
-#         print(
-#             'ERROR: Could not start scanner. LUT file does not exist. Did you executed "ninja lut"?',
-#             file=sys.stderr,
-#         )
-#         sys.exit(-1)
-#
-#     if not os.path.exists(scan_props.json_file_path):
-#         print(
-#             "ERROR: Could not start scanner. Input file not found.",
-#             file=sys.stderr,
-#         )
-#         sys.exit(-1)
-#
-#     with open(scan_props.json_file_path, "r") as json_file:
-#         data = json.load(json_file)
-#     distribution = ScanDistribution(**data)
-#
-#     hash_object = hashlib.sha256()
-#     hash_object.update(scan_props.json_file_path.encode("utf-8"))
-#     cmssw_scanner_config_file = (
-#         "temp_scan_cmssw_config_files/cmssw_scanner_{}.py".format(
-#             hash_object.hexdigest()
-#         )
-#     )
-#     data_scan_status = 255
-#     if scan_type == ScanType.Data:
-#         exec_command("rm -rf {}".format(cmssw_scanner_config_file))
-#         with open(cmssw_scanner_config_file, "w") as file:
-#             file.write(
-#                 make_scanner_config(
-#                     scan_props.json_file_path,
-#                     "{}/{}".format(
-#                         scan_props.output_directory, distribution.name.replace("+", "_")
-#                     ),
-#                     scan_props.rounds,
-#                     scan_props.start_round,
-#                     shifts_file_path,
-#                     lut_file_path,
-#                     scan_type="data",
-#                     ec_name=scan_props.ec_name,
-#                     distribution_type=scan_props.,
-#                     # now=now,
-#                 )
-#             )
-#
-#         data_scan_status = os.system(
-#             r'cmssw-el9 --cleanenv --command-to-run "cd CMSSW_14_0_7/src && cmsenv && cd ../.. && cmsRun ___CMSSW_CONFIG___"'.replace(
-#                 "___CMSSW_CONFIG___", cmssw_scanner_config_file
-#             )
-#         )
-#         os.system("rm -rf {}".format(cmssw_scanner_config_file))
-#         if data_scan_status:
-#             print("ERROR: Could not perform Data scan.", file=sys.stderr)
-#             return
-#
-#     mc_scan_status = 255
-#     if scan_type == ScanType.Toys:
-#         exec_command("rm -rf {}".format(cmssw_scanner_config_file))
-#         with open(cmssw_scanner_config_file, "w") as file:
-#             file.write(
-#                 make_scanner_config(
-#                     scan_props.json_file_path,
-#                     "{}/{}".format(
-#                         scan_props.output_directory, distribution.name.replace("+", "_")
-#                     ),
-#                     scan_props.rounds,
-#                     scan_props.start_round,
-#                     shifts_file_path,
-#                     lut_file_path,
-#                     scan_type="mc",
-#                 )
-#             )
-#
-#         mc_scan_status = os.system(
-#             r'cmssw-el9 --cleanenv --command-to-run "cd CMSSW_14_0_7/src && cmsenv && cd ../.. && cmsRun ___CMSSW_CONFIG___"'.replace(
-#                 "___CMSSW_CONFIG___", cmssw_scanner_config_file
-#             )
-#         )
-#         os.system("rm -rf {}".format(cmssw_scanner_config_file))
-#         if mc_scan_status:
-#             print("ERROR: Could not perform MC scan.", file=sys.stderr)
-#             return
-#
-#     if not data_scan_status:
-#         return "Distribution: {} - {} - {}".format(
-#             distribution.name,
-#             distribution.distribution,
-#             distribution.year,
-#         )
-#
-#     if not mc_scan_status:
-#         return "Distribution: {} - {} - {} | Start round: {}".format(
-#             distribution.name,
-#             distribution.distribution,
-#             distribution.year,
-#             scan_props.start_round,
-#         )
-
-
 def make_starting_rounds(total: int, chunk_size: int) -> list[tuple[int, int]]:
     start = 0
     # Generate the interval range
@@ -302,6 +190,7 @@ def build_scan_jobs_task(
                     temp_scan_props.append(
                         ScanProps(
                             ec_name=ec_nice_name,
+                            distribution_type=distribution_type,
                             json_file_path=ScanDistribution(
                                 name=ec_nice_name,
                                 distribution=scan_distribution_type,
@@ -439,119 +328,6 @@ def launch_scan(
     print("Done.")
 
 
-# def launch_cmssw_scan(
-#     input_dir: str,
-#     patterns: list[str],
-#     distribution_type: str,
-#     output_dir: str = "scan_results",
-#     num_cpus: int = 128,
-#     do_clean: bool = False,
-#     n_rounds: int = 100_000,
-#     split_size: int = 1000,
-# ):
-#     if not os.path.isdir(input_dir):
-#         print("ERROR: Input directory does not exists.")
-#         sys.exit(-1)
-#
-#     if do_clean:
-#         print("Cleanning output directory ...")
-#         os.system("rm -rf {}".format(output_dir))
-#     os.system("mkdir -p {}".format(output_dir))
-#
-#     def make_distribution_paths(inputs_dir: str, patterns: list[str]) -> list[str]:
-#         distribution_paths: list[str] = []
-#         for root, _, files in os.walk(inputs_dir):
-#             for file in files:
-#                 if any(
-#                     fnmatch.fnmatch(file, "*" + pattern.replace("+", "_") + ".root")
-#                     for pattern in patterns
-#                 ):
-#                     distribution_paths.append(os.path.join(root, file))
-#         return distribution_paths
-#
-#     distribution_files = make_distribution_paths(input_dir, patterns)
-#     if len(distribution_files) == 0:
-#         print("WARNING: No distribution matches the requirements.")
-#         sys.exit(1)
-#
-#     # Will build scan jobs
-#     variations: list[str] = []
-#     scan_props: list[ScanProps] = []
-#     with Pool(min(len(distribution_files), num_cpus)) as p:
-#         with Progress() as progress:
-#             task = progress.add_task(
-#                 "Building scan jobs {} - {} distribution files ...".format(
-#                     distribution_type,
-#                     len(distribution_files),
-#                 ),
-#                 total=len(distribution_files),
-#             )
-#             for this_scan_props, this_variations in p.imap_unordered(
-#                 build_scan_jobs_task,
-#                 [
-#                     (dist, output_dir, distribution_type, n_rounds, split_size, False)
-#                     for dist in distribution_files
-#                 ],
-#             ):
-#                 scan_props += this_scan_props
-#                 variations = list(set(variations + this_variations))
-#                 progress.advance(task)
-#
-#     make_shifts(n_rounds, variations)
-#
-#     # Will launch scan and save results
-#     data_scan_props = [scan for scan in scan_props if scan.start_round == 0]
-#     data_scan_props = sorted(data_scan_props, key=lambda scan: len(scan.ec_name))
-#     scan_props = sorted(scan_props, key=lambda scan: len(scan.ec_name))
-#
-#     exec_command("rm -rf temp_scan_cmssw_config_files")
-#     exec_command("mkdir -p temp_scan_cmssw_config_files")
-#     with Pool(max(1, min(max(len(data_scan_props), len(scan_props)), num_cpus))) as p:
-#         if len(data_scan_props) > 0:
-#             with Progress() as progress:
-#                 task = progress.add_task(
-#                     "Performing {} scans (Data)...".format(len(data_scan_props)),
-#                     total=len(data_scan_props),
-#                 )
-#                 for job in p.imap_unordered(do_cmssw_scan_data, data_scan_props):
-#                     if job:
-#                         progress.console.print("Done: {}".format(job))
-#                         progress.advance(task)
-#                     else:
-#                         print(
-#                             "ERROR: Could not run the scanner (Data). Unknown error.",
-#                             file=sys.stderr,
-#                         )
-#                         sys.exit(-1)
-#
-#         if len(scan_props) > 0:
-#             with Progress() as progress:
-#                 task = progress.add_task(
-#                     "Performing {} scans (toys)...".format(len(scan_props)),
-#                     total=len(scan_props),
-#                 )
-#                 for job in p.imap_unordered(do_cmssw_scan_toys, scan_props):
-#                     if job:
-#                         progress.console.print("Done: {}".format(job))
-#                         progress.advance(task)
-#                     else:
-#                         print(
-#                             "ERROR: Could not run the scanner (Toys). Unknown error.",
-#                             file=sys.stderr,
-#                         )
-#                         sys.exit(-1)
-#
-#     print("Copying index.php ...")
-#     os.system(
-#         r"find ___OUTPUT_DIR___/ -type d -exec cp $MUSIC_BASE/NanoMUSiC/Plotter/assets/index.php {} \;".replace(
-#             "___OUTPUT_DIR___", output_dir
-#         )
-#     )
-#     exec_command("rm -rf temp_scan_cmssw_config_files")
-#
-#     print("Done.")
-
-
 def crab_username():
     try:
         # Run the command and capture the output
@@ -591,7 +367,6 @@ def crab_username():
 def launch_crab_scan(
     input_dir: str,
     patterns: list[str],
-    distribution_type: str,
     output_dir: str = "scan_results",
     num_cpus: int = 128,
     do_clean: bool = False,
@@ -628,25 +403,26 @@ def launch_crab_scan(
     # Will build scan jobs
     variations: list[str] = []
     scan_props: list[ScanProps] = []
-    with Pool(min(len(distribution_files), num_cpus)) as p:
-        with Progress() as progress:
-            task = progress.add_task(
-                "Building scan jobs: {} - {} distribution files ...".format(
-                    distribution_type,
-                    len(distribution_files),
-                ),
-                total=len(distribution_files),
-            )
-            for this_scan_props, this_variations in p.imap_unordered(
-                build_scan_jobs_task,
-                [
-                    (dist, output_dir, distribution_type, n_rounds, split_size, False)
-                    for dist in distribution_files
-                ],
-            ):
-                scan_props += this_scan_props
-                variations = list(set(variations + this_variations))
-                progress.advance(task)
+    for dist_type in DistributionType:
+        with Pool(min(len(distribution_files), num_cpus)) as p:
+            with Progress() as progress:
+                task = progress.add_task(
+                    "Building scan jobs: {} - {} distribution files ...".format(
+                        dist_type.value,
+                        len(distribution_files),
+                    ),
+                    total=len(distribution_files),
+                )
+                for this_scan_props, this_variations in p.imap_unordered(
+                    build_scan_jobs_task,
+                    [
+                        (dist, output_dir, dist_type.value, n_rounds, split_size, False)
+                        for dist in distribution_files
+                    ],
+                ):
+                    scan_props += this_scan_props
+                    variations = list(set(variations + this_variations))
+                    progress.advance(task)
 
     print("Making shifts file ...")
     make_shifts(n_rounds, variations)
@@ -693,7 +469,7 @@ def launch_crab_scan(
                     "lookuptable.bin",
                     scan_type="data",
                     ec_name=scan.ec_name,
-                    distribution_type=distribution_type,
+                    distribution_type=scan.distribution_type,
                     # now=now,
                 )
             )
@@ -720,7 +496,7 @@ def launch_crab_scan(
                     "lookuptable.bin",
                     scan_type="mc",
                     ec_name=scan.ec_name,
-                    distribution_type=distribution_type,
+                    distribution_type=scan.distribution_type,
                 )
             )
         cmsRun_calls += "cmsrun {}\n".format(cmssw_scanner_config_file)

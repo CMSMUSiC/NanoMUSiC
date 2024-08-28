@@ -668,7 +668,7 @@ def launch(
     num_cpus: int = 128,
     do_clean: bool = False,
     n_rounds: int = 10_000,
-    split_size: int = 2_000,
+    split_size: int = 5_000,
     target: ScanTarget = ScanTarget.CRAB,
 ):
     """
@@ -682,7 +682,6 @@ def launch(
         print("ERROR: Could not start scan. n_rounds should be > 0.", file=sys.stderr)
         sys.exit(1)
 
-    # from scan import launch_scan, launch_crab_scan, launch_cmssw_scan
     from scan import launch_scan, launch_crab_scan
 
     if target == ScanTarget.Local:
@@ -729,65 +728,16 @@ def launch(
                 split_size,
             )
 
-    # if target == ScanTarget.CMSSW:
-    #     if distribution:
-    #         launch_cmssw_scan(
-    #             input_dir,
-    #             filters,
-    #             distribution.value,
-    #             output_dir,
-    #             num_cpus,
-    #             do_clean,
-    #             n_rounds,
-    #             split_size,
-    #         )
-    #     else:
-    #         launch_cmssw_scan(
-    #             input_dir,
-    #             filters,
-    #             DistributionsType.InvariantMass.value,
-    #             output_dir,
-    #             num_cpus,
-    #             do_clean,
-    #             n_rounds,
-    #             split_size,
-    #         )
-    #         launch_cmssw_scan(
-    #             input_dir,
-    #             filters,
-    #             DistributionsType.SumPt.value,
-    #             output_dir,
-    #             num_cpus,
-    #             do_clean,
-    #             n_rounds,
-    #             split_size,
-    #         )
-    #         launch_cmssw_scan(
-    #             input_dir,
-    #             filters,
-    #             DistributionsType.MET.value,
-    #             output_dir,
-    #             num_cpus,
-    #             do_clean,
-    #             n_rounds,
-    #             split_size,
-    #         )
-
     if target == ScanTarget.CRAB:
-        if distribution:
-            launch_crab_scan(
-                input_dir,
-                filters,
-                distribution.value,
-                output_dir,
-                num_cpus,
-                do_clean,
-                n_rounds,
-                split_size,
-            )
-        else:
-            print("ERROR: Could not launch scanner. CRAB Scanner needs a distribution.", file=sys.stderr)
-            sys.exit(-1)
+        launch_crab_scan(
+            input_dir,
+            filters,
+            output_dir,
+            num_cpus,
+            do_clean,
+            n_rounds,
+            split_size,
+        )
 
 
 

@@ -176,7 +176,8 @@ class ECScanner
     bool m_noLowStatsTreatment = false;
 
     // Threshold for the realtive statistical uncert in region for low stats treatment
-    float m_thresholdLowStatsUncert = 0.6;
+    // float m_thresholdLowStatsUncert = 0.6;
+    float m_thresholdLowStatsUncert = 0.3;
 
     // width for neighborhood regins in low stat treatment
     int m_widthLowStatsRegions = 4;

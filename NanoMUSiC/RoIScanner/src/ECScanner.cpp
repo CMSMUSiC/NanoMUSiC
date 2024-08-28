@@ -343,14 +343,19 @@ bool ECScanner::vetoRegion(const MCBin &mcbin,
     }
 
     if (data < no_data_threshold and not mcbin.isEmpty() and
-        (std::abs(n_mc / mcbin.getTotalMcStatUncert()) < m_coverageThreshold))
+        (std::fabs(n_mc / mcbin.getTotalMcStatUncert()) < m_coverageThreshold))
     {
         m_regionStatistics["skip: (classic) coverage"]++;
         fillRegionControlPlot(mcbin, SkipReason::MC_NO_DATA);
         return true;
     }
 
-    const double adaptive_coverage_threshold = std::min(1.0, std::max(1.2 * std::pow(n_mc, -0.2), 0.5));
+    // definifion found in the code
+    // const double adaptive_coverage_threshold = std::min(1.0, std::max(1.2 * std::pow(n_mc, -0.2), 0.5));
+
+    // definition from the analysis note
+    const double adaptive_coverage_threshold = std::max(0.5, std::min(5.0, 1.2 * std::pow(n_mc, -0.2)));
+
     if (relative_uncert > adaptive_coverage_threshold)
     { // too high uncert
         m_regionStatistics["skip: adaptive coverage"]++;
@@ -359,7 +364,7 @@ bool ECScanner::vetoRegion(const MCBin &mcbin,
     }
 
     // too insignificant for a full p-value calculation
-    if (!isIntegral && std::abs(data - n_mc) / mcbin.getTotalMcUncert() < m_sigmaThreshold)
+    if (!isIntegral && std::fabs(data - n_mc) / mcbin.getTotalMcUncert() < m_sigmaThreshold)
     {
         m_regionStatistics["skip: insignificant"]++;
         fillRegionControlPlot(mcbin, SkipReason::SIGMA_THRESHOLD);

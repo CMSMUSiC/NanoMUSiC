@@ -69,7 +69,8 @@ class ScanDistribution(BaseModel):
     DataBins: list[float]
     minRegionWidth: NonNegativeInt = 3
     coverageThreshold: NonNegativeFloat = 0.0
-    regionYieldThreshold: NonNegativeFloat = 0.0
+    # regionYieldThreshold: NonNegativeFloat = 0
+    regionYieldThreshold: NonNegativeFloat = 1e-6
     sigmaThreshold: NonNegativeFloat = 0.0
     integralScan: bool = False
     skipLookupTable: bool = False

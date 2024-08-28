@@ -77,22 +77,22 @@ spinner() {
 }
 
 
-echo -e "${BOLD_BLUE}[CRAB Babysitter]${RESET} Starting ... "
+echo -e "${BOLD_BLUE}[CRAB NannyBot]${RESET} Starting ... "
 DIR="./crab_MUSIC_CLASSIFICATION"
 
 # Check if the directory exists
 if [ -d "$DIR" ]; then
     echo ""
-    echo -e "${BOLD_YELLOW}[CRAB Babysitter] WARNING: CRAB task directory already exists. Will skip submission.${RESET}"
+    echo -e "${BOLD_YELLOW}[CRAB NannyBot] WARNING: CRAB task directory already exists. Will skip submission.${RESET}"
     echo ""
 else
-    echo -e "${BOLD_BLUE}[CRAB Babysitter]${RESET} Launching task ... "
+    echo -e "${BOLD_BLUE}[CRAB NannyBot]${RESET} Launching task ... "
     crab submit crab_sub.py
 
     if [ $? -eq 0 ]; then
-        echo -e "${BOLD_GREEN}[CRAB Babysitter] Submission succeeded.${RESET}"
+        echo -e "${BOLD_GREEN}[CRAB NannyBot] Submission succeeded.${RESET}"
     else
-        echo -e "${BOLD_RED}[CRAB Babysitter] Submission failed.${RESET}"
+        echo -e "${BOLD_RED}[CRAB NannyBot] Submission failed.${RESET}"
         exit 1
     fi
 fi
@@ -101,7 +101,7 @@ START=$(date)
 COMMAND="crab status -d crab_MUSIC_CLASSIFICATION"
 FAILED_PATTERN="   failed   "
 
-echo -e "${BOLD_BLUE}[CRAB Babysitter]${RESET} Checking status ..."
+echo -e "${BOLD_BLUE}[CRAB NannyBot]${RESET} Checking status ..."
 echo ""
 while true; do
     OUTPUT=$($COMMAND)
@@ -109,20 +109,20 @@ while true; do
     echo -e "$OUTPUT"
 
     if echo "$OUTPUT" | grep Jobs | grep status | grep finished | grep -q '100.0%'; then
-        echo -e "${BOLD_GREEN}[CRAB Babysitter] All finished.${RESET}"
+        echo -e "${BOLD_GREEN}[CRAB NannyBot] All finished.${RESET}"
         break
     fi
 
     if [[ $OUTPUT =~ $FAILED_PATTERN ]]; then
         echo ""
-        echo -e "${BOLD_YELLOW}[CRAB Babysitter] Failed jobs:${RESET}"
+        echo -e "${BOLD_YELLOW}[CRAB NannyBot] Failed jobs:${RESET}"
 	crab status --long | grep failed | grep -v Warning
         echo ""
-        echo -e "${BOLD_YELLOW}[CRAB Babysitter] Resubmitting failed jobs ...${RESET}"
+        echo -e "${BOLD_YELLOW}[CRAB NannyBot] Resubmitting failed jobs ...${RESET}"
 	crab resubmit
     fi
 
-    echo -e "${BOLD_BLUE}[CRAB Babysitter]${RESET} Waiting 2 minutes before next check ..."
+    echo -e "${BOLD_BLUE}[CRAB NannyBot]${RESET} Waiting 2 minutes before next check ..."
     spinner &
     spinner_pid=$!
     sleep 120
@@ -130,13 +130,13 @@ while true; do
     wait $spinner_pid 2>/dev/null
 
     echo ""
-    echo -e "${BOLD_BLUE}[CRAB Babysitter]${RESET} Running since: $START"
+    echo -e "${BOLD_BLUE}[CRAB NannyBot]${RESET} Running since: $START"
     echo ""
 done
 
 
 echo ""
-echo -e "${BOLD_GREEN}[CRAB Babysitter] Done!!${RESET}"
+echo -e "${BOLD_GREEN}[CRAB NannyBot] Done!!${RESET}"
 """
 
 music_sh = r"""#!/usr/bin/env bash
