@@ -14,6 +14,22 @@ import subprocess
 from functools import wraps
 
 
+def exec_command(cmd: str) -> None:
+    try:
+        subprocess.run(
+            cmd,
+            check=True,  # Raises CalledProcessError on non-zero exit
+            shell=True,
+            stdout=subprocess.PIPE,  # Capture standard output
+            stderr=subprocess.PIPE,  # Capture standard error
+        )
+    except subprocess.CalledProcessError as e:
+        print(f"Error during execution: {e}")
+        print(f"Standard Output: {e.stdout.decode()}")
+        print(f"Standard Error: {e.stderr.decode()}")
+        sys.exit(-1)
+
+
 def execution_time(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -576,17 +592,84 @@ class DistributionsType(str, Enum):
     MET = "met"
 
 
+class ScanTarget(str, Enum):
+    Local = "local"
+    CRAB = "crab"
+    CMSSW = "cmssw"
+
+
 @scan_app.command()
 @execution_time
-def start(
+def prepare_cmssw_env():
+    """
+    Will configure a CMSSW area for the scanner.
+    """
+
+    from cmssw_scan import prepare_cmssw_env
+
+    prepare_cmssw_env()
+
+
+@scan_app.command()
+@execution_time
+def monitor():
+    """
+    Monitor Scanner task on CRAB.
+    """
+
+    os.system(
+        r'cmssw-el9 --cleanenv --command-to-run "cd CMSSW_14_0_7/src && cmsenv && cd ../.. && ./crab_worker.sh"'
+    )
+
+@scan_app.command()
+@execution_time
+def kill():
+    """
+    Kill Scanner task on CRAB.
+    """
+
+    os.system(
+        r'cmssw-el9 --cleanenv --command-to-run "cd CMSSW_14_0_7/src && cmsenv && cd ../.. && crab kill -d crab_MUSIC_CLASSIFICATION"'
+    )
+
+@scan_app.command()
+@execution_time
+def get_output():
+    """
+    Get outputs of CRAB Scanner task.
+    """
+
+    res = os.system(
+        r'cmssw-el9 --cleanenv --command-to-run "cd CMSSW_14_0_7/src && cmsenv && cd ../.. && crab getoutput"'
+    )
+
+
+    if res !=0:
+        print("ERROR: Could not get outputs.", file=sys.stderr)
+        sys.exit(-1)
+
+
+    # Loop over all files in the directory
+    for filename in os.listdir("crab_MUSIC_CLASSIFICATION/results"):
+        # Check if the file is a .tar file
+        if filename.endswith(".tar"):
+            file_path = os.path.join("crab_MUSIC_CLASSIFICATION/results", filename)
+            
+            # Open the tar file for extraction
+            os.system("tar -xvf {}".format(file_path))
+
+@scan_app.command()
+@execution_time
+def launch(
     distribution: Union[DistributionsType, None] = None,
     input_dir: str = "classification_distributions",
     filters: list[str] = ["*"],
     output_dir: str = "scan_results",
     num_cpus: int = 128,
     do_clean: bool = False,
-    n_rounds: int = 100_000,
-    split_size: int = 1_000,
+    n_rounds: int = 10_000,
+    split_size: int = 2_000,
+    target: ScanTarget = ScanTarget.CRAB,
 ):
     """
     Launch RoIScan.
@@ -599,50 +682,126 @@ def start(
         print("ERROR: Could not start scan. n_rounds should be > 0.", file=sys.stderr)
         sys.exit(1)
 
-    from scan import launch_scan
+    # from scan import launch_scan, launch_crab_scan, launch_cmssw_scan
+    from scan import launch_scan, launch_crab_scan
 
-    if distribution:
-        launch_scan(
-            input_dir,
-            filters,
-            distribution.value,
-            output_dir,
-            num_cpus,
-            do_clean,
-            n_rounds,
-            split_size,
-        )
-    else:
-        launch_scan(
-            input_dir,
-            filters,
-            DistributionsType.InvariantMass.value,
-            output_dir,
-            num_cpus,
-            do_clean,
-            n_rounds,
-            split_size,
-        )
-        launch_scan(
-            input_dir,
-            filters,
-            DistributionsType.SumPt.value,
-            output_dir,
-            num_cpus,
-            do_clean,
-            n_rounds,
-            split_size,
-        )
-        launch_scan(
-            input_dir,
-            filters,
-            DistributionsType.MET.value,
-            output_dir,
-            num_cpus,
-            do_clean,
-            n_rounds,
-            split_size,
-        )
+    if target == ScanTarget.Local:
+        if distribution:
+            launch_scan(
+                input_dir,
+                filters,
+                distribution.value,
+                output_dir,
+                num_cpus,
+                do_clean,
+                n_rounds,
+                split_size,
+            )
+        else:
+            launch_scan(
+                input_dir,
+                filters,
+                DistributionsType.InvariantMass.value,
+                output_dir,
+                num_cpus,
+                do_clean,
+                n_rounds,
+                split_size,
+            )
+            launch_scan(
+                input_dir,
+                filters,
+                DistributionsType.SumPt.value,
+                output_dir,
+                num_cpus,
+                do_clean,
+                n_rounds,
+                split_size,
+            )
+            launch_scan(
+                input_dir,
+                filters,
+                DistributionsType.MET.value,
+                output_dir,
+                num_cpus,
+                do_clean,
+                n_rounds,
+                split_size,
+            )
+
+    # if target == ScanTarget.CMSSW:
+    #     if distribution:
+    #         launch_cmssw_scan(
+    #             input_dir,
+    #             filters,
+    #             distribution.value,
+    #             output_dir,
+    #             num_cpus,
+    #             do_clean,
+    #             n_rounds,
+    #             split_size,
+    #         )
+    #     else:
+    #         launch_cmssw_scan(
+    #             input_dir,
+    #             filters,
+    #             DistributionsType.InvariantMass.value,
+    #             output_dir,
+    #             num_cpus,
+    #             do_clean,
+    #             n_rounds,
+    #             split_size,
+    #         )
+    #         launch_cmssw_scan(
+    #             input_dir,
+    #             filters,
+    #             DistributionsType.SumPt.value,
+    #             output_dir,
+    #             num_cpus,
+    #             do_clean,
+    #             n_rounds,
+    #             split_size,
+    #         )
+    #         launch_cmssw_scan(
+    #             input_dir,
+    #             filters,
+    #             DistributionsType.MET.value,
+    #             output_dir,
+    #             num_cpus,
+    #             do_clean,
+    #             n_rounds,
+    #             split_size,
+    #         )
+
+    if target == ScanTarget.CRAB:
+        if distribution:
+            launch_crab_scan(
+                input_dir,
+                filters,
+                distribution.value,
+                output_dir,
+                num_cpus,
+                do_clean,
+                n_rounds,
+                split_size,
+            )
+        else:
+            print("ERROR: Could not launch scanner. CRAB Scanner needs a distribution.", file=sys.stderr)
+            sys.exit(-1)
+
+
+
+
+@scan_app.command()
+@execution_time
+def clean():
+    """
+    Clear Scanner task on CRAB.
+    """
+
+    exec_command(
+        r'rm -rf __pycache__ crab.log crab_MUSIC_CLASSIFICATION crab_worker.sh pset.py crab_sub.py music.sh scan_results scan_results.tar'
+    )
 
 
 @scan_app.command()

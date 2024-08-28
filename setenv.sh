@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This is a set_env script
-SCRIPTDIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+SCRIPTDIR=$(pwd)
 
 # Set up the LCG environment
 # List of available software:

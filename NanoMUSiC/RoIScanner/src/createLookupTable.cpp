@@ -15,10 +15,12 @@ int main(int argc, char *argv[])
 
     // PARAMS
     const double data_max = 70000;
+    // const double data_max = 1000000;
 
     options.prior = NORMAL_PRIOR;
 
     options.data_log_block_start = 100;
+    // options.data_log_block_start = 1000;
     options.data_log_block_factor = 1.02;
 
     options.bg_factor_down = 1.005;
@@ -26,10 +28,12 @@ int main(int argc, char *argv[])
 
     const double bg_min = 0.1;
     const double bg_max = 5.0;
+    // const double bg_max = 1000000.0;
 
     options.uncert_factor = 1.05;
     options.uncert_min = 0.01;
     const double uncert_max = 2.0;
+    // const double uncert_max = 20000.0;
 
     options.data_lower_block_size = 10;
     // END PARAMS
