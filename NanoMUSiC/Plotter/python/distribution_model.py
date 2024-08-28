@@ -1,6 +1,7 @@
 from pydantic import BaseModel, NonNegativeFloat, NonNegativeInt, root_validator
 from enum import Enum
 import os
+import sys
 from typing import Optional
 
 
@@ -21,6 +22,17 @@ class DistributionType(str, Enum):
 
     def __str__(self):
         return self.value
+
+    def latex_name(self) -> str:
+        if self == DistributionType.sum_pt:
+            return r"$S_{T}$"
+        if self == DistributionType.invariant_mass:
+            return r"$M_{inv}$"
+        if self == DistributionType.sum_pt:
+            return r"$p_{T}^{miss}$"
+
+        print("ERROR: Invalid distribution type.", file=sys.stderr)
+        sys.exit(-1)
 
 
 class MCBin(BaseModel):

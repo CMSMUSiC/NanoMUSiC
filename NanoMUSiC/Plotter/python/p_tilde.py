@@ -1,3 +1,10 @@
+import glob
+import json
+import os
+import multiprocessing as mp
+from distribution_model import DistributionType
+from pydantic import NoneStr
+from rich.progress import track
 import matplotlib.pyplot as plt  # matplotlib library
 import matplotlib as mpl
 import mplhep as hep  # HEP (CMS) extensions/styling on top of mpl
@@ -5,6 +12,8 @@ from scan import ScanResults
 import scipy
 import numpy as np
 from numpy.typing import NDArray
+
+from scan_results import ScanResults
 
 mpl.use("Agg")
 
@@ -30,25 +39,35 @@ def plot_ptilde(
     bin_width: float = -np.log10(1.0 / n_rounds) / N_BINS
     bins: NDArray[np.float64] = np.linspace(0, (N_BINS + 1) * bin_width, N_BINS + 1)
     bin_centers: NDArray[np.float64] = 0.5 * (bins[:-1] + bins[1:])
-    bin_widths: NDArray[np.float64] = np.diff(bins)
+    # bin_widths: NDArray[np.float64] = np.diff(bins)
     n_dist: int = len(props)
 
-    temp_ptildes: list[list[float]] = []
+    print(f"Building p-tilde toys for {title}...")
+    temp_ptildes: list[list[float] | None] = []
+
     for ec in props:
-        temp_ptildes.append(props[ec].p_toys)
+        if not props[ec].skipped_scan:
+            temp_ptildes.append(props[ec].p_tilde_toys())
     ptildes: NDArray[np.float64] = -np.log10(np.array(temp_ptildes))
+    ptildes = np.transpose(ptildes)
+    print(ptildes.shape)
+    print(n_rounds)
 
-    temp_pdata: list[float] = []
+    print(f"Building p-tilde data for {title}...")
+    temp_pdata: list[float | None] = []
     for ec in props:
-        temp_pdata.append(props[ec].p_data)
-    p_data: NDArray[np.float64] = -np.log10(np.array(temp_pdata))
+        if not props[ec].skipped_scan:
+            temp_pdata.append(props[ec].p_tilde())
+    p_tilde_data: NDArray[np.float64] = -np.log10(np.array(temp_pdata))
 
+    print(f"Building p-tilde histograms for {title}...")
     list_of_histograms: list[NDArray[np.float64]] = []
     for r in range(n_rounds):
         list_of_histograms.append((np.histogram(ptildes[r], bins)[0]))
 
     histograms: NDArray[np.float64] = np.array(list_of_histograms)
 
+    print(f"Plotting {title}...")
     fig, ax = plt.subplots()
     ax.set_yscale("log", nonpositive="clip")
     hep.cms.label(label="Preliminary", data=True, loc=0, ax=ax, lumi=138)
@@ -97,26 +116,26 @@ def plot_ptilde(
         label="Median SM expectation",
     )
 
-    yerr = np.abs(2 * np.random.normal(0, 1, N_BINS))
-    ax.errorbar(
-        bin_centers,
-        np.percentile(histograms, 50, axis=0) + yerr,
-        xerr=bin_widths / 2,
-        yerr=yerr,
-        fmt="o",
-        color="purple",
-        ecolor="#7a21dd",
-        elinewidth=2,
-        capsize=0,
-        capthick=2,
-        linestyle="None",
-        label="Signal",
-    )
+    # yerr = np.abs(2 * np.random.normal(0, 1, N_BINS))
+    # ax.errorbar(
+    #     bin_centers,
+    #     np.percentile(histograms, 50, axis=0) + yerr,
+    #     xerr=bin_widths / 2,
+    #     yerr=yerr,
+    #     fmt="o",
+    #     color="purple",
+    #     ecolor="#7a21dd",
+    #     elinewidth=2,
+    #     capsize=0,
+    #     capthick=2,
+    #     linestyle="None",
+    #     label="Signal",
+    # )
 
     ax.plot(
         bin_centers,
         np.histogram(
-            p_data,
+            p_tilde_data,
             bins=bins,
         )[0],
         "o",
@@ -126,7 +145,7 @@ def plot_ptilde(
     # ax.errorbar(
     #     bin_centers,
     #     np.histogram(
-    #         p_data,
+    #         p_tilde_data,
     #         bins=bins,
     #     )[0],
     #     xerr=bin_widths / 2,
@@ -174,6 +193,94 @@ def plot_ptilde(
 
     ax.set_xlim(0, (N_BINS + 1) * bin_width)
 
+    print(f"Saving plots  for {title}")
     fig.savefig("{}/{}.pdf".format(output_dir, file_name))
     fig.savefig("{}/{}.png".format(output_dir, file_name))
     fig.savefig("{}/{}.svg".format(output_dir, file_name))
+
+    # Write scan_results to a file
+    with open("{}/{}.json".format(output_dir, file_name), "w") as f:
+        json.dump(
+            {
+                ec: props[ec].dict(exclude={"p_values_mc"})
+                for ec in sorted(
+                    props, key=lambda ec: props[ec].unsafe_p_tilde(), reverse=True
+                )
+            },
+            f,
+            indent=4,
+        )
+
+
+def plot_summary(
+    distribution: DistributionType,
+    input_dir: str = "scan_results",
+    output_dir: str = "scan_summary_plots",
+    num_cpus: int = 128,
+):
+    os.system(f"mkdir -p {output_dir}")
+
+    args = []
+    for ec in glob.glob(f"{input_dir}/*EC_*"):
+        ec = ec.replace("scan_results/", "")
+        if distribution == DistributionType.met and "MET" not in ec:
+            continue
+        args.append(
+            (
+                "{}/{}/{}_{}_data_0_info.json".format(
+                    input_dir,
+                    ec.replace("+", "_"),
+                    ec.replace("+", "_"),
+                    distribution,
+                ),
+                "{}/{}/{}_{}_mc_*_info.json".format(
+                    input_dir,
+                    ec.replace("+", "_"),
+                    ec.replace("+", "_"),
+                    distribution,
+                ),
+            )
+        )
+    with mp.Pool(num_cpus) as pool:
+        results = pool.starmap(
+            ScanResults.make_scan_results, track(args, total=len(args))
+        )
+
+    n_rounds = len(results[0].p_values_mc)
+    for res in results:
+        assert n_rounds == len(res.p_values_mc)
+
+    # Plotting exclusive classes
+    scan_results = {}
+    for result in results:
+        if distribution == DistributionType.met and "MET" not in result.class_name:
+            continue
+        if "+" not in result.class_name:
+            scan_results[result.class_name] = result
+    title = "Exclusive Classes: {}".format(distribution.latex_name())
+
+    plot_ptilde(scan_results, n_rounds, output_dir, f"{distribution}_exclusive", title)
+
+    # Plotting inclusive classes
+    scan_results = {}
+    for result in results:
+        if distribution == DistributionType.met and "MET" not in result.class_name:
+            continue
+        if "+X" in result.class_name:
+            scan_results[result.class_name] = result
+    title = "Inclusive Classes: {}".format(distribution.latex_name())
+
+    plot_ptilde(scan_results, n_rounds, output_dir, f"{distribution}_inclusive", title)
+
+    # Plotting jet inclusive classes
+    scan_results = {}
+    for result in results:
+        if distribution == DistributionType.met and "MET" not in result.class_name:
+            continue
+        if "+NJet" in result.class_name:
+            scan_results[result.class_name] = result
+    title = "Jet Inclusive Classes: {}".format(distribution.latex_name())
+
+    plot_ptilde(
+        scan_results, n_rounds, output_dir, f"{distribution}_jet_inclusive", title
+    )

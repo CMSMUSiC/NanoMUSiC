@@ -3,13 +3,14 @@
 from enum import Enum
 from typing import Union
 from distribution_model import DistributionType
-from matplotlib import is_interactive
 from typing_extensions import Annotated
 import typer
 import metadata
 import sys
 import os
 import time
+import glob
+import json
 import subprocess
 from functools import wraps
 
@@ -470,94 +471,20 @@ def most_discrepant(
 
 @plot_app.command()
 @execution_time
-def summary(input_dir: str = "scan_results", output_dir: str = "scan_summary_plots"):
-    from p_tilde import plot_ptilde
-    from scan_results import ScanResults
+def summary(
+    input_dir: str = "scan_results",
+    output_dir: str = "scan_summary_plots",
+    num_cpus: int = 128,
+):
+    from p_tilde import plot_summary
 
-    def is_met(ec_name: str) -> bool:
-        return "MET" in ec_name
-
-    def is_sum_pt(ec_name: str) -> bool:
-        return "sum_pt" in ec_name
-
-    def is_invariant_mass(ec_name: str) -> bool:
-        return "invariant_mass" in ec_name
-
-    n_rounds, p_tilde_props = make_p_tilde_props(filters=[is_met])
-    plot_ptilde(p_tilde_props, n_rounds, output_dir, "all_met", "All classes")
-
-    n_rounds, p_tilde_props = make_p_tilde_props(filters=[is_sum_pt])
-    plot_ptilde(p_tilde_props, n_rounds, output_dir, "all_sum_pt", "All classes")
-
-    n_rounds, p_tilde_props = make_p_tilde_props(filters=[is_invariant_mass])
-    plot_ptilde(
-        p_tilde_props, n_rounds, output_dir, "all_invariant_mass", "All classes"
-    )
-
-    n_rounds, p_tilde_props = make_p_tilde_props(filters=[is_met])
-    plot_ptilde(
-        p_tilde_props, n_rounds, output_dir, "exclusive_met", "All exclusive classes"
-    )
-
-    n_rounds, p_tilde_props = make_p_tilde_props(filters=[is_sum_pt])
-    plot_ptilde(
-        p_tilde_props, n_rounds, output_dir, "exclusive_sum_pt", "All exclusive classes"
-    )
-
-    n_rounds, p_tilde_props = make_p_tilde_props(filters=[is_invariant_mass])
-    plot_ptilde(
-        p_tilde_props,
-        n_rounds,
-        output_dir,
-        "exclusive_invariant_mass",
-        "All exclusive classes",
-    )
-
-    n_rounds, p_tilde_props = make_p_tilde_props(filters=[is_met])
-    plot_ptilde(
-        p_tilde_props, n_rounds, output_dir, "inclusive_met", "All inclusive classes"
-    )
-
-    n_rounds, p_tilde_props = make_p_tilde_props(filters=[is_sum_pt])
-    plot_ptilde(
-        p_tilde_props, n_rounds, output_dir, "inclusive_sum_pt", "All inclusive classes"
-    )
-
-    n_rounds, p_tilde_props = make_p_tilde_props(filters=[is_invariant_mass])
-    plot_ptilde(
-        p_tilde_props,
-        n_rounds,
-        output_dir,
-        "inclusive_invariant_mass",
-        "All inclusive classes",
-    )
-
-    n_rounds, p_tilde_props = make_p_tilde_props(filters=[is_met])
-    plot_ptilde(
-        p_tilde_props,
-        n_rounds,
-        output_dir,
-        "jet_inclusive_met",
-        "All jet inclusive classes",
-    )
-
-    n_rounds, p_tilde_props = make_p_tilde_props(filters=[is_sum_pt])
-    plot_ptilde(
-        p_tilde_props,
-        n_rounds,
-        output_dir,
-        "jet_inclusive_sum_pt",
-        "All jet inclusive classes",
-    )
-
-    n_rounds, p_tilde_props = make_p_tilde_props(filters=[is_invariant_mass])
-    plot_ptilde(
-        p_tilde_props,
-        n_rounds,
-        output_dir,
-        "jet_inclusive_invariant_mass",
-        "All jet inclusive classes",
-    )
+    for distribution in DistributionType:
+        plot_summary(
+            distribution=distribution.value,
+            input_dir=input_dir,
+            output_dir=output_dir,
+            num_cpus=num_cpus,
+        )
 
 
 @plot_app.command()
@@ -621,6 +548,7 @@ def monitor():
         r'cmssw-el9 --cleanenv --command-to-run "cd CMSSW_14_0_7/src && cmsenv && cd ../.. && ./crab_worker.sh"'
     )
 
+
 @scan_app.command()
 @execution_time
 def kill():
@@ -631,6 +559,7 @@ def kill():
     os.system(
         r'cmssw-el9 --cleanenv --command-to-run "cd CMSSW_14_0_7/src && cmsenv && cd ../.. && crab kill -d crab_MUSIC_CLASSIFICATION"'
     )
+
 
 @scan_app.command()
 @execution_time
@@ -643,20 +572,19 @@ def get_output():
         r'cmssw-el9 --cleanenv --command-to-run "cd CMSSW_14_0_7/src && cmsenv && cd ../.. && crab getoutput"'
     )
 
-
-    if res !=0:
+    if res != 0:
         print("ERROR: Could not get outputs.", file=sys.stderr)
         sys.exit(-1)
-
 
     # Loop over all files in the directory
     for filename in os.listdir("crab_MUSIC_CLASSIFICATION/results"):
         # Check if the file is a .tar file
         if filename.endswith(".tar"):
             file_path = os.path.join("crab_MUSIC_CLASSIFICATION/results", filename)
-            
+
             # Open the tar file for extraction
             os.system("tar -xvf {}".format(file_path))
+
 
 @scan_app.command()
 @execution_time
@@ -740,8 +668,6 @@ def launch(
         )
 
 
-
-
 @scan_app.command()
 @execution_time
 def clean():
@@ -750,36 +676,95 @@ def clean():
     """
 
     exec_command(
-        r'rm -rf __pycache__ crab.log crab_MUSIC_CLASSIFICATION crab_worker.sh pset.py crab_sub.py music.sh scan_results scan_results.tar'
+        r"rm -rf __pycache__ crab.log crab_MUSIC_CLASSIFICATION crab_worker.sh pset.py crab_sub.py music.sh scan_results scan_results.tar"
     )
 
 
 @scan_app.command()
 @execution_time
 def get_p_tilde(
-    class_name: str,
     distribution: str,
+    class_name: str = "All",
     input_dir: str = "scan_results",
 ):
     """
-    Calculate p-tilde for a given class and distribution.
+    Calculate p-tilde for a distribution, class_name = All for all classes.
     """
     from scan import get_p_tilde
 
-    get_p_tilde(
-        "{}/{}/{}_{}_data_0_info.json".format(
-            input_dir,
-            class_name.replace("+", "_"),
-            class_name.replace("+", "_"),
-            distribution,
-        ),
-        "{}/{}/{}_{}_mc_*_info.json".format(
-            input_dir,
-            class_name.replace("+", "_"),
-            class_name.replace("+", "_"),
-            distribution,
-        ),
-    )
+    if class_name == "All":
+        print("Collecting information for all classes...")
+        scan_results_json = {}
+        args = []
+        for ec in glob.glob(f"{input_dir}/*EC_*"):
+            if "met" in distribution and "MET" not in ec:
+                continue
+            ec = ec.replace("scan_results/", "")
+            args.append(
+                (
+                    "{}/{}/{}_{}_data_0_info.json".format(
+                        input_dir,
+                        ec.replace("+", "_"),
+                        ec.replace("+", "_"),
+                        distribution,
+                    ),
+                    "{}/{}/{}_{}_mc_*_info.json".format(
+                        input_dir,
+                        ec.replace("+", "_"),
+                        ec.replace("+", "_"),
+                        distribution,
+                    ),
+                )
+            )
+        with mp.Pool(100) as pool:
+            results = pool.starmap(get_p_tilde, tqdm(args, total=len(args)))
+
+        print("Saving to json file...")
+
+        for result in tqdm(results):
+            scan_results_json[result.class_name] = {}
+            scan_results_json[result.class_name]["RoI"] = "[{} - {}]".format(
+                result.lower_edge, result.lower_edge + result.width
+            )
+            scan_results_json[result.class_name]["p-value"] = result.p_value_data
+            scan_results_json[result.class_name]["p-tilde"] = (
+                result.p_tilde() if result.p_tilde() else -1
+            )
+            scan_results_json[result.class_name]["skipped_scan"] = result.skipped_scan
+
+        sorted_scan_results = dict(
+            sorted(scan_results_json.items(), key=lambda item: item[1]["p-tilde"])
+        )
+
+        with open(f"sorted_scan_results_{distribution}.json", "w") as json_file:
+            json.dump(sorted_scan_results, json_file, indent=4)
+
+    else:
+        scan_results = get_p_tilde(
+            "{}/{}/{}_{}_data_0_info.json".format(
+                input_dir,
+                class_name.replace("+", "_"),
+                class_name.replace("+", "_"),
+                distribution,
+            ),
+            "{}/{}/{}_{}_mc_*_info.json".format(
+                input_dir,
+                class_name.replace("+", "_"),
+                class_name.replace("+", "_"),
+                distribution,
+            ),
+        )
+        print("Event class: {}".format(scan_results.class_name))
+        print("Distribution: {}".format(scan_results.distribution))
+        print(
+            "RoI: [{} - {}]".format(
+                scan_results.lower_edge, scan_results.lower_edge + scan_results.width
+            )
+        )
+        print("p-value: {}".format(scan_results.p_value_data))
+
+        print("p-tilde: {}".format(scan_results.p_tilde()))
+        print()
 
 
 ############################################################################

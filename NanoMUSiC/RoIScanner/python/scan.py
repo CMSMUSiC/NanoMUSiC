@@ -564,21 +564,3 @@ def launch_crab_scan(
     )
 
     exec_command("rm -rf temp_scan_cmssw_config_files")
-
-
-def get_p_tilde(scan_result_data_file_path: str, scan_mc_data_files: str) -> None:
-    scan_results = ScanResults.make_scan_results(
-        scan_result_data_file_path, scan_mc_data_files
-    )
-
-    print("Event class: {}".format(scan_results.class_name))
-    print("Distribution: {}".format(scan_results.distribution))
-    print(
-        "RoI: [{} - {}]".format(
-            scan_results.lower_edge, scan_results.lower_edge + scan_results.width
-        )
-    )
-    print("p-value: {}".format(scan_results.p_value_data))
-
-    print("p-tilde: {}".format(scan_results.p_tilde()))
-    print()

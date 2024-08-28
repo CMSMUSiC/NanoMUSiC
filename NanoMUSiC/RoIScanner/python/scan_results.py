@@ -14,6 +14,10 @@ class ScanResults(BaseModel):
     p_values_mc: list[float]
     skipped_scan: bool
 
+    @property
+    def upper_edge(self) -> float:
+        return self.lower_edge + self.width
+
     @staticmethod
     def make_scan_results(
         scan_result_data_file_path: str, scan_mc_data_files: str
@@ -52,6 +56,7 @@ class ScanResults(BaseModel):
 
         if np.sum(np.array(self.p_values_mc) <= self.p_value_data) == 0.0:
             p_tilde = 1 / float(len(self.p_values_mc))
+            return p_tilde
 
         if np.sum(np.array(self.p_values_mc) <= self.p_value_data) < 0.0:
             print(
@@ -64,3 +69,22 @@ class ScanResults(BaseModel):
             len(self.p_values_mc)
         )
         return float(p_tilde)
+
+    def unsafe_p_tilde(self) -> float:
+        p_tilde = self.p_tilde()
+        if p_tilde:
+            return p_tilde
+        return -1.0
+
+    def p_tilde_toys(self) -> list[float] | None:
+        if self.skipped_scan:
+            return None
+
+        p_tilde_toys = []
+
+        p_values_mc = np.array(self.p_values_mc)
+        counts = np.sum(p_values_mc[:, None] <= p_values_mc, axis=0) - 1
+        p_tilde_toys = counts / float(len(p_values_mc) - 1)
+        p_tilde_toys[p_tilde_toys == 0.0] = 1 / float(len(self.p_values_mc) - 1)
+
+        return p_tilde_toys
