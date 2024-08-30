@@ -18,6 +18,7 @@ def exec_command(cmd: str) -> None:
             stdout=subprocess.PIPE,  # Capture standard output
             stderr=subprocess.PIPE,  # Capture standard error
         )
+
     except subprocess.CalledProcessError as e:
         print(f"Error during execution: {e}")
         print(f"Standard Output: {e.stdout.decode()}")

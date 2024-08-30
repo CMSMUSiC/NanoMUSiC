@@ -1,6 +1,7 @@
-from enum import Enum
-import subprocess
+from enum import Enum, StrEnum
 import re
+from rich.progress import track
+import subprocess
 import hashlib
 import random
 import scanner_imp as scanner
@@ -18,7 +19,7 @@ from distribution_model import (
     ScanYear,
     MCBinsBuilder,
 )
-from metadata import make_ec_nice_name
+from metadata import make_ec_nice_name, make_raw_ec_name
 from tools import configure_root
 
 from ROOT import TFile
@@ -27,6 +28,7 @@ from scan_results import ScanResults
 
 from crab_scan import music_sh, crab_sub, crab_worker, pset
 from cmssw_scan import make_scanner_config, exec_command
+from pydantic import BaseModel
 
 
 configure_root()
@@ -219,6 +221,12 @@ def build_scan_jobs_task(
     return temp_scan_props, this_variations
 
 
+class DataOrMC(StrEnum):
+    Data = "data"
+    MC = "mc"
+    All = "all"
+
+
 def launch_scan(
     input_dir: str,
     patterns: list[str],
@@ -228,6 +236,7 @@ def launch_scan(
     do_clean: bool = False,
     n_rounds: int = 100_000,
     split_size: int = 1000,
+    data_or_mc: DataOrMC = DataOrMC.All,
 ):
     if not os.path.isdir(input_dir):
         print("ERROR: Input directory does not exists.")
@@ -284,7 +293,11 @@ def launch_scan(
     data_scan_props = sorted(data_scan_props, key=lambda scan: len(scan.ec_name))
     scan_props = sorted(scan_props, key=lambda scan: len(scan.ec_name))
     with Pool(max(1, min(max(len(data_scan_props), len(scan_props)), num_cpus))) as p:
-        if len(data_scan_props) > 0:
+        if (
+            len(data_scan_props) > 0
+            and data_or_mc == DataOrMC.Data
+            or data_or_mc == DataOrMC.All
+        ):
             with Progress() as progress:
                 task = progress.add_task(
                     "Performing {} scans (Data)...".format(len(data_scan_props)),
@@ -301,7 +314,11 @@ def launch_scan(
                         )
                         sys.exit(-1)
 
-        if len(scan_props) > 0:
+        if (
+            len(scan_props) > 0
+            and data_or_mc == DataOrMC.MC
+            or data_or_mc == DataOrMC.All
+        ):
             with Progress() as progress:
                 task = progress.add_task(
                     "Performing {} scans (toys)...".format(len(scan_props)),
@@ -445,7 +462,9 @@ def launch_crab_scan(
         )
     )
     os.system(
-        'cmssw-el9 --cleanenv --command-to-run "gfal-rm -r root://eoscms.cern.ch///eos/cms/store/user/ftorresd/cmsmusic/scan_results.tar"'
+        r'cmssw-el9 --cleanenv --command-to-run "gfal-rm -r root://eoscms.cern.ch///eos/cms/store/user/___CMS_USER___/cmsmusic/scan_results.tar"'.replace(
+            "___CMS_USER___", cms_user
+        )
     )
     cmsRun_calls = ""
     for scan in data_scan_props:
@@ -507,7 +526,9 @@ def launch_crab_scan(
 
     print("Copying scan results to EOS ...")
     res = os.system(
-        'cmssw-el9 --cleanenv --command-to-run "gfal-copy -r -f scan_results.tar root://eoscms.cern.ch///eos/cms/store/user/ftorresd/cmsmusic/."'
+        r'cmssw-el9 --cleanenv --command-to-run "gfal-copy -r -f -p scan_results.tar root://eoscms.cern.ch///eos/cms/store/user/___CMS_USER___/cmsmusic/."'.replace(
+            "___CMS_USER___", cms_user
+        )
     )
     if res != 0:
         print("ERROR: Could not copy input files.", file=sys.stderr)
@@ -529,10 +550,12 @@ def launch_crab_scan(
             music_sh.replace(
                 "___SPLIT_SIZE___",
                 str(crab_split_size),
-            ).replace(
+            )
+            .replace(
                 "___NUM_JOBS___",
                 str(num_jobs),
             )
+            .replace("___CMS_USER___", str(cms_user))
         )
     exec_command("chmod +x music.sh")
 
@@ -564,3 +587,191 @@ def launch_crab_scan(
     )
 
     exec_command("rm -rf temp_scan_cmssw_config_files")
+
+
+def download_result_file(
+    args: tuple[str, str, str],
+) -> tuple[subprocess.CompletedProcess, str] | tuple[None, str]:
+    result_file, cms_user, job_time_hash = args
+
+    if not os.path.isdir("scan_downloads/{}".format(result_file)):
+        res = subprocess.run(
+            r'cmssw-el9 --cleanenv --command-to-run "gfal-copy -n 50 -p -r -f --abort-on-failure -t 9999999 davs://grid-webdav.physik.rwth-aachen.de:2889///store/user/___CMS_USER___/music/CRAB_PrivateMC/MUSIC_CLASSIFICATION/___JOB_TIME_HASH___/___RES_FILE___ scan_downloads/."'.replace(
+                "___CMS_USER___", cms_user
+            )
+            .replace("___JOB_TIME_HASH___", job_time_hash)
+            .replace("___RES_FILE___", result_file),
+            shell=True,
+            capture_output=True,
+        )
+
+        return res, result_file
+
+    return None, result_file
+
+
+def get_output() -> None:
+    # os.system("rm -rf scan_downloads")
+    os.system("mkdir -p  scan_downloads")
+
+    res = subprocess.run(
+        r'cmssw-el9 --cleanenv --command-to-run "cd CMSSW_14_0_7/src && cmsenv && cd ../.. && crab getoutput --jobids 1 --dump"',
+        shell=True,
+        capture_output=True,
+        text=True,
+    )
+
+    if res.returncode != 0:
+        print("ERROR: Could not get results PFN.", file=sys.stderr)
+        print(res.stdout, file=sys.stderr)
+        print(res.stderr, file=sys.stderr)
+        sys.exit(-1)
+
+    cms_user = crab_username()
+
+    job_time_hash: None | str = None
+    for line in res.stdout.splitlines():
+        if "PFN:" in line:
+            job_time_hash = line.split("MUSIC_CLASSIFICATION")[1].split("/")[1]
+            break
+
+    if not job_time_hash:
+        print("ERROR: Could not get job time hash.", file=sys.stderr)
+        sys.exit(-1)
+
+    print("Job date n' time: {}".format(job_time_hash))
+
+    download_args: list[tuple[str, str, str]] = []
+    for line in res.stdout.splitlines():
+        if "PFN:" in line:
+            result_file = line.split(job_time_hash)[1]
+            download_args.append((result_file[1:], cms_user, job_time_hash))
+
+    with Pool(min(len(download_args), 100)) as p:
+        with Progress() as progress:
+            task = progress.add_task(
+                description="Downloading {} result files ...".format(
+                    len(download_args)
+                ),
+                total=len(download_args),
+            )
+            for res, filepath in p.imap_unordered(
+                download_result_file,
+                download_args,
+            ):
+                # progress.console.print("File: {}".format(filepath))
+                if res:
+                    if res.returncode != 0:
+                        print(
+                            "ERROR: Could not download file.\n{}\n{} ".format(
+                                res.stdout, res.stderr
+                            ),
+                            file=sys.stderr,
+                        )
+                        sys.exit(-1)
+                progress.advance(task)
+
+    # unpack results
+    result_files: list[str] = []
+    for dirpath, _, filenames in os.walk("scan_downloads"):
+        for filename in filenames:
+            filepath = os.path.join(dirpath, filename)
+            if filepath.endswith(".tar"):
+                result_files.append(filepath)
+
+    for f in track(result_files, description="Unpacking results"):
+        exec_command("tar -xf {}".format(f))
+
+    print("Cleanning ...")
+    exec_command("rm -rf scan_downloads")
+    print("... done.")
+
+
+class RemainingScan(BaseModel):
+    class_name: str
+    distribution: str
+    start_round: int
+    is_data: bool
+
+    @property
+    def data_or_mc(self) -> str:
+        if self.is_data:
+            return "data"
+
+        return "mc"
+
+
+def scan_remaining(results_dir: str, input_dir: str, n_rounds: int, split_size: int):
+    scans: list[RemainingScan] = []
+    for root, _, files in os.walk(results_dir):
+        if root == results_dir:
+            continue
+        ec = root.split("/")[1]
+        for distribution in DistributionType:
+            if distribution == DistributionType.met and "MET" not in root:
+                continue
+            for file in files:
+                if distribution.value in file:
+                    prefix = "{}_{}".format(ec, distribution.value)
+                    suffix = ".json"
+
+                    if file.startswith(prefix) and file.endswith(suffix):
+                        core_part = file[len(prefix) : -len(suffix)]
+                        _, _, start_round = core_part.rpartition("_")
+
+                        if start_round.isdigit():
+                            if start_round == "0":
+                                scans.append(
+                                    RemainingScan(
+                                        class_name=ec,
+                                        distribution=distribution.value,
+                                        start_round=int(start_round),
+                                        is_data=True,
+                                    )
+                                )
+                            scans.append(
+                                RemainingScan(
+                                    class_name=ec,
+                                    distribution=distribution.value,
+                                    start_round=int(start_round),
+                                    is_data=False,
+                                )
+                            )
+
+    remaining_scans: dict[str, list[RemainingScan]] = {}
+    for d in DistributionType:
+        remaining_scans[d.value] = []
+
+    for scan in scans:
+        if not os.path.isfile(
+            f"{results_dir}/{scan.class_name}/{scan.class_name}_{scan.distribution}_{scan.data_or_mc}_{scan.start_round}_info.json"
+        ):
+            remaining_scans[scan.distribution].append(scan)
+
+    for dist in DistributionType:
+        launch_scan(
+            input_dir,
+            [
+                make_raw_ec_name(scan.class_name)
+                for scan in remaining_scans[dist]
+                if scan.is_data
+            ],
+            dist,
+            results_dir,
+            n_rounds=n_rounds,
+            split_size=split_size,
+            data_or_mc=DataOrMC.Data,
+        )
+        launch_scan(
+            input_dir,
+            [
+                make_raw_ec_name(scan.class_name)
+                for scan in remaining_scans[dist]
+                if not scan.is_data
+            ],
+            dist,
+            results_dir,
+            n_rounds=n_rounds,
+            split_size=split_size,
+            data_or_mc=DataOrMC.MC,
+        )

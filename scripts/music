@@ -539,55 +539,6 @@ def prepare_cmssw_env():
 
 @scan_app.command()
 @execution_time
-def monitor():
-    """
-    Monitor Scanner task on CRAB.
-    """
-
-    os.system(
-        r'cmssw-el9 --cleanenv --command-to-run "cd CMSSW_14_0_7/src && cmsenv && cd ../.. && ./crab_worker.sh"'
-    )
-
-
-@scan_app.command()
-@execution_time
-def kill():
-    """
-    Kill Scanner task on CRAB.
-    """
-
-    os.system(
-        r'cmssw-el9 --cleanenv --command-to-run "cd CMSSW_14_0_7/src && cmsenv && cd ../.. && crab kill -d crab_MUSIC_CLASSIFICATION"'
-    )
-
-
-@scan_app.command()
-@execution_time
-def get_output():
-    """
-    Get outputs of CRAB Scanner task.
-    """
-
-    res = os.system(
-        r'cmssw-el9 --cleanenv --command-to-run "cd CMSSW_14_0_7/src && cmsenv && cd ../.. && crab getoutput"'
-    )
-
-    if res != 0:
-        print("ERROR: Could not get outputs.", file=sys.stderr)
-        sys.exit(-1)
-
-    # Loop over all files in the directory
-    for filename in os.listdir("crab_MUSIC_CLASSIFICATION/results"):
-        # Check if the file is a .tar file
-        if filename.endswith(".tar"):
-            file_path = os.path.join("crab_MUSIC_CLASSIFICATION/results", filename)
-
-            # Open the tar file for extraction
-            os.system("tar -xvf {}".format(file_path))
-
-
-@scan_app.command()
-@execution_time
 def launch(
     distribution: Union[DistributionsType, None] = None,
     input_dir: str = "classification_distributions",
@@ -670,6 +621,47 @@ def launch(
 
 @scan_app.command()
 @execution_time
+def monitor(long: bool = False):
+    """
+    Monitor Scanner task on CRAB.
+    """
+
+    if long:
+        os.system(
+            r'cmssw-el9 --cleanenv --command-to-run "cd CMSSW_14_0_7/src && cmsenv && cd ../.. && crab status --long"'
+        )
+    else:
+        os.system(
+            r'cmssw-el9 --cleanenv --command-to-run "cd CMSSW_14_0_7/src && cmsenv && cd ../.. && ./crab_worker.sh"'
+        )
+
+
+@scan_app.command()
+@execution_time
+def kill():
+    """
+    Kill Scanner task on CRAB.
+    """
+
+    os.system(
+        r'cmssw-el9 --cleanenv --command-to-run "cd CMSSW_14_0_7/src && cmsenv && cd ../.. && crab kill -d crab_MUSIC_CLASSIFICATION"'
+    )
+
+
+@scan_app.command()
+@execution_time
+def get_output():
+    """
+    Get outputs of CRAB Scanner task.
+    """
+
+    from scan import get_output
+
+    get_output()
+
+
+@scan_app.command()
+@execution_time
 def clean():
     """
     Clear Scanner task on CRAB.
@@ -682,89 +674,24 @@ def clean():
 
 @scan_app.command()
 @execution_time
-def get_p_tilde(
-    distribution: str,
-    class_name: str = "All",
-    input_dir: str = "scan_results",
+def scan_remaining(
+    results_dir: str = "scan_results",
+    input_dir: str = "classification_distributions",
+    n_rounds: int = 10_000,
+    split_size: int = 5_000,
 ):
     """
-    Calculate p-tilde for a distribution, class_name = All for all classes.
+    Scan unfinished distributions.
     """
-    from scan import get_p_tilde
 
-    if class_name == "All":
-        print("Collecting information for all classes...")
-        scan_results_json = {}
-        args = []
-        for ec in glob.glob(f"{input_dir}/*EC_*"):
-            if "met" in distribution and "MET" not in ec:
-                continue
-            ec = ec.replace("scan_results/", "")
-            args.append(
-                (
-                    "{}/{}/{}_{}_data_0_info.json".format(
-                        input_dir,
-                        ec.replace("+", "_"),
-                        ec.replace("+", "_"),
-                        distribution,
-                    ),
-                    "{}/{}/{}_{}_mc_*_info.json".format(
-                        input_dir,
-                        ec.replace("+", "_"),
-                        ec.replace("+", "_"),
-                        distribution,
-                    ),
-                )
-            )
-        with mp.Pool(100) as pool:
-            results = pool.starmap(get_p_tilde, tqdm(args, total=len(args)))
+    from scan import scan_remaining
 
-        print("Saving to json file...")
-
-        for result in tqdm(results):
-            scan_results_json[result.class_name] = {}
-            scan_results_json[result.class_name]["RoI"] = "[{} - {}]".format(
-                result.lower_edge, result.lower_edge + result.width
-            )
-            scan_results_json[result.class_name]["p-value"] = result.p_value_data
-            scan_results_json[result.class_name]["p-tilde"] = (
-                result.p_tilde() if result.p_tilde() else -1
-            )
-            scan_results_json[result.class_name]["skipped_scan"] = result.skipped_scan
-
-        sorted_scan_results = dict(
-            sorted(scan_results_json.items(), key=lambda item: item[1]["p-tilde"])
-        )
-
-        with open(f"sorted_scan_results_{distribution}.json", "w") as json_file:
-            json.dump(sorted_scan_results, json_file, indent=4)
-
-    else:
-        scan_results = get_p_tilde(
-            "{}/{}/{}_{}_data_0_info.json".format(
-                input_dir,
-                class_name.replace("+", "_"),
-                class_name.replace("+", "_"),
-                distribution,
-            ),
-            "{}/{}/{}_{}_mc_*_info.json".format(
-                input_dir,
-                class_name.replace("+", "_"),
-                class_name.replace("+", "_"),
-                distribution,
-            ),
-        )
-        print("Event class: {}".format(scan_results.class_name))
-        print("Distribution: {}".format(scan_results.distribution))
-        print(
-            "RoI: [{} - {}]".format(
-                scan_results.lower_edge, scan_results.lower_edge + scan_results.width
-            )
-        )
-        print("p-value: {}".format(scan_results.p_value_data))
-
-        print("p-tilde: {}".format(scan_results.p_tilde()))
-        print()
+    scan_remaining(
+        results_dir,
+        input_dir,
+        n_rounds,
+        split_size,
+    )
 
 
 ############################################################################

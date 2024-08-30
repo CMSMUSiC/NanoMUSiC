@@ -130,7 +130,13 @@ def make_ec_nice_name(s: str) -> str:
 
 
 def make_raw_ec_name(nice_name: str) -> str:
-    parts = nice_name.replace("+X", "").replace("+NJet", "").split("_")
+    parts = (
+        nice_name.replace("_X", "")
+        .replace("+X", "")
+        .replace("_NJet", "")
+        .replace("+NJet", "")
+        .split("_")
+    )
 
     n_muons = 0
     n_electrons = 0
@@ -174,12 +180,12 @@ def make_raw_ec_name(nice_name: str) -> str:
         sys.exit(-1)
 
     class_modifier = ""
-    if nice_name.endswith("+X"):
+    if nice_name.endswith("X"):
         class_modifier = "+X"
-    if nice_name.endswith("+NJet"):
+    if nice_name.endswith("NJet"):
         class_modifier = "+NJet"
 
-    return "EC_{}Muon_{}Electron_{}Tau_{}bJet_{}Jet_{}MET{}".format(
+    return "EC_{}Muon_{}Electron_{}Tau_{}Photon_{}bJet_{}Jet_{}MET{}".format(
         n_muons, n_electrons, n_taus, n_photons, n_bjets, n_jets, n_met, class_modifier
     )
 

@@ -26,6 +26,7 @@ config.Site.storageSite = "T2_DE_RWTH"
 config.Site.blacklist = [
     "T3_*",
     "T2_BR_*",
+    "T2_UK_London_IC",
     # "T2_US_Florida",
     # "T2_EE_Estonia",
     # "T2_TW_NCHC",
@@ -172,7 +173,7 @@ for ((i=1; i<=max_retries; i++)); do
     sleep $sleep_time
 
     # Attempt to download the file
-    xrdcp -s -f root://eoscms.cern.ch///eos/cms/store/user/ftorresd/cmsmusic/scan_results.tar . 
+    xrdcp -s -f root://eoscms.cern.ch///eos/cms/store/user/___CMS_USER___/cmsmusic/scan_results.tar . 
     if [ $? -eq 0 ]; then
         echo "Download done."
         break
