@@ -1,19 +1,19 @@
 import glob
+import sys
 import json
 import os
 import multiprocessing as mp
-from distribution_model import DistributionType
-from pydantic import NoneStr
-from rich.progress import track
+from distribution_model import BaseModel, DistributionType
+from rich.progress import Progress, track
 import matplotlib.pyplot as plt  # matplotlib library
 import matplotlib as mpl
 import mplhep as hep  # HEP (CMS) extensions/styling on top of mpl
-from scan import ScanResults
 import scipy
 import numpy as np
 from numpy.typing import NDArray
-
+from functools import partial
 from scan_results import ScanResults
+
 
 mpl.use("Agg")
 
@@ -42,7 +42,7 @@ def plot_ptilde(
     # bin_widths: NDArray[np.float64] = np.diff(bins)
     n_dist: int = len(props)
 
-    print(f"Building p-tilde toys for {title}...")
+    print(f"Building p-tilde toys for {title} ...")
     temp_ptildes: list[list[float] | None] = []
 
     for ec in props:
@@ -50,17 +50,15 @@ def plot_ptilde(
             temp_ptildes.append(props[ec].p_tilde_toys())
     ptildes: NDArray[np.float64] = -np.log10(np.array(temp_ptildes))
     ptildes = np.transpose(ptildes)
-    print(ptildes.shape)
-    print(n_rounds)
 
-    print(f"Building p-tilde data for {title}...")
+    print(f"Building p-tilde data for {title} ...")
     temp_pdata: list[float | None] = []
     for ec in props:
         if not props[ec].skipped_scan:
             temp_pdata.append(props[ec].p_tilde())
     p_tilde_data: NDArray[np.float64] = -np.log10(np.array(temp_pdata))
 
-    print(f"Building p-tilde histograms for {title}...")
+    print(f"Building p-tilde histograms for {title} ...")
     list_of_histograms: list[NDArray[np.float64]] = []
     for r in range(n_rounds):
         list_of_histograms.append((np.histogram(ptildes[r], bins)[0]))
@@ -132,12 +130,13 @@ def plot_ptilde(
     #     label="Signal",
     # )
 
+    counts, _ = np.histogram(p_tilde_data, bins=bins)
+    if np.sum(p_tilde_data > bins[-1]):
+        print("WARNING: Has overflow!!!", file=sys.stderr)
+
     ax.plot(
         bin_centers,
-        np.histogram(
-            p_tilde_data,
-            bins=bins,
-        )[0],
+        counts,
         "o",
         color="black",
         label="Observed deviations",
@@ -185,7 +184,7 @@ def plot_ptilde(
         0.15,
         y_max * 0.65,
         title,
-        fontsize=24,
+        fontsize=20,
         horizontalalignment="left",
         verticalalignment="top",
         fontproperties="Tex Gyre Heros",
@@ -193,7 +192,7 @@ def plot_ptilde(
 
     ax.set_xlim(0, (N_BINS + 1) * bin_width)
 
-    print(f"Saving plots  for {title}")
+    print(f"Saving plots for {title} ...")
     fig.savefig("{}/{}.pdf".format(output_dir, file_name))
     fig.savefig("{}/{}.png".format(output_dir, file_name))
     fig.savefig("{}/{}.svg".format(output_dir, file_name))
@@ -202,7 +201,7 @@ def plot_ptilde(
     with open("{}/{}.json".format(output_dir, file_name), "w") as f:
         json.dump(
             {
-                ec: props[ec].dict(exclude={"p_values_mc"})
+                ec: props[ec].dict()
                 for ec in sorted(
                     props, key=lambda ec: props[ec].unsafe_p_tilde(), reverse=True
                 )
@@ -212,6 +211,83 @@ def plot_ptilde(
         )
 
 
+def control_plot(res: ScanResults, output_dir: str) -> None:
+    if res.distribution == DistributionType.met and "MET" not in res.class_name:
+        return None
+    if res.distribution == DistributionType.invariant_mass and res.count_objects() == 1:
+        return None
+
+    fig, ax = plt.subplots()
+    ax.set_yscale("log")
+    # ax.set_xscale("log")
+
+    N_BINS = 20
+    _, _, _ = ax.hist(
+        res.unsafe_p_tilde_toys(),
+        bins=N_BINS,
+        histtype="step",
+        color="blue",
+        linewidth=2,
+        label=r"$\tilde{p}_{toys}$",
+    )
+    x = np.linspace(0, 1, 1000)
+    y = (
+        scipy.stats.uniform.pdf(x, 0.0, 1.0)
+        * float(len(res.p_values_mc))
+        / float(N_BINS)
+    )
+    ax.plot(
+        x,
+        y,
+        color="orange",
+        linestyle="--",
+        linewidth=2,
+        label="Uniform dist.",
+    )
+
+    ax.hist(
+        res.p_values_mc,
+        bins=50,
+        histtype="step",
+        color="black",
+        linewidth=2,
+        label=r"$p_{toys}$",
+    )
+    ax.axvline(
+        res.unsafe_p_tilde(),
+        color="red",
+        linestyle="--",
+        linewidth=2,
+        label=r"$\tilde{p}_{data}$",
+    )
+    ax.axvline(
+        res.p_value_data,
+        color="purple",
+        linestyle="--",
+        linewidth=2,
+        label=r"$p_{data}$",
+    )
+
+    ax.set_ylabel("number of toy scans")
+    ax.set_xlabel(r"$p_{toys}$ or $\tilde{p}_{toys}$")
+    ax.set_xlim(-0.1, 1.1)
+    ax.legend(edgecolor="none")
+    plt.title("{} - {}".format(res.class_name, res.distribution))
+
+    fig.tight_layout()
+    fig.savefig(
+        "{}/control_plot_{}_{}.pdf".format(
+            output_dir,
+            res.class_name.replace("+", "_"),
+            res.distribution,
+        ),
+        dpi=100,
+        transparent=False,
+    )
+
+    plt.close()
+
+
 def plot_summary(
     distribution: DistributionType,
     input_dir: str = "scan_results",
@@ -219,6 +295,7 @@ def plot_summary(
     num_cpus: int = 128,
 ):
     os.system(f"mkdir -p {output_dir}")
+    os.system(f"mkdir -p {output_dir}/control_plots")
 
     args = []
     for ec in glob.glob(f"{input_dir}/*EC_*"):
@@ -241,19 +318,44 @@ def plot_summary(
                 ),
             )
         )
-    with mp.Pool(num_cpus) as pool:
-        results = pool.starmap(
-            ScanResults.make_scan_results, track(args, total=len(args))
-        )
+
+    results = []
+    with mp.Pool(num_cpus) as p:
+        with Progress() as progress:
+            task = progress.add_task(
+                "Building list of Scan Results ...",
+                total=len(args),
+            )
+            for res in p.imap_unordered(ScanResults.make_scan_results, args):
+                if not res.skipped_scan:
+                    results.append(res)
+
+                progress.advance(task)
 
     n_rounds = len(results[0].p_values_mc)
     for res in results:
-        assert n_rounds == len(res.p_values_mc)
+        assert n_rounds == len(res.p_values_mc) and not res.skipped_scan
+
+    with mp.Pool(num_cpus) as p:
+        with Progress() as progress:
+            task = progress.add_task(
+                "Building control plots ...",
+                total=len(results),
+            )
+            for res in p.imap_unordered(
+                partial(control_plot, output_dir=f"{output_dir}/control_plots"), results
+            ):
+                progress.advance(task)
 
     # Plotting exclusive classes
     scan_results = {}
     for result in results:
         if distribution == DistributionType.met and "MET" not in result.class_name:
+            continue
+        if (
+            distribution == DistributionType.invariant_mass
+            and result.count_objects() == 1
+        ):
             continue
         if "+" not in result.class_name:
             scan_results[result.class_name] = result
@@ -266,6 +368,11 @@ def plot_summary(
     for result in results:
         if distribution == DistributionType.met and "MET" not in result.class_name:
             continue
+        if (
+            distribution == DistributionType.invariant_mass
+            and result.count_objects() == 1
+        ):
+            continue
         if "+X" in result.class_name:
             scan_results[result.class_name] = result
     title = "Inclusive Classes: {}".format(distribution.latex_name())
@@ -276,6 +383,11 @@ def plot_summary(
     scan_results = {}
     for result in results:
         if distribution == DistributionType.met and "MET" not in result.class_name:
+            continue
+        if (
+            distribution == DistributionType.invariant_mass
+            and result.count_objects() == 1
+        ):
             continue
         if "+NJet" in result.class_name:
             scan_results[result.class_name] = result

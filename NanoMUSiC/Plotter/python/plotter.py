@@ -13,9 +13,12 @@ from ROOT import gStyle
 
 from distribution_plot import make_plot_task, p_value_task, build_plot_jobs_task
 
+from distribution_model import DistributionType
+
 
 def plotter(
     input_dir: str,
+    scan_summary_dir: str,
     patterns: list[str],
     output_dir: str,
     num_cpus: int = 128,
@@ -80,6 +83,34 @@ def plotter(
         ) as f:
             json.dump(integral_pvalues_data, f, ensure_ascii=False, indent=4)
 
+    # Will read RoI and p-tildes - Run2 only
+    # for validation, it should be None
+    def get_scan_data(dist: str) -> dict[str, dict[str, str | float]]:
+        this_scan_data = {}
+
+        file_path = "{}/{}_{}.json".format(scan_summary_dir, dist, "exclusive")
+        if os.path.exists(file_path):
+            with open(file_path, "r") as json_file:
+                this_scan_data.update(json.load(json_file))
+
+        file_path = "{}/{}_{}.json".format(scan_summary_dir, dist, "inclusive")
+        if os.path.exists(file_path):
+            with open(file_path, "r") as json_file:
+                this_scan_data.update(json.load(json_file))
+
+        file_path = "{}/{}_{}.json".format(scan_summary_dir, dist, "jet_inclusive")
+        if os.path.exists(file_path):
+            with open(file_path, "r") as json_file:
+                this_scan_data.update(json.load(json_file))
+
+        return this_scan_data
+
+    scan_data = None
+    if not is_validation:
+        scan_data = {dist.value: {} for dist in DistributionType}
+        for dist in scan_data:
+            scan_data[dist] = get_scan_data(dist)
+
     # Will build plot jobs
     plot_props: list[Any] = []
     with Pool(min(len(distribution_files), num_cpus)) as p:
@@ -93,7 +124,10 @@ def plotter(
             )
             for this_plot_props in p.imap_unordered(
                 build_plot_jobs_task,
-                [(output_dir, integral_pvalues_data, d) for d in distribution_files],
+                [
+                    (output_dir, integral_pvalues_data, scan_data, d)
+                    for d in distribution_files
+                ],
             ):
                 plot_props += this_plot_props
                 progress.advance(task)

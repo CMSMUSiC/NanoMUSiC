@@ -1,4 +1,5 @@
 import sys
+import math
 import tdrstyle
 import atlasplots as aplt
 from colors import PROCESS_GROUP_STYLES
@@ -10,7 +11,7 @@ from typing import Any
 import os
 from metadata import make_ec_nice_name
 
-from ROOT import TFile, THStack, TLine, gPad
+from ROOT import TFile, THStack, TLine, gPad, kRed
 
 import matplotlib as mpl
 
@@ -167,18 +168,36 @@ def p_value_task(distribution_file: str):
     return counts, distribution_file
 
 
-def build_plot_jobs_task(args: tuple[str, dict[str, Any] | None, str]) -> list[Any]:
-    output_dir, plots_data, distribution_file = args
+def build_plot_jobs_task(
+    args: tuple[str, dict[str, Any] | None, dict[str, Any] | None, str],
+) -> list[Any]:
+    output_dir, plots_data, scan_data, distribution_file = args
 
     temp_plot_props: list[Any] = []
 
     root_file = TFile.Open(distribution_file)
     distribution_names = [k.GetName() for k in root_file.GetListOfKeys()]
-
     for dist_name in distribution_names:
         dist = root_file.Get(dist_name)
         if dist.has_mc():
             plot = dist.make_plot_props()
+
+            this_scan_data = None
+            if (
+                scan_data
+                and plot.distribution_name != "counts"
+                and plot.year_to_plot == "Run2"
+            ):
+                if plot.distribution_name != "met":
+                    this_scan_data = scan_data[plot.distribution_name].get(
+                        make_ec_nice_name(plot.class_name)
+                    )
+                else:
+                    if "MET" in make_ec_nice_name(plot.class_name):
+                        this_scan_data = scan_data[plot.distribution_name].get(
+                            make_ec_nice_name(plot.class_name)
+                        )
+
             temp_plot_props.append(
                 (
                     plot.class_name,
@@ -198,6 +217,7 @@ def build_plot_jobs_task(args: tuple[str, dict[str, Any] | None, str]) -> list[A
                     plots_data[plot.year_to_plot][plot.class_name]["p_value"]
                     if plots_data
                     else None,
+                    this_scan_data,
                     dist.m_systematics_uncertainties,
                     dist.m_statistical_uncert,
                     dist.m_total_mc_histogram,
@@ -235,6 +255,7 @@ def make_plot(
     output_path,
     year,
     p_value: float | None,
+    scan_data: Any,
     _systematic_uncertainties,
     _statistical_uncertainties,
     _total_mc_histogram,
@@ -297,12 +318,32 @@ def make_plot(
             event_class_str += f" (p = {p_value:.2g})"
 
     ax1.text(
-        0.19,
+        0.2,
         0.9,
         event_class_str,
         size=26,
         align=13,
     )
+
+    if scan_data:
+        ax1.text(
+            0.2,
+            0.85,
+            r"p: ___P_DATA___  - #tilde{p}: ___P_TILDE___".replace(
+                "___P_DATA___", f"{scan_data['p_value_data']:.2g}"
+            ).replace("___P_TILDE___", f"{scan_data['p_tilde']:.2g}"),
+            size=26,
+            align=13,
+        )
+        ax1.text(
+            0.2,
+            0.8,
+            r"RoI = [___LOWER___ - ___UPPER___] GeV".replace(
+                "___LOWER___", f"{scan_data['lower_edge']:.1f}"
+            ).replace("___UPPER___", f"{scan_data['upper_edge']:.1f}"),
+            size=26,
+            align=13,
+        )
 
     if distribution_name == "counts":
         x_min = 0
@@ -332,7 +373,6 @@ def make_plot(
 
     ax1.set_yscale("log")  # uncomment to use log scale for y axis
 
-    # print("##### Plotting data graph")
     ax1.plot(data_graph, "P0", expand=False)
 
     ax1.set_xlim(x_min, x_max)
@@ -375,13 +415,35 @@ def make_plot(
             sys.exit(-1)
 
     # add extra space at top of plot to make room for labels
-    ax1.add_margins(top=0.15)
+    if scan_data:
+        ax1.add_margins(top=0.25)
+    else:
+        ax1.add_margins(top=0.15)
 
     ax2.set_ylim(0, 2.5)
 
     ax2.draw_arrows_outside_range(ratio_graph)
 
     ax2.set_xlim(x_min, x_max)
+
+    if scan_data:
+        ymin, ymax = ax1.get_ylim()
+
+        roi_lower_edge = scan_data["lower_edge"]
+        roi_line_lower = TLine(roi_lower_edge, ymin, roi_lower_edge, ymax)
+        roi_line_lower.SetLineColor(kRed)
+        roi_line_lower.SetLineStyle(2)
+        ax1.plot(roi_line_lower)
+
+        roi_upper_edge = scan_data["upper_edge"]
+        roi_line_upper = TLine(roi_upper_edge, ymin, roi_upper_edge, ymax)
+        roi_line_upper.SetLineColor(kRed)
+        roi_line_upper.SetLineStyle(2)
+        expand = True
+        if roi_upper_edge > x_max:
+            expand = False
+        ax1.plot(roi_line_upper, expand=expand)
+        ax2.cd()
 
     # go back to top axes to add labels
     ax1.cd()

@@ -28,7 +28,7 @@ class DistributionType(str, Enum):
             return r"$S_{T}$"
         if self == DistributionType.invariant_mass:
             return r"$M_{inv}$"
-        if self == DistributionType.sum_pt:
+        if self == DistributionType.met:
             return r"$p_{T}^{miss}$"
 
         print("ERROR: Invalid distribution type.", file=sys.stderr)
@@ -87,7 +87,8 @@ class ScanDistribution(BaseModel):
     integralScan: bool = False
     skipLookupTable: bool = False
     noLowStatsTreatment: bool = False
-    widthLowStatsRegions: NonNegativeInt = 4
+    # widthLowStatsRegions: NonNegativeInt = 4
+    widthLowStatsRegions: NonNegativeInt = 8
     thresholdLowStatsDominant: NonNegativeFloat = 0.95
     FirstRound: Optional[NonNegativeInt] = 0
     NumRounds: Optional[NonNegativeInt] = 100_000

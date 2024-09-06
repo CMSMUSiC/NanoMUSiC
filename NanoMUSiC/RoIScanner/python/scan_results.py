@@ -4,6 +4,19 @@ import glob
 import sys
 import numpy as np
 
+from scipy.stats import ks_1samp, uniform
+
+
+def ks_to_uniform(observed: list[float]):
+    res = ks_1samp(observed, "uniform")
+    print(res)
+    print(type(res))
+
+    # if res.pvalue < 0.05:
+    #     print(
+    #         "WARNING: The p-tilde distribution does not follow a uniform distribution."
+    #     )
+
 
 class ScanResults(BaseModel):
     class_name: str
@@ -19,9 +32,9 @@ class ScanResults(BaseModel):
         return self.lower_edge + self.width
 
     @staticmethod
-    def make_scan_results(
-        scan_result_data_file_path: str, scan_mc_data_files: str
-    ) -> "ScanResults":
+    def make_scan_results(args: tuple[str, str]) -> "ScanResults":
+        scan_result_data_file_path, scan_mc_data_files = args
+
         with open(scan_result_data_file_path, "r") as file:
             data = json.load(file)
         p_value_data = data["ScanResults"][0]["CompareScore"]
@@ -30,7 +43,7 @@ class ScanResults(BaseModel):
         lower_edge = data["ScanResults"][0]["lowerEdge"]
         width = data["ScanResults"][0]["width"]
 
-        skipped_scan = data["ScanResults"][0]["skippedScan"]
+        skipped_data_scan = data["ScanResults"][0]["skippedScan"]
 
         p_values_toys = []
         for f in glob.glob(scan_mc_data_files):
@@ -39,6 +52,14 @@ class ScanResults(BaseModel):
                 for item in mc["ScanResults"]:
                     if not item["skippedScan"]:
                         p_values_toys.append(item["CompareScore"])
+        if any(([p < 0 or p > 1 for p in p_values_toys])):
+            print("ERROR: Found p-values out of bounds.", file=sys.stderr)
+            sys.exit(-1)
+
+        # ks_to_uniform(p_values_toys)
+        # res = ks_1samp(p_values_toys, uniform.cdf)
+        # print(res)
+        # print(type(res))
 
         return ScanResults(
             class_name=class_name,
@@ -47,7 +68,7 @@ class ScanResults(BaseModel):
             width=width,
             p_value_data=p_value_data,
             p_values_mc=p_values_toys,
-            skipped_scan=skipped_scan,
+            skipped_scan=skipped_data_scan and len(p_values_toys) != 10_000,
         )
 
     def p_tilde(self) -> float | None:
@@ -88,3 +109,24 @@ class ScanResults(BaseModel):
         p_tilde_toys[p_tilde_toys == 0.0] = 1 / float(len(self.p_values_mc) - 1)
 
         return p_tilde_toys
+
+    def unsafe_p_tilde_toys(self) -> list[float]:
+        p_tilde_toys = self.p_tilde_toys()
+        if p_tilde_toys is not None:
+            return p_tilde_toys
+        return [-1 for _ in range(len(self.p_values_mc))]
+
+    def count_objects(self) -> int:
+        """For a given event class, it will count the number of physics objects."""
+        return sum([int(c) for c in self.class_name if c.isdigit()])
+
+    def dict(self, *args, **kwargs):
+        # Get the original dict representation
+        original_dict = super().dict(*args, **kwargs)
+
+        # Add property fields manually
+        original_dict["upper_edge"] = self.upper_edge
+        original_dict["p_tilde"] = self.p_tilde()
+        original_dict.pop("p_values_mc", None)
+
+        return original_dict

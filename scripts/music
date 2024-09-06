@@ -351,6 +351,7 @@ plot_app = typer.Typer(
 def distribution(
     input_dir: str = "classification_distributions",
     output_dir: str = "classification_plots",
+    scan_summary_dir: str = "scan_summary_plots",
     filters: list[str] = ["*"],
     num_cpus: int = 128,
 ):
@@ -359,7 +360,7 @@ def distribution(
     """
     from plotter import plotter
 
-    plotter(input_dir, filters, output_dir, num_cpus)
+    plotter(input_dir, scan_summary_dir, filters, output_dir, num_cpus)
 
 
 @plot_app.command()
@@ -375,7 +376,7 @@ def validation(
     """
     from plotter import plotter
 
-    plotter(input_dir, filters, output_dir, num_cpus, True)
+    plotter(input_dir, "foo", filters, output_dir, num_cpus, True)
 
 
 @plot_app.command()
@@ -478,9 +479,12 @@ def summary(
 ):
     from p_tilde import plot_summary
 
+    os.system("rm -rf {}".format(output_dir))
+    os.system("mkdir -p {}".format(output_dir))
+
     for distribution in DistributionType:
         plot_summary(
-            distribution=distribution.value,
+            distribution=distribution,
             input_dir=input_dir,
             output_dir=output_dir,
             num_cpus=num_cpus,
@@ -678,7 +682,7 @@ def scan_remaining(
     results_dir: str = "scan_results",
     input_dir: str = "classification_distributions",
     n_rounds: int = 10_000,
-    split_size: int = 5_000,
+    split_size: int = 1_000,
 ):
     """
     Scan unfinished distributions.

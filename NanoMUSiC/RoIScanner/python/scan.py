@@ -3,7 +3,6 @@ import re
 from rich.progress import track
 import subprocess
 import hashlib
-import random
 import scanner_imp as scanner
 from multiprocessing import Pool
 from rich.progress import Progress
@@ -24,7 +23,6 @@ from tools import configure_root
 
 from ROOT import TFile
 
-from scan_results import ScanResults
 
 from crab_scan import music_sh, crab_sub, crab_worker, pset
 from cmssw_scan import make_scanner_config, exec_command
@@ -145,6 +143,11 @@ def make_starting_rounds(total: int, chunk_size: int) -> list[tuple[int, int]]:
     chunks = [interval[i : i + chunk_size] for i in range(0, len(interval), chunk_size)]
 
     return [(c[0], len(c)) for c in chunks]
+
+
+def count_objects(ec_name: str) -> int:
+    """For a given event class name, it will count the number of physics objects."""
+    return sum([c.isdigit() for c in ec_name])
 
 
 def build_scan_jobs_task(
@@ -290,8 +293,26 @@ def launch_scan(
 
     # Will launch scan and save results
     data_scan_props = [scan for scan in scan_props if scan.start_round == 0]
-    data_scan_props = sorted(data_scan_props, key=lambda scan: len(scan.ec_name))
-    scan_props = sorted(scan_props, key=lambda scan: len(scan.ec_name))
+    data_scan_props = [
+        scan
+        for scan in data_scan_props
+        if not (
+            count_objects(scan.ec_name) == 1
+            and scan.distribution_type == "invariant_mass"
+        )
+    ]
+    data_scan_props = sorted(
+        data_scan_props, key=lambda scan: count_objects(scan.ec_name)
+    )
+    scan_props = [
+        scan
+        for scan in scan_props
+        if not (
+            count_objects(scan.ec_name) == 1
+            and scan.distribution_type == "invariant_mass"
+        )
+    ]
+    scan_props = sorted(scan_props, key=lambda scan: count_objects(scan.ec_name))
     with Pool(max(1, min(max(len(data_scan_props), len(scan_props)), num_cpus))) as p:
         if (
             len(data_scan_props) > 0
@@ -445,8 +466,26 @@ def launch_crab_scan(
     make_shifts(n_rounds, variations)
 
     data_scan_props = [scan for scan in scan_props if scan.start_round == 0]
-    random.shuffle(data_scan_props)
-    random.shuffle(scan_props)
+    data_scan_props = [
+        scan
+        for scan in data_scan_props
+        if not (
+            count_objects(scan.ec_name) == 1
+            and scan.distribution_type == "invariant_mass"
+        )
+    ]
+    data_scan_props = sorted(
+        data_scan_props, key=lambda scan: count_objects(scan.ec_name)
+    )
+    scan_props = [
+        scan
+        for scan in scan_props
+        if not (
+            count_objects(scan.ec_name) == 1
+            and scan.distribution_type == "invariant_mass"
+        )
+    ]
+    scan_props = sorted(scan_props, key=lambda scan: count_objects(scan.ec_name))
 
     print("Writing CMSSW files ...")
     exec_command("rm -rf temp_scan_cmssw_config_files")
@@ -749,29 +788,32 @@ def scan_remaining(results_dir: str, input_dir: str, n_rounds: int, split_size: 
             remaining_scans[scan.distribution].append(scan)
 
     for dist in DistributionType:
-        launch_scan(
-            input_dir,
-            [
-                make_raw_ec_name(scan.class_name)
-                for scan in remaining_scans[dist]
-                if scan.is_data
-            ],
-            dist,
-            results_dir,
-            n_rounds=n_rounds,
-            split_size=split_size,
-            data_or_mc=DataOrMC.Data,
-        )
-        launch_scan(
-            input_dir,
-            [
-                make_raw_ec_name(scan.class_name)
-                for scan in remaining_scans[dist]
-                if not scan.is_data
-            ],
-            dist,
-            results_dir,
-            n_rounds=n_rounds,
-            split_size=split_size,
-            data_or_mc=DataOrMC.MC,
-        )
+        if len(remaining_scans[dist]):
+            launch_scan(
+                input_dir,
+                [
+                    make_raw_ec_name(scan.class_name)
+                    for scan in remaining_scans[dist]
+                    if scan.is_data
+                ],
+                dist,
+                results_dir,
+                n_rounds=n_rounds,
+                split_size=split_size,
+                data_or_mc=DataOrMC.Data,
+            )
+            launch_scan(
+                input_dir,
+                [
+                    make_raw_ec_name(scan.class_name)
+                    for scan in remaining_scans[dist]
+                    if not scan.is_data
+                ],
+                dist,
+                results_dir,
+                n_rounds=n_rounds,
+                split_size=split_size,
+                data_or_mc=DataOrMC.MC,
+            )
+        else:
+            print("Nothing to do for {}".format(dist))
