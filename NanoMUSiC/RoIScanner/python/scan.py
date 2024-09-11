@@ -147,7 +147,7 @@ def make_starting_rounds(total: int, chunk_size: int) -> list[tuple[int, int]]:
 
 def count_objects(ec_name: str) -> int:
     """For a given event class name, it will count the number of physics objects."""
-    return sum([c.isdigit() for c in ec_name])
+    return sum([int(c) for c in ec_name if c.isdigit()])
 
 
 def build_scan_jobs_task(
@@ -240,7 +240,9 @@ def launch_scan(
     n_rounds: int = 100_000,
     split_size: int = 1000,
     data_or_mc: DataOrMC = DataOrMC.All,
-):
+    do_make_shifts: bool = True,
+    do_copy_index_files: bool = True,
+) -> None:
     if not os.path.isdir(input_dir):
         print("ERROR: Input directory does not exists.")
         sys.exit(-1)
@@ -250,9 +252,9 @@ def launch_scan(
         os.system("rm -rf {}".format(output_dir))
     os.system("mkdir -p {}".format(output_dir))
 
-    def make_distribution_paths(inputs_dir: str, patterns: list[str]) -> list[str]:
+    def make_distribution_paths() -> list[str]:
         distribution_paths: list[str] = []
-        for root, _, files in os.walk(inputs_dir):
+        for root, _, files in os.walk(input_dir):
             for file in files:
                 if any(
                     fnmatch.fnmatch(file, "*" + pattern.replace("+", "_") + ".root")
@@ -261,10 +263,10 @@ def launch_scan(
                     distribution_paths.append(os.path.join(root, file))
         return distribution_paths
 
-    distribution_files = make_distribution_paths(input_dir, patterns)
+    distribution_files = make_distribution_paths()
     if len(distribution_files) == 0:
-        print("WARNING: No distribution matches the requirements.")
-        sys.exit(1)
+        print("ERROR: No distribution matches the requirements.")
+        sys.exit(-1)
 
     # Will build scan jobs
     variations: list[str] = []
@@ -289,7 +291,8 @@ def launch_scan(
                 variations = list(set(variations + this_variations))
                 progress.advance(task)
 
-    make_shifts(n_rounds, variations)
+    if do_make_shifts:
+        make_shifts(n_rounds, variations)
 
     # Will launch scan and save results
     data_scan_props = [scan for scan in scan_props if scan.start_round == 0]
@@ -356,12 +359,13 @@ def launch_scan(
                         )
                         sys.exit(-1)
 
-    print("Copying index.php ...")
-    os.system(
-        r"find ___OUTPUT_DIR___/ -type d -exec cp $MUSIC_BASE/NanoMUSiC/Plotter/assets/index.php {} \;".replace(
-            "___OUTPUT_DIR___", output_dir
+    if do_copy_index_files:
+        print("Copying index.php ...")
+        os.system(
+            r"find ___OUTPUT_DIR___/ -type d -exec cp $MUSIC_BASE/NanoMUSiC/Plotter/assets/index.php {} \;".replace(
+                "___OUTPUT_DIR___", output_dir
+            )
         )
-    )
 
     print("Done.")
 
@@ -410,7 +414,7 @@ def launch_crab_scan(
     do_clean: bool = False,
     n_rounds: int = 100_000,
     split_size: int = 10_000,
-):
+) -> None:
     cms_user = crab_username()
     print("CRAB username is: {}".format(cms_user))
 
@@ -435,8 +439,8 @@ def launch_crab_scan(
 
     distribution_files = make_distribution_paths(input_dir, patterns)
     if len(distribution_files) == 0:
-        print("WARNING: No distribution matches the requirements.")
-        sys.exit(1)
+        print("ERROR: No distribution matches the requirements.")
+        sys.exit(-1)
 
     # Will build scan jobs
     variations: list[str] = []
@@ -489,6 +493,7 @@ def launch_crab_scan(
 
     print("Writing CMSSW files ...")
     exec_command("rm -rf temp_scan_cmssw_config_files")
+
     exec_command("mkdir -p temp_scan_cmssw_config_files")
     os.system(
         'cmssw-el9 --cleanenv --command-to-run "gfal-rm -r davs://grid-webdav.physik.rwth-aachen.de:2889///store/user/{}/music"'.format(
@@ -505,6 +510,7 @@ def launch_crab_scan(
             "___CMS_USER___", cms_user
         )
     )
+
     cmsRun_calls = ""
     for scan in data_scan_props:
         hash_object = hashlib.sha256()
@@ -649,66 +655,71 @@ def download_result_file(
     return None, result_file
 
 
-def get_output() -> None:
+def get_output(skip_download: bool = False) -> None:
     # os.system("rm -rf scan_downloads")
     os.system("mkdir -p  scan_downloads")
 
-    res = subprocess.run(
-        r'cmssw-el9 --cleanenv --command-to-run "cd CMSSW_14_0_7/src && cmsenv && cd ../.. && crab getoutput --jobids 1 --dump"',
-        shell=True,
-        capture_output=True,
-        text=True,
-    )
+    if not skip_download:
+        res = subprocess.run(
+            r'cmssw-el9 --cleanenv --command-to-run "cd CMSSW_14_0_7/src && cmsenv && cd ../.. && crab getoutput --jobids 1 --dump"',
+            shell=True,
+            capture_output=True,
+            text=True,
+        )
 
-    if res.returncode != 0:
-        print("ERROR: Could not get results PFN.", file=sys.stderr)
-        print(res.stdout, file=sys.stderr)
-        print(res.stderr, file=sys.stderr)
-        sys.exit(-1)
+        if res.returncode != 0:
+            print("ERROR: Could not get results PFN.", file=sys.stderr)
+            print(res.stdout, file=sys.stderr)
+            print(res.stderr, file=sys.stderr)
+            sys.exit(-1)
 
-    cms_user = crab_username()
+        cms_user = crab_username()
 
-    job_time_hash: None | str = None
-    for line in res.stdout.splitlines():
-        if "PFN:" in line:
-            job_time_hash = line.split("MUSIC_CLASSIFICATION")[1].split("/")[1]
-            break
+        job_time_hash: None | str = None
+        for line in res.stdout.splitlines():
+            if "PFN:" in line:
+                job_time_hash = line.split("MUSIC_CLASSIFICATION")[1].split("/")[1]
+                break
 
-    if not job_time_hash:
-        print("ERROR: Could not get job time hash.", file=sys.stderr)
-        sys.exit(-1)
+        if not job_time_hash:
+            print("ERROR: Could not get job time hash.", file=sys.stderr)
+            sys.exit(-1)
 
-    print("Job date n' time: {}".format(job_time_hash))
+        print("Job date and time: {}".format(job_time_hash))
 
-    download_args: list[tuple[str, str, str]] = []
-    for line in res.stdout.splitlines():
-        if "PFN:" in line:
-            result_file = line.split(job_time_hash)[1]
-            download_args.append((result_file[1:], cms_user, job_time_hash))
+        download_args: list[tuple[str, str, str]] = []
+        for line in res.stdout.splitlines():
+            if "PFN:" in line:
+                result_file = line.split(job_time_hash)[1]
+                download_args.append((result_file[1:], cms_user, job_time_hash))
 
-    with Pool(min(len(download_args), 100)) as p:
-        with Progress() as progress:
-            task = progress.add_task(
-                description="Downloading {} result files ...".format(
-                    len(download_args)
-                ),
-                total=len(download_args),
-            )
-            for res, filepath in p.imap_unordered(
-                download_result_file,
-                download_args,
-            ):
-                # progress.console.print("File: {}".format(filepath))
-                if res:
-                    if res.returncode != 0:
-                        print(
-                            "ERROR: Could not download file.\n{}\n{} ".format(
-                                res.stdout, res.stderr
-                            ),
-                            file=sys.stderr,
-                        )
-                        sys.exit(-1)
-                progress.advance(task)
+        with Pool(min(len(download_args), 100)) as p:
+            with Progress() as progress:
+                task = progress.add_task(
+                    description="Downloading {} result files ...".format(
+                        len(download_args)
+                    ),
+                    total=len(download_args),
+                )
+                for res, filepath in p.imap_unordered(
+                    download_result_file,
+                    download_args,
+                ):
+                    # progress.console.print("File: {}".format(filepath))
+                    if res:
+                        if res.returncode != 0:
+                            print(
+                                "ERROR: Could not download file.\n{}\n{} ".format(
+                                    res.stdout, res.stderr
+                                ),
+                                file=sys.stderr,
+                            )
+                            sys.exit(-1)
+
+                    progress.advance(task)
+    else:
+        exec_command("rm -rf scan_results")
+        exec_command("tar -xvf scan_results.tar")
 
     # unpack results
     result_files: list[str] = []
@@ -789,31 +800,44 @@ def scan_remaining(results_dir: str, input_dir: str, n_rounds: int, split_size: 
 
     for dist in DistributionType:
         if len(remaining_scans[dist]):
-            launch_scan(
-                input_dir,
-                [
-                    make_raw_ec_name(scan.class_name)
-                    for scan in remaining_scans[dist]
-                    if scan.is_data
-                ],
-                dist,
-                results_dir,
-                n_rounds=n_rounds,
-                split_size=split_size,
-                data_or_mc=DataOrMC.Data,
-            )
-            launch_scan(
-                input_dir,
-                [
-                    make_raw_ec_name(scan.class_name)
-                    for scan in remaining_scans[dist]
-                    if not scan.is_data
-                ],
-                dist,
-                results_dir,
-                n_rounds=n_rounds,
-                split_size=split_size,
-                data_or_mc=DataOrMC.MC,
-            )
+            this_data_scans = [
+                make_raw_ec_name(scan.class_name)
+                for scan in remaining_scans[dist]
+                if scan.is_data
+            ]
+            if len(this_data_scans):
+                launch_scan(
+                    input_dir,
+                    this_data_scans,
+                    dist,
+                    results_dir,
+                    n_rounds=n_rounds,
+                    split_size=split_size,
+                    data_or_mc=DataOrMC.Data,
+                    do_make_shifts=False,
+                    do_copy_index_files=False,
+                )
+            else:
+                print("Nothing to do for {} (data).".format(dist))
+
+            this_mc_scans = [
+                make_raw_ec_name(scan.class_name)
+                for scan in remaining_scans[dist]
+                if not scan.is_data
+            ]
+            if len(this_mc_scans):
+                launch_scan(
+                    input_dir,
+                    this_mc_scans,
+                    dist,
+                    results_dir,
+                    n_rounds=n_rounds,
+                    split_size=split_size,
+                    data_or_mc=DataOrMC.MC,
+                    do_make_shifts=False,
+                    do_copy_index_files=False,
+                )
+            else:
+                print("Nothing to do for {} (mc).".format(dist))
         else:
-            print("Nothing to do for {}".format(dist))
+            print("Nothing to do for {} (mc).".format(dist))

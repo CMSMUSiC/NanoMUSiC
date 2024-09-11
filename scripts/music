@@ -506,6 +506,18 @@ def web_summary():
     make_web_summary("./scan_summary_plots")
 
 
+@plot_app.command()
+@execution_time
+def render_latex(
+    input_dir: str = "classification_plots",
+    output_dir: str = "classification_plots",
+    render: bool = False,
+):
+    from latex_summary import render_latex
+
+    render_latex(input_dir, output_dir, render)
+
+
 ############################################################################
 ############################################################################
 # Scanner
@@ -557,6 +569,7 @@ def launch(
     """
     Launch RoIScan.
     """
+
     if split_size < 1:
         print("ERROR: Could not start scan. split_size should be > 0.", file=sys.stderr)
         sys.exit(1)
@@ -654,14 +667,14 @@ def kill():
 
 @scan_app.command()
 @execution_time
-def get_output():
+def get_output(skip_download: bool = False):
     """
     Get outputs of CRAB Scanner task.
     """
 
     from scan import get_output
 
-    get_output()
+    get_output(skip_download)
 
 
 @scan_app.command()

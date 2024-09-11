@@ -22,7 +22,15 @@ using json = nlohmann::json;
 class ECScanner
 {
   public:
-    ECScanner(int &rounds, int &startRound);
+    enum class ScanType
+    {
+        unknown = 0,
+        data,
+        mc,
+        signal,
+    };
+
+    ECScanner(ScanType scanType, int &rounds, int &startRound);
     ~ECScanner();
     void finalize();
     // public member functions
@@ -119,13 +127,6 @@ class ECScanner
     json m_jsonDocument;
     std::string m_lastJsonFilePath;
 
-    enum class ScanType
-    {
-        unknown = 0,
-        data,
-        mc,
-        signal,
-    };
     ScanType m_scanType;
 
     unsigned int m_numDicingRounds = 0;

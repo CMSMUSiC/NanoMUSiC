@@ -1,6 +1,7 @@
 #include "scan.hpp"
 #include "ECScanner.hpp"
 #include "fmt/core.h"
+#include <cstdlib>
 #include <string>
 
 auto scan(const std::string &jsonFilePath,
@@ -13,7 +14,25 @@ auto scan(const std::string &jsonFilePath,
           const bool is_debug) -> bool
 {
     // Create ECScanner object
-    ECScanner scanner(rounds, start_round);
+    auto type = ECScanner::ScanType::unknown;
+    if (scanType == "data")
+    {
+        type = ECScanner::ScanType::data;
+    }
+    else if (scanType == "signal")
+    {
+        type = ECScanner::ScanType::data;
+    }
+    else if (scanType == "mc")
+    {
+        type = ECScanner::ScanType::mc;
+    }
+    else
+    {
+        fmt::print(stderr, "ERROR: Unknown scan type.");
+        std::exit(EXIT_FAILURE);
+    }
+    ECScanner scanner(type, rounds, start_round);
 
     // Read and parse JSON
     scanner.readInputJson(jsonFilePath);

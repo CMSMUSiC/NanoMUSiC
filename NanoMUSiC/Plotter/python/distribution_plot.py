@@ -315,7 +315,7 @@ def make_plot(
         event_class_str = "Event class: {}".format(to_root_latex(class_name))
     if p_value and distribution_name == "counts":
         if p_value > 0:
-            event_class_str += f" (p = {p_value:.2g})"
+            event_class_str += f" (Integral p = {p_value:.2g})"
 
     ax1.text(
         0.2,
@@ -420,7 +420,9 @@ def make_plot(
     else:
         ax1.add_margins(top=0.15)
 
-    ax2.set_ylim(0, 2.5)
+    ratio_y_min = 0
+    ratio_y_max = 2.5
+    ax2.set_ylim(ratio_y_min, ratio_y_max)
 
     ax2.draw_arrows_outside_range(ratio_graph)
 
@@ -433,7 +435,14 @@ def make_plot(
         roi_line_lower = TLine(roi_lower_edge, ymin, roi_lower_edge, ymax)
         roi_line_lower.SetLineColor(kRed)
         roi_line_lower.SetLineStyle(2)
-        ax1.plot(roi_line_lower)
+        ax1.plot(roi_line_lower, expand=True)
+
+        roi_line_lower_ratio = TLine(
+            roi_lower_edge, ratio_y_min, roi_lower_edge, ratio_y_max
+        )
+        roi_line_lower_ratio.SetLineColor(kRed)
+        roi_line_lower_ratio.SetLineStyle(2)
+        ax2.plot(roi_line_lower_ratio, expand=True)
 
         roi_upper_edge = scan_data["upper_edge"]
         roi_line_upper = TLine(roi_upper_edge, ymin, roi_upper_edge, ymax)
@@ -443,7 +452,13 @@ def make_plot(
         if roi_upper_edge > x_max:
             expand = False
         ax1.plot(roi_line_upper, expand=expand)
-        ax2.cd()
+
+        roi_line_upper_ratio = TLine(
+            roi_upper_edge, ratio_y_min, roi_upper_edge, ratio_y_max
+        )
+        roi_line_upper_ratio.SetLineColor(kRed)
+        roi_line_upper_ratio.SetLineStyle(2)
+        ax2.plot(roi_line_upper_ratio, expand=expand)
 
     # go back to top axes to add labels
     ax1.cd()

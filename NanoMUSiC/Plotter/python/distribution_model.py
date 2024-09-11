@@ -82,7 +82,8 @@ class ScanDistribution(BaseModel):
     minRegionWidth: NonNegativeInt = 3
     coverageThreshold: NonNegativeFloat = 0.0
     # regionYieldThreshold: NonNegativeFloat = 0
-    regionYieldThreshold: NonNegativeFloat = 1e-6
+    # regionYieldThreshold: NonNegativeFloat = 1e-6
+    regionYieldThreshold: NonNegativeFloat = 0.1
     sigmaThreshold: NonNegativeFloat = 0.0
     integralScan: bool = False
     skipLookupTable: bool = False

@@ -25,7 +25,7 @@ def configure_root() -> None:
     ROOT.EnableThreadSafety()
 
 
-def to_root_latex(class_name):
+def to_root_latex(class_name, latex_syntax=False):
     has_suffix = False
     is_first_object = True
 
@@ -73,7 +73,7 @@ def to_root_latex(class_name):
                 if str(p[0]) != str(0):
                     bjet_part = r" + " + str(p[0]) + r"bjet"
 
-            if p[1:] == "Jet" and p[0] != "b":
+            if p[1:] == "Jet" and p[0] != "b" and p[0] != "N":
                 if str(p[0]) != str(0):
                     jet_part = r" + " + str(p[0]) + r"jet"
 
@@ -81,18 +81,18 @@ def to_root_latex(class_name):
                 if str(p[0]) != str(0):
                     met_part = r" + " + r"p_{T}^{miss}"
 
-            if r"+X" in p:
+            if r"X" in p:
                 suffix = r" " + r"incl."
                 has_suffix = True
 
-            if r"+NJet" in p:
+            if r"NJet" in p:
                 suffix = r" " + r"jet inc."
                 has_suffix = True
 
     if not has_suffix:
         suffix = " excl."
 
-    return (
+    output = (
         muon_part
         + electron_part
         + tau_part
@@ -100,8 +100,14 @@ def to_root_latex(class_name):
         + bjet_part
         + jet_part
         + met_part
-        + suffix
     )
+
+    if latex_syntax:
+        output = "$" + output.replace("#", "\\") + "$"
+
+    output = output + suffix
+
+    return output
 
 
 def make_shifts(shifts):

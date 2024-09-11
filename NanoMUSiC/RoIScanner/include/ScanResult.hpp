@@ -28,7 +28,7 @@ class ScanResult
         return score < other.score;
     }
 
-    // serialize this to json using rapidjson
+    // serialize this to json 
     json jsonValue(bool verbose = true) const;
 
     static void writeCsvHeader(std::ostream &out);

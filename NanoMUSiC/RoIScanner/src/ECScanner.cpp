@@ -30,8 +30,9 @@ namespace ph = std::placeholders;
 //// Constructor for ECScanner
 //
 //
-ECScanner::ECScanner(int &rounds, int &startRound)
-    : m_scanType(ScanType::unknown),
+ECScanner::ECScanner(ScanType scanType, int &rounds, int &startRound)
+    // : m_scanType(ScanType::unknown),
+    : m_scanType(scanType),
       m_numDicingRounds(rounds),
       m_firstDicingRound(startRound),
       m_scoreFunc("p-value")
@@ -874,17 +875,17 @@ void ECScanner::readInputJson(const std::string &jsonFilePath)
     // make sure we sourced a valid json with a object as root
     assert(m_jsonDocument.is_object());
 
-    m_scanType = ScanType::mc;
+    // m_scanType = ScanType::mc;
 
     // decide on the type of scan
     if (m_jsonDocument.contains("SignalBins"))
     {
-        m_scanType = ScanType::signal;
+        // m_scanType = ScanType::signal;
         readSignalBinInfo();
     }
     if (m_jsonDocument.contains("DataBins"))
     {
-        m_scanType = ScanType::data;
+        // m_scanType = ScanType::data;
         readDataBinInfo();
     }
     // read and parse MCBin infos
@@ -1050,8 +1051,8 @@ void ECScanner::writeOutputFiles(const std::string &outputDirectory,
     // Add EC name and scanned distribution
     infoJsonDocument["name"] = m_ECName;
     infoJsonDocument["distribution"] = m_distribution;
-    infoJsonDocument["hash"] = m_submissionHash;
-    infoJsonDocument["key"] = m_submissionKey;
+    // infoJsonDocument["hash"] = m_submissionHash;
+    // infoJsonDocument["key"] = m_submissionKey;
 
     // Add starting round within global list of rounds
     infoJsonDocument["firstRound"] = m_firstDicingRound;
