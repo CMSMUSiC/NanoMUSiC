@@ -31,6 +31,84 @@ xlabel_linear = r"$\tilde{p}$"
 ylabel = "number of classes"
 
 
+def plot_ptilde_cumulative(
+    props: dict[str, ScanResults],
+    n_rounds: int,
+    output_dir: str,
+    file_name: str,
+    title: str,
+) -> None:
+    # bin_width = -np.log10(1.0 / 10000) / N_BINS
+    # bin_width: float = -np.log10(1.0 / n_rounds) / N_BINS
+
+    # bins: NDArray[np.float64] = np.linspace(0, (N_BINS + 1) * bin_width, N_BINS + 1)
+    # bin_centers: NDArray[np.float64] = 0.5 * (bins[:-1] + bins[1:])
+    # bin_widths: NDArray[np.float64] = np.diff(bins)
+    # n_dist: int = len(props)
+
+    ylabel = "fraction of classes with $\tilde{p} < p_{min}$"
+    x_common = np.linspace(0, -np.log10(1.0 / n_rounds), 1000)  # Common x-axis
+
+    print(f"Building p-tilde toys for {title} ...")
+    temp_ptildes: list[list[float] | None] = []
+
+    for ec in props:
+        if not props[ec].skipped_scan:
+            temp_ptildes.append(props[ec].p_tilde_toys())
+    ptildes: NDArray[np.float64] = -np.log10(np.array(temp_ptildes))
+    ptildes = np.transpose(ptildes)
+
+    comps = []
+    for x in x_common:
+        comps.append(1 - np.mean(ptildes <= x, axis=1)[:, None])
+    ptildes_ccdf = np.hstack(comps)
+
+    print(f"Building p-tilde data for {title} ...")
+    temp_pdata: list[float | None] = []
+    for ec in props:
+        if not props[ec].skipped_scan:
+            temp_pdata.append(props[ec].p_tilde())
+    p_tilde_data: NDArray[np.float64] = -np.log10(np.array(temp_pdata))
+
+    p_tilde_data = 1 - np.cumsum(p_tilde_data) / np.sum(p_tilde_data)
+    comps = []
+    for x in p_tilde_data:
+        comps.append(1 - np.mean(p_tilde_data <= x))
+    p_tilde_data_ccdf = np.hstack(comps)
+
+    y_median = np.median(ptildes_ccdf, axis=0)
+    lower_bound_outer = np.percentile(ptildes_ccdf, 2.5, axis=0)
+    lower_bound = np.percentile(ptildes_ccdf, 16, axis=0)
+    upper_bound = np.percentile(ptildes_ccdf, 84, axis=0)
+    upper_bound_outer = np.percentile(ptildes_ccdf, 97.5, axis=0)
+
+    plt.fill_between(
+        x_common,
+        lower_bound_outer,
+        upper_bound_outer,
+        color="red",
+        alpha=0.5,
+        label=r"$2\sigma$",
+    )
+    plt.fill_between(
+        x_common, lower_bound, upper_bound, color="gray", alpha=1, label=r"$1\sigma$"
+    )
+    plt.plot(x_common, y_median, label="Median", color="blue")
+    plt.plot(p_tilde_data, p_tilde_data_ccdf, "ko", markersize=1, label="Median")
+
+    plt.xlabel("X-axis Label")
+    plt.ylim(1e-4, 1.3)
+    plt.xlim(1e-4, -np.log10(1.0 / n_rounds) * 1.1)
+    plt.yscale("log")
+    plt.xscale("log")
+
+    print(f"Saving plots for {title} ...")
+    plt.savefig("{}/{}_cumulative.pdf".format(output_dir, file_name))
+    plt.savefig("{}/{}_cumulative.png".format(output_dir, file_name))
+    plt.savefig("{}/{}_cumulative.svg".format(output_dir, file_name))
+    plt.close()
+
+
 def plot_ptilde(
     props: dict[str, ScanResults],
     n_rounds: int,
@@ -473,6 +551,25 @@ def plot_summary(
     os.system(f"mkdir -p {output_dir}/control_plots")
 
     args = []
+
+    def append_arg(ec: str) -> None:
+        args.append(
+            (
+                "{}/{}/{}_{}_data_0_info.json".format(
+                    input_dir,
+                    ec.replace("+", "_"),
+                    ec.replace("+", "_"),
+                    distribution,
+                ),
+                "{}/{}/{}_{}_mc_*_info.json".format(
+                    input_dir,
+                    ec.replace("+", "_"),
+                    ec.replace("+", "_"),
+                    distribution,
+                ),
+            ),
+        )
+
     for ec in glob.glob(f"{input_dir}/*EC_*"):
         ec = ec.replace("scan_results/", "")
         if distribution == DistributionType.met and "MET" not in ec:
@@ -483,62 +580,18 @@ def plot_summary(
             and sum([int(c) for c in ec if c.isdigit()]) == 1
         ):
             continue
+
         if class_type == ClassType.All or class_type == ClassType.Exclusive:
             if "_X" not in ec and "_N" not in ec:
-                args.append(
-                    (
-                        "{}/{}/{}_{}_data_0_info.json".format(
-                            input_dir,
-                            ec.replace("+", "_"),
-                            ec.replace("+", "_"),
-                            distribution,
-                        ),
-                        "{}/{}/{}_{}_mc_*_info.json".format(
-                            input_dir,
-                            ec.replace("+", "_"),
-                            ec.replace("+", "_"),
-                            distribution,
-                        ),
-                    ),
-                )
+                append_arg(ec)
 
         if class_type == ClassType.All or class_type == ClassType.Inclusive:
             if "_X" in ec:
-                args.append(
-                    (
-                        "{}/{}/{}_{}_data_0_info.json".format(
-                            input_dir,
-                            ec.replace("+", "_"),
-                            ec.replace("+", "_"),
-                            distribution,
-                        ),
-                        "{}/{}/{}_{}_mc_*_info.json".format(
-                            input_dir,
-                            ec.replace("+", "_"),
-                            ec.replace("+", "_"),
-                            distribution,
-                        ),
-                    ),
-                )
+                append_arg(ec)
 
         if class_type == ClassType.All or class_type == ClassType.JetInclusive:
             if "_N" in ec:
-                args.append(
-                    (
-                        "{}/{}/{}_{}_data_0_info.json".format(
-                            input_dir,
-                            ec.replace("+", "_"),
-                            ec.replace("+", "_"),
-                            distribution,
-                        ),
-                        "{}/{}/{}_{}_mc_*_info.json".format(
-                            input_dir,
-                            ec.replace("+", "_"),
-                            ec.replace("+", "_"),
-                            distribution,
-                        ),
-                    ),
-                )
+                append_arg(ec)
 
     results = []
     with mp.Pool(num_cpus) as p:
@@ -594,6 +647,13 @@ def plot_summary(
             f"{distribution}_exclusive",
             title,
         )
+        plot_ptilde_cumulative(
+            scan_results,
+            n_rounds,
+            output_dir,
+            f"{distribution}_exclusive",
+            title,
+        )
         # plot_ptilde_linear(
         #     scan_results, n_rounds, output_dir, f"{distribution}_exclusive", title
         # )
@@ -620,6 +680,13 @@ def plot_summary(
             f"{distribution}_inclusive",
             title,
         )
+        plot_ptilde_cumulative(
+            scan_results,
+            n_rounds,
+            output_dir,
+            f"{distribution}_inclusive",
+            title,
+        )
         # plot_ptilde_linear(
         #     scan_results, n_rounds, output_dir, f"{distribution}_inclusive", title
         # )
@@ -640,6 +707,13 @@ def plot_summary(
         title = "Jet Inclusive Classes: {}".format(distribution.latex_name())
 
         plot_ptilde(
+            scan_results,
+            n_rounds,
+            output_dir,
+            f"{distribution}_jet_inclusive",
+            title,
+        )
+        plot_ptilde_cumulative(
             scan_results,
             n_rounds,
             output_dir,
