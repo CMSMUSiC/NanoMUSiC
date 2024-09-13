@@ -299,7 +299,8 @@ class Distribution
                                 props[idx].width = widths[idx];
                                 for (const auto &[var, syst] : m_systematics_uncertainties)
                                 {
-                                    props[idx].mcSysUncerts[var] = syst[idx];
+
+                                    props[idx].mcSysUncerts[var] = syst[idx] ;
                                 }
 
                                 has_edges_and_syst = true;

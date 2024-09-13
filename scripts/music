@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 
 from enum import Enum
-from typing import Union
+from typing import Optional, Union
 from distribution_model import DistributionType
 from typing_extensions import Annotated
 import typer
 import metadata
+from metadata import ClassType, Years
 import sys
 import os
 import time
-import glob
-import json
 import subprocess
 from functools import wraps
 
@@ -379,11 +378,20 @@ def validation(
     plotter(input_dir, "foo", filters, output_dir, num_cpus, True)
 
 
+class YearsToPlot(str, Enum):
+    Run2016 = "2016"
+    Run2017 = "2017"
+    Run2018 = "2018"
+    Run2 = "Run2"
+    All = "all"
+
+
 @plot_app.command()
 @execution_time
 def most_occupied(
     input_file: str = "classification_plots/integral_pvalues_data.json",
     output_dir: str = "classification_most_occupied",
+    year: YearsToPlot = YearsToPlot.All,
 ):
     """
     Plot the occupancy and p_integral of most occupied classes.
@@ -393,11 +401,40 @@ def most_occupied(
     os.system("rm -rf {}".format(output_dir))
     os.system("mkdir -p {}".format(output_dir))
 
-    for y in ["2016", "2017", "2018", "Run2"]:
+    if year == YearsToPlot.All:
+        for y in YearsToPlot:
+            integral_pvalues_summary(
+                input_file,
+                output_dir,
+                year=y.value,
+                num_classes=20,
+                plot_all=True,
+                plot_per_objects=True,
+                plot_exclusive=True,
+            )
+            integral_pvalues_summary(
+                input_file,
+                output_dir,
+                year=y.value,
+                num_classes=40,
+                plot_all=True,
+                plot_per_objects=True,
+                plot_exclusive=True,
+            )
+            integral_pvalues_summary(
+                input_file,
+                output_dir,
+                year=y.value,
+                num_classes=100,
+                plot_all=True,
+                plot_per_objects=True,
+                plot_exclusive=True,
+            )
+    else:
         integral_pvalues_summary(
             input_file,
             output_dir,
-            year=y,
+            year=year.value,
             num_classes=20,
             plot_all=True,
             plot_per_objects=True,
@@ -406,7 +443,7 @@ def most_occupied(
         integral_pvalues_summary(
             input_file,
             output_dir,
-            year=y,
+            year=year.value,
             num_classes=40,
             plot_all=True,
             plot_per_objects=True,
@@ -415,7 +452,7 @@ def most_occupied(
         integral_pvalues_summary(
             input_file,
             output_dir,
-            year=y,
+            year=year.value,
             num_classes=100,
             plot_all=True,
             plot_per_objects=True,
@@ -473,6 +510,8 @@ def most_discrepant(
 @plot_app.command()
 @execution_time
 def summary(
+    distribution: Optional[DistributionType] = None,
+    class_type: ClassType = ClassType.All,
     input_dir: str = "scan_results",
     output_dir: str = "scan_summary_plots",
     num_cpus: int = 128,
@@ -482,13 +521,23 @@ def summary(
     os.system("rm -rf {}".format(output_dir))
     os.system("mkdir -p {}".format(output_dir))
 
-    for distribution in DistributionType:
+    if distribution:
         plot_summary(
             distribution=distribution,
             input_dir=input_dir,
             output_dir=output_dir,
             num_cpus=num_cpus,
+            class_type=class_type,
         )
+    else:
+        for distribution in DistributionType:
+            plot_summary(
+                distribution=distribution,
+                input_dir=input_dir,
+                output_dir=output_dir,
+                num_cpus=num_cpus,
+                class_type=class_type,
+            )
 
 
 @plot_app.command()
@@ -555,8 +604,9 @@ def prepare_cmssw_env():
 
 @scan_app.command()
 @execution_time
-def launch(
+def start(
     distribution: Union[DistributionsType, None] = None,
+    class_type: ClassType = ClassType.All,
     input_dir: str = "classification_distributions",
     filters: list[str] = ["*"],
     output_dir: str = "scan_results",
@@ -578,6 +628,10 @@ def launch(
         print("ERROR: Could not start scan. n_rounds should be > 0.", file=sys.stderr)
         sys.exit(1)
 
+    if n_rounds % split_size != 0:
+        print("ERROR: n-rounds should be divisible by split-size.", file=sys.stderr)
+        sys.exit(1)
+
     from scan import launch_scan, launch_crab_scan
 
     if target == ScanTarget.Local:
@@ -586,6 +640,7 @@ def launch(
                 input_dir,
                 filters,
                 distribution.value,
+                class_type,
                 output_dir,
                 num_cpus,
                 do_clean,
@@ -597,6 +652,7 @@ def launch(
                 input_dir,
                 filters,
                 DistributionsType.InvariantMass.value,
+                class_type,
                 output_dir,
                 num_cpus,
                 do_clean,
@@ -607,6 +663,7 @@ def launch(
                 input_dir,
                 filters,
                 DistributionsType.SumPt.value,
+                class_type,
                 output_dir,
                 num_cpus,
                 do_clean,
@@ -617,6 +674,7 @@ def launch(
                 input_dir,
                 filters,
                 DistributionsType.MET.value,
+                class_type,
                 output_dir,
                 num_cpus,
                 do_clean,

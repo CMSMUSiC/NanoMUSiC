@@ -199,3 +199,10 @@ def make_p_tilde_props(
     filters: list[Callable[[str], bool]],
 ) -> tuple[int, dict[str, PTildeProps]]:
     return 1, {}
+
+
+class ClassType(str, Enum):
+    Inclusive = "inclusive"
+    Exclusive = "exclusive"
+    JetInclusive = "jet-inclusive"
+    All = "all"

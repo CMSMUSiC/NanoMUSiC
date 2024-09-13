@@ -1,4 +1,5 @@
 import os
+import math
 import sys
 from enum import Enum
 from typing import Any
@@ -7,6 +8,14 @@ import matplotlib.pyplot as plt
 import mplhep as hep
 
 hep.style.use("CMS")
+import mplhep as hep  # HEP (CMS) extensions/styling on top of mpl
+
+import matplotlib as mpl
+
+mpl.use("Agg")
+
+# Load style sheet
+plt.style.use(hep.style.CMS)  # or ATLAS/LHCb2
 
 import json
 from rich.progress import track
@@ -53,6 +62,20 @@ class PlotSize(float, Enum):
     Large = 2.5
 
 
+def change_exponent(number: float, modifier):
+    # Extract the base-10 exponent and mantissa
+    mantissa = number / (10 ** math.floor(math.log10(number)))
+    exponent = math.floor(math.log10(number))
+
+    # Double the exponent
+    exponent_doubled = modifier(exponent)
+
+    # Calculate the new number
+    new_number = mantissa * (10**exponent_doubled)
+
+    return new_number
+
+
 def plot_classes(
     event_classes: list[Any],
     year: str,
@@ -82,7 +105,7 @@ def plot_classes(
                 p = ax.bar(
                     get_ec_name(ec),
                     ec_data_json[year][ec]["mc"][pg],
-                    label=pg,
+                    label=PROCESS_GROUP_STYLES[pg].label,
                     bottom=bottom,
                     color=PROCESS_GROUP_STYLES[pg].colorhex,
                 )
@@ -106,13 +129,16 @@ def plot_classes(
             alpha=0.6,
             color="None",
             hatch="//",
+            edgecolor="black",
+            facecolor="None",
+            linewidth=0,
         )
         data_uncert = ec_data_json[year][ec]["data_uncert"]
         if "Data" in set_of_labels:
             ax.errorbar(
                 p[0].xy[0] + p[0].get_width() / 2,
                 ec_data_json[year][ec]["data_count"],
-                xerr=0.0,
+                xerr=p[0].get_width() / 2,
                 yerr=data_uncert,
                 fmt="o",
                 color="k",
@@ -121,7 +147,7 @@ def plot_classes(
             ax.errorbar(
                 p[0].xy[0] + p[0].get_width() / 2,
                 ec_data_json[year][ec]["data_count"],
-                xerr=0.0,
+                xerr=p[0].get_width() / 2,
                 yerr=data_uncert,
                 fmt="o",
                 color="k",
@@ -139,53 +165,79 @@ def plot_classes(
         if p_value != None and p_value >= 0.1:
             plt.text(
                 get_ec_name(ec),
-                bottom,
-                "$p_{int}$  = " + f"{p_value:.2f}",
+                bottom * 1.1,
+                "p = " + f"{p_value:.2f}",
                 ha="center",
                 usetex=True,
                 va="bottom",
                 rotation=90,
+                fontsize=40,
             )
         elif p_value != None and p_value < 0.1:
             plt.text(
                 get_ec_name(ec),
-                bottom,
-                "$p_{int}$ = " + f"{p_value:.1e}",
+                bottom * 1.1,
+                "p = " + f"{p_value:.1e}",
                 ha="center",
                 usetex=True,
                 va="bottom",
                 rotation=90,
+                fontsize=40,
             )
         else:
             plt.text(
                 get_ec_name(ec),
-                bottom,
-                "$p_{int}$  = " + str(p_value),
+                bottom * 1.1,
+                "p = " + str(p_value),
                 ha="center",
                 usetex=True,
                 va="bottom",
                 rotation=90,
+                fontsize=40,
             )
 
     legend_elements, labels = plt.gca().get_legend_handles_labels()
     labels.reverse()
     legend_elements.reverse()
 
-    ax.legend(handles=legend_elements, labels=labels, loc="upper right", ncol=5)
-    plt.xticks(rotation=90, va="top")
+    ax.legend(
+        handles=legend_elements,
+        labels=labels,
+        loc="upper right",
+        ncol=4,
+        fontsize="x-large",
+    )
+    plt.xticks(rotation=90, va="top", usetex=False)
     plt.yscale("log")
     ylim_bottom, ylim_top = ax.get_ylim()
-    plt.ylim(ylim_bottom, 15 * ylim_top)
-    hep.cms.label("Preliminary", data=True, lumi=Lumi[year], year=year)
-    ax.set_ylabel("Events")
+    plt.ylim(ylim_bottom, change_exponent(ylim_top, lambda x: x * 1.4))
 
+    description = f"{len(event_classes)} most {title_modifier[0]}:\n{title_modifier[1]}"
+    if title_modifier[1] == "":
+        description = f"{len(event_classes)} most {title_modifier[0]}"
+
+    cms_label, _ = hep.cms.label(
+        f"Work in progress",
+        loc=2,
+        fontsize=50,
+        data=True,
+        lumi=Lumi[year],
+        year=year,
+    )
+    ax.set_ylabel("Events per class", fontsize=50)
+
+    plt.tick_params(axis="both", labelsize=50, pad=10)
+
+    pos = cms_label.get_position()
     plt.text(
-        0.02,
-        0.98,
-        f"{len(event_classes)} most {title_modifier[0]}: {title_modifier[1]}",
-        transform=plt.gca().transAxes,
-        fontsize=36,
+        pos[0],
+        pos[1] - 0.10,
+        description,
+        transform=ax.transAxes,
+        # transform=plt.gca().transAxes,
+        fontsize=50,
         fontweight="bold",
+        fontname="TeX Gyre Heros",
         verticalalignment="top",
         horizontalalignment="left",
     )
@@ -327,7 +379,8 @@ def integral_pvalues_summary(
             plot_size,
             (
                 plot_type.value,
-                "all event classes",
+                # "all event classes",
+                "",
             ),
         )
         plt.savefig("{}/pval_plot_{}_{}.png".format(output_dir, year, num_classes))

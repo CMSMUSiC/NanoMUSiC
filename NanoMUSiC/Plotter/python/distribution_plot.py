@@ -14,10 +14,12 @@ from metadata import make_ec_nice_name
 from ROOT import TFile, THStack, TLine, gPad, kRed
 
 import matplotlib as mpl
+import matplotlib.pyplot as plt
 
 
 configure_root()
 mpl.use("Agg")
+
 
 # def make_uncertainties_plot(
 #     class_name,
@@ -83,6 +85,9 @@ mpl.use("Agg")
 #     fig.savefig(f"{output_file_path}.pdf")
 #     fig.savefig(f"{output_file_path}.svg")
 #
+#
+# def make_uncertainties_plot_task(args):
+#     return make_uncertainties_plot(*args)
 
 
 def p_value_task(distribution_file: str):

@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from metadata import ClassType
 import json
 import glob
 import sys
@@ -93,7 +94,7 @@ class ScanResults(BaseModel):
             p_values_mc=p_values_toys,
             skipped_scan=(
                 skipped_data_scan
-                or len(p_values_toys) != 10_000
+                or len(p_values_toys) != 3_000
                 or inv_mass_of_one_object
                 or has_only_one_tau
             ),

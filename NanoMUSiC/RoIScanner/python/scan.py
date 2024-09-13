@@ -18,7 +18,7 @@ from distribution_model import (
     ScanYear,
     MCBinsBuilder,
 )
-from metadata import make_ec_nice_name, make_raw_ec_name
+from metadata import make_ec_nice_name, make_raw_ec_name, ClassType
 from tools import configure_root
 
 from ROOT import TFile
@@ -151,11 +151,17 @@ def count_objects(ec_name: str) -> int:
 
 
 def build_scan_jobs_task(
-    args: tuple[str, str, str, int, int, bool],
+    args: tuple[str, str, str, int, int, bool, ClassType],
 ) -> tuple[list[ScanProps], list[str]]:
-    distribution_file, output_dir, distribution_type, n_rounds, split_size, skip_lut = (
-        args
-    )
+    (
+        distribution_file,
+        output_dir,
+        distribution_type,
+        n_rounds,
+        split_size,
+        skip_lut,
+        class_type,
+    ) = args
     temp_scan_props: list[ScanProps] = []
     this_variations: list[str] = []
 
@@ -221,6 +227,14 @@ def build_scan_jobs_task(
 
     root_file.Close()
 
+    # ClassType.All is the default case
+    if class_type == ClassType.Inclusive:
+        temp_scan_props = [scan for scan in temp_scan_props if "+X" in scan.ec_name]
+    if class_type == ClassType.Exclusive:
+        temp_scan_props = [scan for scan in temp_scan_props if "+" not in scan.ec_name]
+    if class_type == ClassType.JetInclusive:
+        temp_scan_props = [scan for scan in temp_scan_props if "+N" not in scan.ec_name]
+
     return temp_scan_props, this_variations
 
 
@@ -234,6 +248,7 @@ def launch_scan(
     input_dir: str,
     patterns: list[str],
     distribution_type: str,
+    class_type: ClassType,
     output_dir: str = "scan_results",
     num_cpus: int = 128,
     do_clean: bool = False,
@@ -283,7 +298,15 @@ def launch_scan(
             for this_scan_props, this_variations in p.imap_unordered(
                 build_scan_jobs_task,
                 [
-                    (dist, output_dir, distribution_type, n_rounds, split_size, False)
+                    (
+                        dist,
+                        output_dir,
+                        distribution_type,
+                        n_rounds,
+                        split_size,
+                        False,
+                        class_type,
+                    )
                     for dist in distribution_files
                 ],
             ):
@@ -810,6 +833,7 @@ def scan_remaining(results_dir: str, input_dir: str, n_rounds: int, split_size: 
                     input_dir,
                     this_data_scans,
                     dist,
+                    ClassType.All,
                     results_dir,
                     n_rounds=n_rounds,
                     split_size=split_size,
@@ -830,6 +854,7 @@ def scan_remaining(results_dir: str, input_dir: str, n_rounds: int, split_size: 
                     input_dir,
                     this_mc_scans,
                     dist,
+                    ClassType.All,
                     results_dir,
                     n_rounds=n_rounds,
                     split_size=split_size,

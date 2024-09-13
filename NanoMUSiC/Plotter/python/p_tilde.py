@@ -3,9 +3,9 @@ import sys
 import json
 import os
 import multiprocessing as mp
-from distribution_model import BaseModel, DistributionType
-from rich.progress import Progress, track
-import matplotlib.pyplot as plt  # matplotlib library
+from distribution_model import DistributionType
+from rich.progress import Progress
+import matplotlib.pyplot as plt
 import matplotlib as mpl
 import mplhep as hep  # HEP (CMS) extensions/styling on top of mpl
 import scipy
@@ -13,6 +13,7 @@ import numpy as np
 from numpy.typing import NDArray
 from functools import partial
 from scan_results import ScanResults
+from metadata import ClassType
 
 
 mpl.use("Agg")
@@ -37,11 +38,15 @@ def plot_ptilde(
     file_name: str,
     title: str,
 ) -> None:
+    bin_width = -np.log10(1.0 / 10000) / N_BINS
     bin_width: float = -np.log10(1.0 / n_rounds) / N_BINS
+
     bins: NDArray[np.float64] = np.linspace(0, (N_BINS + 1) * bin_width, N_BINS + 1)
     bin_centers: NDArray[np.float64] = 0.5 * (bins[:-1] + bins[1:])
     # bin_widths: NDArray[np.float64] = np.diff(bins)
     n_dist: int = len(props)
+
+    list_of_histograms: list[NDArray[np.float64]] = []
 
     print(f"Building p-tilde toys for {title} ...")
     temp_ptildes: list[list[float] | None] = []
@@ -52,19 +57,18 @@ def plot_ptilde(
     ptildes: NDArray[np.float64] = -np.log10(np.array(temp_ptildes))
     ptildes = np.transpose(ptildes)
 
+    print(f"Building p-tilde histograms for {title} ...")
+    for r in range(n_rounds):
+        list_of_histograms.append((np.histogram(ptildes[r], bins)[0]))
+
+    histograms: NDArray[np.float64] = np.array(list_of_histograms)
+
     print(f"Building p-tilde data for {title} ...")
     temp_pdata: list[float | None] = []
     for ec in props:
         if not props[ec].skipped_scan:
             temp_pdata.append(props[ec].p_tilde())
     p_tilde_data: NDArray[np.float64] = -np.log10(np.array(temp_pdata))
-
-    print(f"Building p-tilde histograms for {title} ...")
-    list_of_histograms: list[NDArray[np.float64]] = []
-    for r in range(n_rounds):
-        list_of_histograms.append((np.histogram(ptildes[r], bins)[0]))
-
-    histograms: NDArray[np.float64] = np.array(list_of_histograms)
 
     print(f"Plotting {title}...")
     fig, ax = plt.subplots()
@@ -98,15 +102,6 @@ def plot_ptilde(
     add_band(q_m1s, q_p1s, "#85D1FB", r"SM expectation $\pm 1\sigma$")
 
     ax.stairs(
-        (10 ** (-bins[:-1]) - 10 ** (-bins[1:])) * n_dist,
-        bins,
-        color="#bd1f01",
-        linestyle="-",
-        linewidth=2,
-        label="Uniform distribution",
-    )
-
-    ax.stairs(
         q_median,
         bins,
         color="black",
@@ -134,6 +129,15 @@ def plot_ptilde(
     counts, _ = np.histogram(p_tilde_data, bins=bins)
     if np.sum(p_tilde_data > bins[-1]):
         print("WARNING: Has overflow!!!", file=sys.stderr)
+
+    ax.stairs(
+        (10 ** (-bins[:-1]) - 10 ** (-bins[1:])) * n_dist,
+        bins,
+        color="#bd1f01",
+        linestyle="-",
+        linewidth=2,
+        label="Uniform distribution",
+    )
 
     ax.plot(
         bin_centers,
@@ -197,8 +201,8 @@ def plot_ptilde(
     fig.savefig("{}/{}.pdf".format(output_dir, file_name))
     fig.savefig("{}/{}.png".format(output_dir, file_name))
     fig.savefig("{}/{}.svg".format(output_dir, file_name))
+    plt.close()
 
-    # Write scan_results to a file
     with open("{}/{}.json".format(output_dir, file_name), "w") as f:
         json.dump(
             {
@@ -463,6 +467,7 @@ def plot_summary(
     input_dir: str = "scan_results",
     output_dir: str = "scan_summary_plots",
     num_cpus: int = 128,
+    class_type: ClassType = ClassType.All,
 ):
     os.system(f"mkdir -p {output_dir}")
     os.system(f"mkdir -p {output_dir}/control_plots")
@@ -478,29 +483,68 @@ def plot_summary(
             and sum([int(c) for c in ec if c.isdigit()]) == 1
         ):
             continue
+        if class_type == ClassType.All or class_type == ClassType.Exclusive:
+            if "_X" not in ec and "_N" not in ec:
+                args.append(
+                    (
+                        "{}/{}/{}_{}_data_0_info.json".format(
+                            input_dir,
+                            ec.replace("+", "_"),
+                            ec.replace("+", "_"),
+                            distribution,
+                        ),
+                        "{}/{}/{}_{}_mc_*_info.json".format(
+                            input_dir,
+                            ec.replace("+", "_"),
+                            ec.replace("+", "_"),
+                            distribution,
+                        ),
+                    ),
+                )
 
-        args.append(
-            (
-                "{}/{}/{}_{}_data_0_info.json".format(
-                    input_dir,
-                    ec.replace("+", "_"),
-                    ec.replace("+", "_"),
-                    distribution,
-                ),
-                "{}/{}/{}_{}_mc_*_info.json".format(
-                    input_dir,
-                    ec.replace("+", "_"),
-                    ec.replace("+", "_"),
-                    distribution,
-                ),
-            )
-        )
+        if class_type == ClassType.All or class_type == ClassType.Inclusive:
+            if "_X" in ec:
+                args.append(
+                    (
+                        "{}/{}/{}_{}_data_0_info.json".format(
+                            input_dir,
+                            ec.replace("+", "_"),
+                            ec.replace("+", "_"),
+                            distribution,
+                        ),
+                        "{}/{}/{}_{}_mc_*_info.json".format(
+                            input_dir,
+                            ec.replace("+", "_"),
+                            ec.replace("+", "_"),
+                            distribution,
+                        ),
+                    ),
+                )
+
+        if class_type == ClassType.All or class_type == ClassType.JetInclusive:
+            if "_N" in ec:
+                args.append(
+                    (
+                        "{}/{}/{}_{}_data_0_info.json".format(
+                            input_dir,
+                            ec.replace("+", "_"),
+                            ec.replace("+", "_"),
+                            distribution,
+                        ),
+                        "{}/{}/{}_{}_mc_*_info.json".format(
+                            input_dir,
+                            ec.replace("+", "_"),
+                            ec.replace("+", "_"),
+                            distribution,
+                        ),
+                    ),
+                )
 
     results = []
     with mp.Pool(num_cpus) as p:
         with Progress() as progress:
             task = progress.add_task(
-                "Building list of Scan Results ...",
+                "Building list of Scan Results ({}) ...".format(distribution.value),
                 total=len(args),
             )
             for res in p.imap_unordered(ScanResults.make_scan_results, args):
@@ -509,7 +553,9 @@ def plot_summary(
 
                 progress.advance(task)
 
-    n_rounds = len(results[0].p_values_mc)
+    n_rounds = 0
+    if len(results):
+        n_rounds = len(results[0].p_values_mc)
     for res in results:
         assert n_rounds == len(res.p_values_mc)
         assert not res.skipped_scan
@@ -521,65 +567,85 @@ def plot_summary(
                 total=len(results),
             )
             for res in p.imap_unordered(
-                partial(control_plot, output_dir=f"{output_dir}/control_plots"), results
+                partial(control_plot, output_dir=f"{output_dir}/control_plots"),
+                results,
             ):
                 progress.advance(task)
 
     # Plotting exclusive classes
-    scan_results = {}
-    for result in results:
-        if distribution == DistributionType.met and "MET" not in result.class_name:
-            continue
-        if (
-            distribution == DistributionType.invariant_mass
-            and result.count_objects() == 1
-        ):
-            continue
-        if "+" not in result.class_name:
-            scan_results[result.class_name] = result
-    title = "Exclusive Classes: {}".format(distribution.latex_name())
+    if class_type == ClassType.All or class_type == ClassType.Exclusive:
+        scan_results = {}
+        for result in results:
+            if distribution == DistributionType.met and "MET" not in result.class_name:
+                continue
+            if (
+                distribution == DistributionType.invariant_mass
+                and result.count_objects() == 1
+            ):
+                continue
+            if "+" not in result.class_name:
+                scan_results[result.class_name] = result
+        title = "Exclusive Classes: {}".format(distribution.latex_name())
 
-    plot_ptilde(scan_results, n_rounds, output_dir, f"{distribution}_exclusive", title)
-    # plot_ptilde_linear(
-    #     scan_results, n_rounds, output_dir, f"{distribution}_exclusive", title
-    # )
+        plot_ptilde(
+            scan_results,
+            n_rounds,
+            output_dir,
+            f"{distribution}_exclusive",
+            title,
+        )
+        # plot_ptilde_linear(
+        #     scan_results, n_rounds, output_dir, f"{distribution}_exclusive", title
+        # )
 
     # Plotting inclusive classes
-    scan_results = {}
-    for result in results:
-        if distribution == DistributionType.met and "MET" not in result.class_name:
-            continue
-        if (
-            distribution == DistributionType.invariant_mass
-            and result.count_objects() == 1
-        ):
-            continue
-        if "+X" in result.class_name:
-            scan_results[result.class_name] = result
-    title = "Inclusive Classes: {}".format(distribution.latex_name())
+    if class_type == ClassType.All or class_type == ClassType.Inclusive:
+        scan_results = {}
+        for result in results:
+            if distribution == DistributionType.met and "MET" not in result.class_name:
+                continue
+            if (
+                distribution == DistributionType.invariant_mass
+                and result.count_objects() == 1
+            ):
+                continue
+            if "+X" in result.class_name:
+                scan_results[result.class_name] = result
+        title = "Inclusive Classes: {}".format(distribution.latex_name())
 
-    plot_ptilde(scan_results, n_rounds, output_dir, f"{distribution}_inclusive", title)
-    # plot_ptilde_linear(
-    #     scan_results, n_rounds, output_dir, f"{distribution}_inclusive", title
-    # )
+        plot_ptilde(
+            scan_results,
+            n_rounds,
+            output_dir,
+            f"{distribution}_inclusive",
+            title,
+        )
+        # plot_ptilde_linear(
+        #     scan_results, n_rounds, output_dir, f"{distribution}_inclusive", title
+        # )
 
     # Plotting jet inclusive classes
-    scan_results = {}
-    for result in results:
-        if distribution == DistributionType.met and "MET" not in result.class_name:
-            continue
-        if (
-            distribution == DistributionType.invariant_mass
-            and result.count_objects() == 1
-        ):
-            continue
-        if "+NJet" in result.class_name:
-            scan_results[result.class_name] = result
-    title = "Jet Inclusive Classes: {}".format(distribution.latex_name())
+    if class_type == ClassType.All or class_type == ClassType.JetInclusive:
+        scan_results = {}
+        for result in results:
+            if distribution == DistributionType.met and "MET" not in result.class_name:
+                continue
+            if (
+                distribution == DistributionType.invariant_mass
+                and result.count_objects() == 1
+            ):
+                continue
+            if "+NJet" in result.class_name:
+                scan_results[result.class_name] = result
+        title = "Jet Inclusive Classes: {}".format(distribution.latex_name())
 
-    plot_ptilde(
-        scan_results, n_rounds, output_dir, f"{distribution}_jet_inclusive", title
-    )
-    # plot_ptilde_linear(
-    #     scan_results, n_rounds, output_dir, f"{distribution}_jet_inclusive", title
-    # )
+        plot_ptilde(
+            scan_results,
+            n_rounds,
+            output_dir,
+            f"{distribution}_jet_inclusive",
+            title,
+        )
+        # plot_ptilde_linear(
+        #     scan_results, n_rounds, output_dir, f"{distribution}_jet_inclusive", title
+        # )
