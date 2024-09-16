@@ -14,6 +14,7 @@ from numpy.typing import NDArray
 from functools import partial
 from scan_results import ScanResults
 from metadata import ClassType
+from tools import change_exponent
 
 
 mpl.use("Agg")
@@ -70,7 +71,6 @@ def plot_ptilde_cumulative(
             temp_pdata.append(props[ec].p_tilde())
     p_tilde_data: NDArray[np.float64] = -np.log10(np.array(temp_pdata))
 
-    p_tilde_data = 1 - np.cumsum(p_tilde_data) / np.sum(p_tilde_data)
     comps = []
     for x in p_tilde_data:
         comps.append(1 - np.mean(p_tilde_data <= x))
@@ -98,9 +98,10 @@ def plot_ptilde_cumulative(
 
     plt.xlabel("X-axis Label")
     plt.ylim(1e-4, 1.3)
-    plt.xlim(1e-4, -np.log10(1.0 / n_rounds) * 1.1)
+    # plt.xlim(1e-4, change_exponent(-np.log10(1.0 / n_rounds), lambda x: x * 3))
+    plt.xlim(0, 5)
     plt.yscale("log")
-    plt.xscale("log")
+    # plt.xscale("log")
 
     print(f"Saving plots for {title} ...")
     plt.savefig("{}/{}_cumulative.pdf".format(output_dir, file_name))

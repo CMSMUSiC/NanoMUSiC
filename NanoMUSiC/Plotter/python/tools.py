@@ -1,4 +1,5 @@
 import ROOT
+import math
 import sys
 import os
 
@@ -123,3 +124,17 @@ def make_shifts(shifts):
             n_shifts = len(shifts[s])
 
     return cpp_shift, n_shifts
+
+
+def change_exponent(number: float, modifier):
+    # Extract the base-10 exponent and mantissa
+    mantissa = number / (10 ** math.floor(math.log10(number)))
+    exponent = math.floor(math.log10(number))
+
+    # Double the exponent
+    exponent_doubled = modifier(exponent)
+
+    # Calculate the new number
+    new_number = mantissa * (10**exponent_doubled)
+
+    return new_number
