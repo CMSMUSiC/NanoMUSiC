@@ -88,17 +88,23 @@ def plotter(
     def get_scan_data(dist: str) -> dict[str, dict[str, str | float]]:
         this_scan_data = {}
 
-        file_path = "{}/{}_{}.json".format(scan_summary_dir, dist, "exclusive")
+        file_path = "{}/{}_{}_no_selection.json".format(
+            scan_summary_dir, dist, "exclusive"
+        )
         if os.path.exists(file_path):
             with open(file_path, "r") as json_file:
                 this_scan_data.update(json.load(json_file))
 
-        file_path = "{}/{}_{}.json".format(scan_summary_dir, dist, "inclusive")
+        file_path = "{}/{}_{}_no_selection.json".format(
+            scan_summary_dir, dist, "inclusive"
+        )
         if os.path.exists(file_path):
             with open(file_path, "r") as json_file:
                 this_scan_data.update(json.load(json_file))
 
-        file_path = "{}/{}_{}.json".format(scan_summary_dir, dist, "jet_inclusive")
+        file_path = "{}/{}_{}_no_selection.json".format(
+            scan_summary_dir, dist, "jet_inclusive"
+        )
         if os.path.exists(file_path):
             with open(file_path, "r") as json_file:
                 this_scan_data.update(json.load(json_file))

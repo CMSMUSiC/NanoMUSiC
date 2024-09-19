@@ -32,6 +32,20 @@ def get_num_taus(class_name: str) -> int:
         sys.exit(-1)
 
 
+def get_dominant_process_group(scan_input_file_path: str):
+    with open(scan_input_file_path, "r") as file:
+        data = json.load(file)
+    mc_bins = data["MCBins"]
+    events_per_process_group: dict[str, float] = {}
+    for bin in mc_bins:
+        for process_group in bin["mcEventsPerProcessGroup"]:
+            events_per_process_group[process_group] = bin["mcEventsPerProcessGroup"][
+                process_group
+            ] + events_per_process_group.get(process_group, 0.0)
+
+    return max(events_per_process_group, key=lambda pg: events_per_process_group[pg])
+
+
 class ScanResults(BaseModel):
     class_name: str
     distribution: str
@@ -40,17 +54,21 @@ class ScanResults(BaseModel):
     p_value_data: float
     p_values_mc: list[float]
     skipped_scan: bool
+    dominant_process_group: str
 
     @property
     def upper_edge(self) -> float:
         return self.lower_edge + self.width
 
     @staticmethod
-    def make_scan_results(args: tuple[str, str]) -> "ScanResults":
-        scan_result_data_file_path, scan_mc_data_files = args
-
+    def make_scan_results(
+        scan_result_data_file_path: str,
+        scan_mc_data_files: str,
+        scan_input_file_path: str,
+    ) -> "ScanResults":
         with open(scan_result_data_file_path, "r") as file:
             data = json.load(file)
+
         p_value_data = data["ScanResults"][0]["CompareScore"]
         class_name = data["name"]
         distribution = data["distribution"]
@@ -94,10 +112,11 @@ class ScanResults(BaseModel):
             p_values_mc=p_values_toys,
             skipped_scan=(
                 skipped_data_scan
-                or len(p_values_toys) != 3_000
+                or len(p_values_toys) != 10_000
                 or inv_mass_of_one_object
                 or has_only_one_tau
             ),
+            dominant_process_group=get_dominant_process_group(scan_input_file_path),
         )
 
     def p_tilde(self) -> float | None:
@@ -144,9 +163,10 @@ class ScanResults(BaseModel):
             return p_tilde_toys
         return [-1 for _ in range(len(self.p_values_mc))]
 
-    def count_objects(self) -> int:
+    @staticmethod
+    def count_objects(class_name: str) -> int:
         """For a given event class, it will count the number of physics objects."""
-        return sum([int(c) for c in self.class_name if c.isdigit()])
+        return sum([int(c) for c in class_name if c.isdigit()])
 
     def dict(self, *args, **kwargs):
         # Get the original dict representation

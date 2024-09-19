@@ -1,4 +1,6 @@
 from enum import Enum, StrEnum
+import time
+from multiprocessing.pool import AsyncResult
 import re
 from rich.progress import track
 import subprocess
@@ -61,31 +63,25 @@ def do_scan_toys(scan_props: ScanProps) -> str | None:
     return do_scan(scan_props, ScanType.Toys)
 
 
-def do_scan(scan_props: ScanProps, scan_type: ScanType) -> str | None:
+def do_scan(scan_props: ScanProps, scan_type: ScanType) -> str:
     lut_file_path = "{}/bin/lookuptable.bin".format(os.getenv("MUSIC_BASE"))
     shifts_file_path = "shifts.json"
 
     if not os.path.exists("{}/".format(os.getenv("MUSIC_BASE"))):
-        print(
-            'ERROR: Could not start scanner. LUT file does not exist. Did you executed "ninja lut"?',
-            file=sys.stderr,
+        raise FileNotFoundError(
+            'ERROR: Could not start scanner. LUT file does not exist. Did you executed "ninja lut"?'
         )
-        sys.exit(-1)
 
     if not os.path.exists(scan_props.json_file_path):
-        print(
-            "ERROR: Could not start scanner. Input file not found.",
-            file=sys.stderr,
-        )
-        sys.exit(-1)
+        raise FileNotFoundError("ERROR: Could not start scanner. Input file not found.")
 
     with open(scan_props.json_file_path, "r") as json_file:
         data = json.load(json_file)
     distribution = ScanDistribution(**data)
 
-    data_scan_status = False
+    scan_status = False
     if scan_type == ScanType.Data:
-        data_scan_status = scanner.scan(
+        scan_status = scanner.scan(
             scan_props.json_file_path,
             "{}/{}".format(
                 scan_props.output_directory, distribution.name.replace("+", "_")
@@ -97,13 +93,11 @@ def do_scan(scan_props: ScanProps, scan_type: ScanType) -> str | None:
             scan_type="data",
         )
 
-        if not data_scan_status:
-            print("ERROR: Could not perform Data scan.", file=sys.stderr)
-            sys.exit(-1)
+        if not scan_status:
+            raise Exception("ERROR: Could not perform Data scan.")
 
-    mc_scan_status = False
     if scan_type == ScanType.Toys:
-        mc_scan_status = scanner.scan(
+        scan_status = scanner.scan(
             scan_props.json_file_path,
             "{}/{}".format(
                 scan_props.output_directory, distribution.name.replace("+", "_")
@@ -114,23 +108,21 @@ def do_scan(scan_props: ScanProps, scan_type: ScanType) -> str | None:
             lut_file_path,
             scan_type="mc",
         )
-        if not mc_scan_status:
-            print("ERROR: Could not perform MC scan.", file=sys.stderr)
-            sys.exit(-1)
+        if not scan_status:
+            raise Exception("ERROR: Could not perform MC scan.")
 
-    if data_scan_status:
-        return "Distribution: {} - {} - {}".format(
-            distribution.name,
-            distribution.distribution,
-            distribution.year,
-        )
-
-    if mc_scan_status:
+    if scan_type == ScanType.Toys:
         return "Distribution: {} - {} - {} | Start round: {}".format(
             distribution.name,
             distribution.distribution,
             distribution.year,
             scan_props.start_round,
+        )
+    else:
+        return "Distribution: {} - {} - {}".format(
+            distribution.name,
+            distribution.distribution,
+            distribution.year,
         )
 
 
@@ -350,16 +342,28 @@ def launch_scan(
                     "Performing {} scans (Data)...".format(len(data_scan_props)),
                     total=len(data_scan_props),
                 )
-                for job in p.imap_unordered(do_scan_data, data_scan_props):
-                    if job:
-                        progress.console.print("Done: {}".format(job))
-                        progress.advance(task)
-                    else:
-                        print(
-                            "ERROR: Could not run the scanner (Data). Unknown error.",
-                            file=sys.stderr,
-                        )
-                        sys.exit(-1)
+                jobs: dict[ScanProps, AsyncResult] = {}
+                for prop in data_scan_props:
+                    jobs[prop] = p.apply_async(do_scan_data, prop)
+                while len(jobs):
+                    not_ready: list[str] = []
+                    progress.console.print("Checking ...")
+                    for job in jobs:
+                        if jobs[job].ready():
+                            progress.console.print("Done: {}".format(jobs[job].get()))
+                            del jobs[job]
+                            progress.advance(task)
+                        else:
+                            not_ready.append(
+                                "Not ready: {} - {}".format(
+                                    job.ec_name, job.distribution_type
+                                )
+                            )
+                    progress.console.print("Not ready: {}".format(not_ready))
+                    progress.console.print(
+                        "Waiting 10 seconds before next iteration ..."
+                    )
+                    time.sleep(10)
 
         if (
             len(scan_props) > 0
@@ -371,16 +375,26 @@ def launch_scan(
                     "Performing {} scans (toys)...".format(len(scan_props)),
                     total=len(scan_props),
                 )
-                for job in p.imap_unordered(do_scan_toys, scan_props):
-                    if job:
-                        progress.console.print("Done: {}".format(job))
-                        progress.advance(task)
-                    else:
-                        print(
-                            "ERROR: Could not run the scanner (Toys). Unknown error.",
-                            file=sys.stderr,
-                        )
-                        sys.exit(-1)
+                jobs: dict[ScanProps, AsyncResult] = {}
+                for prop in scan_props:
+                    jobs[prop] = p.apply_async(do_scan_toys, prop)
+                while len(jobs):
+                    not_ready: list[str] = []
+                    progress.console.print("Checking ...")
+                    for job in jobs:
+                        if jobs[job].ready():
+                            progress.console.print("Done: {}".format(jobs[job].get()))
+                            del jobs[job]
+                            progress.advance(task)
+                        else:
+                            not_ready.append(
+                                "Not ready: {} - {} - {}".format(
+                                    job.ec_name, job.distribution_type, job.rounds
+                                )
+                            )
+                    progress.console.print("Not ready: {}".format(not_ready))
+                    progress.console.print("Waiting 2 mins before next iteration ...")
+                    time.sleep(120)
 
     if do_copy_index_files:
         print("Copying index.php ...")
@@ -481,7 +495,15 @@ def launch_crab_scan(
                 for this_scan_props, this_variations in p.imap_unordered(
                     build_scan_jobs_task,
                     [
-                        (dist, output_dir, dist_type.value, n_rounds, split_size, False)
+                        (
+                            dist,
+                            output_dir,
+                            dist_type.value,
+                            n_rounds,
+                            split_size,
+                            False,
+                            ClassType.All,
+                        )
                         for dist in distribution_files
                     ],
                 ):

@@ -403,33 +403,34 @@ def most_occupied(
 
     if year == YearsToPlot.All:
         for y in YearsToPlot:
-            integral_pvalues_summary(
-                input_file,
-                output_dir,
-                year=y.value,
-                num_classes=20,
-                plot_all=True,
-                plot_per_objects=True,
-                plot_exclusive=True,
-            )
-            integral_pvalues_summary(
-                input_file,
-                output_dir,
-                year=y.value,
-                num_classes=40,
-                plot_all=True,
-                plot_per_objects=True,
-                plot_exclusive=True,
-            )
-            integral_pvalues_summary(
-                input_file,
-                output_dir,
-                year=y.value,
-                num_classes=100,
-                plot_all=True,
-                plot_per_objects=True,
-                plot_exclusive=True,
-            )
+            if y !=YearsToPlot.All:
+                integral_pvalues_summary(
+                    input_file,
+                    output_dir,
+                    year=y.value,
+                    num_classes=20,
+                    plot_all=True,
+                    plot_per_objects=True,
+                    plot_exclusive=True,
+                )
+                integral_pvalues_summary(
+                    input_file,
+                    output_dir,
+                    year=y.value,
+                    num_classes=40,
+                    plot_all=True,
+                    plot_per_objects=True,
+                    plot_exclusive=True,
+                )
+                integral_pvalues_summary(
+                    input_file,
+                    output_dir,
+                    year=y.value,
+                    num_classes=100,
+                    plot_all=True,
+                    plot_per_objects=True,
+                    plot_exclusive=True,
+                )
     else:
         integral_pvalues_summary(
             input_file,

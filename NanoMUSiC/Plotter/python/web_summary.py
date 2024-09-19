@@ -117,11 +117,3 @@ def make_web_summary(root_directory: str) -> None:
 
         # Create the HTML page for the directory
         create_html_page(directory_data, template_string, output_path)
-
-
-if __name__ == "__main__":
-    # Usage: Define the root directory to start from
-    root_directory = "/path/to/root_directory"  # Replace with your actual directory
-
-    # Create the necessary HTML pages for the directory tree
-    make_web_summary(root_directory)
