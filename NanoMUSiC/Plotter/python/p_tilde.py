@@ -18,6 +18,7 @@ from functools import partial
 from scan_results import ScanResults
 from metadata import ClassType
 from class_selections import class_selections
+from tools import change_exponent
 
 
 mpl.use("Agg")
@@ -41,34 +42,25 @@ def plot_ptilde_cumulative(
     output_dir: str,
     file_name: str,
     title: str,
+    sub_title: str,
 ) -> None:
-    # bin_width = -np.log10(1.0 / 10000) / N_BINS
-    # bin_width: float = -np.log10(1.0 / n_rounds) / N_BINS
-
-    # bins: NDArray[np.float64] = np.linspace(0, (N_BINS + 1) * bin_width, N_BINS + 1)
-    # bin_centers: NDArray[np.float64] = 0.5 * (bins[:-1] + bins[1:])
-    # bin_widths: NDArray[np.float64] = np.diff(bins)
-    # n_dist: int = len(props)
-
     ylabel = r"number of event classes with $\tilde{p} < \tilde{p}_{max}$"
     xlabel = r"$-log_{10}(\tilde{p}_{max})$"
     x_common = np.linspace(0, -np.log10(1.0 / n_rounds), 1000)  # Common x-axis
 
-    print(f"Building p-tilde toys for {title} ...")
     temp_ptildes: list[list[float] | None] = []
 
     for ec in props:
         if not props[ec].skipped_scan:
             temp_ptildes.append(props[ec].p_tilde_toys())
-    ptildes: NDArray[np.float64] = -np.log10(np.array(temp_ptildes))
-    ptildes = np.transpose(ptildes)
+    ptildes: NDArray[np.float64] = np.atleast_2d(-np.log10(np.array(temp_ptildes)))
+    ptildes = np.atleast_2d(np.transpose(ptildes))
 
     comps = []
     for x in x_common:
         comps.append(np.sum(ptildes >= x, axis=1)[:, None])
     ptildes_ccdf = np.hstack(comps)
 
-    print(f"Building p-tilde data for {title} ...")
     temp_pdata: list[float | None] = []
     for ec in props:
         if not props[ec].skipped_scan:
@@ -86,46 +78,57 @@ def plot_ptilde_cumulative(
     upper_bound = np.percentile(ptildes_ccdf, 84, axis=0)
     upper_bound_outer = np.percentile(ptildes_ccdf, 97.5, axis=0)
 
-    plt.fill_between(
+    fig, ax = plt.subplots()
+    ax.set_yscale("log", nonpositive="clip")
+    hep.cms.label(label="Work in progress", data=True, loc=0, ax=ax, lumi=138)
+
+    ax.fill_between(
         x_common,
         lower_bound_outer,
         upper_bound_outer,
         color="#FFDF7F",
         label=r"$2\sigma$",
     )
-    plt.fill_between(
+    ax.fill_between(
         x_common,
         lower_bound,
         upper_bound,
         color="#85D1FB",
         label=r"$1\sigma$",
     )
-    plt.plot(x_common, y_median, label="Median", color="red", linestyle="--")
-    plt.plot(p_tilde_data, p_tilde_data_ccdf, "ko", markersize=3, label="Data")
+    ax.plot(x_common, y_median, label="Median", color="red", linestyle="--")
+    ax.plot(p_tilde_data, p_tilde_data_ccdf, "ko", markersize=3, label="Data")
 
-    plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
 
-    # Calculate the lowest visible y-value
-    # In log scale, the minimum visible value is the smallest positive number above the lower limit
-    # y_min, y_max = plt.ylim()
-    # y_min_visible = np.power(10, np.floor(np.log10(y_min)))
-    # if y_min_visible < y_min:
-    #     y_min_visible = np.power(10, np.floor(np.log10(y_min)) + 1)
-    #
-    # y_max = plt.ylim()[1] * 10
-    # _, y_max = plt.ylim()
-    # plt.ylim(0.9, y_max)
-    # plt.xlim(1e-4, change_exponent(-np.log10(1.0 / n_rounds), lambda x: x * 3))
+    y_min, y_max = ax.get_ylim()
+    ax.set_ylim(y_min, change_exponent(y_max, lambda x: x * 1.5))
+    ax.set_xlim(0, (N_BINS + 1) * -np.log10(1.0 / n_rounds) / N_BINS)
 
-    plt.xlim(0, (N_BINS + 1) * -np.log10(1.0 / n_rounds) / N_BINS)
-    plt.yscale("log")
-    # plt.xscale("log")
+    if sub_title != "":
+        title = (
+            title
+            + r"""
+"""
+            + sub_title
+        )
 
-    print(f"Saving plots for {title} ...")
-    plt.savefig("{}/{}_cumulative.pdf".format(output_dir, file_name))
-    plt.savefig("{}/{}_cumulative.png".format(output_dir, file_name))
-    plt.savefig("{}/{}_cumulative.svg".format(output_dir, file_name))
+    ax.text(
+        0.15,
+        0.9,
+        title,
+        fontsize=20,
+        horizontalalignment="left",
+        verticalalignment="top",
+        fontproperties="Tex Gyre Heros",
+        transform=plt.gca().transAxes,
+    )
+
+    # print(f"Saving plots for {title} ...")
+    fig.savefig("{}/{}_cumulative.pdf".format(output_dir, file_name))
+    fig.savefig("{}/{}_cumulative.png".format(output_dir, file_name))
+    fig.savefig("{}/{}_cumulative.svg".format(output_dir, file_name))
     plt.close()
 
 
@@ -146,29 +149,29 @@ def plot_ptilde(
 
     list_of_histograms: list[NDArray[np.float64]] = []
 
-    print(f"Building p-tilde toys for {title} - {sub_title} ...")
+    # print(f"Building p-tilde toys for {title} - {sub_title} ...")
     temp_ptildes: list[list[float] | None] = []
 
     for ec in props:
         if not props[ec].skipped_scan:
             temp_ptildes.append(props[ec].p_tilde_toys())
-    ptildes: NDArray[np.float64] = -np.log10(np.array(temp_ptildes))
-    ptildes = np.transpose(ptildes)
+    ptildes: NDArray[np.float64] = np.atleast_2d(-np.log10(np.array(temp_ptildes)))
+    ptildes = np.atleast_2d(np.transpose(ptildes))
 
-    print(f"Building p-tilde histograms for {title} - {sub_title} ...")
+    # print(f"Building p-tilde histograms for {title} - {sub_title} ...")
     for r in range(n_rounds):
         list_of_histograms.append((np.histogram(ptildes[r], bins)[0]))
 
     histograms: NDArray[np.float64] = np.array(list_of_histograms)
 
-    print(f"Building p-tilde data for {title} - {sub_title} ...")
+    # print(f"Building p-tilde data for {title} - {sub_title} ...")
     temp_pdata: list[float | None] = []
     for ec in props:
         if not props[ec].skipped_scan:
             temp_pdata.append(props[ec].p_tilde())
     p_tilde_data: NDArray[np.float64] = -np.log10(np.array(temp_pdata))
 
-    print(f"Plotting {title} - {sub_title}...")
+    # print(f"Plotting {title} - {sub_title}...")
     fig, ax = plt.subplots()
     ax.set_yscale("log", nonpositive="clip")
     hep.cms.label(label="Work in progress", data=True, loc=0, ax=ax, lumi=138)
@@ -305,7 +308,7 @@ def plot_ptilde(
 
     ax.set_xlim(0, (N_BINS + 1) * bin_width)
 
-    print(f"Saving plots for {title} - { sub_title } ...")
+    # print(f"Saving plots for {title} - { sub_title } ...")
     fig.savefig("{}/{}.pdf".format(output_dir, file_name))
     fig.savefig("{}/{}.png".format(output_dir, file_name))
     fig.savefig("{}/{}.svg".format(output_dir, file_name))
@@ -324,177 +327,7 @@ def plot_ptilde(
         )
 
 
-def plot_ptilde_linear(
-    props: dict[str, ScanResults],
-    n_rounds: int,
-    output_dir: str,
-    file_name: str,
-    title: str,
-) -> None:
-    bin_width: float = 1.0 / N_BINS
-    bins: NDArray[np.float64] = np.linspace(0.0, 1.0, N_BINS)
-    bin_centers: NDArray[np.float64] = 0.5 * (bins[:-1] + bins[1:])
-    # bin_widths: NDArray[np.float64] = np.diff(bins)
-    n_dist: int = len(props)
-
-    print(f"Building linear p-tilde toys for {title} ...")
-    temp_ptildes: list[list[float] | None] = []
-
-    for ec in props:
-        if not props[ec].skipped_scan:
-            temp_ptildes.append(props[ec].p_tilde_toys())
-    ptildes: NDArray[np.float64] = np.array(temp_ptildes)
-    ptildes = np.transpose(ptildes)
-
-    print(f"Building linear p-tilde data for {title} ...")
-    temp_pdata: list[float | None] = []
-    for ec in props:
-        if not props[ec].skipped_scan:
-            temp_pdata.append(props[ec].p_tilde())
-    p_tilde_data: NDArray[np.float64] = np.array(temp_pdata)
-
-    print(f"Building linear p-tilde histograms for {title} ...")
-    list_of_histograms: list[NDArray[np.float64]] = []
-    for r in range(n_rounds):
-        list_of_histograms.append((np.histogram(ptildes[r], bins)[0]))
-
-    histograms: NDArray[np.float64] = np.array(list_of_histograms)
-
-    print(f"Plotting {title}...")
-    fig, ax = plt.subplots()
-    ax.set_yscale("log", nonpositive="clip")
-    hep.cms.label(label="Work in progress", data=True, loc=0, ax=ax, lumi=138)
-
-    q_m2s = np.percentile(histograms, 2.5, axis=0)
-    q_m1s = np.percentile(histograms, 16, axis=0)
-    q_median = np.percentile(histograms, 50, axis=0)
-    q_p1s = np.percentile(histograms, 84, axis=0)
-    q_p2s = np.percentile(histograms, 97.5, axis=0)
-
-    def add_band(q_m, q_p, color, label):
-        x = []
-        y1 = []
-        y2 = []
-        for i in range(len(bins)):
-            if i > 0:
-                x.append(bins[i])
-                y1.append(q_m[i - 1])
-                y2.append(q_p[i - 1])
-
-            if i < len(bins) - 1:
-                x.append(bins[i])
-                y1.append(q_m[i])
-                y2.append(q_p[i])
-
-        ax.fill_between(x, y1, y2, color=color, label=label)
-
-    add_band(q_m2s, q_p2s, "#FFDF7F", r"SM expectation $\pm 2\sigma$")
-    add_band(q_m1s, q_p1s, "#85D1FB", r"SM expectation $\pm 1\sigma$")
-
-    ax.stairs(
-        (-bins[:-1] + bins[1:]) * n_dist,
-        bins,
-        color="#bd1f01",
-        linestyle="-",
-        linewidth=2,
-        label="Uniform distribution",
-    )
-
-    ax.stairs(
-        q_median,
-        bins,
-        color="black",
-        linestyle="--",
-        linewidth=2,
-        label="Median SM expectation",
-    )
-
-    # yerr = np.abs(2 * np.random.normal(0, 1, N_BINS))
-    # ax.errorbar(
-    #     bin_centers,
-    #     np.percentile(histograms, 50, axis=0) + yerr,
-    #     xerr=bin_widths / 2,
-    #     yerr=yerr,
-    #     fmt="o",
-    #     color="purple",
-    #     ecolor="#7a21dd",
-    #     elinewidth=2,
-    #     capsize=0,
-    #     capthick=2,
-    #     linestyle="None",
-    #     label="Signal",
-    # )
-
-    counts, _ = np.histogram(p_tilde_data, bins=bins)
-    if np.sum(p_tilde_data > bins[-1]):
-        print("WARNING: Has overflow!!!", file=sys.stderr)
-
-    ax.plot(
-        bin_centers,
-        counts,
-        "o",
-        color="black",
-        label="Observed deviations",
-    )
-    # ax.errorbar(
-    #     bin_centers,
-    #     np.histogram(
-    #         p_tilde_data,
-    #         bins=bins,
-    #     )[0],
-    #     xerr=bin_widths / 2,
-    #     yerr=None,
-    #     fmt="o",
-    #     color="black",
-    #     ecolor="black",
-    #     elinewidth=2,
-    #     capsize=0,
-    #     capthick=2,
-    #     linestyle="None",
-    #     label="Observed deviations",
-    # )
-
-    # Calculate the lowest visible y-value
-    # In log scale, the minimum visible value is the smallest positive number above the lower limit
-    y_min, y_max = ax.get_ylim()
-    y_min_visible = np.power(10, np.floor(np.log10(y_min)))
-    if y_min_visible < y_min:
-        y_min_visible = np.power(10, np.floor(np.log10(y_min)) + 1)
-
-    y_max = ax.get_ylim()[1] * 10
-
-    # for z in range( 1, int( -np.log10(1.0/n_rounds) ) ):
-    #     log10p = -math.log10( z_to_p( z ) )
-    #     ax.axvline(log10p, 0, 1, color='#717581', linestyle='--', linewidth=2, alpha=0.6)
-    #     ax.text(log10p-bin_width/10, y_max*0.5, '${}\\sigma$'.format(z), color='#717581', fontsize=20, ha='right', alpha=0.6)
-
-    ax.set_xlabel(xlabel_linear)
-    ax.set_ylabel(ylabel)
-    legend = ax.legend(loc="upper right", edgecolor="black")
-    legend.get_frame().set_alpha(None)
-    legend.get_frame().set_facecolor("white")
-    ax.set_ylim(y_min_visible, y_max)
-
-    ax.text(
-        0.05,
-        y_max * 0.65,
-        title,
-        fontsize=20,
-        horizontalalignment="left",
-        verticalalignment="top",
-        fontproperties="Tex Gyre Heros",
-    )
-
-    ax.set_xlim(0, 1)
-
-    print(f"Saving plots for {title} (linear p-tilde) ...")
-    fig.savefig("{}/{}_{}.pdf".format(output_dir, file_name, "linear"))
-    fig.savefig("{}/{}_{}.png".format(output_dir, file_name, "linear"))
-    fig.savefig("{}/{}_{}.svg".format(output_dir, file_name, "linear"))
-
-
 def control_plot(res: ScanResults, output_dir: str) -> None:
-    return
     if res.distribution == DistributionType.met and "MET" not in res.class_name:
         return None
     if (
@@ -572,6 +405,38 @@ def control_plot(res: ScanResults, output_dir: str) -> None:
     )
 
     plt.close()
+
+
+def make_summary_plots(
+    results: list[ScanResults],
+    file_name: str,
+    file_name_modifier: str,
+    title: str,
+    sub_title: str,
+    n_rounds: int,
+    output_dir: str,
+) -> None:
+    scan_results = {}
+    for result in results:
+        scan_results[result.class_name] = result
+
+    if len(scan_results):
+        plot_ptilde_cumulative(
+            scan_results,
+            n_rounds,
+            output_dir,
+            file_name + "_" + file_name_modifier,
+            title,
+            sub_title,
+        )
+        plot_ptilde(
+            scan_results,
+            n_rounds,
+            output_dir,
+            file_name + "_" + file_name_modifier,
+            title,
+            sub_title,
+        )
 
 
 def plot_summary(
@@ -684,71 +549,88 @@ def plot_summary(
             ):
                 progress.advance(task)
 
-    def make_summary_plots(
-        results: list[ScanResults],
-        file_name: str,
-        file_name_modifier: str,
-        title: str,
-        sub_title: str,
-        filter_func: Callable[[ScanResults], bool],
-    ) -> None:
-        scan_results = {}
-        for result in results:
-            if filter_func(result):
-                scan_results[result.class_name] = result
+    plots_results: list[AsyncResult] = []
+    with mp.Pool(num_cpus) as p:
+        for selection in class_selections:
+            # Plotting exclusive classes
+            if class_type == ClassType.All or class_type == ClassType.Exclusive:
+                plots_results.append(
+                    p.apply_async(
+                        make_summary_plots,
+                        (
+                            list(
+                                filter(
+                                    lambda result: "+" not in result.class_name
+                                    and class_selections[selection].filter_func(result),
+                                    results,
+                                )
+                            ),
+                            f"{distribution}_exclusive",
+                            selection,
+                            "Exclusive Classes: {}".format(distribution.latex_name()),
+                            class_selections[selection].title,
+                            n_rounds,
+                            output_dir,
+                        ),
+                    )
+                )
 
-        plot_ptilde_cumulative(
-            scan_results,
-            n_rounds,
-            output_dir,
-            file_name + "_" + file_name_modifier,
-            title,
-        )
-        plot_ptilde(
-            scan_results,
-            n_rounds,
-            output_dir,
-            file_name + "_" + file_name_modifier,
-            title,
-            sub_title,
-        )
-        # plot_ptilde_linear(
-        #     scan_results, n_rounds, output_dir, file_name, title
-        # )
+            # Plotting inclusive classes
+            if class_type == ClassType.All or class_type == ClassType.Inclusive:
+                plots_results.append(
+                    p.apply_async(
+                        make_summary_plots,
+                        (
+                            list(
+                                filter(
+                                    lambda result: "+X" in result.class_name
+                                    and class_selections[selection].filter_func(result),
+                                    results,
+                                )
+                            ),
+                            f"{distribution}_inclusive",
+                            selection,
+                            "Inclusive Classes: {}".format(distribution.latex_name()),
+                            class_selections[selection].title,
+                            n_rounds,
+                            output_dir,
+                        ),
+                    )
+                )
 
-    # Plotting exclusive classes
-    for selection in class_selections:
-        if class_type == ClassType.All or class_type == ClassType.Exclusive:
-            make_summary_plots(
-                results=results,
-                file_name=f"{distribution}_exclusive",
-                file_name_modifier=selection,
-                title="Exclusive Classes: {}".format(distribution.latex_name()),
-                sub_title=class_selections[selection].title,
-                filter_func=lambda result: "+" not in result.class_name
-                and class_selections[selection].filter_func(result),
+            # Plotting jet inclusive classes
+            if class_type == ClassType.All or class_type == ClassType.JetInclusive:
+                plots_results.append(
+                    p.apply_async(
+                        make_summary_plots,
+                        (
+                            list(
+                                filter(
+                                    lambda result: "+NJet" in result.class_name
+                                    and class_selections[selection].filter_func(result),
+                                    results,
+                                )
+                            ),
+                            f"{distribution}_jet_inclusive",
+                            selection,
+                            "Jet Inclusive Classes: {}".format(
+                                distribution.latex_name()
+                            ),
+                            class_selections[selection].title,
+                            n_rounds,
+                            output_dir,
+                        ),
+                    )
+                )
+
+        with Progress() as progress:
+            task = progress.add_task(
+                "Summary plots ({} plots) ...".format(len(plots_results)),
+                total=len(plots_results),
             )
-
-        # Plotting inclusive classes
-        if class_type == ClassType.All or class_type == ClassType.Inclusive:
-            make_summary_plots(
-                results=results,
-                file_name=f"{distribution}_inclusive",
-                file_name_modifier=selection,
-                title="Inclusive Classes: {}".format(distribution.latex_name()),
-                sub_title=class_selections[selection].title,
-                filter_func=lambda result: "+X" in result.class_name
-                and class_selections[selection].filter_func(result),
-            )
-
-        # Plotting jet inclusive classes
-        if class_type == ClassType.All or class_type == ClassType.JetInclusive:
-            make_summary_plots(
-                results=results,
-                file_name=f"{distribution}_jet_inclusive",
-                file_name_modifier=selection,
-                title="Jet Inclusive Classes: {}".format(distribution.latex_name()),
-                sub_title=class_selections[selection].title,
-                filter_func=lambda result: "+NJet" in result.class_name
-                and class_selections[selection].filter_func(result),
-            )
+            while len(plots_results):
+                for i, async_res in enumerate(plots_results):
+                    if async_res.ready():
+                        _ = async_res.get()
+                        plots_results.pop(i)
+                        progress.advance(task)

@@ -62,6 +62,59 @@ class_selections["at_least_1_tau_no_other_leptons"] = ClassSelection(
     at_least_1_tau_no_leptons,
 )
 
+#### --------------------- at least one lepton - no photon
+
+
+def at_least_1_muon_no_leptons_no_photon(result: ScanResults) -> bool:
+    if (
+        "Muon" in result.class_name
+        and "Electron" not in result.class_name
+        and "Tau" not in result.class_name
+        and "Photon" not in result.class_name
+    ):
+        return True
+    return False
+
+
+class_selections["at_least_1_muon_no_other_leptons_no_photon"] = ClassSelection(
+    r"$N_{\mu} \geq 1$ - no $e$, $\tau$ or $\gamma$",
+    at_least_1_muon_no_leptons_no_photon,
+)
+
+
+def at_least_1_electron_no_leptons_no_photon(result: ScanResults) -> bool:
+    if (
+        "Muon" not in result.class_name
+        and "Electron" in result.class_name
+        and "Tau" not in result.class_name
+        and "Photon" not in result.class_name
+    ):
+        return True
+    return False
+
+
+class_selections["at_least_1_electron_no_other_leptons_no_photon"] = ClassSelection(
+    r"$N_{e} \geq 1$ - no $\mu$, $\tau$ or $\gamma$",
+    at_least_1_electron_no_leptons_no_photon,
+)
+
+
+def at_least_1_tau_no_leptons_no_photon(result: ScanResults) -> bool:
+    if (
+        "Muon" not in result.class_name
+        and "Electron" not in result.class_name
+        and "Tau" in result.class_name
+        and "Photon" not in result.class_name
+    ):
+        return True
+    return False
+
+
+class_selections["at_least_1_tau_no_other_leptons_no_photon"] = ClassSelection(
+    r"$N_{\tau} \geq 1$ - no $\mu$, $e$ or $\gamma$",
+    at_least_1_tau_no_leptons_no_photon,
+)
+
 #### --------------------- exactly 2 leptons
 
 
@@ -117,8 +170,7 @@ class_selections["exactly_2_tau_no_other_leptons"] = ClassSelection(
 
 def only_light_leptons(result: ScanResults) -> bool:
     if (
-        "Muon" in result.class_name
-        and "Electron" in result.class_name
+        ("Muon" in result.class_name or "Electron" in result.class_name)
         and "Tau" not in result.class_name
         and "Photon" not in result.class_name
         and "bJet" not in result.class_name
@@ -132,6 +184,22 @@ def only_light_leptons(result: ScanResults) -> bool:
 class_selections["only_light_leptons"] = ClassSelection(
     r"only light leptons",
     only_light_leptons,
+)
+
+
+def light_leptons_no_photon_no_tau(result: ScanResults) -> bool:
+    if (
+        ("Muon" in result.class_name or "Electron" in result.class_name)
+        and "Tau" not in result.class_name
+        and "Photon" not in result.class_name
+    ):
+        return True
+    return False
+
+
+class_selections["light_leptons_no_photon_no_tau"] = ClassSelection(
+    r"no $\tau$ or $\gamma$",
+    light_leptons_no_photon_no_tau,
 )
 
 #### --------------------- only photons
@@ -157,7 +225,7 @@ class_selections["only_photons"] = ClassSelection(
 )
 
 
-def only_photons_inclusive(result: ScanResults) -> bool:
+def only_photons_no_leptons(result: ScanResults) -> bool:
     if (
         "Muon" not in result.class_name
         and "Electron" not in result.class_name
@@ -168,7 +236,7 @@ def only_photons_inclusive(result: ScanResults) -> bool:
     return False
 
 
-class_selections["only_photons_inclusive"] = ClassSelection(
+class_selections["only_photons_no_leptons"] = ClassSelection(
     r"only photons - no leptons",
-    only_photons_inclusive,
+    only_photons_no_leptons,
 )
