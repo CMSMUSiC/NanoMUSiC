@@ -516,6 +516,7 @@ def summary(
     input_dir: str = "scan_results",
     output_dir: str = "scan_summary_plots",
     num_cpus: int = 128,
+    expected_n_rounds:int=10_000,
 ):
     from p_tilde import plot_summary
 
@@ -529,6 +530,7 @@ def summary(
             output_dir=output_dir,
             num_cpus=num_cpus,
             class_type=class_type,
+            expected_n_rounds=expected_n_rounds
         )
     else:
         for distribution in DistributionType:
@@ -538,6 +540,7 @@ def summary(
                 output_dir=output_dir,
                 num_cpus=num_cpus,
                 class_type=class_type,
+            expected_n_rounds=expected_n_rounds
             )
 
 

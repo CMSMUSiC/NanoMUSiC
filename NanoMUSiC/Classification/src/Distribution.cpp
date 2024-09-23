@@ -403,6 +403,7 @@ auto Distribution::get_systematics_uncert(
                 {
                     xsec_order_uncert_LO_samples.at(pg) += ROOTHelpers::Counts(*(unmerged_histos[i])) * 0.5;
                 }
+                // NLO case
                 else
                 {
                     auto uncert_qcd_scale = Uncertanties::AbsDiffAndSymmetrize(
@@ -414,7 +415,9 @@ auto Distribution::get_systematics_uncert(
 
                     for (std::size_t i = 0; i < uncert_qcd_scale.size(); i++)
                     {
-                        uncert_qcd_scale[i] = std::min(uncert_qcd_scale[i], std::fabs(nominal_counts[i] * 0.3));
+                        constexpr double qcd_scale_uncert_uupper_limit = 0.15;
+                        uncert_qcd_scale[i] =
+                            std::min(uncert_qcd_scale[i], std::fabs(nominal_counts[i] * qcd_scale_uncert_uupper_limit));
                     }
 
                     xsec_order_uncert_non_LO_samples.at(pg) += uncert_qcd_scale;
@@ -423,18 +426,18 @@ auto Distribution::get_systematics_uncert(
         }
     }
 
-    auto xsec_uncert = RVec<double>(m_n_bins, 0.);
-    for (const auto &[pg, uncert] : xsec_order_uncert_LO_samples)
-    {
-        xsec_uncert += ROOT::VecOps::pow(xsec_order_uncert_LO_samples.at(pg), 2.) +
-                       ROOT::VecOps::pow(xsec_order_uncert_non_LO_samples.at(pg), 2.);
-        // fmt::print("=== EC: {} - DIST: {} - PG: {} -- [{}]\n",
-        //    m_event_class_name,
-        //    m_distribution_name,
-        //    pg,
-        //    fmt::join(xsec_order_uncert_non_LO_samples.at(pg), ", "));
-    }
-    xsec_uncert = ROOT::VecOps::sqrt(xsec_uncert);
+    // auto xsec_uncert = RVec<double>(m_n_bins, 0.);
+    // for (const auto &[pg, uncert] : xsec_order_uncert_LO_samples)
+    // {
+    //     xsec_uncert += ROOT::VecOps::pow(xsec_order_uncert_LO_samples.at(pg), 2.) +
+    //                    ROOT::VecOps::pow(xsec_order_uncert_non_LO_samples.at(pg), 2.);
+    //     // fmt::print("=== EC: {} - DIST: {} - PG: {} -- [{}]\n",
+    //     //    m_event_class_name,
+    //     //    m_distribution_name,
+    //     //    pg,
+    //     //    fmt::join(xsec_order_uncert_non_LO_samples.at(pg), ", "));
+    // }
+    // xsec_uncert = ROOT::VecOps::sqrt(xsec_uncert);
 
     // std::cout << "Fakes error: "
     //           << Uncertanties::AbsDiff(m_total_mc_histogram,
@@ -478,7 +481,7 @@ auto Distribution::get_systematics_uncert(
     // }
 
     // will cap the PDF+As uncertainties
-    constexpr auto pdf_as_upper_limit = 0.7;
+    constexpr auto pdf_as_upper_limit = 0.15;
     auto capped_pdf_as_uncert = ROOTHelpers::Counts(m_total_mc_histogram) * pdf_as_upper_limit;
     auto pdf_as_uncert = Uncertanties::AbsDiff(m_total_mc_histogram,
                                                ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
@@ -501,13 +504,11 @@ auto Distribution::get_systematics_uncert(
         // Integrals
         ////////////////////////////////////
         // trigger
-        {"trigger", Uncertanties::IntegralUncert(m_total_mc_histogram, 0.03)},
+        {"trigger", Uncertanties::IntegralUncert(m_total_mc_histogram, 0.02)},
 
         // luminosity
+        // https://twiki.cern.ch/twiki/bin/view/CMS/LumiRecommendationsRun2#Quick_summary_table
         {"luminosity", Uncertanties::IntegralUncert(m_total_mc_histogram, 0.016)},
-
-        // XSecOrder + QCD Scale
-        {"xsec_order_qcd_scale", xsec_uncert},
 
         ////////////////////////////////////
         // Constants
@@ -521,8 +522,8 @@ auto Distribution::get_systematics_uncert(
         // PDF + Alpha_S
         // Uncertanties::AbsDiff(m_total_mc_histogram,
         //   ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("PDF_As_Up"))),
-        {"pdf_alphas", ROOTHelpers::Counts(m_total_mc_histogram) * 0.1},
-        // capped_pdf_as_uncert,
+        // {"pdf_alphas", ROOTHelpers::Counts(m_total_mc_histogram) * 0.1},
+        {"pdf_alphas", capped_pdf_as_uncert},
 
         // Prefiring
         {"prefiring",
@@ -615,6 +616,17 @@ auto Distribution::get_systematics_uncert(
              ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
                  static_cast<std::size_t>(Shifts::Variations::UnclusteredEnergy_Down))))},
     };
+
+    // XSecOrder + QCD Scale
+    for (const auto &[pg, uncert] : xsec_order_uncert_LO_samples)
+    {
+        m_systematics_uncertainties[fmt::format("xsec_LO_{}", pg)] = xsec_order_uncert_LO_samples.at(pg);
+    }
+
+    for (const auto &[pg, uncert] : xsec_order_uncert_LO_samples)
+    {
+        m_systematics_uncertainties[fmt::format("xsec_non_LO_{}", pg)] = xsec_order_uncert_non_LO_samples.at(pg);
+    }
 
     return ROOT::VecOps::sqrt(std::accumulate(
         m_systematics_uncertainties.cbegin(),

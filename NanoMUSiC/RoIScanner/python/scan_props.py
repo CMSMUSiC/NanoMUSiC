@@ -8,3 +8,6 @@ class ScanProps(BaseModel):
     output_directory: str
     rounds: int
     start_round: int = 0
+
+    class Config:
+        frozen = True

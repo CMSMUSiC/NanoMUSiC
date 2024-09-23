@@ -344,26 +344,30 @@ def launch_scan(
                 )
                 jobs: dict[ScanProps, AsyncResult] = {}
                 for prop in data_scan_props:
-                    jobs[prop] = p.apply_async(do_scan_data, prop)
+                    jobs[prop] = p.apply_async(do_scan_data, (prop,))
                 while len(jobs):
+                    ready: list[ScanProps] = []
                     not_ready: list[str] = []
                     progress.console.print("Checking ...")
                     for job in jobs:
                         if jobs[job].ready():
                             progress.console.print("Done: {}".format(jobs[job].get()))
-                            del jobs[job]
+                            ready.append(job)
                             progress.advance(task)
                         else:
                             not_ready.append(
-                                "Not ready: {} - {}".format(
-                                    job.ec_name, job.distribution_type
-                                )
+                                "{} - {}".format(job.ec_name, job.distribution_type)
                             )
-                    progress.console.print("Not ready: {}".format(not_ready))
-                    progress.console.print(
-                        "Waiting 10 seconds before next iteration ..."
-                    )
-                    time.sleep(10)
+
+                    for job_ready in ready:
+                        jobs.pop(job_ready)
+
+                    if len(not_ready) <= 100 and len(not_ready) > 0:
+                        progress.console.print("Not ready: {}".format(not_ready))
+                    # progress.console.print(
+                    #     "Waiting 10 seconds before next iteration ..."
+                    # )
+                    # time.sleep(10)
 
         if (
             len(scan_props) > 0
@@ -377,24 +381,29 @@ def launch_scan(
                 )
                 jobs: dict[ScanProps, AsyncResult] = {}
                 for prop in scan_props:
-                    jobs[prop] = p.apply_async(do_scan_toys, prop)
+                    jobs[prop] = p.apply_async(do_scan_toys, (prop,))
                 while len(jobs):
+                    ready: list[ScanProps] = []
                     not_ready: list[str] = []
                     progress.console.print("Checking ...")
                     for job in jobs:
                         if jobs[job].ready():
                             progress.console.print("Done: {}".format(jobs[job].get()))
-                            del jobs[job]
+                            ready.append(job)
                             progress.advance(task)
                         else:
                             not_ready.append(
-                                "Not ready: {} - {} - {}".format(
+                                "{} - {} - {}".format(
                                     job.ec_name, job.distribution_type, job.rounds
                                 )
                             )
-                    progress.console.print("Not ready: {}".format(not_ready))
-                    progress.console.print("Waiting 2 mins before next iteration ...")
-                    time.sleep(120)
+                    for job_ready in ready:
+                        jobs.pop(job_ready)
+
+                    if len(not_ready) <= 100 and len(not_ready) > 0:
+                        progress.console.print("Not ready: {}".format(not_ready))
+                    # progress.console.print("Waiting 2 mins before next iteration ...")
+                    # time.sleep(120)
 
     if do_copy_index_files:
         print("Copying index.php ...")

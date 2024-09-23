@@ -65,6 +65,7 @@ class ScanResults(BaseModel):
         scan_result_data_file_path: str,
         scan_mc_data_files: str,
         scan_input_file_path: str,
+        expected_n_rounds: int = 10_000,
     ) -> "ScanResults":
         with open(scan_result_data_file_path, "r") as file:
             data = json.load(file)
@@ -112,7 +113,7 @@ class ScanResults(BaseModel):
             p_values_mc=p_values_toys,
             skipped_scan=(
                 skipped_data_scan
-                or len(p_values_toys) != 10_000
+                or len(p_values_toys) != expected_n_rounds
                 or inv_mass_of_one_object
                 or has_only_one_tau
             ),

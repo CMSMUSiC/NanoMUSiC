@@ -445,13 +445,14 @@ def plot_summary(
     output_dir: str = "scan_summary_plots",
     num_cpus: int = 128,
     class_type: ClassType = ClassType.All,
+    expected_n_rounds: int = 10_000,
 ):
     os.system(f"mkdir -p {output_dir}")
     os.system(f"mkdir -p {output_dir}/control_plots")
 
     args = []
 
-    def make_args(ec: str) -> tuple[str, str, str]:
+    def make_args(ec: str) -> tuple[str, str, str, int]:
         return (
             "{}/{}/{}_{}_data_0_info.json".format(
                 input_dir,
@@ -471,6 +472,7 @@ def plot_summary(
                 ec.replace("+", "_"),
                 distribution,
             ),
+            expected_n_rounds,
         )
 
     async_results: list[AsyncResult] = []
@@ -490,19 +492,28 @@ def plot_summary(
                 if class_type == ClassType.Exclusive:
                     if "_X" not in ec and "_N" not in ec:
                         async_results.append(
-                            p.apply_async(ScanResults.make_scan_results, make_args(ec))
+                            p.apply_async(
+                                ScanResults.make_scan_results,
+                                make_args(ec),
+                            )
                         )
 
                 if class_type == ClassType.Inclusive:
                     if "_X" in ec:
                         async_results.append(
-                            p.apply_async(ScanResults.make_scan_results, make_args(ec))
+                            p.apply_async(
+                                ScanResults.make_scan_results,
+                                make_args(ec),
+                            )
                         )
 
                 if class_type == ClassType.JetInclusive:
                     if "_N" in ec:
                         async_results.append(
-                            p.apply_async(ScanResults.make_scan_results, make_args(ec))
+                            p.apply_async(
+                                ScanResults.make_scan_results,
+                                make_args(ec),
+                            )
                         )
 
             else:
