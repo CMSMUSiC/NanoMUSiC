@@ -348,7 +348,7 @@ def launch_scan(
                 while len(jobs):
                     ready: list[ScanProps] = []
                     not_ready: list[str] = []
-                    progress.console.print("Checking ...")
+                    # progress.console.print("Checking ...")
                     for job in jobs:
                         if jobs[job].ready():
                             progress.console.print("Done: {}".format(jobs[job].get()))
@@ -362,8 +362,8 @@ def launch_scan(
                     for job_ready in ready:
                         jobs.pop(job_ready)
 
-                    if len(not_ready) <= 100 and len(not_ready) > 0:
-                        progress.console.print("Not ready: {}".format(not_ready))
+                    # if len(not_ready) <= 100 and len(not_ready) > 0:
+                    #     progress.console.print("Not ready: {}".format(not_ready))
                     # progress.console.print(
                     #     "Waiting 10 seconds before next iteration ..."
                     # )
@@ -385,7 +385,7 @@ def launch_scan(
                 while len(jobs):
                     ready: list[ScanProps] = []
                     not_ready: list[str] = []
-                    progress.console.print("Checking ...")
+                    # progress.console.print("Checking ...")
                     for job in jobs:
                         if jobs[job].ready():
                             progress.console.print("Done: {}".format(jobs[job].get()))
@@ -400,8 +400,8 @@ def launch_scan(
                     for job_ready in ready:
                         jobs.pop(job_ready)
 
-                    if len(not_ready) <= 100 and len(not_ready) > 0:
-                        progress.console.print("Not ready: {}".format(not_ready))
+                    # if len(not_ready) <= 100 and len(not_ready) > 0:
+                    #     progress.console.print("Not ready: {}".format(not_ready))
                     # progress.console.print("Waiting 2 mins before next iteration ...")
                     # time.sleep(120)
 

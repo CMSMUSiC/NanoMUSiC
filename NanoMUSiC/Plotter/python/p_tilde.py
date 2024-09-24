@@ -515,7 +515,6 @@ def plot_summary(
                                 make_args(ec),
                             )
                         )
-
             else:
                 async_results.append(
                     p.apply_async(ScanResults.make_scan_results, make_args(ec))
