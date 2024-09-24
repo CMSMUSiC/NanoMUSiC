@@ -514,10 +514,10 @@ auto Distribution::get_systematics_uncert(
         // Constants
         ////////////////////////////////////
         // fakes
-        // {"fakes",
-        //  Uncertanties::AbsDiff(m_total_mc_histogram,
-        //                        ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
-        //                            static_cast<std::size_t>(Shifts::Variations::Fakes_Up))))},
+        {"fakes",
+         Uncertanties::AbsDiff(m_total_mc_histogram,
+                               ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                   static_cast<std::size_t>(Shifts::Variations::Fakes_Up))))},
 
         // PDF + Alpha_S
         // Uncertanties::AbsDiff(m_total_mc_histogram,
