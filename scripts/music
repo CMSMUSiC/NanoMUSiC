@@ -6,7 +6,7 @@ from distribution_model import DistributionType
 from typing_extensions import Annotated
 import typer
 import metadata
-from metadata import ClassType, Years
+from metadata import ClassType
 import sys
 import os
 import time

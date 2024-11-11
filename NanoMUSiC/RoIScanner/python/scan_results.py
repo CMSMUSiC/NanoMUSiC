@@ -1,3 +1,4 @@
+from numpy.ma import count
 from pydantic import BaseModel
 from metadata import ClassType
 import json
@@ -165,9 +166,60 @@ class ScanResults(BaseModel):
         return [-1 for _ in range(len(self.p_values_mc))]
 
     @staticmethod
-    def count_objects(class_name: str) -> int:
+    def count_objects(class_name: str, count_jets: bool = True) -> int:
         """For a given event class, it will count the number of physics objects."""
-        return sum([int(c) for c in class_name if c.isdigit()])
+        if count_jets:
+            return sum([int(c) for c in class_name if c.isdigit()])
+
+        parts = (
+            class_name.replace("_X", "")
+            .replace("+X", "")
+            .replace("_NJet", "")
+            .replace("+NJet", "")
+            .split("_")
+        )
+
+        n_muons: int = 0
+        n_electrons: int = 0
+        n_taus: int = 0
+        n_photons: int = 0
+        n_bjets: int = 0
+        n_met: int = 0
+
+        for i, p in enumerate(parts):
+            if i == 0:
+                continue
+
+            count = p[0]
+            if p[1:] == "Muon":
+                n_muons = int(count)
+                continue
+            if p[1:] == "Electron":
+                n_electrons = int(count)
+                continue
+            if p[1:] == "Tau":
+                n_taus = int(count)
+                continue
+            if p[1:] == "Photon":
+                n_photons = int(count)
+                continue
+            if p[1:] == "bJet":
+                n_bjets = int(count)
+                continue
+            if p[1:] == "Jet":
+                _ = int(count)
+                continue
+            if p[1:] == "MET":
+                n_met = int(count)
+                continue
+
+            print(
+                "ERROR: Could not count objects class name: {}".format(class_name),
+                file=sys.stderr,
+            )
+            sys.exit(-1)
+
+        return n_muons + n_electrons + n_taus + n_photons + n_bjets + n_met
 
     def dict(self, *args, **kwargs):
         # Get the original dict representation

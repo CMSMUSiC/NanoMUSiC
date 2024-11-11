@@ -137,9 +137,60 @@ def make_starting_rounds(total: int, chunk_size: int) -> list[tuple[int, int]]:
     return [(c[0], len(c)) for c in chunks]
 
 
-def count_objects(ec_name: str) -> int:
-    """For a given event class name, it will count the number of physics objects."""
-    return sum([int(c) for c in ec_name if c.isdigit()])
+def count_objects(class_name: str, count_jets: bool = True) -> int:
+    """For a given event class, it will count the number of physics objects."""
+    if count_jets:
+        return sum([int(c) for c in class_name if c.isdigit()])
+
+    parts = (
+        class_name.replace("_X", "")
+        .replace("+X", "")
+        .replace("_NJet", "")
+        .replace("+NJet", "")
+        .split("_")
+    )
+
+    n_muons: int = 0
+    n_electrons: int = 0
+    n_taus: int = 0
+    n_photons: int = 0
+    n_bjets: int = 0
+    n_met: int = 0
+
+    for i, p in enumerate(parts):
+        if i == 0:
+            continue
+
+        count = p[0]
+        if p[1:] == "Muon":
+            n_muons = int(count)
+            continue
+        if p[1:] == "Electron":
+            n_electrons = int(count)
+            continue
+        if p[1:] == "Tau":
+            n_taus = int(count)
+            continue
+        if p[1:] == "Photon":
+            n_photons = int(count)
+            continue
+        if p[1:] == "bJet":
+            n_bjets = int(count)
+            continue
+        if p[1:] == "Jet":
+            _ = int(count)
+            continue
+        if p[1:] == "MET":
+            n_met = int(count)
+            continue
+
+        print(
+            "ERROR: Could not count objects class name: {}".format(class_name),
+            file=sys.stderr,
+        )
+        sys.exit(-1)
+
+    return n_muons + n_electrons + n_taus + n_photons + n_bjets + n_met
 
 
 def build_scan_jobs_task(
@@ -164,7 +215,8 @@ def build_scan_jobs_task(
 
     for dist_name in distribution_names:
         if (
-            "Run2" in dist_name
+            # "Run2" in dist_name
+            "2016" in dist_name
             and "counts" not in dist_name
             and distribution_type in dist_name
         ):
@@ -197,7 +249,8 @@ def build_scan_jobs_task(
                             json_file_path=ScanDistribution(
                                 name=ec_nice_name,
                                 distribution=scan_distribution_type,
-                                year=ScanYear.Run2,
+                                # year=ScanYear.Run2,
+                                year=ScanYear.Run2016,
                                 MCBins=MCBinsBuilder(dist.get_mcbins_props()).build(),
                                 DataBins=data_counts,
                                 FirstRound=start_round,
@@ -533,7 +586,7 @@ def launch_crab_scan(
         )
     ]
     data_scan_props = sorted(
-        data_scan_props, key=lambda scan: count_objects(scan.ec_name)
+        data_scan_props, key=lambda scan: count_objects(scan.ec_name, count_jets=False)
     )
     scan_props = [
         scan
@@ -543,7 +596,9 @@ def launch_crab_scan(
             and scan.distribution_type == "invariant_mass"
         )
     ]
-    scan_props = sorted(scan_props, key=lambda scan: count_objects(scan.ec_name))
+    scan_props = sorted(
+        scan_props, key=lambda scan: count_objects(scan.ec_name, count_jets=False)
+    )
 
     print("Writing CMSSW files ...")
     exec_command("rm -rf temp_scan_cmssw_config_files")
