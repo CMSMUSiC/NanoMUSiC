@@ -215,8 +215,8 @@ def build_scan_jobs_task(
 
     for dist_name in distribution_names:
         if (
-            # "Run2" in dist_name
-            "2016" in dist_name
+            "Run2" in dist_name
+            # "2016" in dist_name
             and "counts" not in dist_name
             and distribution_type in dist_name
         ):
@@ -249,8 +249,8 @@ def build_scan_jobs_task(
                             json_file_path=ScanDistribution(
                                 name=ec_nice_name,
                                 distribution=scan_distribution_type,
-                                # year=ScanYear.Run2,
-                                year=ScanYear.Run2016,
+                                year=ScanYear.Run2,
+                                # year=ScanYear.Run2016,
                                 MCBins=MCBinsBuilder(dist.get_mcbins_props()).build(),
                                 DataBins=data_counts,
                                 FirstRound=start_round,
