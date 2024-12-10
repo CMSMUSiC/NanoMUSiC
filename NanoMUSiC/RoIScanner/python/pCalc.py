@@ -8,10 +8,12 @@ import numpy as np
 import scipy.stats
 
 # Load shared object libraries
-src_path = os.path.join(os.environ["SCAN_BASE"], "src")
-default_lookup_path = os.path.join(os.environ["SCAN_BASE"], "bin", "lookuptable.bin")
+src_path = os.path.join(os.environ["MUSIC_BASE"], "lib")
+default_lookup_path = os.path.join(os.environ["MUSIC_BASE"], "bin", "lookuptable.bin")
 
-cc_library = ctypes.cdll.LoadLibrary(os.path.join(src_path, "ConvolutionComputer.so"))
+cc_library = ctypes.cdll.LoadLibrary(
+    os.path.join(src_path, "libConvolutionComputer.so")
+)
 _compute_p_convolution = cc_library.compute_p_convolution
 _compute_p_convolution.argtypes = [
     ctypes.c_double,
@@ -21,7 +23,7 @@ _compute_p_convolution.argtypes = [
 ]
 _compute_p_convolution.restype = ctypes.c_double
 
-cl_library = ctypes.cdll.LoadLibrary(os.path.join(src_path, "ConvolutionLookup.so"))
+cl_library = ctypes.cdll.LoadLibrary(os.path.join(src_path, "libConvolutionLookup.so"))
 _lookup_p_convolution = cl_library.lookup_p_convolution
 _lookup_p_convolution.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double]
 _lookup_p_convolution.restype = ctypes.c_double

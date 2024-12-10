@@ -1,12 +1,11 @@
-from numpy.ma import count
 from pydantic import BaseModel
-from metadata import ClassType
 import json
 import glob
 import sys
 import numpy as np
+from enum import Enum
 
-from scipy.stats import ks_1samp, uniform
+from scipy.stats import ks_1samp
 
 
 def ks_to_uniform(observed: list[float]):
@@ -47,6 +46,11 @@ def get_dominant_process_group(scan_input_file_path: str):
     return max(events_per_process_group, key=lambda pg: events_per_process_group[pg])
 
 
+class RoIType(str, Enum):
+    excess = "excess"
+    deficit = "deficit"
+
+
 class ScanResults(BaseModel):
     class_name: str
     distribution: str
@@ -54,8 +58,13 @@ class ScanResults(BaseModel):
     width: float
     p_value_data: float
     p_values_mc: list[float]
+    p_values_mc_roi_type: list[RoIType]
     skipped_scan: bool
     dominant_process_group: str
+    roi_type: RoIType
+    data_counts: int
+    mc_counts: float
+    mc_total_uncert: float
 
     @property
     def upper_edge(self) -> float:
@@ -72,6 +81,14 @@ class ScanResults(BaseModel):
             data = json.load(file)
 
         p_value_data = data["ScanResults"][0]["CompareScore"]
+
+        data_counts = data["ScanResults"][0]["dataEvents"]
+        mc_counts = data["ScanResults"][0]["mcEvents"]
+        mc_total_uncert = data["ScanResults"][0]["mcTotalUncert"]
+        roi_type = RoIType.excess
+        if data["ScanResults"][0]["dataEvents"] < data["ScanResults"][0]["mcEvents"]:
+            roi_type = RoIType.deficit
+
         class_name = data["name"]
         distribution = data["distribution"]
         lower_edge = data["ScanResults"][0]["lowerEdge"]
@@ -84,22 +101,27 @@ class ScanResults(BaseModel):
             and sum([int(c) for c in class_name if c.isdigit()]) == 1
         )
 
-        has_only_one_tau = (
+        has_only_taus = (
             "Muon" not in class_name
             and "Electron" not in class_name
             and "Photon" not in class_name
             and "Tau" in class_name
         )
-        if has_only_one_tau:
-            has_only_one_tau = has_only_one_tau and get_num_taus(class_name) == 1
+        if has_only_taus:
+            has_only_taus = has_only_taus and get_num_taus(class_name) == 1
 
         p_values_toys = []
+        p_values_toys_roi_type = []
         for f in glob.glob(scan_mc_data_files):
             with open(f, "r") as file:
                 mc = json.load(file)
                 for item in mc["ScanResults"]:
                     if not item["skippedScan"]:
                         p_values_toys.append(item["CompareScore"])
+                        toy_roi_type = RoIType.excess
+                        if item["dataEvents"] < item["mcEvents"]:
+                            toy_roi_type = RoIType.deficit
+                        p_values_toys_roi_type.append(toy_roi_type)
 
         if any(([p < 0 or p > 1 for p in p_values_toys])):
             print("ERROR: Found p-values out of bounds.", file=sys.stderr)
@@ -112,20 +134,33 @@ class ScanResults(BaseModel):
             width=width,
             p_value_data=p_value_data,
             p_values_mc=p_values_toys,
+            p_values_mc_roi_type=p_values_toys_roi_type,
             skipped_scan=(
                 skipped_data_scan
                 or len(p_values_toys) != expected_n_rounds
                 or inv_mass_of_one_object
-                or has_only_one_tau
+                or has_only_taus
             ),
             dominant_process_group=get_dominant_process_group(scan_input_file_path),
+            roi_type=roi_type,
+            data_counts=data_counts,
+            mc_counts=mc_counts,
+            mc_total_uncert=mc_total_uncert,
         )
 
     def p_tilde(self) -> float | None:
         if self.skipped_scan:
             return None
 
-        counts = np.sum(np.array(self.p_values_mc) <= self.p_value_data)
+        counts = np.sum(
+            (
+                np.array(self.p_values_mc) <= self.p_value_data
+                # * (
+                #     # np.array([roi == self.roi_type for roi in self.p_values_mc_roi_type])
+                #     <= self.p_value_data
+                # )
+            )
+        )
         if counts == 0.0:
             p_tilde = 1 / float(len(self.p_values_mc) + 1)
             return p_tilde
@@ -153,7 +188,17 @@ class ScanResults(BaseModel):
         p_tilde_toys = []
 
         p_values_mc = np.array(self.p_values_mc)
-        counts = np.sum(p_values_mc[:, None] <= p_values_mc, axis=0) - 1
+        roi_types = np.array(
+            [1 if roi == RoIType.excess else 0 for roi in self.p_values_mc_roi_type]
+        )
+        counts = (
+            np.sum(
+                (p_values_mc[:, None] <= p_values_mc),
+                # * (roi_types[:, None] == roi_types)
+                axis=0,
+            )
+            - 1
+        )
         p_tilde_toys = counts / float(len(p_values_mc) - 1)
         p_tilde_toys[p_tilde_toys == 0.0] = 1 / float(len(self.p_values_mc))
 
@@ -229,5 +274,9 @@ class ScanResults(BaseModel):
         original_dict["upper_edge"] = self.upper_edge
         original_dict["p_tilde"] = self.p_tilde()
         original_dict.pop("p_values_mc", None)
+        original_dict.pop("p_values_mc_roi_type", None)
+        original_dict["number_of_toy_roy_type_matches"] = sum(
+            [roi == self.roi_type for roi in self.p_values_mc_roi_type]
+        )
 
         return original_dict

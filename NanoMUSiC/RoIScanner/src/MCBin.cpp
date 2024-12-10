@@ -80,7 +80,7 @@ MCBin &MCBin::operator+=(const MCBin &add)
         std::cerr << "MCBin2 lowerEdge: " << add.lowerEdge;
         std::cerr << " upperEdge: " << (add.lowerEdge + add.width);
         std::cerr << " (width " << add.width << ")" << std::endl;
-	std::exit(EXIT_FAILURE);
+        std::exit(EXIT_FAILURE);
     }
     lowerEdge = min(lowerEdge, add.lowerEdge);
     width += add.width;
@@ -285,8 +285,12 @@ double MCBin::symmetrizeError(const std::pair<double, double> error)
     //~ std::cout << error.first << " " << error.second << " " << version1 << " " << version2 << std::endl;
     //~ }
     if (error.first == error.second)
+    {
         return error.first;
+    }
     else
+    {
         return std::abs(error.first + error.second) / 2.;
+    }
     //~ else return (std::abs( error.first) + std::abs(error.second )) / 2.;
 }

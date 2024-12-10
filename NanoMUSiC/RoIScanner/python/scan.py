@@ -213,12 +213,18 @@ def build_scan_jobs_task(
         str(k.GetName()) for k in root_file.GetListOfKeys()
     ]
 
+    def distribution_type_checker(distribution_name) -> bool:
+        if distribution_type:
+            return distribution_type in dist_name
+
+        return True
+
     for dist_name in distribution_names:
         if (
             "Run2" in dist_name
             # "2016" in dist_name
             and "counts" not in dist_name
-            and distribution_type in dist_name
+            and distribution_type_checker(dist_name)
         ):
             dist = root_file.Get(dist_name)
             if dist.has_mc(MC_THRESHOLD) and dist.has_data():
@@ -245,7 +251,7 @@ def build_scan_jobs_task(
                     temp_scan_props.append(
                         ScanProps(
                             ec_name=ec_nice_name,
-                            distribution_type=distribution_type,
+                            distribution_type=scan_distribution_type.value,
                             json_file_path=ScanDistribution(
                                 name=ec_nice_name,
                                 distribution=scan_distribution_type,
@@ -335,7 +341,7 @@ def launch_scan(
         with Progress() as progress:
             task = progress.add_task(
                 "Building scan jobs {} - {} distribution files ...".format(
-                    distribution_type,
+                    distribution_type if distribution_files != None else "",
                     len(distribution_files),
                 ),
                 total=len(distribution_files),
@@ -373,7 +379,7 @@ def launch_scan(
         )
     ]
     data_scan_props = sorted(
-        data_scan_props, key=lambda scan: count_objects(scan.ec_name)
+        data_scan_props, key=lambda scan: count_objects(scan.ec_name, count_jets=False)
     )
     scan_props = [
         scan
@@ -383,7 +389,9 @@ def launch_scan(
             and scan.distribution_type == "invariant_mass"
         )
     ]
-    scan_props = sorted(scan_props, key=lambda scan: count_objects(scan.ec_name))
+    scan_props = sorted(
+        scan_props, key=lambda scan: count_objects(scan.ec_name, count_jets=False)
+    )
     with Pool(max(1, min(max(len(data_scan_props), len(scan_props)), num_cpus))) as p:
         if (
             len(data_scan_props) > 0
@@ -511,8 +519,8 @@ def launch_crab_scan(
     output_dir: str = "scan_results",
     num_cpus: int = 128,
     do_clean: bool = False,
-    n_rounds: int = 100_000,
-    split_size: int = 10_000,
+    n_rounds: int = 10_000,
+    split_size: int = 5_000,
 ) -> None:
     cms_user = crab_username()
     print("CRAB username is: {}".format(cms_user))
@@ -826,9 +834,9 @@ def get_output(skip_download: bool = False) -> None:
                             sys.exit(-1)
 
                     progress.advance(task)
-    else:
-        exec_command("rm -rf scan_results")
-        exec_command("tar -xvf scan_results.tar")
+
+    exec_command("rm -rf scan_results")
+    # exec_command("tar -xvf scan_results.tar")
 
     # unpack results
     result_files: list[str] = []
@@ -838,12 +846,12 @@ def get_output(skip_download: bool = False) -> None:
             if filepath.endswith(".tar"):
                 result_files.append(filepath)
 
-    for f in track(result_files, description="Unpacking results"):
+    for f in track(result_files, description="Unpacking CRAB job results ... "):
         exec_command("tar -xf {}".format(f))
 
-    print("Cleanning ...")
-    exec_command("rm -rf scan_downloads")
-    print("... done.")
+    # print("Cleanning ...")
+    # exec_command("rm -rf scan_downloads")
+    # print("... done.")
 
 
 class RemainingScan(BaseModel):
@@ -907,6 +915,8 @@ def scan_remaining(results_dir: str, input_dir: str, n_rounds: int, split_size: 
         ):
             remaining_scans[scan.distribution].append(scan)
 
+    data_scans = []
+    mc_scans = []
     for dist in DistributionType:
         if len(remaining_scans[dist]):
             this_data_scans = [
@@ -915,18 +925,7 @@ def scan_remaining(results_dir: str, input_dir: str, n_rounds: int, split_size: 
                 if scan.is_data
             ]
             if len(this_data_scans):
-                launch_scan(
-                    input_dir,
-                    this_data_scans,
-                    dist,
-                    ClassType.All,
-                    results_dir,
-                    n_rounds=n_rounds,
-                    split_size=split_size,
-                    data_or_mc=DataOrMC.Data,
-                    do_make_shifts=False,
-                    do_copy_index_files=False,
-                )
+                data_scans += this_data_scans
             else:
                 print("Nothing to do for {} (data).".format(dist))
 
@@ -936,19 +935,33 @@ def scan_remaining(results_dir: str, input_dir: str, n_rounds: int, split_size: 
                 if not scan.is_data
             ]
             if len(this_mc_scans):
-                launch_scan(
-                    input_dir,
-                    this_mc_scans,
-                    dist,
-                    ClassType.All,
-                    results_dir,
-                    n_rounds=n_rounds,
-                    split_size=split_size,
-                    data_or_mc=DataOrMC.MC,
-                    do_make_shifts=False,
-                    do_copy_index_files=False,
-                )
+                mc_scans += this_mc_scans
             else:
                 print("Nothing to do for {} (mc).".format(dist))
         else:
             print("Nothing to do for {} (mc).".format(dist))
+
+    launch_scan(
+        input_dir,
+        data_scans,
+        None,
+        ClassType.All,
+        results_dir,
+        n_rounds=n_rounds,
+        split_size=split_size,
+        data_or_mc=DataOrMC.Data,
+        do_make_shifts=False,
+        do_copy_index_files=False,
+    )
+    launch_scan(
+        input_dir,
+        mc_scans,
+        None,
+        ClassType.All,
+        results_dir,
+        n_rounds=n_rounds,
+        split_size=split_size,
+        data_or_mc=DataOrMC.MC,
+        do_make_shifts=False,
+        do_copy_index_files=False,
+    )

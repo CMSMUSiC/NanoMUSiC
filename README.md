@@ -3,9 +3,12 @@
 ![music](https://raw.githubusercontent.com/CMSMUSiC/NanoMUSiC/main/docs/images/music.svg)
 
 
-MUSiC - Model Unspecific Search in CMS
+**MUSiC - Model Unspecific Search in CMS**
 
-Run2 - Ultra Legacy and Run3, using NanoAOD
+Analysis framework for Run2-UL ( and Run3 ? ) using NanoAOD.
+
+Last poublication (Run2016): [Eur. Phys. J. C 81 (2021) 629](http://dx.doi.org/10.1140/epjc/s10052-021-09236-z)
+
 
 ## About
 
@@ -49,3 +52,4 @@ For every new session you should setup the environment.
 ```
 source setenv.sh
 ```
+st public result":

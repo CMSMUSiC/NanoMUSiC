@@ -154,10 +154,15 @@ def p_value_task(distribution_file: str):
                     filter(lambda pg: pg != "Data", mc_hists),
                     key=lambda pg: mc_hists[pg].Integral(),
                 )
+                total_mc = 0
                 for pg in mc_hists_keys_sorted:
                     counts[dist.m_year_to_plot][plot.class_name.decode("utf-8")]["mc"][
                         pg.decode("utf-8")
                     ] = mc_hists[pg].GetBinContent(1)
+                    total_mc += mc_hists[pg].GetBinContent(1)
+                counts[dist.m_year_to_plot][plot.class_name.decode("utf-8")][
+                    "total_mc"
+                ] = total_mc
                 counts[dist.m_year_to_plot][plot.class_name.decode("utf-8")][
                     "mc_uncert"
                 ] = plot.mc_uncertainty.GetErrorY(0)

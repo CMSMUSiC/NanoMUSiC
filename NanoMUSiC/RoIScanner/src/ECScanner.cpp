@@ -176,6 +176,11 @@ void ECScanner::findRoI(const std::string &scoreType, const bool filtered)
 
             // calculate new score
             const double score = thisScoreFunc(mcbin, data);
+
+            // fmt::print("-- [BEGIN] DEBUG: ");
+            // std::cout << mcbin << std::endl;
+            // fmt::print("-- [END] DEBUG: ");
+
             if (score >= 0)
             {
                 // store scan result

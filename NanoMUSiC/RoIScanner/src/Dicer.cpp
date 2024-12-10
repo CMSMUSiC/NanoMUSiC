@@ -120,7 +120,7 @@ std::vector<double> Dicer::dicePoissonData(const std::vector<MCBin> &bins,
 
             // Check whether the new mean can be represented as long int, leave 2 orders
             // of magnitude as buffer (thus the factor 100).
-            assert(static_cast<unsigned long long>( 100 * newMean ) < std::numeric_limits<unsigned long long>::max());
+            assert(static_cast<unsigned long long>(100 * newMean) < std::numeric_limits<unsigned long long>::max());
 
             // Construct poisson distribution. Using "long long" as int datatype guarantees a
             // range of at least 64bits (up to 1.84e19 ).

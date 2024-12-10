@@ -904,11 +904,11 @@ auto classification(const std::string process,
                                                                  year,                              //
                                                                  Shifts::Variations::Nominal);
 
-        auto nominal_taus = ObjectFactories::make_taus(unwrap(Tau_pt),                     //
-                                                       unwrap(Tau_eta),                    //
-                                                       unwrap(Tau_phi),                    //
-                                                       unwrap(Tau_dz),                     //
-                                                       unwrap(Tau_mass),                   //
+        auto nominal_taus = ObjectFactories::make_taus(unwrap(Tau_pt),   //
+                                                       unwrap(Tau_eta),  //
+                                                       unwrap(Tau_phi),  //
+                                                       unwrap(Tau_dz),   //
+                                                       unwrap(Tau_mass), //
                                                        unwrap(Tau_genPartFlav),
                                                        unwrap(Tau_genPartIdx),             //
                                                        unwrap(Tau_decayMode),              //
@@ -1054,11 +1054,11 @@ auto classification(const std::string process,
             {
                 if (starts_with(Shifts::variation_to_string(diff_shift), "Tau"))
                 {
-                    return ObjectFactories::make_taus(unwrap(Tau_pt),                     //
-                                                      unwrap(Tau_eta),                    //
-                                                      unwrap(Tau_phi),                    //
-                                                      unwrap(Tau_dz),                     //
-                                                      unwrap(Tau_mass),                   //
+                    return ObjectFactories::make_taus(unwrap(Tau_pt),   //
+                                                      unwrap(Tau_eta),  //
+                                                      unwrap(Tau_phi),  //
+                                                      unwrap(Tau_dz),   //
+                                                      unwrap(Tau_mass), //
                                                       unwrap(Tau_genPartFlav),
                                                       unwrap(Tau_genPartIdx),             //
                                                       unwrap(Tau_decayMode),              //

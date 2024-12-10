@@ -208,6 +208,11 @@ inline auto AbsDiff(const TH1F &h1, const TH1F &h2) -> RVec<double>
     return ROOT::VecOps::abs(Counts(h1) - Counts(h2));
 }
 
+inline auto Diff(const TH1F &h1, const TH1F &h2) -> RVec<double>
+{
+    return Counts(h1) - Counts(h2);
+}
+
 inline auto SumAsTH1F(const std::vector<TH1F *> &histos, const std::optional<std::string> &new_name = std::nullopt)
     -> TH1F
 {
@@ -653,9 +658,14 @@ inline auto AbsDiff(const TH1F &nom, const TH1F &shift) -> RVec<double>
     return ROOTHelpers::AbsDiff(nom, shift);
 }
 
-inline auto AbsDiffAndSymmetrize(const TH1F &nom, const TH1F &up, const TH1F &down) -> RVec<double>
+inline auto AbsDiffAndSymmetrizeForPlots(const TH1F &nom, const TH1F &up, const TH1F &down) -> RVec<double>
 {
     return Symmetrize(ROOTHelpers::AbsDiff(nom, up), ROOTHelpers::AbsDiff(nom, down));
+}
+
+inline auto AbsDiffAndSymmetrize(const TH1F &nom, const TH1F &up, const TH1F &down) -> RVec<double>
+{
+    return ROOT::VecOps::abs(Symmetrize(ROOTHelpers::Diff(up, nom), ROOTHelpers::Diff(down, nom)));
 }
 
 } // namespace Uncertanties

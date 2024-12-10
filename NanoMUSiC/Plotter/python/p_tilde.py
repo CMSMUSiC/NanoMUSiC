@@ -450,8 +450,6 @@ def plot_summary(
     os.system(f"mkdir -p {output_dir}")
     os.system(f"mkdir -p {output_dir}/control_plots")
 
-    args = []
-
     def make_args(ec: str) -> tuple[str, str, str, int]:
         return (
             "{}/{}/{}_{}_data_0_info.json".format(
