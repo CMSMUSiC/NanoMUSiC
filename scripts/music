@@ -194,23 +194,6 @@ def launch(
             )
             sys.exit(-1)
 
-    print("Creating source code tarball ...")
-    os.system("rm -rf classification_src.tar.gz ")
-    proc = subprocess.run(
-        "tar --exclude-from=$MUSIC_BASE/.gitignore --exclude=build --exclude=.git --exclude=.ruff_cache --exclude=.rucio_seth --exclude=.rucio_silva --exclude=Legacy --exclude=opt --exclude=bin --exclude=lib -czvf classification_src.tar.gz -C $MUSIC_BASE .",
-        shell=True,
-        capture_output=True,
-        text=True,
-    )
-    if proc.returncode != 0:
-        print(
-            "ERROR: Could create source code tarball.\n{}\n{}".format(
-                proc.stdout, proc.stderr
-            ),
-            file=sys.stderr,
-        )
-        sys.exit(-1)
-
     import classification
 
     if not os.path.exists("sum_weights.json"):
@@ -224,6 +207,22 @@ def launch(
             config_file, process, year, max_files, 1, num_cpus
         )
     else:
+        print("Creating source code tarball ...")
+        os.system("rm -rf classification_src.tar.gz ")
+        proc = subprocess.run(
+            "tar --exclude-from=$MUSIC_BASE/.gitignore --exclude=build --exclude=.git --exclude=.ruff_cache --exclude=.rucio_seth --exclude=.rucio_silva --exclude=Legacy --exclude=opt --exclude=bin --exclude=lib -czvf classification_src.tar.gz -C $MUSIC_BASE .",
+            shell=True,
+            capture_output=True,
+            text=True,
+        )
+        if proc.returncode != 0:
+            print(
+                "ERROR: Could create source code tarball.\n{}\n{}".format(
+                    proc.stdout, proc.stderr
+                ),
+                file=sys.stderr,
+            )
+            sys.exit(-1)
         classification.launch_condor(
             config_file, process, year, max_files, split_size, dry_run
         )

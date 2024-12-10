@@ -1172,36 +1172,36 @@ auto classification(const std::string process,
             // clear objects
             auto electrons_idxs = electrons.indexes();
             auto electrons_clear_mask = electrons.clear_mask(muons, 0.4);
-            if (not(std::equal(electrons_clear_mask.cbegin(), electrons_clear_mask.cend(), electrons_idxs.cbegin())))
+            if (electrons_clear_mask.size() != electrons.size())
             {
                 electrons = electrons.take_as_copy(electrons_clear_mask);
             }
 
             auto taus_idxs = taus.indexes();
             auto taus_clear_mask = taus.clear_mask(electrons, 0.4);
-            if (not(std::equal(taus_clear_mask.cbegin(), taus_clear_mask.cend(), taus_idxs.cbegin())))
+            if (taus_clear_mask.size() != taus.size())
             {
                 taus = taus.take_as_copy(taus_clear_mask);
             }
             taus_clear_mask = taus.clear_mask(muons, 0.4);
-            if (not(std::equal(taus_clear_mask.cbegin(), taus_clear_mask.cend(), taus_idxs.cbegin())))
+            if (taus_clear_mask.size() != taus.size())
             {
                 taus = taus.take_as_copy(taus_clear_mask);
             }
 
             auto photons_idxs = photons.indexes();
             auto photons_clear_mask = photons.clear_mask(taus, 0.4);
-            if (not(std::equal(photons_clear_mask.cbegin(), photons_clear_mask.cend(), photons_idxs.cbegin())))
+            if (photons_clear_mask.size() != photons.size())
             {
                 photons = photons.take_as_copy(photons_clear_mask);
             }
             photons_clear_mask = photons.clear_mask(electrons, 0.4);
-            if (not(std::equal(photons_clear_mask.cbegin(), photons_clear_mask.cend(), photons_idxs.cbegin())))
+            if (photons_clear_mask.size() != photons.size())
             {
                 photons = photons.take_as_copy(photons_clear_mask);
             }
             photons_clear_mask = photons.clear_mask(muons, 0.4);
-            if (not(std::equal(photons_clear_mask.cbegin(), photons_clear_mask.cend(), photons_idxs.cbegin())))
+            if (photons_clear_mask.size() != photons.size())
             {
                 photons = photons.take_as_copy(photons_clear_mask);
             }
@@ -1209,42 +1209,42 @@ auto classification(const std::string process,
             auto jets_idxs = jets.indexes();
             auto bjets_idxs = bjets.indexes();
             auto jets_clear_mask = jets.clear_mask(photons, 0.5);
-            if (not(std::equal(jets_clear_mask.cbegin(), jets_clear_mask.cend(), jets_idxs.cbegin())))
+            if (jets_clear_mask.size() != jets.size())
             {
                 jets = jets.take_as_copy(jets_clear_mask);
             }
             auto bjets_clear_mask = bjets.clear_mask(photons, 0.5);
-            if (not(std::equal(bjets_clear_mask.cbegin(), bjets_clear_mask.cend(), bjets_idxs.cbegin())))
+            if (bjets_clear_mask.size() != bjets.size())
             {
                 bjets = bjets.take_as_copy(bjets_clear_mask);
             }
             jets_clear_mask = jets.clear_mask(taus, 0.5);
-            if (not(std::equal(jets_clear_mask.cbegin(), jets_clear_mask.cend(), jets_idxs.cbegin())))
+            if (jets_clear_mask.size() != jets.size())
             {
                 jets = jets.take_as_copy(jets_clear_mask);
             }
             bjets_clear_mask = bjets.clear_mask(taus, 0.5);
-            if (not(std::equal(bjets_clear_mask.cbegin(), bjets_clear_mask.cend(), bjets_idxs.cbegin())))
+            if (bjets_clear_mask.size() != bjets.size())
             {
                 bjets = bjets.take_as_copy(bjets_clear_mask);
             }
             jets_clear_mask = jets.clear_mask(electrons, 0.5);
-            if (not(std::equal(jets_clear_mask.cbegin(), jets_clear_mask.cend(), jets_idxs.cbegin())))
+            if (jets_clear_mask.size() != jets.size())
             {
                 jets = jets.take_as_copy(jets_clear_mask);
             }
             bjets_clear_mask = bjets.clear_mask(electrons, 0.5);
-            if (not(std::equal(bjets_clear_mask.cbegin(), bjets_clear_mask.cend(), bjets_idxs.cbegin())))
+            if (bjets_clear_mask.size() != bjets.size())
             {
                 bjets = bjets.take_as_copy(bjets_clear_mask);
             }
             jets_clear_mask = jets.clear_mask(muons, 0.5);
-            if (not(std::equal(jets_clear_mask.cbegin(), jets_clear_mask.cend(), jets_idxs.cbegin())))
+            if (jets_clear_mask.size() != jets.size())
             {
                 jets = jets.take_as_copy(jets_clear_mask);
             }
             bjets_clear_mask = bjets.clear_mask(muons, 0.5);
-            if (not(std::equal(bjets_clear_mask.cbegin(), bjets_clear_mask.cend(), bjets_idxs.cbegin())))
+            if (bjets_clear_mask.size() != bjets.size())
             {
                 bjets = bjets.take_as_copy(bjets_clear_mask);
             }
