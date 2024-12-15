@@ -635,11 +635,11 @@ def start(
         print("ERROR: n-rounds should be divisible by split-size.", file=sys.stderr)
         sys.exit(1)
 
-    from scan import launch_scan, launch_crab_scan
+    from scan import start_scan, start_crab_scan
 
     if target == ScanTarget.Local:
         if distribution:
-            launch_scan(
+            start_scan(
                 input_dir,
                 filters,
                 distribution.value,
@@ -651,7 +651,7 @@ def start(
                 split_size,
             )
         else:
-            launch_scan(
+            start_scan(
                 input_dir,
                 filters,
                 DistributionsType.InvariantMass.value,
@@ -662,7 +662,7 @@ def start(
                 n_rounds,
                 split_size,
             )
-            launch_scan(
+            start_scan(
                 input_dir,
                 filters,
                 DistributionsType.SumPt.value,
@@ -673,7 +673,7 @@ def start(
                 n_rounds,
                 split_size,
             )
-            launch_scan(
+            start_scan(
                 input_dir,
                 filters,
                 DistributionsType.MET.value,
@@ -686,7 +686,7 @@ def start(
             )
 
     if target == ScanTarget.CRAB:
-        launch_crab_scan(
+        start_crab_scan(
             input_dir,
             filters,
             output_dir,

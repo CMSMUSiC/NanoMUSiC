@@ -7,7 +7,7 @@ class ScanProps(BaseModel):
     json_file_path: str
     output_directory: str
     rounds: int
-    start_round: int = 0
+    start_round: int
 
     class Config:
         frozen = True

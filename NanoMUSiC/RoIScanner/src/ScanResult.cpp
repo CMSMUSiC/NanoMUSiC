@@ -34,13 +34,13 @@ json ScanResult::jsonValue(bool verbose) const
     resultObject["mcSystUncert"] = mcbin.getTotalMcSystUncert();
     resultObject["mcTotalUncert"] = mcbin.getTotalMcUncert();
     resultObject["dataEvents"] = data;
-    resultObject["totalMcEventsEC"] = totalMc;
-    resultObject["totalMcUncertEC"] = totalMcUncert;
-    resultObject["totalDataEventsEC"] = totalData;
+    // resultObject["totalMcEventsEC"] = totalMc;
+    // resultObject["totalMcUncertEC"] = totalMcUncert;
+    // resultObject["totalDataEventsEC"] = totalData;
     resultObject["lowerEdge"] = mcbin.lowerEdge;
     resultObject["width"] = mcbin.width;
     resultObject["CompareScore"] = score;
-    resultObject["integralScan"] = integralScan;
+    // resultObject["integralScan"] = integralScan;
     resultObject["skippedScan"] = skippedScan;
 
     if (verbose)
@@ -69,7 +69,7 @@ json ScanResult::jsonValue(bool verbose) const
                 mcSysUncertsObj[name] = upValue;
             }
         }
-        resultObject["mcSysUncerts"] = mcSysUncertsObj;
+        // resultObject["mcSysUncerts"] = mcSysUncertsObj;
 
         json mcEventsPerProcessObj;
         json mcStatUncertsObj;
@@ -82,15 +82,15 @@ json ScanResult::jsonValue(bool verbose) const
             mcEventsPerProcessObj[name] = events;
             mcStatUncertsObj[name] = statUncert;
         }
-        resultObject["mcEventsPerProcessGroup"] = mcEventsPerProcessObj;
-        resultObject["mcStatUncertPerProcessGroup"] = mcStatUncertsObj;
+        // resultObject["mcEventsPerProcessGroup"] = mcEventsPerProcessObj;
+        // resultObject["mcStatUncertPerProcessGroup"] = mcStatUncertsObj;
 
         json dicedDataArray;
         for (double n : dicedData)
         {
             dicedDataArray.push_back(n);
         }
-        resultObject["dicedData"] = dicedDataArray;
+        // resultObject["dicedData"] = dicedDataArray;
     }
 
     return resultObject;

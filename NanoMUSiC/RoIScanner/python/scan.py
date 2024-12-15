@@ -247,26 +247,25 @@ def build_scan_jobs_task(
                 for i in range(raw_data_counts.size()):
                     data_counts.append(raw_data_counts[i])
 
-                for start_round, n_rds in make_starting_rounds(n_rounds, split_size):
-                    temp_scan_props.append(
-                        ScanProps(
-                            ec_name=ec_nice_name,
-                            distribution_type=scan_distribution_type.value,
-                            json_file_path=ScanDistribution(
-                                name=ec_nice_name,
-                                distribution=scan_distribution_type,
-                                year=ScanYear.Run2,
-                                # year=ScanYear.Run2016,
-                                MCBins=MCBinsBuilder(dist.get_mcbins_props()).build(),
-                                DataBins=data_counts,
-                                FirstRound=start_round,
-                                skipLookupTable=skip_lut,
-                            ).save(output_dir),
-                            output_directory=output_dir,
-                            rounds=n_rds,
-                            start_round=start_round,
-                        )
+                # for start_round, n_rds in make_starting_rounds(n_rounds, split_size):
+                temp_scan_props.append(
+                    ScanProps(
+                        ec_name=ec_nice_name,
+                        distribution_type=scan_distribution_type.value,
+                        json_file_path=ScanDistribution(
+                            name=ec_nice_name,
+                            distribution=scan_distribution_type,
+                            year=ScanYear.Run2,
+                            # year=ScanYear.Run2016,
+                            MCBins=MCBinsBuilder(dist.get_mcbins_props()).build(),
+                            DataBins=data_counts,
+                            skipLookupTable=skip_lut,
+                        ).save(output_dir),
+                        output_directory=output_dir,
+                        rounds=n_rounds,
+                        start_round=0,
                     )
+                )
 
                 # prepare output area
                 if not os.path.exists(
@@ -295,7 +294,7 @@ class DataOrMC(StrEnum):
     All = "all"
 
 
-def launch_scan(
+def start_scan(
     input_dir: str,
     patterns: list[str],
     distribution_type: str,
@@ -381,6 +380,7 @@ def launch_scan(
     data_scan_props = sorted(
         data_scan_props, key=lambda scan: count_objects(scan.ec_name, count_jets=False)
     )
+
     scan_props = [
         scan
         for scan in scan_props
@@ -389,8 +389,18 @@ def launch_scan(
             and scan.distribution_type == "invariant_mass"
         )
     ]
+
+    expanded_scan_props: list[ScanProps] = []
+    for scan in scan_props:
+        for start_round, n_rds in make_starting_rounds(n_rounds, split_size):
+            this_scan = scan.dict()
+            this_scan["start_round"] = start_round
+            this_scan["rounds"] = n_rds
+            expanded_scan_props.append(ScanProps(**this_scan))
+
     scan_props = sorted(
-        scan_props, key=lambda scan: count_objects(scan.ec_name, count_jets=False)
+        expanded_scan_props,
+        key=lambda scan: count_objects(scan.ec_name, count_jets=False),
     )
     with Pool(max(1, min(max(len(data_scan_props), len(scan_props)), num_cpus))) as p:
         if (
@@ -513,7 +523,7 @@ def crab_username():
         sys.exit(-1)
 
 
-def launch_crab_scan(
+def start_crab_scan(
     input_dir: str,
     patterns: list[str],
     output_dir: str = "scan_results",
@@ -593,9 +603,11 @@ def launch_crab_scan(
             and scan.distribution_type == "invariant_mass"
         )
     ]
+
     data_scan_props = sorted(
         data_scan_props, key=lambda scan: count_objects(scan.ec_name, count_jets=False)
     )
+
     scan_props = [
         scan
         for scan in scan_props
@@ -604,8 +616,18 @@ def launch_crab_scan(
             and scan.distribution_type == "invariant_mass"
         )
     ]
+
+    expanded_scan_props: list[ScanProps] = []
+    for scan in scan_props:
+        for start_round, n_rds in make_starting_rounds(n_rounds, split_size):
+            this_scan = scan.dict()
+            this_scan["start_round"] = start_round
+            this_scan["rounds"] = n_rds
+            expanded_scan_props.append(ScanProps(**this_scan))
+
     scan_props = sorted(
-        scan_props, key=lambda scan: count_objects(scan.ec_name, count_jets=False)
+        expanded_scan_props,
+        key=lambda scan: count_objects(scan.ec_name, count_jets=False),
     )
 
     print("Writing CMSSW files ...")

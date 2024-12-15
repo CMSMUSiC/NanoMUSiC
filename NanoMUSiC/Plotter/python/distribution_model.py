@@ -91,7 +91,7 @@ class ScanDistribution(BaseModel):
     widthLowStatsRegions: NonNegativeInt = 4
     # widthLowStatsRegions: NonNegativeInt = 8
     thresholdLowStatsDominant: NonNegativeFloat = 0.95
-    FirstRound: Optional[NonNegativeInt] = 0
+    # FirstRound: Optional[NonNegativeInt] = 0
     NumRounds: Optional[NonNegativeInt] = 100_000
 
     @root_validator(pre=True)
@@ -118,17 +118,14 @@ class ScanDistribution(BaseModel):
             )
         )
 
-        output_file = "{}/{}/{}_{}_{}_{}.json".format(
+        output_file = "{}/{}/{}_{}_{}.json".format(
             output_directory,
             self.name.replace("+", "_"),
             self.name.replace("+", "_"),
             self.distribution,
             self.year,
-            self.FirstRound,
         )
-        with open(
-            output_file,
-            "w",
-        ) as f:
+        with open(output_file, "w") as f:
             f.write(self.json(indent=4))
+
         return output_file

@@ -464,7 +464,7 @@ def plot_summary(
                 ec.replace("+", "_"),
                 distribution,
             ),
-            "{}/{}/{}_{}_Run2_0.json".format(
+            "{}/{}/{}_{}_Run2.json".format(
                 input_dir,
                 ec.replace("+", "_"),
                 ec.replace("+", "_"),
