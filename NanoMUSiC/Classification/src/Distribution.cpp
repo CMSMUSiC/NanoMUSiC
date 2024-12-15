@@ -377,6 +377,7 @@ auto Distribution::get_systematics_uncert(
 {
     std::unordered_map<std::string, RVec<double>> xsec_order_uncert_LO_samples;
     std::unordered_map<std::string, RVec<double>> xsec_order_uncert_non_LO_samples;
+    std::unordered_map<std::string, RVec<double>> xsec_order_uncert_non_LO_samples_for_plotting;
 
     for (const auto &[pg, unmerged_histos] :
          unmerged_mc_histograms[static_cast<std::size_t>(Shifts::Variations::Nominal)])
@@ -411,16 +412,25 @@ auto Distribution::get_systematics_uncert(
                         *unmerged_mc_histograms[static_cast<std::size_t>(Shifts::Variations::QCDScale_Up)].at(pg).at(i),
                         *unmerged_mc_histograms[static_cast<std::size_t>(Shifts::Variations::QCDScale_Down)].at(pg).at(
                             i));
+                    auto uncert_qcd_scale_for_plotting = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+                        *(unmerged_histos[i]),
+                        *unmerged_mc_histograms[static_cast<std::size_t>(Shifts::Variations::QCDScale_Up)].at(pg).at(i),
+                        *unmerged_mc_histograms[static_cast<std::size_t>(Shifts::Variations::QCDScale_Down)].at(pg).at(
+                            i));
                     auto nominal_counts = ROOTHelpers::Counts(*(unmerged_histos[i]));
 
                     for (std::size_t i = 0; i < uncert_qcd_scale.size(); i++)
                     {
-                        constexpr double qcd_scale_uncert_uupper_limit = 0.15;
+                        constexpr double qcd_scale_uncert_upper_limit = 0.15;
                         uncert_qcd_scale[i] =
-                            std::min(uncert_qcd_scale[i], std::fabs(nominal_counts[i] * qcd_scale_uncert_uupper_limit));
+                            std::min(uncert_qcd_scale[i], std::fabs(nominal_counts[i] * qcd_scale_uncert_upper_limit));
+                        uncert_qcd_scale_for_plotting[i] =
+                            std::min(uncert_qcd_scale_for_plotting[i],
+                                     std::fabs(nominal_counts[i] * qcd_scale_uncert_upper_limit));
                     }
 
                     xsec_order_uncert_non_LO_samples.at(pg) += uncert_qcd_scale;
+                    xsec_order_uncert_non_LO_samples_for_plotting.at(pg) += uncert_qcd_scale_for_plotting;
                 }
             }
         }
@@ -623,14 +633,92 @@ auto Distribution::get_systematics_uncert(
         m_systematics_uncertainties[fmt::format("xsec_LO_{}", pg)] = xsec_order_uncert_LO_samples.at(pg);
     }
 
-    for (const auto &[pg, uncert] : xsec_order_uncert_LO_samples)
+    for (const auto &[pg, uncert] : xsec_order_uncert_non_LO_samples)
     {
         m_systematics_uncertainties[fmt::format("xsec_non_LO_{}", pg)] = xsec_order_uncert_non_LO_samples.at(pg);
     }
 
+    // build systematics for plotting (taking the symmatriation conservative approach)
+    auto systematics_for_plots_and_integral_p_value = m_systematics_uncertainties;
+    systematics_for_plots_and_integral_p_value["prefiring"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+        m_total_mc_histogram,
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::PreFiring_Up))),
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::PreFiring_Down))));
+
+    systematics_for_plots_and_integral_p_value["pile_up"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+        m_total_mc_histogram,
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::PU_Up))),
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::PU_Down))));
+
+    systematics_for_plots_and_integral_p_value["electron_resolution"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+        m_total_mc_histogram,
+        ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+            static_cast<std::size_t>(Shifts::Variations::ElectronResolution_Up))),
+        ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+            static_cast<std::size_t>(Shifts::Variations::ElectronResolution_Down))));
+
+    systematics_for_plots_and_integral_p_value["electron_scale"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+        m_total_mc_histogram,
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::ElectronScale_Up))),
+        ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+            static_cast<std::size_t>(Shifts::Variations::ElectronScale_Down))));
+
+    systematics_for_plots_and_integral_p_value["photon_resolution"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+        m_total_mc_histogram,
+        ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+            static_cast<std::size_t>(Shifts::Variations::PhotonResolution_Up))),
+        ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+            static_cast<std::size_t>(Shifts::Variations::PhotonResolution_Down))));
+
+    systematics_for_plots_and_integral_p_value["photon_scale"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+        m_total_mc_histogram,
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::PhotonScale_Up))),
+        ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+            static_cast<std::size_t>(Shifts::Variations::PhotonScale_Down))));
+
+    systematics_for_plots_and_integral_p_value["tau_energy"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+        m_total_mc_histogram,
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::TauEnergy_Up))),
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::TauEnergy_Down))));
+
+    systematics_for_plots_and_integral_p_value["jet_resolution"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+        m_total_mc_histogram,
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::JetResolution_Up))),
+        ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+            static_cast<std::size_t>(Shifts::Variations::JetResolution_Down))));
+
+    systematics_for_plots_and_integral_p_value["jet_scale"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+        m_total_mc_histogram,
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::JetScale_Up))),
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::JetScale_Down))));
+
+    systematics_for_plots_and_integral_p_value["met_unclustered_energy"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+        m_total_mc_histogram,
+        ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+            static_cast<std::size_t>(Shifts::Variations::UnclusteredEnergy_Up))),
+        ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+            static_cast<std::size_t>(Shifts::Variations::UnclusteredEnergy_Down))));
+
+    for (const auto &[pg, uncert] : xsec_order_uncert_non_LO_samples_for_plotting)
+    {
+        m_systematics_uncertainties[fmt::format("xsec_non_LO_{}", pg)] =
+            xsec_order_uncert_non_LO_samples_for_plotting.at(pg);
+    }
+
     return ROOT::VecOps::sqrt(std::accumulate(
-        m_systematics_uncertainties.cbegin(),
-        m_systematics_uncertainties.cend(),
+        systematics_for_plots_and_integral_p_value.cbegin(),
+        systematics_for_plots_and_integral_p_value.cend(),
         RVec<double>(m_n_bins, 0.),
         [](const RVec<double> &acc_vec, const std::pair<std::string, RVec<double>> &next_key_val) -> RVec<double>
         {
