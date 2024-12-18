@@ -161,13 +161,15 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
             }
         }
 
-        auto is_good_jet_pre_filter = (std::fabs(Jet_eta[i]) <= ObjConfig::Jets[year].MaxAbsEta) //
-                                      and (Jet_jetId[i] >= ObjConfig::Jets[year].MinJetID)       //
-                                      and (Jet_btagDeepFlavB[i] < ObjConfig::Jets[year].MaxBTagWPTight);
+        auto is_good_jet_pre_filter =
+            (std::fabs(Jet_eta[i]) <= ObjConfig::Jets[year].MaxAbsEta) //
+            and (Jet_jetId[i] >= ObjConfig::Jets[year].MinJetID)       //
+            and (0 >= Jet_btagDeepFlavB[i] and Jet_btagDeepFlavB[i] < ObjConfig::Jets[year].MaxBTagWPTight);
 
-        auto is_good_bjet_pre_filter = (std::fabs(Jet_eta[i]) <= ObjConfig::Jets[year].MaxAbsEta) //
-                                       and (Jet_jetId[i] >= ObjConfig::Jets[year].MinJetID)       //
-                                       and (Jet_btagDeepFlavB[i] >= ObjConfig::Jets[year].MaxBTagWPTight);
+        auto is_good_bjet_pre_filter =
+            (std::fabs(Jet_eta[i]) <= ObjConfig::Jets[year].MaxAbsEta) //
+            and (Jet_jetId[i] >= ObjConfig::Jets[year].MinJetID)       //
+            and (ObjConfig::Jets[year].MaxBTagWPTight <= Jet_btagDeepFlavB[i] and Jet_btagDeepFlavB[i] <= 1);
 
         auto jet_p4 = Math::PtEtaPhiMVector(Jet_pt[i], Jet_eta[i], Jet_phi[i], Jet_mass[i]);
 

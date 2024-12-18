@@ -109,7 +109,7 @@ while true; do
     
     echo -e "$OUTPUT"
 
-    if echo "$OUTPUT" | grep Jobs | grep status | grep finished | grep -q '100.0%'; then
+    if echo "$OUTPUT" | grep Jobs | grep status | grep finished | grep -q '100.0%' | grep -P '\((\d+)/\1\)'; then
         echo -e "${BOLD_GREEN}[CRAB NannyBot] All finished.${RESET}"
         break
     fi

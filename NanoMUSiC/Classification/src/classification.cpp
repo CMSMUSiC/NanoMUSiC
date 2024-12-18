@@ -576,32 +576,32 @@ auto classification(const std::string process,
             continue;
         }
 
-        auto pass_low_pt_muon_trigger = [&](const std::string &year) -> bool
-        {
-            auto _year = get_runyear(year);
-            if (_year == Year::Run2016APV)
-            {
-                return unwrap_or(HLT_IsoMu24, false) or unwrap_or(HLT_IsoTkMu24, false);
-            }
+        // auto pass_low_pt_muon_trigger = [&](const std::string &year) -> bool
+        // {
+        //     auto _year = get_runyear(year);
+        //     if (_year == Year::Run2016APV)
+        //     {
+        //         return unwrap_or(HLT_IsoMu24, false) or unwrap_or(HLT_IsoTkMu24, false);
+        //     }
 
-            if (_year == Year::Run2016)
-            {
-                return unwrap_or(HLT_IsoMu24, false) or unwrap_or(HLT_IsoTkMu24, false);
-            }
+        //     if (_year == Year::Run2016)
+        //     {
+        //         return unwrap_or(HLT_IsoMu24, false) or unwrap_or(HLT_IsoTkMu24, false);
+        //     }
 
-            if (_year == Year::Run2017)
-            {
-                return unwrap_or(HLT_IsoMu27, false);
-            }
+        //     if (_year == Year::Run2017)
+        //     {
+        //         return unwrap_or(HLT_IsoMu27, false);
+        //     }
 
-            if (_year == Year::Run2018)
-            {
-                return unwrap_or(HLT_IsoMu24, false);
-            }
+        //     if (_year == Year::Run2018)
+        //     {
+        //         return unwrap_or(HLT_IsoMu24, false);
+        //     }
 
-            fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
-            std::exit(EXIT_FAILURE);
-        };
+        //     fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
+        //     std::exit(EXIT_FAILURE);
+        // };
 
         auto pass_high_pt_muon_trigger = [&](const std::string &year) -> bool
         {
@@ -659,58 +659,58 @@ auto classification(const std::string process,
             std::exit(EXIT_FAILURE);
         };
 
-        auto pass_low_pt_electron_trigger = [&](const std::string &year) -> bool
-        {
-            auto _year = get_runyear(year);
-            if (_year == Year::Run2016APV)
-            {
-                return unwrap_or(HLT_Ele27_WPTight_Gsf, false);
-            }
+        // auto pass_low_pt_electron_trigger = [&](const std::string &year) -> bool
+        // {
+        //     auto _year = get_runyear(year);
+        //     if (_year == Year::Run2016APV)
+        //     {
+        //         return unwrap_or(HLT_Ele27_WPTight_Gsf, false);
+        //     }
 
-            if (_year == Year::Run2016)
-            {
-                return unwrap_or(HLT_Ele27_WPTight_Gsf, false);
-            }
+        //     if (_year == Year::Run2016)
+        //     {
+        //         return unwrap_or(HLT_Ele27_WPTight_Gsf, false);
+        //     }
 
-            if (_year == Year::Run2017)
-            {
-                return unwrap_or(HLT_Ele35_WPTight_Gsf, false);
-            }
+        //     if (_year == Year::Run2017)
+        //     {
+        //         return unwrap_or(HLT_Ele35_WPTight_Gsf, false);
+        //     }
 
-            if (_year == Year::Run2018)
-            {
-                return unwrap_or(HLT_Ele32_WPTight_Gsf, false);
-            }
+        //     if (_year == Year::Run2018)
+        //     {
+        //         return unwrap_or(HLT_Ele32_WPTight_Gsf, false);
+        //     }
 
-            fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
-            std::exit(EXIT_FAILURE);
-        };
+        //     fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
+        //     std::exit(EXIT_FAILURE);
+        // };
 
         auto pass_high_pt_electron_trigger = [&](const std::string &year) -> bool
         {
             auto _year = get_runyear(year);
             if (_year == Year::Run2016APV)
             {
-                // return unwrap_or(HLT_Photon175, false) or unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
-                return unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
+                return unwrap_or(HLT_Photon175, false) or unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
+                // return unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
             }
 
             if (_year == Year::Run2016)
             {
-                // return unwrap_or(HLT_Photon175, false) or unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
-                return unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
+                return unwrap_or(HLT_Photon175, false) or unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
+                // return unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
             }
 
             if (_year == Year::Run2017)
             {
-                // return unwrap_or(HLT_Photon200, false) or unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
-                return unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
+                return unwrap_or(HLT_Photon200, false) or unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
+                // return unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
             }
 
             if (_year == Year::Run2018)
             {
-                // return unwrap_or(HLT_Photon200, false) or unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
-                return unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
+                return unwrap_or(HLT_Photon200, false) or unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
+                // return unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
             }
 
             fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
@@ -845,17 +845,17 @@ auto classification(const std::string process,
         };
 
         // Trigger
-        auto is_good_trigger = trigger_filter(process,           //
-                                              is_data,           //
-                                              get_runyear(year), //
-                                              pass_low_pt_muon_trigger(year),
+        auto is_good_trigger = trigger_filter(process,
+                                              is_data,
+                                              get_runyear(year),
+                                              false /*pass_low_pt_muon_trigger(year)*/,
                                               pass_high_pt_muon_trigger(year),
                                               pass_double_muon_trigger(year),
-                                              pass_low_pt_electron_trigger(year),
+                                              false /*pass_low_pt_electron_trigger(year)*/,
                                               pass_high_pt_electron_trigger(year),
                                               pass_double_electron_trigger(year),
-                                              pass_high_pt_tau_trigger(year), //
-                                              pass_double_tau_trigger(year),  //
+                                              pass_high_pt_tau_trigger(year),
+                                              pass_double_tau_trigger(year),
                                               pass_photon_trigger(year),
                                               pass_double_photon_trigger(year));
         if (not(is_good_trigger))
@@ -1170,14 +1170,14 @@ auto classification(const std::string process,
             }
 
             // clear objects
-            auto electrons_idxs = electrons.indexes();
+            // auto electrons_idxs = electrons.indexes();
             auto electrons_clear_mask = electrons.clear_mask(muons, 0.4);
             if (electrons_clear_mask.size() != electrons.size())
             {
                 electrons = electrons.take_as_copy(electrons_clear_mask);
             }
 
-            auto taus_idxs = taus.indexes();
+            // auto taus_idxs = taus.indexes();
             auto taus_clear_mask = taus.clear_mask(electrons, 0.4);
             if (taus_clear_mask.size() != taus.size())
             {
@@ -1189,60 +1189,70 @@ auto classification(const std::string process,
                 taus = taus.take_as_copy(taus_clear_mask);
             }
 
-            auto photons_idxs = photons.indexes();
+            // auto photons_idxs = photons.indexes();
             auto photons_clear_mask = photons.clear_mask(taus, 0.4);
             if (photons_clear_mask.size() != photons.size())
             {
                 photons = photons.take_as_copy(photons_clear_mask);
             }
+
             photons_clear_mask = photons.clear_mask(electrons, 0.4);
             if (photons_clear_mask.size() != photons.size())
             {
                 photons = photons.take_as_copy(photons_clear_mask);
             }
+
             photons_clear_mask = photons.clear_mask(muons, 0.4);
             if (photons_clear_mask.size() != photons.size())
             {
                 photons = photons.take_as_copy(photons_clear_mask);
             }
 
-            auto jets_idxs = jets.indexes();
-            auto bjets_idxs = bjets.indexes();
+            // auto jets_idxs = jets.indexes();
+            // auto bjets_idxs = bjets.indexes();
+
             auto jets_clear_mask = jets.clear_mask(photons, 0.5);
             if (jets_clear_mask.size() != jets.size())
             {
                 jets = jets.take_as_copy(jets_clear_mask);
             }
+
             auto bjets_clear_mask = bjets.clear_mask(photons, 0.5);
             if (bjets_clear_mask.size() != bjets.size())
             {
                 bjets = bjets.take_as_copy(bjets_clear_mask);
             }
+
             jets_clear_mask = jets.clear_mask(taus, 0.5);
             if (jets_clear_mask.size() != jets.size())
             {
                 jets = jets.take_as_copy(jets_clear_mask);
             }
+
             bjets_clear_mask = bjets.clear_mask(taus, 0.5);
             if (bjets_clear_mask.size() != bjets.size())
             {
                 bjets = bjets.take_as_copy(bjets_clear_mask);
             }
+
             jets_clear_mask = jets.clear_mask(electrons, 0.5);
             if (jets_clear_mask.size() != jets.size())
             {
                 jets = jets.take_as_copy(jets_clear_mask);
             }
+
             bjets_clear_mask = bjets.clear_mask(electrons, 0.5);
             if (bjets_clear_mask.size() != bjets.size())
             {
                 bjets = bjets.take_as_copy(bjets_clear_mask);
             }
+
             jets_clear_mask = jets.clear_mask(muons, 0.5);
             if (jets_clear_mask.size() != jets.size())
             {
                 jets = jets.take_as_copy(jets_clear_mask);
             }
+
             bjets_clear_mask = bjets.clear_mask(muons, 0.5);
             if (bjets_clear_mask.size() != bjets.size())
             {

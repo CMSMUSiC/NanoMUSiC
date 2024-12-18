@@ -140,22 +140,24 @@ class Distribution
     /// A valid class should have some data and some MC
     static auto is_valid(const std::vector<ECHistogram> &event_class_histograms) -> bool
     {
-        bool has_data = false;
+        // bool has_data = false;
         bool has_mc = false;
         for (const auto &hist : event_class_histograms)
         {
-            if (hist.process_group == "Data")
-            {
-                has_data = true;
-            }
+            // if (hist.process_group == "Data")
+            // {
+            //     has_data = true;
+            // }
 
             if (hist.process_group != "Data")
             {
                 has_mc = true;
+                return true;
             }
         }
 
-        return has_mc and has_data;
+        // return has_mc or has_data;
+        return has_mc;
     }
 
     // Distribution(const std::vector<std::unique_ptr<TFile>> &input_root_files,
@@ -299,8 +301,7 @@ class Distribution
                                 props[idx].width = widths[idx];
                                 for (const auto &[var, syst] : m_systematics_uncertainties)
                                 {
-
-                                    props[idx].mcSysUncerts[var] = syst[idx] ;
+                                    props[idx].mcSysUncerts[var] = syst[idx];
                                 }
 
                                 has_edges_and_syst = true;

@@ -227,7 +227,8 @@ def build_scan_jobs_task(
             and distribution_type_checker(dist_name)
         ):
             dist = root_file.Get(dist_name)
-            if dist.has_mc(MC_THRESHOLD) and dist.has_data():
+            # if dist.has_mc(MC_THRESHOLD) and dist.has_data():
+            if dist.has_mc(MC_THRESHOLD):
                 this_variations = [
                     str(var) for var, _ in dist.m_systematics_uncertainties
                 ]
@@ -653,7 +654,9 @@ def start_crab_scan(
     cmsRun_calls = ""
     for scan in data_scan_props:
         hash_object = hashlib.sha256()
-        hash_object.update((scan.json_file_path + "data").encode("utf-8"))
+        hash_object.update(
+            (scan.json_file_path + "data" + str(scan.start_round)).encode("utf-8")
+        )
         cmssw_scanner_config_file = (
             "temp_scan_cmssw_config_files/cmssw_scanner_{}.py".format(
                 hash_object.hexdigest()
@@ -680,7 +683,9 @@ def start_crab_scan(
 
     for scan in scan_props:
         hash_object = hashlib.sha256()
-        hash_object.update((scan.json_file_path + "mc").encode("utf-8"))
+        hash_object.update(
+            (scan.json_file_path + "mc" + str(scan.start_round)).encode("utf-8")
+        )
         cmssw_scanner_config_file = (
             "temp_scan_cmssw_config_files/cmssw_scanner_{}.py".format(
                 hash_object.hexdigest()

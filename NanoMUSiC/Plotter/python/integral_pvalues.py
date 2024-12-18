@@ -39,20 +39,20 @@ def get_ec_name(eventclass):
         if "Photon" in p and p[0] != "0":
             ec_name += "+" + p[0] + r"$\gamma$"
         if "bJet" in p and p[0] != "0":
-            ec_name += "+" + p[0] + r"$bjet$"
-        if "Jet" in p and p[0] != "0":
+            ec_name += "+" + p[0] + r"$b-jet$"
+        if "Jet" in p and "bJet" not in p and p[0] != "0":
             ec_name += "+" + p[0] + r"$jet$"
         if "MET" in p and p[0] != "0":
-            ec_name += "+" + p[0] + r"$met$"
+            ec_name += "+" + r"$MET$"
 
     ec_name = ec_name.strip("+")
 
     if "+X" in eventclass:
-        ec_name += " inc"
+        ec_name += " + X"
     elif "+NJet" in eventclass:
-        ec_name += " njet"
+        ec_name += " + NJet"
     else:
-        ec_name += " exc"
+        ec_name += " exc."
 
     return ec_name
 

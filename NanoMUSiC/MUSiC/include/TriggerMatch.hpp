@@ -74,8 +74,8 @@ inline auto make_trigger_matches(const std::unordered_map<std::string, bool> &is
         auto good_muons = VecOps::Filter(muons.p4,
                                          [](const auto &muon)
                                          {
-                                             // return muon.pt() > 53.;
-                                             return muon.pt() > 205.;
+                                             return muon.pt() > 53.;
+                                             //  return muon.pt() > 205.;
                                          });
         if (good_muons.size() >= 1)
         {
@@ -99,20 +99,13 @@ inline auto make_trigger_matches(const std::unordered_map<std::string, bool> &is
                                          [](const auto &muon)
                                          {
                                              // sub-leading
-                                             return muon.pt() > 12.;
+                                             return muon.pt() > 21. /*following 2021 paper*/;
                                          });
         if (good_muons.size() >= 2)
         {
-            if (good_muons[0].pt() > 21.)
-            {
-                matches.insert({"pass_double_muon_trigger",
-                                TriggerMatch({good_muons[0].pt(), good_muons[1].pt()},
-                                             {good_muons[0].eta(), good_muons[1].eta()})});
-            }
-            else
-            {
-                matches.insert({"pass_double_muon_trigger", std::nullopt});
-            }
+            matches.insert(
+                {"pass_double_muon_trigger",
+                 TriggerMatch({good_muons[0].pt(), good_muons[1].pt()}, {good_muons[0].eta(), good_muons[1].eta()})});
         }
         else
         {

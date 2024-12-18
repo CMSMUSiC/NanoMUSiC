@@ -388,6 +388,7 @@ auto Distribution::get_systematics_uncert(
             {
                 xsec_order_uncert_LO_samples.insert({pg, RVec<double>(m_n_bins, 0.)});
                 xsec_order_uncert_non_LO_samples.insert({pg, RVec<double>(m_n_bins, 0.)});
+                xsec_order_uncert_non_LO_samples_for_plotting.insert({pg, RVec<double>(m_n_bins, 0.)});
             }
 
             for (std::size_t i = 0; i < unmerged_histos.size(); i++)

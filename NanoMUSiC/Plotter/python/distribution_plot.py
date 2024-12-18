@@ -21,6 +21,9 @@ configure_root()
 mpl.use("Agg")
 
 
+MC_THRESHOLD = 0.1
+
+
 # def make_uncertainties_plot(
 #     class_name,
 #     distribution_name,
@@ -107,7 +110,7 @@ def p_value_task(distribution_file: str):
     distribution_names = [k.GetName() for k in root_file.GetListOfKeys()]
     for dist_name in distribution_names:
         dist = root_file.Get(dist_name)
-        if dist.has_mc():
+        if dist.has_mc(MC_THRESHOLD):
             if dist.m_distribution_name == "counts":
                 plot = dist.make_plot_props()
                 p_value_props = dist.make_integral_pvalue_props()
@@ -189,7 +192,7 @@ def build_plot_jobs_task(
     distribution_names = [k.GetName() for k in root_file.GetListOfKeys()]
     for dist_name in distribution_names:
         dist = root_file.Get(dist_name)
-        if dist.has_mc():
+        if dist.has_mc(MC_THRESHOLD):
             plot = dist.make_plot_props()
 
             this_scan_data = None

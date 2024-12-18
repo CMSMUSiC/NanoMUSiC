@@ -52,8 +52,6 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
                       const std::string &_year,                             //
                       const Shifts::Variations shift) -> MUSiCObjects
 {
-    auto year = get_runyear(_year);
-
     auto taus_p4 = RVec<Math::PtEtaPhiMVector>{};
     auto scale_factors = RVec<double>{};
     auto scale_factor_shift = RVec<double>{};
@@ -62,6 +60,7 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
     auto is_fake = RVec<bool>{};
     auto id_score = RVec<unsigned int>{};
 
+    auto year = get_runyear(_year);
     for (std::size_t i = 0; i < Tau_pt.size(); i++)
     {
         bool is_good_tau_pre_filter =
@@ -122,11 +121,12 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
                     {tau_p4.pt(), Tau_decayMode[i], Tau_genPartFlav[i], "Tight", "Tight", "down", "pt"});
 
                 scale_factors.push_back(sf_vs_e * sf_vs_mu * sf_vs_jet);
-                scale_factor_shift.push_back(std::sqrt(                                                              //
-                    std::pow(std::max(std::fabs(sf_vs_e - sf_vs_e_up), std::fabs(sf_vs_e - sf_vs_e_down)), 2.)       //
-                    + std::pow(std::max(std::fabs(sf_vs_mu - sf_vs_mu_up), std::fabs(sf_vs_mu - sf_vs_mu_down)), 2.) //
-                    +
-                    std::pow(std::max(std::fabs(sf_vs_jet - sf_vsjet_up), std::fabs(sf_vs_jet - sf_vsjet_down)), 2.) //
+                scale_factor_shift.push_back(std::sqrt(                                                        //
+                    std::pow(std::max(std::fabs(sf_vs_e - sf_vs_e_up), std::fabs(sf_vs_e - sf_vs_e_down)), 2.) //
+                    + std::pow(std::max(std::fabs(sf_vs_mu - sf_vs_mu_up), std::fabs(sf_vs_mu - sf_vs_mu_down)), 2.)
+                    //
+                    + std::pow(std::max(std::fabs(sf_vs_jet - sf_vsjet_up), std::fabs(sf_vs_jet - sf_vsjet_down)), 2.)
+                    //
                     ));
 
                 delta_met_x.push_back((tau_p4.pt() - Tau_pt[i]) * std::cos(Tau_phi[i]));

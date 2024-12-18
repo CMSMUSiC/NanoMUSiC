@@ -426,7 +426,7 @@ auto ttbar_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
     bool filter_result = false;
     if (std::max(0.f, mass_min - .5f) <= ttbar_mass and ttbar_mass <= mass_max + .5f)
     {
-        // fmt::print("[ Generator Filter ] Pass: TTBar Mass Cut. ...\n");
+        // fmt::print("[ Generator Filter ] Pass: TTBar Mass Cut. ... {}\n", ttbar_mass);
         filter_result = true;
     }
 
@@ -439,7 +439,6 @@ auto ttbar_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
         }
     }
 
-    // fmt::print("[ Generator Filter ] Didn't pass: TTBar Mass Cut. Skipping ...\n");
     return filter_result;
 }
 
