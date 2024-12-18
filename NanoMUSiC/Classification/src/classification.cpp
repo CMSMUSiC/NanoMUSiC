@@ -1170,14 +1170,14 @@ auto classification(const std::string process,
             }
 
             // clear objects
-            // auto electrons_idxs = electrons.indexes();
+            // electrons
             auto electrons_clear_mask = electrons.clear_mask(muons, 0.4);
             if (electrons_clear_mask.size() != electrons.size())
             {
                 electrons = electrons.take_as_copy(electrons_clear_mask);
             }
 
-            // auto taus_idxs = taus.indexes();
+            // taus
             auto taus_clear_mask = taus.clear_mask(electrons, 0.4);
             if (taus_clear_mask.size() != taus.size())
             {
@@ -1189,7 +1189,7 @@ auto classification(const std::string process,
                 taus = taus.take_as_copy(taus_clear_mask);
             }
 
-            // auto photons_idxs = photons.indexes();
+            // photons
             auto photons_clear_mask = photons.clear_mask(taus, 0.4);
             if (photons_clear_mask.size() != photons.size())
             {
@@ -1208,9 +1208,7 @@ auto classification(const std::string process,
                 photons = photons.take_as_copy(photons_clear_mask);
             }
 
-            // auto jets_idxs = jets.indexes();
-            // auto bjets_idxs = bjets.indexes();
-
+            // jets and bjets
             auto jets_clear_mask = jets.clear_mask(photons, 0.5);
             if (jets_clear_mask.size() != jets.size())
             {

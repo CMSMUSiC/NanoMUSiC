@@ -152,15 +152,16 @@ class ScanResults(BaseModel):
         if self.skipped_scan:
             return None
 
-        counts = np.sum(
-            (
-                np.array(self.p_values_mc) <= self.p_value_data
-                # * (
-                #     # np.array([roi == self.roi_type for roi in self.p_values_mc_roi_type])
-                #     <= self.p_value_data
-                # )
-            )
-        )
+        # counts = np.sum(
+        #     (
+        #         np.array(self.p_values_mc) <= self.p_value_data
+        #         # * (
+        #         #     # np.array([roi == self.roi_type for roi in self.p_values_mc_roi_type])
+        #         #     <= self.p_value_data
+        #         # )
+        #     )
+        # )
+        counts = np.sum(np.array(self.p_values_mc) <= self.p_value_data)
         if counts == 0.0:
             p_tilde = 1 / float(len(self.p_values_mc) + 1)
             return p_tilde
@@ -191,14 +192,15 @@ class ScanResults(BaseModel):
         roi_types = np.array(
             [1 if roi == RoIType.excess else 0 for roi in self.p_values_mc_roi_type]
         )
-        counts = (
-            np.sum(
-                (p_values_mc[:, None] <= p_values_mc),
-                # * (roi_types[:, None] == roi_types)
-                axis=0,
-            )
-            - 1
-        )
+        # counts = (
+        #     np.sum(
+        #         p_values_mc[:, None] <= p_values_mc,
+        #         # * (roi_types[:, None] == roi_types)
+        #         axis=0,
+        #     )
+        #     - 1
+        # )
+        counts = np.sum(p_values_mc[:, None] <= p_values_mc, axis=0) - 1
         p_tilde_toys = counts / float(len(p_values_mc) - 1)
         p_tilde_toys[p_tilde_toys == 0.0] = 1 / float(len(self.p_values_mc))
 
