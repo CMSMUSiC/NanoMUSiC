@@ -197,8 +197,28 @@ def launch(
     import classification
 
     if not os.path.exists("sum_weights.json"):
-        print("ERROR: Could not find sum_weights.json. Did you run the preprocess?")
+        print(
+            "ERROR: Could not find sum_weights.json. Did you run the preprocess?",
+            file=sys.stderr,
+        )
         sys.exit(-1)
+
+    if not os.path.exists("btag_efficiency_map.root"):
+        print(
+            "Could not find btag_efficiency_map.root. Will launch Btag Efficiency computation ..."
+        )
+        os.system("rm -rf btag_eff_maps_buffer")
+        os.system("mkdir btag_eff_maps_buffer")
+
+        classification.launch_parallel(
+            config_file,
+            process,
+            year,
+            max_files,
+            1,
+            num_cpus,
+            do_btag_efficiency=True,
+        )
 
     if target == ClassificationTarget.Dev:
         classification.launch_dev(config_file, process, year, max_files)

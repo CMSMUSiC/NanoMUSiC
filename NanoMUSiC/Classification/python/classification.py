@@ -146,6 +146,7 @@ def run_classification(
     first_event: Optional[int] = None,
     last_event: Optional[int] = None,
     is_dev_job: bool = False,
+    do_btag_efficiency: bool = False,
     debug: bool = False,
 ) -> None:
     if not output_file.endswith(".root"):
@@ -189,6 +190,7 @@ def run_classification(
             first_event,
             last_event,
             # 100,
+            do_btag_efficiency,
             debug,
         )
         _output_file = "{}_{}.root".format(output_file.split(".root")[0], idx)
@@ -213,6 +215,7 @@ def build_classification_job(
     year: Years,
     split_index: int,
     sub_input_files: list[str],
+    do_btag_efficiency: bool,
 ):
     template = r"""
 import classification
@@ -233,6 +236,7 @@ classification.run_classification(
     generator_filter="{}",
     first_event=None,
     last_event=None,
+    do_btag_efficiency={},
     debug=False,
 )
 
@@ -251,6 +255,7 @@ print("YAY! Done _o/")
         process.ProcessGroup,
         sub_input_files,
         process.generator_filter_key,
+        "True" if do_btag_efficiency else "False",
     )
 
     output_path = f"classification_jobs/run_classification_{process.name}_{year.value}_{split_index}.py"
@@ -267,6 +272,7 @@ def launch_condor(
     dry_run: bool = False,
     skip_tar: bool = False,
     do_cleanning: bool = True,
+    do_btag_efficiency: bool = False,
 ):
     config_file = load_toml(config_file_path)
 
@@ -345,7 +351,9 @@ def launch_condor(
             input_files = chunks(p.get_files(this_year, max_files), split_size)
             for split_index, sub_input_files in enumerate(input_files):
                 if len(sub_input_files):
-                    build_classification_job(p, this_year, split_index, sub_input_files)
+                    build_classification_job(
+                        p, this_year, split_index, sub_input_files, do_btag_efficiency
+                    )
                     jobs.append(
                         CondorJob(
                             f"{p.name}_{this_year}_{split_index}",
@@ -381,6 +389,7 @@ def launch_parallel(
     max_files: int = sys.maxsize,
     split_size: int = sys.maxsize,
     num_cpus: int = 120,
+    do_btag_efficiency: bool = False,
 ):
     do_cleanning = True
     if year or process_name:
@@ -396,6 +405,7 @@ def launch_parallel(
         True,
         True,
         do_cleanning,
+        do_btag_efficiency,
     )
 
     years_to_process = ["2016", "2017", "2018"]
@@ -539,6 +549,7 @@ def launch_dev(
         first_event=None,
         last_event=None,
         is_dev_job=True,
+        do_btag_efficiency=False,
         debug=True,
     )
 

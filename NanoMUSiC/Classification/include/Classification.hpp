@@ -375,7 +375,7 @@ inline auto starts_with(const std::string &str, std::string &&prefix) -> bool
 }
 
 // check if an event pass any trigger
-inline auto trigger_filter(const std::string &process,         //
+inline auto trigger_filter(const std::string &process, //
                            bool is_data,
                            Year year,                          //
                            bool pass_low_pt_muon_trigger,      //
@@ -882,6 +882,7 @@ auto classification(const std::string process,
                     ValidationContainer &validation_container,
                     std::optional<unsigned long> first_event = std::nullopt,
                     std::optional<long> last_event = std::nullopt,
+                    bool do_btag_efficiency = false,
                     const bool debug = false) -> void;
 
 #endif // CLASSIFICATION

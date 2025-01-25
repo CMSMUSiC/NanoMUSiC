@@ -1,0 +1,9 @@
+#[tool.pyright]
+#include = ["NanoMUSiC/**","NanoMUSiC/Classification/python", "NanoMUSiC/MUSiC/python"]
+#exclude = [".cache"]
+##strict = ["scripts/music"]
+#diagnosticMode = "workspace"
+#useLibraryCodeForTypes = true
+#autoSearchPaths = true
+#pythonPath = "/cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/bin/python3"
+#pythonVersion = "3.11"

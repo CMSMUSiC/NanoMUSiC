@@ -103,7 +103,8 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
                       const CorrectionlibRef_t &jet_veto_map,  //
                       bool is_data,                            //
                       const std::string &_year,                //
-                      const Shifts::Variations shift) -> std::tuple<MUSiCObjects, MUSiCObjects, bool>
+                      const Shifts::Variations shift)
+    -> std::tuple<MUSiCObjects, MUSiCObjects, bool, RVec<int>, RVec<int>>
 {
     auto year = get_runyear(_year);
     auto jets = RVec<Math::PtEtaPhiMVector>{};
@@ -124,6 +125,8 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
     auto bjets_id_score = RVec<unsigned int>{};
 
     bool has_vetoed_jets = false;
+    auto selected_jet_indexes = RVec<int>{};
+    auto selected_bjet_indexes = RVec<int>{};
     for (std::size_t i = 0; i < Jet_pt.size(); i++)
     {
         // check for vetoed jets
@@ -219,6 +222,8 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
                 {
                     jets_id_score.push_back(MUSiCObjects::IdScore::Tight);
                 }
+
+                selected_jet_indexes.push_back(i);
             }
 
             if (is_good_bjet)
@@ -242,6 +247,8 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
                 {
                     bjets_id_score.push_back(MUSiCObjects::IdScore::Tight);
                 }
+
+                selected_bjet_indexes.push_back(i);
             }
         }
     }
@@ -260,7 +267,9 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
                          bjets_delta_met_y,
                          bjets_is_fake,
                          bjets_id_score),
-            has_vetoed_jets};
+            has_vetoed_jets,
+            selected_jet_indexes,
+            selected_bjet_indexes};
 }
 
 } // namespace ObjectFactories

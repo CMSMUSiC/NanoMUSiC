@@ -45,7 +45,7 @@ auto print_debug(long long global_event_index, bool debug) -> void
         }
     }
 }
-
+// das
 auto pass_generator_filter(const std::string &generator_filter,
                            const std::string &year_str,
                            ROOT::RVec<float> LHEPart_pt,
@@ -142,6 +142,7 @@ auto classification(const std::string process,
                     ValidationContainer &validation_container,
                     std::optional<unsigned long> first_event,
                     std::optional<long> last_event,
+                    bool do_btag_efficiency,
                     const bool debug) -> void
 {
     fmt::print("\n[MUSiC Classification] Starting ...\n");
@@ -324,6 +325,51 @@ auto classification(const std::string process,
         return EventWeights{.sum_weights = 1., .total_events = 1., .should_use_LHEWeight = false};
     }();
 
+    // get btag efficiency map
+    std::unique_ptr<TFile> btag_efficiency_map_file;
+    if (not(do_btag_efficiency))
+    {
+        btag_efficiency_map_file = std::unique_ptr<TFile>(TFile::Open("btag_efficiency_map.root"));
+        if (!btag_efficiency_map_file or btag_efficiency_map_file->IsZombie())
+        {
+            fmt::print(stderr, "ERROR: Could not open btag efficiency map file. {}\n", "btag_efficiency_map.root");
+            std::exit(EXIT_FAILURE);
+        }
+    }
+
+    // create btag efficiency histograms
+    constexpr std::array<double, 12> pt_bins = {std::numeric_limits<double>::lowest(),
+                                                20.,
+                                                30.,
+                                                50.,
+                                                70.,
+                                                100.,
+                                                140.,
+                                                200.,
+                                                300.,
+                                                600.,
+                                                1000.,
+                                                std::numeric_limits<double>::max()};
+    auto btag_efficiency_light_num =
+        TH2D(fmt::format("[{}]_light_num", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4, 0., 3.);
+    auto btag_efficiency_light_den =
+        TH2D(fmt::format("[{}]_light_den", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4, 0., 3.);
+    auto btag_efficiency_c_num =
+        TH2D(fmt::format("[{}]_c_num", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4, 0., 3.);
+    auto btag_efficiency_c_den =
+        TH2D(fmt::format("[{}]_c_den", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4, 0., 3.);
+    auto btag_efficiency_b_num =
+        TH2D(fmt::format("[{}]_b_num", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4, 0., 3.);
+    auto btag_efficiency_b_den =
+        TH2D(fmt::format("[{}]_b_den", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4, 0., 3.);
+
+    btag_efficiency_light_num.Sumw2();
+    btag_efficiency_light_den.Sumw2();
+    btag_efficiency_c_num.Sumw2();
+    btag_efficiency_c_den.Sumw2();
+    btag_efficiency_b_num.Sumw2();
+    btag_efficiency_b_den.Sumw2();
+
     auto input_root_file = std::unique_ptr<TFile>(TFile::Open(input_file.c_str()));
     auto input_ttree = input_root_file->Get<TTree>("Events");
     input_ttree->SetBranchStatus("*", false);
@@ -500,6 +546,7 @@ auto classification(const std::string process,
     ADD_ARRAY_READER(Jet_chEmEF, float);
     ADD_ARRAY_READER(Jet_puId, Int_t);
     ADD_ARRAY_READER(Jet_genJetIdx, Int_t);
+    ADD_ARRAY_READER(Jet_hadronFlavour, Int_t);
 
     ADD_VALUE_READER(MET_pt, float);
     ADD_VALUE_READER(MET_phi, float);
@@ -942,7 +989,11 @@ auto classification(const std::string process,
                                                              year,                        //
                                                              Shifts::Variations::Nominal);
 
-        auto [nominal_jets, nominal_bjets, has_vetoed_jet] =
+        auto [nominal_jets,
+              nominal_bjets,
+              has_vetoed_jet,
+              nominal_selected_jet_indexes,
+              nominal_selected_bjet_indexes] =
             ObjectFactories::make_jets(unwrap(Jet_pt),                 //
                                        unwrap(Jet_eta),                //
                                        unwrap(Jet_phi),                //
@@ -989,6 +1040,71 @@ auto classification(const std::string process,
 
         if (not(has_trigger_match))
         {
+            continue;
+        }
+
+        // btag efficiency will go here
+        if (do_btag_efficiency)
+        {
+            if (not(is_data))
+            {
+                double mc_weight = [&genWeight, &LHEWeight_originalXWGTUP, &event_weights]() -> double
+                {
+                    if (event_weights.should_use_LHEWeight)
+                    {
+                        return unwrap(LHEWeight_originalXWGTUP);
+                    }
+                    return unwrap(genWeight);
+                }();
+
+                auto weight = mc_weight / event_weights.sum_weights * x_section * luminosity * filter_eff * k_factor;
+                for (std::size_t i = 0; i < nominal_bjets.size(); i++)
+                {
+                    if (unwrap(Jet_hadronFlavour).at(nominal_selected_bjet_indexes.at(i)) == 0)
+                    {
+                        btag_efficiency_light_num.Fill(
+                            nominal_bjets.p4[i].pt(), std::fabs(nominal_bjets.p4[i].eta()), weight);
+                        btag_efficiency_light_den.Fill(
+                            nominal_bjets.p4[i].pt(), std::fabs(nominal_bjets.p4[i].eta()), weight);
+                    }
+
+                    if (unwrap(Jet_hadronFlavour).at(nominal_selected_bjet_indexes.at(i)) == 4)
+                    {
+                        btag_efficiency_c_num.Fill(
+                            nominal_bjets.p4[i].pt(), std::fabs(nominal_bjets.p4[i].eta()), weight);
+                        btag_efficiency_c_den.Fill(
+                            nominal_bjets.p4[i].pt(), std::fabs(nominal_bjets.p4[i].eta()), weight);
+                    }
+
+                    if (unwrap(Jet_hadronFlavour).at(nominal_selected_bjet_indexes.at(i)) == 5)
+                    {
+                        btag_efficiency_b_num.Fill(
+                            nominal_bjets.p4[i].pt(), std::fabs(nominal_bjets.p4[i].eta()), weight);
+                        btag_efficiency_b_den.Fill(
+                            nominal_bjets.p4[i].pt(), std::fabs(nominal_bjets.p4[i].eta()), weight);
+                    }
+                }
+                for (std::size_t i = 0; i < nominal_jets.size(); i++)
+                {
+                    if (unwrap(Jet_hadronFlavour).at(nominal_selected_jet_indexes.at(i)) == 0)
+                    {
+                        btag_efficiency_light_den.Fill(
+                            nominal_jets.p4[i].pt(), std::fabs(nominal_jets.p4[i].eta()), weight);
+                    }
+
+                    if (unwrap(Jet_hadronFlavour).at(nominal_selected_jet_indexes.at(i)) == 4)
+                    {
+                        btag_efficiency_c_den.Fill(
+                            nominal_jets.p4[i].pt(), std::fabs(nominal_jets.p4[i].eta()), weight);
+                    }
+
+                    if (unwrap(Jet_hadronFlavour).at(nominal_selected_jet_indexes.at(i)) == 5)
+                    {
+                        btag_efficiency_b_den.Fill(
+                            nominal_jets.p4[i].pt(), std::fabs(nominal_jets.p4[i].eta()), weight);
+                    }
+                }
+            }
             continue;
         }
 
@@ -1104,7 +1220,8 @@ auto classification(const std::string process,
                 return nominal_photons;
             }();
 
-            auto [jets, bjets, has_vetoed_jet] = [&]() -> std::tuple<MUSiCObjects, MUSiCObjects, bool>
+            auto [jets, bjets, has_vetoed_jet, selected_jet_indexes, selected_bjet_indexes] =
+                [&]() -> std::tuple<MUSiCObjects, MUSiCObjects, bool, RVec<int>, RVec<int>>
             {
                 if (starts_with(Shifts::variation_to_string(diff_shift), "Jet"))
                 {
@@ -1134,7 +1251,8 @@ auto classification(const std::string process,
                                                       diff_shift);
                 }
 
-                return {nominal_jets, nominal_bjets, false};
+                return {
+                    nominal_jets, nominal_bjets, false, nominal_selected_jet_indexes, nominal_selected_bjet_indexes};
             }();
 
             auto [met, is_fake_met] = ObjectFactories::make_met( //
@@ -1568,6 +1686,17 @@ auto classification(const std::string process,
             //////////////////////////////////////////////
         }
     }
+
+    // save btag efficiency histograms
+    std::unique_ptr<TFile> btag_eff_maps_file(TFile::Open(
+        fmt::format("btag_eff_maps_buffer/{}_{}.root", process_group, std::hash<std::string>{}(input_file)).c_str(),
+        "RECREATE"));
+    btag_efficiency_light_num.Write();
+    btag_efficiency_light_den.Write();
+    btag_efficiency_c_num.Write();
+    btag_efficiency_c_den.Write();
+    btag_efficiency_b_num.Write();
+    btag_efficiency_b_den.Write();
 
     fmt::print("\n[MUSiC Classification] Done ...\n");
     fmt::print("\n\nProcessed {} events ...\n", global_event_index);
