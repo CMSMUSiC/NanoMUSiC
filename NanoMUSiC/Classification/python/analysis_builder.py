@@ -62,6 +62,17 @@ def build_analysis_config(input_file: str) -> None:
                                     f
                                 )
                             )
+                    else:
+                        print(
+                            "WARNING: Dataset not found in RWTH storage: {}".format(
+                                dataset
+                            ),
+                            file=sys.stderr,
+                        )
+                        for i, f in enumerate(files_per_dataset):
+                            files_per_dataset[i] = (
+                                "root://cms-xrd-global.cern.ch//{}".format(f)
+                            )
                     samples_list[sample]["input_files_{}".format(year)] += (
                         files_per_dataset
                     )

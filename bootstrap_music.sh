@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-set -e
+# set -e
 
 # Set up the LCG environment
 # List of available software:
@@ -15,6 +15,9 @@ SCRIPT_DIR=$(pwd)
 
 # create links for libaries
 mkdir -p lib/python
+
+# create the build directory
+mkdir -p build
 
 cd $SCRIPT_DIR
 

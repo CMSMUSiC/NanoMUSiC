@@ -117,7 +117,7 @@ def launch(
     config_file: Annotated[
         str,
         typer.Argument(help="analysis_config.toml file path"),
-    ],
+    ] = "analysis_config.toml",
     description: Annotated[
         Union[str, None],
         typer.Argument(
@@ -128,7 +128,7 @@ def launch(
     process: Union[str, None] = None,
     year: Union[metadata.Years, None] = None,
     max_files: int = sys.maxsize,
-    split_size: int = sys.maxsize,
+    split_size: int = 1,
     dry_run: bool = False,
     num_cpus: int = 128,
 ):
@@ -203,22 +203,22 @@ def launch(
         )
         sys.exit(-1)
 
-    if not os.path.exists("btag_efficiency_map.root"):
-        print(
-            "Could not find btag_efficiency_map.root. Will launch Btag Efficiency computation ..."
-        )
-        os.system("rm -rf btag_eff_maps_buffer")
-        os.system("mkdir btag_eff_maps_buffer")
-
-        classification.launch_parallel(
-            config_file,
-            process,
-            year,
-            max_files,
-            1,
-            num_cpus,
-            do_btag_efficiency=True,
-        )
+    # if not os.path.exists("btag_efficiency_map.root"):
+    #     print(
+    #         "Could not find btag_efficiency_map.root. Will launch Btag Efficiency computation ..."
+    #     )
+    #     os.system("rm -rf btag_eff_maps_buffer")
+    #     os.system("mkdir btag_eff_maps_buffer")
+    #
+    #     classification.launch_parallel(
+    #         config_file,
+    #         process,
+    #         year,
+    #         max_files,
+    #         1,
+    #         num_cpus,
+    #         do_btag_efficiency=True,
+    #     )
 
     if target == ClassificationTarget.Dev:
         classification.launch_dev(config_file, process, year, max_files)

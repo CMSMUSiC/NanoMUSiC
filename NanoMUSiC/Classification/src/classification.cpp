@@ -325,17 +325,17 @@ auto classification(const std::string process,
         return EventWeights{.sum_weights = 1., .total_events = 1., .should_use_LHEWeight = false};
     }();
 
-    // get btag efficiency map
-    std::unique_ptr<TFile> btag_efficiency_map_file;
-    if (not(do_btag_efficiency))
-    {
-        btag_efficiency_map_file = std::unique_ptr<TFile>(TFile::Open("btag_efficiency_map.root"));
-        if (!btag_efficiency_map_file or btag_efficiency_map_file->IsZombie())
-        {
-            fmt::print(stderr, "ERROR: Could not open btag efficiency map file. {}\n", "btag_efficiency_map.root");
-            std::exit(EXIT_FAILURE);
-        }
-    }
+    // // get btag efficiency map
+    // std::unique_ptr<TFile> btag_efficiency_map_file;
+    // if (not(do_btag_efficiency))
+    // {
+    //     btag_efficiency_map_file = std::unique_ptr<TFile>(TFile::Open("btag_efficiency_map.root"));
+    //     if (!btag_efficiency_map_file or btag_efficiency_map_file->IsZombie())
+    //     {
+    //         fmt::print(stderr, "ERROR: Could not open btag efficiency map file. {}\n", "btag_efficiency_map.root");
+    //         std::exit(EXIT_FAILURE);
+    //     }
+    // }
 
     // create btag efficiency histograms
     constexpr std::array<double, 12> pt_bins = {std::numeric_limits<double>::lowest(),
@@ -1687,16 +1687,16 @@ auto classification(const std::string process,
         }
     }
 
-    // save btag efficiency histograms
-    std::unique_ptr<TFile> btag_eff_maps_file(TFile::Open(
-        fmt::format("btag_eff_maps_buffer/{}_{}.root", process_group, std::hash<std::string>{}(input_file)).c_str(),
-        "RECREATE"));
-    btag_efficiency_light_num.Write();
-    btag_efficiency_light_den.Write();
-    btag_efficiency_c_num.Write();
-    btag_efficiency_c_den.Write();
-    btag_efficiency_b_num.Write();
-    btag_efficiency_b_den.Write();
+    // // save btag efficiency histograms
+    // std::unique_ptr<TFile> btag_eff_maps_file(TFile::Open(
+    //     fmt::format("btag_eff_maps_buffer/{}_{}.root", process_group, std::hash<std::string>{}(input_file)).c_str(),
+    //     "RECREATE"));
+    // btag_efficiency_light_num.Write();
+    // btag_efficiency_light_den.Write();
+    // btag_efficiency_c_num.Write();
+    // btag_efficiency_c_den.Write();
+    // btag_efficiency_b_num.Write();
+    // btag_efficiency_b_den.Write();
 
     fmt::print("\n[MUSiC Classification] Done ...\n");
     fmt::print("\n\nProcessed {} events ...\n", global_event_index);
