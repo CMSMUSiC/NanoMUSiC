@@ -213,6 +213,40 @@ Will launch the classification over all samples and years, using GNU parallel.
 music classification launch 
 ```
 
+#### Classification post-processing
+
+##### Merge
+
+Classification runs one classification job per input. The merge step will aggregate the results per sample.
+
+```bash
+music classification merge analysis_config.toml
+```
+
+Merged files are stored in `classification_merged_results` and `validation_merged_results`.
+
+##### Unwrap
+
+Will serialize the results into a collection of ROOT TH1F.
+
+```bash
+music classification unwrap analysis_config.toml
+```
+
+Merged files are stored in `classification_root_files` and `validation_root_files`.
+
+
+##### Fold
+
+Will merge related histograms (TH1F) into one ROOT file, per event class.                                                                                                                                                                                     
+
+```bash
+music classification fold
+```
+
+Merged files are stored in `classification_folded_files` and `validation_folded_files`.
+
+
 
 ## License
 

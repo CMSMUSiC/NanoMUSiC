@@ -254,7 +254,7 @@ def merge(
     config_file: Annotated[
         str,
         typer.Argument(help="analysis_config.toml file path"),
-    ],
+    ]="analysis_config.toml",
     inputs_dir: str = "classification_outputs",
 ):
     """
@@ -271,7 +271,7 @@ def unwrap(
     config_file: Annotated[
         str,
         typer.Argument(help="analysis_config.toml file path"),
-    ],
+    ]="analysis_config.toml",
     inputs_dir: str = "classification_merged_results",
     validation_inputs_dir: str = "validation_merged_results",
     num_cpus: int = 128,
