@@ -34,4 +34,5 @@ include_directories(
 
 # base library
 add_subdirectory(NanoMUSiC)
+add_subdirectory(configs)
 
