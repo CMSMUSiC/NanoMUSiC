@@ -109,7 +109,7 @@ def readSamplesFromFile(filename):
 
 
 def parse(sample_list_path: str):
-    xsection_file_path = "{}/configs/xsections_and_lumi/xSections.toml".format(
+    xsection_file_path = "{}/configs/data/xsections_and_lumi/xSections.toml".format(
         os.getenv("MUSIC_BASE")
     )
     output_filename = "parsed_sample_list.toml"

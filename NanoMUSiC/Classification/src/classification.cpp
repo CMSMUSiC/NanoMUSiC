@@ -45,7 +45,7 @@ auto print_debug(long long global_event_index, bool debug) -> void
         }
     }
 }
-// das
+
 auto pass_generator_filter(const std::string &generator_filter,
                            const std::string &year_str,
                            ROOT::RVec<float> LHEPart_pt,
@@ -142,7 +142,6 @@ auto classification(const std::string process,
                     ValidationContainer &validation_container,
                     std::optional<unsigned long> first_event,
                     std::optional<long> last_event,
-                    bool do_btag_efficiency,
                     const bool debug) -> void
 {
     fmt::print("\n[MUSiC Classification] Starting ...\n");
@@ -325,50 +324,49 @@ auto classification(const std::string process,
         return EventWeights{.sum_weights = 1., .total_events = 1., .should_use_LHEWeight = false};
     }();
 
-    // // get btag efficiency map
-    // std::unique_ptr<TFile> btag_efficiency_map_file;
-    // if (not(do_btag_efficiency))
-    // {
-    //     btag_efficiency_map_file = std::unique_ptr<TFile>(TFile::Open("btag_efficiency_map.root"));
-    //     if (!btag_efficiency_map_file or btag_efficiency_map_file->IsZombie())
-    //     {
-    //         fmt::print(stderr, "ERROR: Could not open btag efficiency map file. {}\n", "btag_efficiency_map.root");
-    //         std::exit(EXIT_FAILURE);
-    //     }
-    // }
+    // get btag efficiency map
+    std::unique_ptr<TFile> btag_efficiency_map_file;
+    btag_efficiency_map_file = std::unique_ptr<TFile>(TFile::Open("btag_efficiency_map.root"));
+    if (!btag_efficiency_map_file or btag_efficiency_map_file->IsZombie())
+    {
+        fmt::print(stderr, "ERROR: Could not open btag efficiency map file. {}\n", "btag_efficiency_map.root");
+        std::exit(EXIT_FAILURE);
+    }
 
-    // create btag efficiency histograms
-    constexpr std::array<double, 12> pt_bins = {std::numeric_limits<double>::lowest(),
-                                                20.,
-                                                30.,
-                                                50.,
-                                                70.,
-                                                100.,
-                                                140.,
-                                                200.,
-                                                300.,
-                                                600.,
-                                                1000.,
-                                                std::numeric_limits<double>::max()};
-    auto btag_efficiency_light_num =
-        TH2D(fmt::format("[{}]_light_num", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4, 0., 3.);
-    auto btag_efficiency_light_den =
-        TH2D(fmt::format("[{}]_light_den", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4, 0., 3.);
-    auto btag_efficiency_c_num =
-        TH2D(fmt::format("[{}]_c_num", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4, 0., 3.);
-    auto btag_efficiency_c_den =
-        TH2D(fmt::format("[{}]_c_den", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4, 0., 3.);
-    auto btag_efficiency_b_num =
-        TH2D(fmt::format("[{}]_b_num", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4, 0., 3.);
-    auto btag_efficiency_b_den =
-        TH2D(fmt::format("[{}]_b_den", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4, 0., 3.);
-
-    btag_efficiency_light_num.Sumw2();
-    btag_efficiency_light_den.Sumw2();
-    btag_efficiency_c_num.Sumw2();
-    btag_efficiency_c_den.Sumw2();
-    btag_efficiency_b_num.Sumw2();
-    btag_efficiency_b_den.Sumw2();
+    // // create btag efficiency histograms
+    // constexpr std::array<double, 12> pt_bins = {std::numeric_limits<double>::lowest(),
+    //                                             20.,
+    //                                             30.,
+    //                                             50.,
+    //                                             70.,
+    //                                             100.,
+    //                                             140.,
+    //                                             200.,
+    //                                             300.,
+    //                                             600.,
+    //                                             1000.,
+    //                                             std::numeric_limits<double>::max()};
+    // auto btag_efficiency_light_num =
+    //     TH2D(fmt::format("[{}]_light_num", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4,
+    //     0., 3.);
+    // auto btag_efficiency_light_den =
+    //     TH2D(fmt::format("[{}]_light_den", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4,
+    //     0., 3.);
+    // auto btag_efficiency_c_num =
+    //     TH2D(fmt::format("[{}]_c_num", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4, 0., 3.);
+    // auto btag_efficiency_c_den =
+    //     TH2D(fmt::format("[{}]_c_den", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4, 0., 3.);
+    // auto btag_efficiency_b_num =
+    //     TH2D(fmt::format("[{}]_b_num", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4, 0., 3.);
+    // auto btag_efficiency_b_den =
+    //     TH2D(fmt::format("[{}]_b_den", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4, 0., 3.);
+    //
+    // btag_efficiency_light_num.Sumw2();
+    // btag_efficiency_light_den.Sumw2();
+    // btag_efficiency_c_num.Sumw2();
+    // btag_efficiency_c_den.Sumw2();
+    // btag_efficiency_b_num.Sumw2();
+    // btag_efficiency_b_den.Sumw2();
 
     auto input_root_file = std::unique_ptr<TFile>(TFile::Open(input_file.c_str()));
     auto input_ttree = input_root_file->Get<TTree>("Events");

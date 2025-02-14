@@ -37,4 +37,10 @@ cd $SCRIPT_DIR
 # install htcondor
 python3 -m pip install --user htcondor
 
+# install dbs3-client
+# https://twiki.cern.ch/twiki/bin/viewauth/CMS/DBS3APIInstructions
+# https://cmsweb.cern.ch/dbs/prod/global/DBSReader/
+python3 -m pip install --user dbs3-client
+
+
 cd $SCRIPT_DIR

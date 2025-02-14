@@ -50,7 +50,7 @@ def execution_time(func):
 ############################################################################
 ############################################################################
 classification_app = typer.Typer(
-    help="Launch and control the Classification steps. Expected workflow: build -> preprocess -> launch -> merge -> unwrap -> fold -> make-distributions.",
+    help="Launch and control the Classification steps. Expected workflow: parse -> build -> preprocess -> btag-efficiency -> launch -> merge -> unwrap -> fold -> make-distributions.",
     pretty_exceptions_show_locals=False,
 )
 
@@ -79,13 +79,18 @@ def build(
             help="parsed_sample_list.toml file path, as build by the parser."
         ),
     ] = "parsed_sample_list.toml",
+    outside_rwth: Annotated[
+        bool, typer.Option(help="When not running from within RWTH network.")
+    ] = False,
 ):
     """
     Will query all files LFN, for each sample and add it to the analysis_config.toml.
     """
-    import analysis_builder
+    from analysis_builder import build_analysis_config, ProcessingSite
 
-    analysis_builder.build_analysis_config(config_file)
+    build_analysis_config(
+        config_file, ProcessingSite.Other if outside_rwth else ProcessingSite.RWTH
+    )
 
 
 @classification_app.command()
@@ -94,16 +99,37 @@ def preprocess(
     config_file: Annotated[
         str,
         typer.Argument(help="analysis_config.toml file path, as provided by builder."),
-    ],
+    ] = "analysis_config.toml",
 ):
     """
-    Will scan all MC input files and collect the total MC weight per sample.
+    Will scan all MC input files and collect the total MC weight per sample and compute the btag_efficiency_map.
     """
     import preprocessing
 
     preprocessing.preamble()
+    print("Computing sum_weights ... ")
     preprocessing.compute_sum_weights(config_file)
 
+
+
+@classification_app.command()
+@execution_time
+def btag_efficiency(
+    config_file: Annotated[
+        str,
+        typer.Argument(help="analysis_config.toml file path, as provided by builder."),
+    ] = "analysis_config.toml",
+):
+    """
+    Will scan all MC input files and compute the btag_efficiency_map.
+    """
+    import btag_efficiency
+
+    btag_efficiency.preamble()
+
+    print("Computing btag_efficiency_map ... ")
+    btag_efficiency.compute_btag_efficiency(config_file)
+    btag_efficiency.merge_btag_efficiency_maps()
 
 class ClassificationTarget(str, Enum):
     Condor = "condor"
@@ -203,22 +229,11 @@ def launch(
         )
         sys.exit(-1)
 
-    # if not os.path.exists("btag_efficiency_map.root"):
-    #     print(
-    #         "Could not find btag_efficiency_map.root. Will launch Btag Efficiency computation ..."
-    #     )
-    #     os.system("rm -rf btag_eff_maps_buffer")
-    #     os.system("mkdir btag_eff_maps_buffer")
-    #
-    #     classification.launch_parallel(
-    #         config_file,
-    #         process,
-    #         year,
-    #         max_files,
-    #         1,
-    #         num_cpus,
-    #         do_btag_efficiency=True,
-    #     )
+    if not os.path.exists("btag_efficiency_map.root"):
+        print(
+            "ERROR: Could not find btag_efficiency_map.root. Run preprocess before launch.",
+            file=sys.stderr,
+        )
 
     if target == ClassificationTarget.Dev:
         classification.launch_dev(config_file, process, year, max_files)
@@ -254,7 +269,7 @@ def merge(
     config_file: Annotated[
         str,
         typer.Argument(help="analysis_config.toml file path"),
-    ]="analysis_config.toml",
+    ] = "analysis_config.toml",
     inputs_dir: str = "classification_outputs",
 ):
     """
@@ -271,7 +286,7 @@ def unwrap(
     config_file: Annotated[
         str,
         typer.Argument(help="analysis_config.toml file path"),
-    ]="analysis_config.toml",
+    ] = "analysis_config.toml",
     inputs_dir: str = "classification_merged_results",
     validation_inputs_dir: str = "validation_merged_results",
     num_cpus: int = 128,

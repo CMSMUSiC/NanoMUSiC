@@ -50,9 +50,9 @@ struct Accumulator
     }
 };
 
-auto process(const std::vector<std::string> &files) -> SumWeights
+auto compute_sum_weights(const std::string &input_file) -> SumWeights
 {
-    ROOT::RDataFrame df("Events", files);
+    ROOT::RDataFrame df("Events", input_file);
 
     auto colNames = df.GetColumnNames();
     auto has_genWeight = false;
