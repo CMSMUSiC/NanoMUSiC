@@ -246,6 +246,22 @@ music classification fold
 
 Merged files are stored in `classification_folded_files` and `validation_folded_files`.
 
+##### Make Distributions
+
+Will merge related histograms (TH1F) into Distributions (usefull data format for plotting and scan).                                                                                                                                                                                     
+
+```bash
+music classification make-distributions
+```
+
+#### Scan
+
+Start and monitor Region of Interest Scan.
+
+
+
+
+
 
 
 ## License
