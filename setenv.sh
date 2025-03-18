@@ -8,8 +8,10 @@ SCRIPTDIR=$(pwd)
 # https://lcginfo.cern.ch/release_packages/x86_64-centos7-gcc11-opt/104c/
 
 echo "[ LCG View ] Using x86_64-el9-gcc13-opt ..."
-source /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/setup.sh
+export LCGVIEW_PATH="/cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt"
+source $LCGVIEW_PATH/setup.sh
 echo "[ LCG View ] Done ..."
+
 
 # Set ninja as default CMake generator
 export CMAKE_GENERATOR=Ninja

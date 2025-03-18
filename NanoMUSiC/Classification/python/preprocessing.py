@@ -178,13 +178,13 @@ def compute_sum_weights_imp(args):
             "Could not process {}. All redirectors have failed.\n{}".format(file, e)
         )
         # we can allow this to fail and treat it later
-        # raise RuntimeError("Could not process file {}".format(file))
+        raise RuntimeError("Could not process file {}. {}".format(file, e))
 
-        return (
-            sample,
-            year,
-            SumWeights(),
-        )
+        # return (
+        #     sample,
+        #     year,
+        #     SumWeights(),
+        # )
 
 
 def compute_sum_weights(analysis_config: str) -> None:

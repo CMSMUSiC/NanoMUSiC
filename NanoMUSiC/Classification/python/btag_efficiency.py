@@ -1,18 +1,19 @@
+import subprocess
 import random
+from pathlib import Path
 import shutil
 import os
+import hashlib
 from dataclasses import dataclass, asdict
-import subprocess
-import ROOT
-from ROOT import gSystem
-from multiprocessing import Pool
+from multiprocessing import Pool, process
 import tomli
-from pathlib import Path
 import logging
 from rich.logging import RichHandler
 from metadata import Years
 import sys
 from rich.progress import track
+
+from metadata import Lumi
 
 FORMAT = "%(message)s"
 logging.basicConfig(
@@ -24,59 +25,82 @@ logging.basicConfig(
 log = logging.getLogger("main")
 
 
+def compile_lib(path: str) -> None:
+    if "ROOT" not in sys.modules:
+        import ROOT
+
+    ROOT.gSystem.AddIncludePath(
+        f"-I{os.getenv('MUSIC_BASE')}/NanoMUSiC/Classification/include"
+    )
+    ROOT.gSystem.AddIncludePath(f"-I{os.getenv('MUSIC_BASE')}/NanoMUSiC/MUSiC/src")
+    ROOT.gSystem.AddIncludePath(
+        f"-I{os.getenv('MUSIC_BASE')}/NanoMUSiC/Classification/src"
+    )
+    ROOT.gSystem.AddIncludePath(f"-I{os.getenv('MUSIC_BASE')}/NanoMUSiC/MUSiC/include")
+    ROOT.gSystem.AddIncludePath(f"-I{os.getenv('LCGVIEW_PATH')}/include")
+    ROOT.gSystem.AddIncludePath(f"-I{os.getenv('LCGVIEW_PATH')}/include/nlohmann")
+
+    compilation_res = ROOT.gSystem.CompileMacro(
+        path,
+        "fgO-",
+        "",
+        "",
+        1,
+    )
+
+    if not compilation_res:
+        raise RuntimeError(f"Could not compile {path}.")
+
+
 def preamble():
-    # check proxy
+    # check VOMS Proxy
     p = subprocess.run(["voms-proxy-info"], capture_output=True)
     if p.returncode != 0:
         log.error("No proxy found.")
         sys.exit(-1)
 
     log.info("Compiling libraries ...")
-
-    gSystem.AddIncludePath(
-        f"-I{os.getenv('MUSIC_BASE')}/NanoMUSiC/Classification/include"
-    )
-    gSystem.AddIncludePath(f"-I{os.getenv('MUSIC_BASE')}/NanoMUSiC/MUSiC/include")
-
-    compilation_res = gSystem.CompileMacro(
+    libs = [
         f"{os.getenv('MUSIC_BASE')}/NanoMUSiC/Classification/Utils/PreProcessing/compute_btag_efficiency.cpp",
-        "fgO-",
-        "",
-        "",
-        1,
-    )
-    if not compilation_res:
-        log.error("Could not compile compute_btag_efficiency.cpp.")
-        sys.exit(-1)
+    ]
+    with Pool(processes=len(libs)) as pool:
+        pool.map(compile_lib, libs)
 
 
 @dataclass
 class BTagEffInputs:
     sample: str
     process_group: str
-    generator_filter: str | None
+    generator_filter: str
     input_file: str
     year: str
+    sum_weights_json_filepath: str
+    x_section: float
+    luminosity: float
+    filter_eff: float
+    k_factor: float
 
 
 def compute_btag_efficiency_imp(inputs: BTagEffInputs):
     import ROOT
 
-    gSystem.AddIncludePath(
+    ROOT.gErrorIgnoreLevel = ROOT.kError  # Suppresses warnings, shows only errors
+
+    ROOT.gSystem.AddIncludePath(
         f"-I{os.getenv('MUSIC_BASE')}/NanoMUSiC/Classification/include"
     )
-    gSystem.AddIncludePath(f"-I{os.getenv('MUSIC_BASE')}/NanoMUSiC/MUSiC/include")
+    ROOT.gSystem.AddIncludePath(f"-I{os.getenv('MUSIC_BASE')}/NanoMUSiC/MUSiC/include")
+    ROOT.gSystem.AddIncludePath(f"-I{os.getenv('LCGVIEW_PATH')}/include")
+    ROOT.gSystem.AddIncludePath(f"-I{os.getenv('LCGVIEW_PATH')}/include/nlohmann")
 
     libs = [
-        gSystem.Load(
+        ROOT.gSystem.Load(
             f"{os.getenv('MUSIC_BASE')}/NanoMUSiC/Classification/Utils/PreProcessing/compute_btag_efficiency_cpp.so",
         ),
-        # gSystem.Load("libfmt.so"),
     ]
 
     if any([lib < 0 for lib in libs]):
-        print("ERROR: Could not load libraries.")
-        sys.exit(-1)
+        raise RuntimeError("ERROR: Could not load libraries.")
 
     try:
         res = ROOT.compute_btag_efficiency(**asdict(inputs))
@@ -144,12 +168,13 @@ def compute_btag_efficiency_imp(inputs: BTagEffInputs):
             )
         )
 
-        # we can allow it to fail
-        # raise RuntimeError("Could not process file {}".format(inputs.input_file))
-        return inputs, None
+        raise RuntimeError("Could not process file {}. {}".format(inputs.input_file, e))
+        # return inputs, None
 
 
 def compute_btag_efficiency(analysis_config: str) -> None:
+    import ROOT
+
     configs = tomli.loads(Path(analysis_config).read_text(encoding="utf-8"))
 
     total_files = 0
@@ -165,14 +190,27 @@ def compute_btag_efficiency(analysis_config: str) -> None:
             for year in Years:
                 if f"input_files_{year}" in configs[sample]:
                     if len(configs[sample][f"input_files_{year}"]):
-                        for file in configs[sample][f"input_files_{year}"]:
+                        for idx, file in enumerate(
+                            configs[sample][f"input_files_{year}"]
+                        ):
+                            # # DEBUG
+                            # if idx == 0:
                             btag_eff_inputs.append(
                                 BTagEffInputs(
                                     sample=sample,
                                     process_group=configs[sample][f"ProcessGroup"],
-                                    generator_filter=ROOT.std.optional[str](),
+                                    generator_filter=configs[sample][
+                                        "generator_filter_key"
+                                    ]
+                                    if "generator_filter_key" in configs[sample]
+                                    else "",
                                     input_file=file,
                                     year=year,
+                                    sum_weights_json_filepath="sum_weights.json",
+                                    x_section=configs[sample][f"XSec"],
+                                    luminosity=Lumi.lumi[year],
+                                    filter_eff=configs[sample][f"FilterEff"],
+                                    k_factor=configs[sample][f"kFactor"],
                                 )
                             )
     try:
@@ -183,23 +221,17 @@ def compute_btag_efficiency(analysis_config: str) -> None:
     os.mkdir("btag_eff_maps_buffer")
 
     with Pool() as p:
-        # for idx, job in enumerate(
-        #     p.imap_unordered(
-        #         compute_btag_efficiency_imp,
-        #         random.sample(btag_eff_inputs, len(btag_eff_inputs)),
-        #     )
-        # ):
-        for idx, job in track(
+        for idx, res in track(
             enumerate(
                 p.imap_unordered(
                     compute_btag_efficiency_imp,
                     random.sample(btag_eff_inputs, len(btag_eff_inputs)),
                 )
             ),
-            description="Processing...",
+            description="Computing b-tag efficiency ...",
             total=len(btag_eff_inputs),
         ):
-            inputs, _ = job
+            inputs, _ = res
             log.info(
                 "Done: {} - {} | {}/{}".format(
                     inputs.sample, inputs.year, idx, len(btag_eff_inputs)
@@ -208,4 +240,78 @@ def compute_btag_efficiency(analysis_config: str) -> None:
 
 
 def merge_btag_efficiency_maps() -> None:
-    print("TODO: Will merge btag efficiency maps...")
+    try:
+        shutil.rmtree("btag_eff_maps")
+    except FileNotFoundError:
+        pass
+    os.mkdir("btag_eff_maps")
+
+    path = Path("btag_eff_maps_buffer")
+
+    processes_groups = set(
+        [
+            str(file).replace("btag_eff_maps_buffer", "").split("_")[0].replace("/", "")
+            for file in path.glob("*")
+            if str(file).endswith(".root")
+        ]
+    )
+    for process_group in track(processes_groups):
+        print(
+            f"hadd -f -j btag_eff_maps/btag_eff_map_{process_group}.root btag_eff_maps_buffer/{process_group}_*.root"
+        )
+        result = subprocess.run(
+            f"hadd -f -j btag_eff_maps/btag_eff_map_{process_group}.root btag_eff_maps_buffer/{process_group}_*.root",
+            shell=True,
+            capture_output=True,
+            text=True,
+        )
+        if not result.returncode == 0:
+            print(
+                f"ERROR: Could not merge btag maps for: {process_group}",
+                result.stderr,
+                file=sys.stderr,
+            )
+            sys.exit(-1)
+
+    result = subprocess.run(
+        f"rm -rf btag_eff_maps_buffer",
+        shell=True,
+        capture_output=True,
+        text=True,
+    )
+    if not result.returncode == 0:
+        print(
+            "ERROR: Could not delete buffered files",
+            result.stderr,
+            file=sys.stderr,
+        )
+
+
+def make_teffs() -> None:
+    import ROOT
+
+    ROOT.gErrorIgnoreLevel = ROOT.kError  # Suppresses warnings, shows only errors
+
+    path = Path("btag_eff_maps")
+
+    processes_groups = set(
+        [
+            str(file).replace("btag_eff_map", "").split("_")[1].replace(".root", "")
+            for file in path.glob("*")
+            if str(file).endswith(".root")
+        ]
+    )
+    for process_group in track(processes_groups):
+        out_file = ROOT.TFile(
+            f"btag_eff_maps/btag_eff_map_{process_group}.root", "UPDATE"
+        )
+        for tagger in ["light", "c", "b"]:
+            num = getattr(out_file, f"[{process_group}]_{tagger}_num")
+            den = getattr(out_file, f"[{process_group}]_{tagger}_den")
+
+            if ROOT.TEfficiency.CheckConsistency(num, den):
+                pEff = ROOT.TEfficiency(num, den)
+                pEff.SetName(f"{process_group}_{tagger}_eff")
+                pEff.Write()
+
+        out_file.Close()

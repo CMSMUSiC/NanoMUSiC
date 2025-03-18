@@ -50,7 +50,7 @@ def execution_time(func):
 ############################################################################
 ############################################################################
 classification_app = typer.Typer(
-    help="Launch and control the Classification steps. Expected workflow: parse -> build -> preprocess -> btag-efficiency -> launch -> merge -> unwrap -> fold -> make-distributions.",
+    help="Launch and control the Classification steps. Expected workflow: parse -> build -> preprocess -> btag-efficiency -> launch -> merge -> unwrap -> fold -> make-distributions. Each step depends on the previous one.",
     pretty_exceptions_show_locals=False,
 )
 
@@ -102,14 +102,14 @@ def preprocess(
     ] = "analysis_config.toml",
 ):
     """
-    Will scan all MC input files and collect the total MC weight per sample and compute the btag_efficiency_map.
+    Will scan all MC input files and collect the total MC weight per sample.
     """
     import preprocessing
 
     preprocessing.preamble()
+
     print("Computing sum_weights ... ")
     preprocessing.compute_sum_weights(config_file)
-
 
 
 @classification_app.command()
@@ -130,6 +130,8 @@ def btag_efficiency(
     print("Computing btag_efficiency_map ... ")
     btag_efficiency.compute_btag_efficiency(config_file)
     btag_efficiency.merge_btag_efficiency_maps()
+    btag_efficiency.make_teffs()
+
 
 class ClassificationTarget(str, Enum):
     Condor = "condor"

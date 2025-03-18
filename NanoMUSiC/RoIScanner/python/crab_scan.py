@@ -174,6 +174,8 @@ for ((i=1; i<=max_retries; i++)); do
 
     # Attempt to download the file
     xrdcp -s -f root://eoscms.cern.ch///eos/cms/store/user/___CMS_USER___/cmsmusic/scan_results.tar . 
+    # xrdcp -s -f root://eosuser.cern.ch//eos/user/c/___CMS_USER___/cmsmusic/scan_results.tar . 
+    # wget https://ftorresd.web.cern.ch/___CMS_USER___/cmsmusic/scan_results.tar . 
     if [ $? -eq 0 ]; then
         echo "Download done."
         break

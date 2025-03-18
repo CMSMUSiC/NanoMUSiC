@@ -46,46 +46,6 @@ auto print_debug(long long global_event_index, bool debug) -> void
     }
 }
 
-auto pass_generator_filter(const std::string &generator_filter,
-                           const std::string &year_str,
-                           ROOT::RVec<float> LHEPart_pt,
-                           ROOT::RVec<float> LHEPart_eta,
-                           ROOT::RVec<float> LHEPart_phi,
-                           ROOT::RVec<float> LHEPart_mass,
-                           ROOT::RVec<float> LHEPart_incomingpz,
-                           ROOT::RVec<int> LHEPart_pdgId,
-                           ROOT::RVec<int> LHEPart_status,
-                           ROOT::RVec<float> GenPart_pt,
-                           ROOT::RVec<float> GenPart_eta,
-                           ROOT::RVec<float> GenPart_phi,
-                           ROOT::RVec<float> GenPart_mass,
-                           ROOT::RVec<int> GenPart_genPartIdxMother,
-                           ROOT::RVec<int> GenPart_pdgId,
-                           ROOT::RVec<int> GenPart_status,
-                           ROOT::RVec<int> GenPart_statusFlags) -> bool
-{
-    if (generator_filter != "")
-    {
-        auto gen_filter_func = GeneratorFilters::get_filter(generator_filter);
-        const auto lhe_particles = NanoAODGenInfo::LHEParticles(
-            LHEPart_pt, LHEPart_eta, LHEPart_phi, LHEPart_mass, LHEPart_incomingpz, LHEPart_pdgId, LHEPart_status);
-
-        const auto gen_particles = NanoAODGenInfo::GenParticles(GenPart_pt,
-                                                                GenPart_eta,
-                                                                GenPart_phi,
-                                                                GenPart_mass,
-                                                                GenPart_genPartIdxMother,
-                                                                GenPart_pdgId,
-                                                                GenPart_status,
-                                                                GenPart_statusFlags);
-        auto year = get_runyear(year_str);
-        debugger_t debugger = std::nullopt;
-        return gen_filter_func(lhe_particles, gen_particles, year, debugger);
-    }
-
-    return true;
-}
-
 struct EventWeights
 {
     double sum_weights;
@@ -333,41 +293,6 @@ auto classification(const std::string process,
         std::exit(EXIT_FAILURE);
     }
 
-    // // create btag efficiency histograms
-    // constexpr std::array<double, 12> pt_bins = {std::numeric_limits<double>::lowest(),
-    //                                             20.,
-    //                                             30.,
-    //                                             50.,
-    //                                             70.,
-    //                                             100.,
-    //                                             140.,
-    //                                             200.,
-    //                                             300.,
-    //                                             600.,
-    //                                             1000.,
-    //                                             std::numeric_limits<double>::max()};
-    // auto btag_efficiency_light_num =
-    //     TH2D(fmt::format("[{}]_light_num", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4,
-    //     0., 3.);
-    // auto btag_efficiency_light_den =
-    //     TH2D(fmt::format("[{}]_light_den", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4,
-    //     0., 3.);
-    // auto btag_efficiency_c_num =
-    //     TH2D(fmt::format("[{}]_c_num", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4, 0., 3.);
-    // auto btag_efficiency_c_den =
-    //     TH2D(fmt::format("[{}]_c_den", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4, 0., 3.);
-    // auto btag_efficiency_b_num =
-    //     TH2D(fmt::format("[{}]_b_num", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4, 0., 3.);
-    // auto btag_efficiency_b_den =
-    //     TH2D(fmt::format("[{}]_b_den", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4, 0., 3.);
-    //
-    // btag_efficiency_light_num.Sumw2();
-    // btag_efficiency_light_den.Sumw2();
-    // btag_efficiency_c_num.Sumw2();
-    // btag_efficiency_c_den.Sumw2();
-    // btag_efficiency_b_num.Sumw2();
-    // btag_efficiency_b_den.Sumw2();
-
     auto input_root_file = std::unique_ptr<TFile>(TFile::Open(input_file.c_str()));
     auto input_ttree = input_root_file->Get<TTree>("Events");
     input_ttree->SetBranchStatus("*", false);
@@ -575,7 +500,7 @@ auto classification(const std::string process,
             std::exit(EXIT_FAILURE);
         }
 
-        if (not(pass_generator_filter(generator_filter,
+        if (not(GeneratorFilters::pass_generator_filter(generator_filter,
                                       year,
                                       unwrap(LHEPart_pt),
                                       unwrap(LHEPart_eta),
@@ -1038,71 +963,6 @@ auto classification(const std::string process,
 
         if (not(has_trigger_match))
         {
-            continue;
-        }
-
-        // btag efficiency will go here
-        if (do_btag_efficiency)
-        {
-            if (not(is_data))
-            {
-                double mc_weight = [&genWeight, &LHEWeight_originalXWGTUP, &event_weights]() -> double
-                {
-                    if (event_weights.should_use_LHEWeight)
-                    {
-                        return unwrap(LHEWeight_originalXWGTUP);
-                    }
-                    return unwrap(genWeight);
-                }();
-
-                auto weight = mc_weight / event_weights.sum_weights * x_section * luminosity * filter_eff * k_factor;
-                for (std::size_t i = 0; i < nominal_bjets.size(); i++)
-                {
-                    if (unwrap(Jet_hadronFlavour).at(nominal_selected_bjet_indexes.at(i)) == 0)
-                    {
-                        btag_efficiency_light_num.Fill(
-                            nominal_bjets.p4[i].pt(), std::fabs(nominal_bjets.p4[i].eta()), weight);
-                        btag_efficiency_light_den.Fill(
-                            nominal_bjets.p4[i].pt(), std::fabs(nominal_bjets.p4[i].eta()), weight);
-                    }
-
-                    if (unwrap(Jet_hadronFlavour).at(nominal_selected_bjet_indexes.at(i)) == 4)
-                    {
-                        btag_efficiency_c_num.Fill(
-                            nominal_bjets.p4[i].pt(), std::fabs(nominal_bjets.p4[i].eta()), weight);
-                        btag_efficiency_c_den.Fill(
-                            nominal_bjets.p4[i].pt(), std::fabs(nominal_bjets.p4[i].eta()), weight);
-                    }
-
-                    if (unwrap(Jet_hadronFlavour).at(nominal_selected_bjet_indexes.at(i)) == 5)
-                    {
-                        btag_efficiency_b_num.Fill(
-                            nominal_bjets.p4[i].pt(), std::fabs(nominal_bjets.p4[i].eta()), weight);
-                        btag_efficiency_b_den.Fill(
-                            nominal_bjets.p4[i].pt(), std::fabs(nominal_bjets.p4[i].eta()), weight);
-                    }
-                }
-                for (std::size_t i = 0; i < nominal_jets.size(); i++)
-                {
-                    if (unwrap(Jet_hadronFlavour).at(nominal_selected_jet_indexes.at(i)) == 0)
-                    {
-                        btag_efficiency_light_den.Fill(
-                            nominal_jets.p4[i].pt(), std::fabs(nominal_jets.p4[i].eta()), weight);
-                    }
-
-                    if (unwrap(Jet_hadronFlavour).at(nominal_selected_jet_indexes.at(i)) == 4)
-                    {
-                        btag_efficiency_c_den.Fill(
-                            nominal_jets.p4[i].pt(), std::fabs(nominal_jets.p4[i].eta()), weight);
-                    }
-
-                    if (unwrap(Jet_hadronFlavour).at(nominal_selected_jet_indexes.at(i)) == 5)
-                    {
-                        btag_efficiency_b_den.Fill(
-                            nominal_jets.p4[i].pt(), std::fabs(nominal_jets.p4[i].eta()), weight);
-                    }
-                }
-            }
             continue;
         }
 
@@ -1684,17 +1544,6 @@ auto classification(const std::string process,
             //////////////////////////////////////////////
         }
     }
-
-    // // save btag efficiency histograms
-    // std::unique_ptr<TFile> btag_eff_maps_file(TFile::Open(
-    //     fmt::format("btag_eff_maps_buffer/{}_{}.root", process_group, std::hash<std::string>{}(input_file)).c_str(),
-    //     "RECREATE"));
-    // btag_efficiency_light_num.Write();
-    // btag_efficiency_light_den.Write();
-    // btag_efficiency_c_num.Write();
-    // btag_efficiency_c_den.Write();
-    // btag_efficiency_b_num.Write();
-    // btag_efficiency_b_den.Write();
 
     fmt::print("\n[MUSiC Classification] Done ...\n");
     fmt::print("\n\nProcessed {} events ...\n", global_event_index);

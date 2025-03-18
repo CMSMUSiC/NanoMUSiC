@@ -329,6 +329,45 @@ const std::map<std::string, Filter_t> filters = {
      }},
 };
 
+inline auto pass_generator_filter(const std::string &generator_filter,
+                                  const std::string &year_str,
+                                  ROOT::RVec<float> LHEPart_pt,
+                                  ROOT::RVec<float> LHEPart_eta,
+                                  ROOT::RVec<float> LHEPart_phi,
+                                  ROOT::RVec<float> LHEPart_mass,
+                                  ROOT::RVec<float> LHEPart_incomingpz,
+                                  ROOT::RVec<int> LHEPart_pdgId,
+                                  ROOT::RVec<int> LHEPart_status,
+                                  ROOT::RVec<float> GenPart_pt,
+                                  ROOT::RVec<float> GenPart_eta,
+                                  ROOT::RVec<float> GenPart_phi,
+                                  ROOT::RVec<float> GenPart_mass,
+                                  ROOT::RVec<int> GenPart_genPartIdxMother,
+                                  ROOT::RVec<int> GenPart_pdgId,
+                                  ROOT::RVec<int> GenPart_status,
+                                  ROOT::RVec<int> GenPart_statusFlags) -> bool
+{
+    if (generator_filter != "")
+    {
+        auto gen_filter_func = GeneratorFilters::get_filter(generator_filter);
+        const auto lhe_particles = NanoAODGenInfo::LHEParticles(
+            LHEPart_pt, LHEPart_eta, LHEPart_phi, LHEPart_mass, LHEPart_incomingpz, LHEPart_pdgId, LHEPart_status);
+
+        const auto gen_particles = NanoAODGenInfo::GenParticles(GenPart_pt,
+                                                                GenPart_eta,
+                                                                GenPart_phi,
+                                                                GenPart_mass,
+                                                                GenPart_genPartIdxMother,
+                                                                GenPart_pdgId,
+                                                                GenPart_status,
+                                                                GenPart_statusFlags);
+        auto year = get_runyear(year_str);
+        debugger_t debugger = std::nullopt;
+        return gen_filter_func(lhe_particles, gen_particles, year, debugger);
+    }
+
+    return true;
+}
 } // namespace GeneratorFilters
 
 #endif // GENERATOR_FILTERS_H

@@ -128,7 +128,7 @@ JetCorrector::JetCorrector(const Year &_year, const std::string &_era, const boo
         break;
     default:
         throw std::runtime_error(
-            fmt::format("Year ({}) not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).\n", year));
+            fmt::format("Year ({}) not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).\n", static_cast<int>(year)));
     }
 }
 
@@ -164,7 +164,7 @@ auto is_good_match(float pt,
     if (genjet_idx >= 0 and static_cast<std::size_t>(genjet_idx) < gen_jets.size)
     {
         const double radius = 0.4;
-        const double dr = VecOps::DeltaR(eta, gen_jets.eta.at(genjet_idx), phi, gen_jets.phi.at(genjet_idx));
+        const double dr = ROOT::VecOps::DeltaR(eta, gen_jets.eta.at(genjet_idx), phi, gen_jets.phi.at(genjet_idx));
         const double dpt = std::fabs(pt - gen_jets.pt.at(genjet_idx));
         if ((dr < radius / 2.) and (dpt < 3 * resolution * pt))
         {
