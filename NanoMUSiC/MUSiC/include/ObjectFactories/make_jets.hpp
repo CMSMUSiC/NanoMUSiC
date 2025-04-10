@@ -98,7 +98,7 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
                       const RVec<Int_t> &Jet_genJetIdx,        //
                       float fixedGridRhoFastjetAll,            //
                       JetCorrector &jet_corrections,           //
-                                                               //   BTagSFCorrector &btag_sf_Corrector,
+                      const CorrectionlibRef_t &btag_sf,       //
                       const NanoAODGenInfo::GenJets &gen_jets, //
                       const CorrectionlibRef_t &jet_veto_map,  //
                       bool is_data,                            //

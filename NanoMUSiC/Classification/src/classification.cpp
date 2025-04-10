@@ -182,6 +182,8 @@ auto classification(const std::string process,
 
     auto jet_veto_map = correctionlib_utils.make_correctionlib_ref("JetVetoMap", year);
 
+    auto btag_sf = correctionlib_utils.make_correctionlib_ref("BTagSF", year);
+
     /////////////////////////////////////////////
     /////////////////////////////////////////////
     // [ BEGIN ]  LHAPDF
@@ -501,22 +503,22 @@ auto classification(const std::string process,
         }
 
         if (not(GeneratorFilters::pass_generator_filter(generator_filter,
-                                      year,
-                                      unwrap(LHEPart_pt),
-                                      unwrap(LHEPart_eta),
-                                      unwrap(LHEPart_phi),
-                                      unwrap(LHEPart_mass),
-                                      unwrap(LHEPart_incomingpz),
-                                      unwrap(LHEPart_pdgId),
-                                      unwrap(LHEPart_status),
-                                      unwrap(GenPart_pt),
-                                      unwrap(GenPart_eta),
-                                      unwrap(GenPart_phi),
-                                      unwrap(GenPart_mass),
-                                      unwrap(GenPart_genPartIdxMother),
-                                      unwrap(GenPart_pdgId),
-                                      unwrap(GenPart_status),
-                                      unwrap(GenPart_statusFlags))))
+                                                        year,
+                                                        unwrap(LHEPart_pt),
+                                                        unwrap(LHEPart_eta),
+                                                        unwrap(LHEPart_phi),
+                                                        unwrap(LHEPart_mass),
+                                                        unwrap(LHEPart_incomingpz),
+                                                        unwrap(LHEPart_pdgId),
+                                                        unwrap(LHEPart_status),
+                                                        unwrap(GenPart_pt),
+                                                        unwrap(GenPart_eta),
+                                                        unwrap(GenPart_phi),
+                                                        unwrap(GenPart_mass),
+                                                        unwrap(GenPart_genPartIdxMother),
+                                                        unwrap(GenPart_pdgId),
+                                                        unwrap(GenPart_status),
+                                                        unwrap(GenPart_statusFlags))))
         {
             continue;
         }
@@ -917,23 +919,23 @@ auto classification(const std::string process,
               has_vetoed_jet,
               nominal_selected_jet_indexes,
               nominal_selected_bjet_indexes] =
-            ObjectFactories::make_jets(unwrap(Jet_pt),                 //
-                                       unwrap(Jet_eta),                //
-                                       unwrap(Jet_phi),                //
-                                       unwrap(Jet_mass),               //
-                                       unwrap(Jet_jetId),              //
-                                       unwrap(Jet_btagDeepFlavB),      //
-                                       unwrap(Jet_rawFactor),          //
-                                       unwrap(Jet_area),               //
-                                       unwrap(Jet_chEmEF),             //
-                                       unwrap(Jet_puId),               //
-                                       unwrap(Muon_eta),               //
-                                       unwrap(Muon_phi),               //
-                                       unwrap(Muon_isPFcand),          //
-                                       unwrap(Jet_genJetIdx),          //
-                                       unwrap(fixedGridRhoFastjetAll), //
-                                       jet_corrections,                //
-                                       // btag_sf_Corrector,                    //
+            ObjectFactories::make_jets(unwrap(Jet_pt),                              //
+                                       unwrap(Jet_eta),                             //
+                                       unwrap(Jet_phi),                             //
+                                       unwrap(Jet_mass),                            //
+                                       unwrap(Jet_jetId),                           //
+                                       unwrap(Jet_btagDeepFlavB),                   //
+                                       unwrap(Jet_rawFactor),                       //
+                                       unwrap(Jet_area),                            //
+                                       unwrap(Jet_chEmEF),                          //
+                                       unwrap(Jet_puId),                            //
+                                       unwrap(Muon_eta),                            //
+                                       unwrap(Muon_phi),                            //
+                                       unwrap(Muon_isPFcand),                       //
+                                       unwrap(Jet_genJetIdx),                       //
+                                       unwrap(fixedGridRhoFastjetAll),              //
+                                       jet_corrections,                             //
+                                       btag_sf,                                     //
                                        NanoAODGenInfo::GenJets(unwrap(GenJet_pt),   //
                                                                unwrap(GenJet_eta),  //
                                                                unwrap(GenJet_phi)), //
@@ -1083,23 +1085,23 @@ auto classification(const std::string process,
             {
                 if (starts_with(Shifts::variation_to_string(diff_shift), "Jet"))
                 {
-                    return ObjectFactories::make_jets(unwrap(Jet_pt),                 //
-                                                      unwrap(Jet_eta),                //
-                                                      unwrap(Jet_phi),                //
-                                                      unwrap(Jet_mass),               //
-                                                      unwrap(Jet_jetId),              //
-                                                      unwrap(Jet_btagDeepFlavB),      //
-                                                      unwrap(Jet_rawFactor),          //
-                                                      unwrap(Jet_area),               //
-                                                      unwrap(Jet_chEmEF),             //
-                                                      unwrap(Jet_puId),               //
-                                                      unwrap(Muon_eta),               //
-                                                      unwrap(Muon_phi),               //
-                                                      unwrap(Muon_isPFcand),          //
-                                                      unwrap(Jet_genJetIdx),          //
-                                                      unwrap(fixedGridRhoFastjetAll), //
-                                                      jet_corrections,                //
-                                                      // btag_sf_Corrector,                    //
+                    return ObjectFactories::make_jets(unwrap(Jet_pt),                              //
+                                                      unwrap(Jet_eta),                             //
+                                                      unwrap(Jet_phi),                             //
+                                                      unwrap(Jet_mass),                            //
+                                                      unwrap(Jet_jetId),                           //
+                                                      unwrap(Jet_btagDeepFlavB),                   //
+                                                      unwrap(Jet_rawFactor),                       //
+                                                      unwrap(Jet_area),                            //
+                                                      unwrap(Jet_chEmEF),                          //
+                                                      unwrap(Jet_puId),                            //
+                                                      unwrap(Muon_eta),                            //
+                                                      unwrap(Muon_phi),                            //
+                                                      unwrap(Muon_isPFcand),                       //
+                                                      unwrap(Jet_genJetIdx),                       //
+                                                      unwrap(fixedGridRhoFastjetAll),              //
+                                                      jet_corrections,                             //
+                                                      btag_sf,                                     //
                                                       NanoAODGenInfo::GenJets(unwrap(GenJet_pt),   //
                                                                               unwrap(GenJet_eta),  //
                                                                               unwrap(GenJet_phi)), //

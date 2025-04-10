@@ -69,6 +69,7 @@ pybind11_add_module(classification_imp MODULE
     src/GammaPlusJet.cpp //
     src/TTBarTo1Lep2Bjet2JetMET.cpp //
     src/WToLepNuX.cpp //
+    src/BTagEffMap.cpp //
     # src/WToLepNu_eff.cpp //
     # src/ZToTauTauLepX.cpp //
     # src/Distribution.cpp //

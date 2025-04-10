@@ -379,6 +379,19 @@ class CorrectionLibUtils
         {{"JetVetoMap"sv, Year::Run2018},
          {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/2018_UL/jetvetomaps.json.gz",
           "Summer19UL18_V1"}},
+
+        // btag scale factors
+        // {{TYPE, YEAR}, {JSON, CORRECTION_KEY}},
+        {{"BTagSF"sv, Year::Run2016APV},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/2016preVFP_UL/btagging.json.gz",
+          "deepJet_comb"}},
+        {{"BTagSF"sv, Year::Run2016},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/2016postVFP_UL/btagging.json.gz",
+          "deepJet_comb"}},
+        {{"BTagSF"sv, Year::Run2017},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/2017_UL/btagging.json.gz", "deepJet_comb"}},
+        {{"BTagSF"sv, Year::Run2018},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/2018_UL/btagging.json.gz", "deepJet_comb"}},
     };
 
     auto make_correctionlib_ref(const std::string &key, const std::string &year) -> const CorrectionlibRef_t
