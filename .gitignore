@@ -21,7 +21,7 @@ foo/
 *.gcda
 bin/
 lib/
-build/
+build/*
 foo.C
 nano.root
 .vscode/browse.vc.db
