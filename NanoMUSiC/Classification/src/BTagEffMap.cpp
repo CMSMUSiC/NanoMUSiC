@@ -6,31 +6,43 @@
 BTagEffMap::BTagEffMap(const std::string &process_group)
 {
     // Open the file
-    auto file_path = std::format("btag_eff_maps/btag_eff_map_{}.root", process_group);
+    file_path = std::format("btag_eff_maps/btag_eff_map_{}.root", process_group);
     auto root_file = std::unique_ptr<TFile>(TFile::Open(file_path.c_str(), "READ"));
-    if (file->IsZombie() or not(file))
+    if (root_file->IsZombie() or not(root_file))
     {
         throw std::runtime_error(std::format("Error: Cannot open file {}", file_path));
     }
 
-    // Get the object and cast to TEfficiency
-    //
-    TEfficiency *eff = dynamic_cast<TEfficiency *>(file.Get(objname.c_str()));
-    auto p = file->Get<TEfficiency>("DrellYan_light_eff");
-
-    if (!eff)
+    auto light_map_name = std::format("{}_light_eff", process_group);
+    eff_light = std::unique_ptr<TEfficiency>(root_file->Get<TEfficiency>(light_map_name.c_str()));
+    if (not(eff_light))
     {
-        std::cerr << "Error: Object '" << objname << "' is not a TEfficiency or not found in file " << filename
-                  << std::endl;
-        return nullptr;
+        throw std::runtime_error(
+            std::format("Object '{}' is not a TEfficiency or not found in file {}", light_map_name, file_path));
     }
+    root_file->Remove(eff_light.get());
 
-    // Clone the object to create a unique_ptr (since the file will close)
-    std::unique_ptr<TEfficiency> effCopy(static_cast<TEfficiency *>(eff->Clone()));
-    return effCopy;
+    auto b_map_name = std::format("{}_b_eff", process_group);
+    eff_b = std::unique_ptr<TEfficiency>(root_file->Get<TEfficiency>(b_map_name.c_str()));
+    if (not(eff_b))
+    {
+        throw std::runtime_error(
+            std::format("Object '{}' is not a TEfficiency or not found in file {}", b_map_name, file_path));
+    }
+    root_file->Remove(eff_b.get());
 }
 
 double BTagEffMap::get_eff(const Flavor &flavor, double pt, double eta) const
 {
-    return 0.0; // Default fallback if no bin matches
+    switch (flavor)
+    {
+    case Flavor::Light:
+        return 1.;
+    case Flavor::B:
+        return 1.;
+    case Flavor::C:
+        throw std::runtime_error(std::format("c Eff not supported"));
+    default:
+        throw std::runtime_error(std::format("Unkown flavor"));
+    }
 }
