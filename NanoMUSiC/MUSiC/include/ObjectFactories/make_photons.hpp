@@ -104,6 +104,8 @@ inline auto make_photons(const RVec<float> &Photon_pt,             //
                          const RVec<float> &Photon_dEsigmaUp,      //
                          const RVec<float> &Photon_dEsigmaDown,    //
                          const RVec<int> &Photon_genPartIdx,       //
+                         const RVec<int> &Photon_electronIdx,      //
+                         const RVec<int> &Photon_jetIdx,           //
                          const CorrectionlibRef_t &photon_sf,      //
                          const CorrectionlibRef_t &photon_csev_sf, //
                          bool is_data,                             //
@@ -122,10 +124,12 @@ inline auto make_photons(const RVec<float> &Photon_pt,             //
 
     for (std::size_t i = 0; i < Photon_pt.size(); i++)
     {
-        bool is_good_photon_pre_filter = (Photon_isScEtaEB[i])         //
-                                         and (not Photon_isScEtaEE[i]) // only EB photons
-                                         and (Photon_mvaID_WP90[i])    //
-                                         and (Photon_electronVeto[i]);
+        bool is_good_photon_pre_filter = (Photon_isScEtaEB[i])           //
+                                         and (not Photon_isScEtaEE[i])   // only EB photons
+                                         and (Photon_mvaID_WP90[i])      //
+                                         and (Photon_electronVeto[i])    //
+                                         and (Photon_electronIdx[i] < 0) //
+                                         and (Photon_jetIdx[i] < 0);
 
         auto photon_p4 = Math::PtEtaPhiMVector(Photon_pt[i], Photon_eta[i], Photon_phi[i], Photon_mass[i]);
         photon_p4 = photon_p4 * get_photon_energy_corrections(shift,
@@ -185,7 +189,7 @@ inline auto make_photons(const RVec<float> &Photon_pt,             //
                 {
                     id_score.push_back(MUSiCObjects::IdScore::Medium);
                 }
-		else
+                else
                 {
                     id_score.push_back(MUSiCObjects::IdScore::Tight);
                 }

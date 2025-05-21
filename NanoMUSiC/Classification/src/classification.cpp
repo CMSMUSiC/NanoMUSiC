@@ -453,6 +453,8 @@ auto classification(const std::string process,
     ADD_ARRAY_READER(Photon_dEsigmaUp, float);
     ADD_ARRAY_READER(Photon_dEsigmaDown, float);
     ADD_ARRAY_READER(Photon_genPartIdx, int);
+    ADD_ARRAY_READER(Photon_electronIdx, int);
+    ADD_ARRAY_READER(Photon_jetIdx, int);
 
     ADD_VALUE_READER(fixedGridRhoFastjetAll, float);
 
@@ -908,6 +910,8 @@ auto classification(const std::string process,
                                                              unwrap(Photon_dEsigmaUp),    //
                                                              unwrap(Photon_dEsigmaDown),  //
                                                              unwrap(Photon_genPartIdx),   //
+                                                             unwrap(Photon_electronIdx),  //
+                                                             unwrap(Photon_jetIdx),       //
                                                              photon_sf,                   //
                                                              photon_csev_sf,              //
                                                              is_data,                     //
@@ -1070,6 +1074,8 @@ auto classification(const std::string process,
                                                          unwrap(Photon_dEsigmaUp),    //
                                                          unwrap(Photon_dEsigmaDown),  //
                                                          unwrap(Photon_genPartIdx),   //
+                                                         unwrap(Photon_electronIdx),  //
+                                                         unwrap(Photon_jetIdx),       //
                                                          photon_sf,                   //
                                                          photon_csev_sf,              //
                                                          is_data,                     //
