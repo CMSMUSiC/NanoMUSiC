@@ -43,4 +43,18 @@ python3 -m pip install --user htcondor
 python3 -m pip install --user dbs3-client
 
 
+# install parallel
+echo "Installing parallel ..."
+cd $SCRIPT_DIR
+cd external
+wget https://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2
+tar -xjf parallel-latest.tar.bz2
+mv parallel-*/ parallel
+cd parallel
+./configure --prefix=`pwd`
+make
+make check
+make install
+
+
 cd $SCRIPT_DIR

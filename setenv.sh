@@ -55,3 +55,7 @@ export RUSTFLAGS="-C linker=$CC"
 
 #pybind11 CMAKE files
 export pybind11_DIR="/cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/lib/python3.11/site-packages/pybind11/share/cmake/pybind11"
+
+
+#parallel
+export PATH=$PATH:$SCRIPT_DIR/external/parallel/bin

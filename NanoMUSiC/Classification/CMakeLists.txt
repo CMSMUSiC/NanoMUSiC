@@ -76,9 +76,9 @@ pybind11_add_module(classification_imp MODULE
     src/pybind_imp.cpp //
 )
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+target_include_directories(classification_imp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(classification_imp LINK_PUBLIC ROOT::RIO ROOT::Net correctionlib)
 target_link_libraries(classification_imp LINK_PRIVATE EventClass Distribution)
-target_include_directories(classification_imp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 install(TARGETS classification_imp DESTINATION ${CMAKE_SOURCE_DIR}/lib/python)
 
 

@@ -28,7 +28,6 @@ PYBIND11_MODULE(classification_imp, m)
           "validation_container"_a,
           "first_event"_a = std::nullopt,
           "last_event"_a = std::nullopt,
-          "do_btag_efficiency"_a = false,
           "debug"_a = false,
           "Entry point for classification code.");
     m.doc() = "python bindings for classification";

@@ -1,26 +1,26 @@
-from typing import Optional, Union, Iterator, Any
-import time
-from pydantic import BaseModel
-from multiprocessing.pool import AsyncResult
 import fnmatch
-from multiprocessing import Pool
-from itertools import product
 import glob
-import random
-import json
-from condor_manager import CondorJob, CondorManager
-import os
-import classification_imp as clft
-import sys
-from metadata import Lumi, Years, Process, load_toml
-from rich.progress import Progress
-from rich import print as rprint
 import hashlib
-import subprocess
-import shlex
-from enum import Enum, auto
-from collections import defaultdict
+import json
 import multiprocessing
+import os
+import random
+import shlex
+import subprocess
+import sys
+import time
+from collections import defaultdict
+from enum import Enum, auto
+from itertools import product
+from multiprocessing import Pool, process
+from multiprocessing.pool import AsyncResult
+from typing import Any, Iterator, Optional, Union
+
+import classification_imp as clft
+from metadata import Lumi, Process, Years, load_toml
+from pydantic import BaseModel
+from rich import print as rprint
+from rich.progress import Progress
 
 
 class XrdcpResult(Enum):
@@ -215,7 +215,6 @@ def build_classification_job(
     year: Years,
     split_index: int,
     sub_input_files: list[str],
-    do_btag_efficiency: bool,
 ):
     template = r"""
 import classification
@@ -236,7 +235,6 @@ classification.run_classification(
     generator_filter="{}",
     first_event=None,
     last_event=None,
-    do_btag_efficiency={},
     debug=False,
 )
 
@@ -255,7 +253,6 @@ print("YAY! Done _o/")
         process.ProcessGroup,
         sub_input_files,
         process.generator_filter_key,
-        "True" if do_btag_efficiency else "False",
     )
 
     output_path = f"classification_jobs/run_classification_{process.name}_{year.value}_{split_index}.py"
@@ -263,16 +260,14 @@ print("YAY! Done _o/")
         f.write(template)
 
 
-def launch_condor(
+def prepare_classification(
+    *,
     config_file_path: str,
     process_name: Union[str, None] = None,
     year: Union[Years, None] = None,
     max_files: int = sys.maxsize,
     split_size: int = sys.maxsize,
-    dry_run: bool = False,
-    skip_tar: bool = False,
     do_cleanning: bool = True,
-    do_btag_efficiency: bool = False,
 ):
     config_file = load_toml(config_file_path)
 
@@ -299,28 +294,6 @@ def launch_condor(
         os.system("rm -rf classification_jobs")
     os.system("mkdir -p classification_jobs")
 
-    if not skip_tar:
-        os.system(
-            "tar --exclude-from=$MUSIC_BASE/.gitignore --exclude=build --exclude=.git --exclude=Legacy --exclude=opt --exclude=bin --exclude=lib -czvf classification_src.tar.gz -C $MUSIC_BASE ."
-        )
-
-    preamble = [
-        r"source /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/setup.sh",
-        r"cd $_CONDOR_SCRATCH_DIR",
-        r"tar -zxf classification_src.tar.gz",
-        r"mkdir -p lib",
-        r"mkdir -p opt",
-        r"mkdir -p bin",
-        r"source setenv.sh",
-        r"mkdir -p build",
-        r"cd build",
-        r"cmake ..",
-        r"ninja classification_imp",
-        r"mkdir -p ../lib/python",
-        r"cp NanoMUSiC/Classification/classification_imp.cpython-39-x86_64-linux-gnu.so ../lib/python/.",
-        r"cd ..",
-    ]
-
     def chunks(lst: list[str], n: Union[int, None]) -> list[list[str]]:
         if not n:
             return [lst]
@@ -329,57 +302,17 @@ def launch_condor(
         assert n > 0
         return [lst[i : i + n] for i in range(0, len(lst), n)]
 
-    def request_memory(process: Process) -> int:
-        if process.name.startswith("tt") or process.name.startswith("TT"):
-            return 5
-        if process.name.startswith("ggZH_HToBB_ZToNuNu_M-125_13TeV_PH"):
-            return 4
-        if process.name.startswith("QCD"):
-            return 2
-        if process.is_data:
-            return 2
-        return 3
-
     def year_filter(y: str) -> bool:
         if year:
             return y in year
         return True
 
-    jobs = []
     for p in processes:
         for this_year in filter(year_filter, Years):
             input_files = chunks(p.get_files(this_year, max_files), split_size)
             for split_index, sub_input_files in enumerate(input_files):
                 if len(sub_input_files):
-                    build_classification_job(
-                        p, this_year, split_index, sub_input_files, do_btag_efficiency
-                    )
-                    jobs.append(
-                        CondorJob(
-                            f"{p.name}_{this_year}_{split_index}",
-                            actions=[
-                                f'echo "--- {p.name} {this_year}"',
-                                r"mkdir -p classification_outputs",
-                                r"ls -lha",
-                                f"python3 run_classification_{p.name}_{this_year}_{split_index}.py",
-                                f"mv {p.name}_{this_year}_{split_index}*.root classification_outputs/.",
-                                r"ls -lha classification_outputs",
-                            ],
-                            preamble=preamble,
-                            input_files=[
-                                f"classification_jobs/run_classification_{p.name}_{this_year}_{split_index}.py",
-                                "sum_weights.json",
-                                r"classification_src.tar.gz",
-                            ],
-                            output_files=[r"classification_outputs"],
-                            request_memory=request_memory(p),
-                        )
-                    )
-
-    if not dry_run:
-        manager = CondorManager(jobs)
-        manager.submit()
-        manager.nanny()
+                    build_classification_job(p, this_year, split_index, sub_input_files)
 
 
 def launch_parallel(
@@ -389,23 +322,19 @@ def launch_parallel(
     max_files: int = sys.maxsize,
     split_size: int = sys.maxsize,
     num_cpus: int = 120,
-    do_btag_efficiency: bool = False,
 ):
     do_cleanning = True
     if year or process_name:
         do_cleanning = False
 
     # launch a dry-run of a condor classification
-    launch_condor(
-        config_file,
-        process_name,
-        year,
-        max_files,
-        split_size,
-        True,
-        True,
-        do_cleanning,
-        do_btag_efficiency,
+    prepare_classification(
+        config_file_path=config_file,
+        process_name=process_name,
+        year=year,
+        max_files=max_files,
+        split_size=split_size,
+        do_cleanning=do_cleanning,
     )
 
     years_to_process = ["2016", "2017", "2018"]

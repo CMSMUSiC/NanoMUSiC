@@ -882,7 +882,6 @@ auto classification(const std::string process,
                     ValidationContainer &validation_container,
                     std::optional<unsigned long> first_event = std::nullopt,
                     std::optional<long> last_event = std::nullopt,
-                    bool do_btag_efficiency = false,
                     const bool debug = false) -> void;
 
 #endif // CLASSIFICATION
