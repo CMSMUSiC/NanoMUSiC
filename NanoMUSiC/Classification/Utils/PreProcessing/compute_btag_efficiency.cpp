@@ -203,6 +203,7 @@ auto compute_btag_efficiency(const std::string &sample,
     auto jet_corrections = JetCorrector(get_runyear(year), get_era_from_process_name(sample, false), false);
     auto correctionlib_utils = CorrectionLibUtils();
     auto jet_veto_map = correctionlib_utils.make_correctionlib_ref("JetVetoMap", year);
+    auto btag_sf = correctionlib_utils.make_correctionlib_ref("BTagSF", year);
 
     // constexpr unsigned int MAX_EVENTS = 1;
     constexpr unsigned int MAX_EVENTS = std::numeric_limits<unsigned int>::max();
@@ -298,6 +299,7 @@ auto compute_btag_efficiency(const std::string &sample,
                                                                               Jet_genJetIdx,                       //
                                                                               fixedGridRhoFastjetAll,              //
                                                                               jet_corrections,                     //
+                                                                              btag_sf,   //
                                                                               NanoAODGenInfo::GenJets(GenJet_pt,   //
                                                                                                       GenJet_eta,  //
                                                                                                       GenJet_phi), //
@@ -305,6 +307,7 @@ auto compute_btag_efficiency(const std::string &sample,
                                                                               false,                               //
                                                                               year,                                //
                                                                               Shifts::Variations::Nominal);
+
             if (has_vetoed_jet)
             {
                 return;

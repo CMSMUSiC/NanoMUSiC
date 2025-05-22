@@ -32,17 +32,17 @@ def get_files(
     all_redirectors = [
         # "davs://grid-webdav.physik.rwth-aachen.de:2889",
         "root://grid-dcache.physik.rwth-aachen.de//",
-        "root://cmsxrootd.fnal.gov//",
         "root://xrootd-cms.infn.it//",
+        "root://cmsxrootd.fnal.gov//",
         "root://cms-xrd-global.cern.ch//",
     ]
 
     match processing_site:
         case ProcessingSite.RWTH:
             start_pos = 0
-        case ProcessingSite.Americas:
-            start_pos = 1
         case ProcessingSite.Europe | ProcessingSite.Asia:
+            start_pos = 1
+        case ProcessingSite.Americas:
             start_pos = 2
         case ProcessingSite.Other:
             start_pos = 3
