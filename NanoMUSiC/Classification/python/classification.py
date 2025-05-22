@@ -375,7 +375,7 @@ def launch_parallel(
                 if y in j:
                     file.write("../{}\n".format(j))
 
-        parallel_cmd = r"mkdir -p classification_outputs && cd classification_outputs && cp ../sum_weights.json . && /usr/bin/cat ../classification_jobs/inputs_parallel.txt | parallel -j ___NUM_CPUS___ --halt now,fail=1 --eta --progress --noswap --retries 4 --joblog job____YEAR___.log 'python3 {} > {/.}.stdout 2> {/.}.stderr' && cd ..".replace(
+        parallel_cmd = r"mkdir -p classification_outputs && cd classification_outputs && cp -r ../btag_eff_maps . && cp ../sum_weights.json . && /usr/bin/cat ../classification_jobs/inputs_parallel.txt | parallel -j ___NUM_CPUS___ --halt now,fail=1 --eta --progress --noswap --retries 4 --joblog job____YEAR___.log 'python3 {} > {/.}.stdout 2> {/.}.stderr' && cd ..".replace(
             "___NUM_CPUS___", str(num_cpus)
         ).replace("___YEAR___", y)
         rprint(

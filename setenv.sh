@@ -1,7 +1,12 @@
 #!/bin/bash
 
 # fix the many locale warnings
-unset LC_ALL
+export LANG=C.utf8
+export LC_ALL=C.utf8
+export LC_CTYPE=C.utf8
+export LC_MESSAGES=C.utf8
+export LC_COLLATE=C.utf8
+unset LANGUAGE
 
 # This is a set_env script
 SCRIPTDIR=$(pwd)
