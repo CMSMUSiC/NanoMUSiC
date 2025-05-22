@@ -115,7 +115,8 @@ def compute_btag_efficiency_imp(inputs: BTagEffInputs):
     try:
         inputs.input_file = inputs.input_file.replace(
             "root://cms-xrd-global.cern.ch//",
-            "davs://grid-webdav.physik.rwth-aachen.de:2889",
+            # "davs://grid-webdav.physik.rwth-aachen.de:2889",
+            "root://grid-dcache.physik.rwth-aachen.de//",
         )
 
         res = ROOT.compute_btag_efficiency(**asdict(inputs))
@@ -130,7 +131,8 @@ def compute_btag_efficiency_imp(inputs: BTagEffInputs):
 
     try:
         inputs.input_file = inputs.input_file.replace(
-            "davs://grid-webdav.physik.rwth-aachen.de:2889",
+            # "davs://grid-webdav.physik.rwth-aachen.de:2889",
+            "root://grid-dcache.physik.rwth-aachen.de//",
             "root://cmsxrootd.fnal.gov//",
         )
 
