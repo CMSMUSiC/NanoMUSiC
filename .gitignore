@@ -1,3 +1,4 @@
+external/
 .rucio_silva
 .rucio_seth
 .ruff_cache

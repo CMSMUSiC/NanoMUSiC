@@ -47,9 +47,11 @@ python3 -m pip install --user dbs3-client
 echo "Installing parallel ..."
 cd $SCRIPT_DIR
 cd external
+rm -rf *
 wget https://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2
 tar -xjf parallel-latest.tar.bz2
 mv parallel-*/ parallel
+rm -rf *.bz2
 cd parallel
 ./configure --prefix=`pwd`
 make

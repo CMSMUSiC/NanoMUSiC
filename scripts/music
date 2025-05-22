@@ -232,11 +232,12 @@ def launch(
         )
         sys.exit(-1)
 
-    if not os.path.exists("btag_efficiency_map.root"):
+    if not os.path.exists("btag_eff_maps"):
         print(
-            "ERROR: Could not find btag_efficiency_map.root. Run preprocess before launch.",
+            'ERROR: Could not find btag_eff_maps. Run "btag-efficiency" before "launch".',
             file=sys.stderr,
         )
+        sys.exit(-1)
 
     if target == ClassificationTarget.Dev:
         classification.launch_dev(config_file, process, year, max_files)

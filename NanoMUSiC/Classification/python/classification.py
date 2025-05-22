@@ -145,8 +145,6 @@ def run_classification(
     generator_filter: str,
     first_event: Optional[int] = None,
     last_event: Optional[int] = None,
-    is_dev_job: bool = False,
-    do_btag_efficiency: bool = False,
     debug: bool = False,
 ) -> None:
     if not output_file.endswith(".root"):
@@ -190,7 +188,6 @@ def run_classification(
             first_event,
             last_event,
             # 100,
-            do_btag_efficiency,
             debug,
         )
         _output_file = "{}_{}.root".format(output_file.split(".root")[0], idx)
@@ -477,8 +474,6 @@ def launch_dev(
         generator_filter=process.generator_filter_key,
         first_event=None,
         last_event=None,
-        is_dev_job=True,
-        do_btag_efficiency=False,
         debug=True,
     )
 

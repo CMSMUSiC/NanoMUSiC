@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# fix the many locale warnings
+unset LC_ALL
+
 # This is a set_env script
 SCRIPTDIR=$(pwd)
 
@@ -58,4 +61,5 @@ export pybind11_DIR="/cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/l
 
 
 #parallel
-export PATH=$PATH:$SCRIPT_DIR/external/parallel/bin
+export PATH=$PATH:$SCRIPTDIR/external/parallel/bin
+

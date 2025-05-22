@@ -325,10 +325,10 @@ struct RunConfig
     std::string_view golden_json;
 };
 
-constexpr auto Run2016APV = RunConfig{.golden_json = "$MUSIC_BASE/configs/golden_jsons/Run2016APV.txt"};
-constexpr auto Run2016 = RunConfig{.golden_json = "$MUSIC_BASE/configs/golden_jsons/Run2016.txt"};
-constexpr auto Run2017 = RunConfig{.golden_json = "$MUSIC_BASE/configs/golden_jsons/Run2017.txt"};
-constexpr auto Run2018 = RunConfig{.golden_json = "$MUSIC_BASE/configs/golden_jsons/Run2018.txt"};
+constexpr auto Run2016APV = RunConfig{.golden_json = "$MUSIC_BASE/configs/data/golden_jsons/Run2016APV.txt"};
+constexpr auto Run2016 = RunConfig{.golden_json = "$MUSIC_BASE/configs/data/golden_jsons/Run2016.txt"};
+constexpr auto Run2017 = RunConfig{.golden_json = "$MUSIC_BASE/configs/data/golden_jsons/Run2017.txt"};
+constexpr auto Run2018 = RunConfig{.golden_json = "$MUSIC_BASE/configs/data/golden_jsons/Run2018.txt"};
 constexpr std::array<RunConfig, Year::kTotalYears> Runs = {Run2016APV, Run2016, Run2017, Run2018};
 
 } // namespace RunConfig
