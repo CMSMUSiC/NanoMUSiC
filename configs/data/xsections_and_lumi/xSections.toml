@@ -1622,12 +1622,12 @@ XSecOrder = "NNLO"
 ProcessGroup = "WW"
 #generator_filter_key = "ww_mLL_less_1800"
 
-[WWTo2L2Nu_MLL_1800ToInf_13TeV_PH]
-XSec = 10.4814      # this xSec is completely off !!!
-FilterEff = 1.0
-kFactor = 1.162
-XSecOrder = "NNLO"
-ProcessGroup = "WW"
+# [WWTo2L2Nu_MLL_1800ToInf_13TeV_PH]
+# XSec = 10.4814      # this xSec is completely off !!!
+# FilterEff = 1.0
+# kFactor = 1.162
+# XSecOrder = "NNLO"
+# ProcessGroup = "WW"
 
 [WWTo2L2Nu_MLL_2500ToInf_13TeV_PH]
 XSec = 10.4814

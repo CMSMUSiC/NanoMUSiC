@@ -2,6 +2,7 @@
 
 from enum import Enum
 from typing import Optional, Union
+from analysis_builder import ProcessingSite
 from distribution_model import DistributionType
 from typing_extensions import Annotated
 import typer
@@ -79,17 +80,17 @@ def build(
             help="parsed_sample_list.toml file path, as build by the parser."
         ),
     ] = "parsed_sample_list.toml",
-    outside_rwth: Annotated[
-        bool, typer.Option(help="When not running from within RWTH network.")
-    ] = False,
+    processing_site: Annotated[
+        ProcessingSite, typer.Option(help="Region or institute where processing files.")
+    ] = ProcessingSite.RWTH,
 ):
     """
     Will query all files LFN, for each sample and add it to the analysis_config.toml.
     """
-    from analysis_builder import build_analysis_config, ProcessingSite
+    from analysis_builder import build_analysis_config 
 
     build_analysis_config(
-        config_file, ProcessingSite.Other if outside_rwth else ProcessingSite.RWTH
+        config_file, processing_site
     )
 
 
