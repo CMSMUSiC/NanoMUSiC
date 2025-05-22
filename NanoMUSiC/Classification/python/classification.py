@@ -350,96 +350,89 @@ def launch_parallel(
     if not process_name:
         process_name = "*"
 
-    for y in years_to_process:
-        with open("classification_jobs/inputs_parallel.txt", "w") as file:
-            generated_jobs = glob.glob(
-                os.path.join(
-                    "classification_jobs",
-                    "*{}_{}*.py".format(process_name, years_to_process),
-                )
-            )
-            if len(generated_jobs) == 0:
-                print(
-                    "ERROR: Could not launch Classification. The requested combination of sample ({}) and year ({}) is not valid.".format(
-                        process_name, year
-                    ),
-                    file=sys.stderr,
-                )
-                sys.exit(-1)
-            # random.shuffle(generated_jobs)
-            generated_jobs = sorted(generated_jobs, reverse=True)
-            generated_jobs = [j for j in generated_jobs if "classification_T" in j] + [
-                j for j in generated_jobs if "classification_T" not in j
-            ]
-            for j in generated_jobs:
-                if y in j:
-                    file.write("../{}\n".format(j))
-
-        parallel_cmd = r"mkdir -p classification_outputs && cd classification_outputs && cp -r ../btag_eff_maps . && cp ../sum_weights.json . && /usr/bin/cat ../classification_jobs/inputs_parallel.txt | parallel -j ___NUM_CPUS___ --halt now,fail=1 --eta --progress --noswap --retries 4 --joblog job____YEAR___.log 'python3 {} > {/.}.stdout 2> {/.}.stderr' && cd ..".replace(
-            "___NUM_CPUS___", str(num_cpus)
-        ).replace("___YEAR___", y)
-        rprint(
-            "[bold magenta]Parallel command for year {}: [/bold magenta][white]{}[/white]".format(
-                y, parallel_cmd
+    with open("classification_jobs/inputs_parallel.txt", "w") as file:
+        generated_jobs = glob.glob(
+            os.path.join(
+                "classification_jobs",
+                "*{}_{}*.py".format(process_name, years_to_process),
             )
         )
-
-        os.system("date")
-        parallel_proc = subprocess.Popen(
-            parallel_cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            shell=True,
-        )
-
-        print()
-        max_line_size = 0
-        if parallel_proc.stdout:
-            for line in iter(parallel_proc.stdout.readline, ""):
-                if line.startswith("ETA"):
-                    line = line.replace("\n", "")
-                    max_line_size = max(max_line_size, len(line))
-                    print(" " * max_line_size, end="\r")
-                    print(line.replace("\n", ""), end="\r")
-                    sys.stdout.flush()  # Ensure it prints in real-time
-                else:
-                    print(line, end="")
-        print()
-
-        if parallel_proc.stdout:
-            parallel_proc.stdout.close()
-        return_code = parallel_proc.wait()
-        os.system("date")
-        if return_code:
+        if len(generated_jobs) == 0:
             print(
-                "ERROR: Could not run parallel jobs for year {}.".format(y),
-                file=sys.stderr,
-            )
-            sys.exit(-1)
-
-        parallel_proc = subprocess.run(
-            r"awk '$7 != 0' classification_outputs/job____YEAR___.log | wc -l".replace(
-                "___YEAR___", y
-            ),
-            capture_output=True,
-            shell=True,
-            text=True,
-        )
-        if parallel_proc.returncode != 0:
-            print(
-                "ERROR: Could not status of parallel jobs for year {}.".format(y),
-                file=sys.stderr,
-            )
-            sys.exit(-1)
-        if parallel_proc.stdout.replace("\n", "").replace(" ", "") != "1":
-            print(
-                "ERROR: Could not run parallel jobs for year {}. At least one job have failed.".format(
-                    y
+                "ERROR: Could not launch Classification. The requested combination of sample ({}) and year ({}) is not valid.".format(
+                    process_name, year
                 ),
                 file=sys.stderr,
             )
             sys.exit(-1)
+        # random.shuffle(generated_jobs)
+        generated_jobs = sorted(generated_jobs, reverse=True)
+        generated_jobs = [j for j in generated_jobs if "classification_T" in j] + [
+            j for j in generated_jobs if "classification_T" not in j
+        ]
+        for j in generated_jobs:
+            file.write("../{}\n".format(j))
+    parallel_cmd = r"mkdir -p classification_outputs && cd classification_outputs && cp -r ../btag_eff_maps . && cp ../sum_weights.json . && /usr/bin/cat ../classification_jobs/inputs_parallel.txt | parallel -j ___NUM_CPUS___ --halt now,fail=1 --eta --progress --noswap --retries 4 --joblog job.log 'python3 {} > {/.}.stdout 2> {/.}.stderr' && cd ..".replace(
+        "___NUM_CPUS___", str(num_cpus)
+    )
+    rprint(
+        "[bold magenta]Parallel command: [/bold magenta][white]{}[/white]".format(
+            parallel_cmd
+        )
+    )
+
+    os.system("date")
+    parallel_proc = subprocess.Popen(
+        parallel_cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        shell=True,
+    )
+
+    print()
+    max_line_size = 0
+    if parallel_proc.stdout:
+        for line in iter(parallel_proc.stdout.readline, ""):
+            if line.startswith("ETA"):
+                line = line.replace("\n", "")
+                max_line_size = max(max_line_size, len(line))
+                print(" " * max_line_size, end="\r")
+                print(line.replace("\n", ""), end="\r")
+                sys.stdout.flush()  # Ensure it prints in real-time
+            else:
+                print(line, end="")
+    print()
+
+    if parallel_proc.stdout:
+        parallel_proc.stdout.close()
+    return_code = parallel_proc.wait()
+    os.system("date")
+    if return_code:
+        print(
+            "ERROR: Could not run parallel jobs.",
+            file=sys.stderr,
+        )
+        sys.exit(-1)
+
+    parallel_proc = subprocess.run(
+        r"awk '$7 != 0' classification_outputs/job.log | wc -l",
+        capture_output=True,
+        shell=True,
+        text=True,
+    )
+    if parallel_proc.returncode != 0:
+        print(
+            "ERROR: Could not status of parallel jobs.",
+            file=sys.stderr,
+        )
+        sys.exit(-1)
+    if parallel_proc.stdout.replace("\n", "").replace(" ", "") != "1":
+        print(
+            "ERROR: Could not run parallel jobs for year {}. At least one job have failed.",
+            file=sys.stderr,
+        )
+        sys.exit(-1)
 
 
 def launch_dev(
