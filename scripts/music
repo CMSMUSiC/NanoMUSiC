@@ -4,10 +4,11 @@ from enum import Enum
 from typing import Optional, Union
 from analysis_builder import ProcessingSite
 from distribution_model import DistributionType
+from rich import console
 from typing_extensions import Annotated
 import typer
 import metadata
-from metadata import ClassType
+from metadata import ClassType, Years
 import sys
 import os
 import time
@@ -87,11 +88,9 @@ def build(
     """
     Will query all files LFN, for each sample and add it to the analysis_config.toml.
     """
-    from analysis_builder import build_analysis_config 
+    from analysis_builder import build_analysis_config
 
-    build_analysis_config(
-        config_file, processing_site
-    )
+    build_analysis_config(config_file, processing_site)
 
 
 @classification_app.command()
@@ -429,74 +428,64 @@ class YearsToPlot(str, Enum):
 def most_occupied(
     input_file: str = "classification_plots/integral_pvalues_data.json",
     output_dir: str = "classification_most_occupied",
-    year: YearsToPlot = YearsToPlot.All,
 ):
     """
     Plot the occupancy and p_integral of most occupied classes.
     """
+    from concurrent.futures import ProcessPoolExecutor, as_completed
+    from rich.progress import track
+    from rich.console import Console
+
     from integral_pvalues import integral_pvalues_summary
 
     os.system("rm -rf {}".format(output_dir))
     os.system("mkdir -p {}".format(output_dir))
 
-    if year == YearsToPlot.All:
-        for y in YearsToPlot:
-            if y != YearsToPlot.All:
-                integral_pvalues_summary(
+    with ProcessPoolExecutor(max_workers=12) as executor:
+        futures = []
+        for y in ["2016", "2017", "2018", "Run2"]:
+            futures.append(
+                executor.submit(
+                    integral_pvalues_summary,
                     input_file,
                     output_dir,
-                    year=y.value,
-                    num_classes=20,
-                    plot_all=True,
-                    plot_per_objects=True,
-                    plot_exclusive=True,
+                    y,
+                    20,
+                    True,
+                    True,
+                    True,
                 )
-                integral_pvalues_summary(
+            )
+            futures.append(
+                executor.submit(
+                    integral_pvalues_summary,
                     input_file,
                     output_dir,
-                    year=y.value,
-                    num_classes=40,
-                    plot_all=True,
-                    plot_per_objects=True,
-                    plot_exclusive=True,
+                    y,
+                    40,
+                    True,
+                    True,
+                    True,
                 )
-                integral_pvalues_summary(
+            )
+            futures.append(
+                executor.submit(
+                    integral_pvalues_summary,
                     input_file,
                     output_dir,
-                    year=y.value,
-                    num_classes=100,
-                    plot_all=True,
-                    plot_per_objects=True,
-                    plot_exclusive=True,
+                    y,
+                    100,
+                    True,
+                    True,
+                    True,
                 )
-    else:
-        integral_pvalues_summary(
-            input_file,
-            output_dir,
-            year=year.value,
-            num_classes=20,
-            plot_all=True,
-            plot_per_objects=True,
-            plot_exclusive=True,
-        )
-        integral_pvalues_summary(
-            input_file,
-            output_dir,
-            year=year.value,
-            num_classes=40,
-            plot_all=True,
-            plot_per_objects=True,
-            plot_exclusive=True,
-        )
-        integral_pvalues_summary(
-            input_file,
-            output_dir,
-            year=year.value,
-            num_classes=100,
-            plot_all=True,
-            plot_per_objects=True,
-            plot_exclusive=True,
-        )
+            )
+
+        console=Console()
+        for future in track( as_completed(futures), total=len(futures), description="Most occupied scenarios...", console=console):
+            year, num_classes=future.result()
+            console.print(f"Done: {year} - {num_classes} classes")
+
 
 
 @plot_app.command()
@@ -508,42 +497,62 @@ def most_discrepant(
     """
     Plot the occupancy and p_integral of most discrepant classes.
     """
+    from concurrent.futures import ProcessPoolExecutor, as_completed
+    from rich.progress import track
+    from rich.console import Console
+
     from integral_pvalues import integral_pvalues_summary, IntegralPValuePlotType
 
     os.system("rm -rf {}".format(output_dir))
     os.system("mkdir -p {}".format(output_dir))
 
-    for y in ["2016", "2017", "2018", "Run2"]:
-        integral_pvalues_summary(
-            input_file,
-            output_dir,
-            year=y,
-            num_classes=20,
-            plot_all=True,
-            plot_per_objects=True,
-            plot_exclusive=True,
-            plot_type=IntegralPValuePlotType.MostDiscrepant,
-        )
-        integral_pvalues_summary(
-            input_file,
-            output_dir,
-            year=y,
-            num_classes=40,
-            plot_all=True,
-            plot_per_objects=True,
-            plot_exclusive=True,
-            plot_type=IntegralPValuePlotType.MostDiscrepant,
-        )
-        integral_pvalues_summary(
-            input_file,
-            output_dir,
-            year=y,
-            num_classes=100,
-            plot_all=True,
-            plot_per_objects=True,
-            plot_exclusive=True,
-            plot_type=IntegralPValuePlotType.MostDiscrepant,
-        )
+    with ProcessPoolExecutor(max_workers=12) as executor:
+        futures = []
+        for y in ["2016", "2017", "2018", "Run2"]:
+            futures.append(
+                executor.submit(
+                    integral_pvalues_summary,
+                    input_file,
+                    output_dir,
+                    y,
+                    20,
+                    True,
+                    True,
+                    True,
+                    IntegralPValuePlotType.MostDiscrepant,
+                )
+            )
+            futures.append(
+                executor.submit(
+                    integral_pvalues_summary,
+                    input_file,
+                    output_dir,
+                    y,
+                    40,
+                    True,
+                    True,
+                    True,
+                    IntegralPValuePlotType.MostDiscrepant,
+                )
+            )
+            futures.append(
+                executor.submit(
+                    integral_pvalues_summary,
+                    input_file,
+                    output_dir,
+                    y,
+                    100,
+                    True,
+                    True,
+                    True,
+                    IntegralPValuePlotType.MostDiscrepant,
+                )
+            )
+
+        console=Console()
+        for future in track( as_completed(futures), total=len(futures), description="Most discrepant scenarios...", console=console):
+            year, num_classes=future.result()
+            console.print(f"Done: {year} - {num_classes} classes")
 
 
 @plot_app.command()

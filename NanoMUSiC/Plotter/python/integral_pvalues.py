@@ -5,12 +5,14 @@ from enum import Enum
 from typing import Any
 
 import matplotlib.pyplot as plt
+
 import mplhep as hep
 
 hep.style.use("CMS")
 import mplhep as hep  # HEP (CMS) extensions/styling on top of mpl
 
 import matplotlib as mpl
+
 
 mpl.use("Agg")
 
@@ -82,7 +84,7 @@ def plot_classes(
                 ordered_pg[pg] = ec_data_json[year][ec]["mc"][pg]
     ordered_pg = sorted(ordered_pg.items(), key=lambda item: item[1], reverse=False)
 
-    for ec in track(event_classes):
+    for ec in event_classes:
         bottom = 0
 
         for pg, _ in ordered_pg:
@@ -254,7 +256,7 @@ def integral_pvalues_summary(
     plot_per_objects: bool = True,
     plot_exclusive: bool = True,
     plot_type: IntegralPValuePlotType = IntegralPValuePlotType.MostOccupied,
-) -> None:
+) -> tuple[str, int]:
     plot_size = PlotSize.Medium
     if num_classes >= 100:
         plot_size = PlotSize.Large
@@ -347,10 +349,6 @@ def integral_pvalues_summary(
         return sys.float_info.max
 
     if plot_all:
-        print(
-            f"Processing {num_classes} most {plot_type.value} event classes for {year} ..."
-        )
-
         is_reverse, class_selector = True, select_most_occupied_class
         if plot_type == IntegralPValuePlotType.MostDiscrepant:
             is_reverse, class_selector = False, select_most_discrepant_class
@@ -376,10 +374,6 @@ def integral_pvalues_summary(
         plt.close()
 
     if plot_per_objects:
-        print(
-            f"Processing {num_classes} most {plot_type.value} event classes with at least one muon for {year} ..."
-        )
-
         is_reverse, class_selector = True, select_most_occupied_muon_class
         if plot_type == IntegralPValuePlotType.MostDiscrepant:
             is_reverse, class_selector = False, select_most_discrepant_muon_class
@@ -400,10 +394,6 @@ def integral_pvalues_summary(
         plt.savefig("{}/pval_plot_muon_{}_{}.pdf".format(output_dir, year, num_classes))
         plt.savefig("{}/pval_plot_muon_{}_{}.svg".format(output_dir, year, num_classes))
         plt.close()
-
-        print(
-            f"Processing {num_classes} most {plot_type.value} event classes with at least one electron for {year} ..."
-        )
 
         is_reverse, class_selector = True, select_most_occupied_electron_class
         if plot_type == IntegralPValuePlotType.MostDiscrepant:
@@ -435,10 +425,6 @@ def integral_pvalues_summary(
         )
         plt.close()
 
-        print(
-            f"Processing {num_classes} most {plot_type.value} event classes with at least one tau for {year} ..."
-        )
-
         is_reverse, class_selector = True, select_most_occupied_tau_class
         if plot_type == IntegralPValuePlotType.MostDiscrepant:
             is_reverse, class_selector = False, select_most_discrepant_tau_class
@@ -463,9 +449,6 @@ def integral_pvalues_summary(
         plt.savefig("{}/pval_plot_tau_{}_{}.svg".format(output_dir, year, num_classes))
         plt.close()
 
-        print(
-            f"Processing {num_classes} most {plot_type.value} event classes with at least one photon for {year} ..."
-        )
         is_reverse, class_selector = True, select_most_occupied_photon_class
         if plot_type == IntegralPValuePlotType.MostDiscrepant:
             is_reverse, class_selector = False, select_most_discrepant_photon_class
@@ -497,9 +480,6 @@ def integral_pvalues_summary(
         plt.close()
 
     if plot_exclusive:
-        print(
-            f"Processing {num_classes} most {plot_type.value} exclusive event classes for {year} ..."
-        )
         is_reverse, class_selector = True, select_most_occupied_exc_class
         if plot_type == IntegralPValuePlotType.MostDiscrepant:
             is_reverse, class_selector = False, select_most_discrepant_exc_class
@@ -524,9 +504,10 @@ def integral_pvalues_summary(
         plt.savefig("{}/pval_plot_excl_{}_{}.svg".format(output_dir, year, num_classes))
         plt.close()
 
-    print("Copying index.php ...")
     os.system(
         r"find ___OUTPUT_DIR___/ -type d -exec cp $MUSIC_BASE/NanoMUSiC/Plotter/assets/index.php {} \;".replace(
             "___OUTPUT_DIR___", output_dir
         )
     )
+
+    return year, num_classes
