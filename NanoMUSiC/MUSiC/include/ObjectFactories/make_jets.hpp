@@ -167,7 +167,7 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
         auto is_good_jet_pre_filter =
             (std::fabs(Jet_eta[i]) <= ObjConfig::Jets[year].MaxAbsEta) //
             and (Jet_jetId[i] >= ObjConfig::Jets[year].MinJetID)       //
-            and (0 >= Jet_btagDeepFlavB[i] and Jet_btagDeepFlavB[i] < ObjConfig::Jets[year].MaxBTagWPTight);
+            and (0 <= Jet_btagDeepFlavB[i] and Jet_btagDeepFlavB[i] < ObjConfig::Jets[year].MaxBTagWPTight);
 
         auto is_good_bjet_pre_filter =
             (std::fabs(Jet_eta[i]) <= ObjConfig::Jets[year].MaxAbsEta) //
