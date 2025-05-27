@@ -203,7 +203,9 @@ auto compute_btag_efficiency(const std::string &sample,
     auto jet_corrections = JetCorrector(get_runyear(year), get_era_from_process_name(sample, false), false);
     auto correctionlib_utils = CorrectionLibUtils();
     auto jet_veto_map = correctionlib_utils.make_correctionlib_ref("JetVetoMap", year);
-    auto btag_sf = correctionlib_utils.make_correctionlib_ref("BTagSF", year);
+
+    auto btag_sf_bc = correctionlib_utils.make_correctionlib_ref("BTagSFbc", year);
+    auto btag_sf_light = correctionlib_utils.make_correctionlib_ref("BTagSFlight", year);
 
     // constexpr unsigned int MAX_EVENTS = 1;
     constexpr unsigned int MAX_EVENTS = std::numeric_limits<unsigned int>::max();
@@ -283,33 +285,35 @@ auto compute_btag_efficiency(const std::string &sample,
                   nominal_bjets,
                   has_vetoed_jet,
                   nominal_selected_jet_indexes,
-                  nominal_selected_bjet_indexes] =
+                  nominal_selected_bjet_indexes,
+                  btag_weight] =
                 ObjectFactories::make_jets(
-                    Jet_pt,                              //
-                    Jet_eta,                             //
-                    Jet_phi,                             //
-                    Jet_mass,                            //
-                    Jet_jetId,                           //
-                    Jet_btagDeepFlavB,                   //
-                    Jet_rawFactor,                       //
-                    Jet_area,                            //
-                    Jet_chEmEF,                          //
-                    Jet_puId,                            //
-                    Muon_eta,                            //
-                    Muon_phi,                            //
-                    Muon_isPFcand,                       //
-                    Jet_genJetIdx,                       //
-                    fixedGridRhoFastjetAll,              //
-                    jet_corrections,                     //
-                    btag_sf,                             //
-                    NanoAODGenInfo::GenJets(GenJet_pt,   //
-                                            GenJet_eta,  //
-                                            GenJet_phi), //
-                    jet_veto_map,                        //
-                    BTagEffMaps(
-                        "", BTagEffMaps::IsDummy::Dummy), // no need to pass the btag eff maps
-                    false,                                                 //
-                    year,                                                  //
+                    Jet_pt,                                                      //
+                    Jet_eta,                                                     //
+                    Jet_phi,                                                     //
+                    Jet_mass,                                                    //
+                    Jet_jetId,                                                   //
+                    Jet_btagDeepFlavB,                                           //
+                    Jet_rawFactor,                                               //
+                    Jet_area,                                                    //
+                    Jet_chEmEF,                                                  //
+                    Jet_puId,                                                    //
+                    Jet_hadronFlavour,                                           //
+                    Muon_eta,                                                    //
+                    Muon_phi,                                                    //
+                    Muon_isPFcand,                                               //
+                    Jet_genJetIdx,                                               //
+                    fixedGridRhoFastjetAll,                                      //
+                    jet_corrections,                                             //
+                    btag_sf_light,                                               //
+                    btag_sf_bc,                                                  //
+                    NanoAODGenInfo::GenJets(GenJet_pt,                           //
+                                            GenJet_eta,                          //
+                                            GenJet_phi),                         //
+                    jet_veto_map,                                                //
+                    BTagEffMaps(process_group, "", BTagEffMaps::IsDummy::Dummy), // no need to pass the btag eff maps
+                    false,                                                       //
+                    year,                                                        //
                     Shifts::Variations::Nominal);
 
             if (has_vetoed_jet)
@@ -319,42 +323,42 @@ auto compute_btag_efficiency(const std::string &sample,
 
             for (std::size_t i = 0; i < nominal_bjets.size(); i++)
             {
-                if (Jet_hadronFlavour.at(nominal_selected_bjet_indexes.at(i)) == 0)
+                switch (Jet_hadronFlavour.at(nominal_selected_bjet_indexes.at(i)))
                 {
+                case HadronFlavor::LIGHT:
                     btag_efficiency_light_num.Fill(
                         nominal_bjets.p4[i].pt(), std::fabs(nominal_bjets.p4[i].eta()), weight);
                     btag_efficiency_light_den.Fill(
                         nominal_bjets.p4[i].pt(), std::fabs(nominal_bjets.p4[i].eta()), weight);
-                }
-
-                if (Jet_hadronFlavour.at(nominal_selected_bjet_indexes.at(i)) == 4)
-                {
+                    break;
+                case HadronFlavor::C:
                     btag_efficiency_c_num.Fill(nominal_bjets.p4[i].pt(), std::fabs(nominal_bjets.p4[i].eta()), weight);
                     btag_efficiency_c_den.Fill(nominal_bjets.p4[i].pt(), std::fabs(nominal_bjets.p4[i].eta()), weight);
-                }
-
-                if (Jet_hadronFlavour.at(nominal_selected_bjet_indexes.at(i)) == 5)
-                {
+                    break;
+                case HadronFlavor::B:
                     btag_efficiency_b_num.Fill(nominal_bjets.p4[i].pt(), std::fabs(nominal_bjets.p4[i].eta()), weight);
                     btag_efficiency_b_den.Fill(nominal_bjets.p4[i].pt(), std::fabs(nominal_bjets.p4[i].eta()), weight);
+                    break;
+                default:
+                    throw std::runtime_error(std::format("Invalid hadron flavor: {}", hadron_flavor));
                 }
             }
             for (std::size_t i = 0; i < nominal_jets.size(); i++)
             {
-                if (Jet_hadronFlavour.at(nominal_selected_jet_indexes.at(i)) == 0)
+                switch (Jet_hadronFlavour.at(nominal_selected_jet_indexes.at(i)))
                 {
+                case HadronFlavor::LIGHT:
                     btag_efficiency_light_den.Fill(
                         nominal_jets.p4[i].pt(), std::fabs(nominal_jets.p4[i].eta()), weight);
-                }
-
-                if (Jet_hadronFlavour.at(nominal_selected_jet_indexes.at(i)) == 4)
-                {
+                    break;
+                case HadronFlavor::C:
                     btag_efficiency_c_den.Fill(nominal_jets.p4[i].pt(), std::fabs(nominal_jets.p4[i].eta()), weight);
-                }
-
-                if (Jet_hadronFlavour.at(nominal_selected_jet_indexes.at(i)) == 5)
-                {
+                    break;
+                case HadronFlavor::B:
                     btag_efficiency_b_den.Fill(nominal_jets.p4[i].pt(), std::fabs(nominal_jets.p4[i].eta()), weight);
+                    break;
+                default:
+                    throw std::runtime_error(std::format("Invalid hadron flavor: {}", hadron_flavor));
                 }
             }
         },

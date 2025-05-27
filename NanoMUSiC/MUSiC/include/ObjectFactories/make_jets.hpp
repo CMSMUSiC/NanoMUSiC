@@ -62,18 +62,28 @@ class BTagEffMaps
     }
 
   public:
+    struct HadronFlavor
+    {
+        static constexpr unsigned int LIGHT = 0;
+        static constexpr unsigned int C = 4;
+        static constexpr unsigned int B = 5;
+    };
+
     enum class IsDummy
     {
         Dummy,
         NotDummy,
     };
+
     std::unordered_map<std::string, std::unique_ptr<TEfficiency>> light_eff = {};
     std::unordered_map<std::string, std::unique_ptr<TEfficiency>> c_eff = {};
     std::unordered_map<std::string, std::unique_ptr<TEfficiency>> b_eff = {};
-    IsDummy is_dummy = IsDummy::Dummy;
+    std::string process_group;
+    IsDummy is_dummy = IsDummy::NotDummy;
 
-    BTagEffMaps(const std::string &input_path, IsDummy is_dummy = IsDummy::NotDummy)
-        : is_dummy(is_dummy)
+    BTagEffMaps(const std::string &process_group, const std::string &input_path, IsDummy is_dummy = IsDummy::NotDummy)
+        : process_group(process_group),
+          is_dummy(is_dummy)
     {
         if (is_dummy == IsDummy::Dummy)
         {
@@ -112,6 +122,7 @@ class BTagEffMaps
                             std::format("Cannot load TEfficiency for light jets from {}", file_path));
                     }
                     light_eff[process_group]->SetDirectory(nullptr);
+                    light_eff[process_group]->Print("all");
 
                     c_eff[process_group] = std::unique_ptr<TEfficiency>(
                         file->Get<TEfficiency>(std::format("{}_c_eff", process_group).c_str()));
@@ -120,6 +131,7 @@ class BTagEffMaps
                         throw std::runtime_error(std::format("Cannot load TEfficiency for c jets from {}", file_path));
                     }
                     c_eff[process_group]->SetDirectory(nullptr);
+                    c_eff[process_group]->Print("all");
 
                     b_eff[process_group] = std::unique_ptr<TEfficiency>(
                         file->Get<TEfficiency>(std::format("{}_b_eff", process_group).c_str()));
@@ -128,8 +140,26 @@ class BTagEffMaps
                         throw std::runtime_error(std::format("Cannot load TEfficiency for b jets from {}", file_path));
                     }
                     b_eff[process_group]->SetDirectory(nullptr);
+                    b_eff[process_group]->Print("all");
                 }
             }
+        }
+    }
+
+    auto get_efficiency(int hadron_flavor, float pt, float eta) const -> double
+    {
+        eta = std::fabs(eta);
+
+        switch (hadron_flavor)
+        {
+        case HadronFlavor::LIGHT:
+            return light_eff.at(process_group)->GetEfficiency(light_eff.at(process_group)->FindFixBin(pt, eta));
+        case HadronFlavor::C:
+            return c_eff.at(process_group)->GetEfficiency(c_eff.at(process_group)->FindFixBin(pt, eta));
+        case HadronFlavor::B:
+            return b_eff.at(process_group)->GetEfficiency(b_eff.at(process_group)->FindFixBin(pt, eta));
+        default:
+            throw std::runtime_error(std::format("Invalid hadron flavor: {}", hadron_flavor));
         }
     }
 };
@@ -209,20 +239,22 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
                       const RVec<float> &Jet_area,             //
                       const RVec<float> &Jet_chEmEF,           //
                       const RVec<Int_t> &Jet_puId,             //
+                      const RVec<Int_t> &Jet_hadronFlavour,    //
                       const RVec<float> &Muon_eta,             //
                       const RVec<float> &Muon_phi,             //
                       const RVec<bool> &Muon_isPFcand,         //
                       const RVec<Int_t> &Jet_genJetIdx,        //
                       float fixedGridRhoFastjetAll,            //
                       JetCorrector &jet_corrections,           //
-                      const CorrectionlibRef_t &btag_sf,       //
+                      const CorrectionlibRef_t &btag_sf_bc,    //
+                      const CorrectionlibRef_t &btag_sf_light, //
                       const NanoAODGenInfo::GenJets &gen_jets, //
                       const CorrectionlibRef_t &jet_veto_map,  //
                       const BTagEffMaps &btag_eff_maps,        //
                       bool is_data,                            //
                       const std::string &_year,                //
                       const Shifts::Variations shift)
-    -> std::tuple<MUSiCObjects, MUSiCObjects, bool, RVec<int>, RVec<int>>
+    -> std::tuple<MUSiCObjects, MUSiCObjects, bool, RVec<int>, RVec<int>, double>
 {
     auto year = get_runyear(_year);
     auto jets = RVec<Math::PtEtaPhiMVector>{};
@@ -241,6 +273,9 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
     auto bjets_is_fake = RVec<bool>{};
     auto jets_id_score = RVec<unsigned int>{};
     auto bjets_id_score = RVec<unsigned int>{};
+
+    auto jets_hadron_flavor = RVec<int>{};
+    auto bjets_hadron_flavor = RVec<int>{};
 
     bool has_vetoed_jets = false;
     auto selected_jet_indexes = RVec<int>{};
@@ -341,6 +376,7 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
                     jets_id_score.push_back(MUSiCObjects::IdScore::Tight);
                 }
 
+                jets_hadron_flavor.push_back(Jet_hadronFlavour[i]);
                 selected_jet_indexes.push_back(i);
             }
 
@@ -366,14 +402,75 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
                     bjets_id_score.push_back(MUSiCObjects::IdScore::Tight);
                 }
 
+                bjets_hadron_flavor.push_back(Jet_hadronFlavour[i]);
                 selected_bjet_indexes.push_back(i);
             }
         }
     }
 
+    double btag_weight = 1.0;
     if (btag_eff_maps.is_dummy == BTagEffMaps::IsDummy::NotDummy)
     {
-        fmt::print("Passei por aqui.. \n");
+        for (std::size_t i = 0; i < bjets_p4.size(); i++)
+        {
+            switch (bjets_hadron_flavor[i])
+            {
+            case 0:
+                btag_weight *= MUSiCObjects::get_scale_factor(
+                    btag_sf_light,
+                    is_data,
+                    {"central", "T", bjets_hadron_flavor[i], std::fabs(bjets_p4[i].eta()), bjets_p4[i].pt()});
+                break;
+            case 4:
+            case 5:
+                btag_weight *= MUSiCObjects::get_scale_factor(
+                    btag_sf_bc,
+                    is_data,
+                    {"central", "T", bjets_hadron_flavor[i], std::fabs(bjets_p4[i].eta()), bjets_p4[i].pt()});
+                break;
+            default:
+                throw std::runtime_error(std::format("Invalid hadron flavor: {}", bjets_hadron_flavor[i]));
+            }
+        }
+        for (std::size_t i = 0; i < jets_p4.size(); i++)
+        {
+            switch (jets_hadron_flavor[i])
+            {
+            case 0:
+                btag_weight *=
+                    (1 - MUSiCObjects::get_scale_factor(
+                             btag_sf_light,
+                             is_data,
+                             {"central", "T", jets_hadron_flavor[i], std::fabs(jets_p4[i].eta()), jets_p4[i].pt()})) *
+                    btag_eff_maps.get_efficiency(jets_hadron_flavor[i], jets_p4[i].pt(), jets_p4[i].eta()) /
+                    (1 - btag_eff_maps.get_efficiency(jets_hadron_flavor[i], jets_p4[i].pt(), jets_p4[i].eta()));
+
+                break;
+            case 4:
+            case 5:
+                btag_weight *=
+                    (1 - MUSiCObjects::get_scale_factor(
+                             btag_sf_bc,
+                             is_data,
+                             {"central", "T", jets_hadron_flavor[i], std::fabs(jets_p4[i].eta()), jets_p4[i].pt()})) *
+                    btag_eff_maps.get_efficiency(jets_hadron_flavor[i], jets_p4[i].pt(), jets_p4[i].eta()) /
+                    (1 - btag_eff_maps.get_efficiency(jets_hadron_flavor[i], jets_p4[i].pt(), jets_p4[i].eta()));
+                break;
+            default:
+                throw std::runtime_error(std::format("Invalid hadron flavor: {}", jets_hadron_flavor[i]));
+            }
+        }
+    }
+    // if (shift == Shifts::Variations::Nominal)
+    // {
+    //     fmt::print("btag weight: {}\n", btag_weight);
+    // }
+
+    // Check for NaNs
+    if (std::isnan(btag_weight) or std::isinf(btag_weight))
+    {
+        throw std::runtime_error(
+            std::format("ERROR: NaN or INF weight found for btag weight: {}!\n", Shifts::variation_to_string(shift)));
     }
 
     return {MUSiCObjects(jets_p4,
@@ -392,7 +489,8 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
                          bjets_id_score),
             has_vetoed_jets,
             selected_jet_indexes,
-            selected_bjet_indexes};
+            selected_bjet_indexes,
+            btag_weight};
 }
 
 } // namespace ObjectFactories

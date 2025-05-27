@@ -380,18 +380,33 @@ class CorrectionLibUtils
          {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/2018_UL/jetvetomaps.json.gz",
           "Summer19UL18_V1"}},
 
-        // btag scale factors
+        // btag scale factors - heavy jets
         // {{TYPE, YEAR}, {JSON, CORRECTION_KEY}},
-        {{"BTagSF"sv, Year::Run2016APV},
+        {{"BTagSFbc"sv, Year::Run2016APV},
          {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/2016preVFP_UL/btagging.json.gz",
-          "deepJet_comb"}},
-        {{"BTagSF"sv, Year::Run2016},
+          "deepJet_mujets"}},
+        {{"BTagSFbc"sv, Year::Run2016},
          {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/2016postVFP_UL/btagging.json.gz",
-          "deepJet_comb"}},
-        {{"BTagSF"sv, Year::Run2017},
-         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/2017_UL/btagging.json.gz", "deepJet_comb"}},
-        {{"BTagSF"sv, Year::Run2018},
-         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/2018_UL/btagging.json.gz", "deepJet_comb"}},
+          "deepJet_mujets"}},
+        {{"BTagSFbc"sv, Year::Run2017},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/2017_UL/btagging.json.gz",
+          "deepJet_mujets"}},
+        {{"BTagSFbc"sv, Year::Run2018},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/2018_UL/btagging.json.gz",
+          "deepJet_mujets"}},
+
+        // btag scale factors - light jets
+        // {{TYPE, YEAR}, {JSON, CORRECTION_KEY}},
+        {{"BTagSFlight"sv, Year::Run2016APV},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/2016preVFP_UL/btagging.json.gz",
+          "deepJet_incl"}},
+        {{"BTagSFlight"sv, Year::Run2016},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/2016postVFP_UL/btagging.json.gz",
+          "deepJet_incl"}},
+        {{"BTagSFlight"sv, Year::Run2017},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/2017_UL/btagging.json.gz", "deepJet_incl"}},
+        {{"BTagSFlight"sv, Year::Run2018},
+         {"/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/2018_UL/btagging.json.gz", "deepJet_incl"}},
     };
 
     auto make_correctionlib_ref(const std::string &key, const std::string &year) -> const CorrectionlibRef_t
