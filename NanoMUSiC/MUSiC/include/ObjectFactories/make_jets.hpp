@@ -2,21 +2,138 @@
 #define MAKE_JETS_HPP
 
 // ROOT Stuff
+#include "BTagEffMap.hpp"
 #include "Math/Vector4Dfwd.h"
 #include "ROOT/RVec.hxx"
 
 #include "Configs.hpp"
 #include "JetCorrector.hpp"
 #include "Shifts.hpp"
+#include "TEfficiency.h"
 #include "music_objects.hpp"
 
 #include "NanoAODGenInfo.hpp"
 #include <algorithm>
 #include <cmath>
+#include <filesystem>
+#include <format>
+#include <memory>
+#include <stdexcept>
+
+namespace fs = std::filesystem;
 
 using namespace ROOT;
 using namespace ROOT::Math;
 using namespace ROOT::VecOps;
+
+class BTagEffMaps
+{
+    // Function to extract substring between "btag_eff_map_" and ".root"
+    auto extract_process_group(std::string_view file_path) -> std::string
+    {
+        constexpr std::string_view prefix = "btag_eff_map_";
+        constexpr std::string_view suffix = ".root";
+
+        // Find the position of the prefix
+        auto prefix_pos = file_path.find(prefix);
+        if (prefix_pos == std::string_view::npos)
+        {
+            throw std::runtime_error(std::format("Cannot extract process group from file path: {}", file_path));
+        }
+
+        // Calculate start position after the prefix
+        auto start_pos = prefix_pos + prefix.length();
+
+        // Find the position of the suffix starting from after the prefix
+        auto suffix_pos = file_path.find(suffix, start_pos);
+        if (suffix_pos == std::string_view::npos)
+        {
+            throw std::runtime_error(std::format("Cannot extract process group from file path: {}", file_path));
+        }
+
+        // Extract the substring between prefix and suffix
+        auto length = suffix_pos - start_pos;
+        if (length == 0)
+        {
+            throw std::runtime_error(std::format("Cannot extract process group from file path: {}", file_path));
+        }
+
+        return std::string(file_path.substr(start_pos, length));
+    }
+
+  public:
+    enum class IsDummy
+    {
+        Dummy,
+        NotDummy,
+    };
+    std::unordered_map<std::string, std::unique_ptr<TEfficiency>> light_eff = {};
+    std::unordered_map<std::string, std::unique_ptr<TEfficiency>> c_eff = {};
+    std::unordered_map<std::string, std::unique_ptr<TEfficiency>> b_eff = {};
+    IsDummy is_dummy = IsDummy::Dummy;
+
+    BTagEffMaps(const std::string &input_path, IsDummy is_dummy = IsDummy::NotDummy)
+        : is_dummy(is_dummy)
+    {
+        if (is_dummy == IsDummy::Dummy)
+        {
+            return;
+        }
+
+        // Check if directory exists
+        if (not(fs::exists(input_path)) or not(fs::is_directory(input_path)))
+        {
+            throw std::runtime_error(std::format("Directory does not exist: {}", input_path));
+        }
+
+        for (const auto &entry : fs::directory_iterator(input_path))
+        {
+            if (entry.is_regular_file())
+            {
+                const std::string file_path = entry.path().string();
+
+                // Check if file ends with .root
+                if (file_path.ends_with(".root"))
+                {
+                    // Open ROOT file
+                    std::unique_ptr<TFile> file(TFile::Open(file_path.c_str(), "READ"));
+                    if (!file || file->IsZombie())
+                    {
+                        throw std::runtime_error(std::format("Cannot open file: {}", file_path));
+                    }
+
+                    auto process_group = extract_process_group(file_path);
+
+                    light_eff[process_group] = std::unique_ptr<TEfficiency>(
+                        file->Get<TEfficiency>(std::format("{}_light_eff", process_group).c_str()));
+                    if (not(light_eff[process_group]))
+                    {
+                        throw std::runtime_error(
+                            std::format("Cannot load TEfficiency for light jets from {}", file_path));
+                    }
+                    light_eff[process_group]->SetDirectory(nullptr);
+
+                    c_eff[process_group] = std::unique_ptr<TEfficiency>(
+                        file->Get<TEfficiency>(std::format("{}_c_eff", process_group).c_str()));
+                    if (not(c_eff[process_group]))
+                    {
+                        throw std::runtime_error(std::format("Cannot load TEfficiency for c jets from {}", file_path));
+                    }
+                    c_eff[process_group]->SetDirectory(nullptr);
+
+                    b_eff[process_group] = std::unique_ptr<TEfficiency>(
+                        file->Get<TEfficiency>(std::format("{}_b_eff", process_group).c_str()));
+                    if (not(b_eff[process_group]))
+                    {
+                        throw std::runtime_error(std::format("Cannot load TEfficiency for b jets from {}", file_path));
+                    }
+                    b_eff[process_group]->SetDirectory(nullptr);
+                }
+            }
+        }
+    }
+};
+
 namespace ObjectFactories
 {
 
@@ -101,6 +218,7 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
                       const CorrectionlibRef_t &btag_sf,       //
                       const NanoAODGenInfo::GenJets &gen_jets, //
                       const CorrectionlibRef_t &jet_veto_map,  //
+                      const BTagEffMaps &btag_eff_maps,        //
                       bool is_data,                            //
                       const std::string &_year,                //
                       const Shifts::Variations shift)
@@ -251,6 +369,11 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
                 selected_bjet_indexes.push_back(i);
             }
         }
+    }
+
+    if (btag_eff_maps.is_dummy == BTagEffMaps::IsDummy::NotDummy)
+    {
+        fmt::print("Passei por aqui.. \n");
     }
 
     return {MUSiCObjects(jets_p4,

@@ -287,13 +287,8 @@ auto classification(const std::string process,
     }();
 
     // get btag efficiency map
-    // std::unique_ptr<TFile> btag_efficiency_map_file;
-    // btag_efficiency_map_file = std::unique_ptr<TFile>(TFile::Open("btag_efficiency_map.root"));
-    // if (!btag_efficiency_map_file or btag_efficiency_map_file->IsZombie())
-    // {
-    //     fmt::print(stderr, "ERROR: Could not open btag efficiency map file. {}\n", "btag_efficiency_map.root");
-    //     std::exit(EXIT_FAILURE);
-    // }
+
+    auto btag_eff_maps = BTagEffMaps("btag_eff_maps");
 
     auto input_root_file = std::unique_ptr<TFile>(TFile::Open(input_file.c_str()));
     auto input_ttree = input_root_file->Get<TTree>("Events");
@@ -944,6 +939,7 @@ auto classification(const std::string process,
                                                                unwrap(GenJet_eta),  //
                                                                unwrap(GenJet_phi)), //
                                        jet_veto_map,                                //
+                                       btag_eff_maps,                               //
                                        is_data,                                     //
                                        year,                                        //
                                        Shifts::Variations::Nominal);
@@ -1112,6 +1108,7 @@ auto classification(const std::string process,
                                                                               unwrap(GenJet_eta),  //
                                                                               unwrap(GenJet_phi)), //
                                                       jet_veto_map,                                //
+                                                      btag_eff_maps,                               //
                                                       is_data,                                     //
                                                       year,                                        //
                                                       diff_shift);
