@@ -242,6 +242,7 @@ auto compute_btag_efficiency(const std::string &sample,
             RVec<float> Muon_phi,               //
             RVec<bool> Muon_isPFcand,           //
             RVec<int> Jet_genJetIdx,            //
+            RVec<int> Tau_jetIdx,               //
             float fixedGridRhoFastjetAll,       //
             RVec<float> GenJet_pt,              //
             RVec<float> GenJet_eta,             //
@@ -303,6 +304,7 @@ auto compute_btag_efficiency(const std::string &sample,
                     Muon_phi,                                                    //
                     Muon_isPFcand,                                               //
                     Jet_genJetIdx,                                               //
+                    Tau_jetIdx,                                                  //
                     fixedGridRhoFastjetAll,                                      //
                     jet_corrections,                                             //
                     btag_sf_light,                                               //
@@ -392,6 +394,7 @@ auto compute_btag_efficiency(const std::string &sample,
          "Muon_phi",                 //
          "Muon_isPFcand",            //
          "Jet_genJetIdx",            //
+         "Tau_jetIdx",               //
          "fixedGridRhoFastjetAll",   //
          "GenJet_pt",                //
          "GenJet_eta",               //
