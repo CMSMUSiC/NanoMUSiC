@@ -194,26 +194,26 @@ def compute_btag_efficiency(analysis_config: str) -> None:
                         for idx, file in enumerate(
                             configs[sample][f"input_files_{year}"]
                         ):
-                            # DEBUG
-                            if idx == 0:
-                                btag_eff_inputs.append(
-                                    BTagEffInputs(
-                                        sample=sample,
-                                        process_group=configs[sample][f"ProcessGroup"],
-                                        generator_filter=configs[sample][
-                                            "generator_filter_key"
-                                        ]
-                                        if "generator_filter_key" in configs[sample]
-                                        else "",
-                                        input_file=file,
-                                        year=year,
-                                        sum_weights_json_filepath="sum_weights.json",
-                                        x_section=configs[sample][f"XSec"],
-                                        luminosity=Lumi.lumi[year],
-                                        filter_eff=configs[sample][f"FilterEff"],
-                                        k_factor=configs[sample][f"kFactor"],
-                                    )
+                            # # DEBUG
+                            # if idx == 0:
+                            btag_eff_inputs.append(
+                                BTagEffInputs(
+                                    sample=sample,
+                                    process_group=configs[sample][f"ProcessGroup"],
+                                    generator_filter=configs[sample][
+                                        "generator_filter_key"
+                                    ]
+                                    if "generator_filter_key" in configs[sample]
+                                    else "",
+                                    input_file=file,
+                                    year=year,
+                                    sum_weights_json_filepath="sum_weights.json",
+                                    x_section=configs[sample][f"XSec"],
+                                    luminosity=Lumi.lumi[year],
+                                    filter_eff=configs[sample][f"FilterEff"],
+                                    k_factor=configs[sample][f"kFactor"],
                                 )
+                            )
     try:
         shutil.rmtree("btag_eff_maps_buffer")
     except FileNotFoundError:
@@ -309,8 +309,6 @@ def make_teffs() -> None:
         for tagger in ["light", "c", "b"]:
             num = getattr(out_file, f"[{process_group}]_{tagger}_num")
             den = getattr(out_file, f"[{process_group}]_{tagger}_den")
-            num.Print("all")
-            den.Print("all")
 
             if ROOT.TEfficiency.CheckConsistency(num, den):
                 pEff = ROOT.TEfficiency(num, den)
