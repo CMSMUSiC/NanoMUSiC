@@ -282,6 +282,316 @@ auto compute_btag_efficiency(const std::string &sample,
                 return;
             }
 
+            if (not(unwrap_or(PV_npvsGood, 1) > 0))
+            {
+                continue;
+            }
+
+            if (not(met_filters(unwrap_or(Flag_goodVertices, true),
+                                unwrap_or(Flag_globalSuperTightHalo2016Filter, true),
+                                unwrap_or(Flag_HBHENoiseFilter, true),
+                                unwrap_or(Flag_HBHENoiseIsoFilter, true),
+                                unwrap_or(Flag_EcalDeadCellTriggerPrimitiveFilter, true),
+                                unwrap_or(Flag_BadPFMuonFilter, true),
+                                unwrap_or(Flag_BadPFMuonDzFilter, true),
+                                unwrap_or(Flag_eeBadScFilter, true),
+                                unwrap_or(Flag_hfNoisyHitsFilter, true),
+                                unwrap_or(Flag_ecalBadCalibFilter, true),
+                                year)))
+            {
+                continue;
+            }
+
+            // auto pass_low_pt_muon_trigger = [&](const std::string &year) -> bool
+            // {
+            //     auto _year = get_runyear(year);
+            //     if (_year == Year::Run2016APV)
+            //     {
+            //         return unwrap_or(HLT_IsoMu24, false) or unwrap_or(HLT_IsoTkMu24, false);
+            //     }
+
+            //     if (_year == Year::Run2016)
+            //     {
+            //         return unwrap_or(HLT_IsoMu24, false) or unwrap_or(HLT_IsoTkMu24, false);
+            //     }
+
+            //     if (_year == Year::Run2017)
+            //     {
+            //         return unwrap_or(HLT_IsoMu27, false);
+            //     }
+
+            //     if (_year == Year::Run2018)
+            //     {
+            //         return unwrap_or(HLT_IsoMu24, false);
+            //     }
+
+            //     fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.",
+            //     year); std::exit(EXIT_FAILURE);
+            // };
+
+            auto pass_high_pt_muon_trigger = [&](const std::string &year) -> bool
+            {
+                auto _year = get_runyear(year);
+                if (_year == Year::Run2016APV)
+                {
+                    return unwrap_or(HLT_Mu50, false) or unwrap_or(HLT_TkMu50, false);
+                }
+
+                if (_year == Year::Run2016)
+                {
+                    return unwrap_or(HLT_Mu50, false) or unwrap_or(HLT_TkMu50, false);
+                }
+
+                if (_year == Year::Run2017)
+                {
+                    return unwrap_or(HLT_Mu50, false) or unwrap_or(HLT_TkMu100, false) or
+                           unwrap_or(HLT_OldMu100, false);
+                }
+
+                if (_year == Year::Run2018)
+                {
+                    return unwrap_or(HLT_Mu50, false) or unwrap_or(HLT_TkMu100, false) or
+                           unwrap_or(HLT_OldMu100, false);
+                }
+
+                fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
+                std::exit(EXIT_FAILURE);
+            };
+
+            auto pass_double_muon_trigger = [&](const std::string &year) -> bool
+            {
+                auto _year = get_runyear(year);
+                std::vector<std::string> double_muon_triggers = {};
+                if (_year == Year::Run2016APV or _year == Year::Run2016)
+                {
+                    return unwrap_or(HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ, false) or
+                           unwrap_or(HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ, false) or
+                           unwrap_or(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ, false) or
+                           unwrap_or(HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL, false) or
+                           unwrap_or(HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL, false) or
+                           unwrap_or(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL, false);
+                }
+
+                if (_year == Year::Run2017)
+                {
+                    return unwrap_or(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8, false) or
+                           unwrap_or(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8, false);
+                }
+
+                if (_year == Year::Run2018)
+                {
+                    return unwrap_or(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8, false);
+                }
+
+                fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
+                std::exit(EXIT_FAILURE);
+            };
+
+            // auto pass_low_pt_electron_trigger = [&](const std::string &year) -> bool
+            // {
+            //     auto _year = get_runyear(year);
+            //     if (_year == Year::Run2016APV)
+            //     {
+            //         return unwrap_or(HLT_Ele27_WPTight_Gsf, false);
+            //     }
+
+            //     if (_year == Year::Run2016)
+            //     {
+            //         return unwrap_or(HLT_Ele27_WPTight_Gsf, false);
+            //     }
+
+            //     if (_year == Year::Run2017)
+            //     {
+            //         return unwrap_or(HLT_Ele35_WPTight_Gsf, false);
+            //     }
+
+            //     if (_year == Year::Run2018)
+            //     {
+            //         return unwrap_or(HLT_Ele32_WPTight_Gsf, false);
+            //     }
+
+            //     fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.",
+            //     year); std::exit(EXIT_FAILURE);
+            // };
+
+            auto pass_high_pt_electron_trigger = [&](const std::string &year) -> bool
+            {
+                auto _year = get_runyear(year);
+                if (_year == Year::Run2016APV)
+                {
+                    return unwrap_or(HLT_Photon175, false) or unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
+                    // return unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
+                }
+
+                if (_year == Year::Run2016)
+                {
+                    return unwrap_or(HLT_Photon175, false) or unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
+                    // return unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
+                }
+
+                if (_year == Year::Run2017)
+                {
+                    return unwrap_or(HLT_Photon200, false) or unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
+                    // return unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
+                }
+
+                if (_year == Year::Run2018)
+                {
+                    return unwrap_or(HLT_Photon200, false) or unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
+                    // return unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
+                }
+
+                fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
+                std::exit(EXIT_FAILURE);
+            };
+
+            auto pass_double_electron_trigger = [&](const std::string &year) -> bool
+            {
+                auto _year = get_runyear(year);
+
+                if (_year == Year::Run2016APV or _year == Year::Run2016)
+                {
+                    return unwrap_or(HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW, false) or
+                           unwrap_or(HLT_DoubleEle33_CaloIdL_MW, false);
+                }
+
+                if (_year == Year::Run2017)
+                {
+                    return unwrap_or(HLT_DoubleEle33_CaloIdL_MW, false) or unwrap_or(HLT_DoubleEle25_CaloIdL_MW, false);
+                }
+
+                if (_year == Year::Run2018)
+                {
+                    return unwrap_or(HLT_DoubleEle25_CaloIdL_MW, false);
+                }
+
+                fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
+                std::exit(EXIT_FAILURE);
+            };
+
+            auto pass_photon_trigger = [&](const std::string &year) -> bool
+            {
+                auto _year = get_runyear(year);
+                if (_year == Year::Run2016APV or _year == Year::Run2016)
+                {
+                    return unwrap_or(HLT_Photon175, false);
+                }
+
+                if (_year == Year::Run2017)
+                {
+                    return unwrap_or(HLT_Photon200, false);
+                }
+
+                if (_year == Year::Run2018)
+                {
+                    return unwrap_or(HLT_Photon200, false);
+                }
+
+                fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
+                std::exit(EXIT_FAILURE);
+            };
+
+            // Source:
+            // https://cmshltinfo.app.cern.ch/summary#state=ff9f9cf5-fecc-49de-8e42-9de74bb45ed6&session_state=bc67d35b-00fe-4c35-b107-24a35b8e9fb5&code=d14fac8b-5b46-49d2-8889-0adfe5f52145.bc67d35b-00fe-4c35-b107-24a35b8e9fb5.1363e04b-e180-4d83-92b3-3aca653d1d8d
+            auto pass_double_photon_trigger = [&](const std::string &year) -> bool
+            {
+                auto _year = get_runyear(year);
+                if (_year == Year::Run2016APV or _year == Year::Run2016)
+                {
+                    return unwrap_or(HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90, false);
+                }
+
+                if (_year == Year::Run2017)
+                {
+                    return unwrap_or(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90, false) or
+                           unwrap_or(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass95, false);
+                }
+
+                if (_year == Year::Run2018)
+                {
+                    return unwrap_or(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90, false) or
+                           unwrap_or(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass95, false);
+                }
+
+                fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
+                std::exit(EXIT_FAILURE);
+            };
+
+            auto pass_high_pt_tau_trigger = [&](const std::string &year) -> bool
+            {
+                auto _year = get_runyear(year);
+                std::vector<std::string> high_pt_tau_triggers = {};
+                if (_year == Year::Run2016APV or _year == Year::Run2016)
+                {
+                    return unwrap_or(HLT_VLooseIsoPFTau120_Trk50_eta2p1, false) or
+                           unwrap_or(HLT_VLooseIsoPFTau140_Trk50_eta2p1, false);
+                }
+
+                if (_year == Year::Run2017)
+                {
+                    return unwrap_or(HLT_MediumChargedIsoPFTau180HighPtRelaxedIso_Trk50_eta2p1, false);
+                }
+
+                if (_year == Year::Run2018)
+                {
+                    return unwrap_or(HLT_MediumChargedIsoPFTau180HighPtRelaxedIso_Trk50_eta2p1, false);
+                }
+
+                fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
+                std::exit(EXIT_FAILURE);
+            };
+
+            auto pass_double_tau_trigger = [&](const std::string &year) -> bool
+            {
+                auto _year = get_runyear(year);
+                std::vector<std::string> double_tau_triggers = {};
+
+                if (_year == Year::Run2016APV or _year == Year::Run2016)
+                {
+                    return unwrap_or(HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg, false) or
+                           unwrap_or(HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg, false);
+                }
+
+                if (_year == Year::Run2017)
+                {
+                    return unwrap_or(HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg, false) or
+                           unwrap_or(HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg, false) or
+                           unwrap_or(HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg, false);
+                }
+
+                if (_year == Year::Run2018)
+                {
+                    return unwrap_or(HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg, false) or
+                           unwrap_or(HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg, false) or
+                           unwrap_or(HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg, false) or
+                           unwrap_or(HLT_DoubleMediumChargedIsoPFTauHPS35_Trk1_eta2p1_Reg, false);
+                }
+
+                fmt::print(stderr,
+                           "ERROR: Could not define double tau trigger bits. The requested year ({}) is invalid.",
+                           year);
+                std::exit(EXIT_FAILURE);
+            };
+
+            // Trigger
+            auto is_good_trigger = trigger_filter(process,
+                                                  is_data,
+                                                  get_runyear(year),
+                                                  false /*pass_low_pt_muon_trigger(year)*/,
+                                                  pass_high_pt_muon_trigger(year),
+                                                  pass_double_muon_trigger(year),
+                                                  false /*pass_low_pt_electron_trigger(year)*/,
+                                                  pass_high_pt_electron_trigger(year),
+                                                  pass_double_electron_trigger(year),
+                                                  pass_high_pt_tau_trigger(year),
+                                                  pass_double_tau_trigger(year),
+                                                  pass_photon_trigger(year),
+                                                  pass_double_photon_trigger(year));
+            if (not(is_good_trigger))
+            {
+                continue;
+            }
+
             auto weight = genWeight / event_weights.sum_weights * x_section * luminosity * filter_eff * k_factor;
 
             auto [nominal_jets,
