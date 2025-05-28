@@ -346,7 +346,8 @@ auto compute_btag_efficiency(const std::string &sample,
                     btag_efficiency_b_den.Fill(nominal_bjets.p4[i].pt(), std::fabs(nominal_bjets.p4[i].eta()), weight);
                     break;
                 default:
-                    throw std::runtime_error(std::format("Invalid hadron flavor: {}", hadron_flavor));
+                    throw std::runtime_error(std::format("Invalid hadron flavor: {}",
+                                                         Jet_hadronFlavour.at(nominal_selected_bjet_indexes.at(i))));
                 }
             }
             for (std::size_t i = 0; i < nominal_jets.size(); i++)
@@ -364,7 +365,8 @@ auto compute_btag_efficiency(const std::string &sample,
                     btag_efficiency_b_den.Fill(nominal_jets.p4[i].pt(), std::fabs(nominal_jets.p4[i].eta()), weight);
                     break;
                 default:
-                    throw std::runtime_error(std::format("Invalid hadron flavor: {}", hadron_flavor));
+                    throw std::runtime_error(std::format("Invalid hadron flavor: {}",
+                                                         Jet_hadronFlavour.at(nominal_selected_jet_indexes.at(i))));
                 }
             }
         },
