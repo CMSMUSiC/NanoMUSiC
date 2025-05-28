@@ -4,6 +4,7 @@
 #include <limits>
 #include <optional>
 #include <ranges>
+#include <stdexcept>
 
 #include "ROOT/RDataFrame.hxx"
 #include "TH2.h"
@@ -25,6 +26,38 @@ using json = nlohmann::json;
 #include "JetCorrector.cpp"
 #include "NanoAODGenInfo.cpp"
 
+inline auto met_filters(bool Flag_goodVertices,
+                        bool Flag_globalSuperTightHalo2016Filter,
+                        bool Flag_HBHENoiseFilter,
+                        bool Flag_HBHENoiseIsoFilter,
+                        bool Flag_EcalDeadCellTriggerPrimitiveFilter,
+                        bool Flag_BadPFMuonFilter,
+                        bool Flag_BadPFMuonDzFilter,
+                        bool Flag_eeBadScFilter,
+                        bool Flag_hfNoisyHitsFilter,
+                        bool Flag_ecalBadCalibFilter,
+                        const std::string &year) -> bool
+{
+    auto _year = get_runyear(year);
+
+    if (_year == Year::Run2016APV or _year == Year::Run2016)
+    {
+        return Flag_goodVertices and Flag_globalSuperTightHalo2016Filter and Flag_HBHENoiseFilter and
+               Flag_HBHENoiseIsoFilter and Flag_EcalDeadCellTriggerPrimitiveFilter and Flag_BadPFMuonFilter and
+               Flag_BadPFMuonDzFilter and Flag_eeBadScFilter and Flag_hfNoisyHitsFilter;
+    }
+
+    if (_year == Year::Run2017 or _year == Year::Run2018)
+    {
+        return Flag_goodVertices and Flag_globalSuperTightHalo2016Filter and Flag_HBHENoiseFilter and
+               Flag_HBHENoiseIsoFilter and Flag_EcalDeadCellTriggerPrimitiveFilter and Flag_BadPFMuonFilter and
+               Flag_BadPFMuonDzFilter and Flag_hfNoisyHitsFilter and Flag_eeBadScFilter and Flag_ecalBadCalibFilter;
+    }
+
+    throw std::runtime_error(
+        std::format("Could not define MET filters bits. The requested year ({}) is invalid.", year));
+};
+
 auto get_era_from_process_name(const std::string &process, bool is_data) -> std::string
 {
     if (is_data)
@@ -45,13 +78,34 @@ struct EventWeights
     bool should_use_LHEWeight;
 };
 
-#define DEFINE_IF_NOT_AVAILABLE(column, type)                                                                          \
+#define DEFINE_ARRAY_IF_NOT_AVAILABLE(column, type)                                                                    \
     if (not(std::ranges::find(colNames, #column) != colNames.end()))                                                   \
     {                                                                                                                  \
         df = df.Define(#column,                                                                                        \
                        []() -> RVec<type>                                                                              \
                        {                                                                                               \
                            return {};                                                                                  \
+                       },                                                                                              \
+                       {});                                                                                            \
+    }
+#define DEFINE_VALUE_IF_NOT_AVAILABLE(column, type)                                                                    \
+    if (not(std::ranges::find(colNames, #column) != colNames.end()))                                                   \
+    {                                                                                                                  \
+        df = df.Define(#column,                                                                                        \
+                       []() -> type                                                                                    \
+                       {                                                                                               \
+                           return type();                                                                              \
+                       },                                                                                              \
+                       {});                                                                                            \
+    }
+
+#define DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(column, type, default_val)                                          \
+    if (not(std::ranges::find(colNames, #column) != colNames.end()))                                                   \
+    {                                                                                                                  \
+        df = df.Define(#column,                                                                                        \
+                       []() -> type                                                                                    \
+                       {                                                                                               \
+                           return default_val;                                                                         \
                        },                                                                                              \
                        {});                                                                                            \
     }
@@ -119,13 +173,57 @@ auto compute_btag_efficiency(const std::string &sample,
 
     auto colNames = df.GetColumnNames();
 
-    DEFINE_IF_NOT_AVAILABLE(LHEPart_pt, float)
-    DEFINE_IF_NOT_AVAILABLE(LHEPart_eta, float)
-    DEFINE_IF_NOT_AVAILABLE(LHEPart_phi, float)
-    DEFINE_IF_NOT_AVAILABLE(LHEPart_mass, float)
-    DEFINE_IF_NOT_AVAILABLE(LHEPart_incomingpz, float)
-    DEFINE_IF_NOT_AVAILABLE(LHEPart_pdgId, int)
-    DEFINE_IF_NOT_AVAILABLE(LHEPart_status, int)
+    DEFINE_ARRAY_IF_NOT_AVAILABLE(LHEPart_pt, float)
+    DEFINE_ARRAY_IF_NOT_AVAILABLE(LHEPart_eta, float)
+    DEFINE_ARRAY_IF_NOT_AVAILABLE(LHEPart_phi, float)
+    DEFINE_ARRAY_IF_NOT_AVAILABLE(LHEPart_mass, float)
+    DEFINE_ARRAY_IF_NOT_AVAILABLE(LHEPart_incomingpz, float)
+    DEFINE_ARRAY_IF_NOT_AVAILABLE(LHEPart_pdgId, int)
+    DEFINE_ARRAY_IF_NOT_AVAILABLE(LHEPart_status, int)
+
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(Flag_goodVertices, bool, true)
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(Flag_globalSuperTightHalo2016Filter, bool, true)
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(Flag_HBHENoiseFilter, bool, true)
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(Flag_HBHENoiseIsoFilter, bool, true)
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(Flag_EcalDeadCellTriggerPrimitiveFilter, bool, true)
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(Flag_BadPFMuonFilter, bool, true)
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(Flag_BadPFMuonDzFilter, bool, true)
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(Flag_eeBadScFilter, bool, true)
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(Flag_hfNoisyHitsFilter, bool, true)
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(Flag_ecalBadCalibFilter, bool, true)
+
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(HLT_Mu50, bool, false)                                               //
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(HLT_TkMu50, bool, false)                                             //
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(HLT_TkMu100, bool, false)                                            //
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(HLT_OldMu100, bool, false)                                           //
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ, bool, false)                  //
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ, bool, false)                //
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ, bool, false)                    //
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL, bool, false)                     //
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL, bool, false)                   //
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL, bool, false)                       //
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8, bool, false)              //
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8, bool, false)            //
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(HLT_Photon175, bool, false)                                          //
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(HLT_Photon200, bool, false)                                          //
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(HLT_Ele115_CaloIdVT_GsfTrkIdT, bool, false)                          //
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW, bool, false)                  //
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(HLT_DoubleEle33_CaloIdL_MW, bool, false)                             //
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(HLT_DoubleEle25_CaloIdL_MW, bool, false)                             //
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90, bool, false) //
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90, bool, false) //
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass95, bool, false) //
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(HLT_VLooseIsoPFTau120_Trk50_eta2p1, bool, false)                     //
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(HLT_VLooseIsoPFTau140_Trk50_eta2p1, bool, false)                     //
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(
+        HLT_MediumChargedIsoPFTau180HighPtRelaxedIso_Trk50_eta2p1, bool, false)                                       //
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg, bool, false)               //
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg, bool, false)       //
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg, bool, false) //
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(
+        HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg, bool, false)                                   //
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg, bool, false)     //
+    DEFINE_VALUE_WITH_DEFAULT_IF_NOT_AVAILABLE(HLT_DoubleMediumChargedIsoPFTauHPS35_Trk1_eta2p1_Reg, bool, false) //
 
     auto has_genWeight = false;
     auto has_LHEWeight_originalXWGTUP = false;
@@ -249,6 +347,47 @@ auto compute_btag_efficiency(const std::string &sample,
             RVec<float> GenJet_pt,              //
             RVec<float> GenJet_eta,             //
             RVec<float> GenJet_phi,             //
+            int PV_npvsGood,
+            bool Flag_goodVertices,                                         //
+            bool Flag_globalSuperTightHalo2016Filter,                       //
+            bool Flag_HBHENoiseFilter,                                      //
+            bool Flag_HBHENoiseIsoFilter,                                   //
+            bool Flag_EcalDeadCellTriggerPrimitiveFilter,                   //
+            bool Flag_BadPFMuonFilter,                                      //
+            bool Flag_BadPFMuonDzFilter,                                    //
+            bool Flag_eeBadScFilter,                                        //
+            bool Flag_hfNoisyHitsFilter,                                    //
+            bool Flag_ecalBadCalibFilter,                                   //
+            bool HLT_Mu50,                                                  //
+            bool HLT_TkMu50,                                                //
+            bool HLT_TkMu100,                                               //
+            bool HLT_OldMu100,                                              //
+            bool HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ,                     //
+            bool HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ,                   //
+            bool HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ,                       //
+            bool HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL,                        //
+            bool HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL,                      //
+            bool HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL,                          //
+            bool HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8,                 //
+            bool HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8,               //
+            bool HLT_Photon175,                                             //
+            bool HLT_Photon200,                                             //
+            bool HLT_Ele115_CaloIdVT_GsfTrkIdT,                             //
+            bool HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW,                     //
+            bool HLT_DoubleEle33_CaloIdL_MW,                                //
+            bool HLT_DoubleEle25_CaloIdL_MW,                                //
+            bool HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90,    //
+            bool HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90,    //
+            bool HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass95,    //
+            bool HLT_VLooseIsoPFTau120_Trk50_eta2p1,                        //
+            bool HLT_VLooseIsoPFTau140_Trk50_eta2p1,                        //
+            bool HLT_MediumChargedIsoPFTau180HighPtRelaxedIso_Trk50_eta2p1, //
+            bool HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg,                //
+            bool HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg,        //
+            bool HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg,  //
+            bool HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg, //
+            bool HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg,          //
+            bool HLT_DoubleMediumChargedIsoPFTauHPS35_Trk1_eta2p1_Reg,      //
             RVec<int> Jet_hadronFlavour)
         {
             if (event_counter >= MAX_EVENTS)
@@ -282,24 +421,24 @@ auto compute_btag_efficiency(const std::string &sample,
                 return;
             }
 
-            if (not(unwrap_or(PV_npvsGood, 1) > 0))
+            if (not(PV_npvsGood > 0))
             {
-                continue;
+                return;
             }
 
-            if (not(met_filters(unwrap_or(Flag_goodVertices, true),
-                                unwrap_or(Flag_globalSuperTightHalo2016Filter, true),
-                                unwrap_or(Flag_HBHENoiseFilter, true),
-                                unwrap_or(Flag_HBHENoiseIsoFilter, true),
-                                unwrap_or(Flag_EcalDeadCellTriggerPrimitiveFilter, true),
-                                unwrap_or(Flag_BadPFMuonFilter, true),
-                                unwrap_or(Flag_BadPFMuonDzFilter, true),
-                                unwrap_or(Flag_eeBadScFilter, true),
-                                unwrap_or(Flag_hfNoisyHitsFilter, true),
-                                unwrap_or(Flag_ecalBadCalibFilter, true),
+            if (not(met_filters(Flag_goodVertices,
+                                Flag_globalSuperTightHalo2016Filter,
+                                Flag_HBHENoiseFilter,
+                                Flag_HBHENoiseIsoFilter,
+                                Flag_EcalDeadCellTriggerPrimitiveFilter,
+                                Flag_BadPFMuonFilter,
+                                Flag_BadPFMuonDzFilter,
+                                Flag_eeBadScFilter,
+                                Flag_hfNoisyHitsFilter,
+                                Flag_ecalBadCalibFilter,
                                 year)))
             {
-                continue;
+                return;
             }
 
             // auto pass_low_pt_muon_trigger = [&](const std::string &year) -> bool
@@ -307,26 +446,26 @@ auto compute_btag_efficiency(const std::string &sample,
             //     auto _year = get_runyear(year);
             //     if (_year == Year::Run2016APV)
             //     {
-            //         return unwrap_or(HLT_IsoMu24, false) or unwrap_or(HLT_IsoTkMu24, false);
+            //         return HLT_IsoMu24 or HLT_IsoTkMu24;
             //     }
 
             //     if (_year == Year::Run2016)
             //     {
-            //         return unwrap_or(HLT_IsoMu24, false) or unwrap_or(HLT_IsoTkMu24, false);
+            //         return HLT_IsoMu24 or HLT_IsoTkMu24;
             //     }
 
             //     if (_year == Year::Run2017)
             //     {
-            //         return unwrap_or(HLT_IsoMu27, false);
+            //         return HLT_IsoMu27;
             //     }
 
             //     if (_year == Year::Run2018)
             //     {
-            //         return unwrap_or(HLT_IsoMu24, false);
+            //         return HLT_IsoMu24;
             //     }
 
-            //     fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.",
-            //     year); std::exit(EXIT_FAILURE);
+            //     throw std::runtime_error( fmt::format("Could not define trigger bits. The requested year ({}) is
+            //     invalid.", year) );
             // };
 
             auto pass_high_pt_muon_trigger = [&](const std::string &year) -> bool
@@ -334,28 +473,26 @@ auto compute_btag_efficiency(const std::string &sample,
                 auto _year = get_runyear(year);
                 if (_year == Year::Run2016APV)
                 {
-                    return unwrap_or(HLT_Mu50, false) or unwrap_or(HLT_TkMu50, false);
+                    return HLT_Mu50 or HLT_TkMu50;
                 }
 
                 if (_year == Year::Run2016)
                 {
-                    return unwrap_or(HLT_Mu50, false) or unwrap_or(HLT_TkMu50, false);
+                    return HLT_Mu50 or HLT_TkMu50;
                 }
 
                 if (_year == Year::Run2017)
                 {
-                    return unwrap_or(HLT_Mu50, false) or unwrap_or(HLT_TkMu100, false) or
-                           unwrap_or(HLT_OldMu100, false);
+                    return HLT_Mu50 or HLT_TkMu100 or HLT_OldMu100;
                 }
 
                 if (_year == Year::Run2018)
                 {
-                    return unwrap_or(HLT_Mu50, false) or unwrap_or(HLT_TkMu100, false) or
-                           unwrap_or(HLT_OldMu100, false);
+                    return HLT_Mu50 or HLT_TkMu100 or HLT_OldMu100;
                 }
 
-                fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
-                std::exit(EXIT_FAILURE);
+                throw std::runtime_error(
+                    std::format("Could not define trigger bits. The requested year ({}) is invalid.", year));
             };
 
             auto pass_double_muon_trigger = [&](const std::string &year) -> bool
@@ -364,27 +501,23 @@ auto compute_btag_efficiency(const std::string &sample,
                 std::vector<std::string> double_muon_triggers = {};
                 if (_year == Year::Run2016APV or _year == Year::Run2016)
                 {
-                    return unwrap_or(HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ, false) or
-                           unwrap_or(HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ, false) or
-                           unwrap_or(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ, false) or
-                           unwrap_or(HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL, false) or
-                           unwrap_or(HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL, false) or
-                           unwrap_or(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL, false);
+                    return HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ or HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ or
+                           HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ or HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL or
+                           HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL or HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL;
                 }
 
                 if (_year == Year::Run2017)
                 {
-                    return unwrap_or(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8, false) or
-                           unwrap_or(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8, false);
+                    return HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8 or HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8;
                 }
 
                 if (_year == Year::Run2018)
                 {
-                    return unwrap_or(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8, false);
+                    return HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8;
                 }
 
-                fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
-                std::exit(EXIT_FAILURE);
+                throw std::runtime_error(
+                    fmt::format("Could not define trigger bits. The requested year ({}) is invalid.", year));
             };
 
             // auto pass_low_pt_electron_trigger = [&](const std::string &year) -> bool
@@ -392,26 +525,26 @@ auto compute_btag_efficiency(const std::string &sample,
             //     auto _year = get_runyear(year);
             //     if (_year == Year::Run2016APV)
             //     {
-            //         return unwrap_or(HLT_Ele27_WPTight_Gsf, false);
+            //         return HLT_Ele27_WPTight_Gsf;
             //     }
 
             //     if (_year == Year::Run2016)
             //     {
-            //         return unwrap_or(HLT_Ele27_WPTight_Gsf, false);
+            //         return HLT_Ele27_WPTight_Gsf;
             //     }
 
             //     if (_year == Year::Run2017)
             //     {
-            //         return unwrap_or(HLT_Ele35_WPTight_Gsf, false);
+            //         return HLT_Ele35_WPTight_Gsf;
             //     }
 
             //     if (_year == Year::Run2018)
             //     {
-            //         return unwrap_or(HLT_Ele32_WPTight_Gsf, false);
+            //         return HLT_Ele32_WPTight_Gsf;
             //     }
 
-            //     fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.",
-            //     year); std::exit(EXIT_FAILURE);
+            //     throw std::runtime_error( fmt::format("Could not define trigger bits. The requested year ({}) is
+            //     invalid.", year) );
             // };
 
             auto pass_high_pt_electron_trigger = [&](const std::string &year) -> bool
@@ -419,30 +552,30 @@ auto compute_btag_efficiency(const std::string &sample,
                 auto _year = get_runyear(year);
                 if (_year == Year::Run2016APV)
                 {
-                    return unwrap_or(HLT_Photon175, false) or unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
-                    // return unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
+                    return HLT_Photon175 or HLT_Ele115_CaloIdVT_GsfTrkIdT;
+                    // return unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT;
                 }
 
                 if (_year == Year::Run2016)
                 {
-                    return unwrap_or(HLT_Photon175, false) or unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
-                    // return unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
+                    return HLT_Photon175 or HLT_Ele115_CaloIdVT_GsfTrkIdT;
+                    // return unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT;
                 }
 
                 if (_year == Year::Run2017)
                 {
-                    return unwrap_or(HLT_Photon200, false) or unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
-                    // return unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
+                    return HLT_Photon200 or HLT_Ele115_CaloIdVT_GsfTrkIdT;
+                    // return unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT;
                 }
 
                 if (_year == Year::Run2018)
                 {
-                    return unwrap_or(HLT_Photon200, false) or unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
-                    // return unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
+                    return HLT_Photon200 or HLT_Ele115_CaloIdVT_GsfTrkIdT;
+                    // return unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT;
                 }
 
-                fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
-                std::exit(EXIT_FAILURE);
+                throw std::runtime_error(
+                    fmt::format("Could not define trigger bits. The requested year ({}) is invalid.", year));
             };
 
             auto pass_double_electron_trigger = [&](const std::string &year) -> bool
@@ -451,22 +584,21 @@ auto compute_btag_efficiency(const std::string &sample,
 
                 if (_year == Year::Run2016APV or _year == Year::Run2016)
                 {
-                    return unwrap_or(HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW, false) or
-                           unwrap_or(HLT_DoubleEle33_CaloIdL_MW, false);
+                    return HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW or HLT_DoubleEle33_CaloIdL_MW;
                 }
 
                 if (_year == Year::Run2017)
                 {
-                    return unwrap_or(HLT_DoubleEle33_CaloIdL_MW, false) or unwrap_or(HLT_DoubleEle25_CaloIdL_MW, false);
+                    return HLT_DoubleEle33_CaloIdL_MW or HLT_DoubleEle25_CaloIdL_MW;
                 }
 
                 if (_year == Year::Run2018)
                 {
-                    return unwrap_or(HLT_DoubleEle25_CaloIdL_MW, false);
+                    return HLT_DoubleEle25_CaloIdL_MW;
                 }
 
-                fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
-                std::exit(EXIT_FAILURE);
+                throw std::runtime_error(
+                    fmt::format("Could not define trigger bits. The requested year ({}) is invalid.", year));
             };
 
             auto pass_photon_trigger = [&](const std::string &year) -> bool
@@ -474,21 +606,21 @@ auto compute_btag_efficiency(const std::string &sample,
                 auto _year = get_runyear(year);
                 if (_year == Year::Run2016APV or _year == Year::Run2016)
                 {
-                    return unwrap_or(HLT_Photon175, false);
+                    return HLT_Photon175;
                 }
 
                 if (_year == Year::Run2017)
                 {
-                    return unwrap_or(HLT_Photon200, false);
+                    return HLT_Photon200;
                 }
 
                 if (_year == Year::Run2018)
                 {
-                    return unwrap_or(HLT_Photon200, false);
+                    return HLT_Photon200;
                 }
 
-                fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
-                std::exit(EXIT_FAILURE);
+                throw std::runtime_error(
+                    fmt::format("Could not define trigger bits. The requested year ({}) is invalid.", year));
             };
 
             // Source:
@@ -498,23 +630,23 @@ auto compute_btag_efficiency(const std::string &sample,
                 auto _year = get_runyear(year);
                 if (_year == Year::Run2016APV or _year == Year::Run2016)
                 {
-                    return unwrap_or(HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90, false);
+                    return HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90;
                 }
 
                 if (_year == Year::Run2017)
                 {
-                    return unwrap_or(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90, false) or
-                           unwrap_or(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass95, false);
+                    return HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90 or
+                           HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass95;
                 }
 
                 if (_year == Year::Run2018)
                 {
-                    return unwrap_or(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90, false) or
-                           unwrap_or(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass95, false);
+                    return HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90 or
+                           HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass95;
                 }
 
-                fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
-                std::exit(EXIT_FAILURE);
+                throw std::runtime_error(
+                    fmt::format("Could not define trigger bits. The requested year ({}) is invalid.", year));
             };
 
             auto pass_high_pt_tau_trigger = [&](const std::string &year) -> bool
@@ -523,22 +655,21 @@ auto compute_btag_efficiency(const std::string &sample,
                 std::vector<std::string> high_pt_tau_triggers = {};
                 if (_year == Year::Run2016APV or _year == Year::Run2016)
                 {
-                    return unwrap_or(HLT_VLooseIsoPFTau120_Trk50_eta2p1, false) or
-                           unwrap_or(HLT_VLooseIsoPFTau140_Trk50_eta2p1, false);
+                    return HLT_VLooseIsoPFTau120_Trk50_eta2p1 or HLT_VLooseIsoPFTau140_Trk50_eta2p1;
                 }
 
                 if (_year == Year::Run2017)
                 {
-                    return unwrap_or(HLT_MediumChargedIsoPFTau180HighPtRelaxedIso_Trk50_eta2p1, false);
+                    return HLT_MediumChargedIsoPFTau180HighPtRelaxedIso_Trk50_eta2p1;
                 }
 
                 if (_year == Year::Run2018)
                 {
-                    return unwrap_or(HLT_MediumChargedIsoPFTau180HighPtRelaxedIso_Trk50_eta2p1, false);
+                    return HLT_MediumChargedIsoPFTau180HighPtRelaxedIso_Trk50_eta2p1;
                 }
 
-                fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
-                std::exit(EXIT_FAILURE);
+                throw std::runtime_error(
+                    fmt::format("Could not define trigger bits. The requested year ({}) is invalid.", year));
             };
 
             auto pass_double_tau_trigger = [&](const std::string &year) -> bool
@@ -548,48 +679,44 @@ auto compute_btag_efficiency(const std::string &sample,
 
                 if (_year == Year::Run2016APV or _year == Year::Run2016)
                 {
-                    return unwrap_or(HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg, false) or
-                           unwrap_or(HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg, false);
+                    return HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg or
+                           HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg;
                 }
 
                 if (_year == Year::Run2017)
                 {
-                    return unwrap_or(HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg, false) or
-                           unwrap_or(HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg, false) or
-                           unwrap_or(HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg, false);
+                    return HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg or
+                           HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg or
+                           HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg;
                 }
 
                 if (_year == Year::Run2018)
                 {
-                    return unwrap_or(HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg, false) or
-                           unwrap_or(HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg, false) or
-                           unwrap_or(HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg, false) or
-                           unwrap_or(HLT_DoubleMediumChargedIsoPFTauHPS35_Trk1_eta2p1_Reg, false);
+                    return HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg or
+                           HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg or
+                           HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg or
+                           HLT_DoubleMediumChargedIsoPFTauHPS35_Trk1_eta2p1_Reg;
                 }
 
-                fmt::print(stderr,
-                           "ERROR: Could not define double tau trigger bits. The requested year ({}) is invalid.",
-                           year);
-                std::exit(EXIT_FAILURE);
+                throw std::runtime_error(
+                    std::format("Could not define double tau trigger bits. The requested year ({}) is invalid.", year));
             };
 
             // Trigger
-            auto is_good_trigger = trigger_filter(process,
-                                                  is_data,
-                                                  get_runyear(year),
-                                                  false /*pass_low_pt_muon_trigger(year)*/,
-                                                  pass_high_pt_muon_trigger(year),
-                                                  pass_double_muon_trigger(year),
-                                                  false /*pass_low_pt_electron_trigger(year)*/,
-                                                  pass_high_pt_electron_trigger(year),
-                                                  pass_double_electron_trigger(year),
-                                                  pass_high_pt_tau_trigger(year),
-                                                  pass_double_tau_trigger(year),
-                                                  pass_photon_trigger(year),
-                                                  pass_double_photon_trigger(year));
+            auto is_good_trigger = std::set<bool>({false /*pass_low_pt_muon_trigger(year)*/,
+                                                   pass_high_pt_muon_trigger(year),
+                                                   pass_double_muon_trigger(year),
+                                                   false /*pass_low_pt_electron_trigger(year)*/,
+                                                   pass_high_pt_electron_trigger(year),
+                                                   pass_double_electron_trigger(year),
+                                                   pass_high_pt_tau_trigger(year),
+                                                   pass_double_tau_trigger(year),
+                                                   pass_photon_trigger(year),
+                                                   pass_double_photon_trigger(year)})
+                                       .contains(true);
             if (not(is_good_trigger))
             {
-                continue;
+                return;
             }
 
             auto weight = genWeight / event_weights.sum_weights * x_section * luminosity * filter_eff * k_factor;
@@ -681,42 +808,83 @@ auto compute_btag_efficiency(const std::string &sample,
             }
         },
         {genWeight_var_name,
-         "LHEPart_pt",               //
-         "LHEPart_eta",              //
-         "LHEPart_phi",              //
-         "LHEPart_mass",             //
-         "LHEPart_incomingpz",       //
-         "LHEPart_pdgId",            //
-         "LHEPart_status",           //
-         "GenPart_pt",               //
-         "GenPart_eta",              //
-         "GenPart_phi",              //
-         "GenPart_mass",             //
-         "GenPart_genPartIdxMother", //
-         "GenPart_pdgId",            //
-         "GenPart_status",           //
-         "GenPart_statusFlags",      //
-         "Jet_pt",                   //
-         "Jet_eta",                  //
-         "Jet_phi",                  //
-         "Jet_mass",                 //
-         "Jet_jetId",                //
-         "Jet_btagDeepFlavB",        //
-         "Jet_rawFactor",            //
-         "Jet_area",                 //
-         "Jet_chEmEF",               //
-         "Jet_puId",                 //
-         "Muon_eta",                 //
-         "Muon_phi",                 //
-         "Muon_isPFcand",            //
-         "Jet_genJetIdx",            //
-         "Tau_jetIdx",               //
-         "Electron_jetIdx",          //
-         "Muon_jetIdx",              //
-         "fixedGridRhoFastjetAll",   //
-         "GenJet_pt",                //
-         "GenJet_eta",               //
-         "GenJet_phi",               //
+         "LHEPart_pt",                                                //
+         "LHEPart_eta",                                               //
+         "LHEPart_phi",                                               //
+         "LHEPart_mass",                                              //
+         "LHEPart_incomingpz",                                        //
+         "LHEPart_pdgId",                                             //
+         "LHEPart_status",                                            //
+         "GenPart_pt",                                                //
+         "GenPart_eta",                                               //
+         "GenPart_phi",                                               //
+         "GenPart_mass",                                              //
+         "GenPart_genPartIdxMother",                                  //
+         "GenPart_pdgId",                                             //
+         "GenPart_status",                                            //
+         "GenPart_statusFlags",                                       //
+         "Jet_pt",                                                    //
+         "Jet_eta",                                                   //
+         "Jet_phi",                                                   //
+         "Jet_mass",                                                  //
+         "Jet_jetId",                                                 //
+         "Jet_btagDeepFlavB",                                         //
+         "Jet_rawFactor",                                             //
+         "Jet_area",                                                  //
+         "Jet_chEmEF",                                                //
+         "Jet_puId",                                                  //
+         "Muon_eta",                                                  //
+         "Muon_phi",                                                  //
+         "Muon_isPFcand",                                             //
+         "Jet_genJetIdx",                                             //
+         "Tau_jetIdx",                                                //
+         "Electron_jetIdx",                                           //
+         "Muon_jetIdx",                                               //
+         "fixedGridRhoFastjetAll",                                    //
+         "GenJet_pt",                                                 //
+         "GenJet_eta",                                                //
+         "GenJet_phi",                                                //
+         "PV_npvsGood",                                               //
+         "Flag_goodVertices",                                         //
+         "Flag_globalSuperTightHalo2016Filter",                       //
+         "Flag_HBHENoiseFilter",                                      //
+         "Flag_HBHENoiseIsoFilter",                                   //
+         "Flag_EcalDeadCellTriggerPrimitiveFilter",                   //
+         "Flag_BadPFMuonFilter",                                      //
+         "Flag_BadPFMuonDzFilter",                                    //
+         "Flag_eeBadScFilter",                                        //
+         "Flag_hfNoisyHitsFilter",                                    //
+         "Flag_ecalBadCalibFilter",                                   //
+         "HLT_Mu50",                                                  //
+         "HLT_TkMu50",                                                //
+         "HLT_TkMu100",                                               //
+         "HLT_OldMu100",                                              //
+         "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ",                     //
+         "HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ",                   //
+         "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ",                       //
+         "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL",                        //
+         "HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL",                      //
+         "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL",                          //
+         "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8",                 //
+         "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8",               //
+         "HLT_Photon175",                                             //
+         "HLT_Photon200",                                             //
+         "HLT_Ele115_CaloIdVT_GsfTrkIdT",                             //
+         "HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW",                     //
+         "HLT_DoubleEle33_CaloIdL_MW",                                //
+         "HLT_DoubleEle25_CaloIdL_MW",                                //
+         "HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90",    //
+         "HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90",    //
+         "HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass95",    //
+         "HLT_VLooseIsoPFTau120_Trk50_eta2p1",                        //
+         "HLT_VLooseIsoPFTau140_Trk50_eta2p1",                        //
+         "HLT_MediumChargedIsoPFTau180HighPtRelaxedIso_Trk50_eta2p1", //
+         "HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg",                //
+         "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",        //
+         "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg",  //
+         "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg", //
+         "HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg",          //
+         "HLT_DoubleMediumChargedIsoPFTauHPS35_Trk1_eta2p1_Reg",      //
          "Jet_hadronFlavour"});
 
     // save btag efficiency histograms
