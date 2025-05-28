@@ -245,6 +245,8 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
                       const RVec<bool> &Muon_isPFcand,         //
                       const RVec<Int_t> &Jet_genJetIdx,        //
                       const RVec<Int_t> &Tau_jetIdx,           //
+                      const RVec<Int_t> &Electron_jetIdx,      //
+                      const RVec<Int_t> &Muon_jetIdx,          //
                       float fixedGridRhoFastjetAll,            //
                       JetCorrector &jet_corrections,           //
                       const CorrectionlibRef_t &btag_sf_bc,    //
@@ -285,6 +287,19 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
     {
         bool is_matched_to_tau = std::find(Tau_jetIdx.cbegin(), Tau_jetIdx.cend(), i) != Tau_jetIdx.cend();
         if (is_matched_to_tau)
+        {
+            continue;
+        }
+
+        bool is_matched_to_electron =
+            std::find(Electron_jetIdx.cbegin(), Electron_jetIdx.cend(), i) != Electron_jetIdx.cend();
+        if (is_matched_to_electron)
+        {
+            continue;
+        }
+
+        bool is_matched_to_muon = std::find(Muon_jetIdx.cbegin(), Muon_jetIdx.cend(), i) != Muon_jetIdx.cend();
+        if (is_matched_to_muon)
         {
             continue;
         }

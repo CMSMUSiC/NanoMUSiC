@@ -406,6 +406,7 @@ auto classification(const std::string process,
     ADD_ARRAY_READER(Muon_highPurity, bool);
     ADD_ARRAY_READER(Muon_genPartIdx, int);
     ADD_ARRAY_READER(Muon_isPFcand, bool);
+    ADD_ARRAY_READER(Muon_jetIdx, int);
 
     ADD_ARRAY_READER(Electron_pt, float);
     ADD_ARRAY_READER(Electron_eta, float);
@@ -420,6 +421,7 @@ auto classification(const std::string process,
     ADD_ARRAY_READER(Electron_dEsigmaUp, float);
     ADD_ARRAY_READER(Electron_dEsigmaDown, float);
     ADD_ARRAY_READER(Electron_genPartIdx, int);
+    ADD_ARRAY_READER(Electron_jetIdx, int);
 
     ADD_ARRAY_READER(Tau_pt, float);
     ADD_ARRAY_READER(Tau_eta, float);
@@ -935,6 +937,8 @@ auto classification(const std::string process,
                                                                 unwrap(Muon_isPFcand),                       //
                                                                 unwrap(Jet_genJetIdx),                       //
                                                                 unwrap(Tau_jetIdx),                          //
+                                                                unwrap(Electron_jetIdx),                     //
+                                                                unwrap(Muon_jetIdx),                         //
                                                                 unwrap(fixedGridRhoFastjetAll),              //
                                                                 jet_corrections,                             //
                                                                 btag_sf_bc,                                  //
@@ -1107,6 +1111,8 @@ auto classification(const std::string process,
                                                       unwrap(Muon_isPFcand),                       //
                                                       unwrap(Jet_genJetIdx),                       //
                                                       unwrap(Tau_jetIdx),                          //
+                                                      unwrap(Electron_jetIdx),                     //
+                                                      unwrap(Muon_jetIdx),                         //
                                                       unwrap(fixedGridRhoFastjetAll),              //
                                                       jet_corrections,                             //
                                                       btag_sf_bc,                                  //
