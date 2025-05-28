@@ -331,17 +331,17 @@ auto compute_btag_efficiency(const std::string &sample,
             {
                 switch (Jet_hadronFlavour.at(nominal_selected_bjet_indexes.at(i)))
                 {
-                case HadronFlavor::LIGHT:
+                case BTagEffMaps::HadronFlavor::LIGHT:
                     btag_efficiency_light_num.Fill(
                         nominal_bjets.p4[i].pt(), std::fabs(nominal_bjets.p4[i].eta()), weight);
                     btag_efficiency_light_den.Fill(
                         nominal_bjets.p4[i].pt(), std::fabs(nominal_bjets.p4[i].eta()), weight);
                     break;
-                case HadronFlavor::C:
+                case BTagEffMaps::HadronFlavor::C:
                     btag_efficiency_c_num.Fill(nominal_bjets.p4[i].pt(), std::fabs(nominal_bjets.p4[i].eta()), weight);
                     btag_efficiency_c_den.Fill(nominal_bjets.p4[i].pt(), std::fabs(nominal_bjets.p4[i].eta()), weight);
                     break;
-                case HadronFlavor::B:
+                case BTagEffMaps::HadronFlavor::B:
                     btag_efficiency_b_num.Fill(nominal_bjets.p4[i].pt(), std::fabs(nominal_bjets.p4[i].eta()), weight);
                     btag_efficiency_b_den.Fill(nominal_bjets.p4[i].pt(), std::fabs(nominal_bjets.p4[i].eta()), weight);
                     break;
@@ -354,14 +354,14 @@ auto compute_btag_efficiency(const std::string &sample,
             {
                 switch (Jet_hadronFlavour.at(nominal_selected_jet_indexes.at(i)))
                 {
-                case HadronFlavor::LIGHT:
+                case BTagEffMaps::HadronFlavor::LIGHT:
                     btag_efficiency_light_den.Fill(
                         nominal_jets.p4[i].pt(), std::fabs(nominal_jets.p4[i].eta()), weight);
                     break;
-                case HadronFlavor::C:
+                case BTagEffMaps::HadronFlavor::C:
                     btag_efficiency_c_den.Fill(nominal_jets.p4[i].pt(), std::fabs(nominal_jets.p4[i].eta()), weight);
                     break;
-                case HadronFlavor::B:
+                case BTagEffMaps::HadronFlavor::B:
                     btag_efficiency_b_den.Fill(nominal_jets.p4[i].pt(), std::fabs(nominal_jets.p4[i].eta()), weight);
                     break;
                 default:
