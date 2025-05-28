@@ -1,19 +1,18 @@
-import subprocess
-import random
-from pathlib import Path
-import shutil
-import os
 import hashlib
-from dataclasses import dataclass, asdict
-from multiprocessing import Pool, process
-import tomli
 import logging
-from rich.logging import RichHandler
-from metadata import Years
+import os
+import random
+import shutil
+import subprocess
 import sys
-from rich.progress import track
+from dataclasses import asdict, dataclass
+from multiprocessing import Pool, process
+from pathlib import Path
 
-from metadata import Lumi
+import tomli
+from metadata import Lumi, Years
+from rich.logging import RichHandler
+from rich.progress import track
 
 FORMAT = "%(message)s"
 logging.basicConfig(
@@ -310,6 +309,8 @@ def make_teffs() -> None:
         for tagger in ["light", "c", "b"]:
             num = getattr(out_file, f"[{process_group}]_{tagger}_num")
             den = getattr(out_file, f"[{process_group}]_{tagger}_den")
+            num.Print("all")
+            den.Print("all")
 
             if ROOT.TEfficiency.CheckConsistency(num, den):
                 pEff = ROOT.TEfficiency(num, den)

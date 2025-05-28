@@ -122,30 +122,19 @@ auto compute_btag_efficiency(const std::string &sample,
                              const double k_factor) -> void
 {
     // create btag efficiency histograms
-    constexpr std::array<double, 12> pt_bins = {std::numeric_limits<double>::lowest(),
-                                                20.,
-                                                30.,
-                                                50.,
-                                                70.,
-                                                100.,
-                                                140.,
-                                                200.,
-                                                300.,
-                                                600.,
-                                                1000.,
-                                                std::numeric_limits<double>::max()};
+    constexpr std::array<double, 12> pt_bins = {0., 20., 30., 50., 70., 100., 140., 200., 300., 600., 1000., 7000.};
     auto btag_efficiency_light_num =
-        TH2D(std::format("[{}]_light_num", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4, 0., 3.);
+        TH2D(std::format("[{}]_light_num", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 1, 0., 3.);
     auto btag_efficiency_light_den =
-        TH2D(std::format("[{}]_light_den", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4, 0., 3.);
+        TH2D(std::format("[{}]_light_den", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 1, 0., 3.);
     auto btag_efficiency_c_num =
-        TH2D(std::format("[{}]_c_num", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4, 0., 3.);
+        TH2D(std::format("[{}]_c_num", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 1, 0., 3.);
     auto btag_efficiency_c_den =
-        TH2D(std::format("[{}]_c_den", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4, 0., 3.);
+        TH2D(std::format("[{}]_c_den", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 1, 0., 3.);
     auto btag_efficiency_b_num =
-        TH2D(std::format("[{}]_b_num", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4, 0., 3.);
+        TH2D(std::format("[{}]_b_num", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 1, 0., 3.);
     auto btag_efficiency_b_den =
-        TH2D(std::format("[{}]_b_den", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 4, 0., 3.);
+        TH2D(std::format("[{}]_b_den", process_group).c_str(), "", pt_bins.size() - 1, pt_bins.data(), 1, 0., 3.);
 
     btag_efficiency_light_num.Sumw2();
     btag_efficiency_light_den.Sumw2();
@@ -724,7 +713,11 @@ auto compute_btag_efficiency(const std::string &sample,
             // Check for NaNs
             if (std::isnan(weight) or std::isinf(weight))
             {
-                throw std::runtime_error("NaN or INF weight found for weight!\n");
+                throw std::runtime_error(std::format("NaN or INF weight found for weight!\n {} - {} - {} - {}",
+                                                     sample,
+                                                     process_group,
+                                                     input_file,
+                                                     year));
             }
 
             auto [nominal_jets,
