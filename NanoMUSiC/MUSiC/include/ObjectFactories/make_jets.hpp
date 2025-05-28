@@ -485,14 +485,14 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
     }
     // if (shift == Shifts::Variations::Nominal)
     // {
-    //     fmt::print("btag weight: {}\n", btag_weight);
+    //     fmt::print("--> btag weight: {}\n", btag_weight);
     // }
 
     // Check for NaNs
     if (std::isnan(btag_weight) or std::isinf(btag_weight))
     {
         throw std::runtime_error(
-            std::format("ERROR: NaN or INF weight found for btag weight: {}!\n", Shifts::variation_to_string(shift)));
+            std::format("NaN or INF weight found for btag weight: {}!\n", Shifts::variation_to_string(shift)));
     }
 
     return {MUSiCObjects(jets_p4,

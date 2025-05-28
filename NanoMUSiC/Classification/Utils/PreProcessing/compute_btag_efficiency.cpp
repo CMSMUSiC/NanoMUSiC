@@ -721,6 +721,12 @@ auto compute_btag_efficiency(const std::string &sample,
 
             auto weight = genWeight / event_weights.sum_weights * x_section * luminosity * filter_eff * k_factor;
 
+            // Check for NaNs
+            if (std::isnan(weight) or std::isinf(weight))
+            {
+                throw std::runtime_error("NaN or INF weight found for weight!\n");
+            }
+
             auto [nominal_jets,
                   nominal_bjets,
                   has_vetoed_jet,
