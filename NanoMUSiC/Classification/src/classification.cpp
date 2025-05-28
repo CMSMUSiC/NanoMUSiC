@@ -432,6 +432,7 @@ auto classification(const std::string process,
     ADD_ARRAY_READER(Tau_decayMode, int);
     ADD_ARRAY_READER(Tau_genPartIdx, int);
     ADD_ARRAY_READER(Tau_genPartFlav, UChar_t);
+    ADD_ARRAY_READER(Tau_jetIdx, int);
 
     ADD_ARRAY_READER(Photon_pt, float);
     ADD_ARRAY_READER(Photon_eta, float);
@@ -933,6 +934,7 @@ auto classification(const std::string process,
                                                                 unwrap(Muon_phi),                            //
                                                                 unwrap(Muon_isPFcand),                       //
                                                                 unwrap(Jet_genJetIdx),                       //
+                                                                unwrap(Tau_jetIdx),                          //
                                                                 unwrap(fixedGridRhoFastjetAll),              //
                                                                 jet_corrections,                             //
                                                                 btag_sf_bc,                                  //
@@ -1104,6 +1106,7 @@ auto classification(const std::string process,
                                                       unwrap(Muon_phi),                            //
                                                       unwrap(Muon_isPFcand),                       //
                                                       unwrap(Jet_genJetIdx),                       //
+                                                      unwrap(Tau_jetIdx),                          //
                                                       unwrap(fixedGridRhoFastjetAll),              //
                                                       jet_corrections,                             //
                                                       btag_sf_bc,                                  //

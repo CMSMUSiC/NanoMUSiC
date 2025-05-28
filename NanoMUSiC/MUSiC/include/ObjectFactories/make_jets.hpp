@@ -244,6 +244,7 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
                       const RVec<float> &Muon_phi,             //
                       const RVec<bool> &Muon_isPFcand,         //
                       const RVec<Int_t> &Jet_genJetIdx,        //
+                      const RVec<Int_t> &Tau_jetIdx,           //
                       float fixedGridRhoFastjetAll,            //
                       JetCorrector &jet_corrections,           //
                       const CorrectionlibRef_t &btag_sf_bc,    //
@@ -282,6 +283,12 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
     auto selected_bjet_indexes = RVec<int>{};
     for (std::size_t i = 0; i < Jet_pt.size(); i++)
     {
+        bool is_matched_to_tau = std::find(Tau_jetIdx.cbegin(), Tau_jetIdx.cend(), i) != Tau_jetIdx.cend();
+        if (is_matched_to_tau)
+        {
+            continue;
+        }
+
         // check for vetoed jets
         // apply recemmended loose selection
         // https://cms-jerc.web.cern.ch/Recommendations/#jet-veto-maps
@@ -452,8 +459,8 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
                     (1 - MUSiCObjects::get_scale_factor(
                              btag_sf_bc,
                              is_data,
-                             {"central", "T", jets_hadron_flavor[i], std::fabs(jets_p4[i].eta()), jets_p4[i].pt()})) *
-                    btag_eff_maps.get_efficiency(jets_hadron_flavor[i], jets_p4[i].pt(), jets_p4[i].eta()) /
+                             {"central", "T", jets_hadron_flavor[i], std::fabs(jets_p4[i].eta()), jets_p4[i].pt()}) *
+                             btag_eff_maps.get_efficiency(jets_hadron_flavor[i], jets_p4[i].pt(), jets_p4[i].eta())) /
                     (1 - btag_eff_maps.get_efficiency(jets_hadron_flavor[i], jets_p4[i].pt(), jets_p4[i].eta()));
                 break;
             default:
