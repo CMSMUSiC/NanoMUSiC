@@ -288,7 +288,7 @@ auto classification(const std::string process,
     }();
 
     // build btag efficiency map
-    auto btag_eff_maps = BTagEffMaps(process_group, "btag_eff_maps");
+    auto btag_eff_maps = BTagEffMaps(process_group, "btag_eff_maps", is_data);
 
     auto input_root_file = std::unique_ptr<TFile>(TFile::Open(input_file.c_str()));
     auto input_ttree = input_root_file->Get<TTree>("Events");
@@ -920,37 +920,37 @@ auto classification(const std::string process,
               nominal_bjets,
               has_vetoed_jet,
               nominal_selected_jet_indexes,
-              nominal_selected_bjet_indexes,
-              nominal_btag_weight] = ObjectFactories::make_jets(unwrap(Jet_pt),                              //
-                                                                unwrap(Jet_eta),                             //
-                                                                unwrap(Jet_phi),                             //
-                                                                unwrap(Jet_mass),                            //
-                                                                unwrap(Jet_jetId),                           //
-                                                                unwrap(Jet_btagDeepFlavB),                   //
-                                                                unwrap(Jet_rawFactor),                       //
-                                                                unwrap(Jet_area),                            //
-                                                                unwrap(Jet_chEmEF),                          //
-                                                                unwrap(Jet_puId),                            //
-                                                                unwrap(Jet_hadronFlavour),                   //
-                                                                unwrap(Muon_eta),                            //
-                                                                unwrap(Muon_phi),                            //
-                                                                unwrap(Muon_isPFcand),                       //
-                                                                unwrap(Jet_genJetIdx),                       //
-                                                                unwrap(Tau_jetIdx),                          //
-                                                                unwrap(Electron_jetIdx),                     //
-                                                                unwrap(Muon_jetIdx),                         //
-                                                                unwrap(fixedGridRhoFastjetAll),              //
-                                                                jet_corrections,                             //
-                                                                btag_sf_bc,                                  //
-                                                                btag_sf_light,                               //
-                                                                NanoAODGenInfo::GenJets(unwrap(GenJet_pt),   //
-                                                                                        unwrap(GenJet_eta),  //
-                                                                                        unwrap(GenJet_phi)), //
-                                                                jet_veto_map,                                //
-                                                                btag_eff_maps,                               //
-                                                                is_data,                                     //
-                                                                year,                                        //
-                                                                Shifts::Variations::Nominal);
+              nominal_selected_bjet_indexes] =
+            ObjectFactories::make_jets(unwrap(Jet_pt),                              //
+                                       unwrap(Jet_eta),                             //
+                                       unwrap(Jet_phi),                             //
+                                       unwrap(Jet_mass),                            //
+                                       unwrap(Jet_jetId),                           //
+                                       unwrap(Jet_btagDeepFlavB),                   //
+                                       unwrap(Jet_rawFactor),                       //
+                                       unwrap(Jet_area),                            //
+                                       unwrap(Jet_chEmEF),                          //
+                                       unwrap(Jet_puId),                            //
+                                       unwrap(Jet_hadronFlavour),                   //
+                                       unwrap(Muon_eta),                            //
+                                       unwrap(Muon_phi),                            //
+                                       unwrap(Muon_isPFcand),                       //
+                                       unwrap(Jet_genJetIdx),                       //
+                                       unwrap(Tau_jetIdx),                          //
+                                       unwrap(Electron_jetIdx),                     //
+                                       unwrap(Muon_jetIdx),                         //
+                                       unwrap(fixedGridRhoFastjetAll),              //
+                                       jet_corrections,                             //
+                                       btag_sf_bc,                                  //
+                                       btag_sf_light,                               //
+                                       NanoAODGenInfo::GenJets(unwrap(GenJet_pt),   //
+                                                               unwrap(GenJet_eta),  //
+                                                               unwrap(GenJet_phi)), //
+                                       jet_veto_map,                                //
+                                       btag_eff_maps,                               //
+                                       is_data,                                     //
+                                       year,                                        //
+                                       Shifts::Variations::Nominal);
         if (has_vetoed_jet)
         {
             continue;
@@ -1090,8 +1090,8 @@ auto classification(const std::string process,
                 return nominal_photons;
             }();
 
-            auto [jets, bjets, has_vetoed_jet, selected_jet_indexes, selected_bjet_indexes, btag_weight] =
-                [&]() -> std::tuple<MUSiCObjects, MUSiCObjects, bool, RVec<int>, RVec<int>, double>
+            auto [jets, bjets, has_vetoed_jet, selected_jet_indexes, selected_bjet_indexes] =
+                [&]() -> std::tuple<MUSiCObjects, MUSiCObjects, bool, RVec<int>, RVec<int>>
             {
                 if (starts_with(Shifts::variation_to_string(diff_shift), "Jet"))
                 {
@@ -1127,12 +1127,8 @@ auto classification(const std::string process,
                                                       diff_shift);
                 }
 
-                return {nominal_jets,
-                        nominal_bjets,
-                        false,
-                        nominal_selected_jet_indexes,
-                        nominal_selected_bjet_indexes,
-                        nominal_btag_weight};
+                return {
+                    nominal_jets, nominal_bjets, false, nominal_selected_jet_indexes, nominal_selected_bjet_indexes};
             }();
 
             auto [met, is_fake_met] = ObjectFactories::make_met( //
@@ -1300,6 +1296,15 @@ auto classification(const std::string process,
                         return unwrap(genWeight);
                     }();
 
+                    double btag_weight = std::reduce(jets.scale_factor.begin(),
+                                                     jets.scale_factor.begin() + num_jet,
+                                                     1.,
+                                                     std::multiplies<double>{}) *
+                                         std::reduce(bjets.scale_factor.begin(),
+                                                     bjets.scale_factor.begin() + num_bjet,
+                                                     1.,
+                                                     std::multiplies<double>{});
+
                     weight = mc_weight * pu_weight * prefiring_weight * trigger_sf / event_weights.sum_weights *
                              x_section * luminosity * filter_eff * k_factor * pdf_as_weight *
                              Shifts::get_reco_scale_factor(shift,
@@ -1317,7 +1322,7 @@ auto classification(const std::string process,
                                                                 {num_photon, photons},
                                                                 {num_bjet, bjets},
                                                                 {num_jet, jets}) *
-                             Shifts::get_qcd_scale_weight(shift, unwrap(LHEScaleWeight));
+                             Shifts::get_qcd_scale_weight(shift, unwrap(LHEScaleWeight)) * btag_weight;
 
                     // Check for NaNs
                     if (std::isnan(weight) or std::isinf(weight))

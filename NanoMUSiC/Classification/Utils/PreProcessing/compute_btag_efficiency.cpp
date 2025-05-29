@@ -724,38 +724,38 @@ auto compute_btag_efficiency(const std::string &sample,
                   nominal_bjets,
                   has_vetoed_jet,
                   nominal_selected_jet_indexes,
-                  nominal_selected_bjet_indexes,
-                  btag_weight] =
+                  nominal_selected_bjet_indexes] =
                 ObjectFactories::make_jets(
-                    Jet_pt,                                                      //
-                    Jet_eta,                                                     //
-                    Jet_phi,                                                     //
-                    Jet_mass,                                                    //
-                    Jet_jetId,                                                   //
-                    Jet_btagDeepFlavB,                                           //
-                    Jet_rawFactor,                                               //
-                    Jet_area,                                                    //
-                    Jet_chEmEF,                                                  //
-                    Jet_puId,                                                    //
-                    Jet_hadronFlavour,                                           //
-                    Muon_eta,                                                    //
-                    Muon_phi,                                                    //
-                    Muon_isPFcand,                                               //
-                    Jet_genJetIdx,                                               //
-                    Tau_jetIdx,                                                  //
-                    Electron_jetIdx,                                             //
-                    Muon_jetIdx,                                                 //
-                    fixedGridRhoFastjetAll,                                      //
-                    jet_corrections,                                             //
-                    btag_sf_light,                                               //
-                    btag_sf_bc,                                                  //
-                    NanoAODGenInfo::GenJets(GenJet_pt,                           //
-                                            GenJet_eta,                          //
-                                            GenJet_phi),                         //
-                    jet_veto_map,                                                //
-                    BTagEffMaps(process_group, "", BTagEffMaps::IsDummy::Dummy), // no need to pass the btag eff maps
-                    false,                                                       //
-                    year,                                                        //
+                    Jet_pt,                              //
+                    Jet_eta,                             //
+                    Jet_phi,                             //
+                    Jet_mass,                            //
+                    Jet_jetId,                           //
+                    Jet_btagDeepFlavB,                   //
+                    Jet_rawFactor,                       //
+                    Jet_area,                            //
+                    Jet_chEmEF,                          //
+                    Jet_puId,                            //
+                    Jet_hadronFlavour,                   //
+                    Muon_eta,                            //
+                    Muon_phi,                            //
+                    Muon_isPFcand,                       //
+                    Jet_genJetIdx,                       //
+                    Tau_jetIdx,                          //
+                    Electron_jetIdx,                     //
+                    Muon_jetIdx,                         //
+                    fixedGridRhoFastjetAll,              //
+                    jet_corrections,                     //
+                    btag_sf_light,                       //
+                    btag_sf_bc,                          //
+                    NanoAODGenInfo::GenJets(GenJet_pt,   //
+                                            GenJet_eta,  //
+                                            GenJet_phi), //
+                    jet_veto_map,                        //
+                    BTagEffMaps(
+                        process_group, "", false, BTagEffMaps::IsDummy::Dummy), // no need to pass the btag eff maps
+                    false,                                                      //
+                    year,                                                       //
                     Shifts::Variations::Nominal);
 
             if (has_vetoed_jet)
