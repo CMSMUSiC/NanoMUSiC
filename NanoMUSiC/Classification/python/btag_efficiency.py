@@ -258,10 +258,10 @@ def merge_btag_efficiency_maps() -> None:
     )
     for process_group in track(processes_groups):
         print(
-            f"hadd -f -j btag_eff_maps/btag_eff_map_{process_group}.root btag_eff_maps_buffer/{process_group}_*.root"
+            f"hadd -f btag_eff_maps/btag_eff_map_{process_group}.root btag_eff_maps_buffer/{process_group}_*.root"
         )
         result = subprocess.run(
-            f"hadd -f -j btag_eff_maps/btag_eff_map_{process_group}.root btag_eff_maps_buffer/{process_group}_*.root",
+            f"hadd -f btag_eff_maps/btag_eff_map_{process_group}.root btag_eff_maps_buffer/{process_group}_*.root",
             shell=True,
             capture_output=True,
             text=True,
@@ -288,6 +288,68 @@ def merge_btag_efficiency_maps() -> None:
     #     )
 
 
+def plot_tefficiency_2d(
+    teff,
+    output_filename,
+    canvas_width=800,
+    canvas_height=600,
+    title="",
+    x_title="",
+    y_title="",
+    z_title="Efficiency",
+    draw_option="COLZ text",
+    z_min=None,
+    z_max=None,
+    palette=1,
+):
+    from ROOT import TCanvas, gStyle, gPad
+
+    # Set ROOT style
+    gStyle.SetOptStat(0)
+    gStyle.SetPalette(palette)
+
+    # Create canvas
+    canvas = TCanvas("c1", "2D Efficiency Plot", canvas_width, canvas_height)
+    canvas.SetRightMargin(0.15)  # Make room for color palette
+
+    canvas.SetLogx()
+
+    # Get the painted histogram for styling
+    # Note: TEfficiency creates a temporary histogram when drawn
+    teff.Draw(draw_option)
+
+    # Get the histogram that was just drawn
+    hist = teff.GetPaintedHistogram()
+
+    if hist:
+        # Set titles
+        if title:
+            hist.SetTitle(title)
+        if x_title:
+            hist.GetXaxis().SetTitle(x_title)
+        if y_title:
+            hist.GetYaxis().SetTitle(y_title)
+        if z_title:
+            hist.GetZaxis().SetTitle(z_title)
+
+        # Set Z-axis range if specified
+        if z_min is not None or z_max is not None:
+            if z_min is None:
+                z_min = hist.GetMinimum()
+            if z_max is None:
+                z_max = hist.GetMaximum()
+            hist.GetZaxis().SetRangeUser(z_min, z_max)
+
+    # Update canvas
+    canvas.Update()
+
+    # Save to PDF
+    canvas.SaveAs(output_filename)
+
+    # Clean up
+    canvas.Close()
+
+
 def make_teffs() -> None:
     import ROOT
 
@@ -307,12 +369,46 @@ def make_teffs() -> None:
             f"btag_eff_maps/btag_eff_map_{process_group}.root", "UPDATE"
         )
         for tagger in ["light", "c", "b"]:
+            print(f"-- Will make TEfficiency maps for {process_group} - {tagger}")
             num = getattr(out_file, f"[{process_group}]_{tagger}_num")
             den = getattr(out_file, f"[{process_group}]_{tagger}_den")
+            if process_group == "tG" and tagger == "c":
+                den.Print("all")
+                print()
+                num.Print("all")
 
-            if ROOT.TEfficiency.CheckConsistency(num, den):
-                pEff = ROOT.TEfficiency(num, den)
-                pEff.SetName(f"{process_group}_{tagger}_eff")
-                pEff.Write()
+            if not ROOT.TEfficiency.CheckConsistency(num, den):
+                nx_bins = den.GetNbinsX()
+                ny_bins = den.GetNbinsY()
+
+                for x_bin in range(1, nx_bins + 1):
+                    for y_bin in range(1, ny_bins + 1):
+                        current_content_den = den.GetBinContent(x_bin, y_bin)
+                        current_content_num = num.GetBinContent(x_bin, y_bin)
+
+                        if (
+                            current_content_den < current_content_num
+                            and current_content_den < 0
+                        ):
+                            den.SetBinContent(x_bin, y_bin, current_content_num)
+
+            pEff = ROOT.TEfficiency(num, den)
+            pEff.SetName(f"{process_group}_{tagger}_eff")
+            pEff.Write()
+
+            plot_tefficiency_2d(
+                pEff,
+                f"btag_eff_maps/{process_group}_{tagger}_eff.pdf",
+                canvas_width=800,
+                canvas_height=600,
+                title=f"{process_group}_{tagger}",
+                x_title="pt",
+                y_title="#eta",
+                z_title="Efficiency",
+                draw_option="COLZ",
+                z_min=None,
+                z_max=None,
+                palette=1,
+            )
 
         out_file.Close()

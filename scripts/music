@@ -125,10 +125,10 @@ def btag_efficiency(
     """
     import btag_efficiency
 
-    btag_efficiency.preamble()
+    # btag_efficiency.preamble()
 
     print("Computing btag_efficiency_map ... ")
-    btag_efficiency.compute_btag_efficiency(config_file)
+    # btag_efficiency.compute_btag_efficiency(config_file)
     btag_efficiency.merge_btag_efficiency_maps()
     btag_efficiency.make_teffs()
 

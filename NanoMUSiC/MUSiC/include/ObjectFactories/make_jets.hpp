@@ -404,8 +404,6 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
 
             if (is_good_bjet)
             {
-                // TODO: Implement those scale factors!
-                // Reference: BTagSFCorrector::BTagSFCorrector @ CorrectionSets.cpp
                 bjets_scale_factors.push_back(1.);
                 bjets_scale_factor_shift.push_back(0.);
 
@@ -435,17 +433,18 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
     {
         for (std::size_t i = 0; i < bjets_p4.size(); i++)
         {
+            auto sf = 1.;
             switch (bjets_hadron_flavor[i])
             {
-            case 0:
-                btag_weight *= MUSiCObjects::get_scale_factor(
+            case BTagEffMaps::HadronFlavor::LIGHT:
+                sf = MUSiCObjects::get_scale_factor(
                     btag_sf_light,
                     is_data,
                     {"central", "T", bjets_hadron_flavor[i], std::fabs(bjets_p4[i].eta()), bjets_p4[i].pt()});
                 break;
-            case 4:
-            case 5:
-                btag_weight *= MUSiCObjects::get_scale_factor(
+            case BTagEffMaps::HadronFlavor::C:
+            case BTagEffMaps::HadronFlavor::B:
+                sf = MUSiCObjects::get_scale_factor(
                     btag_sf_bc,
                     is_data,
                     {"central", "T", bjets_hadron_flavor[i], std::fabs(bjets_p4[i].eta()), bjets_p4[i].pt()});
@@ -453,39 +452,50 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
             default:
                 throw std::runtime_error(std::format("Invalid hadron flavor: {}", bjets_hadron_flavor[i]));
             }
+            btag_weight *= sf;
+            // if (shift == Shifts::Variations::Nominal)
+            // {
+            //     fmt::print("sf: {}\n", sf);
+            //     std::cout << bjets_p4[i] << std::endl;
+            // }
         }
         for (std::size_t i = 0; i < jets_p4.size(); i++)
         {
+            auto btag_eff = btag_eff_maps.get_efficiency(jets_hadron_flavor[i], jets_p4[i].pt(), jets_p4[i].eta());
+
+            auto sf = 1.;
             switch (jets_hadron_flavor[i])
             {
-            case 0:
-                btag_weight *=
-                    (1 - MUSiCObjects::get_scale_factor(
-                             btag_sf_light,
-                             is_data,
-                             {"central", "T", jets_hadron_flavor[i], std::fabs(jets_p4[i].eta()), jets_p4[i].pt()})) *
-                    btag_eff_maps.get_efficiency(jets_hadron_flavor[i], jets_p4[i].pt(), jets_p4[i].eta()) /
-                    (1 - btag_eff_maps.get_efficiency(jets_hadron_flavor[i], jets_p4[i].pt(), jets_p4[i].eta()));
+            case BTagEffMaps::HadronFlavor::LIGHT:
+                sf = MUSiCObjects::get_scale_factor(
+                    btag_sf_light,
+                    is_data,
+                    {"central", "T", jets_hadron_flavor[i], std::fabs(jets_p4[i].eta()), jets_p4[i].pt()});
 
                 break;
-            case 4:
-            case 5:
-                btag_weight *=
-                    (1 - MUSiCObjects::get_scale_factor(
-                             btag_sf_bc,
-                             is_data,
-                             {"central", "T", jets_hadron_flavor[i], std::fabs(jets_p4[i].eta()), jets_p4[i].pt()}) *
-                             btag_eff_maps.get_efficiency(jets_hadron_flavor[i], jets_p4[i].pt(), jets_p4[i].eta())) /
-                    (1 - btag_eff_maps.get_efficiency(jets_hadron_flavor[i], jets_p4[i].pt(), jets_p4[i].eta()));
+            case BTagEffMaps::HadronFlavor::C:
+            case BTagEffMaps::HadronFlavor::B:
+                sf = MUSiCObjects::get_scale_factor(
+                    btag_sf_bc,
+                    is_data,
+                    {"central", "T", jets_hadron_flavor[i], std::fabs(jets_p4[i].eta()), jets_p4[i].pt()});
                 break;
             default:
                 throw std::runtime_error(std::format("Invalid hadron flavor: {}", jets_hadron_flavor[i]));
             }
+
+            btag_weight *= (1 - btag_eff * sf) / (1 - btag_eff);
+            // if (shift == Shifts::Variations::Nominal)
+            // {
+            //     fmt::print("1-btag_eff*sf: {} - 1-btag_eff: {}\n", 1 - btag_eff * sf, 1 - btag_eff);
+            //     std::cout << jets_p4[i] << std::endl;
+            // }
         }
     }
     // if (shift == Shifts::Variations::Nominal)
     // {
     //     fmt::print("--> btag weight: {}\n", btag_weight);
+    //     fmt::print("###################\n");
     // }
 
     // Check for NaNs
