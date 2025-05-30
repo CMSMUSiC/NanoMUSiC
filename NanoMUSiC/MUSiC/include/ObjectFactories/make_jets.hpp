@@ -408,10 +408,10 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
 
                 selected_jet_indexes.push_back(i);
 
-                auto sf = 1.;
-                if (btag_eff_maps.is_dummy == BTagEffMaps::IsDummy::NotDummy)
+                if (btag_eff_maps.is_dummy == BTagEffMaps::IsDummy::NotDummy and not(is_data))
                 {
                     auto btag_eff = btag_eff_maps.get_efficiency(Jet_hadronFlavour[i], jet_p4.pt(), jet_p4.eta());
+                    auto sf = 1.;
                     switch (Jet_hadronFlavour[i])
                     {
                     case BTagEffMaps::HadronFlavor::LIGHT:
@@ -466,7 +466,7 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
 
                 selected_bjet_indexes.push_back(i);
 
-                if (btag_eff_maps.is_dummy == BTagEffMaps::IsDummy::NotDummy)
+                if (btag_eff_maps.is_dummy == BTagEffMaps::IsDummy::NotDummy and not(is_data))
                 {
                     auto sf = 1.;
                     switch (Jet_hadronFlavour[i])
