@@ -6,6 +6,7 @@
 #include "RunLumiFilter.hpp"
 #include "TTreeReader.h"
 #include "TTreeReaderValue.h"
+#include "TopPtReweighting.hpp"
 #include "ValidationContainer.hpp"
 #include "ZToLepLepX.hpp"
 #include "fmt/core.h"
@@ -407,6 +408,7 @@ auto classification(const std::string process,
     ADD_ARRAY_READER(Muon_genPartIdx, int);
     ADD_ARRAY_READER(Muon_isPFcand, bool);
     ADD_ARRAY_READER(Muon_jetIdx, int);
+    ADD_ARRAY_READER(Muon_looseId, bool);
 
     ADD_ARRAY_READER(Electron_pt, float);
     ADD_ARRAY_READER(Electron_eta, float);
@@ -932,13 +934,27 @@ auto classification(const std::string process,
                                        unwrap(Jet_chEmEF),                          //
                                        unwrap(Jet_puId),                            //
                                        unwrap(Jet_hadronFlavour),                   //
+                                       unwrap(Muon_pt),                             //
                                        unwrap(Muon_eta),                            //
                                        unwrap(Muon_phi),                            //
+                                       unwrap(Muon_looseId),                        //
                                        unwrap(Muon_isPFcand),                       //
-                                       unwrap(Jet_genJetIdx),                       //
-                                       unwrap(Tau_jetIdx),                          //
-                                       unwrap(Electron_jetIdx),                     //
                                        unwrap(Muon_jetIdx),                         //
+                                       unwrap(Electron_pt),                         //
+                                       unwrap(Electron_eta),                        //
+                                       unwrap(Electron_phi),                        //
+                                       unwrap(Electron_cutBased),                   //
+                                       unwrap(Electron_jetIdx),                     //
+                                       unwrap(Tau_pt),                              //
+                                       unwrap(Tau_eta),                             //
+                                       unwrap(Tau_phi),                             //
+                                       unwrap(Tau_idDeepTau2017v2p1VSjet),          //
+                                       unwrap(Tau_jetIdx),                          //
+                                       unwrap(Photon_pt),                           //
+                                       unwrap(Photon_eta),                          //
+                                       unwrap(Photon_phi),                          //
+                                       unwrap(Photon_cutBased),                     //
+                                       unwrap(Jet_genJetIdx),                       //
                                        unwrap(fixedGridRhoFastjetAll),              //
                                        jet_corrections,                             //
                                        btag_sf_bc,                                  //
@@ -1106,13 +1122,27 @@ auto classification(const std::string process,
                                                       unwrap(Jet_chEmEF),                          //
                                                       unwrap(Jet_puId),                            //
                                                       unwrap(Jet_hadronFlavour),                   //
+                                                      unwrap(Muon_pt),                             //
                                                       unwrap(Muon_eta),                            //
                                                       unwrap(Muon_phi),                            //
+                                                      unwrap(Muon_looseId),                        //
                                                       unwrap(Muon_isPFcand),                       //
-                                                      unwrap(Jet_genJetIdx),                       //
-                                                      unwrap(Tau_jetIdx),                          //
-                                                      unwrap(Electron_jetIdx),                     //
                                                       unwrap(Muon_jetIdx),                         //
+                                                      unwrap(Electron_pt),                         //
+                                                      unwrap(Electron_eta),                        //
+                                                      unwrap(Electron_phi),                        //
+                                                      unwrap(Electron_cutBased),                   //
+                                                      unwrap(Electron_jetIdx),                     //
+                                                      unwrap(Tau_pt),                              //
+                                                      unwrap(Tau_eta),                             //
+                                                      unwrap(Tau_phi),                             //
+                                                      unwrap(Tau_idDeepTau2017v2p1VSjet),          //
+                                                      unwrap(Tau_jetIdx),                          //
+                                                      unwrap(Photon_pt),                           //
+                                                      unwrap(Photon_eta),                          //
+                                                      unwrap(Photon_phi),                          //
+                                                      unwrap(Photon_cutBased),                     //
+                                                      unwrap(Jet_genJetIdx),                       //
                                                       unwrap(fixedGridRhoFastjetAll),              //
                                                       jet_corrections,                             //
                                                       btag_sf_bc,                                  //
@@ -1305,6 +1335,15 @@ auto classification(const std::string process,
                                                      1.,
                                                      std::multiplies<double>{});
 
+                    // auto top_pt_weight = top_pt_reweighting(
+                    //     is_data, unwrap(GenPart_pt), unwrap(GenPart_pdgId), unwrap(GenPart_statusFlags));
+                    auto top_pt_weight = 1.;
+
+                    // if (shift == Shifts::Variations::Nominal)
+                    // {
+                    //     fmt::print("TOP weight: {}\n", top_pt_weight);
+                    // }
+
                     weight = mc_weight * pu_weight * prefiring_weight * trigger_sf / event_weights.sum_weights *
                              x_section * luminosity * filter_eff * k_factor * pdf_as_weight *
                              Shifts::get_reco_scale_factor(shift,
@@ -1322,7 +1361,7 @@ auto classification(const std::string process,
                                                                 {num_photon, photons},
                                                                 {num_bjet, bjets},
                                                                 {num_jet, jets}) *
-                             Shifts::get_qcd_scale_weight(shift, unwrap(LHEScaleWeight)) * btag_weight;
+                             Shifts::get_qcd_scale_weight(shift, unwrap(LHEScaleWeight)) * btag_weight * top_pt_weight;
 
                     // Check for NaNs
                     if (std::isnan(weight) or std::isinf(weight))

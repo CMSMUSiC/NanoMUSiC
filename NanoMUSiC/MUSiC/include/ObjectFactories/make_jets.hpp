@@ -238,34 +238,133 @@ inline auto get_jet_energy_corrections(const Shifts::Variations shift,
 
     return scale_correction_nominal * resolution_correction_nominal;
 }
+inline auto should_remove_jet(const Math::PtEtaPhiMVector &jet,
+                              const RVec<float> &Muon_pt,
+                              const RVec<float> &Muon_eta,
+                              const RVec<float> &Muon_phi,
+                              const RVec<bool> &Muon_looseId,
+                              const RVec<float> &Electron_pt,
+                              const RVec<float> &Electron_eta,
+                              const RVec<float> &Electron_phi,
+                              const RVec<int> &Electron_cutBased,
+                              const RVec<float> &Tau_pt,
+                              const RVec<float> &Tau_eta,
+                              const RVec<float> &Tau_phi,
+                              const RVec<UChar_t> &Tau_idDeepTau2017v2p1VSjet,
+                              const RVec<float> &Photon_pt,
+                              const RVec<float> &Photon_eta,
+                              const RVec<float> &Photon_phi,
+                              const RVec<int> &Photon_cutBased) -> bool
+{
+    // Helper lambda for deltaR calculation
+    auto deltaR = [](float eta1, float phi1, float eta2, float phi2)
+    {
+        float deta = eta1 - eta2;
+        float dphi = phi1 - phi2;
+        while (dphi > M_PI)
+            dphi -= 2 * M_PI;
+        while (dphi < -M_PI)
+            dphi += 2 * M_PI;
+        return std::sqrt(deta * deta + dphi * dphi);
+    };
 
-inline auto make_jets(const RVec<float> &Jet_pt,               //
-                      const RVec<float> &Jet_eta,              //
-                      const RVec<float> &Jet_phi,              //
-                      const RVec<float> &Jet_mass,             //
-                      const RVec<Int_t> &Jet_jetId,            //
-                      const RVec<float> &Jet_btagDeepFlavB,    //
-                      const RVec<float> &Jet_rawFactor,        //
-                      const RVec<float> &Jet_area,             //
-                      const RVec<float> &Jet_chEmEF,           //
-                      const RVec<Int_t> &Jet_puId,             //
-                      const RVec<Int_t> &Jet_hadronFlavour,    //
-                      const RVec<float> &Muon_eta,             //
-                      const RVec<float> &Muon_phi,             //
-                      const RVec<bool> &Muon_isPFcand,         //
-                      const RVec<Int_t> &Jet_genJetIdx,        //
-                      const RVec<Int_t> &Tau_jetIdx,           //
-                      const RVec<Int_t> &Electron_jetIdx,      //
-                      const RVec<Int_t> &Muon_jetIdx,          //
-                      float fixedGridRhoFastjetAll,            //
-                      JetCorrector &jet_corrections,           //
-                      const CorrectionlibRef_t &btag_sf_bc,    //
-                      const CorrectionlibRef_t &btag_sf_light, //
-                      const NanoAODGenInfo::GenJets &gen_jets, //
-                      const CorrectionlibRef_t &jet_veto_map,  //
-                      const BTagEffMaps &btag_eff_maps,        //
-                      bool is_data,                            //
-                      const std::string &_year,                //
+    constexpr float DR_THRESHOLD = 0.4;
+
+    // Check overlap with muons
+    for (size_t i = 0; i < Muon_pt.size(); ++i)
+    {
+        if (Muon_looseId[i] && Muon_pt[i] > 10 && std::abs(Muon_eta[i]) < 2.4)
+        {
+            if (deltaR(jet.eta(), jet.phi(), Muon_eta[i], Muon_phi[i]) < DR_THRESHOLD)
+            {
+                return true; // Remove this jet
+            }
+        }
+    }
+
+    // Check overlap with electrons
+    for (size_t i = 0; i < Electron_pt.size(); ++i)
+    {
+        if (Electron_cutBased[i] >= 1 && // Veto
+            Electron_pt[i] > 10 && std::abs(Electron_eta[i]) < 2.5)
+        {
+            if (deltaR(jet.eta(), jet.phi(), Electron_eta[i], Electron_phi[i]) < DR_THRESHOLD)
+            {
+                return true; // Remove this jet
+            }
+        }
+    }
+
+    // Check overlap with taus
+    for (size_t i = 0; i < Tau_pt.size(); ++i)
+    {
+        if (Tau_idDeepTau2017v2p1VSjet[i] >= 1 && // VVVLoose
+            Tau_pt[i] > 20 && std::abs(Tau_eta[i]) < 2.3)
+        {
+            if (deltaR(jet.eta(), jet.phi(), Tau_eta[i], Tau_phi[i]) < DR_THRESHOLD)
+            {
+                return true; // Remove this jet
+            }
+        }
+    }
+
+    // Check overlap with photons
+    for (size_t i = 0; i < Photon_pt.size(); ++i)
+    {
+        if (Photon_cutBased[i] >= 1 && // Loose
+            Photon_pt[i] > 15 && std::abs(Photon_eta[i]) < 2.5)
+        {
+            if (deltaR(jet.eta(), jet.phi(), Photon_eta[i], Photon_phi[i]) < DR_THRESHOLD)
+            {
+                return true; // Remove this jet
+            }
+        }
+    }
+
+    return false; // Keep this jet
+}
+
+inline auto make_jets(const RVec<float> &Jet_pt,                       //
+                      const RVec<float> &Jet_eta,                      //
+                      const RVec<float> &Jet_phi,                      //
+                      const RVec<float> &Jet_mass,                     //
+                      const RVec<Int_t> &Jet_jetId,                    //
+                      const RVec<float> &Jet_btagDeepFlavB,            //
+                      const RVec<float> &Jet_rawFactor,                //
+                      const RVec<float> &Jet_area,                     //
+                      const RVec<float> &Jet_chEmEF,                   //
+                      const RVec<Int_t> &Jet_puId,                     //
+                      const RVec<Int_t> &Jet_hadronFlavour,            //
+                      const RVec<float> &Muon_pt,                      //
+                      const RVec<float> &Muon_eta,                     //
+                      const RVec<float> &Muon_phi,                     //
+                      const RVec<bool> &Muon_looseId,                  //
+                      const RVec<bool> &Muon_isPFcand,                 //
+                      const RVec<Int_t> &Muon_jetIdx,                  //
+                      const RVec<float> &Electron_pt,                  //
+                      const RVec<float> &Electron_eta,                 //
+                      const RVec<float> &Electron_phi,                 //
+                      const RVec<int> &Electron_cutBased,              //
+                      const RVec<Int_t> &Electron_jetIdx,              //
+                      const RVec<float> &Tau_pt,                       //
+                      const RVec<float> &Tau_eta,                      //
+                      const RVec<float> &Tau_phi,                      //
+                      const RVec<UChar_t> &Tau_idDeepTau2017v2p1VSjet, //
+                      const RVec<Int_t> &Tau_jetIdx,                   //
+                      const RVec<float> &Photon_pt,                    //
+                      const RVec<float> &Photon_eta,                   //
+                      const RVec<float> &Photon_phi,                   //
+                      const RVec<int> &Photon_cutBased,                //
+                      const RVec<Int_t> &Jet_genJetIdx,                //
+                      float fixedGridRhoFastjetAll,                    //
+                      JetCorrector &jet_corrections,                   //
+                      const CorrectionlibRef_t &btag_sf_bc,            //
+                      const CorrectionlibRef_t &btag_sf_light,         //
+                      const NanoAODGenInfo::GenJets &gen_jets,         //
+                      const CorrectionlibRef_t &jet_veto_map,          //
+                      const BTagEffMaps &btag_eff_maps,                //
+                      bool is_data,                                    //
+                      const std::string &_year,                        //
                       const Shifts::Variations shift)
     -> std::tuple<MUSiCObjects, MUSiCObjects, bool, RVec<int>, RVec<int>>
 {
@@ -388,6 +487,32 @@ inline auto make_jets(const RVec<float> &Jet_pt,               //
         {
             auto is_good_jet = (jet_p4.pt() >= ObjConfig::Jets[year].MediumPt) and is_good_jet_pre_filter;
             auto is_good_bjet = (jet_p4.pt() >= ObjConfig::Jets[year].MediumPt) and is_good_bjet_pre_filter;
+
+            if (is_good_jet or is_good_bjet)
+            {
+                auto should_remove = should_remove_jet(jet_p4,
+                                                       Muon_pt,
+                                                       Muon_eta,
+                                                       Muon_phi,
+                                                       Muon_looseId,
+                                                       Electron_pt,
+                                                       Electron_eta,
+                                                       Electron_phi,
+                                                       Electron_cutBased,
+                                                       Tau_pt,
+                                                       Tau_eta,
+                                                       Tau_phi,
+                                                       Tau_idDeepTau2017v2p1VSjet,
+                                                       Photon_pt,
+                                                       Photon_eta,
+                                                       Photon_phi,
+                                                       Photon_cutBased);
+
+                if (should_remove)
+                {
+                    continue;
+                }
+            }
 
             if (is_good_jet)
             {
