@@ -559,11 +559,6 @@ inline auto make_jets(const RVec<float> &Jet_pt,                       //
 
                     jets_scale_factors.push_back((1 - btag_eff * sf) / (1 - btag_eff));
                     jets_scale_factor_shift.push_back(0.);
-                    // if (shift == Shifts::Variations::Nominal)
-                    // {
-                    //     fmt::print("1-btag_eff*sf: {} - 1-btag_eff: {}\n", 1 - btag_eff * sf, 1 - btag_eff);
-                    //     std::cout << jet_p4 << std::endl;
-                    // }
                 }
                 else
                 {
@@ -614,11 +609,6 @@ inline auto make_jets(const RVec<float> &Jet_pt,                       //
                     }
                     bjets_scale_factors.push_back(sf);
                     bjets_scale_factor_shift.push_back(0.);
-                    // if (shift == Shifts::Variations::Nominal)
-                    // {
-                    //     fmt::print("sf: {}\n", sf);
-                    //     std::cout << jet_p4 << std::endl;
-                    // }
                 }
                 else
                 {

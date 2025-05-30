@@ -1335,14 +1335,8 @@ auto classification(const std::string process,
                                                      1.,
                                                      std::multiplies<double>{});
 
-                    // auto top_pt_weight = top_pt_reweighting(
-                    //     is_data, unwrap(GenPart_pt), unwrap(GenPart_pdgId), unwrap(GenPart_statusFlags));
-                    auto top_pt_weight = 1.;
-
-                    // if (shift == Shifts::Variations::Nominal)
-                    // {
-                    //     fmt::print("TOP weight: {}\n", top_pt_weight);
-                    // }
+                    auto top_pt_weight = top_pt_reweighting(
+                        is_data, unwrap(GenPart_pt), unwrap(GenPart_pdgId), unwrap(GenPart_statusFlags));
 
                     weight = mc_weight * pu_weight * prefiring_weight * trigger_sf / event_weights.sum_weights *
                              x_section * luminosity * filter_eff * k_factor * pdf_as_weight *
@@ -1383,7 +1377,7 @@ auto classification(const std::string process,
                 return weight;
             };
 
-            // Here goes the real analysis...
+            // Here goes the real classification...
             auto temp_event_classes = TempEC::make_temp_event_classes(
                 muons.size(), electrons.size(), taus.size(), photons.size(), bjets.size(), jets.size(), met.size());
 
