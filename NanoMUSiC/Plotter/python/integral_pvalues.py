@@ -1,18 +1,15 @@
-import os
 import math
+import os
 import sys
 from enum import Enum
 from typing import Any
 
 import matplotlib.pyplot as plt
-
 import mplhep as hep
 
 hep.style.use("CMS")
-import mplhep as hep  # HEP (CMS) extensions/styling on top of mpl
-
 import matplotlib as mpl
-
+import mplhep as hep  # HEP (CMS) extensions/styling on top of mpl
 
 mpl.use("Agg")
 
@@ -20,10 +17,10 @@ mpl.use("Agg")
 plt.style.use(hep.style.CMS)  # or ATLAS/LHCb2
 
 import json
-from rich.progress import track
-from colors import PROCESS_GROUP_STYLES
-from tools import change_exponent
 
+from colors import PROCESS_GROUP_STYLES
+from rich.progress import track
+from tools import change_exponent
 
 Lumi = {"Run2": "138", "2016": "36.3", "2017": "41.5", "2018": "59.8"}
 
@@ -503,11 +500,5 @@ def integral_pvalues_summary(
         plt.savefig("{}/pval_plot_excl_{}_{}.pdf".format(output_dir, year, num_classes))
         plt.savefig("{}/pval_plot_excl_{}_{}.svg".format(output_dir, year, num_classes))
         plt.close()
-
-    os.system(
-        r"find ___OUTPUT_DIR___/ -type d -exec cp $MUSIC_BASE/NanoMUSiC/Plotter/assets/index.php {} \;".replace(
-            "___OUTPUT_DIR___", output_dir
-        )
-    )
 
     return year, num_classes

@@ -414,6 +414,7 @@ auto dy_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
 }
 
 auto ttbar_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
+                  // const NanoAODGenInfo::GenParticles &gen_particles,
                   float mass_min,
                   float mass_max,
                   debugger_t &h_debug) -> bool
@@ -422,6 +423,32 @@ auto ttbar_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
                                                   ROOT::VecOps::Take(lhe_particles.eta, -6),
                                                   ROOT::VecOps::Take(lhe_particles.phi, -6),
                                                   ROOT::VecOps::Take(lhe_particles.mass, -6));
+
+    // fmt::print("-------\n");
+    // fmt::print("-------\n");
+    // fmt::print("-------\n");
+    // fmt::print("pT: {}\n", fmt::join(lhe_particles.pt, " == "));
+    // fmt::print("eta: {}\n", fmt::join(lhe_particles.eta, " == "));
+    // fmt::print("phi: {}\n", fmt::join(lhe_particles.phi, " == "));
+    // fmt::print("mass: {}\n", fmt::join(lhe_particles.mass, " == "));
+    // fmt::print("incomingpz: {}\n", fmt::join(lhe_particles.incomingpz, " == "));
+    // fmt::print("pdgId: {}\n", fmt::join(lhe_particles.pdgId, " == "));
+    // fmt::print("status: {}\n", fmt::join(lhe_particles.status, " == "));
+    // fmt::print("*************\n");
+    // fmt::print("*************\n");
+    // fmt::print("pT: {}\n", fmt::join(gen_particles.pt, " == "));
+    // fmt::print("eta: {}\n", fmt::join(gen_particles.eta, " == "));
+    // fmt::print("phi: {}\n", fmt::join(gen_particles.phi, " == "));
+    // fmt::print("mass: {}\n", fmt::join(gen_particles.mass, " == "));
+    // fmt::print("genPartIdxMother: {}\n", fmt::join(gen_particles.genPartIdxMother, " == "));
+    // fmt::print("pdgId: {}\n", fmt::join(gen_particles.pdgId, " == "));
+    // fmt::print("status: {}\n", fmt::join(gen_particles.status, " == "));
+    // fmt::print("------- TTBar Mass : {}\n", ttbar_mass);
+    // fmt::print("------- Alternative TTBar Mass : {}\n",
+    //            ROOT::VecOps::InvariantMass(ROOT::VecOps::Take(lhe_particles.pt, -7),
+    //                                        ROOT::VecOps::Take(lhe_particles.eta, -7),
+    //                                        ROOT::VecOps::Take(lhe_particles.phi, -7),
+    //                                        ROOT::VecOps::Take(lhe_particles.mass, -7)));
 
     bool filter_result = false;
     if (std::max(0.f, mass_min - .5f) <= ttbar_mass and ttbar_mass <= mass_max + .5f)
@@ -525,8 +552,9 @@ auto ww_2l2v_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, float mas
     return filter_result;
 }
 
-auto gamma_jet_cleanner_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, float dr_max, debugger_t &h_debug)
-    -> bool
+auto gamma_jet_cleanner_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
+                               float dr_max,
+                               debugger_t &h_debug) -> bool
 {
     bool filter_result = false;
 

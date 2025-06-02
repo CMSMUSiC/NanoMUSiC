@@ -1,35 +1,31 @@
-from enum import Enum, StrEnum
-import time
-from multiprocessing.pool import AsyncResult
-import re
-from rich.progress import track
-import subprocess
-import hashlib
-import scanner_imp as scanner
-from multiprocessing import Pool
-from rich.progress import Progress
 import fnmatch
-import os
-import sys
+import hashlib
 import json
+import os
+import re
+import subprocess
+import sys
+import time
+from enum import Enum, StrEnum
+from multiprocessing import Pool
+from multiprocessing.pool import AsyncResult
+
 import numpy as np
-from scan_props import ScanProps
+import scanner_imp as scanner
+from cmssw_scan import exec_command, make_scanner_config
+from crab_scan import crab_sub, crab_worker, music_sh, pset
 from distribution_model import (
-    ScanDistribution,
     DistributionType,
-    ScanYear,
     MCBinsBuilder,
+    ScanDistribution,
+    ScanYear,
 )
-from metadata import make_ec_nice_name, make_raw_ec_name, ClassType
-from tools import configure_root
-
-from ROOT import TFile
-
-
-from crab_scan import music_sh, crab_sub, crab_worker, pset
-from cmssw_scan import make_scanner_config, exec_command
+from metadata import ClassType, make_ec_nice_name, make_raw_ec_name
 from pydantic import BaseModel
-
+from rich.progress import Progress, track
+from ROOT import TFile
+from scan_props import ScanProps
+from tools import configure_root
 
 configure_root()
 MC_THRESHOLD = 0.1
@@ -476,14 +472,6 @@ def start_scan(
                     #     progress.console.print("Not ready: {}".format(not_ready))
                     # progress.console.print("Waiting 2 mins before next iteration ...")
                     # time.sleep(120)
-
-    if do_copy_index_files:
-        print("Copying index.php ...")
-        os.system(
-            r"find ___OUTPUT_DIR___/ -type d -exec cp $MUSIC_BASE/NanoMUSiC/Plotter/assets/index.php {} \;".replace(
-                "___OUTPUT_DIR___", output_dir
-            )
-        )
 
     print("Done.")
 

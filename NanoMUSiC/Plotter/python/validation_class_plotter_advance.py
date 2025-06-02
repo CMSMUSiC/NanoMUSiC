@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
-import tdrstyle
-import atlasplots as aplt
-from colors import PROCESS_GROUP_STYLES
-from validation_class_advance import EventClassCollection
-import ROOT
-from multiprocessing import Pool
-from tqdm import tqdm
-import sys
-import os
-from decimal import Decimal
-import glob
 import argparse
+import glob
+import os
+import sys
 import warnings
+from decimal import Decimal
 from functools import partial
-import tomli
+from multiprocessing import Pool
 from pathlib import Path
 
+import atlasplots as aplt
+import ROOT
+import tdrstyle
+import tomli
+from colors import PROCESS_GROUP_STYLES
+from tqdm import tqdm
+from validation_class_advance import EventClassCollection
 
 warnings.simplefilter("ignore", UserWarning)
 
@@ -300,17 +300,13 @@ def plot_event_class(ec, histogram_name, histograms_to_plot, year, output_path):
         os.system(f"mkdir -p {output_path}/{ec_nice_name}")
 
         fig.savefig(
-            f"{output_path}/{ec_nice_name}/{ec_nice_name}_{histogram_name}{(lambda x: f'_{x}' if x!=''  else '') (years_glob[year]['name'])}.png"
+            f"{output_path}/{ec_nice_name}/{ec_nice_name}_{histogram_name}{(lambda x: f'_{x}' if x != '' else '')(years_glob[year]['name'])}.png"
         )
         fig.savefig(
-            f"{output_path}/{ec_nice_name}/{ec_nice_name}_{histogram_name}{(lambda x: f'_{x}' if x!=''  else '') (years_glob[year]['name'])}.pdf"
+            f"{output_path}/{ec_nice_name}/{ec_nice_name}_{histogram_name}{(lambda x: f'_{x}' if x != '' else '')(years_glob[year]['name'])}.pdf"
         )
         fig.savefig(
-            f"{output_path}/{ec_nice_name}/{ec_nice_name}_{histogram_name}{(lambda x: f'_{x}' if x!=''  else '') (years_glob[year]['name'])}.svg"
-        )
-
-        os.system(
-            f"cp $MUSIC_BASE/NanoMUSiC/NanoEventClass/scripts/index.php {output_path}/{ec_nice_name}/index.php"
+            f"{output_path}/{ec_nice_name}/{ec_nice_name}_{histogram_name}{(lambda x: f'_{x}' if x != '' else '')(years_glob[year]['name'])}.svg"
         )
 
 
@@ -372,7 +368,4 @@ if __name__ == "__main__":
                 )
             )
 
-    os.system(
-        f"cp $MUSIC_BASE/NanoMUSiC/NanoEventClass/scripts/index.php {args.output}/index.php"
-    )
     os._exit(os.EX_OK)

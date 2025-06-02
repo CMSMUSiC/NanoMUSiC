@@ -1,21 +1,18 @@
-import sys
 import math
-import tdrstyle
-import atlasplots as aplt
-from colors import PROCESS_GROUP_STYLES
-from decimal import Decimal
-from tools import to_root_latex, configure_root
-from metadata import Years
-from pvalue import get_integral_pvalue
-from typing import Any
 import os
-from metadata import make_ec_nice_name
+import sys
+from decimal import Decimal
+from typing import Any
 
-from ROOT import TFile, THStack, TLine, gPad, kRed
-
+import atlasplots as aplt
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-
+import tdrstyle
+from colors import PROCESS_GROUP_STYLES
+from metadata import Years, make_ec_nice_name
+from pvalue import get_integral_pvalue
+from ROOT import TFile, THStack, TLine, gPad, kRed
+from tools import configure_root, to_root_latex
 
 configure_root()
 mpl.use("Agg")
@@ -519,12 +516,12 @@ def make_plot(
 
     # Save the plot
     ec_nice_name = make_ec_nice_name(class_name)
-    output_file_path = f"{output_path}/{ec_nice_name}/{ec_nice_name}_{distribution_name}{(lambda x: f'_{x}' if x!='' else '_Run2') (year_label)}"
+    output_file_path = f"{output_path}/{ec_nice_name}/{distribution_name}{(lambda x: f'_{x}' if x != '' else '_Run2')(year_label)}"
     output_file_path = output_file_path.replace("+", "_")
 
-    fig.savefig(f"{output_file_path}.png")
     fig.savefig(f"{output_file_path}.pdf")
-    fig.savefig(f"{output_file_path}.svg")
+    # fig.savefig(f"{output_file_path}.png")
+    # fig.savefig(f"{output_file_path}.svg")
     # fig.savefig(f"{output_file_path}.C")
 
     return "{} - {} - {}".format(class_name, distribution_name, year)

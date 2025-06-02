@@ -1,19 +1,17 @@
+import fnmatch
+import json
 import os
 import sys
-import tdrstyle
-import fnmatch
-import atlasplots as aplt
-import json
 from multiprocessing import Pool
-from rich.progress import Progress
-from metadata import Years
 from typing import Any
 
-from ROOT import gStyle
-
-from distribution_plot import make_plot_task, p_value_task, build_plot_jobs_task
-
+import atlasplots as aplt
+import tdrstyle
 from distribution_model import DistributionType
+from distribution_plot import build_plot_jobs_task, make_plot_task, p_value_task
+from metadata import Years
+from rich.progress import Progress
+from ROOT import gStyle
 
 
 def plotter(
@@ -149,12 +147,5 @@ def plotter(
                 if is_validation:
                     progress.console.print("Done: {}".format(job))
                 progress.advance(task)
-
-    print("Copying index.php ...")
-    os.system(
-        r"find ___OUTPUT_DIR___/ -type d -exec cp $MUSIC_BASE/NanoMUSiC/Plotter/assets/index.php {} \;".replace(
-            "___OUTPUT_DIR___", output_dir
-        )
-    )
 
     print("Done.")
