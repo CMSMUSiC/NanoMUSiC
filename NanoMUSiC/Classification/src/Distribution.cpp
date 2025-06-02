@@ -733,10 +733,10 @@ auto Distribution::make_integral_pvalue_props() -> IntegralPValueProps
     //  Sanity check
     if (m_distribution_name != "counts")
     {
-        fmt::print(
-            "WARNING: Could not get P-Value props for a histogram that is not \"Counts\". Using the returned "
-            "values "
-            "will cause undefined behavior.\n");
+        fmt::print(stderr,
+                   "WARNING: Could not get P-Value props for a histogram that is not \"Counts\". Using the returned "
+                   "values "
+                   "will cause undefined behavior.\n");
         return IntegralPValueProps{
             .total_data = -1., .total_mc = -1., .sigma_total = -1., .sigma_stat = -1., .total_per_process_group = {}};
     }
