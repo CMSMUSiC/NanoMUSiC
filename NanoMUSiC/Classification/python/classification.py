@@ -667,13 +667,18 @@ class MakeDistributionsInputs(BaseModel):
     input_file: str
     output_dir: str
     class_name: str
+    skip_per_year: bool
     rescaling: None | dict[str, float]
 
 
 def do_make_distributions(inputs: MakeDistributionsInputs) -> tuple[bool, str]:
     try:
         if clft.Distribution.make_distributions(
-            inputs.input_file, inputs.output_dir, inputs.class_name, inputs.rescaling
+            inputs.input_file,
+            inputs.output_dir,
+            inputs.class_name,
+            inputs.skip_per_year,
+            inputs.rescaling,
         ):
             return True, inputs.class_name
 
@@ -800,6 +805,7 @@ def make_distributions(
     validation_inputs_dir: str,
     class_name_filter_pattern: str | None,
     validation_filter_pattern: str | None,
+    skip_per_year: bool,
 ) -> None:
     config_file = None
     if config_file_path:
@@ -865,6 +871,7 @@ def make_distributions(
                     ),
                     output_dir="classification_distributions",
                     class_name=name,
+                    skip_per_year=skip_per_year,
                     rescaling=rescaling,
                 )
                 for name in classes_names
@@ -908,6 +915,7 @@ def make_distributions(
                     ),
                     output_dir="validation_distributions",
                     class_name=name,
+                    skip_per_year=skip_per_year,
                     rescaling=rescaling,
                 )
                 for name in validation_names

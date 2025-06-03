@@ -198,5 +198,6 @@ PYBIND11_MODULE(classification_imp, m)
                     "input_file"_a,
                     "ouput_dir"_a,
                     "analysis_to_build"_a,
+                    "skip_per_year"_a,
                     "rescaling"_a);
 }

@@ -31,7 +31,7 @@ def plotter(
     gStyle.SetMarkerSize(0.5)
     gStyle.SetLabelSize(25, "XYZ")
 
-    # os.system("rm -rf {}".format(output_dir))
+    os.system("rm -rf {}".format(output_dir))
     os.system("mkdir -p {}".format(output_dir))
 
     def make_distribution_paths(inputs_dir: str, patterns: list[str]) -> list[str]:
@@ -115,7 +115,7 @@ def plotter(
         for dist in scan_data:
             scan_data[dist] = get_scan_data(dist)
 
-    # Will build plot jobs
+    # Build plot jobs
     plot_props: list[Any] = []
     with Pool(min(len(distribution_files), num_cpus)) as p:
         with Progress() as progress:

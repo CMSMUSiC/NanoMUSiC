@@ -222,6 +222,7 @@ auto Distribution::fold(const std::vector<std::string> &input_files,
 auto Distribution::make_distributions(const std::string &input_file,
                                       const std::string &output_dir,
                                       std::string &analysis_to_plot,
+                                      bool skip_per_year,
                                       const std::optional<std::unordered_map<std::string, double>> &rescaling) -> bool
 {
     TH1::AddDirectory(false);
@@ -269,15 +270,18 @@ auto Distribution::make_distributions(const std::string &input_file,
             hist_ptr->Scale(scaling);
         }
 
-        event_class_histograms[histo_name][year].push_back(
-            ECHistogram{.analysis_name = analysis_name,
-                        .process_group = process_group,
-                        .xs_order = xs_order,
-                        .sample = sample,
-                        .year = year,
-                        .shift = static_cast<std::size_t>(Shifts::string_to_variation(shift)),
-                        .histo_name = histo_name,
-                        .histogram = hist_ptr});
+        if (not(skip_per_year))
+        {
+            event_class_histograms[histo_name][year].push_back(
+                ECHistogram{.analysis_name = analysis_name,
+                            .process_group = process_group,
+                            .xs_order = xs_order,
+                            .sample = sample,
+                            .year = year,
+                            .shift = static_cast<std::size_t>(Shifts::string_to_variation(shift)),
+                            .histo_name = histo_name,
+                            .histogram = hist_ptr});
+        }
         event_class_histograms[histo_name][year_to_string(YearToPlot::Run2)].push_back(
             ECHistogram{.analysis_name = analysis_name,
                         .process_group = process_group,
@@ -492,7 +496,7 @@ auto Distribution::get_systematics_uncert(
     // }
 
     // will cap the PDF+As uncertainties
-    constexpr auto pdf_as_upper_limit = 0.15;
+    constexpr auto pdf_as_upper_limit = 0.3;
     auto capped_pdf_as_uncert = ROOTHelpers::Counts(m_total_mc_histogram) * pdf_as_upper_limit;
     auto pdf_as_uncert = Uncertanties::AbsDiff(m_total_mc_histogram,
                                                ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
@@ -510,16 +514,54 @@ auto Distribution::get_systematics_uncert(
         capped_pdf_as_uncert[i] = std::min(capped_pdf_as_uncert[i], pdf_as_uncert[i]);
     }
 
+    auto extra_jets_uncert = [](const std::string &str) -> double
+    {
+        std::regex bjet_regex(R"((\d+)bJet)");
+        std::regex jet_regex(R"((\d+)Jet(?!_))");
+
+        std::smatch match;
+        int bjet_value = 0;
+        int jet_value = 0;
+
+        // Extract bJet value
+        if (std::regex_search(str, match, bjet_regex))
+        {
+            bjet_value = std::stoi(match[1].str());
+        }
+
+        // Extract Jet value (but not bJet)
+        if (std::regex_search(str, match, jet_regex))
+        {
+            jet_value = std::stoi(match[1].str());
+        }
+
+        // return std::make_pair(bjet_value, jet_value);
+        auto extra_jets = 0;
+        if (bjet_value >= 2)
+        {
+            extra_jets += bjet_value - 1;
+        }
+        if (jet_value >= 4)
+        {
+            extra_jets += jet_value - 3;
+        }
+
+        return extra_jets * 0.1;
+    };
+
     m_systematics_uncertainties = {
         ////////////////////////////////////
         // Integrals
         ////////////////////////////////////
         // trigger
-        {"trigger", Uncertanties::IntegralUncert(m_total_mc_histogram, 0.02)},
+        {"trigger", Uncertanties::IntegralUncert(m_total_mc_histogram, 0.05)},
 
         // luminosity
         // https://twiki.cern.ch/twiki/bin/view/CMS/LumiRecommendationsRun2#Quick_summary_table
         {"luminosity", Uncertanties::IntegralUncert(m_total_mc_histogram, 0.016)},
+
+        // extra_jets
+        // {"extra_jets", Uncertanties::IntegralUncert(m_total_mc_histogram, extra_jets_uncert(m_event_class_name))},
 
         ////////////////////////////////////
         // Constants
@@ -723,7 +765,18 @@ auto Distribution::get_systematics_uncert(
         RVec<double>(m_n_bins, 0.),
         [](const RVec<double> &acc_vec, const std::pair<std::string, RVec<double>> &next_key_val) -> RVec<double>
         {
-            auto [src, next_vec] = next_key_val;
+            const auto &[src, next_vec] = next_key_val;
+
+            // if (m_year_to_plot == "Run2" and m_distribution_name == "counts")
+            // {
+            //     fmt::print("--- {} - {} - {} - {}: [{}]\n",
+            //                m_distribution_name,
+            //                m_event_class_name,
+            //                m_year_to_plot,
+            //                src,
+            //                fmt::join(next_vec, " - "));
+            // }
+
             return acc_vec + ROOT::VecOps::pow(next_vec, 2.);
         }));
 }

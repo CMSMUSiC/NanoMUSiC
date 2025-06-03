@@ -459,37 +459,37 @@ class Shifts
                                                    this_muons.scale_factor_shift.begin() + n_muons,
                                                    0.,
                                                    std::plus<double>()),
-                                       2) //
+                                       2.) //
                               + std::pow(std::reduce(this_electrons.scale_factor_shift.begin(),
                                                      this_electrons.scale_factor_shift.begin() + n_electrons,
                                                      0.,
                                                      std::plus<double>()),
-                                         2) //
+                                         2.) //
                               + std::pow(std::reduce(this_taus.scale_factor_shift.begin(),
                                                      this_taus.scale_factor_shift.begin() + n_taus,
                                                      0.,
                                                      std::plus<double>()),
-                                         2) //
+                                         2.) //
                               + std::pow(std::reduce(this_photons.scale_factor_shift.begin(),
                                                      this_photons.scale_factor_shift.begin() + n_photons,
                                                      0.,
                                                      std::plus<double>()),
-                                         2) //
+                                         2.) //
                               + std::pow(std::reduce(this_bjets.scale_factor_shift.begin(),
                                                      this_bjets.scale_factor_shift.begin() + n_bjets,
                                                      0.,
                                                      std::plus<double>()),
-                                         2) //
+                                         2.) //
                               + std::pow(std::reduce(this_jets.scale_factor_shift.begin(),
                                                      this_jets.scale_factor_shift.begin() + n_jets,
                                                      0.,
                                                      std::plus<double>()),
-                                         2) //
+                                         2.) //
                               + std::pow(std::reduce(this_met.scale_factor_shift.begin(),
                                                      this_met.scale_factor_shift.begin() + n_met,
                                                      0.,
                                                      std::plus<double>()),
-                                         2) //
+                                         2.) //
             );
         }
 
@@ -550,25 +550,25 @@ class Shifts
                     std::reduce(
                         this_muons.is_fake.cbegin(), this_muons.is_fake.cbegin() + n_muons, 0., std::plus<double>()) *
                         0.5,
-                    2) +
+                    2.) +
                 std::pow(std::reduce(this_electrons.is_fake.cbegin(),
                                      this_electrons.is_fake.cbegin() + n_electrons,
                                      0.,
                                      std::plus<double>()) *
                              0.5,
-                         2) +
+                         2.) +
 
                 std::pow(std::reduce(
                              this_taus.is_fake.cbegin(), this_taus.is_fake.cbegin() + n_taus, 0., std::plus<double>()) *
                              0.5,
-                         2) +
+                         2.) +
 
                 std::pow(std::reduce(this_photons.is_fake.cbegin(),
                                      this_photons.is_fake.cbegin() + n_photons,
                                      0.,
                                      std::plus<double>()) *
                              0.5,
-                         2) +
+                         2.) +
                 std::pow(
                     std::reduce(
                         this_bjets.is_fake.cbegin(), this_bjets.is_fake.cbegin() + n_bjets, 0., std::plus<double>()) *
@@ -578,7 +578,7 @@ class Shifts
                 std::pow(std::reduce(
                              this_jets.is_fake.cbegin(), this_jets.is_fake.cbegin() + n_jets, 0., std::plus<double>()) *
                              0.5,
-                         2);
+                         2.);
 
             if (shift == Shifts::Variations::Fakes_Up)
             {

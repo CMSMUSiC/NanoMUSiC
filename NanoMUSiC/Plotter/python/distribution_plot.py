@@ -1,7 +1,7 @@
-import math
 import os
 import sys
 from decimal import Decimal
+from enum import Enum, auto
 from typing import Any
 
 import atlasplots as aplt

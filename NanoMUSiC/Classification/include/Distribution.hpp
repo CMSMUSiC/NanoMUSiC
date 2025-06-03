@@ -225,6 +225,7 @@ class Distribution
     static auto make_distributions(const std::string &input_file,
                                    const std::string &output_dir,
                                    std::string &analysis_to_plot,
+				   bool skip_per_year,
                                    const std::optional<std::unordered_map<std::string, double>> &rescaling) -> bool;
 
     auto get_statistical_uncert() -> RVec<double>;
