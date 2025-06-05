@@ -375,6 +375,21 @@ inline auto starts_with(const std::string &str, std::string &&prefix) -> bool
 }
 
 // check if an event pass any trigger
+#define TRIGGER_PASS_MAP                                                                                               \
+    {                                                                                                                  \
+        {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},                                                        \
+            {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},                                                  \
+            {"pass_double_muon_trigger", pass_double_muon_trigger},                                                    \
+            {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},                                            \
+            {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger},                                          \
+            {"pass_double_electron_trigger", pass_double_electron_trigger},                                            \
+            {"pass_high_pt_tau_trigger", pass_high_pt_tau_trigger},                                                    \
+            {"pass_double_tau_trigger", pass_double_tau_trigger}, {"pass_photon_trigger", pass_photon_trigger},        \
+        {                                                                                                              \
+            "pass_double_photon_trigger", pass_double_photon_trigger                                                   \
+        }                                                                                                              \
+    }
+
 inline auto trigger_filter(const std::string &process, //
                            bool is_data,
                            Year year,                          //
@@ -399,18 +414,7 @@ inline auto trigger_filter(const std::string &process, //
         {
             if (pass_low_pt_muon_trigger or pass_high_pt_muon_trigger)
             {
-                trigger_filter_res = {
-                    {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},           //
-                    {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},         //
-                    {"pass_double_muon_trigger", pass_double_muon_trigger},           //
-                    {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},   //
-                    {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger}, //
-                    {"pass_double_electron_trigger", pass_double_electron_trigger},   //
-                    {"pass_high_pt_tau_trigger", pass_high_pt_tau_trigger},           //
-                    {"pass_double_tau_trigger", pass_double_tau_trigger},             //
-                    {"pass_photon_trigger", pass_photon_trigger},                     //
-                    {"pass_double_photon_trigger", pass_double_photon_trigger}        //
-                };
+                trigger_filter_res = TRIGGER_PASS_MAP;
             }
 
             return trigger_filter_res;
@@ -422,18 +426,7 @@ inline auto trigger_filter(const std::string &process, //
             if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger) //
                 and pass_double_muon_trigger)
             {
-                trigger_filter_res = {
-                    {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},           //
-                    {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},         //
-                    {"pass_double_muon_trigger", pass_double_muon_trigger},           //
-                    {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},   //
-                    {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger}, //
-                    {"pass_double_electron_trigger", pass_double_electron_trigger},   //
-                    {"pass_high_pt_tau_trigger", pass_high_pt_tau_trigger},           //
-                    {"pass_double_tau_trigger", pass_double_tau_trigger},             //
-                    {"pass_photon_trigger", pass_photon_trigger},                     //
-                    {"pass_double_photon_trigger", pass_double_photon_trigger}        //
-                };
+                trigger_filter_res = TRIGGER_PASS_MAP;
             }
 
             return trigger_filter_res;
@@ -447,18 +440,7 @@ inline auto trigger_filter(const std::string &process, //
                 if (not(pass_low_pt_muon_trigger or pass_high_pt_muon_trigger or pass_double_muon_trigger) //
                     and (pass_low_pt_electron_trigger or pass_high_pt_electron_trigger))
                 {
-                    trigger_filter_res = {
-                        {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},           //
-                        {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},         //
-                        {"pass_double_muon_trigger", pass_double_muon_trigger},           //
-                        {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},   //
-                        {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger}, //
-                        {"pass_double_electron_trigger", pass_double_electron_trigger},   //
-                        {"pass_high_pt_tau_trigger", pass_high_pt_tau_trigger},           //
-                        {"pass_double_tau_trigger", pass_double_tau_trigger},             //
-                        {"pass_photon_trigger", pass_photon_trigger},                     //
-                        {"pass_double_photon_trigger", pass_double_photon_trigger}        //
-                    };
+                    trigger_filter_res = TRIGGER_PASS_MAP;
                 }
 
                 return trigger_filter_res;
@@ -470,18 +452,7 @@ inline auto trigger_filter(const std::string &process, //
                         pass_low_pt_electron_trigger or pass_high_pt_electron_trigger) //
                     and (pass_double_electron_trigger or pass_double_photon_trigger))
                 {
-                    trigger_filter_res = {
-                        {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},           //
-                        {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},         //
-                        {"pass_double_muon_trigger", pass_double_muon_trigger},           //
-                        {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},   //
-                        {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger}, //
-                        {"pass_double_electron_trigger", pass_double_electron_trigger},   //
-                        {"pass_high_pt_tau_trigger", pass_high_pt_tau_trigger},           //
-                        {"pass_double_tau_trigger", pass_double_tau_trigger},             //
-                        {"pass_photon_trigger", pass_photon_trigger},                     //
-                        {"pass_double_photon_trigger", pass_double_photon_trigger}        //
-                    };
+                    trigger_filter_res = TRIGGER_PASS_MAP;
                 }
 
                 return trigger_filter_res;
@@ -494,18 +465,7 @@ inline auto trigger_filter(const std::string &process, //
                         pass_double_photon_trigger) and
                     pass_photon_trigger)
                 {
-                    trigger_filter_res = {
-                        {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},           //
-                        {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},         //
-                        {"pass_double_muon_trigger", pass_double_muon_trigger},           //
-                        {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},   //
-                        {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger}, //
-                        {"pass_double_electron_trigger", pass_double_electron_trigger},   //
-                        {"pass_high_pt_tau_trigger", pass_high_pt_tau_trigger},           //
-                        {"pass_double_tau_trigger", pass_double_tau_trigger},             //
-                        {"pass_photon_trigger", pass_photon_trigger},                     //
-                        {"pass_double_photon_trigger", pass_double_photon_trigger}        //
-                    };
+                    trigger_filter_res = TRIGGER_PASS_MAP;
                 }
 
                 return trigger_filter_res;
@@ -519,18 +479,7 @@ inline auto trigger_filter(const std::string &process, //
                     and (pass_low_pt_electron_trigger or pass_high_pt_electron_trigger or
                          pass_double_electron_trigger or pass_photon_trigger or pass_double_photon_trigger))
                 {
-                    trigger_filter_res = {
-                        {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},           //
-                        {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},         //
-                        {"pass_double_muon_trigger", pass_double_muon_trigger},           //
-                        {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},   //
-                        {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger}, //
-                        {"pass_double_electron_trigger", pass_double_electron_trigger},   //
-                        {"pass_high_pt_tau_trigger", pass_high_pt_tau_trigger},           //
-                        {"pass_double_tau_trigger", pass_double_tau_trigger},             //
-                        {"pass_photon_trigger", pass_photon_trigger},                     //
-                        {"pass_double_photon_trigger", pass_double_photon_trigger}        //
-                    };
+                    trigger_filter_res = TRIGGER_PASS_MAP;
                 }
 
                 return trigger_filter_res;
@@ -544,18 +493,7 @@ inline auto trigger_filter(const std::string &process, //
                     pass_photon_trigger or pass_double_photon_trigger) //
                 and (pass_high_pt_tau_trigger or pass_double_tau_trigger))
             {
-                trigger_filter_res = {
-                    {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},           //
-                    {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},         //
-                    {"pass_double_muon_trigger", pass_double_muon_trigger},           //
-                    {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},   //
-                    {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger}, //
-                    {"pass_double_electron_trigger", pass_double_electron_trigger},   //
-                    {"pass_high_pt_tau_trigger", pass_high_pt_tau_trigger},           //
-                    {"pass_double_tau_trigger", pass_double_tau_trigger},             //
-                    {"pass_photon_trigger", pass_photon_trigger},                     //
-                    {"pass_double_photon_trigger", pass_double_photon_trigger}        //
-                };
+                trigger_filter_res = TRIGGER_PASS_MAP;
             }
 
             return trigger_filter_res;
@@ -582,18 +520,7 @@ inline auto trigger_filter(const std::string &process, //
         or pass_double_photon_trigger    //
     )
     {
-        trigger_filter_res = {
-            {"pass_low_pt_muon_trigger", pass_low_pt_muon_trigger},           //
-            {"pass_high_pt_muon_trigger", pass_high_pt_muon_trigger},         //
-            {"pass_double_muon_trigger", pass_double_muon_trigger},           //
-            {"pass_low_pt_electron_trigger", pass_low_pt_electron_trigger},   //
-            {"pass_high_pt_electron_trigger", pass_high_pt_electron_trigger}, //
-            {"pass_double_electron_trigger", pass_double_electron_trigger},   //
-            {"pass_high_pt_tau_trigger", pass_high_pt_tau_trigger},           //
-            {"pass_double_tau_trigger", pass_double_tau_trigger},             //
-            {"pass_photon_trigger", pass_photon_trigger},                     //
-            {"pass_double_photon_trigger", pass_double_photon_trigger}        //
-        };
+        trigger_filter_res = TRIGGER_PASS_MAP;
     }
 
     return trigger_filter_res;
@@ -663,8 +590,8 @@ class TempEC
           has_exclusive(has_exclusive),
           has_jet_inclusive(has_jet_inclusive),
           has_met(max_met_idx >= 0),
-          sum_pt(0),
-          met(0),
+          sum_pt(0.),
+          met(0.),
           four_vec({})
     {
     }

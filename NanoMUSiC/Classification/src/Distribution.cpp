@@ -514,40 +514,40 @@ auto Distribution::get_systematics_uncert(
         capped_pdf_as_uncert[i] = std::min(capped_pdf_as_uncert[i], pdf_as_uncert[i]);
     }
 
-    auto extra_jets_uncert = [](const std::string &str) -> double
-    {
-        std::regex bjet_regex(R"((\d+)bJet)");
-        std::regex jet_regex(R"((\d+)Jet(?!_))");
-
-        std::smatch match;
-        int bjet_value = 0;
-        int jet_value = 0;
-
-        // Extract bJet value
-        if (std::regex_search(str, match, bjet_regex))
-        {
-            bjet_value = std::stoi(match[1].str());
-        }
-
-        // Extract Jet value (but not bJet)
-        if (std::regex_search(str, match, jet_regex))
-        {
-            jet_value = std::stoi(match[1].str());
-        }
-
-        // return std::make_pair(bjet_value, jet_value);
-        auto extra_jets = 0;
-        if (bjet_value >= 2)
-        {
-            extra_jets += bjet_value - 1;
-        }
-        if (jet_value >= 4)
-        {
-            extra_jets += jet_value - 3;
-        }
-
-        return extra_jets * 0.1;
-    };
+    // auto extra_jets_uncert = [](const std::string &str) -> double
+    // {
+    //     std::regex bjet_regex(R"((\d+)bJet)");
+    //     std::regex jet_regex(R"((\d+)Jet(?!_))");
+    //
+    //     std::smatch match;
+    //     int bjet_value = 0;
+    //     int jet_value = 0;
+    //
+    //     // Extract bJet value
+    //     if (std::regex_search(str, match, bjet_regex))
+    //     {
+    //         bjet_value = std::stoi(match[1].str());
+    //     }
+    //
+    //     // Extract Jet value (but not bJet)
+    //     if (std::regex_search(str, match, jet_regex))
+    //     {
+    //         jet_value = std::stoi(match[1].str());
+    //     }
+    //
+    //     // return std::make_pair(bjet_value, jet_value);
+    //     auto extra_jets = 0;
+    //     if (bjet_value >= 2)
+    //     {
+    //         extra_jets += bjet_value - 1;
+    //     }
+    //     if (jet_value >= 4)
+    //     {
+    //         extra_jets += jet_value - 3;
+    //     }
+    //
+    //     return extra_jets * 0.1;
+    // };
 
     m_systematics_uncertainties = {
         ////////////////////////////////////
