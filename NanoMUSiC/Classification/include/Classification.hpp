@@ -660,13 +660,7 @@ class TempEC
         const std::optional<std::string> jet_inclusive_class_name;
     };
 
-    auto make_event_class_name(const RVec<unsigned int> &muons_id_score,
-                               const RVec<unsigned int> &electrons_id_score,
-                               const RVec<unsigned int> &taus_id_score,
-                               const RVec<unsigned int> &photons_id_score,
-                               const RVec<unsigned int> &bjets_id_score,
-                               const RVec<unsigned int> &jets_id_score,
-                               const RVec<unsigned int> &met_id_score) -> TempEC::ClassesNames
+    auto make_event_class_name() -> TempEC::ClassesNames
     {
         /////////////////////////////////
         // CUSTOM
@@ -733,7 +727,11 @@ class TempEC
                                         const int total_photons,
                                         const int total_bjets,
                                         const int total_jets,
-                                        const int total_met) -> std::vector<TempEC>
+                                        const int total_met,
+                                        const bool at_least_1_muon_trigger_match,
+                                        const bool at_least_1_electron_trigger_match,
+                                        const bool at_least_1_photon_trigger_match,
+                                        const bool at_least_1_tau_trigger_match) -> std::vector<TempEC>
     {
         auto temp_event_classes = std::vector<TempEC>{};
         for (int idx_muon = -1; idx_muon < total_muons; idx_muon++)
@@ -768,7 +766,10 @@ class TempEC
                                     }
 
                                     if (idx_bjet + 1 + idx_jet + 1 < max_allowed_jets_per_class and
-                                        (idx_muon > -1 or idx_electron > -1 or idx_tau > -1 or idx_photon > -1))
+                                        ((idx_muon > -1 and at_least_1_muon_trigger_match) or
+                                         (idx_electron > -1 and at_least_1_electron_trigger_match) or
+                                         (idx_photon > -1 and at_least_1_photon_trigger_match) or
+                                         (idx_tau > -1 and at_least_1_tau_trigger_match)))
                                     {
                                         temp_event_classes.emplace_back(idx_muon,
                                                                         idx_electron,

@@ -550,32 +550,28 @@ auto classification(const std::string process,
             continue;
         }
 
-        // auto pass_low_pt_muon_trigger = [&](const std::string &year) -> bool
-        // {
-        //     auto _year = get_runyear(year);
-        //     if (_year == Year::Run2016APV)
-        //     {
-        //         return unwrap_or(HLT_IsoMu24, false) or unwrap_or(HLT_IsoTkMu24, false);
-        //     }
-
-        //     if (_year == Year::Run2016)
-        //     {
-        //         return unwrap_or(HLT_IsoMu24, false) or unwrap_or(HLT_IsoTkMu24, false);
-        //     }
-
-        //     if (_year == Year::Run2017)
-        //     {
-        //         return unwrap_or(HLT_IsoMu27, false);
-        //     }
-
-        //     if (_year == Year::Run2018)
-        //     {
-        //         return unwrap_or(HLT_IsoMu24, false);
-        //     }
-
-        //     fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
-        //     std::exit(EXIT_FAILURE);
-        // };
+        auto pass_low_pt_muon_trigger = [&](const std::string &year) -> bool
+        {
+            auto _year = get_runyear(year);
+            if (_year == Year::Run2016APV)
+            {
+                return unwrap_or(HLT_IsoMu24, false) or unwrap_or(HLT_IsoTkMu24, false);
+            }
+            if (_year == Year::Run2016)
+            {
+                return unwrap_or(HLT_IsoMu24, false) or unwrap_or(HLT_IsoTkMu24, false);
+            }
+            if (_year == Year::Run2017)
+            {
+                return unwrap_or(HLT_IsoMu27, false);
+            }
+            if (_year == Year::Run2018)
+            {
+                return unwrap_or(HLT_IsoMu24, false);
+            }
+            fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
+            std::exit(EXIT_FAILURE);
+        };
 
         auto pass_high_pt_muon_trigger = [&](const std::string &year) -> bool
         {
@@ -633,32 +629,32 @@ auto classification(const std::string process,
             std::exit(EXIT_FAILURE);
         };
 
-        // auto pass_low_pt_electron_trigger = [&](const std::string &year) -> bool
-        // {
-        //     auto _year = get_runyear(year);
-        //     if (_year == Year::Run2016APV)
-        //     {
-        //         return unwrap_or(HLT_Ele27_WPTight_Gsf, false);
-        //     }
+        auto pass_low_pt_electron_trigger = [&](const std::string &year) -> bool
+        {
+            auto _year = get_runyear(year);
+            if (_year == Year::Run2016APV)
+            {
+                return unwrap_or(HLT_Ele27_WPTight_Gsf, false);
+            }
 
-        //     if (_year == Year::Run2016)
-        //     {
-        //         return unwrap_or(HLT_Ele27_WPTight_Gsf, false);
-        //     }
+            if (_year == Year::Run2016)
+            {
+                return unwrap_or(HLT_Ele27_WPTight_Gsf, false);
+            }
 
-        //     if (_year == Year::Run2017)
-        //     {
-        //         return unwrap_or(HLT_Ele35_WPTight_Gsf, false);
-        //     }
+            if (_year == Year::Run2017)
+            {
+                return unwrap_or(HLT_Ele35_WPTight_Gsf, false);
+            }
 
-        //     if (_year == Year::Run2018)
-        //     {
-        //         return unwrap_or(HLT_Ele32_WPTight_Gsf, false);
-        //     }
+            if (_year == Year::Run2018)
+            {
+                return unwrap_or(HLT_Ele32_WPTight_Gsf, false);
+            }
 
-        //     fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
-        //     std::exit(EXIT_FAILURE);
-        // };
+            fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
+            std::exit(EXIT_FAILURE);
+        };
 
         auto pass_high_pt_electron_trigger = [&](const std::string &year) -> bool
         {
@@ -822,10 +818,10 @@ auto classification(const std::string process,
         auto is_good_trigger = trigger_filter(process,
                                               is_data,
                                               get_runyear(year),
-                                              false /*pass_low_pt_muon_trigger(year)*/,
+                                              false and pass_low_pt_muon_trigger(year),
                                               pass_high_pt_muon_trigger(year),
                                               pass_double_muon_trigger(year),
-                                              false /*pass_low_pt_electron_trigger(year)*/,
+                                              false and pass_low_pt_electron_trigger(year),
                                               pass_high_pt_electron_trigger(year),
                                               pass_double_electron_trigger(year),
                                               pass_high_pt_tau_trigger(year),
@@ -1378,18 +1374,30 @@ auto classification(const std::string process,
             };
 
             // Here goes the real classification...
+            // trigger_matches
             auto temp_event_classes = TempEC::make_temp_event_classes(
-                muons.size(), electrons.size(), taus.size(), photons.size(), bjets.size(), jets.size(), met.size());
+                muons.size(),
+                electrons.size(),
+                taus.size(),
+                photons.size(),
+                bjets.size(),
+                jets.size(),
+                met.size(),
+                /*muon matches*/
+                trigger_matches.at("pass_low_pt_muon_trigger") or trigger_matches.at("pass_high_pt_muon_trigger") or
+                    trigger_matches.at("pass_double_muon_trigger"),
+                /*electrons matches*/
+                trigger_matches.at("pass_low_pt_electron_trigger") or
+                    trigger_matches.at("pass_high_pt_electron_trigger") or
+                    trigger_matches.at("pass_double_electron_trigger"),
+                /*photon matches*/
+                trigger_matches.at("pass_photon_trigger") or trigger_matches.at("pass_double_photon_trigger"),
+                /*tau matches*/
+                trigger_matches.at("pass_double_tau_trigger") or trigger_matches.at("pass_high_pt_tau_trigger"));
 
             for (auto &temp_ec : temp_event_classes)
             {
-                auto classes_names = temp_ec.make_event_class_name(muons.id_score,
-                                                                   electrons.id_score,
-                                                                   taus.id_score,
-                                                                   photons.id_score,
-                                                                   bjets.id_score,
-                                                                   jets.id_score,
-                                                                   met.id_score);
+                auto classes_names = temp_ec.make_event_class_name();
 
                 // at least one class type should be valid
                 if (classes_names.exclusive_class_name or classes_names.inclusive_class_name or
