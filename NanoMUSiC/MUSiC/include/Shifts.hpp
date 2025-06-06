@@ -423,33 +423,34 @@ class Shifts
         auto [n_jets, this_jets] = jets;
         auto [n_met, this_met] = met;
 
-        auto nominal =
-            std::reduce(this_muons.scale_factor.begin(),
-                        this_muons.scale_factor.begin() + n_muons,
-                        1.,
-                        std::multiplies<double>()) *
-            std::reduce(this_electrons.scale_factor.begin(),
-                        this_electrons.scale_factor.begin() + n_electrons,
-                        1.,
-                        std::multiplies<double>()) //
-            * std::reduce(this_taus.scale_factor.begin(),
-                          this_taus.scale_factor.begin() + n_taus,
-                          1.,
-                          std::multiplies<double>()) //
-            * std::reduce(this_photons.scale_factor.begin(),
-                          this_photons.scale_factor.begin() + n_photons,
-                          1.,
-                          std::multiplies<double>()) //
-            * std::reduce(this_bjets.scale_factor.begin(),
-                          this_bjets.scale_factor.begin() + n_bjets,
-                          1.,
-                          std::multiplies<double>()) *
-            std::reduce(this_jets.scale_factor.begin(),
-                        this_jets.scale_factor.begin() + n_jets,
-                        1.,
-                        std::multiplies<double>()) //
-            * std::reduce(
-                  this_met.scale_factor.begin(), this_met.scale_factor.begin() + n_met, 1., std::multiplies<double>());
+        auto nominal = std::reduce(this_muons.scale_factor.begin(),
+                                   this_muons.scale_factor.begin() + n_muons,
+                                   1.,
+                                   std::multiplies<double>()) *
+                       std::reduce(this_electrons.scale_factor.begin(),
+                                   this_electrons.scale_factor.begin() + n_electrons,
+                                   1.,
+                                   std::multiplies<double>()) //
+                       * std::reduce(this_taus.scale_factor.begin(),
+                                     this_taus.scale_factor.begin() + n_taus,
+                                     1.,
+                                     std::multiplies<double>()) //
+                       * std::reduce(this_photons.scale_factor.begin(),
+                                     this_photons.scale_factor.begin() + n_photons,
+                                     1.,
+                                     std::multiplies<double>()) //
+                       * std::reduce(this_bjets.scale_factor.begin(),
+                                     this_bjets.scale_factor.begin() + n_bjets,
+                                     1.,
+                                     std::multiplies<double>()) *
+                       std::reduce(this_jets.scale_factor.begin(),
+                                   this_jets.scale_factor.begin() + n_jets,
+                                   1.,
+                                   std::multiplies<double>())               //
+                       * std::reduce(this_met.scale_factor.begin(),         //
+                                     this_met.scale_factor.begin() + n_met, //
+                                     1.,                                    //
+                                     std::multiplies<double>());
 
         auto delta = 0.;
 

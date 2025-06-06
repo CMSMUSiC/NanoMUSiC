@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <cmath>
 #include <filesystem>
+#include <fmt/core.h>
 #include <format>
 #include <memory>
 #include <stdexcept>
@@ -536,7 +537,11 @@ inline auto make_jets(const RVec<float> &Jet_pt,                       //
                 if (btag_eff_maps.is_dummy == BTagEffMaps::IsDummy::NotDummy and not(is_data))
                 {
                     auto btag_eff = btag_eff_maps.get_efficiency(Jet_hadronFlavour[i], jet_p4.pt(), jet_p4.eta());
+
                     auto sf = 1.;
+                    auto sf_up = 1.;
+                    auto sf_down = 1.;
+
                     switch (Jet_hadronFlavour[i])
                     {
                     case BTagEffMaps::HadronFlavor::LIGHT:
@@ -544,6 +549,14 @@ inline auto make_jets(const RVec<float> &Jet_pt,                       //
                             btag_sf_light,
                             is_data,
                             {"central", "T", Jet_hadronFlavour[i], std::fabs(jet_p4.eta()), jet_p4.pt()});
+                        sf_up = MUSiCObjects::get_scale_factor(
+                            btag_sf_light,
+                            is_data,
+                            {"up_correlated", "T", Jet_hadronFlavour[i], std::fabs(jet_p4.eta()), jet_p4.pt()});
+                        sf_down = MUSiCObjects::get_scale_factor(
+                            btag_sf_light,
+                            is_data,
+                            {"down_correlated", "T", Jet_hadronFlavour[i], std::fabs(jet_p4.eta()), jet_p4.pt()});
 
                         break;
                     case BTagEffMaps::HadronFlavor::C:
@@ -552,13 +565,25 @@ inline auto make_jets(const RVec<float> &Jet_pt,                       //
                             btag_sf_bc,
                             is_data,
                             {"central", "T", Jet_hadronFlavour[i], std::fabs(jet_p4.eta()), jet_p4.pt()});
+                        sf_up = MUSiCObjects::get_scale_factor(
+                            btag_sf_bc,
+                            is_data,
+                            {"up_correlated", "T", Jet_hadronFlavour[i], std::fabs(jet_p4.eta()), jet_p4.pt()});
+                        sf_down = MUSiCObjects::get_scale_factor(
+                            btag_sf_bc,
+                            is_data,
+                            {"down_correlated", "T", Jet_hadronFlavour[i], std::fabs(jet_p4.eta()), jet_p4.pt()});
                         break;
                     default:
                         throw std::runtime_error(std::format("Invalid hadron flavor: {}", Jet_hadronFlavour[i]));
                     }
+                    auto scale_factor = (1 - btag_eff * sf) / (1 - btag_eff);
+                    auto scale_factor_up = (1 - btag_eff * sf_up) / (1 - btag_eff);
+                    auto scale_factor_down = (1 - btag_eff * sf_down) / (1 - btag_eff);
 
-                    jets_scale_factors.push_back((1 - btag_eff * sf) / (1 - btag_eff));
-                    jets_scale_factor_shift.push_back(0.);
+                    jets_scale_factors.push_back(scale_factor);
+                    jets_scale_factor_shift.push_back(std::max(std::fabs(scale_factor - scale_factor_up),
+                                                               std::fabs(scale_factor - scale_factor_down)));
                 }
                 else
                 {
@@ -589,6 +614,9 @@ inline auto make_jets(const RVec<float> &Jet_pt,                       //
                 if (btag_eff_maps.is_dummy == BTagEffMaps::IsDummy::NotDummy and not(is_data))
                 {
                     auto sf = 1.;
+                    auto sf_up = 1.;
+                    auto sf_down = 1.;
+
                     switch (Jet_hadronFlavour[i])
                     {
                     case BTagEffMaps::HadronFlavor::LIGHT:
@@ -596,6 +624,14 @@ inline auto make_jets(const RVec<float> &Jet_pt,                       //
                             btag_sf_light,
                             is_data,
                             {"central", "T", Jet_hadronFlavour[i], std::fabs(jet_p4.eta()), jet_p4.pt()});
+                        sf_up = MUSiCObjects::get_scale_factor(
+                            btag_sf_light,
+                            is_data,
+                            {"up_correlated", "T", Jet_hadronFlavour[i], std::fabs(jet_p4.eta()), jet_p4.pt()});
+                        sf_down = MUSiCObjects::get_scale_factor(
+                            btag_sf_light,
+                            is_data,
+                            {"down_correlated", "T", Jet_hadronFlavour[i], std::fabs(jet_p4.eta()), jet_p4.pt()});
                         break;
                     case BTagEffMaps::HadronFlavor::C:
                     case BTagEffMaps::HadronFlavor::B:
@@ -603,12 +639,26 @@ inline auto make_jets(const RVec<float> &Jet_pt,                       //
                             btag_sf_bc,
                             is_data,
                             {"central", "T", Jet_hadronFlavour[i], std::fabs(jet_p4.eta()), jet_p4.pt()});
+                        sf_up = MUSiCObjects::get_scale_factor(
+                            btag_sf_bc,
+                            is_data,
+                            {"up_correlated", "T", Jet_hadronFlavour[i], std::fabs(jet_p4.eta()), jet_p4.pt()});
+                        sf_down = MUSiCObjects::get_scale_factor(
+                            btag_sf_bc,
+                            is_data,
+                            {"down_correlated", "T", Jet_hadronFlavour[i], std::fabs(jet_p4.eta()), jet_p4.pt()});
                         break;
                     default:
                         throw std::runtime_error(std::format("Invalid hadron flavor: {}", Jet_hadronFlavour[i]));
                     }
-                    bjets_scale_factors.push_back(sf);
-                    bjets_scale_factor_shift.push_back(0.);
+
+                    auto scale_factor = sf;
+                    auto scale_factor_up = sf_up;
+                    auto scale_factor_down = sf_down;
+
+                    bjets_scale_factors.push_back(scale_factor);
+                    bjets_scale_factor_shift.push_back(std::max(std::fabs(scale_factor - scale_factor_up),
+                                                                std::fabs(scale_factor - scale_factor_down)));
                 }
                 else
                 {

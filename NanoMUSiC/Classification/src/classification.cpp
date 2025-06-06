@@ -285,6 +285,7 @@ auto classification(const std::string process,
                                     .should_use_LHEWeight = should_use_LHEWeight};
             }
         }
+
         return EventWeights{.sum_weights = 1., .total_events = 1., .should_use_LHEWeight = false};
     }();
 
@@ -1290,6 +1291,7 @@ auto classification(const std::string process,
                 if (not(is_data))
                 {
                     // get trigger SF
+                    // TODO: a uniform uncert is applied
                     auto trigger_sf = 1.;
 
                     auto pu_weight = pu_corrector->evaluate({unwrap(Pileup_nTrueInt), Shifts::get_pu_variation(shift)});
@@ -1313,6 +1315,7 @@ auto classification(const std::string process,
                                                 // unwrap_or(LHEWeight_originalXWGTUP,
                                                 //                                                                1.f)
                         );
+
                     double mc_weight = [&genWeight, &LHEWeight_originalXWGTUP, &event_weights]() -> double
                     {
                         if (event_weights.should_use_LHEWeight)
@@ -1321,15 +1324,6 @@ auto classification(const std::string process,
                         }
                         return unwrap(genWeight);
                     }();
-
-                    double btag_weight = std::reduce(jets.scale_factor.begin(),
-                                                     jets.scale_factor.begin() + num_jet,
-                                                     1.,
-                                                     std::multiplies<double>{}) *
-                                         std::reduce(bjets.scale_factor.begin(),
-                                                     bjets.scale_factor.begin() + num_bjet,
-                                                     1.,
-                                                     std::multiplies<double>{});
 
                     auto top_pt_weight = top_pt_reweighting(
                         is_data, unwrap(GenPart_pt), unwrap(GenPart_pdgId), unwrap(GenPart_statusFlags));
@@ -1351,7 +1345,7 @@ auto classification(const std::string process,
                                                                 {num_photon, photons},
                                                                 {num_bjet, bjets},
                                                                 {num_jet, jets}) *
-                             Shifts::get_qcd_scale_weight(shift, unwrap(LHEScaleWeight)) * btag_weight * top_pt_weight;
+                             Shifts::get_qcd_scale_weight(shift, unwrap(LHEScaleWeight)) *  top_pt_weight;
 
                     // Check for NaNs
                     if (std::isnan(weight) or std::isinf(weight))
