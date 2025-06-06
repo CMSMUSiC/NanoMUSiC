@@ -2,6 +2,7 @@
 #define MUSIC_OBJECTS_HPP
 
 #include <any>
+#include <concepts>
 #include <cstdlib>
 #include <numeric>
 #include <optional>
@@ -18,6 +19,7 @@
 #include "ROOT/RVec.hxx"
 
 #include "Configs.hpp"
+#include "Shifts.hpp"
 
 using namespace ROOT;
 using namespace ROOT::Math;
@@ -32,12 +34,72 @@ using namespace ROOT::Math;
 #include "correction.h"
 using CorrectionlibRef_t = correction::Correction::Ref;
 
+inline auto get_uniform_vector_size(const std::unordered_map<Shifts::Variations, RVec<double>> &map)
+    -> std::optional<std::size_t>
+{
+    if (map.empty())
+    {
+        return std::nullopt;
+    }
+
+    std::size_t expected_size = map.begin()->second.size();
+
+    for (const auto &[key, vec] : map)
+    {
+        if (vec.size() != expected_size)
+        {
+            return std::nullopt;
+        }
+    }
+
+    return expected_size;
+}
+
+inline std::string map_to_string(const std::unordered_map<Shifts::Variations, RVec<double>> &map)
+{
+    if (map.empty())
+    {
+        return "{}";
+    }
+
+    std::ostringstream oss;
+    oss << std::fixed << std::setprecision(2);
+    oss << "{\n";
+
+    bool first_entry = true;
+    for (const auto &[key, vec] : map)
+    {
+        if (!first_entry)
+        {
+            oss << ",\n";
+        }
+        first_entry = false;
+
+        oss << "  " << static_cast<unsigned int>(key) << ": [";
+
+        bool first_element = true;
+        for (const auto &value : vec)
+        {
+            if (!first_element)
+            {
+                oss << ", ";
+            }
+            first_element = false;
+            oss << value;
+        }
+
+        oss << "]";
+    }
+
+    oss << "\n}";
+    return oss.str();
+}
+
 class MUSiCObjects
 {
   public:
     RVec<Math::PtEtaPhiMVector> p4;
-    RVec<double> scale_factor;
-    RVec<double> scale_factor_shift;
+    std::unordered_map<Shifts::Variations, RVec<double>> scale_factor;
     RVec<double> delta_met_x;
     RVec<double> delta_met_y;
     RVec<bool> is_fake;
@@ -45,7 +107,6 @@ class MUSiCObjects
     MUSiCObjects()
         : p4({}),
           scale_factor({}),
-          scale_factor_shift({}),
           delta_met_x({}),
           delta_met_y({}),
           is_fake({})
@@ -53,32 +114,38 @@ class MUSiCObjects
     }
 
     MUSiCObjects(const RVec<Math::PtEtaPhiMVector> &_p4,
-                 const RVec<double> &_scale_factor,
-                 const RVec<double> &_scale_factor_shift,
+                 std::unordered_map<Shifts::Variations, RVec<double>> &_scale_factor,
                  const RVec<double> &_delta_met_x,
                  const RVec<double> &_delta_met_y,
                  const RVec<bool> &_is_fake)
         : p4(_p4),
           scale_factor(_scale_factor),
-          scale_factor_shift(_scale_factor_shift),
           delta_met_x(_delta_met_x),
           delta_met_y(_delta_met_y),
           is_fake(_is_fake)
     {
-        if (not(                                           //
-                p4.size() == scale_factor.size()           //
-                and p4.size() == scale_factor_shift.size() //
-                and p4.size() == delta_met_x.size()        //
-                and p4.size() == delta_met_y.size()        //
-                and p4.size() == is_fake.size()            //
+        auto scale_factor_size = get_uniform_vector_size(_scale_factor);
+
+        if (not(scale_factor_size))
+        {
+            fmt::print(stderr,
+                       "ERROR: Could not create MUSiCObjects. Scale factors have different sizes. {}\n",
+                       map_to_string(_scale_factor));
+            std::exit(EXIT_FAILURE);
+        }
+
+        if (not(                                    //
+                p4.size() == scale_factor.size()    //
+                and p4.size() == delta_met_x.size() //
+                and p4.size() == delta_met_y.size() //
+                and p4.size() == is_fake.size()     //
                 ))
         {
             fmt::print(stderr,
                        "ERROR: Could not create MUSiCObjects. Input vectors have different sizes. {} - {} - {} - {} - "
-                       "{} - {}\n",
+                       "{}\n",
                        p4.size(),
-                       scale_factor.size(),
-                       scale_factor_shift.size(),
+                       scale_factor_size ? *scale_factor_size : -1,
                        delta_met_x.size(),
                        delta_met_y.size(),
                        is_fake.size());
@@ -115,8 +182,13 @@ class MUSiCObjects
 
     auto take_inplace(const RVec<int> &indexes) -> void
     {
-        scale_factor = ROOT::VecOps::Take(scale_factor, indexes);
-        scale_factor_shift = ROOT::VecOps::Take(scale_factor_shift, indexes);
+        auto _scale_factor = scale_factor;
+        for (const auto &[variation, vec] : _scale_factor)
+        {
+            _scale_factor[variation] = ROOT::VecOps::Take(vec, indexes);
+        }
+        scale_factor = _scale_factor;
+
         delta_met_x = ROOT::VecOps::Take(delta_met_x, indexes);
         delta_met_y = ROOT::VecOps::Take(delta_met_y, indexes);
         is_fake = ROOT::VecOps::Take(is_fake, indexes);
@@ -125,11 +197,16 @@ class MUSiCObjects
 
     auto take_as_copy(const RVec<int> &indexes) -> MUSiCObjects
     {
-        return MUSiCObjects(ROOT::VecOps::Take(p4, indexes),                 //
-                            ROOT::VecOps::Take(scale_factor, indexes),       //
-                            ROOT::VecOps::Take(scale_factor_shift, indexes), //
-                            ROOT::VecOps::Take(delta_met_x, indexes),
-                            ROOT::VecOps::Take(delta_met_y, indexes),
+        auto _scale_factor = scale_factor;
+        for (const auto &[variation, vec] : _scale_factor)
+        {
+            _scale_factor[variation] = ROOT::VecOps::Take(vec, indexes);
+        }
+
+        return MUSiCObjects(ROOT::VecOps::Take(p4, indexes),          //
+                            _scale_factor,                            //
+                            ROOT::VecOps::Take(delta_met_x, indexes), //
+                            ROOT::VecOps::Take(delta_met_y, indexes), //
                             ROOT::VecOps::Take(is_fake, indexes));
     }
 
@@ -225,6 +302,112 @@ class MUSiCObjects
     auto static transverse_mass(const Math::PtEtaPhiMVector &vec) -> double
     {
         return std::sqrt(std::pow(vec.Et(), 2) - std::pow(vec.px(), 2) - std::pow(vec.py(), 2));
+    }
+
+    static auto get_scale_factor(const Shifts::Variations &shift,
+                                 std::pair<std::size_t, const MUSiCObjects &> muons,
+                                 std::pair<std::size_t, const MUSiCObjects &> electrons,
+                                 std::pair<std::size_t, const MUSiCObjects &> taus,
+                                 std::pair<std::size_t, const MUSiCObjects &> photons,
+                                 std::pair<std::size_t, const MUSiCObjects &> bjets,
+                                 std::pair<std::size_t, const MUSiCObjects &> jets,
+                                 std::pair<std::size_t, const MUSiCObjects &> met) -> double
+    {
+        auto agg = [&](std::pair<std::size_t, const MUSiCObjects &> music_objects) -> double
+        {
+            auto [n, this_obj] = music_objects;
+            if (this_obj.scale_factor.contains(shift))
+            {
+                return std::reduce(this_obj.scale_factor.at(shift).begin(),
+                                   this_obj.scale_factor.at(shift).begin() + n,
+                                   1.,
+                                   std::multiplies<double>());
+            }
+            return std::reduce(this_obj.scale_factor.at(Shifts::Variations::Nominal).begin(),
+                               this_obj.scale_factor.at(Shifts::Variations::Nominal).begin() + n,
+                               1.,
+                               std::multiplies<double>());
+        };
+
+        return agg(muons) * agg(electrons) * agg(photons) * agg(taus) * agg(bjets) * agg(jets) * agg(met);
+    }
+
+    static auto get_fakes_variation_weight(const Shifts::Variations shift,
+                                           std::pair<std::size_t, const MUSiCObjects &> muons,
+                                           std::pair<std::size_t, const MUSiCObjects &> electrons,
+                                           std::pair<std::size_t, const MUSiCObjects &> taus,
+                                           std::pair<std::size_t, const MUSiCObjects &> photons,
+                                           std::pair<std::size_t, const MUSiCObjects &> bjets,
+                                           std::pair<std::size_t, const MUSiCObjects &> jets) -> double
+    {
+        if (shift == Shifts::Variations::Fakes_Up or shift == Shifts::Variations::Fakes_Down)
+        {
+            auto [n_muons, this_muons] = muons;
+            auto [n_electrons, this_electrons] = electrons;
+            auto [n_taus, this_taus] = taus;
+            auto [n_photons, this_photons] = photons;
+            auto [n_bjets, this_bjets] = bjets;
+            auto [n_jets, this_jets] = jets;
+            // auto [n_met, this_met] = met
+
+            auto variation_squared =
+                std::pow(
+                    std::reduce(
+                        this_muons.is_fake.cbegin(), this_muons.is_fake.cbegin() + n_muons, 0., std::plus<double>()) *
+                        0.5,
+                    2.) +
+                std::pow(std::reduce(this_electrons.is_fake.cbegin(),
+                                     this_electrons.is_fake.cbegin() + n_electrons,
+                                     0.,
+                                     std::plus<double>()) *
+                             0.5,
+                         2.) +
+
+                std::pow(std::reduce(
+                             this_taus.is_fake.cbegin(), this_taus.is_fake.cbegin() + n_taus, 0., std::plus<double>()) *
+                             0.5,
+                         2.) +
+
+                std::pow(std::reduce(this_photons.is_fake.cbegin(),
+                                     this_photons.is_fake.cbegin() + n_photons,
+                                     0.,
+                                     std::plus<double>()) *
+                             0.5,
+                         2.) +
+                std::pow(
+                    std::reduce(
+                        this_bjets.is_fake.cbegin(), this_bjets.is_fake.cbegin() + n_bjets, 0., std::plus<double>()) *
+                        0.5,
+                    2) +
+
+                std::pow(std::reduce(
+                             this_jets.is_fake.cbegin(), this_jets.is_fake.cbegin() + n_jets, 0., std::plus<double>()) *
+                             0.5,
+                         2.);
+
+            if (shift == Shifts::Variations::Fakes_Up)
+            {
+                return 1. + std::sqrt(variation_squared);
+            }
+
+            if (shift == Shifts::Variations::Fakes_Down)
+            {
+                return 1. - std::sqrt(variation_squared);
+            }
+        }
+
+        return 1.;
+    }
+
+    static auto push_sf_inplace(std::unordered_map<Shifts::Variations, RVec<double>> &scale_factors,
+                                Shifts::Variations shift,
+                                double sf) -> void
+    {
+        if (not(scale_factors.contains(shift)))
+        {
+            scale_factors[shift] = {};
+        }
+        scale_factors[shift].push_back(sf);
     }
 };
 

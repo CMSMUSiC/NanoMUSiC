@@ -180,22 +180,22 @@ namespace ObjectFactories
 
 inline auto get_scale_resolution_shifts(const Shifts::Variations shift) -> std::pair<std::string, std::string>
 {
-    if (shift == Shifts::Variations::JetScale_Up)
+    if (shift == Shifts::Variations::JetDiffScale_Up)
     {
         return std::make_pair<std::string, std::string>("Up", "Nominal");
     }
 
-    if (shift == Shifts::Variations::JetScale_Down)
+    if (shift == Shifts::Variations::JetDiffScale_Down)
     {
         return std::make_pair<std::string, std::string>("Down", "Nominal");
     }
 
-    if (shift == Shifts::Variations::JetResolution_Up)
+    if (shift == Shifts::Variations::JetDiffResolution_Up)
     {
         return std::make_pair<std::string, std::string>("Nominal", "Up");
     }
 
-    if (shift == Shifts::Variations::JetResolution_Down)
+    if (shift == Shifts::Variations::JetDiffResolution_Down)
     {
         return std::make_pair<std::string, std::string>("Nominal", "Down");
     }
@@ -374,10 +374,10 @@ inline auto make_jets(const RVec<float> &Jet_pt,                       //
     auto bjets = RVec<Math::PtEtaPhiMVector>{};
     auto jets_p4 = RVec<Math::PtEtaPhiMVector>{};
     auto bjets_p4 = RVec<Math::PtEtaPhiMVector>{};
-    auto jets_scale_factors = RVec<double>{};
-    auto bjets_scale_factors = RVec<double>{};
-    auto jets_scale_factor_shift = RVec<double>{};
-    auto bjets_scale_factor_shift = RVec<double>{};
+
+    auto jets_scale_factors = std::unordered_map<Shifts::Variations, RVec<double>>{};
+    auto bjets_scale_factors = std::unordered_map<Shifts::Variations, RVec<double>>{};
+
     auto jets_delta_met_x = RVec<double>{};
     auto bjets_delta_met_x = RVec<double>{};
     auto jets_delta_met_y = RVec<double>{};
@@ -571,14 +571,33 @@ inline auto make_jets(const RVec<float> &Jet_pt,                       //
                     auto scale_factor_up = (1 - btag_eff * sf_up) / (1 - btag_eff);
                     auto scale_factor_down = (1 - btag_eff * sf_down) / (1 - btag_eff);
 
-                    jets_scale_factors.push_back(scale_factor);
-                    jets_scale_factor_shift.push_back(std::max(std::fabs(scale_factor - scale_factor_up),
-                                                               std::fabs(scale_factor - scale_factor_down)));
+                    MUSiCObjects::push_sf_inplace(jets_scale_factors, Shifts::Variations::Nominal, scale_factor);
+                    if (shift == Shifts::Variations::Nominal)
+                    {
+                        MUSiCObjects::push_sf_inplace(
+                            jets_scale_factors, Shifts::Variations::JetBTag_Up, scale_factor_up);
+                        MUSiCObjects::push_sf_inplace(
+                            jets_scale_factors, Shifts::Variations::JetBTag_Down, scale_factor_down);
+                    }
+
+                    if (not(jets_scale_factors.contains(shift)))
+                    {
+                        MUSiCObjects::push_sf_inplace(jets_scale_factors, shift, scale_factor);
+                    }
                 }
                 else
                 {
-                    jets_scale_factors.push_back(1.);
-                    jets_scale_factor_shift.push_back(0.);
+                    MUSiCObjects::push_sf_inplace(jets_scale_factors, Shifts::Variations::Nominal, 1.);
+                    if (shift == Shifts::Variations::Nominal)
+                    {
+                        MUSiCObjects::push_sf_inplace(jets_scale_factors, Shifts::Variations::JetBTag_Up, 1.);
+                        MUSiCObjects::push_sf_inplace(jets_scale_factors, Shifts::Variations::JetBTag_Down, 1.);
+                    }
+
+                    if (not(jets_scale_factors.contains(shift)))
+                    {
+                        MUSiCObjects::push_sf_inplace(jets_scale_factors, shift, 1.);
+                    }
                 }
             }
 
@@ -638,27 +657,40 @@ inline auto make_jets(const RVec<float> &Jet_pt,                       //
                     auto scale_factor_up = sf_up;
                     auto scale_factor_down = sf_down;
 
-                    bjets_scale_factors.push_back(scale_factor);
-                    bjets_scale_factor_shift.push_back(std::max(std::fabs(scale_factor - scale_factor_up),
-                                                                std::fabs(scale_factor - scale_factor_down)));
+                    MUSiCObjects::push_sf_inplace(bjets_scale_factors, Shifts::Variations::Nominal, scale_factor);
+                    if (shift == Shifts::Variations::Nominal)
+                    {
+                        MUSiCObjects::push_sf_inplace(
+                            bjets_scale_factors, Shifts::Variations::JetBTag_Up, scale_factor_up);
+                        MUSiCObjects::push_sf_inplace(
+                            bjets_scale_factors, Shifts::Variations::JetBTag_Down, scale_factor_down);
+                    }
+
+                    if (not(bjets_scale_factors.contains(shift)))
+                    {
+                        MUSiCObjects::push_sf_inplace(bjets_scale_factors, shift, scale_factor);
+                    }
                 }
                 else
                 {
-                    bjets_scale_factors.push_back(1.);
-                    bjets_scale_factor_shift.push_back(0.);
+                    MUSiCObjects::push_sf_inplace(bjets_scale_factors, Shifts::Variations::Nominal, 1.);
+                    if (shift == Shifts::Variations::Nominal)
+                    {
+                        MUSiCObjects::push_sf_inplace(bjets_scale_factors, Shifts::Variations::JetBTag_Up, 1.);
+                        MUSiCObjects::push_sf_inplace(bjets_scale_factors, Shifts::Variations::JetBTag_Down, 1.);
+                    }
+
+                    if (not(bjets_scale_factors.contains(shift)))
+                    {
+                        MUSiCObjects::push_sf_inplace(bjets_scale_factors, shift, 1.);
+                    }
                 }
             }
         }
     }
 
-    return {MUSiCObjects(
-                jets_p4, jets_scale_factors, jets_scale_factor_shift, jets_delta_met_x, jets_delta_met_y, jets_is_fake),
-            MUSiCObjects(bjets_p4,
-                         bjets_scale_factors,
-                         bjets_scale_factor_shift,
-                         bjets_delta_met_x,
-                         bjets_delta_met_y,
-                         bjets_is_fake),
+    return {MUSiCObjects(jets_p4, jets_scale_factors, jets_delta_met_x, jets_delta_met_y, jets_is_fake),
+            MUSiCObjects(bjets_p4, bjets_scale_factors, bjets_delta_met_x, bjets_delta_met_y, bjets_is_fake),
             has_vetoed_jets,
             selected_jet_indexes,
             selected_bjet_indexes};

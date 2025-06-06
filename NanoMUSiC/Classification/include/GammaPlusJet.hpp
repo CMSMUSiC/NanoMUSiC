@@ -2,6 +2,8 @@
 #define GAMMAPLUSJETS
 
 #include "Shifts.hpp"
+#include "ObjectFactories/music_objects.hpp"
+
 #include <TFile.h>
 #include <TH1F.h>
 #include <TH2F.h>
@@ -40,7 +42,7 @@ class GammaPlusJet
               double weight,
               Shifts::Variations shift) -> void;
 
-        auto serialize_to_root(const std::unique_ptr<TFile> &output_file) -> void;
+    auto serialize_to_root(const std::unique_ptr<TFile> &output_file) -> void;
     auto merge_inplace(const GammaPlusJet &other) -> void;
 };
 

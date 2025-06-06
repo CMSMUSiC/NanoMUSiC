@@ -26,22 +26,22 @@ inline auto get_electron_energy_corrections(const Shifts::Variations shift,
                                             float dEsigmaDown,
                                             double energy) -> double
 {
-    if (shift == Shifts::Variations::ElectronScale_Up)
+    if (shift == Shifts::Variations::ElectronDiffScale_Up)
     {
         return (1.f - dEscaleUp / energy);
     }
 
-    if (shift == Shifts::Variations::ElectronScale_Down)
+    if (shift == Shifts::Variations::ElectronDiffScale_Down)
     {
         return (1.f - dEscaleDown / energy);
     }
 
-    if (shift == Shifts::Variations::ElectronResolution_Up)
+    if (shift == Shifts::Variations::ElectronDiffResolution_Up)
     {
         return (1.f - dEsigmaUp / energy);
     }
 
-    if (shift == Shifts::Variations::ElectronResolution_Down)
+    if (shift == Shifts::Variations::ElectronDiffResolution_Down)
     {
         return (1.f - dEsigmaDown / energy);
     }
@@ -200,8 +200,7 @@ inline auto make_electrons(const RVec<float> &Electron_pt,   //
 {
     auto year = get_runyear(_year);
     auto electrons_p4 = RVec<Math::PtEtaPhiMVector>{};
-    auto scale_factors = RVec<double>{};
-    auto scale_factor_shift = RVec<double>{};
+    auto scale_factors = std::unordered_map<Shifts::Variations, RVec<double>>{};
     auto delta_met_x = RVec<double>{};
     auto delta_met_y = RVec<double>{};
     auto is_fake = RVec<bool>{};
@@ -334,11 +333,23 @@ inline auto make_electrons(const RVec<float> &Electron_pt,   //
                                                                   Electron_eta.at(i) + Electron_deltaEtaSC.at(i),
                                                                   electron_p4.pt()});
 
-                scale_factors.push_back(sf_reco * sf_id);
-                scale_factor_shift.push_back(std::sqrt(                                                        //
-                    std::pow(std::max(std::fabs(sf_reco - sf_reco_up), std::fabs(sf_reco - sf_reco_down)), 2.) //
-                    + std::pow(std::max(std::fabs(sf_id - sf_id_up), std::fabs(sf_id - sf_id_down)), 2.)       //
-                    ));
+                MUSiCObjects::push_sf_inplace(scale_factors, Shifts::Variations::Nominal, sf_reco * sf_id);
+                if (shift == Shifts::Variations::Nominal)
+                {
+                    MUSiCObjects::push_sf_inplace(
+                        scale_factors, Shifts::Variations::ElectronReco_Up, sf_reco_up * sf_id);
+                    MUSiCObjects::push_sf_inplace(
+                        scale_factors, Shifts::Variations::ElectronReco_Down, sf_reco_down * sf_id);
+
+                    MUSiCObjects::push_sf_inplace(scale_factors, Shifts::Variations::ElectronId_Up, sf_reco * sf_id_up);
+                    MUSiCObjects::push_sf_inplace(
+                        scale_factors, Shifts::Variations::ElectronId_Down, sf_reco * sf_id_down);
+                }
+
+                if (not(scale_factors.contains(shift)))
+                {
+                    MUSiCObjects::push_sf_inplace(scale_factors, shift, sf_reco * sf_id);
+                }
             }
 
             if (is_good_high_pt_electron)
@@ -361,11 +372,23 @@ inline auto make_electrons(const RVec<float> &Electron_pt,   //
                     {get_year_for_electron_sf(year), "sfdown", "RecoAbove20", Electron_eta.at(i), electron_p4.pt()});
                 auto sf_id_down = get_high_pt_sf(is_data, year, "sfdown", electron_p4.pt(), electron_p4.eta());
 
-                scale_factors.push_back(sf_reco * sf_id);
-                scale_factor_shift.push_back(std::sqrt(                                                        //
-                    std::pow(std::max(std::fabs(sf_reco - sf_reco_up), std::fabs(sf_reco - sf_reco_down)), 2.) //
-                    + std::pow(std::max(std::fabs(sf_id - sf_id_up), std::fabs(sf_id - sf_id_down)), 2.)       //
-                    ));
+                MUSiCObjects::push_sf_inplace(scale_factors, Shifts::Variations::Nominal, sf_reco * sf_id);
+                if (shift == Shifts::Variations::Nominal)
+                {
+                    MUSiCObjects::push_sf_inplace(
+                        scale_factors, Shifts::Variations::ElectronReco_Up, sf_reco_up * sf_id);
+                    MUSiCObjects::push_sf_inplace(
+                        scale_factors, Shifts::Variations::ElectronReco_Down, sf_reco_down * sf_id);
+
+                    MUSiCObjects::push_sf_inplace(scale_factors, Shifts::Variations::ElectronId_Up, sf_reco * sf_id_up);
+                    MUSiCObjects::push_sf_inplace(
+                        scale_factors, Shifts::Variations::ElectronId_Down, sf_reco * sf_id_down);
+                }
+
+                if (not(scale_factors.contains(shift)))
+                {
+                    MUSiCObjects::push_sf_inplace(scale_factors, shift, sf_reco * sf_id);
+                }
             }
 
             if (is_good_low_pt_electron or is_good_high_pt_electron)
@@ -380,11 +403,10 @@ inline auto make_electrons(const RVec<float> &Electron_pt,   //
         }
     }
 
-    return MUSiCObjects(electrons_p4,       //
-                        scale_factors,      //
-                        scale_factor_shift, //
-                        delta_met_x,        //
-                        delta_met_y,        //
+    return MUSiCObjects(electrons_p4,  //
+                        scale_factors, //
+                        delta_met_x,   //
+                        delta_met_y,   //
                         is_fake);
 }
 

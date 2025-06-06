@@ -802,7 +802,7 @@ auto classification(const std::string process,
                        unwrap_or(HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg, false);
             }
 
-         if (_year == Year::Run2018)
+            if (_year == Year::Run2018)
             {
                 return unwrap_or(HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg, false) or
                        unwrap_or(HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg, false) or
@@ -993,7 +993,7 @@ auto classification(const std::string process,
         {
             auto muons = [&]() -> MUSiCObjects
             {
-                if (starts_with(Shifts::variation_to_string(diff_shift), "Muon"))
+                if (starts_with(Shifts::variation_to_string(diff_shift), "MuonDiff"))
                 {
                     return ObjectFactories::make_muons(unwrap(Muon_pt),             //
                                                        unwrap(Muon_eta),            //
@@ -1023,7 +1023,7 @@ auto classification(const std::string process,
 
             auto electrons = [&]() -> MUSiCObjects
             {
-                if (starts_with(Shifts::variation_to_string(diff_shift), "Electron"))
+                if (starts_with(Shifts::variation_to_string(diff_shift), "ElectronDiff"))
                 {
                     return ObjectFactories::make_electrons(unwrap(Electron_pt),               //
                                                            unwrap(Electron_eta),              //
@@ -1049,7 +1049,7 @@ auto classification(const std::string process,
 
             auto taus = [&]() -> MUSiCObjects
             {
-                if (starts_with(Shifts::variation_to_string(diff_shift), "Tau"))
+                if (starts_with(Shifts::variation_to_string(diff_shift), "TauDiff"))
                 {
                     return ObjectFactories::make_taus(unwrap(Tau_pt),   //
                                                       unwrap(Tau_eta),  //
@@ -1076,7 +1076,7 @@ auto classification(const std::string process,
 
             auto photons = [&]() -> MUSiCObjects
             {
-                if (starts_with(Shifts::variation_to_string(diff_shift), "Photon"))
+                if (starts_with(Shifts::variation_to_string(diff_shift), "PhotonDiff"))
                 {
                     return ObjectFactories::make_photons(unwrap(Photon_pt),           //
                                                          unwrap(Photon_eta),          //
@@ -1106,7 +1106,7 @@ auto classification(const std::string process,
             auto [jets, bjets, has_vetoed_jet, selected_jet_indexes, selected_bjet_indexes] =
                 [&]() -> std::tuple<MUSiCObjects, MUSiCObjects, bool, RVec<int>, RVec<int>>
             {
-                if (starts_with(Shifts::variation_to_string(diff_shift), "Jet"))
+                if (starts_with(Shifts::variation_to_string(diff_shift), "JetDiff"))
                 {
                     return ObjectFactories::make_jets(unwrap(Jet_pt),                              //
                                                       unwrap(Jet_eta),                             //
@@ -1330,21 +1330,21 @@ auto classification(const std::string process,
 
                     weight = mc_weight * pu_weight * prefiring_weight * trigger_sf / event_weights.sum_weights *
                              x_section * luminosity * filter_eff * k_factor * pdf_as_weight *
-                             Shifts::get_reco_scale_factor(shift,
-                                                           {num_muon, muons},
-                                                           {num_electron, electrons},
-                                                           {num_tau, taus},
-                                                           {num_photon, photons},
-                                                           {num_bjet, bjets},
-                                                           {num_jet, jets},
-                                                           {num_met, met}) *
-                             Shifts::get_fakes_variation_weight(shift,
-                                                                {num_muon, muons},
-                                                                {num_electron, electrons},
-                                                                {num_tau, taus},
-                                                                {num_photon, photons},
-                                                                {num_bjet, bjets},
-                                                                {num_jet, jets}) *
+                             MUSiCObjects::get_scale_factor(shift,
+                                                            {num_muon, muons},
+                                                            {num_electron, electrons},
+                                                            {num_tau, taus},
+                                                            {num_photon, photons},
+                                                            {num_bjet, bjets},
+                                                            {num_jet, jets},
+                                                            {num_met, met}) *
+                             MUSiCObjects::get_fakes_variation_weight(shift,
+                                                                      {num_muon, muons},
+                                                                      {num_electron, electrons},
+                                                                      {num_tau, taus},
+                                                                      {num_photon, photons},
+                                                                      {num_bjet, bjets},
+                                                                      {num_jet, jets}) *
                              Shifts::get_qcd_scale_weight(shift, unwrap(LHEScaleWeight)) * top_pt_weight;
 
                     // Check for NaNs

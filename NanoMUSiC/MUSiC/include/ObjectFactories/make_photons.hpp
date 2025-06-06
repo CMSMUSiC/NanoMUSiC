@@ -25,22 +25,22 @@ inline auto get_photon_energy_corrections(const Shifts::Variations shift,
                                           float dEsigmaDown,
                                           double energy) -> double
 {
-    if (shift == Shifts::Variations::PhotonScale_Up)
+    if (shift == Shifts::Variations::PhotonDiffScale_Up)
     {
         return (1.f - dEscaleUp / energy);
     }
 
-    if (shift == Shifts::Variations::PhotonScale_Down)
+    if (shift == Shifts::Variations::PhotonDiffScale_Down)
     {
         return (1.f - dEscaleDown / energy);
     }
 
-    if (shift == Shifts::Variations::PhotonResolution_Up)
+    if (shift == Shifts::Variations::PhotonDiffResolution_Up)
     {
         return (1.f - dEsigmaUp / energy);
     }
 
-    if (shift == Shifts::Variations::PhotonResolution_Down)
+    if (shift == Shifts::Variations::PhotonDiffResolution_Down)
     {
         return (1.f - dEsigmaDown / energy);
     }
@@ -115,8 +115,7 @@ inline auto make_photons(const RVec<float> &Photon_pt,             //
     auto year = get_runyear(_year);
 
     auto photons_p4 = RVec<Math::PtEtaPhiMVector>{};
-    auto scale_factors = RVec<double>{};
-    auto scale_factor_shift = RVec<double>{};
+    auto scale_factors = std::unordered_map<Shifts::Variations, RVec<double>>{};
     auto delta_met_x = RVec<double>{};
     auto delta_met_y = RVec<double>{};
     auto is_fake = RVec<bool>{};
@@ -167,11 +166,23 @@ inline auto make_photons(const RVec<float> &Photon_pt,             //
                 auto sf_veto_down = MUSiCObjects::get_scale_factor(
                     photon_csev_sf, is_data, {get_year_for_photon_sf(year), "sfdown", "MVA", "EBInc"});
 
-                scale_factors.push_back(sf_veto * sf_id);
-                scale_factor_shift.push_back(std::sqrt(                                                        //
-                    std::pow(std::max(std::fabs(sf_veto - sf_veto_up), std::fabs(sf_veto - sf_veto_down)), 2.) //
-                    + std::pow(std::max(std::fabs(sf_id - sf_id_up), std::fabs(sf_id - sf_id_down)), 2.)       //
-                    ));
+                MUSiCObjects::push_sf_inplace(scale_factors, Shifts::Variations::Nominal, sf_veto * sf_id);
+
+                if (shift == Shifts::Variations::Nominal)
+                {
+                    MUSiCObjects::push_sf_inplace(scale_factors, Shifts::Variations::PhotonId_Up, sf_veto_up * sf_id);
+                    MUSiCObjects::push_sf_inplace(
+                        scale_factors, Shifts::Variations::PhotonId_Down, sf_veto_down * sf_id);
+
+                    MUSiCObjects::push_sf_inplace(scale_factors, Shifts::Variations::PhotonVeto_Up, sf_veto * sf_id_up);
+                    MUSiCObjects::push_sf_inplace(
+                        scale_factors, Shifts::Variations::PhotonVeto_Down, sf_veto * sf_id_down);
+                }
+
+                if (not(scale_factors.contains(shift)))
+                {
+                    MUSiCObjects::push_sf_inplace(scale_factors, shift, sf_veto * sf_id);
+                }
 
                 delta_met_x.push_back((photon_p4.pt() - Photon_pt[i]) * std::cos(Photon_phi[i]));
                 delta_met_y.push_back((photon_p4.pt() - Photon_pt[i]) * std::sin(Photon_phi[i]));
@@ -183,11 +194,10 @@ inline auto make_photons(const RVec<float> &Photon_pt,             //
         }
     }
 
-    return MUSiCObjects(photons_p4,         //
-                        scale_factors,      //
-                        scale_factor_shift, //
-                        delta_met_x,        //
-                        delta_met_y,        //
+    return MUSiCObjects(photons_p4,    //
+                        scale_factors, //
+                        delta_met_x,   //
+                        delta_met_y,   //
                         is_fake);
 }
 
