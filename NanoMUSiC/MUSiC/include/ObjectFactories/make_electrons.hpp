@@ -180,10 +180,10 @@ inline auto get_year_for_electron_sf(Year year) -> std::string
     }
 }
 
-inline auto make_electrons(const RVec<float> &Electron_pt,           //
-                           const RVec<float> &Electron_eta,          //
-                           const RVec<float> &Electron_phi,          //
-                           const RVec<float> &Electron_mass,         //
+inline auto make_electrons(const RVec<float> &Electron_pt,   //
+                           const RVec<float> &Electron_eta,  //
+                           const RVec<float> &Electron_phi,  //
+                           const RVec<float> &Electron_mass, //
                            const RVec<float> &Electron_deltaEtaSC,
                            const RVec<Int_t> &Electron_cutBased,     //
                            const RVec<bool> &Electron_cutBased_HEEP, //
@@ -377,21 +377,6 @@ inline auto make_electrons(const RVec<float> &Electron_pt,           //
                 electrons_p4.push_back(electron_p4);
 
                 is_fake.push_back(is_data ? false : Electron_genPartIdx[i] < 0);
-                if (is_good_low_pt_electron)
-                {
-                    if (electron_p4.pt() < ObjConfig::Electrons[year].MediumPt)
-                    {
-                        id_score.push_back(MUSiCObjects::IdScore::Loose);
-                    }
-                    else
-                    {
-                        id_score.push_back(MUSiCObjects::IdScore::Medium);
-                    }
-                }
-                if (is_good_high_pt_electron)
-                {
-                    id_score.push_back(MUSiCObjects::IdScore::Tight);
-                }
             }
         }
     }
@@ -401,8 +386,7 @@ inline auto make_electrons(const RVec<float> &Electron_pt,           //
                         scale_factor_shift, //
                         delta_met_x,        //
                         delta_met_y,        //
-                        is_fake,
-                        id_score);
+                        is_fake);
 }
 
 } // namespace ObjectFactories

@@ -211,12 +211,11 @@ inline auto make_met(const double MET_pt,                            //
         {
             scale_factors.push_back(1.);
             scale_factor_shift.push_back(0.);
-                         delta_met_x.push_back(0.);
-                         delta_met_y.push_back(0.);
+            delta_met_x.push_back(0.);
+            delta_met_y.push_back(0.);
             met_p4.push_back(Math::PtEtaPhiMVector(this_met));
 
             is_fake.push_back(false);
-            id_score.push_back(MUSiCObjects::IdScore::Medium);
         }
     }
 
@@ -225,8 +224,7 @@ inline auto make_met(const double MET_pt,                            //
                          scale_factor_shift, //
                          delta_met_x,        //
                          delta_met_y,        //
-                         is_fake,
-                         id_score),
+                         is_fake),
             is_fake_met};
 }
 

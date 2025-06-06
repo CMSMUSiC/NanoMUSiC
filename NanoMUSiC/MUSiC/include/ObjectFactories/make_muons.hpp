@@ -620,22 +620,6 @@ inline auto make_muons(const RVec<float> &Muon_pt,                      //
                 muons_p4.push_back(muon_p4);
 
                 is_fake.push_back(is_data ? false : Muon_genPartIdx[i] < 0);
-
-                if (is_good_low_pt_muon)
-                {
-                    if (muon_p4.pt() < ObjConfig::Muons[year].MediumPt)
-                    {
-                        id_score.push_back(MUSiCObjects::IdScore::Loose);
-                    }
-                    else
-                    {
-                        id_score.push_back(MUSiCObjects::IdScore::Medium);
-                    }
-                }
-                if (is_good_high_pt_muon)
-                {
-                    id_score.push_back(MUSiCObjects::IdScore::Tight);
-                }
             }
         }
     }
@@ -645,8 +629,7 @@ inline auto make_muons(const RVec<float> &Muon_pt,                      //
                         scale_factor_shift, //
                         delta_met_x,        //
                         delta_met_y,        //
-                        is_fake,
-                        id_score);
+                        is_fake);
 }
 
 } // namespace ObjectFactories

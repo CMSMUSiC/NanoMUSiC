@@ -681,17 +681,6 @@ class TempEC
             return ClassesNames{std::nullopt, std::nullopt, std::nullopt};
         }
 
-        // auto total_id_score = MUSiCObjects::IdScore::accum_score(muons_id_score, num_muons) +
-        //                       MUSiCObjects::IdScore::accum_score(electrons_id_score, num_electrons) +
-        //                       MUSiCObjects::IdScore::accum_score(taus_id_score, num_taus) +
-        //                       MUSiCObjects::IdScore::accum_score(photons_id_score, num_photons) +
-        //                       MUSiCObjects::IdScore::accum_score(bjets_id_score, num_bjets) +
-        //                       MUSiCObjects::IdScore::accum_score(jets_id_score, num_jets) +
-        //                       MUSiCObjects::IdScore::accum_score(met_id_score, num_met);
-
-        // if (total_id_score.num_medium >= 1 or total_id_score.num_loose >= 3)
-        // if (total_id_score.num_medium >= 1)
-        // {
         std::string class_name = fmt::format("EC_{}Muon_{}Electron_{}Tau_{}Photon_{}bJet_{}Jet_{}MET",
                                              num_muons,
                                              num_electrons,
@@ -716,7 +705,6 @@ class TempEC
         }
 
         return ClassesNames{exclusive_class_name, inclusive_class_name, jet_inclusive_class_name};
-        // }
 
         return ClassesNames{std::nullopt, std::nullopt, std::nullopt};
     }

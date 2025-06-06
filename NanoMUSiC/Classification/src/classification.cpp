@@ -1345,7 +1345,7 @@ auto classification(const std::string process,
                                                                 {num_photon, photons},
                                                                 {num_bjet, bjets},
                                                                 {num_jet, jets}) *
-                             Shifts::get_qcd_scale_weight(shift, unwrap(LHEScaleWeight)) *  top_pt_weight;
+                             Shifts::get_qcd_scale_weight(shift, unwrap(LHEScaleWeight)) * top_pt_weight;
 
                     // Check for NaNs
                     if (std::isnan(weight) or std::isinf(weight))
@@ -1388,6 +1388,7 @@ auto classification(const std::string process,
                 trigger_matches.at("pass_photon_trigger") or trigger_matches.at("pass_double_photon_trigger"),
                 /*tau matches*/
                 trigger_matches.at("pass_double_tau_trigger") or trigger_matches.at("pass_high_pt_tau_trigger"));
+
 
             for (auto &temp_ec : temp_event_classes)
             {

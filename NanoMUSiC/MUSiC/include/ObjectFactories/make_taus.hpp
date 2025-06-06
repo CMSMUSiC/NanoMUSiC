@@ -135,19 +135,6 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
                 taus_p4.push_back(tau_p4);
 
                 is_fake.push_back(is_data ? false : Tau_genPartIdx[i] < 0);
-
-                if (tau_p4.pt() < ObjConfig::Taus[year].MediumPt)
-                {
-                    id_score.push_back(MUSiCObjects::IdScore::Loose);
-                }
-                else if (ObjConfig::Taus[year].MediumPt <= tau_p4.pt() and tau_p4.pt() < ObjConfig::Taus[year].HighPt)
-                {
-                    id_score.push_back(MUSiCObjects::IdScore::Medium);
-                }
-                else
-                {
-                    id_score.push_back(MUSiCObjects::IdScore::Tight);
-                }
             }
         }
     }
@@ -157,8 +144,7 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
                         scale_factor_shift, //
                         delta_met_x,        //
                         delta_met_y,        //
-                        is_fake,
-                        id_score);
+                        is_fake);
 }
 
 } // namespace ObjectFactories

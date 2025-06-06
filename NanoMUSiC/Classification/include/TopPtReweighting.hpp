@@ -63,15 +63,17 @@ inline auto top_pt_reweighting(bool is_data,
     }
     else if (foundTop && not(foundAntitop))
     {
-        // Only top found - apply single-top correction
-        double weight_top = TMath::Exp(0.0615 - 0.0005 * top_pt);
-        return TMath::Sqrt(weight_top);
+        // // Only top found - apply single-top correction
+        // double weight_top = TMath::Exp(0.0615 - 0.0005 * top_pt);
+        // return TMath::Sqrt(weight_top);
+        return 1.;
     }
     else if (not(foundTop) && foundAntitop)
     {
-        // Only antitop found - apply single-antitop correction
-        double weight_antitop = TMath::Exp(0.0615 - 0.0005 * antitop_pt);
-        return TMath::Sqrt(weight_antitop);
+        // // Only antitop found - apply single-antitop correction
+        // double weight_antitop = TMath::Exp(0.0615 - 0.0005 * antitop_pt);
+        // return TMath::Sqrt(weight_antitop);
+        return 1.;
     }
     else
     {

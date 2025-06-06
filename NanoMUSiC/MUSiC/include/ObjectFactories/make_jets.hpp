@@ -523,14 +523,6 @@ inline auto make_jets(const RVec<float> &Jet_pt,                       //
 
                 jets_p4.push_back(jet_p4);
                 jets_is_fake.push_back(is_data ? false : Jet_genJetIdx[i] < 0);
-                if (jet_p4.pt() < ObjConfig::Jets[year].HighPt)
-                {
-                    jets_id_score.push_back(MUSiCObjects::IdScore::Medium);
-                }
-                else
-                {
-                    jets_id_score.push_back(MUSiCObjects::IdScore::Tight);
-                }
 
                 selected_jet_indexes.push_back(i);
 
@@ -600,14 +592,6 @@ inline auto make_jets(const RVec<float> &Jet_pt,                       //
 
                 bjets_p4.push_back(jet_p4);
                 bjets_is_fake.push_back(is_data ? false : Jet_genJetIdx[i] < 0);
-                if (jet_p4.pt() < ObjConfig::Jets[year].HighPt)
-                {
-                    bjets_id_score.push_back(MUSiCObjects::IdScore::Medium);
-                }
-                else
-                {
-                    bjets_id_score.push_back(MUSiCObjects::IdScore::Tight);
-                }
 
                 selected_bjet_indexes.push_back(i);
 
@@ -669,20 +653,14 @@ inline auto make_jets(const RVec<float> &Jet_pt,                       //
         }
     }
 
-    return {MUSiCObjects(jets_p4,
-                         jets_scale_factors,
-                         jets_scale_factor_shift,
-                         jets_delta_met_x,
-                         jets_delta_met_y,
-                         jets_is_fake,
-                         jets_id_score),
+    return {MUSiCObjects(
+                jets_p4, jets_scale_factors, jets_scale_factor_shift, jets_delta_met_x, jets_delta_met_y, jets_is_fake),
             MUSiCObjects(bjets_p4,
                          bjets_scale_factors,
                          bjets_scale_factor_shift,
                          bjets_delta_met_x,
                          bjets_delta_met_y,
-                         bjets_is_fake,
-                         bjets_id_score),
+                         bjets_is_fake),
             has_vetoed_jets,
             selected_jet_indexes,
             selected_bjet_indexes};

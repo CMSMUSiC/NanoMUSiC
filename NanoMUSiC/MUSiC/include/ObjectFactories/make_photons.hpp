@@ -124,12 +124,14 @@ inline auto make_photons(const RVec<float> &Photon_pt,             //
 
     for (std::size_t i = 0; i < Photon_pt.size(); i++)
     {
-        bool is_good_photon_pre_filter = (Photon_isScEtaEB[i])           //
-                                         and (not Photon_isScEtaEE[i])   // only EB photons
-                                         and (Photon_mvaID_WP90[i])      //
-                                         and (Photon_electronVeto[i])    //
-                                         and (Photon_electronIdx[i] < 0) //
-                                         and (Photon_jetIdx[i] < 0);
+        bool is_good_photon_pre_filter = (Photon_isScEtaEB[i])         //
+                                         and (not Photon_isScEtaEE[i]) // only EB photons
+                                         and (Photon_mvaID_WP90[i])    //
+                                         and (Photon_electronVeto[i])  //
+                                                                       // and (Photon_electronIdx[i] < 0) //
+                                                                       // and (Photon_jetIdx[i] < 0)
+
+            ;
 
         auto photon_p4 = Math::PtEtaPhiMVector(Photon_pt[i], Photon_eta[i], Photon_phi[i], Photon_mass[i]);
         photon_p4 = photon_p4 * get_photon_energy_corrections(shift,
@@ -179,22 +181,17 @@ inline auto make_photons(const RVec<float> &Photon_pt,             //
                 photons_p4.push_back(photon_p4);
 
                 is_fake.push_back(is_data ? false : Photon_genPartIdx[i] < 0);
-
-                if (photon_p4.pt() < ObjConfig::Photons[year].MediumPt)
-                {
-                    id_score.push_back(MUSiCObjects::IdScore::Loose);
-                }
-                if (ObjConfig::Photons[year].MediumPt <= photon_p4.pt() and
-                    photon_p4.pt() < ObjConfig::Photons[year].HighPt)
-                {
-                    id_score.push_back(MUSiCObjects::IdScore::Medium);
-                }
-                else
-                {
-                    id_score.push_back(MUSiCObjects::IdScore::Tight);
-                }
             }
         }
+    }
+
+    if (shift == Shifts::Variations::Nominal)
+    {
+        fmt::print("Found {}/{} [{}] == [{}]  photons ...\n",
+                   photons_p4.size(),
+                   Photon_pt.size(),
+                   fmt::join(Photon_pt, " - "),
+                   fmt::join(Photon_eta, " - "));
     }
 
     return MUSiCObjects(photons_p4,         //
@@ -202,8 +199,8 @@ inline auto make_photons(const RVec<float> &Photon_pt,             //
                         scale_factor_shift, //
                         delta_met_x,        //
                         delta_met_y,        //
-                        is_fake,            //
-                        id_score);
+                        is_fake             
+    );
 }
 
 } // namespace ObjectFactories

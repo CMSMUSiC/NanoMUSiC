@@ -35,89 +35,12 @@ using CorrectionlibRef_t = correction::Correction::Ref;
 class MUSiCObjects
 {
   public:
-    class IdScore
-    {
-      public:
-        static constexpr unsigned int Loose = 1;
-        static constexpr unsigned int Medium = 2 | 1;
-        static constexpr unsigned int Tight = 4 | 2 | 1;
-        static constexpr unsigned int VTight = 8 | 4 | 2 | 1;
-
-        unsigned int num_loose = 0;
-        unsigned int num_medium = 0;
-        unsigned int num_tight = 0;
-        unsigned int num_vtight = 0;
-
-        auto to_string() const -> std::string
-        {
-            return fmt::format(
-                "Loose: {} - Medium: {} - Tight: {} - Very Tight: {}", num_loose, num_medium, num_tight, num_vtight);
-        }
-
-        auto operator+(const IdScore &other) const -> IdScore
-        {
-            return IdScore{.num_loose = num_loose + other.num_loose,
-                           .num_medium = num_medium + other.num_medium,
-                           .num_tight = num_tight + other.num_tight,
-                           .num_vtight = num_vtight + other.num_vtight};
-        }
-
-        static auto is_loose(unsigned int score) -> bool
-        {
-            return (score & Loose) == Loose;
-        }
-
-        static auto is_medium(unsigned int score) -> bool
-        {
-            return (score & Medium) == Medium;
-        }
-
-        static auto is_tight(unsigned int score) -> bool
-        {
-            return (score & Tight) == Tight;
-        }
-
-        static auto is_vtight(unsigned int score) -> bool
-        {
-            return (score & VTight) == VTight;
-        }
-
-        static auto accum_score(const RVec<unsigned int> &scores, const unsigned int num_obj) -> IdScore
-        {
-            return std::accumulate(scores.cbegin(),
-                                   scores.cbegin() + num_obj,
-                                   IdScore{},
-                                   [](IdScore accum, auto s) -> IdScore
-                                   {
-                                       if ((s & Loose) == Loose)
-                                       {
-                                           accum.num_loose += 1;
-                                       }
-                                       if ((s & Medium) == Medium)
-                                       {
-                                           accum.num_medium += 1;
-                                       }
-                                       if ((s & Tight) == Tight)
-                                       {
-                                           accum.num_tight += 1;
-                                       }
-                                       if ((s & VTight) == VTight)
-                                       {
-                                           accum.num_vtight += 1;
-                                       }
-
-                                       return accum;
-                                   });
-        };
-    };
-
     RVec<Math::PtEtaPhiMVector> p4;
     RVec<double> scale_factor;
     RVec<double> scale_factor_shift;
     RVec<double> delta_met_x;
     RVec<double> delta_met_y;
     RVec<bool> is_fake;
-    RVec<unsigned int> id_score;
 
     MUSiCObjects()
         : p4({}),
@@ -125,8 +48,7 @@ class MUSiCObjects
           scale_factor_shift({}),
           delta_met_x({}),
           delta_met_y({}),
-          is_fake({}),
-          id_score({})
+          is_fake({})
     {
     }
 
@@ -135,15 +57,13 @@ class MUSiCObjects
                  const RVec<double> &_scale_factor_shift,
                  const RVec<double> &_delta_met_x,
                  const RVec<double> &_delta_met_y,
-                 const RVec<bool> &_is_fake,
-                 const RVec<unsigned int> &_id_score)
+                 const RVec<bool> &_is_fake)
         : p4(_p4),
           scale_factor(_scale_factor),
           scale_factor_shift(_scale_factor_shift),
           delta_met_x(_delta_met_x),
           delta_met_y(_delta_met_y),
-          is_fake(_is_fake),
-          id_score(_id_score)
+          is_fake(_is_fake)
     {
         if (not(                                           //
                 p4.size() == scale_factor.size()           //
@@ -151,19 +71,17 @@ class MUSiCObjects
                 and p4.size() == delta_met_x.size()        //
                 and p4.size() == delta_met_y.size()        //
                 and p4.size() == is_fake.size()            //
-                and p4.size() == id_score.size()           //
                 ))
         {
             fmt::print(stderr,
                        "ERROR: Could not create MUSiCObjects. Input vectors have different sizes. {} - {} - {} - {} - "
-                       "{} - {} - {}\n",
+                       "{} - {}\n",
                        p4.size(),
                        scale_factor.size(),
                        scale_factor_shift.size(),
                        delta_met_x.size(),
                        delta_met_y.size(),
-                       is_fake.size(),
-                       id_score.size());
+                       is_fake.size());
             std::exit(EXIT_FAILURE);
         }
 
@@ -203,7 +121,6 @@ class MUSiCObjects
         delta_met_y = ROOT::VecOps::Take(delta_met_y, indexes);
         is_fake = ROOT::VecOps::Take(is_fake, indexes);
         p4 = ROOT::VecOps::Take(p4, indexes);
-        id_score = ROOT::VecOps::Take(id_score, indexes);
     }
 
     auto take_as_copy(const RVec<int> &indexes) -> MUSiCObjects
@@ -213,8 +130,7 @@ class MUSiCObjects
                             ROOT::VecOps::Take(scale_factor_shift, indexes), //
                             ROOT::VecOps::Take(delta_met_x, indexes),
                             ROOT::VecOps::Take(delta_met_y, indexes),
-                            ROOT::VecOps::Take(is_fake, indexes),
-                            ROOT::VecOps::Take(id_score, indexes));
+                            ROOT::VecOps::Take(is_fake, indexes));
     }
 
     auto reorder() -> void
