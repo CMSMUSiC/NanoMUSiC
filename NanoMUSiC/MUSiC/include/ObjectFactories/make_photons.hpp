@@ -199,8 +199,7 @@ inline auto make_photons(const RVec<float> &Photon_pt,             //
                         scale_factor_shift, //
                         delta_met_x,        //
                         delta_met_y,        //
-                        is_fake             
-    );
+                        is_fake);
 }
 
 } // namespace ObjectFactories

@@ -200,7 +200,7 @@ namespace ObjConfig
 /// https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2#Tracker_based_Isolation
 struct MuonConfig
 {
-    float LowPt = 8.;
+    // float LowPt = 8.;
     float MediumPt = 25.;
     float HighPt = 200.;
     float MaxAbsEta = 2.4;
@@ -220,10 +220,9 @@ constexpr std::array<MuonConfig, Year::kTotalYears> Muons = {Muon2016APV, Muon20
 // Electrons
 struct ElectronConfig
 {
-    float LowPt = 10.001;
+    // float LowPt = 10.001;
     float MediumPt = 25.;
     // float MediumPt = 40.;
-
     float HighPt = 100.;
     float MaxAbsEta = 2.5;
     float MaxDeltaRTriggerMatch = 0.3;
@@ -242,8 +241,9 @@ constexpr std::array<ElectronConfig, Year::kTotalYears> Electrons = {Electron201
 // Photons
 struct PhotonConfig
 {
-    float LowPt = 25.;
-    float MediumPt = 40.;
+    // float LowPt = 25.;
+    // float MediumPt = 40.;
+    float MediumPt = 25.;
     float HighPt = 200.;
     int cutBasedId = 3; // (tight) greater than this
 };
@@ -307,7 +307,7 @@ constexpr std::array<JetConfig, Year::kTotalYears> Jets = {Jet2016APV, Jet2016, 
 // MET
 struct METConfig
 {
-    float MinPt = 100.;
+    float MediumPt = 100.;
 };
 
 constexpr auto MET2016APV = METConfig{};

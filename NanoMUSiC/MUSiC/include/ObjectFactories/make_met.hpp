@@ -205,7 +205,7 @@ inline auto make_met(const double MET_pt,                            //
 
         auto this_met = Math::PxPyPzMVector(met_px, met_py, 0., 0.);
 
-        bool is_good_met = this_met.pt() >= ObjConfig::MET[year].MinPt;
+        bool is_good_met = this_met.pt() >= ObjConfig::MET[year].MediumPt;
 
         if (is_good_met)
         {
