@@ -120,17 +120,15 @@ inline auto make_photons(const RVec<float> &Photon_pt,             //
     auto delta_met_x = RVec<double>{};
     auto delta_met_y = RVec<double>{};
     auto is_fake = RVec<bool>{};
-    auto id_score = RVec<unsigned int>{};
 
     for (std::size_t i = 0; i < Photon_pt.size(); i++)
     {
-        bool is_good_photon_pre_filter = (Photon_isScEtaEB[i])         //
-                                         and (not Photon_isScEtaEE[i]) // only EB photons
-                                         and (Photon_mvaID_WP90[i])    //
-                                         and (Photon_electronVeto[i])  //
-                                                                       // and (Photon_electronIdx[i] < 0) //
-                                                                       // and (Photon_jetIdx[i] < 0)
-
+        bool is_good_photon_pre_filter = (Photon_isScEtaEB[i])           //
+                                         and (not(Photon_isScEtaEE[i]))  // only EB photons
+                                         and (Photon_mvaID_WP90[i])      //
+                                         and (Photon_electronVeto[i])    //
+                                         and (Photon_electronIdx[i] < 0) //
+                                                                         // and (Photon_jetIdx[i] < 0)
             ;
 
         auto photon_p4 = Math::PtEtaPhiMVector(Photon_pt[i], Photon_eta[i], Photon_phi[i], Photon_mass[i]);
@@ -183,15 +181,6 @@ inline auto make_photons(const RVec<float> &Photon_pt,             //
                 is_fake.push_back(is_data ? false : Photon_genPartIdx[i] < 0);
             }
         }
-    }
-
-    if (shift == Shifts::Variations::Nominal)
-    {
-        fmt::print("Found {}/{} [{}] == [{}]  photons ...\n",
-                   photons_p4.size(),
-                   Photon_pt.size(),
-                   fmt::join(Photon_pt, " - "),
-                   fmt::join(Photon_eta, " - "));
     }
 
     return MUSiCObjects(photons_p4,         //

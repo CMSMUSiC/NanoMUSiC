@@ -384,8 +384,6 @@ inline auto make_jets(const RVec<float> &Jet_pt,                       //
     auto bjets_delta_met_y = RVec<double>{};
     auto jets_is_fake = RVec<bool>{};
     auto bjets_is_fake = RVec<bool>{};
-    auto jets_id_score = RVec<unsigned int>{};
-    auto bjets_id_score = RVec<unsigned int>{};
 
     bool has_vetoed_jets = false;
     auto selected_jet_indexes = RVec<int>{};

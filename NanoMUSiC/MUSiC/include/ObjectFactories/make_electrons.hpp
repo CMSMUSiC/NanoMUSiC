@@ -205,7 +205,6 @@ inline auto make_electrons(const RVec<float> &Electron_pt,   //
     auto delta_met_x = RVec<double>{};
     auto delta_met_y = RVec<double>{};
     auto is_fake = RVec<bool>{};
-    auto id_score = RVec<unsigned int>{};
 
     for (std::size_t i = 0; i < Electron_pt.size(); i++)
     {

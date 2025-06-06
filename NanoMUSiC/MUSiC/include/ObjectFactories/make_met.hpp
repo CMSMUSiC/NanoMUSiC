@@ -165,7 +165,6 @@ inline auto make_met(const double MET_pt,                            //
     auto delta_met_x = RVec<double>{};
     auto delta_met_y = RVec<double>{};
     auto is_fake = RVec<bool>{};
-    auto id_score = RVec<unsigned int>{};
 
     bool is_fake_met = false;
     if (MET_pt > 6500.)

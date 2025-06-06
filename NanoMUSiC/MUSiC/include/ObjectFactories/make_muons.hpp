@@ -475,7 +475,6 @@ inline auto make_muons(const RVec<float> &Muon_pt,                      //
     auto delta_met_x = RVec<double>{};
     auto delta_met_y = RVec<double>{};
     auto is_fake = RVec<bool>{};
-    auto id_score = RVec<unsigned int>{};
 
     for (std::size_t i = 0; i < Muon_pt.size(); i++)
     {
