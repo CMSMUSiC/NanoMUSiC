@@ -1,6 +1,7 @@
 #ifndef ZTOLEPLEPX
 #define ZTOLEPLEPX
 
+#include "ObjectFactories/music_objects.hpp"
 #include "Shifts.hpp"
 #include <TFile.h>
 #include <TH1F.h>

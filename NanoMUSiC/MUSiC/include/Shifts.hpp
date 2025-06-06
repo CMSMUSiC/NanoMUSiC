@@ -5,9 +5,8 @@
 #include <cstdio>
 #include <cstdlib>
 #include <string>
-#include <vector>
 
-#include <fmt/core.h>
+#include <fmt/format.h>
 template <typename EnumType>
 requires std::is_enum_v<EnumType>
 struct fmt::formatter<EnumType> : fmt::formatter<std::underlying_type_t<EnumType>>
@@ -20,8 +19,8 @@ struct fmt::formatter<EnumType> : fmt::formatter<std::underlying_type_t<EnumType
     }
 };
 
-#include "ObjectFactories/music_objects.hpp"
 #include "ROOT/RVec.hxx"
+using namespace ROOT;
 
 inline auto contains(std::string &&str, const std::string &substring) -> bool
 {
@@ -163,35 +162,55 @@ inline auto contains(std::string &&str, const std::string &substring) -> bool
     X(PU_Down)                                                                                                         \
     X(Fakes_Up)                                                                                                        \
     X(PDF_As_Up)                                                                                                       \
-    X(ScaleFactor_Up)                                                                                                  \
     X(PreFiring_Up)                                                                                                    \
     X(PreFiring_Down)                                                                                                  \
     X(QCDScale_Up)                                                                                                     \
     X(QCDScale_Down)                                                                                                   \
-    X(ElectronResolution_Up)                                                                                           \
-    X(ElectronResolution_Down)                                                                                         \
-    X(ElectronScale_Up)                                                                                                \
-    X(ElectronScale_Down)                                                                                              \
-    X(PhotonResolution_Up)                                                                                             \
-    X(PhotonResolution_Down)                                                                                           \
-    X(PhotonScale_Up)                                                                                                  \
-    X(PhotonScale_Down)                                                                                                \
-    X(JetResolution_Up)                                                                                                \
-    X(JetResolution_Down)                                                                                              \
-    X(JetScale_Up)                                                                                                     \
-    X(JetScale_Down)                                                                                                   \
-    X(UnclusteredEnergy_Up)                                                                                            \
-    X(UnclusteredEnergy_Down)                                                                                          \
-    X(TauEnergy_Up)                                                                                                    \
-    X(TauEnergy_Down)                                                                                                  \
+    X(MuonReco_Up)                                                                                                     \
+    X(MuonReco_Down)                                                                                                   \
+    X(MuonId_Up)                                                                                                       \
+    X(MuonId_Down)                                                                                                     \
+    X(MuonIso_Up)                                                                                                      \
+    X(MuonIso_Down)                                                                                                    \
+    X(ElectronReco_Up)                                                                                                 \
+    X(ElectronReco_Down)                                                                                               \
+    X(ElectronId_Up)                                                                                                   \
+    X(ElectronId_Down)                                                                                                 \
+    X(ElectronDiffResolution_Up)                                                                                       \
+    X(ElectronDiffResolution_Down)                                                                                     \
+    X(ElectronDiffScale_Up)                                                                                            \
+    X(ElectronDiffScale_Down)                                                                                          \
+    X(PhotonId_Up)                                                                                                     \
+    X(PhotonId_Down)                                                                                                   \
+    X(PhotonVeto_Up)                                                                                                   \
+    X(PhotonVeto_Down)                                                                                                 \
+    X(PhotonDiffResolution_Up)                                                                                         \
+    X(PhotonDiffResolution_Down)                                                                                       \
+    X(PhotonDiffScale_Up)                                                                                              \
+    X(PhotonDiffScale_Down)                                                                                            \
+    X(TauVsE_Up)                                                                                                       \
+    X(TauVsE_Down)                                                                                                     \
+    X(TauVsMu_Up)                                                                                                      \
+    X(TauVsMu_Down)                                                                                                    \
+    X(TauVsJet_Up)                                                                                                     \
+    X(TauVsJet_Down)                                                                                                   \
+    X(TauDiffEnergy_Up)                                                                                                \
+    X(TauDiffEnergy_Down)                                                                                              \
+    X(JetBTag_Up)                                                                                                      \
+    X(JetBTag_Down)                                                                                                    \
+    X(JetDiffResolution_Up)                                                                                            \
+    X(JetDiffResolution_Down)                                                                                          \
+    X(JetDiffScale_Up)                                                                                                 \
+    X(JetDiffScale_Down)                                                                                               \
+    X(METDiffUnclusteredEnergy_Up)                                                                                     \
+    X(METDiffUnclusteredEnergy_Down)                                                                                   \
     X(kTotalVariations)                                                                                                \
     X(Fakes_Down)                                                                                                      \
     X(PDF_As_Down)                                                                                                     \
-    X(ScaleFactor_Down)                                                                                                \
-    X(MuonResolution_Up)                                                                                               \
-    X(MuonResolution_Down)                                                                                             \
-    X(MuonScale_Up)                                                                                                    \
-    X(MuonScale_Down)
+    X(MuonDiffResolution_Up)                                                                                           \
+    X(MuonDiffResolution_Down)                                                                                         \
+    X(MuonDiffScale_Up)                                                                                                \
+    X(MuonDiffScale_Down)
 
 class Shifts
 {
@@ -240,7 +259,6 @@ class Shifts
 
   public:
     Shifts(bool is_data)
-        // : m_constant_shifts(std::vector<Variations>{Variations::Nominal}),
         : m_constant_shifts(is_data ? std::vector<Variations>{Variations::Nominal}
                                     : std::vector<Variations>{Variations::Nominal,  //
                                                               Variations::PU_Up,    //
@@ -249,14 +267,33 @@ class Shifts
                                                               //    Variations::Fakes_Down,        //
                                                               Variations::PDF_As_Up, //
                                                               //    Variations::PDF_As_Down,      //
-                                                              Variations::ScaleFactor_Up, //
-                                                              //    Variations::ScaleFactor_Down, //
                                                               Variations::PreFiring_Up,   //
                                                               Variations::PreFiring_Down, //
                                                               Variations::QCDScale_Up,
-                                                              Variations::QCDScale_Down}),
+                                                              Variations::QCDScale_Down,
+                                                              Variations::MuonReco_Up,
+                                                              Variations::MuonReco_Down,
+                                                              Variations::MuonId_Up,
+                                                              Variations::MuonId_Down,
+                                                              Variations::MuonIso_Up,
+                                                              Variations::MuonIso_Down,
+                                                              Variations::ElectronReco_Up,
+                                                              Variations::ElectronReco_Down,
+                                                              Variations::ElectronId_Up,
+                                                              Variations::ElectronId_Down,
+                                                              Variations::PhotonId_Up,
+                                                              Variations::PhotonId_Down,
+                                                              Variations::PhotonVeto_Up,
+                                                              Variations::PhotonVeto_Down,
+                                                              Variations::TauVsE_Up,
+                                                              Variations::TauVsE_Down,
+                                                              Variations::TauVsMu_Up,
+                                                              Variations::TauVsMu_Down,
+                                                              Variations::TauVsJet_Up,
+                                                              Variations::TauVsJet_Down,
+                                                              Variations::JetBTag_Up,
+                                                              Variations::JetBTag_Down}),
 
-          //   m_differential_shifts(std::vector<Variations>{Variations::Nominal})
           m_differential_shifts(is_data ? std::vector<Variations>{Variations::Nominal}
                                         : std::vector<Variations>{
                                               Variations::Nominal, //
@@ -264,22 +301,22 @@ class Shifts
                                                                    //    Variations::MuonResolution_Down,     //
                                                                    //    Variations::MuonScale_Up,            //
                                                                    //    Variations::MuonScale_Down,          //
-                                              Variations::ElectronResolution_Up,   //
-                                              Variations::ElectronResolution_Down, //
-                                              Variations::ElectronScale_Up,        //
-                                              Variations::ElectronScale_Down,      //
-                                              Variations::PhotonResolution_Up,     //
-                                              Variations::PhotonResolution_Down,   //
-                                              Variations::PhotonScale_Up,          //
-                                              Variations::PhotonScale_Down,        //
-                                              Variations::JetResolution_Up,        //
-                                              Variations::JetResolution_Down,      //
-                                              Variations::JetScale_Up,             //
-                                              Variations::JetScale_Down,           //
-                                              Variations::UnclusteredEnergy_Up,    //
-                                              Variations::UnclusteredEnergy_Down,  //
-                                              Variations::TauEnergy_Up,            //
-                                              Variations::TauEnergy_Down           //
+                                              Variations::ElectronDiffResolution_Up,     //
+                                              Variations::ElectronDiffResolution_Down,   //
+                                              Variations::ElectronDiffScale_Up,          //
+                                              Variations::ElectronDiffScale_Down,        //
+                                              Variations::PhotonDiffResolution_Up,       //
+                                              Variations::PhotonDiffResolution_Down,     //
+                                              Variations::PhotonDiffScale_Up,            //
+                                              Variations::PhotonDiffScale_Down,          //
+                                              Variations::JetDiffResolution_Up,          //
+                                              Variations::JetDiffResolution_Down,        //
+                                              Variations::JetDiffScale_Up,               //
+                                              Variations::JetDiffScale_Down,             //
+                                              Variations::METDiffUnclusteredEnergy_Up,   //
+                                              Variations::METDiffUnclusteredEnergy_Down, //
+                                              Variations::TauDiffEnergy_Up,              //
+                                              Variations::TauDiffEnergy_Down             //
                                           })
     {
     }
@@ -406,102 +443,6 @@ class Shifts
     //     return luminosity;
     // }
 
-    static auto get_reco_scale_factor(const Variations &shift,
-                                      std::pair<std::size_t, const MUSiCObjects &> muons,
-                                      std::pair<std::size_t, const MUSiCObjects &> electrons,
-                                      std::pair<std::size_t, const MUSiCObjects &> taus,
-                                      std::pair<std::size_t, const MUSiCObjects &> photons,
-                                      std::pair<std::size_t, const MUSiCObjects &> bjets,
-                                      std::pair<std::size_t, const MUSiCObjects &> jets,
-                                      std::pair<std::size_t, const MUSiCObjects &> met) -> double
-    {
-        auto [n_muons, this_muons] = muons;
-        auto [n_electrons, this_electrons] = electrons;
-        auto [n_taus, this_taus] = taus;
-        auto [n_photons, this_photons] = photons;
-        auto [n_bjets, this_bjets] = bjets;
-        auto [n_jets, this_jets] = jets;
-        auto [n_met, this_met] = met;
-
-        auto nominal = std::reduce(this_muons.scale_factor.begin(),
-                                   this_muons.scale_factor.begin() + n_muons,
-                                   1.,
-                                   std::multiplies<double>()) *
-                       std::reduce(this_electrons.scale_factor.begin(),
-                                   this_electrons.scale_factor.begin() + n_electrons,
-                                   1.,
-                                   std::multiplies<double>()) //
-                       * std::reduce(this_taus.scale_factor.begin(),
-                                     this_taus.scale_factor.begin() + n_taus,
-                                     1.,
-                                     std::multiplies<double>()) //
-                       * std::reduce(this_photons.scale_factor.begin(),
-                                     this_photons.scale_factor.begin() + n_photons,
-                                     1.,
-                                     std::multiplies<double>()) //
-                       * std::reduce(this_bjets.scale_factor.begin(),
-                                     this_bjets.scale_factor.begin() + n_bjets,
-                                     1.,
-                                     std::multiplies<double>()) *
-                       std::reduce(this_jets.scale_factor.begin(),
-                                   this_jets.scale_factor.begin() + n_jets,
-                                   1.,
-                                   std::multiplies<double>())               //
-                       * std::reduce(this_met.scale_factor.begin(),         //
-                                     this_met.scale_factor.begin() + n_met, //
-                                     1.,                                    //
-                                     std::multiplies<double>());
-
-        auto delta = 0.;
-
-        if (shift == Variations::ScaleFactor_Up or shift == Variations::ScaleFactor_Down)
-        {
-            delta = std::sqrt(std::pow(std::reduce(this_muons.scale_factor_shift.begin(),
-                                                   this_muons.scale_factor_shift.begin() + n_muons,
-                                                   0.,
-                                                   std::plus<double>()),
-                                       2.) //
-                              + std::pow(std::reduce(this_electrons.scale_factor_shift.begin(),
-                                                     this_electrons.scale_factor_shift.begin() + n_electrons,
-                                                     0.,
-                                                     std::plus<double>()),
-                                         2.) //
-                              + std::pow(std::reduce(this_taus.scale_factor_shift.begin(),
-                                                     this_taus.scale_factor_shift.begin() + n_taus,
-                                                     0.,
-                                                     std::plus<double>()),
-                                         2.) //
-                              + std::pow(std::reduce(this_photons.scale_factor_shift.begin(),
-                                                     this_photons.scale_factor_shift.begin() + n_photons,
-                                                     0.,
-                                                     std::plus<double>()),
-                                         2.) //
-                              + std::pow(std::reduce(this_bjets.scale_factor_shift.begin(),
-                                                     this_bjets.scale_factor_shift.begin() + n_bjets,
-                                                     0.,
-                                                     std::plus<double>()),
-                                         2.) //
-                              + std::pow(std::reduce(this_jets.scale_factor_shift.begin(),
-                                                     this_jets.scale_factor_shift.begin() + n_jets,
-                                                     0.,
-                                                     std::plus<double>()),
-                                         2.) //
-                              + std::pow(std::reduce(this_met.scale_factor_shift.begin(),
-                                                     this_met.scale_factor_shift.begin() + n_met,
-                                                     0.,
-                                                     std::plus<double>()),
-                                         2.) //
-            );
-        }
-
-        if (shift == Variations::ScaleFactor_Down)
-        {
-            delta = -delta;
-        }
-
-        return nominal + delta;
-    }
-
     // static auto get_xsec_order_modifier(const Variations &shift, const
     // std::string &xs_order) -> double
     // {
@@ -526,73 +467,6 @@ class Shifts
             return 0.5;
         }
         return 0.;
-    }
-
-    static auto get_fakes_variation_weight(const Shifts::Variations shift,
-                                           std::pair<std::size_t, const MUSiCObjects &> muons,
-                                           std::pair<std::size_t, const MUSiCObjects &> electrons,
-                                           std::pair<std::size_t, const MUSiCObjects &> taus,
-                                           std::pair<std::size_t, const MUSiCObjects &> photons,
-                                           std::pair<std::size_t, const MUSiCObjects &> bjets,
-                                           std::pair<std::size_t, const MUSiCObjects &> jets) -> double
-    {
-        if (shift == Shifts::Variations::Fakes_Up or shift == Shifts::Variations::Fakes_Down)
-        {
-            auto [n_muons, this_muons] = muons;
-            auto [n_electrons, this_electrons] = electrons;
-            auto [n_taus, this_taus] = taus;
-            auto [n_photons, this_photons] = photons;
-            auto [n_bjets, this_bjets] = bjets;
-            auto [n_jets, this_jets] = jets;
-            // auto [n_met, this_met] = met
-
-            auto variation_squared =
-                std::pow(
-                    std::reduce(
-                        this_muons.is_fake.cbegin(), this_muons.is_fake.cbegin() + n_muons, 0., std::plus<double>()) *
-                        0.5,
-                    2.) +
-                std::pow(std::reduce(this_electrons.is_fake.cbegin(),
-                                     this_electrons.is_fake.cbegin() + n_electrons,
-                                     0.,
-                                     std::plus<double>()) *
-                             0.5,
-                         2.) +
-
-                std::pow(std::reduce(
-                             this_taus.is_fake.cbegin(), this_taus.is_fake.cbegin() + n_taus, 0., std::plus<double>()) *
-                             0.5,
-                         2.) +
-
-                std::pow(std::reduce(this_photons.is_fake.cbegin(),
-                                     this_photons.is_fake.cbegin() + n_photons,
-                                     0.,
-                                     std::plus<double>()) *
-                             0.5,
-                         2.) +
-                std::pow(
-                    std::reduce(
-                        this_bjets.is_fake.cbegin(), this_bjets.is_fake.cbegin() + n_bjets, 0., std::plus<double>()) *
-                        0.5,
-                    2) +
-
-                std::pow(std::reduce(
-                             this_jets.is_fake.cbegin(), this_jets.is_fake.cbegin() + n_jets, 0., std::plus<double>()) *
-                             0.5,
-                         2.);
-
-            if (shift == Shifts::Variations::Fakes_Up)
-            {
-                return 1. + std::sqrt(variation_squared);
-            }
-
-            if (shift == Shifts::Variations::Fakes_Down)
-            {
-                return 1. - std::sqrt(variation_squared);
-            }
-        }
-
-        return 1.;
     }
 
     ///////////////////////////////////////////////////////////////
@@ -686,6 +560,15 @@ class Shifts
             }
         }
         return 1.;
+    }
+
+    static auto is_diff(Variations shift) -> bool
+    {
+        return variation_to_string(shift).find("Diff") != std::string::npos;
+    }
+    static auto is_MET_diff(Variations shift) -> bool
+    {
+        return variation_to_string(shift).find("METDiff") != std::string::npos;
     }
 };
 

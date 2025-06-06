@@ -2,6 +2,7 @@
 #define TTbarToLep
 
 #include "Shifts.hpp"
+#include "ObjectFactories/music_objects.hpp"
 #include <TFile.h>
 #include <TH1F.h>
 #include <TH2F.h>

@@ -2,6 +2,7 @@
 #define WTOLEPNUX
 
 #include "Shifts.hpp"
+#include "ObjectFactories/music_objects.hpp"
 #include <TFile.h>
 #include <TH1F.h>
 #include <TH2F.h>
@@ -36,10 +37,10 @@ class WToLepNuX
     WToLepNuX() = default;
 
     WToLepNuX(enum Leptons lepton,
-               const std::string &process_group,
-               const std::string &xs_order,
-               const std::string &sample,
-               const std::string &year);
+              const std::string &process_group,
+              const std::string &xs_order,
+              const std::string &sample,
+              const std::string &year);
 
     auto fill(const MUSiCObjects &leptons,
               const MUSiCObjects &bjets,
@@ -50,8 +51,6 @@ class WToLepNuX
 
     auto serialize_to_root(const std::unique_ptr<TFile> &output_file) -> void;
     auto merge_inplace(const WToLepNuX &other) -> void;
-
-
 };
 
 #endif // !WTOLEPNUX

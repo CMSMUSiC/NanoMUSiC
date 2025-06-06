@@ -10,6 +10,7 @@ import subprocess
 import sys
 import time
 from collections import defaultdict
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from enum import Enum, auto
 from itertools import product
 from multiprocessing import Pool, process
@@ -18,6 +19,7 @@ from typing import Any, Iterator, Optional, Union
 
 import classification_imp as clft
 from metadata import Lumi, Process, Years, load_toml
+from parallel_resume import parallel_resume_loop
 from pydantic import BaseModel
 from rich import print as rprint
 from rich.progress import Progress
@@ -365,74 +367,46 @@ def launch_parallel(
                 file=sys.stderr,
             )
             sys.exit(-1)
+
         # random.shuffle(generated_jobs)
         generated_jobs = sorted(generated_jobs, reverse=True)
-        generated_jobs = [j for j in generated_jobs if "classification_T" in j] + [
-            j for j in generated_jobs if "classification_T" not in j
-        ]
+        generated_jobs = sorted(
+            generated_jobs, key=lambda j: "classification_DYJetsToLL" not in j
+        )
+        generated_jobs = sorted(
+            generated_jobs, key=lambda j: "classification_T" not in j
+        )
+        generated_jobs = sorted(
+            generated_jobs, key=lambda j: "classification_TTT" not in j
+        )
+        generated_jobs = sorted(
+            generated_jobs, key=lambda j: "classification_TTTo2L" not in j
+        )
+        generated_jobs = sorted(
+            generated_jobs, key=lambda j: "classification_TTTT" not in j
+        )
+        generated_jobs = sorted(
+            generated_jobs, key=lambda j: "classification_TTZ" not in j
+        )
+
         for j in generated_jobs:
             file.write("../{}\n".format(j))
-    parallel_cmd = r"mkdir -p classification_outputs && cd classification_outputs && cp -r ../btag_eff_maps . && cp ../sum_weights.json . && /usr/bin/cat ../classification_jobs/inputs_parallel.txt | parallel -j ___NUM_CPUS___ --halt now,fail=1 --eta --progress --noswap --retries 4 --joblog job.log 'python3 {} > {/.}.stdout 2> {/.}.stderr' && cd ..".replace(
-        "___NUM_CPUS___", str(num_cpus)
-    )
-    rprint(
-        "[bold magenta]Parallel command: [/bold magenta][white]{}[/white]".format(
-            parallel_cmd
-        )
-    )
 
+    # start GNU parallel
     os.system("date")
-    parallel_proc = subprocess.Popen(
-        parallel_cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-        shell=True,
+    parallel_resume_loop(
+        joblog_path="classification_outputs/job.log",
+        parallel_command="cd classification_outputs && parallel --resume-failed --memfree 50G -j ___NUM_CPUS___ --eta --progress --noswap --retry-failed 4 --joblog job.log 'python3 {} > {/.}.stdout 2> {/.}.stderr' :::: ../classification_jobs/inputs_parallel.txt".replace(
+            "___NUM_CPUS___", str(num_cpus)
+        ),
+        max_attempts=10,
+        wait_between_attempts=30,
+        max_runtime_hours=24,
+        preamble="mkdir -p classification_outputs && cd classification_outputs && cp -r ../btag_eff_maps . && cp ../sum_weights.json .",
+        epilog=None,
     )
 
-    print()
-    max_line_size = 0
-    if parallel_proc.stdout:
-        for line in iter(parallel_proc.stdout.readline, ""):
-            if line.startswith("ETA"):
-                line = line.replace("\n", "")
-                max_line_size = max(max_line_size, len(line))
-                print(" " * max_line_size, end="\r")
-                print(line.replace("\n", ""), end="\r")
-                sys.stdout.flush()  # Ensure it prints in real-time
-            else:
-                print(line, end="")
-    print()
-
-    if parallel_proc.stdout:
-        parallel_proc.stdout.close()
-    return_code = parallel_proc.wait()
-    os.system("date")
-    if return_code:
-        print(
-            "ERROR: Could not run parallel jobs.",
-            file=sys.stderr,
-        )
-        sys.exit(-1)
-
-    parallel_proc = subprocess.run(
-        r"awk '$7 != 0' classification_outputs/job.log | wc -l",
-        capture_output=True,
-        shell=True,
-        text=True,
-    )
-    if parallel_proc.returncode != 0:
-        print(
-            "ERROR: Could not status of parallel jobs.",
-            file=sys.stderr,
-        )
-        sys.exit(-1)
-    if parallel_proc.stdout.replace("\n", "").replace(" ", "") != "1":
-        print(
-            "ERROR: Could not run parallel jobs for year {}. At least one job have failed.",
-            file=sys.stderr,
-        )
-        sys.exit(-1)
+    os.system("cp classification_outputs/job.log last_parallel_job.log")
 
 
 def launch_dev(
@@ -471,8 +445,7 @@ def launch_dev(
     )
 
 
-def merge_task(args):
-    files_to_merge, validation_files_to_merge, process, year = args
+def merge_task(files_to_merge, validation_files_to_merge, process, year):
     clft.EventClassContainer.merge_many(
         "{}_{}".format(process.name, year),
         files_to_merge,
@@ -486,8 +459,10 @@ def merge_task(args):
 
 
 def merge_classification_outputs(
+    *,
     config_file_path: str,
     inputs_dir: str,
+    num_cpus: int = 124,
 ) -> None:
     config_file = load_toml(config_file_path)
 
@@ -495,43 +470,73 @@ def merge_classification_outputs(
         Process(name=process_name, **config_file[process_name])
         for process_name in config_file
     ]
+    random.shuffle(processes)
+    # merge_jobs = sorted(merge_jobs, reverse=True, key=lambda proc: proc[2].name)
+    # merge_jobs = sorted(
+    #     merge_jobs, key=lambda proc: "classification_DYJetsToLL" not in proc[2].name
+    # )
+    # merge_jobs = sorted(
+    #     merge_jobs, key=lambda proc: "classification_T" not in proc[2].name
+    # )
+    # merge_jobs = sorted(
+    #     merge_jobs, key=lambda proc: "classification_TTT" not in proc[2].name
+    # )
+    # merge_jobs = sorted(
+    #     merge_jobs, key=lambda proc: "classification_TTTo2L" not in proc[2].name
+    # )
+    # merge_jobs = sorted(
+    #     merge_jobs, key=lambda proc: "classification_TTTT" not in proc[2].name
+    # )
+    # merge_jobs = sorted(
+    #     merge_jobs, key=lambda proc: "classification_TTZ" not in proc[2].name
+    # )
 
     os.system("rm -rf classification_merged_results")
     os.system("mkdir -p classification_merged_results")
     os.system("rm -rf validation_merged_results")
     os.system("mkdir -p validation_merged_results")
 
-    def do_merge(year: Years):
+    for year in Years:
         merge_jobs = []
-        for process in processes:
-            files_to_merge = glob.glob(
-                "{}/{}_{}_*.root".format(inputs_dir, process.name, year.value)
-            )
-            validation_files_to_merge = glob.glob(
-                "{}/validation_{}_{}_*.root".format(
-                    inputs_dir, process.name, year.value
-                )
-            )
-
-            if len(files_to_merge):
-                merge_jobs.append(
-                    (files_to_merge, validation_files_to_merge, process, year.value)
-                )
-
-        random.shuffle(merge_jobs)
-
-        print("Merging Classification results for {}...".format(year.value))
-        with Pool(100) as p:
+        with ProcessPoolExecutor(max_workers=num_cpus) as executor:
             with Progress() as progress:
                 task = progress.add_task(
-                    "Merging {} ...".format(year.value), total=len(merge_jobs)
+                    f"Building merge jobs for {year.value}...", total=len(processes)
                 )
-                for job in p.imap_unordered(merge_task, merge_jobs):
-                    progress.console.print("Done: {}".format(job))
+                for process in processes:
+                    files_to_merge = glob.glob(
+                        "{}/{}_{}_*.root".format(inputs_dir, process.name, year.value)
+                    )
+                    validation_files_to_merge = glob.glob(
+                        "{}/validation_{}_{}_*.root".format(
+                            inputs_dir, process.name, year.value
+                        )
+                    )
+
+                    if len(files_to_merge):
+                        merge_jobs.append(
+                            executor.submit(
+                                merge_task,
+                                files_to_merge,
+                                validation_files_to_merge,
+                                process,
+                                year.value,
+                            )
+                        )
                     progress.advance(task)
 
-    for year in Years:
-        do_merge(year)
+            print(f"Merging Classification results for {year.value}...")
+            with Progress() as progress:
+                task = progress.add_task(
+                    f"Merging for {year.value} ...", total=len(merge_jobs)
+                )
+                completed = 0
+                for future in as_completed(merge_jobs):
+                    progress.console.print(
+                        f"Done: {future.result()} - {completed}/{len(merge_jobs)}"
+                    )
+                    completed += 1
+                    progress.advance(task)
 
 
 def serialize_to_root_task(args):
@@ -659,16 +664,11 @@ def make_distributions_task(
     return analysis_name, year
 
 
-def do_fold(input_files: list[list[str]], output_dir: str, classes_names: list[str]):
-    clft.Distribution.fold(input_files, output_dir, classes_names)
-
-
 class MakeDistributionsInputs(BaseModel):
     input_file: str
     output_dir: str
     class_name: str
     skip_per_year: bool
-    rescaling: None | dict[str, float]
 
 
 def do_make_distributions(inputs: MakeDistributionsInputs) -> tuple[bool, str]:
@@ -678,7 +678,6 @@ def do_make_distributions(inputs: MakeDistributionsInputs) -> tuple[bool, str]:
             inputs.output_dir,
             inputs.class_name,
             inputs.skip_per_year,
-            inputs.rescaling,
         ):
             return True, inputs.class_name
 
@@ -688,43 +687,8 @@ def do_make_distributions(inputs: MakeDistributionsInputs) -> tuple[bool, str]:
         return False, inputs.class_name
 
 
-def make_rescaling(
-    config_file: dict[str, Any] | None, alternative_config_file: dict[str, Any] | None
-) -> dict[str, float] | None:
-    if config_file and alternative_config_file:
-        processes: dict[str, Process] = {}
-        for process_name in config_file:
-            process = Process(name=process_name, **config_file[process_name])
-            if process.is_data:
-                process.ProcessGroup = "Data"
-                process.XSecOrder = "DUMMY"
-            processes[process.name] = process
-
-        alt_processes: dict[str, Process] = {}
-        for process_name in alternative_config_file:
-            alt_process = Process(
-                name=process_name, **alternative_config_file[process_name]
-            )
-            if alt_process.is_data:
-                alt_process.ProcessGroup = "Data"
-                alt_process.XSecOrder = "DUMMY"
-            alt_processes[alt_process.name] = alt_process
-
-        rescaling = {}
-        for proc in processes:
-            rescaling[proc] = (
-                alt_processes[proc].XSec
-                * alt_processes[proc].FilterEff
-                * alt_processes[proc].kFactor
-            ) / (
-                alt_processes[proc].XSec
-                * alt_processes[proc].FilterEff
-                * alt_processes[proc].kFactor
-            )
-
-        return rescaling
-
-    return None
+def do_fold(input_files: list[list[str]], output_dir: str):
+    clft.Distribution.fold(input_files, output_dir)
 
 
 def fold(
@@ -749,17 +713,12 @@ def fold(
     classes_names = [name for name in classes_to_files.keys()]
 
     if classes_names:
-        p = multiprocessing.Process(
-            target=do_fold,
-            args=(
+        if not (
+            clft.Distribution.fold(
                 get_input_files(inputs_dir),
                 "classification_folded_files",
-                classes_names,
-            ),
-        )
-        p.start()
-        p.join()
-        if p.exitcode != 0:
+            )
+        ):
             print(
                 "ERROR: Could not fold files for Classification.",
                 file=sys.stderr,
@@ -770,17 +729,10 @@ def fold(
     validation_names = [name for name in validation_to_files.keys()]
 
     if validation_names:
-        p = multiprocessing.Process(
-            target=do_fold,
-            args=(
-                get_input_files(validation_inputs_dir),
-                "validation_folded_files",
-                validation_names,
-            ),
-        )
-        p.start()
-        p.join()
-        if p.exitcode != 0:
+        if not clft.Distribution.fold(
+            get_input_files(validation_inputs_dir),
+            "validation_folded_files",
+        ):
             print(
                 "ERROR: Could not make distribution files for Validation.",
                 file=sys.stderr,
@@ -799,24 +751,12 @@ def fold(
 
 
 def make_distributions(
-    config_file_path: str | None,
-    alternative_config_file_path: str | None,
     inputs_dir: str,
     validation_inputs_dir: str,
     class_name_filter_pattern: str | None,
     validation_filter_pattern: str | None,
     skip_per_year: bool,
 ) -> None:
-    config_file = None
-    if config_file_path:
-        config_file = load_toml(config_file_path)
-
-    alternative_config_file = None
-    if alternative_config_file_path:
-        alternative_config_file = load_toml(alternative_config_file_path)
-
-    rescaling = make_rescaling(config_file, alternative_config_file)
-
     with open("{}/classes_to_files.json".format(inputs_dir), "r") as file:
         classes_to_files = json.load(file)
 
@@ -860,7 +800,7 @@ def make_distributions(
         return [lst[i * k + min(i, m) : (i + 1) * k + min(i + 1, m)] for i in range(n)]
 
     if class_name_filter_pattern:
-        print("Will fold Classification ...")
+        print("Will make Distributions for Classification ...")
         classes_names = get_analysis_names(classes_to_files, class_name_filter_pattern)
 
         if classes_names:
@@ -872,7 +812,6 @@ def make_distributions(
                     output_dir="classification_distributions",
                     class_name=name,
                     skip_per_year=skip_per_year,
-                    rescaling=rescaling,
                 )
                 for name in classes_names
             ]
@@ -898,11 +837,11 @@ def make_distributions(
                             )
                             sys.exit(-1)
 
-                        # progress.console.print("Done: {}".format(analysis_name))
+                        progress.console.print("Done: {}".format(analysis_name))
                         progress.advance(task)
 
     if validation_filter_pattern:
-        print("Will fold Validation ...")
+        print("Will make Distributions for Validation ...")
         validation_names = get_analysis_names(
             validation_to_files, validation_filter_pattern
         )
@@ -916,7 +855,6 @@ def make_distributions(
                     output_dir="validation_distributions",
                     class_name=name,
                     skip_per_year=skip_per_year,
-                    rescaling=rescaling,
                 )
                 for name in validation_names
             ]
@@ -942,19 +880,5 @@ def make_distributions(
                             )
                             sys.exit(-1)
 
-                        # progress.console.print("Done: {}".format(analysis_name))
+                        progress.console.print("Done: {}".format(analysis_name))
                         progress.advance(task)
-
-    if config_file_path:
-        os.system(
-            "cp {} classification_distributions/analysis_config.toml".format(
-                config_file_path
-            )
-        )
-
-    if alternative_config_file_path:
-        os.system(
-            "cp {} classification_distributions/alternative_config_analysis_config.toml".format(
-                config_file_path
-            )
-        )

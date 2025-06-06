@@ -238,32 +238,16 @@ def launch(
         )
         sys.exit(-1)
 
-    if target == ClassificationTarget.Dev:
-        classification.launch_dev(config_file, process, year, max_files)
-    elif target == ClassificationTarget.Parallel:
-        classification.launch_parallel(
-            config_file, process, year, max_files, 1, num_cpus
-        )
-    else:
-        print("Creating source code tarball ...")
-        os.system("rm -rf classification_src.tar.gz ")
-        proc = subprocess.run(
-            "tar --exclude-from=$MUSIC_BASE/.gitignore --exclude=build --exclude=.git --exclude=.ruff_cache --exclude=.rucio_seth --exclude=.rucio_silva --exclude=Legacy --exclude=opt --exclude=bin --exclude=lib -czvf classification_src.tar.gz -C $MUSIC_BASE .",
-            shell=True,
-            capture_output=True,
-            text=True,
-        )
-        if proc.returncode != 0:
-            print(
-                "ERROR: Could create source code tarball.\n{}\n{}".format(
-                    proc.stdout, proc.stderr
-                ),
-                file=sys.stderr,
+    match target:
+        case ClassificationTarget.Dev:
+            classification.launch_dev(config_file, process, year, max_files)
+        case ClassificationTarget.Parallel:
+            classification.launch_parallel(
+                config_file, process, year, max_files, 1, num_cpus
             )
+        case _:
+            print("ERROR: Invalide Classification target {}", target, file=sys.stderr)
             sys.exit(-1)
-        classification.launch_condor(
-            config_file, process, year, max_files, split_size, dry_run
-        )
 
 
 @classification_app.command()
@@ -274,13 +258,18 @@ def merge(
         typer.Argument(help="analysis_config.toml file path"),
     ] = "analysis_config.toml",
     inputs_dir: str = "classification_outputs",
+    num_cpus: int = 124,
 ):
     """
     Merge classification results.
     """
     import classification
 
-    classification.merge_classification_outputs(config_file, inputs_dir)
+    classification.merge_classification_outputs(
+        config_file_path=config_file,
+        inputs_dir=inputs_dir,
+        num_cpus=num_cpus,
+    )
 
 
 @classification_app.command()
@@ -330,18 +319,6 @@ class FoldAndPlotTarget(str, Enum):
 @classification_app.command()
 @execution_time
 def make_distributions(
-    config_file: Annotated[
-        str,
-        typer.Argument(help="analysis_config.toml file path"),
-    ]
-    | None = None,
-    alternative_config_file: Annotated[
-        str,
-        typer.Argument(
-            help="Altrernative analysis_config.toml file path, with different cross-sections"
-        ),
-    ]
-    | None = None,
     inputs_dir: str = "classification_folded_files",
     validation_inputs_dir: str = "validation_folded_files",
     name_filter: str = "*",
@@ -355,8 +332,6 @@ def make_distributions(
 
     if target == FoldAndPlotTarget.Classification or target == FoldAndPlotTarget.All:
         classification.make_distributions(
-            config_file,
-            alternative_config_file,
             inputs_dir,
             validation_inputs_dir,
             name_filter,
@@ -365,8 +340,6 @@ def make_distributions(
         )
     if target == FoldAndPlotTarget.Validation or target == FoldAndPlotTarget.All:
         classification.make_distributions(
-            config_file,
-            alternative_config_file,
             inputs_dir,
             validation_inputs_dir,
             None,
@@ -447,7 +420,7 @@ def most_occupied(
 
     years = ["2016", "2017", "2018", "Run2"]
     if skip_per_year:
-        years = [ "Run2"]
+        years = ["Run2"]
 
     with ProcessPoolExecutor(max_workers=12) as executor:
         futures = []
@@ -505,7 +478,7 @@ def most_occupied(
 def most_discrepant(
     input_file: str = "classification_plots/integral_pvalues_data.json",
     output_dir: str = "classification_most_discrepant",
-    skip_per_year:bool=True
+    skip_per_year: bool = True,
 ):
     """
     Plot the occupancy and p_integral of most discrepant classes.
@@ -521,7 +494,7 @@ def most_discrepant(
 
     years = ["2016", "2017", "2018", "Run2"]
     if skip_per_year:
-        years = [ "Run2"]
+        years = ["Run2"]
 
     with ProcessPoolExecutor(max_workers=12) as executor:
         futures = []

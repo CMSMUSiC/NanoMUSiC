@@ -20,12 +20,12 @@ namespace ObjectFactories
 
 inline auto get_tau_energy_variation(const Shifts::Variations shift) -> std::string
 {
-    if (shift == Shifts::Variations::TauEnergy_Up)
+    if (shift == Shifts::Variations::TauDiffEnergy_Up)
     {
         return "up";
     }
 
-    if (shift == Shifts::Variations::TauEnergy_Down)
+    if (shift == Shifts::Variations::TauDiffEnergy_Down)
     {
         return "down";
     }
@@ -53,8 +53,7 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
                       const Shifts::Variations shift) -> MUSiCObjects
 {
     auto taus_p4 = RVec<Math::PtEtaPhiMVector>{};
-    auto scale_factors = RVec<double>{};
-    auto scale_factor_shift = RVec<double>{};
+    auto scale_factors = std::unordered_map<Shifts::Variations, RVec<double>>{};
     auto delta_met_x = RVec<double>{};
     auto delta_met_y = RVec<double>{};
     auto is_fake = RVec<bool>{};
@@ -106,7 +105,7 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
                     deep_tau_2017_v2_p1_vs_e, is_data, {std::fabs(tau_p4.eta()), Tau_genPartFlav[i], "Tight", "up"});
                 auto sf_vs_mu_up = MUSiCObjects::get_scale_factor(
                     deep_tau_2017_v2_p1_vs_mu, is_data, {std::fabs(tau_p4.eta()), Tau_genPartFlav[i], "Tight", "up"});
-                auto sf_vsjet_up = MUSiCObjects::get_scale_factor(
+                auto sf_vs_jet_up = MUSiCObjects::get_scale_factor(
                     deep_tau_2017_v2_p1_vs_jet,
                     is_data,
                     {tau_p4.pt(), Tau_decayMode[i], Tau_genPartFlav[i], "Tight", "Tight", "up", "pt"});
@@ -115,19 +114,35 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
                     deep_tau_2017_v2_p1_vs_e, is_data, {std::fabs(tau_p4.eta()), Tau_genPartFlav[i], "Tight", "down"});
                 auto sf_vs_mu_down = MUSiCObjects::get_scale_factor(
                     deep_tau_2017_v2_p1_vs_mu, is_data, {std::fabs(tau_p4.eta()), Tau_genPartFlav[i], "Tight", "down"});
-                auto sf_vsjet_down = MUSiCObjects::get_scale_factor(
+                auto sf_vs_jet_down = MUSiCObjects::get_scale_factor(
                     deep_tau_2017_v2_p1_vs_jet,
                     is_data,
                     {tau_p4.pt(), Tau_decayMode[i], Tau_genPartFlav[i], "Tight", "Tight", "down", "pt"});
 
-                scale_factors.push_back(sf_vs_e * sf_vs_mu * sf_vs_jet);
-                scale_factor_shift.push_back(std::sqrt(                                                        //
-                    std::pow(std::max(std::fabs(sf_vs_e - sf_vs_e_up), std::fabs(sf_vs_e - sf_vs_e_down)), 2.) //
-                    + std::pow(std::max(std::fabs(sf_vs_mu - sf_vs_mu_up), std::fabs(sf_vs_mu - sf_vs_mu_down)), 2.)
-                    //
-                    + std::pow(std::max(std::fabs(sf_vs_jet - sf_vsjet_up), std::fabs(sf_vs_jet - sf_vsjet_down)), 2.)
-                    //
-                    ));
+                if (shift == Shifts::Variations::Nominal)
+                {
+                    MUSiCObjects::push_sf_inplace(
+                        scale_factors, Shifts::Variations::Nominal, sf_vs_e * sf_vs_mu * sf_vs_jet);
+                    MUSiCObjects::push_sf_inplace(
+                        scale_factors, Shifts::Variations::TauVsE_Up, sf_vs_e_up * sf_vs_mu * sf_vs_jet);
+                    MUSiCObjects::push_sf_inplace(
+                        scale_factors, Shifts::Variations::TauVsE_Down, sf_vs_e_down * sf_vs_mu * sf_vs_jet);
+
+                    MUSiCObjects::push_sf_inplace(
+                        scale_factors, Shifts::Variations::TauVsMu_Up, sf_vs_e * sf_vs_mu_up * sf_vs_jet);
+                    MUSiCObjects::push_sf_inplace(
+                        scale_factors, Shifts::Variations::TauVsMu_Down, sf_vs_e * sf_vs_mu_down * sf_vs_jet);
+
+                    MUSiCObjects::push_sf_inplace(
+                        scale_factors, Shifts::Variations::TauVsJet_Up, sf_vs_e * sf_vs_mu * sf_vs_jet_up);
+                    MUSiCObjects::push_sf_inplace(
+                        scale_factors, Shifts::Variations::TauVsJet_Down, sf_vs_e * sf_vs_mu * sf_vs_jet_down);
+                }
+
+                if (Shifts::is_diff(shift))
+                {
+                    MUSiCObjects::push_sf_inplace(scale_factors, shift, sf_vs_e * sf_vs_mu * sf_vs_jet);
+                }
 
                 delta_met_x.push_back((tau_p4.pt() - Tau_pt[i]) * std::cos(Tau_phi[i]));
                 delta_met_y.push_back((tau_p4.pt() - Tau_pt[i]) * std::sin(Tau_phi[i]));
@@ -139,11 +154,10 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
         }
     }
 
-    return MUSiCObjects(taus_p4,            //
-                        scale_factors,      //
-                        scale_factor_shift, //
-                        delta_met_x,        //
-                        delta_met_y,        //
+    return MUSiCObjects(taus_p4,       //
+                        scale_factors, //
+                        delta_met_x,   //
+                        delta_met_y,   //
                         is_fake);
 }
 

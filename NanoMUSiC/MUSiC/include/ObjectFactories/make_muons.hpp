@@ -6,6 +6,7 @@
 #include "Math/Vector4Dfwd.h"
 #include "Math/VectorUtil.h"
 #include "ROOT/RVec.hxx"
+#include "TMath.h"
 
 using namespace ROOT;
 using namespace ROOT::Math;
@@ -470,8 +471,7 @@ inline auto make_muons(const RVec<float> &Muon_pt,                      //
     auto year = get_runyear(_year);
 
     auto muons_p4 = RVec<Math::PtEtaPhiMVector>{};
-    auto scale_factors = RVec<double>{};
-    auto scale_factor_shift = RVec<double>{};
+    auto scale_factors = std::unordered_map<Shifts::Variations, RVec<double>>{};
     auto delta_met_x = RVec<double>{};
     auto delta_met_y = RVec<double>{};
     auto is_fake = RVec<bool>{};
@@ -563,12 +563,29 @@ inline auto make_muons(const RVec<float> &Muon_pt,                      //
                         : MUSiCObjects::get_scale_factor(
                               muon_sf_iso_medium_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "systdown"});
 
-                scale_factors.push_back(sf_reco * sf_id * sf_iso);
-                scale_factor_shift.push_back(std::sqrt(                                                       //
-                    std::pow(std::max(std::fabs(sf_reco - sf_reco_up), std::fabs(sf_reco - sf_reco_down)), 2) //
-                    + std::pow(std::max(std::fabs(sf_id - sf_id_up), std::fabs(sf_id - sf_id_down)), 2)       //
-                    + std::pow(std::max(std::fabs(sf_iso - sf_iso_up), std::fabs(sf_iso - sf_iso_down)), 2)   //
-                    ));
+                if (shift == Shifts::Variations::Nominal)
+                {
+                    MUSiCObjects::push_sf_inplace(scale_factors, Shifts::Variations::Nominal, sf_reco * sf_id * sf_iso);
+                    MUSiCObjects::push_sf_inplace(
+                        scale_factors, Shifts::Variations::MuonReco_Up, sf_reco_up * sf_id * sf_iso);
+                    MUSiCObjects::push_sf_inplace(
+                        scale_factors, Shifts::Variations::MuonReco_Down, sf_reco_down * sf_id * sf_iso);
+
+                    MUSiCObjects::push_sf_inplace(
+                        scale_factors, Shifts::Variations::MuonId_Up, sf_reco * sf_id_up * sf_iso);
+                    MUSiCObjects::push_sf_inplace(
+                        scale_factors, Shifts::Variations::MuonId_Down, sf_reco * sf_id_down * sf_iso);
+
+                    MUSiCObjects::push_sf_inplace(
+                        scale_factors, Shifts::Variations::MuonIso_Up, sf_reco * sf_id * sf_iso_up);
+                    MUSiCObjects::push_sf_inplace(
+                        scale_factors, Shifts::Variations::MuonIso_Down, sf_reco * sf_id * sf_iso_down);
+                }
+
+                if (Shifts::is_diff(shift))
+                {
+                    MUSiCObjects::push_sf_inplace(scale_factors, shift, sf_reco * sf_id * sf_iso);
+                }
             }
 
             if (is_good_high_pt_muon)
@@ -603,12 +620,30 @@ inline auto make_muons(const RVec<float> &Muon_pt,                      //
                 auto sf_iso_down = MUSiCObjects::get_scale_factor(
                     muon_sf_iso_high_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "systdown"});
 
-                scale_factors.push_back(sf_reco * sf_id * sf_iso);
-                scale_factor_shift.push_back(std::sqrt(                                                       //
-                    std::pow(std::max(std::fabs(sf_reco - sf_reco_up), std::fabs(sf_reco - sf_reco_down)), 2) //
-                    + std::pow(std::max(std::fabs(sf_id - sf_id_up), std::fabs(sf_id - sf_id_down)), 2)       //
-                    + std::pow(std::max(std::fabs(sf_iso - sf_iso_up), std::fabs(sf_iso - sf_iso_down)), 2)   //
-                    ));
+
+                if (shift == Shifts::Variations::Nominal)
+                {
+                MUSiCObjects::push_sf_inplace(scale_factors, Shifts::Variations::Nominal, sf_reco * sf_id * sf_iso);
+                    MUSiCObjects::push_sf_inplace(
+                        scale_factors, Shifts::Variations::MuonReco_Up, sf_reco_up * sf_id * sf_iso);
+                    MUSiCObjects::push_sf_inplace(
+                        scale_factors, Shifts::Variations::MuonReco_Down, sf_reco_down * sf_id * sf_iso);
+
+                    MUSiCObjects::push_sf_inplace(
+                        scale_factors, Shifts::Variations::MuonId_Up, sf_reco * sf_id_up * sf_iso);
+                    MUSiCObjects::push_sf_inplace(
+                        scale_factors, Shifts::Variations::MuonId_Down, sf_reco * sf_id_down * sf_iso);
+
+                    MUSiCObjects::push_sf_inplace(
+                        scale_factors, Shifts::Variations::MuonIso_Up, sf_reco * sf_id * sf_iso_up);
+                    MUSiCObjects::push_sf_inplace(
+                        scale_factors, Shifts::Variations::MuonIso_Down, sf_reco * sf_id * sf_iso_down);
+                }
+
+                if (Shifts::is_diff(shift))
+                {
+                    MUSiCObjects::push_sf_inplace(scale_factors, shift, sf_reco * sf_id * sf_iso);
+                }
             }
 
             if (is_good_low_pt_muon or is_good_high_pt_muon)
@@ -623,11 +658,10 @@ inline auto make_muons(const RVec<float> &Muon_pt,                      //
         }
     }
 
-    return MUSiCObjects(muons_p4,           //
-                        scale_factors,      //
-                        scale_factor_shift, //
-                        delta_met_x,        //
-                        delta_met_y,        //
+    return MUSiCObjects(muons_p4,      //
+                        scale_factors, //
+                        delta_met_x,   //
+                        delta_met_y,   //
                         is_fake);
 }
 

@@ -1,6 +1,7 @@
 #ifndef ROOT_HELPERS
 #define ROOT_HELPERS
 
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
 #include <cstdlib>
@@ -11,6 +12,7 @@
 #include <memory>
 #include <numeric>
 #include <optional>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -19,6 +21,7 @@
 #include "TGraphAsymmErrors.h"
 #include "TGraphErrors.h"
 #include "TH1.h"
+#include "TKey.h"
 #include "TList.h"
 
 using namespace ROOT;
@@ -65,7 +68,6 @@ inline auto Print(const TH1F &h) -> void
 
 inline auto Clone(const TH1F &h, const std::optional<std::string> &new_name = std::nullopt) -> TH1F
 {
-    // auto new_histo = *(static_cast<TH1F *>(h.Clone()));
     auto new_histo = TH1F(h);
     if (new_name)
     {
@@ -98,6 +100,12 @@ inline auto Counts(const TH1F &h) -> RVec<double>
     }
 
     return counts;
+}
+
+inline auto Counts(TKey &h) -> RVec<double>
+{
+    auto h_ptr = std::unique_ptr<TH1F>(static_cast<TH1F *>(h.ReadObj()));
+    return Counts(*(h_ptr));
 }
 
 inline auto Errors(const TH1F &h) -> RVec<double>
@@ -249,6 +257,43 @@ inline auto SumAsTH1F(const std::vector<std::shared_ptr<TH1F>> &histos,
     {
         fmt::print(stderr, "ERROR: Could not sum histograms. The provided list is empty.");
         std::exit(EXIT_FAILURE);
+    }
+
+    auto sum = Clone(*(histos.at(0)));
+    if (histos.size() > 1)
+    {
+        auto list = TList();
+        for (std::size_t i = 1; i < histos.size(); i++)
+        {
+            list.Add(histos.at(i).get());
+        }
+        sum.Merge(&list);
+    }
+
+    if (new_name)
+    {
+        sum.SetName(new_name->c_str());
+    }
+    else
+    {
+        sum.SetName(histos.at(0)->GetName());
+    }
+
+    return sum;
+}
+
+inline auto SumAsTH1F(const std::vector<std::shared_ptr<TKey>> &_histos,
+                      const std::optional<std::string> &new_name = std::nullopt) -> TH1F
+{
+    auto histos = std::vector<std::unique_ptr<TH1F>>();
+    for (auto &&_hist : _histos)
+    {
+        histos.push_back(std::unique_ptr<TH1F>(static_cast<TH1F *>(_hist->ReadObj())));
+    }
+
+    if (histos.size() == 0)
+    {
+        throw std::runtime_error("ERROR: Could not sum histograms. The provided list is empty.");
     }
 
     auto sum = Clone(*(histos.at(0)));
@@ -663,9 +708,27 @@ inline auto AbsDiffAndSymmetrizeForPlots(const TH1F &nom, const TH1F &up, const 
     return Symmetrize(ROOTHelpers::AbsDiff(nom, up), ROOTHelpers::AbsDiff(nom, down));
 }
 
+inline auto AbsDiffAndSymmetrizeForPlots(TKey &nom, TKey &up, TKey &down) -> RVec<double>
+{
+    auto nom_ptr = std::unique_ptr<TH1F>(static_cast<TH1F *>(nom.ReadObj()));
+    auto up_ptr = std::unique_ptr<TH1F>(static_cast<TH1F *>(up.ReadObj()));
+    auto down_ptr = std::unique_ptr<TH1F>(static_cast<TH1F *>(down.ReadObj()));
+
+    return AbsDiffAndSymmetrizeForPlots(*nom_ptr, *up_ptr, *down_ptr);
+}
+
 inline auto AbsDiffAndSymmetrize(const TH1F &nom, const TH1F &up, const TH1F &down) -> RVec<double>
 {
     return ROOT::VecOps::abs(Symmetrize(ROOTHelpers::Diff(up, nom), ROOTHelpers::Diff(down, nom)));
+}
+
+inline auto AbsDiffAndSymmetrize(TKey &nom, TKey &up, TKey &down) -> RVec<double>
+{
+    auto nom_ptr = std::unique_ptr<TH1F>(static_cast<TH1F *>(nom.ReadObj()));
+    auto up_ptr = std::unique_ptr<TH1F>(static_cast<TH1F *>(up.ReadObj()));
+    auto down_ptr = std::unique_ptr<TH1F>(static_cast<TH1F *>(down.ReadObj()));
+
+    return AbsDiffAndSymmetrize(*nom_ptr, *up_ptr, *down_ptr);
 }
 
 } // namespace Uncertanties

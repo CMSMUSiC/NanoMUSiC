@@ -192,12 +192,12 @@ PYBIND11_MODULE(classification_imp, m)
             "ouput_file_path"_a);
 
     py::class_<Distribution>(m, "Distribution")
-        .def_static("fold", Distribution::fold, "input_files"_a, "ouput_dir"_a, "analyses_to_fold"_a)
+        .def_static("fold", Distribution::fold, "input_files"_a, "ouput_dir"_a)
         .def_static("make_distributions",
                     Distribution::make_distributions,
                     "input_file"_a,
                     "ouput_dir"_a,
                     "analysis_to_build"_a,
-                    "skip_per_year"_a,
-                    "rescaling"_a);
+                    "skip_per_year"_a
+                    );
 }

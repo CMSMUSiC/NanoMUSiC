@@ -21,12 +21,12 @@ namespace ObjectFactories
 
 inline auto get_unclustered_energy_shift(const Shifts::Variations shift, const double MET_MetUnclustEnUpDelta) -> double
 {
-    if (shift == Shifts::Variations::UnclusteredEnergy_Up)
+    if (shift == Shifts::Variations::METDiffUnclusteredEnergy_Up)
     {
         return MET_MetUnclustEnUpDelta;
     }
 
-    if (shift == Shifts::Variations::UnclusteredEnergy_Down)
+    if (shift == Shifts::Variations::METDiffUnclusteredEnergy_Down)
     {
         return -MET_MetUnclustEnUpDelta;
     }
@@ -160,7 +160,7 @@ inline auto make_met(const double MET_pt,                            //
 
     auto year = get_runyear(_year);
     auto met_p4 = RVec<Math::PtEtaPhiMVector>{};
-    auto scale_factors = RVec<double>{};
+    auto scale_factors = std::unordered_map<Shifts::Variations, RVec<double>>{};
     auto scale_factor_shift = RVec<double>{};
     auto delta_met_x = RVec<double>{};
     auto delta_met_y = RVec<double>{};
@@ -208,8 +208,16 @@ inline auto make_met(const double MET_pt,                            //
 
         if (is_good_met)
         {
-            scale_factors.push_back(1.);
-            scale_factor_shift.push_back(0.);
+
+            if (Shifts::is_MET_diff(shift))
+            {
+                MUSiCObjects::push_sf_inplace(scale_factors, shift, 1.);
+            }
+            else
+            {
+                MUSiCObjects::push_sf_inplace(scale_factors, Shifts::Variations::Nominal, 1.);
+            }
+
             delta_met_x.push_back(0.);
             delta_met_y.push_back(0.);
             met_p4.push_back(Math::PtEtaPhiMVector(this_met));
@@ -218,11 +226,10 @@ inline auto make_met(const double MET_pt,                            //
         }
     }
 
-    return {MUSiCObjects(met_p4,             //
-                         scale_factors,      //
-                         scale_factor_shift, //
-                         delta_met_x,        //
-                         delta_met_y,        //
+    return {MUSiCObjects(met_p4,        //
+                         scale_factors, //
+                         delta_met_x,   //
+                         delta_met_y,   //
                          is_fake),
             is_fake_met};
 }

@@ -4,9 +4,11 @@
 #include <cstdlib>
 #include <memory>
 #include <optional>
+#include <stdexcept>
 #include <unordered_map>
 
 #include "TGraphAsymmErrors.h"
+#include "TKey.h"
 #include "TGraphErrors.h"
 
 #include "Shifts.hpp"
@@ -56,7 +58,7 @@ struct ECHistogram
     std::string year;
     std::size_t shift;
     std::string histo_name;
-    std::shared_ptr<TH1F> histogram;
+    std::shared_ptr<TKey> histogram;
 
     auto get_shift() const -> std::string
     {
@@ -98,8 +100,7 @@ class Distribution
         case YearToPlot::Run2:
             return "Run2";
         default:
-            fmt::print(stderr, "ERROR: Could not convert YearToPlot to string.");
-            std::exit(EXIT_FAILURE);
+            throw std::runtime_error("Could not convert YearToPlot to string.");
         }
     }
 
@@ -124,7 +125,9 @@ class Distribution
     std::string m_year_to_plot;
     RVec<double> m_statistical_uncert;
     RVec<double> m_systematics_uncert;
+    RVec<double> m_systematics_uncert_for_plotting;
     RVec<double> m_total_uncert;
+    RVec<double> m_total_uncert_for_plotting;
     TH1F m_total_data_histogram;
     TH1F m_total_mc_histogram;
     unsigned long m_n_bins;
@@ -161,7 +164,7 @@ class Distribution
     }
 
     // Distribution(const std::vector<std::unique_ptr<TFile>> &input_root_files,
-    Distribution(const std::vector<ECHistogram> &event_class_histograms,
+    Distribution( const std::vector<ECHistogram> &event_class_histograms,
                  const std::string &event_class_name,
                  const std::string &distribution_name,
                  bool allow_rescale_by_width,
@@ -218,19 +221,17 @@ class Distribution
         std::exit(EXIT_FAILURE);
     }
 
-    static auto fold(const std::vector<std::string> &input_files,
-                     const std::string &output_dir,
-                     std::vector<std::string> &analyses_to_fold) -> void;
+    static auto fold(const std::vector<std::string> &input_files, const std::string &output_dir) -> bool;
 
     static auto make_distributions(const std::string &input_file,
                                    const std::string &output_dir,
                                    std::string &analysis_to_plot,
-				   bool skip_per_year,
-                                   const std::optional<std::unordered_map<std::string, double>> &rescaling) -> bool;
+                                   bool skip_per_year) -> bool;
 
     auto get_statistical_uncert() -> RVec<double>;
-    auto get_systematics_uncert(const std::array<std::unordered_map<std::string, std::vector<std::shared_ptr<TH1F>>>,
-                                                 total_variations> &unmerged_mc_histograms) -> RVec<double>;
+    auto get_systematics_uncert(const std::array<std::unordered_map<std::string, std::vector<std::shared_ptr<TKey>>>,
+                                                 total_variations> &unmerged_mc_histograms)
+        -> std::tuple<RVec<double>, RVec<double>>;
 
     auto make_plot_props() -> PlotProps;
     auto make_integral_pvalue_props() -> IntegralPValueProps;
