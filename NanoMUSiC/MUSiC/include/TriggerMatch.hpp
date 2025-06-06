@@ -99,7 +99,7 @@ inline auto make_trigger_matches(const std::unordered_map<std::string, bool> &is
                                          [](const auto &muon)
                                          {
                                              // sub-leading
-                                             return muon.pt() > 21. /*following 2021 paper*/;
+                                             return muon.pt() > 20. /*following 2021 paper*/;
                                          });
         if (good_muons.size() >= 2)
         {

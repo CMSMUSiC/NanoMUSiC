@@ -802,7 +802,7 @@ auto classification(const std::string process,
                        unwrap_or(HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg, false);
             }
 
-            if (_year == Year::Run2018)
+         if (_year == Year::Run2018)
             {
                 return unwrap_or(HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg, false) or
                        unwrap_or(HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg, false) or
@@ -1368,7 +1368,6 @@ auto classification(const std::string process,
             };
 
             // Here goes the real classification...
-            // trigger_matches
             auto temp_event_classes = TempEC::make_temp_event_classes(
                 muons.size(),
                 electrons.size(),
@@ -1388,7 +1387,6 @@ auto classification(const std::string process,
                 trigger_matches.at("pass_photon_trigger") or trigger_matches.at("pass_double_photon_trigger"),
                 /*tau matches*/
                 trigger_matches.at("pass_double_tau_trigger") or trigger_matches.at("pass_high_pt_tau_trigger"));
-
 
             for (auto &temp_ec : temp_event_classes)
             {
