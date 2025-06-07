@@ -166,10 +166,9 @@ inline auto make_photons(const RVec<float> &Photon_pt,             //
                 auto sf_veto_down = MUSiCObjects::get_scale_factor(
                     photon_csev_sf, is_data, {get_year_for_photon_sf(year), "sfdown", "MVA", "EBInc"});
 
-                MUSiCObjects::push_sf_inplace(scale_factors, Shifts::Variations::Nominal, sf_veto * sf_id);
-
                 if (shift == Shifts::Variations::Nominal)
                 {
+                    MUSiCObjects::push_sf_inplace(scale_factors, Shifts::Variations::Nominal, sf_veto * sf_id);
                     MUSiCObjects::push_sf_inplace(scale_factors, Shifts::Variations::PhotonId_Up, sf_veto_up * sf_id);
                     MUSiCObjects::push_sf_inplace(
                         scale_factors, Shifts::Variations::PhotonId_Down, sf_veto_down * sf_id);
@@ -179,7 +178,7 @@ inline auto make_photons(const RVec<float> &Photon_pt,             //
                         scale_factors, Shifts::Variations::PhotonVeto_Down, sf_veto * sf_id_down);
                 }
 
-                if (not(scale_factors.contains(shift)))
+                if (Shifts::is_diff(shift))
                 {
                     MUSiCObjects::push_sf_inplace(scale_factors, shift, sf_veto * sf_id);
                 }
@@ -194,7 +193,6 @@ inline auto make_photons(const RVec<float> &Photon_pt,             //
         }
     }
 
-    fmt::print("I was here photons: {} - [{}]\n", shift, map_to_string(scale_factors));
     return MUSiCObjects(photons_p4,    //
                         scale_factors, //
                         delta_met_x,   //

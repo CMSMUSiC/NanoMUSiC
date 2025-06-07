@@ -207,6 +207,7 @@ inline auto make_electrons(const RVec<float> &Electron_pt,   //
 
     for (std::size_t i = 0; i < Electron_pt.size(); i++)
     {
+
         auto eta_SC = Electron_eta.at(i) + Electron_deltaEtaSC.at(i);
 
         // Low pT Electrons
@@ -333,9 +334,9 @@ inline auto make_electrons(const RVec<float> &Electron_pt,   //
                                                                   Electron_eta.at(i) + Electron_deltaEtaSC.at(i),
                                                                   electron_p4.pt()});
 
-                MUSiCObjects::push_sf_inplace(scale_factors, Shifts::Variations::Nominal, sf_reco * sf_id);
                 if (shift == Shifts::Variations::Nominal)
                 {
+                MUSiCObjects::push_sf_inplace(scale_factors, Shifts::Variations::Nominal, sf_reco * sf_id);
                     MUSiCObjects::push_sf_inplace(
                         scale_factors, Shifts::Variations::ElectronReco_Up, sf_reco_up * sf_id);
                     MUSiCObjects::push_sf_inplace(
@@ -346,7 +347,7 @@ inline auto make_electrons(const RVec<float> &Electron_pt,   //
                         scale_factors, Shifts::Variations::ElectronId_Down, sf_reco * sf_id_down);
                 }
 
-                if (not(scale_factors.contains(shift)))
+                if (Shifts::is_diff(shift))
                 {
                     MUSiCObjects::push_sf_inplace(scale_factors, shift, sf_reco * sf_id);
                 }
@@ -372,9 +373,9 @@ inline auto make_electrons(const RVec<float> &Electron_pt,   //
                     {get_year_for_electron_sf(year), "sfdown", "RecoAbove20", Electron_eta.at(i), electron_p4.pt()});
                 auto sf_id_down = get_high_pt_sf(is_data, year, "sfdown", electron_p4.pt(), electron_p4.eta());
 
-                MUSiCObjects::push_sf_inplace(scale_factors, Shifts::Variations::Nominal, sf_reco * sf_id);
                 if (shift == Shifts::Variations::Nominal)
                 {
+                    MUSiCObjects::push_sf_inplace(scale_factors, Shifts::Variations::Nominal, sf_reco * sf_id);
                     MUSiCObjects::push_sf_inplace(
                         scale_factors, Shifts::Variations::ElectronReco_Up, sf_reco_up * sf_id);
                     MUSiCObjects::push_sf_inplace(
@@ -385,7 +386,7 @@ inline auto make_electrons(const RVec<float> &Electron_pt,   //
                         scale_factors, Shifts::Variations::ElectronId_Down, sf_reco * sf_id_down);
                 }
 
-                if (not(scale_factors.contains(shift)))
+                if (Shifts::is_diff(shift))
                 {
                     MUSiCObjects::push_sf_inplace(scale_factors, shift, sf_reco * sf_id);
                 }
@@ -403,7 +404,6 @@ inline auto make_electrons(const RVec<float> &Electron_pt,   //
         }
     }
 
-    fmt::print("I was here electrons: {} - [{}]\n", shift, map_to_string(scale_factors));
     return MUSiCObjects(electrons_p4,  //
                         scale_factors, //
                         delta_met_x,   //

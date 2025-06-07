@@ -571,30 +571,30 @@ inline auto make_jets(const RVec<float> &Jet_pt,                       //
                     auto scale_factor_up = (1 - btag_eff * sf_up) / (1 - btag_eff);
                     auto scale_factor_down = (1 - btag_eff * sf_down) / (1 - btag_eff);
 
-                    MUSiCObjects::push_sf_inplace(jets_scale_factors, Shifts::Variations::Nominal, scale_factor);
                     if (shift == Shifts::Variations::Nominal)
                     {
+                        MUSiCObjects::push_sf_inplace(jets_scale_factors, Shifts::Variations::Nominal, scale_factor);
                         MUSiCObjects::push_sf_inplace(
                             jets_scale_factors, Shifts::Variations::JetBTag_Up, scale_factor_up);
                         MUSiCObjects::push_sf_inplace(
                             jets_scale_factors, Shifts::Variations::JetBTag_Down, scale_factor_down);
                     }
 
-                    if (not(jets_scale_factors.contains(shift)))
+                    if (Shifts::is_diff(shift))
                     {
                         MUSiCObjects::push_sf_inplace(jets_scale_factors, shift, scale_factor);
                     }
                 }
                 else
                 {
-                    MUSiCObjects::push_sf_inplace(jets_scale_factors, Shifts::Variations::Nominal, 1.);
                     if (shift == Shifts::Variations::Nominal)
                     {
+                        MUSiCObjects::push_sf_inplace(jets_scale_factors, Shifts::Variations::Nominal, 1.);
                         MUSiCObjects::push_sf_inplace(jets_scale_factors, Shifts::Variations::JetBTag_Up, 1.);
                         MUSiCObjects::push_sf_inplace(jets_scale_factors, Shifts::Variations::JetBTag_Down, 1.);
                     }
 
-                    if (not(jets_scale_factors.contains(shift)))
+                    if (Shifts::is_diff(shift))
                     {
                         MUSiCObjects::push_sf_inplace(jets_scale_factors, shift, 1.);
                     }
@@ -657,30 +657,30 @@ inline auto make_jets(const RVec<float> &Jet_pt,                       //
                     auto scale_factor_up = sf_up;
                     auto scale_factor_down = sf_down;
 
-                    MUSiCObjects::push_sf_inplace(bjets_scale_factors, Shifts::Variations::Nominal, scale_factor);
                     if (shift == Shifts::Variations::Nominal)
                     {
+                        MUSiCObjects::push_sf_inplace(bjets_scale_factors, Shifts::Variations::Nominal, scale_factor);
                         MUSiCObjects::push_sf_inplace(
                             bjets_scale_factors, Shifts::Variations::JetBTag_Up, scale_factor_up);
                         MUSiCObjects::push_sf_inplace(
                             bjets_scale_factors, Shifts::Variations::JetBTag_Down, scale_factor_down);
                     }
 
-                    if (not(bjets_scale_factors.contains(shift)))
+                    if (Shifts::is_diff(shift))
                     {
                         MUSiCObjects::push_sf_inplace(bjets_scale_factors, shift, scale_factor);
                     }
                 }
                 else
                 {
-                    MUSiCObjects::push_sf_inplace(bjets_scale_factors, Shifts::Variations::Nominal, 1.);
                     if (shift == Shifts::Variations::Nominal)
                     {
+                        MUSiCObjects::push_sf_inplace(bjets_scale_factors, Shifts::Variations::Nominal, 1.);
                         MUSiCObjects::push_sf_inplace(bjets_scale_factors, Shifts::Variations::JetBTag_Up, 1.);
                         MUSiCObjects::push_sf_inplace(bjets_scale_factors, Shifts::Variations::JetBTag_Down, 1.);
                     }
 
-                    if (not(bjets_scale_factors.contains(shift)))
+                    if (Shifts::is_diff(shift))
                     {
                         MUSiCObjects::push_sf_inplace(bjets_scale_factors, shift, 1.);
                     }
@@ -688,9 +688,6 @@ inline auto make_jets(const RVec<float> &Jet_pt,                       //
             }
         }
     }
-
-    fmt::print("I was here jets: {} - [{}]\n", shift, map_to_string(jets_scale_factors));
-    fmt::print("I was here bjets: {} - [{}]\n", shift, map_to_string(bjets_scale_factors));
 
     return {MUSiCObjects(jets_p4, jets_scale_factors, jets_delta_met_x, jets_delta_met_y, jets_is_fake),
             MUSiCObjects(bjets_p4, bjets_scale_factors, bjets_delta_met_x, bjets_delta_met_y, bjets_is_fake),

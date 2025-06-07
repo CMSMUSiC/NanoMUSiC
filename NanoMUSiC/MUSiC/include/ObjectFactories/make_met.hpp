@@ -208,11 +208,14 @@ inline auto make_met(const double MET_pt,                            //
 
         if (is_good_met)
         {
-            MUSiCObjects::push_sf_inplace(scale_factors, Shifts::Variations::Nominal, 1.);
 
-            if (not(scale_factors.contains(shift)))
+            if (Shifts::is_MET_diff(shift))
             {
                 MUSiCObjects::push_sf_inplace(scale_factors, shift, 1.);
+            }
+            else
+            {
+                MUSiCObjects::push_sf_inplace(scale_factors, Shifts::Variations::Nominal, 1.);
             }
 
             delta_met_x.push_back(0.);
@@ -223,7 +226,6 @@ inline auto make_met(const double MET_pt,                            //
         }
     }
 
-    fmt::print("I was here met: {} - [{}]\n", shift, map_to_string(scale_factors));
     return {MUSiCObjects(met_p4,        //
                          scale_factors, //
                          delta_met_x,   //

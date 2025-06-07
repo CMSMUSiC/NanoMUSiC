@@ -5,7 +5,7 @@ add_compile_options(-g)
 add_compile_options(-I/cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/include)
 
 # add_compile_options(${ROOT_CFLAGS} ${CORRECTIONLIB_FLAGS} -fdiagnostics-color=always -MD -MP -O3 -Wall -march=native -pthread -m64 -ffloat-store)
-add_compile_options(${ROOT_CFLAGS} -fdiagnostics-color=always -MD -MP -O3 -Wall -march=native -pthread -m64 -ffloat-store)
+add_compile_options(${ROOT_CFLAGS} -g -fdiagnostics-color=always -MD -MP -O3 -Wall -march=native -pthread -m64 -ffloat-store)
 
 # root linker options
 execute_process(COMMAND root-config --ldflags OUTPUT_VARIABLE ROOT_LDFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)

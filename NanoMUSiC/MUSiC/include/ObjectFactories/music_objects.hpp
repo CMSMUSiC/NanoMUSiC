@@ -38,12 +38,7 @@ using CorrectionlibRef_t = correction::Correction::Ref;
 inline auto get_uniform_vector_size(const std::unordered_map<Shifts::Variations, RVec<double>> &map)
     -> std::optional<std::size_t>
 {
-    if (map.empty())
-    {
-        return 0;
-    }
-
-    std::size_t expected_size = map.begin()->second.size();
+    std::size_t expected_size = map.empty() ? 0 : map.cbegin()->second.size();
 
     for (const auto &[key, vec] : map)
     {
@@ -60,25 +55,23 @@ inline std::string map_to_string(const std::unordered_map<Shifts::Variations, RV
 {
     if (map.empty())
     {
-        fmt::print(
-            stderr, "ERROR: Could not create MUSiCObjects. Scale factors is completly empty. {}\n", map_to_string(map));
-        std::exit(EXIT_FAILURE);
+        return "{}";
     }
 
     std::ostringstream oss;
     oss << std::fixed << std::setprecision(2);
-    oss << "{\n";
+    oss << "{ ";
 
     bool first_entry = true;
     for (const auto &[key, vec] : map)
     {
         if (!first_entry)
         {
-            oss << ",\n";
+            oss << ", ";
         }
         first_entry = false;
 
-        oss << "  " << static_cast<unsigned int>(key) << ": [";
+        oss << "  " << Shifts::variation_to_string(key) << ": [";
 
         bool first_element = true;
         for (const auto &value : vec)
@@ -94,7 +87,7 @@ inline std::string map_to_string(const std::unordered_map<Shifts::Variations, RV
         oss << "]";
     }
 
-    oss << "\n}";
+    oss << " }";
     return oss.str();
 }
 
@@ -319,6 +312,13 @@ class MUSiCObjects
         auto agg = [&](std::pair<std::size_t, const MUSiCObjects &> music_objects) -> double
         {
             auto [n, this_obj] = music_objects;
+
+            // no objects were selected
+            if (this_obj.scale_factor.empty())
+            {
+                return 1.;
+            }
+
             if (this_obj.scale_factor.contains(shift))
             {
                 return std::reduce(this_obj.scale_factor.at(shift).begin(),

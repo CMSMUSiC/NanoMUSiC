@@ -119,10 +119,10 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
                     is_data,
                     {tau_p4.pt(), Tau_decayMode[i], Tau_genPartFlav[i], "Tight", "Tight", "down", "pt"});
 
-                MUSiCObjects::push_sf_inplace(
-                    scale_factors, Shifts::Variations::Nominal, sf_vs_e * sf_vs_mu * sf_vs_jet);
                 if (shift == Shifts::Variations::Nominal)
                 {
+                    MUSiCObjects::push_sf_inplace(
+                        scale_factors, Shifts::Variations::Nominal, sf_vs_e * sf_vs_mu * sf_vs_jet);
                     MUSiCObjects::push_sf_inplace(
                         scale_factors, Shifts::Variations::TauVsE_Up, sf_vs_e_up * sf_vs_mu * sf_vs_jet);
                     MUSiCObjects::push_sf_inplace(
@@ -139,7 +139,7 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
                         scale_factors, Shifts::Variations::TauVsJet_Down, sf_vs_e * sf_vs_mu * sf_vs_jet_down);
                 }
 
-                if (not(scale_factors.contains(shift)))
+                if (Shifts::is_diff(shift))
                 {
                     MUSiCObjects::push_sf_inplace(scale_factors, shift, sf_vs_e * sf_vs_mu * sf_vs_jet);
                 }
@@ -154,7 +154,6 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
         }
     }
 
-    fmt::print("I was here taus: {} - [{}]\n", shift, map_to_string(scale_factors));
     return MUSiCObjects(taus_p4,       //
                         scale_factors, //
                         delta_met_x,   //

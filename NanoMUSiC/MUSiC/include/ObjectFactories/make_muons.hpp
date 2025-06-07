@@ -563,10 +563,9 @@ inline auto make_muons(const RVec<float> &Muon_pt,                      //
                         : MUSiCObjects::get_scale_factor(
                               muon_sf_iso_medium_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "systdown"});
 
-                MUSiCObjects::push_sf_inplace(scale_factors, Shifts::Variations::Nominal, sf_reco * sf_id * sf_iso);
-
                 if (shift == Shifts::Variations::Nominal)
                 {
+                    MUSiCObjects::push_sf_inplace(scale_factors, Shifts::Variations::Nominal, sf_reco * sf_id * sf_iso);
                     MUSiCObjects::push_sf_inplace(
                         scale_factors, Shifts::Variations::MuonReco_Up, sf_reco_up * sf_id * sf_iso);
                     MUSiCObjects::push_sf_inplace(
@@ -583,7 +582,7 @@ inline auto make_muons(const RVec<float> &Muon_pt,                      //
                         scale_factors, Shifts::Variations::MuonIso_Down, sf_reco * sf_id * sf_iso_down);
                 }
 
-                if (not(scale_factors.contains(shift)))
+                if (Shifts::is_diff(shift))
                 {
                     MUSiCObjects::push_sf_inplace(scale_factors, shift, sf_reco * sf_id * sf_iso);
                 }
@@ -621,10 +620,10 @@ inline auto make_muons(const RVec<float> &Muon_pt,                      //
                 auto sf_iso_down = MUSiCObjects::get_scale_factor(
                     muon_sf_iso_high_pt, is_data, {std::fabs(muon_p4.eta()), muon_p4.pt(), "systdown"});
 
-                MUSiCObjects::push_sf_inplace(scale_factors, Shifts::Variations::Nominal, sf_reco * sf_id * sf_iso);
 
                 if (shift == Shifts::Variations::Nominal)
                 {
+                MUSiCObjects::push_sf_inplace(scale_factors, Shifts::Variations::Nominal, sf_reco * sf_id * sf_iso);
                     MUSiCObjects::push_sf_inplace(
                         scale_factors, Shifts::Variations::MuonReco_Up, sf_reco_up * sf_id * sf_iso);
                     MUSiCObjects::push_sf_inplace(
@@ -641,7 +640,7 @@ inline auto make_muons(const RVec<float> &Muon_pt,                      //
                         scale_factors, Shifts::Variations::MuonIso_Down, sf_reco * sf_id * sf_iso_down);
                 }
 
-                if (not(scale_factors.contains(shift)))
+                if (Shifts::is_diff(shift))
                 {
                     MUSiCObjects::push_sf_inplace(scale_factors, shift, sf_reco * sf_id * sf_iso);
                 }
@@ -658,8 +657,6 @@ inline auto make_muons(const RVec<float> &Muon_pt,                      //
             }
         }
     }
-
-    fmt::print("I was here Muon: {} - [{}]\n", shift, map_to_string(scale_factors));
 
     return MUSiCObjects(muons_p4,      //
                         scale_factors, //

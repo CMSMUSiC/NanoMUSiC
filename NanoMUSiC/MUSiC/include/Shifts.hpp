@@ -561,6 +561,15 @@ class Shifts
         }
         return 1.;
     }
+
+    static auto is_diff(Variations shift) -> bool
+    {
+        return variation_to_string(shift).find("Diff") != std::string::npos;
+    }
+    static auto is_MET_diff(Variations shift) -> bool
+    {
+        return variation_to_string(shift).find("METDiff") != std::string::npos;
+    }
 };
 
 inline auto format_as(Shifts::Variations v)
