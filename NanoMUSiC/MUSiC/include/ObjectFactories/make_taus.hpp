@@ -154,6 +154,7 @@ inline auto make_taus(const RVec<float> &Tau_pt,                            //
         }
     }
 
+    fmt::print("I was here taus: {} - [{}]\n", shift, map_to_string(scale_factors));
     return MUSiCObjects(taus_p4,       //
                         scale_factors, //
                         delta_met_x,   //

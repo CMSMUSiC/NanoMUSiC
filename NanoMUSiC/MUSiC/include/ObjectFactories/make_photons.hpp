@@ -194,6 +194,7 @@ inline auto make_photons(const RVec<float> &Photon_pt,             //
         }
     }
 
+    fmt::print("I was here photons: {} - [{}]\n", shift, map_to_string(scale_factors));
     return MUSiCObjects(photons_p4,    //
                         scale_factors, //
                         delta_met_x,   //

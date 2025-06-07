@@ -4,6 +4,7 @@
 #include <any>
 #include <concepts>
 #include <cstdlib>
+#include <map>
 #include <numeric>
 #include <optional>
 #include <stdexcept>
@@ -39,7 +40,7 @@ inline auto get_uniform_vector_size(const std::unordered_map<Shifts::Variations,
 {
     if (map.empty())
     {
-        return std::nullopt;
+        return 0;
     }
 
     std::size_t expected_size = map.begin()->second.size();
@@ -59,7 +60,9 @@ inline std::string map_to_string(const std::unordered_map<Shifts::Variations, RV
 {
     if (map.empty())
     {
-        return "{}";
+        fmt::print(
+            stderr, "ERROR: Could not create MUSiCObjects. Scale factors is completly empty. {}\n", map_to_string(map));
+        std::exit(EXIT_FAILURE);
     }
 
     std::ostringstream oss;
@@ -135,7 +138,7 @@ class MUSiCObjects
         }
 
         if (not(                                    //
-                p4.size() == scale_factor.size()    //
+                p4.size() == *scale_factor_size     //
                 and p4.size() == delta_met_x.size() //
                 and p4.size() == delta_met_y.size() //
                 and p4.size() == is_fake.size()     //

@@ -403,6 +403,7 @@ inline auto make_electrons(const RVec<float> &Electron_pt,   //
         }
     }
 
+    fmt::print("I was here electrons: {} - [{}]\n", shift, map_to_string(scale_factors));
     return MUSiCObjects(electrons_p4,  //
                         scale_factors, //
                         delta_met_x,   //

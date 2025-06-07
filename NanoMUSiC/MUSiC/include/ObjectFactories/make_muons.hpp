@@ -659,6 +659,8 @@ inline auto make_muons(const RVec<float> &Muon_pt,                      //
         }
     }
 
+    fmt::print("I was here Muon: {} - [{}]\n", shift, map_to_string(scale_factors));
+
     return MUSiCObjects(muons_p4,      //
                         scale_factors, //
                         delta_met_x,   //

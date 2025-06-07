@@ -223,6 +223,7 @@ inline auto make_met(const double MET_pt,                            //
         }
     }
 
+    fmt::print("I was here met: {} - [{}]\n", shift, map_to_string(scale_factors));
     return {MUSiCObjects(met_p4,        //
                          scale_factors, //
                          delta_met_x,   //

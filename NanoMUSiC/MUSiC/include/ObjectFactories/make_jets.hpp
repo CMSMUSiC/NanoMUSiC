@@ -689,6 +689,9 @@ inline auto make_jets(const RVec<float> &Jet_pt,                       //
         }
     }
 
+    fmt::print("I was here jets: {} - [{}]\n", shift, map_to_string(jets_scale_factors));
+    fmt::print("I was here bjets: {} - [{}]\n", shift, map_to_string(bjets_scale_factors));
+
     return {MUSiCObjects(jets_p4, jets_scale_factors, jets_delta_met_x, jets_delta_met_y, jets_is_fake),
             MUSiCObjects(bjets_p4, bjets_scale_factors, bjets_delta_met_x, bjets_delta_met_y, bjets_is_fake),
             has_vetoed_jets,
