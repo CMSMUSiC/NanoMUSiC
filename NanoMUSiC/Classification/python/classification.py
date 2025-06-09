@@ -383,6 +383,9 @@ def launch_parallel(
         generated_jobs = sorted(
             generated_jobs, key=lambda j: "classification_TTTT" not in j
         )
+        generated_jobs = sorted(
+            generated_jobs, key=lambda j: "classification_TTZ" not in j
+        )
 
         for j in generated_jobs:
             file.write("../{}\n".format(j))
