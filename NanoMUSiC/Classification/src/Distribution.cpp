@@ -81,11 +81,16 @@ Distribution::Distribution(const std::vector<ECHistogram> &event_class_histogram
     m_statistical_uncert = get_statistical_uncert();
 
     // systematic uncertainties
-    m_systematics_uncert = get_systematics_uncert(unmerged_mc_histograms);
+    auto _systematics_uncert = get_systematics_uncert(unmerged_mc_histograms);
+    m_systematics_uncert = std::get<0>(_systematics_uncert);
+    m_systematics_uncert_for_plotting = std::get<1>(_systematics_uncert);
 
     // total uncertainties
     m_total_uncert =
         ROOT::VecOps::sqrt(ROOT::VecOps::pow(m_statistical_uncert, 2.) + ROOT::VecOps::pow(m_systematics_uncert, 2.));
+
+    m_total_uncert_for_plotting = ROOT::VecOps::sqrt(ROOT::VecOps::pow(m_statistical_uncert, 2.) +
+                                                     ROOT::VecOps::pow(m_systematics_uncert_for_plotting, 2.));
 
     m_has_data = ROOT::VecOps::Sum(ROOTHelpers::Counts(m_total_data_histogram)) > 0.;
 }
@@ -377,7 +382,7 @@ auto Distribution::get_statistical_uncert() -> RVec<double>
 
 auto Distribution::get_systematics_uncert(
     const std::array<std::unordered_map<std::string, std::vector<std::shared_ptr<TH1F>>>, total_variations>
-        &unmerged_mc_histograms) -> RVec<double>
+        &unmerged_mc_histograms) -> std::tuple<RVec<double>, RVec<double>>
 {
     std::unordered_map<std::string, RVec<double>> xsec_order_uncert_LO_samples;
     std::unordered_map<std::string, RVec<double>> xsec_order_uncert_non_LO_samples;
@@ -685,7 +690,8 @@ auto Distribution::get_systematics_uncert(
         m_systematics_uncertainties[fmt::format("xsec_non_LO_{}", pg)] = xsec_order_uncert_non_LO_samples.at(pg);
     }
 
-    // build systematics for plotting (taking the symmatriation conservative approach)
+    // build systematics for plotting (taking the symmetrization conservative approach)
+    // this will only affect uncertainties which are assymetric
     auto systematics_for_plots_and_integral_p_value = m_systematics_uncertainties;
     systematics_for_plots_and_integral_p_value["prefiring"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
         m_total_mc_histogram,
@@ -763,26 +769,25 @@ auto Distribution::get_systematics_uncert(
             xsec_order_uncert_non_LO_samples_for_plotting.at(pg);
     }
 
-    return ROOT::VecOps::sqrt(std::accumulate(
-        systematics_for_plots_and_integral_p_value.cbegin(),
-        systematics_for_plots_and_integral_p_value.cend(),
-        RVec<double>(m_n_bins, 0.),
-        [](const RVec<double> &acc_vec, const std::pair<std::string, RVec<double>> &next_key_val) -> RVec<double>
-        {
-            const auto &[src, next_vec] = next_key_val;
-
-            // if (m_year_to_plot == "Run2" and m_distribution_name == "counts")
-            // {
-            //     fmt::print("--- {} - {} - {} - {}: [{}]\n",
-            //                m_distribution_name,
-            //                m_event_class_name,
-            //                m_year_to_plot,
-            //                src,
-            //                fmt::join(next_vec, " - "));
-            // }
-
-            return acc_vec + ROOT::VecOps::pow(next_vec, 2.);
-        }));
+    return {
+        ROOT::VecOps::sqrt(std::accumulate(
+            m_systematics_uncertainties.cbegin(),
+            m_systematics_uncertainties.cend(),
+            RVec<double>(m_n_bins, 0.),
+            [](const RVec<double> &acc_vec, const std::pair<std::string, RVec<double>> &next_key_val) -> RVec<double>
+            {
+                const auto &[src, next_vec] = next_key_val;
+                return acc_vec + ROOT::VecOps::pow(next_vec, 2.);
+            })),
+        ROOT::VecOps::sqrt(std::accumulate(
+            systematics_for_plots_and_integral_p_value.cbegin(),
+            systematics_for_plots_and_integral_p_value.cend(),
+            RVec<double>(m_n_bins, 0.),
+            [](const RVec<double> &acc_vec, const std::pair<std::string, RVec<double>> &next_key_val) -> RVec<double>
+            {
+                const auto &[src, next_vec] = next_key_val;
+                return acc_vec + ROOT::VecOps::pow(next_vec, 2.);
+            }))};
 }
 
 auto Distribution::make_integral_pvalue_props() -> IntegralPValueProps
@@ -811,7 +816,7 @@ auto Distribution::make_integral_pvalue_props() -> IntegralPValueProps
     return IntegralPValueProps{
         .total_data = m_total_data_histogram.GetBinContent(1), //
         .total_mc = m_total_mc_histogram.GetBinContent(1),     //
-        .sigma_total = m_total_uncert.at(0),                   //
+        .sigma_total = m_total_uncert_for_plotting.at(0),      //
         .sigma_stat = m_statistical_uncert.at(0),              //
         .total_per_process_group = {}                          //
     };
@@ -825,10 +830,10 @@ auto Distribution::make_plot_props() -> PlotProps
     auto [idx_max, max] = _max;
     auto data_graph = ROOTHelpers::MakeDataGraph(m_total_data_histogram, m_scale_to_area, min_max);
 
-    auto mc_uncert = ROOTHelpers::MakeErrorBand(m_total_mc_histogram, m_total_uncert, m_scale_to_area);
+    auto mc_uncert = ROOTHelpers::MakeErrorBand(m_total_mc_histogram, m_total_uncert_for_plotting, m_scale_to_area);
 
     auto [ratio_graph, ratio_mc_err_graph] =
-        ROOTHelpers::MakeRatioGraph(m_total_data_histogram, m_total_mc_histogram, m_total_uncert, min_max);
+        ROOTHelpers::MakeRatioGraph(m_total_data_histogram, m_total_mc_histogram, m_total_uncert_for_plotting, min_max);
 
     auto y_min = ROOTHelpers::GetYMin(m_total_mc_histogram, m_scale_to_area, min_max);
     auto y_max = ROOTHelpers::GetYMax(m_total_data_histogram, m_total_mc_histogram, m_scale_to_area, min_max);

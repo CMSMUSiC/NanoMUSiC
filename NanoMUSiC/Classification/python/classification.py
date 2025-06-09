@@ -18,12 +18,10 @@ from typing import Any, Iterator, Optional, Union
 
 import classification_imp as clft
 from metadata import Lumi, Process, Years, load_toml
+from parallel_resume import parallel_resume_loop
 from pydantic import BaseModel
 from rich import print as rprint
 from rich.progress import Progress
-
-
-from parallel_resume import parallel_resume_loop
 
 
 class XrdcpResult(Enum):
@@ -391,7 +389,6 @@ def launch_parallel(
             file.write("../{}\n".format(j))
 
     # start GNU parallel
-
     os.system("date")
     parallel_resume_loop(
         joblog_path="classification_outputs/job.log",
@@ -404,6 +401,8 @@ def launch_parallel(
         preamble="mkdir -p classification_outputs && cd classification_outputs && cp -r ../btag_eff_maps . && cp ../sum_weights.json .",
         epilog=None,
     )
+
+    os.system("cp classification_outputs/job.log last_parallel_job.log")
 
 
 def launch_dev(
