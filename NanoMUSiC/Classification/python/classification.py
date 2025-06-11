@@ -370,6 +370,9 @@ def launch_parallel(
         # random.shuffle(generated_jobs)
         generated_jobs = sorted(generated_jobs, reverse=True)
         generated_jobs = sorted(
+            generated_jobs, key=lambda j: "classification_DYJetsToLL" not in j
+        )
+        generated_jobs = sorted(
             generated_jobs, key=lambda j: "classification_T" not in j
         )
         generated_jobs = sorted(
@@ -456,8 +459,10 @@ def merge_task(args):
 
 
 def merge_classification_outputs(
+    *,
     config_file_path: str,
     inputs_dir: str,
+    num_cpus: int = 124,
 ) -> None:
     config_file = load_toml(config_file_path)
 
@@ -491,7 +496,7 @@ def merge_classification_outputs(
         random.shuffle(merge_jobs)
 
         print("Merging Classification results for {}...".format(year.value))
-        with Pool(124) as p:
+        with Pool(num_cpus) as p:
             with Progress() as progress:
                 task = progress.add_task(
                     "Merging {} ...".format(year.value), total=len(merge_jobs)

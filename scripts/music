@@ -243,8 +243,8 @@ def launch(
             classification.launch_dev(config_file, process, year, max_files)
         case ClassificationTarget.Parallel:
             classification.launch_parallel(
-            config_file, process, year, max_files, 1, num_cpus
-        )
+                config_file, process, year, max_files, 1, num_cpus
+            )
         case _:
             print("ERROR: Invalide Classification target {}", target, file=sys.stderr)
             sys.exit(-1)
@@ -258,13 +258,18 @@ def merge(
         typer.Argument(help="analysis_config.toml file path"),
     ] = "analysis_config.toml",
     inputs_dir: str = "classification_outputs",
+    num_cpus: int = 124,
 ):
     """
     Merge classification results.
     """
     import classification
 
-    classification.merge_classification_outputs(config_file, inputs_dir)
+    classification.merge_classification_outputs(
+        config_file_path=config_file,
+        inputs_dir=inputs_dir,
+        num_cpus=num_cpus,
+    )
 
 
 @classification_app.command()
@@ -431,7 +436,7 @@ def most_occupied(
 
     years = ["2016", "2017", "2018", "Run2"]
     if skip_per_year:
-        years = [ "Run2"]
+        years = ["Run2"]
 
     with ProcessPoolExecutor(max_workers=12) as executor:
         futures = []
@@ -489,7 +494,7 @@ def most_occupied(
 def most_discrepant(
     input_file: str = "classification_plots/integral_pvalues_data.json",
     output_dir: str = "classification_most_discrepant",
-    skip_per_year:bool=True
+    skip_per_year: bool = True,
 ):
     """
     Plot the occupancy and p_integral of most discrepant classes.
@@ -505,7 +510,7 @@ def most_discrepant(
 
     years = ["2016", "2017", "2018", "Run2"]
     if skip_per_year:
-        years = [ "Run2"]
+        years = ["Run2"]
 
     with ProcessPoolExecutor(max_workers=12) as executor:
         futures = []
