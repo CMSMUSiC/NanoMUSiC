@@ -10,6 +10,7 @@ import subprocess
 import sys
 import time
 from collections import defaultdict
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from enum import Enum, auto
 from itertools import product
 from multiprocessing import Pool, process
@@ -444,8 +445,7 @@ def launch_dev(
     )
 
 
-def merge_task(args):
-    files_to_merge, validation_files_to_merge, process, year = args
+def merge_task(files_to_merge, validation_files_to_merge, process, year):
     clft.EventClassContainer.merge_many(
         "{}_{}".format(process.name, year),
         files_to_merge,
@@ -470,43 +470,73 @@ def merge_classification_outputs(
         Process(name=process_name, **config_file[process_name])
         for process_name in config_file
     ]
+    random.shuffle(processes)
+    # merge_jobs = sorted(merge_jobs, reverse=True, key=lambda proc: proc[2].name)
+    # merge_jobs = sorted(
+    #     merge_jobs, key=lambda proc: "classification_DYJetsToLL" not in proc[2].name
+    # )
+    # merge_jobs = sorted(
+    #     merge_jobs, key=lambda proc: "classification_T" not in proc[2].name
+    # )
+    # merge_jobs = sorted(
+    #     merge_jobs, key=lambda proc: "classification_TTT" not in proc[2].name
+    # )
+    # merge_jobs = sorted(
+    #     merge_jobs, key=lambda proc: "classification_TTTo2L" not in proc[2].name
+    # )
+    # merge_jobs = sorted(
+    #     merge_jobs, key=lambda proc: "classification_TTTT" not in proc[2].name
+    # )
+    # merge_jobs = sorted(
+    #     merge_jobs, key=lambda proc: "classification_TTZ" not in proc[2].name
+    # )
 
     os.system("rm -rf classification_merged_results")
     os.system("mkdir -p classification_merged_results")
     os.system("rm -rf validation_merged_results")
     os.system("mkdir -p validation_merged_results")
 
-    def do_merge(year: Years):
+    for year in Years:
         merge_jobs = []
-        for process in processes:
-            files_to_merge = glob.glob(
-                "{}/{}_{}_*.root".format(inputs_dir, process.name, year.value)
-            )
-            validation_files_to_merge = glob.glob(
-                "{}/validation_{}_{}_*.root".format(
-                    inputs_dir, process.name, year.value
-                )
-            )
-
-            if len(files_to_merge):
-                merge_jobs.append(
-                    (files_to_merge, validation_files_to_merge, process, year.value)
-                )
-
-        random.shuffle(merge_jobs)
-
-        print("Merging Classification results for {}...".format(year.value))
-        with Pool(num_cpus) as p:
+        with ProcessPoolExecutor(max_workers=num_cpus) as executor:
             with Progress() as progress:
                 task = progress.add_task(
-                    "Merging {} ...".format(year.value), total=len(merge_jobs)
+                    f"Building merge jobs for {year.value}...", total=len(processes)
                 )
-                for job in p.imap_unordered(merge_task, merge_jobs):
-                    progress.console.print("Done: {}".format(job))
+                for process in processes:
+                    files_to_merge = glob.glob(
+                        "{}/{}_{}_*.root".format(inputs_dir, process.name, year.value)
+                    )
+                    validation_files_to_merge = glob.glob(
+                        "{}/validation_{}_{}_*.root".format(
+                            inputs_dir, process.name, year.value
+                        )
+                    )
+
+                    if len(files_to_merge):
+                        merge_jobs.append(
+                            executor.submit(
+                                merge_task,
+                                files_to_merge,
+                                validation_files_to_merge,
+                                process,
+                                year.value,
+                            )
+                        )
                     progress.advance(task)
 
-    for year in Years:
-        do_merge(year)
+            print(f"Merging Classification results for {year.value}...")
+            with Progress() as progress:
+                task = progress.add_task(
+                    f"Merging for {year.value} ...", total=len(merge_jobs)
+                )
+                completed = 0
+                for future in as_completed(merge_jobs):
+                    progress.console.print(
+                        f"Done: {future.result()} - {completed}/{len(merge_jobs)}"
+                    )
+                    completed += 1
+                    progress.advance(task)
 
 
 def serialize_to_root_task(args):
