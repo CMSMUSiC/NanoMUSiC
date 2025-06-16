@@ -664,8 +664,13 @@ def make_distributions_task(
     return analysis_name, year
 
 
-def do_fold(input_files: list[list[str]], output_dir: str, classes_names: list[str]):
-    clft.Distribution.fold(input_files, output_dir, classes_names)
+def do_fold(
+    input_files: list[list[str]],
+    buffer_dir: str,
+    output_dir: str,
+    classes_names: list[str],
+):
+    clft.Distribution.fold(input_files, buffer_dir, output_dir, classes_names)
 
 
 class MakeDistributionsInputs(BaseModel):
@@ -738,8 +743,15 @@ def fold(
 ) -> None:
     os.system("rm -rf classification_folded_files")
     os.system("mkdir -p classification_folded_files")
+
+    os.system("rm -rf classification_fold_buffer")
+    os.system("mkdir -p classification_fold_buffer")
+
     os.system("rm -rf validation_folded_files")
     os.system("mkdir -p validation_folded_files")
+
+    os.system("rm -rf validation_fold_buffer")
+    os.system("mkdir -p validation_fold_buffer")
 
     with open("{}/classes_to_files.json".format(inputs_dir), "r") as file:
         classes_to_files: dict[str, list[str]] = json.load(file)
@@ -758,6 +770,7 @@ def fold(
             target=do_fold,
             args=(
                 get_input_files(inputs_dir),
+                "classification_fold_buffer",
                 "classification_folded_files",
                 classes_names,
             ),
@@ -779,6 +792,7 @@ def fold(
             target=do_fold,
             args=(
                 get_input_files(validation_inputs_dir),
+                "validation_fold_buffer",
                 "validation_folded_files",
                 validation_names,
             ),

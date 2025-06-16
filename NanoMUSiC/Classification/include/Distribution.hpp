@@ -221,6 +221,7 @@ class Distribution
     }
 
     static auto fold(const std::vector<std::string> &input_files,
+                        const std::string &buffer_dir,
                      const std::string &output_dir,
                      std::vector<std::string> &analyses_to_fold) -> void;
 

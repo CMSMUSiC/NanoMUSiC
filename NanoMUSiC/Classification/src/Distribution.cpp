@@ -112,6 +112,7 @@ auto replace_all(std::string str, const std::string &from, const std::string &to
 }
 
 auto Distribution::fold(const std::vector<std::string> &input_files,
+                        const std::string &buffer_dir,
                         const std::string &output_dir,
                         std::vector<std::string> &analyses_to_fold) -> void
 {
@@ -167,6 +168,20 @@ auto Distribution::fold(const std::vector<std::string> &input_files,
                 }
 
                 file_counter++;
+
+                auto buffer_root_file = std::unique_ptr<TFile>(
+                    TFile::Open(fmt::format("{}/{}", output_dir, input_files[i]).c_str(), "RECREATE"));
+
+                for (auto &hist : this_event_class_histograms)
+                {
+                    auto write_res = output_root_file->WriteObject(hist.histogram.get(), hist.histogram->GetName());
+                    if (write_res <= 0)
+                    {
+                        fmt::print(stderr, "ERROR: Could not write histogram to file: {}\n", hist.histogram->GetName());
+                        std::exit(EXIT_FAILURE);
+                    }
+                }
+
                 fmt::print("Loaded ROOT file: {} - {}/{}\n", input_files[i], file_counter.load(), input_files.size());
                 return this_event_class_histograms;
             },
