@@ -705,7 +705,18 @@ inline auto AbsDiff(const TH1F &nom, const TH1F &shift) -> RVec<double>
 
 inline auto AbsDiffAndSymmetrizeForPlots(const TH1F &nom, const TH1F &up, const TH1F &down) -> RVec<double>
 {
-    return Symmetrize(ROOTHelpers::AbsDiff(nom, up), ROOTHelpers::AbsDiff(nom, down));
+    // return Symmetrize(ROOTHelpers::AbsDiff(nom, up), ROOTHelpers::AbsDiff(nom, down));
+    auto sigma_up = ROOTHelpers::AbsDiff(nom, up);
+    auto sigma_down = ROOTHelpers::AbsDiff(nom, down);
+    auto sigma = RVec<double>{};
+    sigma.reserve(sigma_up.size());
+    for (std::size_t i = 0; i < sigma_up.size(); i++)
+
+    {
+        sigma.push_back(std::max(sigma_up[i], sigma_down[i]));
+    }
+
+    return sigma;
 }
 
 inline auto AbsDiffAndSymmetrizeForPlots(TKey &nom, TKey &up, TKey &down) -> RVec<double>

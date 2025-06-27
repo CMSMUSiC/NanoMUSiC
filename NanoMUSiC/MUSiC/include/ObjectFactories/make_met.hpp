@@ -11,6 +11,7 @@
 #include "Shifts.hpp"
 #include "music_objects.hpp"
 #include <cstdlib>
+#include <fmt/core.h>
 
 using namespace ROOT;
 using namespace ROOT::Math;
@@ -69,13 +70,12 @@ struct METXYCorr
             {
                 inputs.push_back(fmt::format("({} as {})", var.name(), var.typeStr()));
             }
-            fmt::print(stderr,
-                       "ERROR: Caught an exception when trying to evaluate a scale factor from "
-                       "correctionlib. Exception: {}. Correctionlib Ref: {}. Expected inputs: [{}].\n",
-                       e.what(),
-                       met_xy_corr_pt->name(),
-                       fmt::join(inputs, " - "));
-            std::exit(EXIT_FAILURE);
+            throw std::runtime_error(
+                fmt::format("Caught an exception when trying to evaluate a scale factor from "
+                            "correctionlib. Exception: {}. Correctionlib Ref: {}. Expected inputs: [{}].\n",
+                            e.what(),
+                            met_xy_corr_pt->name(),
+                            fmt::join(inputs, " - ")));
         }
         // Catch any other unexpected exceptions
         catch (...)
@@ -85,12 +85,11 @@ struct METXYCorr
             {
                 inputs.push_back(fmt::format("({} as {})", var.name(), var.typeStr()));
             }
-            fmt::print(stderr,
-                       "ERROR: Caught an unkown exception when trying to evaluate a scale factor from "
-                       "correctionlib. Correctionlib Ref: {}. Expected inputs: [{}].\n",
-                       met_xy_corr_pt->name(),
-                       fmt::join(inputs, " - "));
-            std::exit(EXIT_FAILURE);
+            throw std::runtime_error(
+                fmt::format("Caught an unkown exception when trying to evaluate a scale factor from "
+                            "correctionlib. Correctionlib Ref: {}. Expected inputs: [{}].\n",
+                            met_xy_corr_pt->name(),
+                            fmt::join(inputs, " - ")));
         }
 
         try
@@ -105,13 +104,12 @@ struct METXYCorr
             {
                 inputs.push_back(fmt::format("({} as {})", var.name(), var.typeStr()));
             }
-            fmt::print(stderr,
-                       "ERROR: Caught an exception when trying to evaluate a scale factor from "
+            throw std::runtime_error( fmt::format(
+                       "Caught an exception when trying to evaluate a scale factor from "
                        "correctionlib. Exception: {}. Correctionlib Ref: {}. Expected inputs: [{}].\n",
                        e.what(),
                        met_xy_corr_phi->name(),
-                       fmt::join(inputs, " - "));
-            std::exit(EXIT_FAILURE);
+                       fmt::join(inputs, " - ")) );
         }
         // Catch any other unexpected exceptions
         catch (...)
@@ -121,12 +119,11 @@ struct METXYCorr
             {
                 inputs.push_back(fmt::format("({} as {})", var.name(), var.typeStr()));
             }
-            fmt::print(stderr,
-                       "ERROR: Caught an unkown exception when trying to evaluate a scale factor from "
-                       "correctionlib. Correctionlib Ref: {}. Expected inputs: [{}].\n",
-                       met_xy_corr_phi->name(),
-                       fmt::join(inputs, " - "));
-            std::exit(EXIT_FAILURE);
+            throw std::runtime_error(
+                fmt::format("Caught an unkown exception when trying to evaluate a scale factor from "
+                            "correctionlib. Correctionlib Ref: {}. Expected inputs: [{}].\n",
+                            met_xy_corr_phi->name(),
+                            fmt::join(inputs, " - ")));
         }
     }
 };

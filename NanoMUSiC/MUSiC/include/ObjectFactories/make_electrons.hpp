@@ -11,6 +11,7 @@
 #include "Shifts.hpp"
 #include "music_objects.hpp"
 #include <cstdlib>
+#include <fmt/core.h>
 
 using namespace ROOT;
 using namespace ROOT::Math;
@@ -118,8 +119,7 @@ inline auto get_high_pt_sf(bool is_data, const Year &year, const std::string &va
         {
             return -1.;
         }
-        fmt::print(stderr, "Invalid variation parameter ({}).", variation);
-        std::exit(EXIT_FAILURE);
+        throw std::runtime_error( fmt::format("Invalid variation parameter ({}).", variation) );
     };
 
     switch (year)
@@ -153,9 +153,9 @@ inline auto get_high_pt_sf(bool is_data, const Year &year, const std::string &va
         return 0.980 + syst_multiplier() * std::sqrt(std::pow(0.002, 2) + std::pow(0.011, 2));
 
     default:
-        fmt::print("Year ({}) not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).",
-                   std::to_string(year));
-        std::exit(EXIT_FAILURE);
+        throw std::runtime_error(
+            fmt::format("Year ({}) not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).",
+                        std::to_string(year)));
     }
 }
 
@@ -174,9 +174,9 @@ inline auto get_year_for_electron_sf(Year year) -> std::string
     case Year::Run2018:
         return "2018"s;
     default:
-        fmt::print("Year ({}) not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).",
-                   std::to_string(year));
-        std::exit(EXIT_FAILURE);
+        throw std::runtime_error(
+            fmt::format("Year ({}) not matching with any possible Run2 cases (2016APV, 2016, 2017 or 2018).",
+                        std::to_string(year)));
     }
 }
 
@@ -336,7 +336,7 @@ inline auto make_electrons(const RVec<float> &Electron_pt,   //
 
                 if (shift == Shifts::Variations::Nominal)
                 {
-                MUSiCObjects::push_sf_inplace(scale_factors, Shifts::Variations::Nominal, sf_reco * sf_id);
+                    MUSiCObjects::push_sf_inplace(scale_factors, Shifts::Variations::Nominal, sf_reco * sf_id);
                     MUSiCObjects::push_sf_inplace(
                         scale_factors, Shifts::Variations::ElectronReco_Up, sf_reco_up * sf_id);
                     MUSiCObjects::push_sf_inplace(

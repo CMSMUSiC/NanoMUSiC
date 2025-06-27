@@ -124,10 +124,9 @@ class MUSiCObjects
 
         if (not(scale_factor_size))
         {
-            fmt::print(stderr,
-                       "ERROR: Could not create MUSiCObjects. Scale factors have different sizes. {}\n",
-                       map_to_string(_scale_factor));
-            std::exit(EXIT_FAILURE);
+            throw std::runtime_error(
+                fmt::format("Could not create MUSiCObjects. Scale factors have different sizes. {}\n",
+                            map_to_string(_scale_factor)));
         }
 
         if (not(                                    //
@@ -137,15 +136,14 @@ class MUSiCObjects
                 and p4.size() == is_fake.size()     //
                 ))
         {
-            fmt::print(stderr,
-                       "ERROR: Could not create MUSiCObjects. Input vectors have different sizes. {} - {} - {} - {} - "
+            throw std::runtime_error( fmt::format(
+                       "Could not create MUSiCObjects. Input vectors have different sizes. {} - {} - {} - {} - "
                        "{}\n",
                        p4.size(),
                        scale_factor_size ? *scale_factor_size : -1,
                        delta_met_x.size(),
                        delta_met_y.size(),
-                       is_fake.size());
-            std::exit(EXIT_FAILURE);
+                       is_fake.size()) );
         }
 
         if (not(std::is_sorted(this->p4.cbegin(),
@@ -233,13 +231,12 @@ class MUSiCObjects
                 {
                     inputs.push_back(fmt::format("({} as {})", var.name(), var.typeStr()));
                 }
-                fmt::print(stderr,
-                           "ERROR: Caught an exception when trying to evaluate a scale factor from "
-                           "correctionlib. Exception: {}. Correctionlib Ref: {}. Expected inputs: [{}].\n",
-                           e.what(),
-                           correction_ref->name(),
-                           fmt::join(inputs, " - "));
-                std::exit(EXIT_FAILURE);
+                throw std::runtime_error(
+                    fmt::format("Caught an exception when trying to evaluate a scale factor from "
+                                "correctionlib. Exception: {}. Correctionlib Ref: {}. Expected inputs: [{}].\n",
+                                e.what(),
+                                correction_ref->name(),
+                                fmt::join(inputs, " - ")));
             }
             // Catch any other unexpected exceptions
             catch (...)
@@ -249,12 +246,11 @@ class MUSiCObjects
                 {
                     inputs.push_back(fmt::format("({} as {})", var.name(), var.typeStr()));
                 }
-                fmt::print(stderr,
-                           "ERROR: Caught an unkown exception when trying to evaluate a scale factor from "
-                           "correctionlib. Correctionlib Ref: {}. Expected inputs: [{}].\n",
-                           correction_ref->name(),
-                           fmt::join(inputs, " - "));
-                std::exit(EXIT_FAILURE);
+                throw std::runtime_error(
+                    fmt::format("Caught an unkown exception when trying to evaluate a scale factor from "
+                                "correctionlib. Correctionlib Ref: {}. Expected inputs: [{}].\n",
+                                correction_ref->name(),
+                                fmt::join(inputs, " - ")));
             }
         }
         return 1.;

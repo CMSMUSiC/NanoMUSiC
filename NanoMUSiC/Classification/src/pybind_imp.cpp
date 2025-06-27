@@ -5,6 +5,7 @@
 #include "pybind11/stl.h"
 #include <cstdlib>
 #include <pybind11/pytypes.h>
+#include <stdexcept>
 namespace py = pybind11;
 using namespace pybind11::literals;
 
@@ -59,8 +60,8 @@ PYBIND11_MODULE(classification_imp, m)
                 auto buffer = input_file->Get<EventClassContainer>(object_name.c_str());
                 if (not(buffer))
                 {
-                    fmt::print(stderr, "Could not find the requested EventClassContainer: {}.\n", object_name);
-                    std::exit(EXIT_FAILURE);
+                    throw std::runtime_error(
+                        fmt::format("Could not find the requested EventClassContainer: {}.\n", object_name));
                 }
 
                 for (std::size_t i = 1; i < input_paths.size(); i++)
@@ -70,8 +71,8 @@ PYBIND11_MODULE(classification_imp, m)
                         _input_file->Get<EventClassContainer>(object_name.c_str()));
                     if (not(ec))
                     {
-                        fmt::print(stderr, "Could not find the requested EventClassContainer: {}.\n", object_name);
-                        std::exit(EXIT_FAILURE);
+                        throw std::runtime_error(
+                            fmt::format("Could not find the requested EventClassContainer: {}.\n", object_name));
                     }
                     buffer->merge_inplace(std::move(ec));
                 }
@@ -97,10 +98,8 @@ PYBIND11_MODULE(classification_imp, m)
                 auto cont = input_file->Get<EventClassContainer>(fmt::format("{}_{}", process_name, year).c_str());
                 if (not(cont))
                 {
-                    fmt::print(stderr,
-                               "Could not find the requested EventClassContainer: {}.\n",
-                               fmt::format("{}_{}", process_name, year));
-                    std::exit(EXIT_FAILURE);
+                    throw std::runtime_error(fmt::format("Could not find the requested EventClassContainer: {}.\n",
+                                                         fmt::format("{}_{}", process_name, year)));
                 }
 
                 EventClassContainer::serialize_to_root(
@@ -151,8 +150,8 @@ PYBIND11_MODULE(classification_imp, m)
                 auto buffer = input_file->Get<ValidationContainer>("validation");
                 if (not(buffer))
                 {
-                    fmt::print(stderr, "Could not find the requested ValidationContainer: {}.\n", "validation");
-                    std::exit(EXIT_FAILURE);
+                    throw std::runtime_error(
+                        fmt::format("Could not find the requested ValidationContainer: {}.\n", "validation"));
                 }
 
                 for (std::size_t i = 1; i < input_paths.size(); i++)
@@ -162,8 +161,8 @@ PYBIND11_MODULE(classification_imp, m)
                         std::unique_ptr<ValidationContainer>(_input_file->Get<ValidationContainer>("validation"));
                     if (not(val))
                     {
-                        fmt::print(stderr, "Could not find the requested ValidationContainer: {}.\n", "validation");
-                        std::exit(EXIT_FAILURE);
+                        throw std::runtime_error(
+                            fmt::format("Could not find the requested ValidationContainer: {}.\n", "validation"));
                     }
                     buffer->merge_inplace(std::move(val));
                 }
@@ -182,8 +181,7 @@ PYBIND11_MODULE(classification_imp, m)
                 auto cont = input_file->Get<ValidationContainer>("validation");
                 if (not(cont))
                 {
-                    fmt::print(stderr, "Could not find the requested ValidationContainer: {}.\n", "validation");
-                    std::exit(EXIT_FAILURE);
+                    throw std::runtime_error( fmt::format("Could not find the requested ValidationContainer: {}.\n", "validation") );
                 }
 
                 return cont->serialize_to_root(ouput_file_path);
@@ -198,6 +196,5 @@ PYBIND11_MODULE(classification_imp, m)
                     "input_file"_a,
                     "ouput_dir"_a,
                     "analysis_to_build"_a,
-                    "skip_per_year"_a
-                    );
+                    "skip_per_year"_a);
 }

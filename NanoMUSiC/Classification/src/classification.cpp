@@ -17,6 +17,7 @@
 #include <fmt/format.h>
 #include <memory>
 #include <optional>
+#include <stdexcept>
 #include <stdlib.h>
 #include <string>
 
@@ -82,8 +83,8 @@ inline auto met_filters(bool Flag_goodVertices,
                Flag_BadPFMuonDzFilter and Flag_hfNoisyHitsFilter and Flag_eeBadScFilter and Flag_ecalBadCalibFilter;
     }
 
-    fmt::print(stderr, "ERROR: Could not define MET filters bits. The requested year ({}) is invalid.", year);
-    std::exit(EXIT_FAILURE);
+    throw std::runtime_error(
+        fmt::format("Could not define MET filters bits. The requested year ({}) is invalid.", year));
 };
 
 auto classification(const std::string process,
@@ -143,8 +144,7 @@ auto classification(const std::string process,
             return std::string(RunConfig::Run2018.golden_json);
         }
 
-        fmt::print(stderr, "ERROR: Could not find Golden JSON for the requested year ({}).", year);
-        std::exit(EXIT_FAILURE);
+        throw std::runtime_error(fmt::format("Could not find Golden JSON for the requested year ({}).", year));
     };
     auto run_lumi_filter = RunLumiFilter(golden_json(year));
 
@@ -226,8 +226,8 @@ auto classification(const std::string process,
     auto sum_weights_json_file = std::ifstream(sum_weights_json_filepath);
     if (!sum_weights_json_file.is_open())
     {
-        fmt::print(stderr, "ERROR: Coudl not open sum of weights JSON file. {}\n", sum_weights_json_filepath);
-        std::exit(EXIT_FAILURE);
+        throw std::runtime_error(
+            fmt::format("Coudl not open sum of weights JSON file. {}\n", sum_weights_json_filepath));
     }
     json sum_weights_json = json::parse(sum_weights_json_file);
 
@@ -264,12 +264,11 @@ auto classification(const std::string process,
 
             if (not(has_genWeight) and not(has_LHEWeight_originalXWGTUP))
             {
-                fmt::print(stderr,
-                           "ERROR: Could not assing sum of weights. This sample ({} - {}) has not genWeight or "
-                           "LHEWeight_originalXWGTUP.",
-                           process,
-                           year);
-                std::exit(EXIT_FAILURE);
+                throw std::runtime_error(
+                    fmt::format("Could not assing sum of weights. This sample ({} - {}) has not genWeight or "
+                                "LHEWeight_originalXWGTUP.",
+                                process,
+                                year));
             }
 
             if (should_use_LHEWeight)
@@ -501,8 +500,7 @@ auto classification(const std::string process,
         // REFERENCE: https://root.cern.ch/doc/v608/classTTreeReader.html#a568e43c7d7d8b1f511bbbeb92c9094a8
         if (tree_reader.GetEntryStatus() != TTreeReader::EEntryStatus::kEntryValid)
         {
-            fmt::print(stderr, "ERROR: Could not load TTree entry.");
-            std::exit(EXIT_FAILURE);
+            throw std::runtime_error(fmt::format("Could not load TTree entry."));
         }
 
         if (not(GeneratorFilters::pass_generator_filter(generator_filter,
@@ -570,8 +568,8 @@ auto classification(const std::string process,
             {
                 return unwrap_or(HLT_IsoMu24, false);
             }
-            fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
-            std::exit(EXIT_FAILURE);
+            throw std::runtime_error(
+                fmt::format("Could not define trigger bits. The requested year ({}) is invalid.", year));
         };
 
         auto pass_high_pt_muon_trigger = [&](const std::string &year) -> bool
@@ -597,8 +595,8 @@ auto classification(const std::string process,
                 return unwrap_or(HLT_Mu50, false) or unwrap_or(HLT_TkMu100, false) or unwrap_or(HLT_OldMu100, false);
             }
 
-            fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
-            std::exit(EXIT_FAILURE);
+            throw std::runtime_error(
+                fmt::format("Could not define trigger bits. The requested year ({}) is invalid.", year));
         };
 
         auto pass_double_muon_trigger = [&](const std::string &year) -> bool
@@ -626,8 +624,8 @@ auto classification(const std::string process,
                 return unwrap_or(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8, false);
             }
 
-            fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
-            std::exit(EXIT_FAILURE);
+            throw std::runtime_error(
+                fmt::format("Could not define trigger bits. The requested year ({}) is invalid.", year));
         };
 
         auto pass_low_pt_electron_trigger = [&](const std::string &year) -> bool
@@ -653,8 +651,8 @@ auto classification(const std::string process,
                 return unwrap_or(HLT_Ele32_WPTight_Gsf, false);
             }
 
-            fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
-            std::exit(EXIT_FAILURE);
+            throw std::runtime_error(
+                fmt::format("Could not define trigger bits. The requested year ({}) is invalid.", year));
         };
 
         auto pass_high_pt_electron_trigger = [&](const std::string &year) -> bool
@@ -684,8 +682,8 @@ auto classification(const std::string process,
                 // return unwrap_or(HLT_Ele115_CaloIdVT_GsfTrkIdT, false);
             }
 
-            fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
-            std::exit(EXIT_FAILURE);
+            throw std::runtime_error(
+                fmt::format("Could not define trigger bits. The requested year ({}) is invalid.", year));
         };
 
         auto pass_double_electron_trigger = [&](const std::string &year) -> bool
@@ -708,8 +706,8 @@ auto classification(const std::string process,
                 return unwrap_or(HLT_DoubleEle25_CaloIdL_MW, false);
             }
 
-            fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
-            std::exit(EXIT_FAILURE);
+            throw std::runtime_error(
+                fmt::format("Could not define trigger bits. The requested year ({}) is invalid.", year));
         };
 
         auto pass_photon_trigger = [&](const std::string &year) -> bool
@@ -730,8 +728,8 @@ auto classification(const std::string process,
                 return unwrap_or(HLT_Photon200, false);
             }
 
-            fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
-            std::exit(EXIT_FAILURE);
+            throw std::runtime_error(
+                fmt::format("Could not define trigger bits. The requested year ({}) is invalid.", year));
         };
 
         // Source:
@@ -756,8 +754,8 @@ auto classification(const std::string process,
                        unwrap_or(HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass95, false);
             }
 
-            fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
-            std::exit(EXIT_FAILURE);
+            throw std::runtime_error(
+                fmt::format("Could not define trigger bits. The requested year ({}) is invalid.", year));
         };
 
         auto pass_high_pt_tau_trigger = [&](const std::string &year) -> bool
@@ -780,8 +778,8 @@ auto classification(const std::string process,
                 return unwrap_or(HLT_MediumChargedIsoPFTau180HighPtRelaxedIso_Trk50_eta2p1, false);
             }
 
-            fmt::print(stderr, "ERROR: Could not define trigger bits. The requested year ({}) is invalid.", year);
-            std::exit(EXIT_FAILURE);
+            throw std::runtime_error(
+                fmt::format("Could not define trigger bits. The requested year ({}) is invalid.", year));
         };
 
         auto pass_double_tau_trigger = [&](const std::string &year) -> bool
@@ -810,9 +808,8 @@ auto classification(const std::string process,
                        unwrap_or(HLT_DoubleMediumChargedIsoPFTauHPS35_Trk1_eta2p1_Reg, false);
             }
 
-            fmt::print(
-                stderr, "ERROR: Could not define double tau trigger bits. The requested year ({}) is invalid.", year);
-            std::exit(EXIT_FAILURE);
+            throw std::runtime_error(fmt::format(
+                "ERROR: Could not define double tau trigger bits. The requested year ({}) is invalid.", year));
         };
 
         // Trigger
@@ -1350,17 +1347,16 @@ auto classification(const std::string process,
                     // Check for NaNs
                     if (std::isnan(weight) or std::isinf(weight))
                     {
-                        fmt::print(stderr, "##########################\n");
-                        fmt::print(stderr, "##########################\n");
-                        fmt::print(stderr, "##########################\n");
-                        fmt::print(stderr,
-                                   "ERROR: NaN or INF weight found when "
-                                   "processing shift: {}!\n",
-                                   Shifts::variation_to_string(shift));
-                        fmt::print(stderr, "##########################\n");
-                        fmt::print(stderr, "##########################\n");
-                        fmt::print(stderr, "##########################\n");
-                        std::exit(EXIT_FAILURE);
+                        throw std::runtime_error(
+                            fmt::format("##########################\n"
+                                        "##########################\n"
+                                        "##########################\n"
+                                        "ERROR: NaN or INF weight found when "
+                                        "processing shift: {}!\n"
+                                        "##########################\n"
+                                        "##########################\n"
+                                        "##########################\n",
+                                        Shifts::variation_to_string(shift)));
                     }
                 }
 

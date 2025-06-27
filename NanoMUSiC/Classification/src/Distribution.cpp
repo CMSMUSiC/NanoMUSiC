@@ -638,11 +638,82 @@ auto Distribution::get_systematics_uncert(
                                                 static_cast<std::size_t>(Shifts::Variations::PreFiring_Down))))},
 
         // Scale Factors
-        // TODO: Update SF list
-        // {"scale_factors",
-        //  Uncertanties::AbsDiff(m_total_mc_histogram,
-        //                        ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
-        //                            static_cast<std::size_t>(Shifts::Variations::ScaleFactor_Up))))},
+        {"muon_reco",
+         Uncertanties::AbsDiffAndSymmetrize(m_total_mc_histogram,
+                                            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                                static_cast<std::size_t>(Shifts::Variations::MuonReco_Up))),
+                                            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                                static_cast<std::size_t>(Shifts::Variations::MuonReco_Down))))},
+
+        {"muon_id",
+         Uncertanties::AbsDiffAndSymmetrize(m_total_mc_histogram,
+                                            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                                static_cast<std::size_t>(Shifts::Variations::MuonId_Up))),
+                                            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                                static_cast<std::size_t>(Shifts::Variations::MuonId_Down))))},
+
+        {"muon_iso",
+         Uncertanties::AbsDiffAndSymmetrize(m_total_mc_histogram,
+                                            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                                static_cast<std::size_t>(Shifts::Variations::MuonIso_Up))),
+                                            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                                static_cast<std::size_t>(Shifts::Variations::MuonIso_Down))))},
+
+        {"electron_reco",
+         Uncertanties::AbsDiffAndSymmetrize(m_total_mc_histogram,
+                                            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                                static_cast<std::size_t>(Shifts::Variations::ElectronReco_Up))),
+                                            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                                static_cast<std::size_t>(Shifts::Variations::ElectronReco_Down))))},
+
+        {"electron_id",
+         Uncertanties::AbsDiffAndSymmetrize(m_total_mc_histogram,
+                                            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                                static_cast<std::size_t>(Shifts::Variations::ElectronId_Up))),
+                                            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                                static_cast<std::size_t>(Shifts::Variations::ElectronId_Down))))},
+
+        {"photon_id",
+         Uncertanties::AbsDiffAndSymmetrize(m_total_mc_histogram,
+                                            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                                static_cast<std::size_t>(Shifts::Variations::PhotonId_Up))),
+                                            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                                static_cast<std::size_t>(Shifts::Variations::PhotonId_Down))))},
+
+        {"photon_veto",
+         Uncertanties::AbsDiffAndSymmetrize(m_total_mc_histogram,
+                                            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                                static_cast<std::size_t>(Shifts::Variations::PhotonVeto_Up))),
+                                            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                                static_cast<std::size_t>(Shifts::Variations::PhotonVeto_Down))))},
+
+        {"tau_vs_e",
+         Uncertanties::AbsDiffAndSymmetrize(m_total_mc_histogram,
+                                            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                                static_cast<std::size_t>(Shifts::Variations::TauVsE_Up))),
+                                            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                                static_cast<std::size_t>(Shifts::Variations::TauVsE_Down))))},
+
+        {"tau_vs_mu",
+         Uncertanties::AbsDiffAndSymmetrize(m_total_mc_histogram,
+                                            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                                static_cast<std::size_t>(Shifts::Variations::TauVsMu_Up))),
+                                            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                                static_cast<std::size_t>(Shifts::Variations::TauVsMu_Down))))},
+
+        {"tau_vs_jet",
+         Uncertanties::AbsDiffAndSymmetrize(m_total_mc_histogram,
+                                            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                                static_cast<std::size_t>(Shifts::Variations::TauVsJet_Up))),
+                                            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                                static_cast<std::size_t>(Shifts::Variations::TauVsJet_Down))))},
+
+        {"jet_btag",
+         Uncertanties::AbsDiffAndSymmetrize(m_total_mc_histogram,
+                                            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                                static_cast<std::size_t>(Shifts::Variations::JetBTag_Up))),
+                                            ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+                                                static_cast<std::size_t>(Shifts::Variations::JetBTag_Down))))},
 
         // Pile up
         {"pile_up",
@@ -746,6 +817,83 @@ auto Distribution::get_systematics_uncert(
         ROOTHelpers::SumAsTH1F(
             m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::PreFiring_Down))));
 
+    systematics_for_plots_and_integral_p_value["muon_reco"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+        m_total_mc_histogram,
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::MuonReco_Up))),
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::MuonReco_Down))));
+
+    systematics_for_plots_and_integral_p_value["muon_id"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+        m_total_mc_histogram,
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::MuonId_Up))),
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::MuonId_Down))));
+
+    systematics_for_plots_and_integral_p_value["muon_iso"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+        m_total_mc_histogram,
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::MuonIso_Up))),
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::MuonIso_Down))));
+
+    systematics_for_plots_and_integral_p_value["electron_reco"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+        m_total_mc_histogram,
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::ElectronReco_Up))),
+        ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
+            static_cast<std::size_t>(Shifts::Variations::ElectronReco_Down))));
+
+    systematics_for_plots_and_integral_p_value["electron_id"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+        m_total_mc_histogram,
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::ElectronId_Up))),
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::ElectronId_Down))));
+
+    systematics_for_plots_and_integral_p_value["photon_id"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+        m_total_mc_histogram,
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::PhotonId_Up))),
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::PhotonId_Down))));
+
+    systematics_for_plots_and_integral_p_value["photon_veto"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+        m_total_mc_histogram,
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::PhotonVeto_Up))),
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::PhotonVeto_Down))));
+
+    systematics_for_plots_and_integral_p_value["tau_vs_e"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+        m_total_mc_histogram,
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::TauVsE_Up))),
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::TauVsE_Down))));
+
+    systematics_for_plots_and_integral_p_value["tau_vs_mu"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+        m_total_mc_histogram,
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::TauVsMu_Up))),
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::TauVsMu_Down))));
+
+    systematics_for_plots_and_integral_p_value["tau_vs_jet"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+        m_total_mc_histogram,
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::TauVsJet_Up))),
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::TauVsJet_Down))));
+
+    systematics_for_plots_and_integral_p_value["jet_btag"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+        m_total_mc_histogram,
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::JetBTag_Up))),
+        ROOTHelpers::SumAsTH1F(
+            m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::JetBTag_Down))));
+
     systematics_for_plots_and_integral_p_value["pile_up"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
         m_total_mc_histogram,
         ROOTHelpers::SumAsTH1F(
@@ -811,7 +959,7 @@ auto Distribution::get_systematics_uncert(
 
     for (const auto &[pg, uncert] : xsec_order_uncert_non_LO_samples_for_plotting)
     {
-        m_systematics_uncertainties[fmt::format("xsec_non_LO_{}", pg)] =
+        systematics_for_plots_and_integral_p_value[fmt::format("xsec_non_LO_{}", pg)] =
             xsec_order_uncert_non_LO_samples_for_plotting.at(pg);
     }
 

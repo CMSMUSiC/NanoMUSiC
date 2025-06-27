@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <fmt/format.h>
 #include <memory>
+#include <stdexcept>
 
 #include "EventClass.hpp"
 #include "SerializationUtils.hpp"
@@ -55,8 +56,7 @@ TTBarTo1Lep2Bjet2JetMET::TTBarTo1Lep2Bjet2JetMET(enum Leptons lepton,
     else
     {
 
-        fmt::print(stderr, "ERROR: Could not set analysis name and bim limits. Lepton flavor not found.\n");
-        std::exit(EXIT_FAILURE);
+	    std::runtime_error("Could not set analysis name and bim limits. Lepton flavor not found.");
     }
 
     auto bins_limits = BinLimits::limits(

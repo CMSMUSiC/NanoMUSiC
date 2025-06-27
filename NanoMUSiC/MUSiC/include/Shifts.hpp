@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <fmt/core.h>
 #include <string>
 
 #include <fmt/format.h>
@@ -234,8 +235,8 @@ class Shifts
             LIST_OF_SHIFTS
 #undef X
         default:
-            fmt::print(stderr, "ERROR: Could not convert variation ({}) to string.", static_cast<unsigned int>(var));
-            std::exit(EXIT_FAILURE);
+            throw std::runtime_error(
+                fmt::format("Could not convert variation ({}) to string.", static_cast<unsigned int>(var)));
         }
     }
 
@@ -249,8 +250,7 @@ class Shifts
         LIST_OF_SHIFTS
 #undef X
 
-        fmt::print(stderr, "ERROR: Could not convert string ({}) to variation.", variation);
-        std::exit(EXIT_FAILURE);
+        throw std::runtime_error(fmt::format("Could not convert string ({}) to variation.", variation));
     }
 
   private:
@@ -367,12 +367,11 @@ class Shifts
     {
         if (diff_shift != Variations::Nominal and const_shift != Variations::Nominal)
         {
-            fmt::print(stderr,
-                       "ERROR: Could not resolve shift. Differential ({}) "
-                       "and Constant ({}) can not be both variations.",
-                       diff_shift,
-                       const_shift);
-            std::exit(EXIT_FAILURE);
+            throw std::runtime_error(
+                fmt::format("Could not resolve shift. Differential ({}) "
+                            "and Constant ({}) can not be both variations.",
+                            diff_shift,
+                            const_shift));
         }
 
         if (diff_shift == Variations::Nominal)
@@ -491,12 +490,10 @@ class Shifts
             {
                 if (not(LHEScaleWeight.size() == 9 or LHEScaleWeight.size() == 8))
                 {
-                    fmt::print(stderr,
-                               fmt::runtime("ERROR: Unexpected number of QCD scale weights ({}). "
-                                            "Expected to be 8 or 9. \nWeights: [{}]\n"),
-                               LHEScaleWeight.size(),
-                               fmt::join(LHEScaleWeight, ", "));
-                    std::exit(EXIT_FAILURE);
+                    throw std::runtime_error( fmt::format(fmt::runtime("Unexpected number of QCD scale weights ({}). "
+                                             "Expected to be 8 or 9. \nWeights: [{}]\n"),
+                                LHEScaleWeight.size(),
+                                fmt::join(LHEScaleWeight, ", ")) );
                 }
 
                 auto murf_nominal = LHEScaleWeight[4];
