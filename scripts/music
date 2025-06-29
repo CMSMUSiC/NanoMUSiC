@@ -401,9 +401,10 @@ class YearsToPlot(str, Enum):
 
 @plot_app.command()
 @execution_time
-def most_occupied(
+def integral_p_value_summaries(
     input_file: str = "classification_plots/integral_pvalues_data.json",
-    output_dir: str = "classification_most_occupied",
+    output_dir_most_occupied: str = "classification_most_occupied",
+    output_dir_most_discrepant: str = "classification_most_discrepant",
     skip_per_year: bool = True,
 ):
     """
@@ -413,97 +414,61 @@ def most_occupied(
     from rich.progress import track
     from rich.console import Console
 
-    from integral_pvalues import integral_pvalues_summary
-
-    os.system("rm -rf {}".format(output_dir))
-    os.system("mkdir -p {}".format(output_dir))
-
-    years = ["2016", "2017", "2018", "Run2"]
-    if skip_per_year:
-        years = ["Run2"]
-
-    with ProcessPoolExecutor(max_workers=12) as executor:
-        futures = []
-        for y in years:
-            futures.append(
-                executor.submit(
-                    integral_pvalues_summary,
-                    input_file,
-                    output_dir,
-                    y,
-                    20,
-                    True,
-                    True,
-                    True,
-                )
-            )
-            futures.append(
-                executor.submit(
-                    integral_pvalues_summary,
-                    input_file,
-                    output_dir,
-                    y,
-                    40,
-                    True,
-                    True,
-                    True,
-                )
-            )
-            futures.append(
-                executor.submit(
-                    integral_pvalues_summary,
-                    input_file,
-                    output_dir,
-                    y,
-                    100,
-                    True,
-                    True,
-                    True,
-                )
-            )
-
-        console = Console()
-        for future in track(
-            as_completed(futures),
-            total=len(futures),
-            description="Most occupied scenarios...",
-            console=console,
-        ):
-            year, num_classes = future.result()
-            console.print(f"Done: {year} - {num_classes} classes")
-
-
-@plot_app.command()
-@execution_time
-def most_discrepant(
-    input_file: str = "classification_plots/integral_pvalues_data.json",
-    output_dir: str = "classification_most_discrepant",
-    skip_per_year: bool = True,
-):
-    """
-    Plot the occupancy and p_integral of most discrepant classes.
-    """
-    from concurrent.futures import ProcessPoolExecutor, as_completed
-    from rich.progress import track
-    from rich.console import Console
-
     from integral_pvalues import integral_pvalues_summary, IntegralPValuePlotType
 
-    os.system("rm -rf {}".format(output_dir))
-    os.system("mkdir -p {}".format(output_dir))
+    os.system("rm -rf {}".format(output_dir_most_occupied))
+    os.system("mkdir -p {}".format(output_dir_most_occupied))
+    os.system("rm -rf {}".format(output_dir_most_discrepant))
+    os.system("mkdir -p {}".format(output_dir_most_discrepant))
 
     years = ["2016", "2017", "2018", "Run2"]
     if skip_per_year:
         years = ["Run2"]
 
-    with ProcessPoolExecutor(max_workers=12) as executor:
+    with ProcessPoolExecutor(max_workers=len(years) * 6) as executor:
         futures = []
         for y in years:
             futures.append(
                 executor.submit(
                     integral_pvalues_summary,
                     input_file,
-                    output_dir,
+                    output_dir_most_occupied,
+                    y,
+                    20,
+                    True,
+                    True,
+                    True,
+                )
+            )
+            futures.append(
+                executor.submit(
+                    integral_pvalues_summary,
+                    input_file,
+                    output_dir_most_occupied,
+                    y,
+                    40,
+                    True,
+                    True,
+                    True,
+                )
+            )
+            futures.append(
+                executor.submit(
+                    integral_pvalues_summary,
+                    input_file,
+                    output_dir_most_occupied,
+                    y,
+                    100,
+                    True,
+                    True,
+                    True,
+                )
+            )
+            futures.append(
+                executor.submit(
+                    integral_pvalues_summary,
+                    input_file,
+                    output_dir_most_discrepant,
                     y,
                     20,
                     True,
@@ -516,7 +481,7 @@ def most_discrepant(
                 executor.submit(
                     integral_pvalues_summary,
                     input_file,
-                    output_dir,
+                    output_dir_most_discrepant,
                     y,
                     40,
                     True,
@@ -529,7 +494,7 @@ def most_discrepant(
                 executor.submit(
                     integral_pvalues_summary,
                     input_file,
-                    output_dir,
+                    output_dir_most_discrepant,
                     y,
                     100,
                     True,
@@ -543,11 +508,11 @@ def most_discrepant(
         for future in track(
             as_completed(futures),
             total=len(futures),
-            description="Most discrepant scenarios...",
+            description="Most occupied/discrepant scenarios...",
             console=console,
         ):
-            year, num_classes = future.result()
-            console.print(f"Done: {year} - {num_classes} classes")
+            scenario, year, num_classes = future.result()
+            console.print(f"Done: {scenario} - {year} - {num_classes} classes")
 
 
 @plot_app.command()
@@ -584,21 +549,6 @@ def summary(
                 class_type=class_type,
                 expected_n_rounds=expected_n_rounds,
             )
-
-
-@plot_app.command()
-@execution_time
-def web_summary():
-    """
-    Make web summary of file contents.
-    """
-    from web_summary import make_web_summary
-
-    make_web_summary("./classification_most_occupied")
-    make_web_summary("./classification_most_discrepant")
-    make_web_summary("./classification_plots")
-    make_web_summary("./validation_plots")
-    make_web_summary("./scan_summary_plots")
 
 
 @plot_app.command()

@@ -25,7 +25,7 @@ from tools import change_exponent
 Lumi = {"Run2": "138", "2016": "36.3", "2017": "41.5", "2018": "59.8"}
 
 
-def get_ec_name(eventclass):
+def get_ec_name(eventclass: Any) -> str:
     ec = eventclass.split("_")
     ec_name = ""
     for p in ec:
@@ -70,7 +70,8 @@ def plot_classes(
     title_modifier: tuple[str, str],
 ) -> None:
     set_of_labels = set()
-    _, ax = plt.subplots(figsize=((16 * 1.8) * plot_size.value, (9 * 1.8 + 6)))
+
+    fig, ax = plt.subplots(figsize=((16 * 2) * plot_size.value, (9 * 1.8 + 6)))
 
     ordered_pg = {}
     for ec in event_classes:
@@ -81,6 +82,7 @@ def plot_classes(
                 ordered_pg[pg] = ec_data_json[year][ec]["mc"][pg]
     ordered_pg = sorted(ordered_pg.items(), key=lambda item: item[1], reverse=False)
 
+    p_val_texts = []
     for ec in event_classes:
         bottom = 0
 
@@ -148,8 +150,10 @@ def plot_classes(
             )
             * 1.1
         )
+
+        p_val_text = None
         if p_value != None and p_value >= 0.1:
-            plt.text(
+            p_val_text = plt.text(
                 get_ec_name(ec),
                 bottom * 1.1,
                 "p = " + f"{p_value:.2f}",
@@ -160,7 +164,7 @@ def plot_classes(
                 fontsize=40,
             )
         elif p_value != None and p_value < 0.1:
-            plt.text(
+            p_val_text = plt.text(
                 get_ec_name(ec),
                 bottom * 1.1,
                 "p = " + f"{p_value:.1e}",
@@ -171,7 +175,7 @@ def plot_classes(
                 fontsize=40,
             )
         else:
-            plt.text(
+            p_val_text = plt.text(
                 get_ec_name(ec),
                 bottom * 1.1,
                 "p = " + str(p_value),
@@ -182,51 +186,56 @@ def plot_classes(
                 fontsize=40,
             )
 
+        p_val_texts.append(p_val_text)
+
+    # Draw to compute actual height
+    fig.canvas.draw()
+    p_val_max_y = 0
+    p_val_min_y = float("+inf")
+    for text in p_val_texts:
+        p_val_max_y = max(
+            p_val_max_y, text.get_window_extent().transformed(ax.transAxes).y1
+        )
+        p_val_min_y = min(
+            p_val_min_y, text.get_window_extent().transformed(ax.transAxes).y0
+        )
+
     legend_elements, labels = plt.gca().get_legend_handles_labels()
     labels.reverse()
     legend_elements.reverse()
 
-    ax.legend(
+    _ = ax.legend(
         handles=legend_elements,
         labels=labels,
-        loc="upper right",
-        ncol=4,
-        fontsize="x-large",
+        loc="upper left",
+        ncol=2,
+        # fontsize="x-large",
+        bbox_to_anchor=(1.01, 1.0),  # x = just outside (1.05), y = top (1.0)
+        borderaxespad=0.0,
     )
     plt.xticks(rotation=90, va="top", usetex=False)
     plt.yscale("log")
     ylim_bottom, ylim_top = ax.get_ylim()
     plt.ylim(ylim_bottom, change_exponent(ylim_top, lambda x: x * 1.4))
 
-    description = f"{len(event_classes)} most {title_modifier[0]}:\n{title_modifier[1]}"
-    if title_modifier[1] == "":
-        description = f"{len(event_classes)} most {title_modifier[0]}"
+    description = f"{len(event_classes)} most {title_modifier[0]}"
+    if title_modifier[1] != "":
+        description += f": {title_modifier[1]}"
 
-    cms_label, _ = hep.cms.label(
-        f"Work in progress",
-        loc=2,
+    _ = hep.cms.label(
+        f"Work in progress - {description}",
+        loc=3,
         fontsize=50,
         data=True,
         lumi=Lumi[year],
         year=year,
     )
+
     ax.set_ylabel("Events per class", fontsize=50)
 
     plt.tick_params(axis="both", labelsize=50, pad=10)
 
-    pos = cms_label.get_position()
-    plt.text(
-        pos[0],
-        pos[1] - 0.10,
-        description,
-        transform=ax.transAxes,
-        # transform=plt.gca().transAxes,
-        fontsize=50,
-        fontweight="bold",
-        fontname="TeX Gyre Heros",
-        verticalalignment="top",
-        horizontalalignment="left",
-    )
+    ax.set_ylim(min(ax.get_ylim()[0], p_val_min_y * 1.1), p_val_max_y * 10**3.5)
 
     plt.tight_layout()
 
@@ -253,7 +262,7 @@ def integral_pvalues_summary(
     plot_per_objects: bool = True,
     plot_exclusive: bool = True,
     plot_type: IntegralPValuePlotType = IntegralPValuePlotType.MostOccupied,
-) -> tuple[str, int]:
+) -> tuple[str, str, int]:
     plot_size = PlotSize.Medium
     if num_classes >= 100:
         plot_size = PlotSize.Large
@@ -365,9 +374,9 @@ def integral_pvalues_summary(
                 "",
             ),
         )
-        plt.savefig("{}/pval_plot_{}_{}.png".format(output_dir, year, num_classes))
+        # plt.savefig("{}/pval_plot_{}_{}.png".format(output_dir, year, num_classes))
         plt.savefig("{}/pval_plot_{}_{}.pdf".format(output_dir, year, num_classes))
-        plt.savefig("{}/pval_plot_{}_{}.svg".format(output_dir, year, num_classes))
+        # plt.savefig("{}/pval_plot_{}_{}.svg".format(output_dir, year, num_classes))
         plt.close()
 
     if plot_per_objects:
@@ -385,11 +394,11 @@ def integral_pvalues_summary(
             year,
             ec_data_json,
             plot_size,
-            (plot_type.value, "with at least 1 muon"),
+            (plot_type.value, "at least 1 muon"),
         )
-        plt.savefig("{}/pval_plot_muon_{}_{}.png".format(output_dir, year, num_classes))
+        # plt.savefig("{}/pval_plot_muon_{}_{}.png".format(output_dir, year, num_classes))
         plt.savefig("{}/pval_plot_muon_{}_{}.pdf".format(output_dir, year, num_classes))
-        plt.savefig("{}/pval_plot_muon_{}_{}.svg".format(output_dir, year, num_classes))
+        # plt.savefig("{}/pval_plot_muon_{}_{}.svg".format(output_dir, year, num_classes))
         plt.close()
 
         is_reverse, class_selector = True, select_most_occupied_electron_class
@@ -408,18 +417,18 @@ def integral_pvalues_summary(
             plot_size,
             (
                 plot_type.value,
-                "with at least 1 electron",
+                "at least 1 electron",
             ),
         )
-        plt.savefig(
-            "{}/pval_plot_electron_{}_{}.png".format(output_dir, year, num_classes)
-        )
+        # plt.savefig(
+        #     "{}/pval_plot_electron_{}_{}.png".format(output_dir, year, num_classes)
+        # )
         plt.savefig(
             "{}/pval_plot_electron_{}_{}.pdf".format(output_dir, year, num_classes)
         )
-        plt.savefig(
-            "{}/pval_plot_electron_{}_{}.svg".format(output_dir, year, num_classes)
-        )
+        # plt.savefig(
+        #     "{}/pval_plot_electron_{}_{}.svg".format(output_dir, year, num_classes)
+        # )
         plt.close()
 
         is_reverse, class_selector = True, select_most_occupied_tau_class
@@ -438,12 +447,12 @@ def integral_pvalues_summary(
             plot_size,
             (
                 plot_type.value,
-                "with at least 1 tau",
+                "at least 1 tau",
             ),
         )
-        plt.savefig("{}/pval_plot_tau_{}_{}.png".format(output_dir, year, num_classes))
+        # plt.savefig("{}/pval_plot_tau_{}_{}.png".format(output_dir, year, num_classes))
         plt.savefig("{}/pval_plot_tau_{}_{}.pdf".format(output_dir, year, num_classes))
-        plt.savefig("{}/pval_plot_tau_{}_{}.svg".format(output_dir, year, num_classes))
+        # plt.savefig("{}/pval_plot_tau_{}_{}.svg".format(output_dir, year, num_classes))
         plt.close()
 
         is_reverse, class_selector = True, select_most_occupied_photon_class
@@ -462,18 +471,18 @@ def integral_pvalues_summary(
             plot_size,
             (
                 plot_type.value,
-                "with at least 1 photon",
+                "at least 1 photon",
             ),
         )
-        plt.savefig(
-            "{}/pval_plot_photon_{}_{}.png".format(output_dir, year, num_classes)
-        )
+        # plt.savefig(
+        #     "{}/pval_plot_photon_{}_{}.png".format(output_dir, year, num_classes)
+        # )
         plt.savefig(
             "{}/pval_plot_photon_{}_{}.pdf".format(output_dir, year, num_classes)
         )
-        plt.savefig(
-            "{}/pval_plot_photon_{}_{}.svg".format(output_dir, year, num_classes)
-        )
+        # plt.savefig(
+        #     "{}/pval_plot_photon_{}_{}.svg".format(output_dir, year, num_classes)
+        # )
         plt.close()
 
     if plot_exclusive:
@@ -493,12 +502,18 @@ def integral_pvalues_summary(
             plot_size,
             (
                 plot_type.value,
-                "exclusive classes",
+                "exc. classes",
             ),
         )
-        plt.savefig("{}/pval_plot_excl_{}_{}.png".format(output_dir, year, num_classes))
+        # plt.savefig("{}/pval_plot_excl_{}_{}.png".format(output_dir, year, num_classes))
         plt.savefig("{}/pval_plot_excl_{}_{}.pdf".format(output_dir, year, num_classes))
-        plt.savefig("{}/pval_plot_excl_{}_{}.svg".format(output_dir, year, num_classes))
+        # plt.savefig("{}/pval_plot_excl_{}_{}.svg".format(output_dir, year, num_classes))
         plt.close()
 
-    return year, num_classes
+    match plot_type:
+        case IntegralPValuePlotType.MostOccupied:
+            return "most occupied", year, num_classes
+        case IntegralPValuePlotType.MostDiscrepant:
+            return "most discrepant", year, num_classes
+        case _:
+            raise ValueError("Invalid Integral PValue Plot Type")
