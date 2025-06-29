@@ -182,12 +182,6 @@ def compute_sum_weights_imp(args):
         # we can allow this to fail and treat it later
         raise RuntimeError("Could not process file {}. {}".format(file, e))
 
-        # return (
-        #     sample,
-        #     year,
-        #     SumWeights(),
-        # )
-
 
 def compute_sum_weights(analysis_config: str) -> None:
     configs = tomli.loads(Path(analysis_config).read_text(encoding="utf-8"))
@@ -239,8 +233,8 @@ def compute_sum_weights(analysis_config: str) -> None:
             weights[sample][y]["sum_genWeight"] += result.sum_genWeight
             weights[sample][y]["sum_LHEWeight"] += result.sum_LHEWeight
             weights[sample][y]["raw_events"] += result.raw_events
-            weights[sample][y]["has_genWeight"] += result.has_genWeight
-            weights[sample][y]["has_LHEWeight_originalXWGTUP"] += (
+            weights[sample][y]["has_genWeight"] |= result.has_genWeight
+            weights[sample][y]["has_LHEWeight_originalXWGTUP"] |= (
                 result.has_LHEWeight_originalXWGTUP
             )
             log.info("Done: {} - {} | {}/{}".format(sample, y, idx, len(args)))

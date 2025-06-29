@@ -414,7 +414,7 @@ inline auto make_jets(const RVec<float> &Jet_pt,                       //
         }
 
         // check for vetoed jets
-        // apply recemmended loose selection
+        // apply recommended loose selection
         // https://cms-jerc.web.cern.ch/Recommendations/#jet-veto-maps
         // https://github.com/columnflow/columnflow/blob/1161b414ba536e93a9f532e8c6078e0b92b2a87e/columnflow/selection/cms/jets.py#L108
         if (shift == Shifts::Variations::Nominal)

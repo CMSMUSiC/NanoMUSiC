@@ -136,14 +136,14 @@ class MUSiCObjects
                 and p4.size() == is_fake.size()     //
                 ))
         {
-            throw std::runtime_error( fmt::format(
-                       "Could not create MUSiCObjects. Input vectors have different sizes. {} - {} - {} - {} - "
-                       "{}\n",
-                       p4.size(),
-                       scale_factor_size ? *scale_factor_size : -1,
-                       delta_met_x.size(),
-                       delta_met_y.size(),
-                       is_fake.size()) );
+            throw std::runtime_error(
+                fmt::format("Could not create MUSiCObjects. Input vectors have different sizes. {} - {} - {} - {} - "
+                            "{}\n",
+                            p4.size(),
+                            scale_factor_size ? *scale_factor_size : -1,
+                            delta_met_x.size(),
+                            delta_met_y.size(),
+                            is_fake.size()));
         }
 
         if (not(std::is_sorted(this->p4.cbegin(),

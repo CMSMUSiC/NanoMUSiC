@@ -238,10 +238,8 @@ auto classification(const std::string process,
             double sum_genWeight = sum_weights_json[process][year]["sum_genWeight"];
             double sum_LHEWeight_originalXWGTUP = sum_weights_json[process][year]["sum_LHEWeight"];
             long long raw_events = sum_weights_json[process][year]["raw_events"];
-            int _has_genWeight = sum_weights_json[process][year]["has_genWeight"];
-            bool has_genWeight = static_cast<bool>(_has_genWeight);
-            int _has_LHEWeight_originalXWGTUP = sum_weights_json[process][year]["has_LHEWeight_originalXWGTUP"];
-            bool has_LHEWeight_originalXWGTUP = static_cast<bool>(_has_LHEWeight_originalXWGTUP);
+            bool has_genWeight = sum_weights_json[process][year]["has_genWeight"];
+            bool has_LHEWeight_originalXWGTUP = sum_weights_json[process][year]["has_LHEWeight_originalXWGTUP"];
 
             bool should_use_LHEWeight = false;
             if (has_genWeight and has_LHEWeight_originalXWGTUP)
@@ -1313,14 +1311,8 @@ auto classification(const std::string process,
                                                 //                                                                1.f)
                         );
 
-                    double mc_weight = [&genWeight, &LHEWeight_originalXWGTUP, &event_weights]() -> double
-                    {
-                        if (event_weights.should_use_LHEWeight)
-                        {
-                            return unwrap(LHEWeight_originalXWGTUP);
-                        }
-                        return unwrap(genWeight);
-                    }();
+                    double mc_weight =
+                        event_weights.should_use_LHEWeight ? unwrap(LHEWeight_originalXWGTUP) : unwrap(genWeight);
 
                     auto top_pt_weight = top_pt_reweighting(
                         is_data, unwrap(GenPart_pt), unwrap(GenPart_pdgId), unwrap(GenPart_statusFlags));

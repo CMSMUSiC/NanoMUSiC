@@ -666,7 +666,6 @@ BTagSFCorrector::BTagSFCorrector(const Year _year, bool _is_data)
 
 //////////////////////////////////////
 /// get btag efficiencies
-/// TODO: Produce these maps for each sample
 /// For now we are taking the mean value of what was used for the 2016 papper
 auto BTagSFCorrector::get_eff(const float &_pt, const float &_eta, const int &_flavour) const -> double
 {
