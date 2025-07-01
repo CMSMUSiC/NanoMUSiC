@@ -183,10 +183,6 @@ def build_plot_jobs_task(
 
 
 def uncertainty_plot(output_path, uncert_props):
-    # for uncert in uncert_props.uncertanties:
-    #     uncert, values = str(uncert.first), list(uncert.second)
-    #     print(uncert, len(values), len(list(uncert_props.bins)))
-
     # Combine multiple
     colors = (
         list(cm.get_cmap("tab10").colors)  #
@@ -203,7 +199,6 @@ def uncertainty_plot(output_path, uncert_props):
         if uncert_props.x_min <= _bin and _bin <= uncert_props.x_max:
             this_bins.append(_bin)
             bins_idx.append(idx)
-    bins = this_bins
     bins_idx.pop()
 
     # Create figure and axis
@@ -215,6 +210,7 @@ def uncertainty_plot(output_path, uncert_props):
 
     for uncert, color in zip(uncert_props.uncertanties, colors):
         uncert, values = str(uncert.first), list(uncert.second)
+        assert len(values) == len(bins) - 1
 
         if uncert.startswith("xsec"):
             if "NLO" in uncert:
@@ -225,74 +221,57 @@ def uncertainty_plot(output_path, uncert_props):
             continue
 
         this_vals = np.array(values)[bins_idx]
-        if not all(this_vals == 0.0):
-            ax.stairs(
-                this_vals,
-                bins,
-                label=uncert,
-                fill=False,
-                color=color,
-                linewidth=2.0,
-                alpha=0.8,
-                baseline=None,
-            )
-
-    if not all(uncert_xsec_NLO == 0.0):
         ax.stairs(
-            np.sqrt(uncert_xsec_NLO),
-            bins,
-            label="xsec_NLO",
+            this_vals,
+            this_bins,
+            label=uncert,
             fill=False,
-            color=next(colors),
+            color=color,
             linewidth=2.0,
             alpha=0.8,
             baseline=None,
         )
 
-    if not all(uncert_xsec_LO == 0.0):
-        ax.stairs(
-            np.sqrt(uncert_xsec_LO),
-            bins,
-            label="xsec_LO",
-            fill=False,
-            color=next(colors),
-            linewidth=2.0,
-            alpha=0.8,
-            baseline=None,
-        )
+    ax.stairs(
+        np.sqrt(uncert_xsec_NLO),
+        this_bins,
+        label="xsec_NLO",
+        fill=False,
+        color=next(colors),
+        linewidth=2.0,
+        alpha=0.8,
+        baseline=None,
+    )
+
+    ax.stairs(
+        np.sqrt(uncert_xsec_LO),
+        this_bins,
+        label="xsec_LO",
+        fill=False,
+        color=next(colors),
+        linewidth=2.0,
+        alpha=0.8,
+        baseline=None,
+    )
 
     # Get handles and labels
     handles, labels = ax.get_legend_handles_labels()
-    if not len(labels) == 0:
-        # Sort them by label
-        sorted_pairs = sorted(zip(labels, handles), key=lambda x: x[0])
-        sorted_labels, sorted_handles = zip(*sorted_pairs)
+    # Sort them by label
+    sorted_pairs = sorted(zip(labels, handles), key=lambda x: x[0])
+    sorted_labels, sorted_handles = zip(*sorted_pairs)
 
-        # Add sorted legend
-        ax.legend(
-            sorted_handles,
-            sorted_labels,
-            # loc="upper left",
-            ncol=1,
-            fontsize="small",
-            bbox_to_anchor=(1.01, 1.0),  # x = just outside (1.05), y = top (1.0)
-            borderaxespad=0.0,
-        )
+    # Add sorted legend
+    ax.legend(
+        sorted_handles,
+        sorted_labels,
+        # loc="upper left",
+        ncol=1,
+        fontsize="small",
+        bbox_to_anchor=(1.01, 1.0),  # x = just outside (1.05), y = top (1.0)
+        borderaxespad=0.0,
+    )
 
-        plt.yscale("log")
-    else:
-        for uncert, color in zip(uncert_props.uncertanties, colors):
-            uncert, values = str(uncert.first), list(uncert.second)
-            if uncert == "total" or uncert == "stat":
-                print(
-                    uncert,
-                    np.array(values),
-                    np.array(values)[bins_idx],
-                    bins_idx,
-                    uncert_props.x_min,
-                    uncert_props.x_max,
-                    bins,
-                )
+    plt.yscale("log")
 
     ax.set_ylabel("Relative Uncert.")
     match uncert_props.distribution_name:

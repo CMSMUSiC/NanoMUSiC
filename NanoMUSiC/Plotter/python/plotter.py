@@ -131,7 +131,7 @@ def plotter(
                 [
                     (output_dir, integral_pvalues_data, scan_data, d)
                     for d in distribution_files
-                ][:10],
+                ],
             ):
                 plot_props += this_plot_props
                 progress.advance(task)
