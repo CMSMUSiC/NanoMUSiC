@@ -809,148 +809,148 @@ auto Distribution::get_systematics_uncert(
 
     // build systematics for plotting (taking the symmetrization conservative approach)
     // this will only affect uncertainties which are assymetric
-    auto systematics_for_plots_and_integral_p_value = m_systematics_uncertainties;
-    systematics_for_plots_and_integral_p_value["prefiring"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+    m_systematics_for_plots_and_integral_p_value = m_systematics_uncertainties;
+    m_systematics_for_plots_and_integral_p_value["prefiring"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
         m_total_mc_histogram,
         ROOTHelpers::SumAsTH1F(
             m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::PreFiring_Up))),
         ROOTHelpers::SumAsTH1F(
             m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::PreFiring_Down))));
 
-    systematics_for_plots_and_integral_p_value["muon_reco"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+    m_systematics_for_plots_and_integral_p_value["muon_reco"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
         m_total_mc_histogram,
         ROOTHelpers::SumAsTH1F(
             m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::MuonReco_Up))),
         ROOTHelpers::SumAsTH1F(
             m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::MuonReco_Down))));
 
-    systematics_for_plots_and_integral_p_value["muon_id"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+    m_systematics_for_plots_and_integral_p_value["muon_id"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
         m_total_mc_histogram,
         ROOTHelpers::SumAsTH1F(
             m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::MuonId_Up))),
         ROOTHelpers::SumAsTH1F(
             m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::MuonId_Down))));
 
-    systematics_for_plots_and_integral_p_value["muon_iso"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+    m_systematics_for_plots_and_integral_p_value["muon_iso"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
         m_total_mc_histogram,
         ROOTHelpers::SumAsTH1F(
             m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::MuonIso_Up))),
         ROOTHelpers::SumAsTH1F(
             m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::MuonIso_Down))));
 
-    systematics_for_plots_and_integral_p_value["electron_reco"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+    m_systematics_for_plots_and_integral_p_value["electron_reco"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
         m_total_mc_histogram,
         ROOTHelpers::SumAsTH1F(
             m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::ElectronReco_Up))),
         ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
             static_cast<std::size_t>(Shifts::Variations::ElectronReco_Down))));
 
-    systematics_for_plots_and_integral_p_value["electron_id"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+    m_systematics_for_plots_and_integral_p_value["electron_id"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
         m_total_mc_histogram,
         ROOTHelpers::SumAsTH1F(
             m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::ElectronId_Up))),
         ROOTHelpers::SumAsTH1F(
             m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::ElectronId_Down))));
 
-    systematics_for_plots_and_integral_p_value["photon_id"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+    m_systematics_for_plots_and_integral_p_value["photon_id"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
         m_total_mc_histogram,
         ROOTHelpers::SumAsTH1F(
             m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::PhotonId_Up))),
         ROOTHelpers::SumAsTH1F(
             m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::PhotonId_Down))));
 
-    systematics_for_plots_and_integral_p_value["photon_veto"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+    m_systematics_for_plots_and_integral_p_value["photon_veto"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
         m_total_mc_histogram,
         ROOTHelpers::SumAsTH1F(
             m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::PhotonVeto_Up))),
         ROOTHelpers::SumAsTH1F(
             m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::PhotonVeto_Down))));
 
-    systematics_for_plots_and_integral_p_value["tau_vs_e"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+    m_systematics_for_plots_and_integral_p_value["tau_vs_e"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
         m_total_mc_histogram,
         ROOTHelpers::SumAsTH1F(
             m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::TauVsE_Up))),
         ROOTHelpers::SumAsTH1F(
             m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::TauVsE_Down))));
 
-    systematics_for_plots_and_integral_p_value["tau_vs_mu"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+    m_systematics_for_plots_and_integral_p_value["tau_vs_mu"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
         m_total_mc_histogram,
         ROOTHelpers::SumAsTH1F(
             m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::TauVsMu_Up))),
         ROOTHelpers::SumAsTH1F(
             m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::TauVsMu_Down))));
 
-    systematics_for_plots_and_integral_p_value["tau_vs_jet"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+    m_systematics_for_plots_and_integral_p_value["tau_vs_jet"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
         m_total_mc_histogram,
         ROOTHelpers::SumAsTH1F(
             m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::TauVsJet_Up))),
         ROOTHelpers::SumAsTH1F(
             m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::TauVsJet_Down))));
 
-    systematics_for_plots_and_integral_p_value["jet_btag"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+    m_systematics_for_plots_and_integral_p_value["jet_btag"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
         m_total_mc_histogram,
         ROOTHelpers::SumAsTH1F(
             m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::JetBTag_Up))),
         ROOTHelpers::SumAsTH1F(
             m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::JetBTag_Down))));
 
-    systematics_for_plots_and_integral_p_value["pile_up"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+    m_systematics_for_plots_and_integral_p_value["pile_up"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
         m_total_mc_histogram,
         ROOTHelpers::SumAsTH1F(
             m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::PU_Up))),
         ROOTHelpers::SumAsTH1F(
             m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::PU_Down))));
 
-    systematics_for_plots_and_integral_p_value["electron_resolution"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+    m_systematics_for_plots_and_integral_p_value["electron_resolution"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
         m_total_mc_histogram,
         ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
             static_cast<std::size_t>(Shifts::Variations::ElectronDiffResolution_Up))),
         ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
             static_cast<std::size_t>(Shifts::Variations::ElectronDiffResolution_Down))));
 
-    systematics_for_plots_and_integral_p_value["electron_scale"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+    m_systematics_for_plots_and_integral_p_value["electron_scale"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
         m_total_mc_histogram,
         ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
             static_cast<std::size_t>(Shifts::Variations::ElectronDiffScale_Up))),
         ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
             static_cast<std::size_t>(Shifts::Variations::ElectronDiffScale_Down))));
 
-    systematics_for_plots_and_integral_p_value["photon_resolution"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+    m_systematics_for_plots_and_integral_p_value["photon_resolution"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
         m_total_mc_histogram,
         ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
             static_cast<std::size_t>(Shifts::Variations::PhotonDiffResolution_Up))),
         ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
             static_cast<std::size_t>(Shifts::Variations::PhotonDiffResolution_Down))));
 
-    systematics_for_plots_and_integral_p_value["photon_scale"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+    m_systematics_for_plots_and_integral_p_value["photon_scale"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
         m_total_mc_histogram,
         ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
             static_cast<std::size_t>(Shifts::Variations::PhotonDiffScale_Up))),
         ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
             static_cast<std::size_t>(Shifts::Variations::PhotonDiffScale_Down))));
 
-    systematics_for_plots_and_integral_p_value["tau_energy"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+    m_systematics_for_plots_and_integral_p_value["tau_energy"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
         m_total_mc_histogram,
         ROOTHelpers::SumAsTH1F(
             m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::TauDiffEnergy_Up))),
         ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
             static_cast<std::size_t>(Shifts::Variations::TauDiffEnergy_Down))));
 
-    systematics_for_plots_and_integral_p_value["jet_resolution"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+    m_systematics_for_plots_and_integral_p_value["jet_resolution"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
         m_total_mc_histogram,
         ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
             static_cast<std::size_t>(Shifts::Variations::JetDiffResolution_Up))),
         ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
             static_cast<std::size_t>(Shifts::Variations::JetDiffResolution_Down))));
 
-    systematics_for_plots_and_integral_p_value["jet_scale"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+    m_systematics_for_plots_and_integral_p_value["jet_scale"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
         m_total_mc_histogram,
         ROOTHelpers::SumAsTH1F(
             m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::JetDiffScale_Up))),
         ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
             static_cast<std::size_t>(Shifts::Variations::JetDiffScale_Down))));
 
-    systematics_for_plots_and_integral_p_value["met_unclustered_energy"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
+    m_systematics_for_plots_and_integral_p_value["met_unclustered_energy"] = Uncertanties::AbsDiffAndSymmetrizeForPlots(
         m_total_mc_histogram,
         ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at(
             static_cast<std::size_t>(Shifts::Variations::METDiffUnclusteredEnergy_Up))),
@@ -959,7 +959,7 @@ auto Distribution::get_systematics_uncert(
 
     for (const auto &[pg, uncert] : xsec_order_uncert_non_LO_samples_for_plotting)
     {
-        systematics_for_plots_and_integral_p_value[fmt::format("xsec_non_LO_{}", pg)] =
+        m_systematics_for_plots_and_integral_p_value[fmt::format("xsec_non_LO_{}", pg)] =
             xsec_order_uncert_non_LO_samples_for_plotting.at(pg);
     }
 
@@ -974,8 +974,8 @@ auto Distribution::get_systematics_uncert(
                 return acc_vec + ROOT::VecOps::pow(next_vec, 2.);
             })),
         ROOT::VecOps::sqrt(std::accumulate(
-            systematics_for_plots_and_integral_p_value.cbegin(),
-            systematics_for_plots_and_integral_p_value.cend(),
+            m_systematics_for_plots_and_integral_p_value.cbegin(),
+            m_systematics_for_plots_and_integral_p_value.cend(),
             RVec<double>(m_n_bins, 0.),
             [](const RVec<double> &acc_vec, const std::pair<std::string, RVec<double>> &next_key_val) -> RVec<double>
             {
@@ -996,16 +996,6 @@ auto Distribution::make_integral_pvalue_props() -> IntegralPValueProps
         return IntegralPValueProps{
             .total_data = -1., .total_mc = -1., .sigma_total = -1., .sigma_stat = -1., .total_per_process_group = {}};
     }
-
-    // auto total_per_process_group = std::vector<double>();
-    // for (const auto &[pg, hist] :
-    //      m_histogram_per_process_group_and_shift.at(static_cast<std::size_t>(Shifts::Variations::Nominal)))
-    // {
-    //     if (pg != "Data")
-    //     {
-    //         total_per_process_group.push_back(hist.GetBinContent(1));
-    //     }
-    // }
 
     return IntegralPValueProps{
         .total_data = m_total_data_histogram.GetBinContent(1), //
@@ -1043,6 +1033,49 @@ auto Distribution::make_plot_props() -> PlotProps
         mc_histograms[pg] = hist;
     }
 
+    auto mc_counts = ROOTHelpers::Counts(m_total_mc_histogram);
+    auto uncertainties = std::unordered_map<std::string, RVec<double>>{};
+    for (const auto &[uncert, values] : m_systematics_for_plots_and_integral_p_value)
+    {
+        uncertainties[uncert] = {};
+        uncertainties[uncert].reserve(values.size());
+        for (std::size_t i = 0; i < values.size(); i++)
+        {
+            if (mc_counts[i] != 0.)
+            {
+                uncertainties[uncert].push_back(values[i] / std::fabs(mc_counts[i]));
+            }
+            else
+            {
+                uncertainties[uncert].push_back(0.);
+            }
+        }
+    }
+
+    for (std::size_t i = 0; i < m_total_uncert_for_plotting.size(); i++)
+    {
+        if (mc_counts[i] != 0.)
+        {
+            uncertainties["total"].push_back(m_total_uncert_for_plotting[i] / std::fabs(mc_counts[i]));
+        }
+        else
+        {
+            uncertainties["total"].push_back(0.);
+        }
+    }
+
+    for (std::size_t i = 0; i < m_statistical_uncert.size(); i++)
+    {
+        if (mc_counts[i] != 0.)
+        {
+            uncertainties["stat"].push_back(m_statistical_uncert[i] / std::fabs(mc_counts[i]));
+        }
+        else
+        {
+            uncertainties["stat"].push_back(0.);
+        }
+    }
+
     return PlotProps{
         .class_name = m_event_class_name,
         .distribution_name = m_distribution_name,
@@ -1057,5 +1090,15 @@ auto Distribution::make_plot_props() -> PlotProps
         .mc_uncertainty = mc_uncert,
         .ratio_graph = ratio_graph,
         .ratio_mc_error_band = ratio_mc_err_graph,
+        .uncert_props =
+            UncertPlotProps{
+                .class_name = m_event_class_name,
+                .distribution_name = m_distribution_name,
+                .year_to_plot = m_year_to_plot,
+                .bins = ROOTHelpers::Edges(m_total_data_histogram),
+                .uncertanties = uncertainties,
+                .x_min = min,
+                .x_max = max,
+            },
     };
 }

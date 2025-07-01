@@ -9,7 +9,6 @@ import mplhep as hep
 
 hep.style.use("CMS")
 import matplotlib as mpl
-import mplhep as hep  # HEP (CMS) extensions/styling on top of mpl
 
 mpl.use("Agg")
 

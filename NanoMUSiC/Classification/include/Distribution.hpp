@@ -8,8 +8,8 @@
 #include <unordered_map>
 
 #include "TGraphAsymmErrors.h"
-#include "TKey.h"
 #include "TGraphErrors.h"
+#include "TKey.h"
 
 #include "Shifts.hpp"
 
@@ -31,6 +31,18 @@ class IntegralPValueProps
     std::vector<double> total_per_process_group;
 };
 
+class UncertPlotProps
+{
+  public:
+    std::string class_name;
+    std::string distribution_name;
+    std::string year_to_plot;
+    RVec<double> bins;
+    std::unordered_map<std::string, RVec<double>> uncertanties;
+    double x_min;
+    double x_max;
+};
+
 class PlotProps
 {
   public:
@@ -47,6 +59,7 @@ class PlotProps
     TGraphErrors mc_uncertainty;
     TGraphAsymmErrors ratio_graph;
     TGraphErrors ratio_mc_error_band;
+    UncertPlotProps uncert_props;
 };
 
 struct ECHistogram
@@ -135,6 +148,7 @@ class Distribution
     TGraphErrors m_error_band;
     bool m_has_data;
     std::unordered_map<std::string, RVec<double>> m_systematics_uncertainties;
+    std::unordered_map<std::string, RVec<double>> m_systematics_for_plots_and_integral_p_value;
     std::array<std::unordered_map<std::string, TH1F>, total_variations> m_histogram_per_process_group_and_shift;
 
     // constructor and methods
@@ -164,7 +178,7 @@ class Distribution
     }
 
     // Distribution(const std::vector<std::unique_ptr<TFile>> &input_root_files,
-    Distribution( const std::vector<ECHistogram> &event_class_histograms,
+    Distribution(const std::vector<ECHistogram> &event_class_histograms,
                  const std::string &event_class_name,
                  const std::string &distribution_name,
                  bool allow_rescale_by_width,
@@ -176,7 +190,6 @@ class Distribution
         {
             return {{"counts", false}, {"sum_pt", true}, {"invariant_mass", true}, {"met", true}};
         }
-
         else if (analysis_name.find("z_to") != std::string::npos)
         {
             return {

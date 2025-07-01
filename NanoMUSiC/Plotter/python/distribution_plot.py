@@ -1,12 +1,18 @@
 import os
 import sys
 from decimal import Decimal
-from enum import Enum, auto
+from itertools import cycle
+from multiprocessing import Value
 from typing import Any
 
-import atlasplots as aplt
 import matplotlib as mpl
+import matplotlib.cm as cm
 import matplotlib.pyplot as plt
+
+mpl.use("Agg")
+
+import atlasplots as aplt
+import numpy as np
 import tdrstyle
 from colors import PROCESS_GROUP_STYLES
 from metadata import Years, make_ec_nice_name
@@ -19,75 +25,6 @@ mpl.use("Agg")
 
 
 MC_THRESHOLD = 0.1
-
-
-# def make_uncertainties_plot(
-#     class_name,
-#     distribution_name,
-#     x_min,
-#     x_max,
-#     y_min,
-#     y_max,
-#     total_data_histogram_first_bin_content,
-#     data_graph,
-#     mc_histograms,
-#     mc_uncertainty,
-#     ratio_graph,
-#     ratio_mc_error,
-#     output_path,
-#     year,
-#     p_value,
-#     systematic_uncertainties,
-#     statistical_uncertainties,
-#     total_mc_histogram,
-# ) -> None:
-#     x = []
-#     for _, hist in mc_histograms:
-#         for i in range(1, hist.GetNbinsX() + 2):
-#             x.append(hist.GetXaxis().GetBinLowEdge(i))
-#         break
-#
-#     grid_dim = math.ceil(math.sqrt(systematic_uncertainties.size() + 1))
-#     fig, axs = plt.subplots(grid_dim, grid_dim, figsize=(grid_dim * 6, grid_dim * 2))
-#     for i, data in enumerate(systematic_uncertainties):
-#         syst_name, values = data
-#         y_to_plot = [
-#             v / total_mc_histogram.GetBinContent(i + 1) for i, v in enumerate(values)
-#         ]
-#         y_to_plot = [y_to_plot[0]] + y_to_plot
-#         axs[int(i / grid_dim)][int(i % grid_dim)].step(x, y_to_plot, label=syst_name)
-#         axs[int(i / grid_dim)][int(i % grid_dim)].set_ylabel("Relative Uncert.")
-#         axs[int(i / grid_dim)][int(i % grid_dim)].legend()
-#         # axs[int(i / grid_dim)][int(i % grid_dim)].set_yscale("log")
-#
-#     y_to_plot = []
-#     for i, v in enumerate(statistical_uncertainties):
-#         if total_mc_histogram.GetBinContent(i + 1) > 0:
-#             y_to_plot.append(v / total_mc_histogram.GetBinContent(i + 1))
-#
-#         else:
-#             y_to_plot.append(0)
-#     y_to_plot = [y_to_plot[0]] + y_to_plot
-#     i = systematic_uncertainties.size()
-#     axs[int(i / grid_dim)][int(i % grid_dim)].step(x, y_to_plot, label="Statist.")
-#     axs[int(i / grid_dim)][int(i % grid_dim)].set_ylabel("Relative Uncert.")
-#     axs[int(i / grid_dim)][int(i % grid_dim)].legend()
-#     # axs[int(i / grid_dim)][int(i % grid_dim)].set_yscale("log")
-#
-#     plt.tight_layout()
-#     year_label = year
-#     if year_label == "Run2":
-#         year_label = ""
-#     output_file_path = f"{output_path}/{class_name}/Uncerts_{class_name}_{distribution_name}{(lambda x: f'_{x}' if x!='' else '_Run2') (year_label)}"
-#     output_file_path = output_file_path.replace("+", "_")
-#
-#     fig.savefig(f"{output_file_path}.png")
-#     fig.savefig(f"{output_file_path}.pdf")
-#     fig.savefig(f"{output_file_path}.svg")
-#
-#
-# def make_uncertainties_plot_task(args):
-#     return make_uncertainties_plot(*args)
 
 
 def p_value_task(distribution_file: str):
@@ -231,6 +168,7 @@ def build_plot_jobs_task(
                     dist.m_systematics_uncertainties,
                     dist.m_statistical_uncert,
                     dist.m_total_mc_histogram,
+                    plot.uncert_props,
                 )
             )
 
@@ -242,6 +180,146 @@ def build_plot_jobs_task(
     root_file.Close()
 
     return temp_plot_props
+
+
+def uncertainty_plot(output_path, uncert_props):
+    # for uncert in uncert_props.uncertanties:
+    #     uncert, values = str(uncert.first), list(uncert.second)
+    #     print(uncert, len(values), len(list(uncert_props.bins)))
+
+    # Combine multiple
+    colors = (
+        list(cm.get_cmap("tab10").colors)  #
+        + list(cm.get_cmap("tab20").colors)  #
+        + list(cm.get_cmap("tab20b").colors)  #
+        + list(cm.get_cmap("tab20c").colors)  #
+    )
+    colors = cycle(colors)  # infinite iterator
+
+    bins = list(uncert_props.bins)
+    bins_idx = []
+    this_bins = []
+    for idx, _bin in enumerate(bins):
+        if uncert_props.x_min <= _bin and _bin <= uncert_props.x_max:
+            this_bins.append(_bin)
+            bins_idx.append(idx)
+    bins = this_bins
+    bins_idx.pop()
+
+    # Create figure and axis
+    fig, ax = plt.subplots(figsize=(8, 6))
+
+    # Plot histograms
+    uncert_xsec_LO = np.zeros(len(bins_idx))
+    uncert_xsec_NLO = np.zeros(len(bins_idx))
+
+    for uncert, color in zip(uncert_props.uncertanties, colors):
+        uncert, values = str(uncert.first), list(uncert.second)
+
+        if uncert.startswith("xsec"):
+            if "NLO" in uncert:
+                uncert_xsec_NLO = uncert_xsec_NLO + np.power(values, 2)[bins_idx]
+            else:
+                uncert_xsec_LO = uncert_xsec_LO + np.power(values, 2)[bins_idx]
+
+            continue
+
+        this_vals = np.array(values)[bins_idx]
+        if not all(this_vals == 0.0):
+            ax.stairs(
+                this_vals,
+                bins,
+                label=uncert,
+                fill=False,
+                color=color,
+                linewidth=2.0,
+                alpha=0.8,
+                baseline=None,
+            )
+
+    if not all(uncert_xsec_NLO == 0.0):
+        ax.stairs(
+            np.sqrt(uncert_xsec_NLO),
+            bins,
+            label="xsec_NLO",
+            fill=False,
+            color=next(colors),
+            linewidth=2.0,
+            alpha=0.8,
+            baseline=None,
+        )
+
+    if not all(uncert_xsec_LO == 0.0):
+        ax.stairs(
+            np.sqrt(uncert_xsec_LO),
+            bins,
+            label="xsec_LO",
+            fill=False,
+            color=next(colors),
+            linewidth=2.0,
+            alpha=0.8,
+            baseline=None,
+        )
+
+    # Get handles and labels
+    handles, labels = ax.get_legend_handles_labels()
+    if not len(labels) == 0:
+        # Sort them by label
+        sorted_pairs = sorted(zip(labels, handles), key=lambda x: x[0])
+        sorted_labels, sorted_handles = zip(*sorted_pairs)
+
+        # Add sorted legend
+        ax.legend(
+            sorted_handles,
+            sorted_labels,
+            # loc="upper left",
+            ncol=1,
+            fontsize="small",
+            bbox_to_anchor=(1.01, 1.0),  # x = just outside (1.05), y = top (1.0)
+            borderaxespad=0.0,
+        )
+
+        plt.yscale("log")
+    else:
+        for uncert, color in zip(uncert_props.uncertanties, colors):
+            uncert, values = str(uncert.first), list(uncert.second)
+            if uncert == "total" or uncert == "stat":
+                print(
+                    uncert,
+                    np.array(values),
+                    np.array(values)[bins_idx],
+                    bins_idx,
+                    uncert_props.x_min,
+                    uncert_props.x_max,
+                    bins,
+                )
+
+    ax.set_ylabel("Relative Uncert.")
+    match uncert_props.distribution_name:
+        case "sum_pt":
+            ax.set_xlabel("Sum pT")
+        case "invariant_mass":
+            ax.set_xlabel("Inv. Mass")
+        case "met":
+            ax.set_xlabel("MET")
+        case "counts":
+            ax.set_xlabel("")
+        case _:
+            raise ValueError("Invalid distribution name")
+
+    fig.tight_layout()
+
+    # Save the plot
+    year_label = uncert_props.year_to_plot
+    if year_label == "Run2":
+        year_label = ""
+
+    ec_nice_name = make_ec_nice_name(uncert_props.class_name)
+    output_file_path = f"{output_path}/{ec_nice_name}/{uncert_props.distribution_name}{(lambda x: f'_{x}' if x != '' else '_Run2')(year_label)}_uncertainties"
+    output_file_path = output_file_path.replace("+", "_")
+
+    fig.savefig(f"{output_file_path}.pdf")
+    plt.close()
 
 
 def make_plot_task(args):
@@ -269,6 +347,7 @@ def make_plot(
     _systematic_uncertainties,
     _statistical_uncertainties,
     _total_mc_histogram,
+    uncert_props,
 ) -> str:
     # Create a figure and axes
     fig, (ax1, ax2) = aplt.ratio_plot(
@@ -523,5 +602,7 @@ def make_plot(
     # fig.savefig(f"{output_file_path}.png")
     # fig.savefig(f"{output_file_path}.svg")
     # fig.savefig(f"{output_file_path}.C")
+
+    uncertainty_plot(output_path, uncert_props)
 
     return "{} - {} - {}".format(class_name, distribution_name, year)

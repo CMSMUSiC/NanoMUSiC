@@ -8,6 +8,7 @@
 #pragma link C++ nestedtypedefs;
 #pragma link C++ class IntegralPValueProps + ;
 #pragma link C++ class PlotProps + ;
+#pragma link C++ class UncertPlotProps + ;
 #pragma link C++ class Distribution + ;
 
 #endif
