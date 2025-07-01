@@ -2,7 +2,6 @@ import os
 import sys
 from decimal import Decimal
 from itertools import cycle
-from multiprocessing import Value
 from typing import Any
 
 import matplotlib as mpl
@@ -184,12 +183,14 @@ def build_plot_jobs_task(
 
 def uncertainty_plot(output_path, uncert_props):
     # Combine multiple
-    colors = (
-        list(cm.get_cmap("tab10").colors)  #
-        + list(cm.get_cmap("tab20").colors)  #
-        + list(cm.get_cmap("tab20b").colors)  #
-        + list(cm.get_cmap("tab20c").colors)  #
-    )
+    colors = []
+    for c in cm.get_cmap("tab20").colors:
+        colors.append((c, "-"))
+    for c in cm.get_cmap("tab20").colors:
+        colors.append((c, ":"))
+    for c in cm.get_cmap("tab20").colors:
+        colors.append((c, "--"))
+
     colors = cycle(colors)  # infinite iterator
 
     bins = list(uncert_props.bins)
@@ -208,8 +209,10 @@ def uncertainty_plot(output_path, uncert_props):
     uncert_xsec_LO = np.zeros(len(bins_idx))
     uncert_xsec_NLO = np.zeros(len(bins_idx))
 
-    for uncert, color in zip(uncert_props.uncertanties, colors):
+    has_data = False
+    for uncert, color_and_line_style in zip(uncert_props.uncertanties, colors):
         uncert, values = str(uncert.first), list(uncert.second)
+        color, line_style = color_and_line_style
         assert len(values) == len(bins) - 1
 
         if uncert.startswith("xsec"):
@@ -221,41 +224,59 @@ def uncertainty_plot(output_path, uncert_props):
             continue
 
         this_vals = np.array(values)[bins_idx]
+        if uncert == "total":
+            color, line_style = "black", "-"
+        if uncert == "stat":
+            color, line_style = "black", ":"
+
+        if np.sum(this_vals) > 0:
+            has_data = True
+
         ax.stairs(
             this_vals,
             this_bins,
             label=uncert,
             fill=False,
             color=color,
-            linewidth=2.0,
+            # linewidth=2.0,
+            linestyle=line_style,
             alpha=0.8,
             baseline=None,
         )
 
+    if np.sum(uncert_xsec_NLO) > 0.0:
+        has_data = True
+    color, line_style = next(colors)
     ax.stairs(
         np.sqrt(uncert_xsec_NLO),
         this_bins,
         label="xsec_NLO",
         fill=False,
-        color=next(colors),
-        linewidth=2.0,
+        color=color,
+        linestyle=line_style,
+        # linewidth=2.0,
         alpha=0.8,
         baseline=None,
     )
 
+    if np.sum(uncert_xsec_LO) > 0.0:
+        has_data = True
+    color, line_style = next(colors)
     ax.stairs(
         np.sqrt(uncert_xsec_LO),
         this_bins,
         label="xsec_LO",
         fill=False,
-        color=next(colors),
-        linewidth=2.0,
+        color=color,
+        # linewidth=2.0,
+        linestyle=line_style,
         alpha=0.8,
         baseline=None,
     )
 
     # Get handles and labels
     handles, labels = ax.get_legend_handles_labels()
+
     # Sort them by label
     sorted_pairs = sorted(zip(labels, handles), key=lambda x: x[0])
     sorted_labels, sorted_handles = zip(*sorted_pairs)
@@ -270,21 +291,24 @@ def uncertainty_plot(output_path, uncert_props):
         bbox_to_anchor=(1.01, 1.0),  # x = just outside (1.05), y = top (1.0)
         borderaxespad=0.0,
     )
-
-    plt.yscale("log")
+    if has_data:
+        plt.yscale("log")
 
     ax.set_ylabel("Relative Uncert.")
     match uncert_props.distribution_name:
         case "sum_pt":
             ax.set_xlabel("Sum pT")
         case "invariant_mass":
-            ax.set_xlabel("Inv. Mass")
+            ax.set_xlabel("Inv. Mass/Transv. Mass")
         case "met":
             ax.set_xlabel("MET")
         case "counts":
             ax.set_xlabel("")
         case _:
             raise ValueError("Invalid distribution name")
+
+    ec_nice_name = make_ec_nice_name(uncert_props.class_name)
+    ax.set_title(ec_nice_name + " - " + uncert_props.year_to_plot)
 
     fig.tight_layout()
 
@@ -293,7 +317,6 @@ def uncertainty_plot(output_path, uncert_props):
     if year_label == "Run2":
         year_label = ""
 
-    ec_nice_name = make_ec_nice_name(uncert_props.class_name)
     output_file_path = f"{output_path}/{ec_nice_name}/{uncert_props.distribution_name}{(lambda x: f'_{x}' if x != '' else '_Run2')(year_label)}_uncertainties"
     output_file_path = output_file_path.replace("+", "_")
 

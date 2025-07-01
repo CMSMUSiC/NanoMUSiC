@@ -338,14 +338,14 @@ def make_distributions(
             None,
             skip_per_year,
         )
-    # if target == FoldAndPlotTarget.Validation or target == FoldAndPlotTarget.All:
-    #     classification.make_distributions(
-    #         inputs_dir,
-    #         validation_inputs_dir,
-    #         None,
-    #         "*" if target == FoldAndPlotTarget.All else name_filter,
-    #         skip_per_year,
-    #     )
+    if target == FoldAndPlotTarget.Validation or target == FoldAndPlotTarget.All:
+        classification.make_distributions(
+            inputs_dir,
+            validation_inputs_dir,
+            None,
+            "*" if target == FoldAndPlotTarget.All else name_filter,
+            skip_per_year,
+        )
 
 
 ############################################################################
