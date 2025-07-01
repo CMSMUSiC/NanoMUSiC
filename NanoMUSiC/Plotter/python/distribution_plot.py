@@ -182,16 +182,36 @@ def build_plot_jobs_task(
 
 
 def uncertainty_plot(output_path, uncert_props):
-    # Combine multiple
-    colors = []
-    for c in cm.get_cmap("tab20").colors:
-        colors.append((c, "-"))
-    for c in cm.get_cmap("tab20").colors:
-        colors.append((c, ":"))
-    for c in cm.get_cmap("tab20").colors:
-        colors.append((c, "--"))
+    color_map = cm.get_cmap("tab20").colors
+    uncert_groups = {}
+    group_idx = 0
+    for uncert in uncert_props.uncertanties:
+        uncert, values = str(uncert.first), list(uncert.second)
+        group = uncert.split("_")[0]
+        if group not in uncert_groups:
+            uncert_groups[group] = (
+                color_map[group_idx],
+                cycle(
+                    ["solid", "dotted", "dashed", "dashdot", (0, (3, 5, 1, 5, 1, 5))]
+                ),
+            )
+            group_idx += 1
 
-    colors = cycle(colors)  # infinite iterator
+    def get_color(uncert):
+        match uncert:
+            case "total" | "stat":
+                return "black"
+            case _:
+                return uncert_groups[uncert.split("_")[0]][0]
+
+    def get_line_style(uncert):
+        match uncert:
+            case "total":
+                return "-"
+            case "stat":
+                return ":"
+            case _:
+                return next(uncert_groups[uncert.split("_")[0]][1])
 
     bins = list(uncert_props.bins)
     bins_idx = []
@@ -210,9 +230,8 @@ def uncertainty_plot(output_path, uncert_props):
     uncert_xsec_NLO = np.zeros(len(bins_idx))
 
     has_data = False
-    for uncert, color_and_line_style in zip(uncert_props.uncertanties, colors):
+    for uncert in uncert_props.uncertanties:
         uncert, values = str(uncert.first), list(uncert.second)
-        color, line_style = color_and_line_style
         assert len(values) == len(bins) - 1
 
         if uncert.startswith("xsec"):
@@ -224,10 +243,6 @@ def uncertainty_plot(output_path, uncert_props):
             continue
 
         this_vals = np.array(values)[bins_idx]
-        if uncert == "total":
-            color, line_style = "black", "-"
-        if uncert == "stat":
-            color, line_style = "black", ":"
 
         if np.sum(this_vals) > 0:
             has_data = True
@@ -237,40 +252,38 @@ def uncertainty_plot(output_path, uncert_props):
             this_bins,
             label=uncert,
             fill=False,
-            color=color,
+            color=get_color(uncert),
             # linewidth=2.0,
-            linestyle=line_style,
-            alpha=0.8,
+            linestyle=get_line_style(uncert),
+            # alpha=1,
             baseline=None,
         )
 
     if np.sum(uncert_xsec_NLO) > 0.0:
         has_data = True
-    color, line_style = next(colors)
     ax.stairs(
         np.sqrt(uncert_xsec_NLO),
         this_bins,
         label="xsec_NLO",
         fill=False,
-        color=color,
-        linestyle=line_style,
+        color=get_color("xsec"),
+        linestyle=get_line_style("xsec"),
         # linewidth=2.0,
-        alpha=0.8,
+        # alpha=0.8,
         baseline=None,
     )
 
     if np.sum(uncert_xsec_LO) > 0.0:
         has_data = True
-    color, line_style = next(colors)
     ax.stairs(
         np.sqrt(uncert_xsec_LO),
         this_bins,
         label="xsec_LO",
         fill=False,
-        color=color,
+        color=get_color("xsec"),
         # linewidth=2.0,
-        linestyle=line_style,
-        alpha=0.8,
+        linestyle=get_line_style("xsec"),
+        # alpha=0.8,
         baseline=None,
     )
 
@@ -305,7 +318,7 @@ def uncertainty_plot(output_path, uncert_props):
         case "counts":
             ax.set_xlabel("")
         case _:
-            raise ValueError("Invalid distribution name")
+            ax.set_xlabel(uncert_props.distribution_name)
 
     ec_nice_name = make_ec_nice_name(uncert_props.class_name)
     ax.set_title(ec_nice_name + " - " + uncert_props.year_to_plot)
@@ -462,7 +475,7 @@ def make_plot(
         mc_uncertainty, "2", fillcolor=13, fillstyle=3254, linewidth=0, expand=False
     )
 
-    ax1.set_yscale("log")  # uncomment to use log scale for y axis
+    ax1.set_yscale("log")
 
     ax1.plot(data_graph, "P0", expand=False)
 
@@ -579,7 +592,7 @@ def make_plot(
                 "f",
             )
 
-        legend.AddEntry(mc_uncertainty, "Bkg. Uncert.", "f")
+        legend.AddEntry(mc_uncertainty, "Total Uncert.", "f")
 
     year_label = year
     if year_label == "Run2":

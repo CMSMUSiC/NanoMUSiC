@@ -151,7 +151,7 @@ def plot_classes(
         )
 
         p_val_text = None
-        if p_value != None and p_value >= 0.1:
+        if p_value != None and p_value >= 0.01:
             p_val_text = plt.text(
                 get_ec_name(ec),
                 bottom * 1.1,
@@ -162,7 +162,7 @@ def plot_classes(
                 rotation=90,
                 fontsize=40,
             )
-        elif p_value != None and p_value < 0.1:
+        elif p_value != None and p_value < 0.01:
             p_val_text = plt.text(
                 get_ec_name(ec),
                 bottom * 1.1,
@@ -300,6 +300,18 @@ def integral_pvalues_summary(
             return ec_data_json[year][event_class]["data_count"]
         return -1
 
+    def select_most_occupied_no_photon_class(event_class: str):
+        if r"$\gamma$" not in get_ec_name(event_class):
+            return ec_data_json[year][event_class]["data_count"]
+        return -1
+
+    def select_most_occupied_no_photon_exc_class(event_class: str):
+        if "exc" in get_ec_name(event_class) and r"$\gamma$" not in get_ec_name(
+            event_class
+        ):
+            return ec_data_json[year][event_class]["data_count"]
+        return -1
+
     def select_most_discrepant_class(event_class: str):
         if (
             ec_data_json[year][event_class]["data_count"] >= data_threshold
@@ -353,161 +365,96 @@ def integral_pvalues_summary(
             return ec_data_json[year][event_class]["p_value"]
         return sys.float_info.max
 
+    def select_most_discrepant_no_photon_class(event_class: str):
+        if (
+            r"$\gamma$" not in get_ec_name(event_class)
+            and ec_data_json[year][event_class]["data_count"] >= data_threshold
+            and get_total_mc(ec_data_json[year][event_class]) >= mc_threshold
+        ):
+            return ec_data_json[year][event_class]["p_value"]
+        return sys.float_info.max
+
+    def select_most_discrepant_no_photon_exc_class(event_class: str):
+        if (
+            "exc" in get_ec_name(event_class)
+            and r"$\gamma$" not in get_ec_name(event_class)
+            and ec_data_json[year][event_class]["data_count"] >= data_threshold
+            and get_total_mc(ec_data_json[year][event_class]) >= mc_threshold
+        ):
+            return ec_data_json[year][event_class]["p_value"]
+        return sys.float_info.max
+
+    def custom_plot(class_selector, is_reverse, description, file_name_modifier):
+        selected_ec = sorted(
+            ec_data_json[year].keys(),
+            key=class_selector,
+            reverse=is_reverse,
+        )
+        plot_classes(
+            (selected_ec)[0:num_classes],
+            year,
+            ec_data_json,
+            plot_size,
+            (plot_type.value, description),
+        )
+        plt.savefig(
+            f"{output_dir}/pval_plot_{file_name_modifier}_{year}_{num_classes}.pdf"
+        )
+        plt.close()
+
     if plot_all:
         is_reverse, class_selector = True, select_most_occupied_class
         if plot_type == IntegralPValuePlotType.MostDiscrepant:
             is_reverse, class_selector = False, select_most_discrepant_class
-
-        selected_ec = sorted(
-            ec_data_json[year].keys(), key=class_selector, reverse=is_reverse
-        )
-
-        plot_classes(
-            (selected_ec)[0:num_classes],
-            year,
-            ec_data_json,
-            plot_size,
-            (
-                plot_type.value,
-                # "all event classes",
-                "",
-            ),
-        )
-        # plt.savefig("{}/pval_plot_{}_{}.png".format(output_dir, year, num_classes))
-        plt.savefig("{}/pval_plot_{}_{}.pdf".format(output_dir, year, num_classes))
-        # plt.savefig("{}/pval_plot_{}_{}.svg".format(output_dir, year, num_classes))
-        plt.close()
+        custom_plot(class_selector, is_reverse, "", "all")
 
     if plot_per_objects:
+        # muon
         is_reverse, class_selector = True, select_most_occupied_muon_class
         if plot_type == IntegralPValuePlotType.MostDiscrepant:
             is_reverse, class_selector = False, select_most_discrepant_muon_class
+        custom_plot(class_selector, is_reverse, "at least 1 muon", "muon")
 
-        selected_ec = sorted(
-            ec_data_json[year].keys(),
-            key=class_selector,
-            reverse=is_reverse,
-        )
-        plot_classes(
-            (selected_ec)[0:num_classes],
-            year,
-            ec_data_json,
-            plot_size,
-            (plot_type.value, "at least 1 muon"),
-        )
-        # plt.savefig("{}/pval_plot_muon_{}_{}.png".format(output_dir, year, num_classes))
-        plt.savefig("{}/pval_plot_muon_{}_{}.pdf".format(output_dir, year, num_classes))
-        # plt.savefig("{}/pval_plot_muon_{}_{}.svg".format(output_dir, year, num_classes))
-        plt.close()
-
+        # electron
         is_reverse, class_selector = True, select_most_occupied_electron_class
         if plot_type == IntegralPValuePlotType.MostDiscrepant:
             is_reverse, class_selector = False, select_most_discrepant_electron_class
+        custom_plot(class_selector, is_reverse, "at least 1 electron", "electron")
 
-        selected_ec = sorted(
-            ec_data_json[year].keys(),
-            key=select_most_occupied_electron_class,
-            reverse=is_reverse,
-        )
-        plot_classes(
-            (selected_ec)[0:num_classes],
-            year,
-            ec_data_json,
-            plot_size,
-            (
-                plot_type.value,
-                "at least 1 electron",
-            ),
-        )
-        # plt.savefig(
-        #     "{}/pval_plot_electron_{}_{}.png".format(output_dir, year, num_classes)
-        # )
-        plt.savefig(
-            "{}/pval_plot_electron_{}_{}.pdf".format(output_dir, year, num_classes)
-        )
-        # plt.savefig(
-        #     "{}/pval_plot_electron_{}_{}.svg".format(output_dir, year, num_classes)
-        # )
-        plt.close()
-
+        # tau
         is_reverse, class_selector = True, select_most_occupied_tau_class
         if plot_type == IntegralPValuePlotType.MostDiscrepant:
             is_reverse, class_selector = False, select_most_discrepant_tau_class
+        custom_plot(class_selector, is_reverse, "at least 1 tau", "tau")
 
-        selected_ec = sorted(
-            ec_data_json[year].keys(),
-            key=class_selector,
-            reverse=is_reverse,
-        )
-        plot_classes(
-            (selected_ec)[0:num_classes],
-            year,
-            ec_data_json,
-            plot_size,
-            (
-                plot_type.value,
-                "at least 1 tau",
-            ),
-        )
-        # plt.savefig("{}/pval_plot_tau_{}_{}.png".format(output_dir, year, num_classes))
-        plt.savefig("{}/pval_plot_tau_{}_{}.pdf".format(output_dir, year, num_classes))
-        # plt.savefig("{}/pval_plot_tau_{}_{}.svg".format(output_dir, year, num_classes))
-        plt.close()
-
+        # photon
         is_reverse, class_selector = True, select_most_occupied_photon_class
         if plot_type == IntegralPValuePlotType.MostDiscrepant:
             is_reverse, class_selector = False, select_most_discrepant_photon_class
+        custom_plot(class_selector, is_reverse, "at least 1 photon", "photon")
 
-        selected_ec = sorted(
-            ec_data_json[year].keys(),
-            key=class_selector,
-            reverse=is_reverse,
-        )
-        plot_classes(
-            (selected_ec)[0:num_classes],
-            year,
-            ec_data_json,
-            plot_size,
-            (
-                plot_type.value,
-                "at least 1 photon",
-            ),
-        )
-        # plt.savefig(
-        #     "{}/pval_plot_photon_{}_{}.png".format(output_dir, year, num_classes)
-        # )
-        plt.savefig(
-            "{}/pval_plot_photon_{}_{}.pdf".format(output_dir, year, num_classes)
-        )
-        # plt.savefig(
-        #     "{}/pval_plot_photon_{}_{}.svg".format(output_dir, year, num_classes)
-        # )
-        plt.close()
+        # no photon
+        is_reverse, class_selector = True, select_most_occupied_no_photon_class
+        if plot_type == IntegralPValuePlotType.MostDiscrepant:
+            is_reverse, class_selector = False, select_most_discrepant_no_photon_class
 
+        custom_plot(class_selector, is_reverse, "no photons", "no_photon")
     if plot_exclusive:
         is_reverse, class_selector = True, select_most_occupied_exc_class
         if plot_type == IntegralPValuePlotType.MostDiscrepant:
             is_reverse, class_selector = False, select_most_discrepant_exc_class
+        custom_plot(class_selector, is_reverse, "exc. classes", "exc")
 
-        selected_ec = sorted(
-            ec_data_json[year].keys(),
-            key=class_selector,
-            reverse=is_reverse,
+        # no photon - exc
+        is_reverse, class_selector = True, select_most_occupied_no_photon_exc_class
+        if plot_type == IntegralPValuePlotType.MostDiscrepant:
+            is_reverse, class_selector = (
+                False,
+                select_most_discrepant_no_photon_exc_class,
+            )
+        custom_plot(
+            class_selector, is_reverse, "no photons - exc. classes", "no_photon_exc"
         )
-        plot_classes(
-            (selected_ec)[0:num_classes],
-            year,
-            ec_data_json,
-            plot_size,
-            (
-                plot_type.value,
-                "exc. classes",
-            ),
-        )
-        # plt.savefig("{}/pval_plot_excl_{}_{}.png".format(output_dir, year, num_classes))
-        plt.savefig("{}/pval_plot_excl_{}_{}.pdf".format(output_dir, year, num_classes))
-        # plt.savefig("{}/pval_plot_excl_{}_{}.svg".format(output_dir, year, num_classes))
-        plt.close()
 
     match plot_type:
         case IntegralPValuePlotType.MostOccupied:

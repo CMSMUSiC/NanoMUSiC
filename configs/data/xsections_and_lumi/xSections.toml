@@ -1188,8 +1188,8 @@ ProcessGroup = "WG"
 
 
 [WGToLNuG_01J_5f_13TeV_AM]
-XSec = 0.0412
-# XSec = 192.3
+# XSec = 0.0412
+XSec = 192.3
 FilterEff = 1.0
 kFactor = 1.0
 # XSecOrder = "LO"
