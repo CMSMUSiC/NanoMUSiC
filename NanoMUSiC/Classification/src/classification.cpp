@@ -10,7 +10,6 @@
 #include "ValidationContainer.hpp"
 #include "ZToLepLepX.hpp"
 #include "fmt/core.h"
-#include <algorithm>
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
@@ -18,7 +17,6 @@
 #include <memory>
 #include <optional>
 #include <stdexcept>
-#include <stdlib.h>
 #include <string>
 
 auto print_debug(long long global_event_index, bool debug) -> void
@@ -604,16 +602,17 @@ auto classification(const std::string process,
             if (_year == Year::Run2016APV or _year == Year::Run2016)
             {
                 return unwrap_or(HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ, false) or
-                       unwrap_or(HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ, false) or
+                       // unwrap_or(HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ, false) or
                        unwrap_or(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ, false) or
                        unwrap_or(HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL, false) or
-                       unwrap_or(HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL, false) or
+                       // unwrap_or(HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL, false) or
                        unwrap_or(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL, false);
             }
 
             if (_year == Year::Run2017)
             {
                 return unwrap_or(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8, false) or
+                       unwrap_or(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ, false) or
                        unwrap_or(HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8, false);
             }
 
@@ -690,13 +689,14 @@ auto classification(const std::string process,
 
             if (_year == Year::Run2016APV or _year == Year::Run2016)
             {
-                return unwrap_or(HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW, false) or
-                       unwrap_or(HLT_DoubleEle33_CaloIdL_MW, false);
+                return unwrap_or(HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW, false);
+                // or unwrap_or(HLT_DoubleEle33_CaloIdL_MW, false);
             }
 
             if (_year == Year::Run2017)
             {
-                return unwrap_or(HLT_DoubleEle33_CaloIdL_MW, false) or unwrap_or(HLT_DoubleEle25_CaloIdL_MW, false);
+                return unwrap_or(HLT_DoubleEle33_CaloIdL_MW, false);
+                // or unwrap_or(HLT_DoubleEle25_CaloIdL_MW, false);
             }
 
             if (_year == Year::Run2018)
