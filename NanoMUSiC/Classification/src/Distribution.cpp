@@ -11,7 +11,7 @@
 #include <future>
 #include <memory>
 #include <numeric>
-#include <optional>
+// #include <regex> #needed for extra_jets_uncert
 #include <string>
 #include <unordered_map>
 
@@ -611,8 +611,7 @@ auto Distribution::get_systematics_uncert(
         {"luminosity", Uncertanties::IntegralUncert(m_total_mc_histogram, 0.016)},
 
         // extra_jets
-        // {"extra_jets", Uncertanties::IntegralUncert(m_total_mc_histogram,
-        // extra_jets_uncert(m_event_class_name))},
+        // {"extra_jets", Uncertanties::IntegralUncert(m_total_mc_histogram, extra_jets_uncert(m_event_class_name))},
 
         ////////////////////////////////////
         // Constants
