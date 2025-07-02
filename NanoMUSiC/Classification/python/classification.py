@@ -396,7 +396,7 @@ def launch_parallel(
     os.system("date")
     parallel_resume_loop(
         joblog_path="classification_outputs/job.log",
-        parallel_command="cd classification_outputs && parallel --resume-failed --memfree 50G -j ___NUM_CPUS___ --eta --progress --noswap --retry-failed 4 --joblog job.log 'python3 {} > {/.}.stdout 2> {/.}.stderr' :::: ../classification_jobs/inputs_parallel.txt".replace(
+        parallel_command="cd classification_outputs && parallel --joblog job.log --resume-failed --memfree 50G -j ___NUM_CPUS___ --eta --progress --noswap --retry-failed 4  'python3 {} > {/.}.stdout 2> {/.}.stderr' :::: ../classification_jobs/inputs_parallel.txt".replace(
             "___NUM_CPUS___", str(num_cpus)
         ),
         max_attempts=10,
