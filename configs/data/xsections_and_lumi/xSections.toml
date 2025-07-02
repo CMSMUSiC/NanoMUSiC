@@ -1032,7 +1032,8 @@ XSecOrder = "NLO"
 ProcessGroup = "TTZ"
 
 [TTZToLL_5f_13TeV_MG]
-XSec = 0.5272
+# XSec = 0.5272
+XSec = 0.052 # XSDB - I think the one above was a typo
 FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "LO"
