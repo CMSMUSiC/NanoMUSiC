@@ -21,7 +21,7 @@ def parallel_resume_loop(
 
     Args:
         joblog_path: Path to the job log file
-        parallel_command: String containing the parallel command (without --resume-failed)
+        parallel_command: String containing the parallel command
         max_attempts: Maximum number of resume attempts
         wait_between_attempts: Seconds to wait between attempts
         max_runtime_hours: Maximum total runtime in hours
