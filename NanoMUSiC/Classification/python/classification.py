@@ -389,6 +389,8 @@ def launch_parallel(
             generated_jobs, key=lambda j: "classification_TTZ" not in j
         )
 
+        generated_jobs = [job for job in generated_jobs if "classification_TTZ" in job]
+
         for j in generated_jobs:
             file.write("../{}\n".format(j))
 
@@ -396,7 +398,7 @@ def launch_parallel(
     os.system("date")
     parallel_resume_loop(
         joblog_path="classification_outputs/job.log",
-        parallel_command="cd classification_outputs && parallel --joblog job.log --resume-failed --memfree 50G -j ___NUM_CPUS___ --eta --progress --noswap --retry-failed 'python3 {} > {/.}.stdout 2> {/.}.stderr' :::: ../classification_jobs/inputs_parallel.txt".replace(
+        parallel_command="cd classification_outputs && parallel --joblog job.log --retry-failed --memfree 350G -j ___NUM_CPUS___ --eta --progress --noswap  'python3 {} > {/.}.stdout 2> {/.}.stderr' :::: ../classification_jobs/inputs_parallel.txt".replace(
             "___NUM_CPUS___", str(num_cpus)
         ),
         max_attempts=10,

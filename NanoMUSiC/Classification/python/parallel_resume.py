@@ -109,7 +109,6 @@ def parallel_resume_loop(
 
     def run_parallel_resume() -> Tuple[bool, str, str]:
         """Execute parallel --resume-failed command with real-time output."""
-        # cmd: str = f"parallel --resume-failed --joblog {joblog_path} {parallel_command.split('parallel', 1)[1] if parallel_command.startswith('parallel') else parallel_command}"
         cmd = parallel_command
 
         print(f"Running: {cmd}")
