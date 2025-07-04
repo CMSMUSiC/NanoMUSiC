@@ -229,11 +229,6 @@ def parallel_resume_loop(
 
         # Parse current job status
         stats: Dict[str, Union[int, float]] = parse_joblog()
-        print(
-            f"📊 Status: {stats['completed']}/{stats['total']} completed "
-            f"({stats['success_rate']:.1f}% success rate), "
-            f"{stats['failed']} failed"
-        )
 
         # Check stopping conditions
         should_stop: bool
@@ -251,6 +246,13 @@ def parallel_resume_loop(
             return
 
         success, _, stderr = run_parallel_resume()
+
+        stats: Dict[str, Union[int, float]] = parse_joblog()
+        print(
+            f"📊 Status: {stats['completed']}/{stats['total']} completed "
+            f"({stats['success_rate']:.1f}% success rate), "
+            f"{stats['failed']} failed"
+        )
 
         if success:
             print("✅ Parallel command completed successfully")
