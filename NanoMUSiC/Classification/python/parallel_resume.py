@@ -1,9 +1,9 @@
-import subprocess
-import time
 import os
+import subprocess
 import sys
+import time
 from datetime import datetime
-from typing import Tuple, Dict, Union, Optional
+from typing import Dict, Optional, Tuple, Union
 
 
 def parallel_resume_loop(
@@ -53,19 +53,25 @@ def parallel_resume_loop(
             completed_jobs: int = 0
             failed_jobs: int = 0
 
+            job_status = {}
             for line in job_lines:
                 parts: list[str] = line.split("\t")
-                if len(parts) >= 7:
+                if len(parts) >= 8:
                     try:
                         exit_code: int = int(parts[6])
-                        if exit_code == 0:
-                            completed_jobs += 1
-                        else:
-                            failed_jobs += 1
+                        job_cmd = parts[8]
+                        assert job_cmd.startswith("python3")
+                        if job_cmd not in job_status:
+                            job_status[job_cmd] = 0
+
+                        job_status[job_cmd] = exit_code
                     except ValueError:
                         continue
 
-            success_rate: float = (
+            total_jobs = len(job_status)
+            completed_jobs = sum([job_status[j] == 0 for j in job_status])
+            failed_jobs = sum([job_status[j] != 0 for j in job_status])
+            success_rate = (
                 (completed_jobs / total_jobs) * 100 if total_jobs > 0 else 0.0
             )
 
