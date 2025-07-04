@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include <stdexcept>
 #include <string>
 
 #include "fmt/core.h"
@@ -15,7 +16,6 @@ class RunLumiFilter
 {
   private:
     json good_runs_lumis_json;
-    bool dummy_json = false;
 
   public:
     RunLumiFilter(const std::string &input_json_file)
@@ -23,8 +23,7 @@ class RunLumiFilter
 
         if (input_json_file == "")
         {
-            fmt::print(stderr, "ERROR: No Golden JSON file provided.");
-            std::exit(EXIT_FAILURE);
+            throw std::runtime_error("No Golden JSON file provided.");
         }
         auto _input_json_file = input_json_file;
         size_t pos = input_json_file.find("$MUSIC_BASE");
@@ -53,8 +52,7 @@ class RunLumiFilter
             std::string content((std::istreambuf_iterator<char>(file)),
                                 (std::istreambuf_iterator<char>())); // Read file content into a string
 
-            fmt::print("Golden JSON file content:\n{}\n", content); // Print the content using fmt::print
-            std::exit(EXIT_FAILURE);
+            throw std::runtime_error(fmt::format("Golden JSON file content:\n{}\n", content));
         }
     }
 

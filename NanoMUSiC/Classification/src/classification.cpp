@@ -46,13 +46,6 @@ auto print_debug(long long global_event_index, bool debug) -> void
     }
 }
 
-struct EventWeights
-{
-    double sum_weights;
-    double total_events;
-    bool should_use_LHEWeight;
-};
-
 inline auto met_filters(bool Flag_goodVertices,
                         bool Flag_globalSuperTightHalo2016Filter,
                         bool Flag_HBHENoiseFilter,
@@ -83,6 +76,13 @@ inline auto met_filters(bool Flag_goodVertices,
 
     throw std::runtime_error(
         fmt::format("Could not define MET filters bits. The requested year ({}) is invalid.", year));
+};
+
+struct EventWeights
+{
+    double sum_weights;
+    double total_events;
+    bool should_use_LHEWeight;
 };
 
 auto classification(const std::string process,

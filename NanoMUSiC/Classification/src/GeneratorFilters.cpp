@@ -5,6 +5,7 @@
 #include <cmath>
 #include <cstddef>
 #include <limits>
+#include <stdexcept>
 
 namespace GeneratorFilters
 {
@@ -17,8 +18,7 @@ auto get_filter(const std::string &filter_name) -> Filter_t
     }
     else
     {
-        fmt::print(stderr, "ERROR: Could not find generator filter: {}", filter_name);
-        std::exit(EXIT_FAILURE);
+        throw std::runtime_error( fmt::format("Could not find generator filter: {}", filter_name) );
     }
 }
 
@@ -552,9 +552,8 @@ auto ww_2l2v_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, float mas
     return filter_result;
 }
 
-auto gamma_jet_cleanner_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
-                               float dr_max,
-                               debugger_t &h_debug) -> bool
+auto gamma_jet_cleanner_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, float dr_max, debugger_t &h_debug)
+    -> bool
 {
     bool filter_result = false;
 

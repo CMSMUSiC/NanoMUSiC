@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
+#include <fmt/core.h>
 #include <functional>
 #include <numeric>
 #include <optional>
@@ -108,11 +109,9 @@ auto unwrap(std::optional<TTreeReaderValue<T>> &value, bool allow_nan_or_inf = f
         {
             if (std::isnan(_this_value) or std::isinf(_this_value))
             {
-                fmt::print(stderr,
-                           "ERROR: Could not unwrap value: {}. NaN or INF found. Unwraped value: {}.\n",
-                           (*value).GetBranchName(),
-                           _this_value);
-                std::exit(EXIT_FAILURE);
+                throw std::runtime_error( fmt::format("Could not unwrap value: {}. NaN or INF found. Unwraped value: {}.\n",
+                            (*value).GetBranchName(),
+                            _this_value) );
             }
         }
         else
