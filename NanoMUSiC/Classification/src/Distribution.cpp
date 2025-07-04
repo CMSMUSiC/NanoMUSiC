@@ -11,7 +11,8 @@
 #include <future>
 #include <memory>
 #include <numeric>
-#include <regex> #needed for extra_jets_uncert
+// needed for extra_jets_uncert
+#include <regex>
 #include <string>
 #include <unordered_map>
 

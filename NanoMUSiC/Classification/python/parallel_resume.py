@@ -14,7 +14,7 @@ def parallel_resume_loop(
     max_runtime_hours: float = 24,
     preamble: Optional[str] = None,
     epilog: Optional[str] = None,
-) -> Tuple[str, Dict[str, Union[int, float]]]:
+) -> None:
     """
     Run parallel --resume-failed in a loop until all jobs complete or conditions are met.
     Shows real-time output from parallel including ETA updates.
@@ -240,19 +240,17 @@ def parallel_resume_loop(
         reason: Optional[str]
         should_stop, reason = check_stopping_conditions(stats, attempt)
         if should_stop:
-            print(f"\n🛑 Stopping: {reason}")
-
             # Execute epilog only on successful completion
             if reason == "all_completed":
+                print(f"\n✅ Stopping: {reason}")
                 execute_epilog()
+            else:
+                print(f"\n🛑 Stopping: {reason}")
+                raise RuntimeError("Error when running with parallel")
 
-            return reason, stats
+            return
 
-        # Run parallel --resume-failed
-        success: bool
-        stdout: str
-        stderr: str
-        success, stdout, stderr = run_parallel_resume()
+        success, _, stderr = run_parallel_resume()
 
         if success:
             print("✅ Parallel command completed successfully")
@@ -266,50 +264,4 @@ def parallel_resume_loop(
             print(f"⏳ Waiting {wait_between_attempts} seconds before next attempt...")
             time.sleep(wait_between_attempts)
 
-    return "max_attempts", stats
-
-
-# Example usage
-if __name__ == "__main__":
-    # Your parallel command as a string (without --resume-failed --joblog)
-    parallel_cmd: str = """parallel --halt now,fail=5 --eta --progress --noswap --retries 2 --memfree 1G 'process_file {}' ::: file1 file2 file3 file4 file5"""
-
-    # Optional preamble to run before first attempt only
-    preamble_cmd: str = "echo 'Initializing batch processing...' && free -h && df -h /tmp && mkdir -p output_dir"
-
-    # Optional epilog to run after successful completion
-    epilog_cmd: str = (
-        "echo 'All jobs completed successfully!' && date && ls -la output_dir/ | wc -l"
-    )
-
-    try:
-        reason: str
-        final_stats: Dict[str, Union[int, float]]
-        reason, final_stats = parallel_resume_loop(
-            joblog_path="job.log",
-            parallel_command=parallel_cmd,
-            max_attempts=20,
-            wait_between_attempts=60,
-            max_runtime_hours=12,
-            preamble=preamble_cmd,
-            epilog=epilog_cmd,
-        )
-
-        print("\n" + "=" * 60)
-        print("FINAL RESULTS:")
-        print(f"Reason for stopping: {reason}")
-        print(f"Total jobs: {final_stats['total']}")
-        print(f"Completed: {final_stats['completed']}")
-        print(f"Failed: {final_stats['failed']}")
-        print(f"Success rate: {final_stats['success_rate']:.1f}%")
-
-        # Exit based on results
-        if final_stats["failed"] == 0 and final_stats["total"] > 0:
-            sys.exit(0)  # Success
-        else:
-            print("ERROR: Some jobs still failed.", file=sys.stderr)
-            sys.exit(-1)  # Some jobs still failed
-
-    except KeyboardInterrupt:
-        print("\n\n⚠️  Interrupted by user (Ctrl+C)")
-        sys.exit(130)
+    return None  # should be unreachable
