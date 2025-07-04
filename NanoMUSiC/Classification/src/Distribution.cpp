@@ -493,60 +493,6 @@ auto Distribution::get_systematics_uncert(
         }
     }
 
-    // auto xsec_uncert = RVec<double>(m_n_bins, 0.);
-    // for (const auto &[pg, uncert] : xsec_order_uncert_LO_samples)
-    // {
-    //     xsec_uncert += ROOT::VecOps::pow(xsec_order_uncert_LO_samples.at(pg), 2.) +
-    //                    ROOT::VecOps::pow(xsec_order_uncert_non_LO_samples.at(pg), 2.);
-    //     // fmt::print("=== EC: {} - DIST: {} - PG: {} -- [{}]\n",
-    //     //    m_event_class_name,
-    //     //    m_distribution_name,
-    //     //    pg,
-    //     //    fmt::join(xsec_order_uncert_non_LO_samples.at(pg), ", "));
-    // }
-    // xsec_uncert = ROOT::VecOps::sqrt(xsec_uncert);
-
-    // std::cout << "Fakes error: "
-    //           << Uncertanties::AbsDiff(m_total_mc_histogram,
-    //                                    ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("Fakes_Up")))
-    //           << std::endl;
-    // std::cout << "PDF+As error: "
-    //           << Uncertanties::AbsDiff(m_total_mc_histogram,
-    //                                    ROOTHelpers::SumAsTH1F(m_histogram_per_process_group_and_shift.at("PDF_As_Up")))
-    //           << std::endl;
-    // for (auto &&[pg, h] : m_histogram_per_process_group_and_shift.at("PDF_As_Up"))
-    // {
-    //     fmt::print("PG:{} - [{}]\n", pg, fmt::join(ROOTHelpers::Counts(h), ", "));
-    // }
-    // if (m_distribution_name == "counts")
-    // {
-    //     for (const auto &[shift, histo_per_pg] : unmerged_mc_histograms)
-    //     {
-    //         if (shift == "Nominal")
-    //         {
-    //             for (const auto &[pg, unmerged_histos] : histo_per_pg)
-    //             {
-    //                 if (pg != "Data")
-    //                 {
-    //                     for (std::size_t i = 0; i < unmerged_histos.size(); i++)
-    //                     {
-    //                         fmt::print(
-    //                             "{} \n[{}]\n",
-    //                             unmerged_mc_histograms.at("PDF_As_Up").at(pg).at(i)->GetName(),
-    //                             fmt::join(
-    //                                 Uncertanties::AbsDiff(unmerged_mc_histograms.at("PDF_As_Up").at(pg).at(i),
-    //                                                       unmerged_mc_histograms.at("Nominal").at(pg).at(i))
-    //                                                       /
-    //                                     (ROOTHelpers::Counts(unmerged_mc_histograms.at("Nominal").at(pg).at(i))
-    //                                     + 1e-6),
-    //                                 ", "));
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-
     // will cap the PDF+As uncertainties
     constexpr auto pdf_as_upper_limit = 0.3;
     auto capped_pdf_as_uncert = ROOTHelpers::Counts(m_total_mc_histogram) * pdf_as_upper_limit;
