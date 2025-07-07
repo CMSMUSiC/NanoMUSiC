@@ -602,7 +602,7 @@ auto Distribution::get_systematics_uncert(
         {"luminosity", Uncertanties::IntegralUncert(m_total_mc_histogram, 0.016)},
 
         // extra_jets
-        {"jet_extra", Uncertanties::IntegralUncert(m_total_mc_histogram, extra_jets_uncert(m_event_class_name))},
+        // {"jet_extra", Uncertanties::IntegralUncert(m_total_mc_histogram, extra_jets_uncert(m_event_class_name))},
 
         ////////////////////////////////////
         // Constants
