@@ -11,8 +11,6 @@
 #include <future>
 #include <memory>
 #include <numeric>
-// needed for extra_jets_uncert
-#include <regex>
 #include <string>
 #include <unordered_map>
 
@@ -493,7 +491,6 @@ auto Distribution::get_systematics_uncert(
         }
     }
 
-
     // will cap the PDF+As uncertainties
     constexpr auto pdf_as_upper_limit = 0.3;
     auto capped_pdf_as_uncert = ROOTHelpers::Counts(m_total_mc_histogram) * pdf_as_upper_limit;
@@ -512,41 +509,85 @@ auto Distribution::get_systematics_uncert(
         capped_pdf_as_uncert[i] = std::min(capped_pdf_as_uncert[i], pdf_as_uncert[i]);
     }
 
-    auto extra_jets_uncert = [](const std::string &str) -> double
+    constexpr auto extra_jets_uncert = [](const std::string &str) -> double
     {
-        std::regex bjet_regex(R"((\d+)bJet)");
-        std::regex jet_regex(R"((\d+)Jet(?!_))");
+        std::optional<int> bJet_count;
+        std::optional<int> jet_count;
 
-        std::smatch match;
-        int bjet_value = 0;
-        int jet_value = 0;
-
-        // Extract bJet value
-        if (std::regex_search(str, match, bjet_regex))
+        auto extract_number_before = [&](std::string_view key) -> std::optional<int>
         {
-            bjet_value = std::stoi(match[1].str());
-        }
+            auto pos = str.find(key);
+            if (pos == std::string_view::npos || pos == 0)
+                return std::nullopt;
 
-        // Extract Jet value (but not bJet)
-        if (std::regex_search(str, match, jet_regex))
+            // Walk backwards to find the number
+            size_t end = pos;
+            size_t start = end;
+            while (start > 0 && std::isdigit(str[start - 1]))
+            {
+                --start;
+            }
+
+            if (start == end)
+                return std::nullopt;
+
+            int value;
+            auto result = std::from_chars(str.data() + start, str.data() + end, value);
+            if (result.ec == std::errc())
+            {
+                return value;
+            }
+            return std::nullopt;
+        };
+
+        bJet_count = extract_number_before("bJet");
+
+        // To avoid double-counting the same number for Jet and bJet
+        // We search for "Jet" only when it's NOT preceded by 'b'
+        size_t pos = 0;
+        while ((pos = str.find("Jet", pos)) != std::string_view::npos)
         {
-            jet_value = std::stoi(match[1].str());
-        }
+            if (pos == 0 || str[pos - 1] != 'b')
+            {
+                // Found "Jet" not preceded by 'b'
+                size_t end = pos;
+                size_t start = end;
+                while (start > 0 && std::isdigit(str[start - 1]))
+                {
+                    --start;
+                }
 
-        constexpr auto MIN_JETS = 4;
-        constexpr auto MIN_BJETS = 2;
+                if (start != end)
+                {
+                    int value;
+                    auto result = std::from_chars(str.data() + start, str.data() + end, value);
+                    if (result.ec == std::errc())
+                    {
+                        jet_count = value;
+                    }
+                }
+            }
+            ++pos;
+        }
 
         auto extra_jets = 0;
-        if (bjet_value >= MIN_BJETS)
+        if (bJet_count)
         {
-            extra_jets += bjet_value - MIN_BJETS - 1;
-        }
-        if (jet_value >= MIN_JETS)
-        {
-            extra_jets += jet_value - MIN_JETS - 1;
+            if (*bJet_count >= 2)
+            {
+                extra_jets += *bJet_count - 1;
+            }
         }
 
-        return extra_jets * 0.15;
+        if (jet_count)
+        {
+            if (*jet_count >= 4)
+            {
+                extra_jets += *jet_count - 3;
+            }
+        }
+
+        return extra_jets * 0.1;
     };
 
     m_systematics_uncertainties = {
