@@ -493,6 +493,7 @@ auto Distribution::get_systematics_uncert(
         }
     }
 
+
     // will cap the PDF+As uncertainties
     constexpr auto pdf_as_upper_limit = 0.3;
     auto capped_pdf_as_uncert = ROOTHelpers::Counts(m_total_mc_histogram) * pdf_as_upper_limit;
@@ -532,15 +533,17 @@ auto Distribution::get_systematics_uncert(
             jet_value = std::stoi(match[1].str());
         }
 
-        // return std::make_pair(bjet_value, jet_value);
+        constexpr auto MIN_JETS = 4;
+        constexpr auto MIN_BJETS = 2;
+
         auto extra_jets = 0;
-        if (bjet_value >= 2)
+        if (bjet_value >= MIN_BJETS)
         {
-            extra_jets += bjet_value - 1;
+            extra_jets += bjet_value - MIN_BJETS - 1;
         }
-        if (jet_value >= 4)
+        if (jet_value >= MIN_JETS)
         {
-            extra_jets += jet_value - 3;
+            extra_jets += jet_value - MIN_JETS - 1;
         }
 
         return extra_jets * 0.15;

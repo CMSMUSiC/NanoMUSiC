@@ -148,6 +148,6 @@ def plotter(
                     progress.console.print("Done: {}".format(job))
                 progress.advance(task)
 
-    os.system(f"cp $MUSIC_BASE/external/index.php {output_dir}/.")
+    os.system(f"cp $MUSIC_BASE/NanoMUSiC/Plotter/assets/index.php {output_dir}/.")
 
     print("Done.")

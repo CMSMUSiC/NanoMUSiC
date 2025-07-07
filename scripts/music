@@ -360,7 +360,7 @@ plot_app = typer.Typer(
 
 @plot_app.command()
 @execution_time
-def distribution(
+def classification(
     input_dir: str = "classification_distributions",
     output_dir: str = "classification_plots",
     scan_summary_dir: str = "scan_summary_plots",
@@ -401,7 +401,7 @@ class YearsToPlot(str, Enum):
 
 @plot_app.command()
 @execution_time
-def integral_p_value_summaries(
+def classification_summary(
     input_file: str = "classification_plots/integral_pvalues_data.json",
     output_dir_most_occupied: str = "classification_most_occupied",
     output_dir_most_discrepant: str = "classification_most_discrepant",
@@ -517,7 +517,7 @@ def integral_p_value_summaries(
 
 @plot_app.command()
 @execution_time
-def summary(
+def scan_summary(
     distribution: Optional[DistributionType] = None,
     class_type: ClassType = ClassType.All,
     input_dir: str = "scan_results",
