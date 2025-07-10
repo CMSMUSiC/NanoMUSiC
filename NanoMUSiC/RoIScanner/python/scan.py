@@ -299,7 +299,7 @@ def start_scan(
     output_dir: str = "scan_results",
     num_cpus: int = 128,
     do_clean: bool = False,
-    n_rounds: int = 100_000,
+    n_rounds: int = 10_000,
     split_size: int = 1000,
     data_or_mc: DataOrMC = DataOrMC.All,
     do_make_shifts: bool = True,
@@ -825,7 +825,7 @@ def get_output(skip_download: bool = False) -> None:
                 result_file = line.split(job_time_hash)[1]
                 download_args.append((result_file[1:], cms_user, job_time_hash))
 
-        with Pool(min(len(download_args), 100)) as p:
+        with Pool(min(len(download_args), 50)) as p:
             with Progress() as progress:
                 task = progress.add_task(
                     description="Downloading {} result files ...".format(
@@ -837,7 +837,6 @@ def get_output(skip_download: bool = False) -> None:
                     download_result_file,
                     download_args,
                 ):
-                    # progress.console.print("File: {}".format(filepath))
                     if res:
                         if res.returncode != 0:
                             print(
@@ -848,6 +847,7 @@ def get_output(skip_download: bool = False) -> None:
                             )
                             sys.exit(-1)
 
+                    progress.console.print("File: {}".format(filepath))
                     progress.advance(task)
 
     exec_command("rm -rf scan_results")
@@ -899,26 +899,28 @@ def scan_remaining(results_dir: str, input_dir: str, n_rounds: int, split_size: 
 
                     if file.startswith(prefix) and file.endswith(suffix):
                         core_part = file[len(prefix) : -len(suffix)]
-                        _, _, start_round = core_part.rpartition("_")
-
-                        if start_round.isdigit():
-                            if start_round == "0":
+                        try:
+                            start_round = core_part.split("_")[2]
+                            if start_round.isdigit():
+                                if start_round == "0":
+                                    scans.append(
+                                        RemainingScan(
+                                            class_name=ec,
+                                            distribution=distribution.value,
+                                            start_round=int(start_round),
+                                            is_data=True,
+                                        )
+                                    )
                                 scans.append(
                                     RemainingScan(
                                         class_name=ec,
                                         distribution=distribution.value,
                                         start_round=int(start_round),
-                                        is_data=True,
+                                        is_data=False,
                                     )
                                 )
-                            scans.append(
-                                RemainingScan(
-                                    class_name=ec,
-                                    distribution=distribution.value,
-                                    start_round=int(start_round),
-                                    is_data=False,
-                                )
-                            )
+                        except:
+                            continue
 
     remaining_scans: dict[str, list[RemainingScan]] = {}
     for d in DistributionType:
@@ -954,29 +956,31 @@ def scan_remaining(results_dir: str, input_dir: str, n_rounds: int, split_size: 
             else:
                 print("Nothing to do for {} (mc).".format(dist))
         else:
-            print("Nothing to do for {} (mc).".format(dist))
+            print("Nothing to do for {}.".format(dist))
 
-    launch_scan(
-        input_dir,
-        data_scans,
-        None,
-        ClassType.All,
-        results_dir,
-        n_rounds=n_rounds,
-        split_size=split_size,
-        data_or_mc=DataOrMC.Data,
-        do_make_shifts=False,
-        do_copy_index_files=False,
-    )
-    launch_scan(
-        input_dir,
-        mc_scans,
-        None,
-        ClassType.All,
-        results_dir,
-        n_rounds=n_rounds,
-        split_size=split_size,
-        data_or_mc=DataOrMC.MC,
-        do_make_shifts=False,
-        do_copy_index_files=False,
-    )
+        if len(data_scans) > 0:
+            start_scan(
+                input_dir=input_dir,
+                patterns=data_scans,
+                distribution_type=dist,
+                class_type=ClassType.All,
+                output_dir=results_dir,
+                n_rounds=n_rounds,
+                split_size=split_size,
+                data_or_mc=DataOrMC.Data,
+                do_make_shifts=False,
+                do_copy_index_files=False,
+            )
+        if len(mc_scans) > 0:
+            start_scan(
+                input_dir=input_dir,
+                patterns=mc_scans,
+                distribution_type=dist,
+                class_type=ClassType.All,
+                output_dir=results_dir,
+                n_rounds=n_rounds,
+                split_size=split_size,
+                data_or_mc=DataOrMC.MC,
+                do_make_shifts=False,
+                do_copy_index_files=False,
+            )
