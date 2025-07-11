@@ -509,86 +509,86 @@ auto Distribution::get_systematics_uncert(
         capped_pdf_as_uncert[i] = std::min(capped_pdf_as_uncert[i], pdf_as_uncert[i]);
     }
 
-    constexpr auto extra_jets_uncert = [](const std::string &str) -> double
-    {
-        std::optional<int> bJet_count;
-        std::optional<int> jet_count;
-
-        auto extract_number_before = [&](std::string_view key) -> std::optional<int>
-        {
-            auto pos = str.find(key);
-            if (pos == std::string_view::npos || pos == 0)
-                return std::nullopt;
-
-            // Walk backwards to find the number
-            size_t end = pos;
-            size_t start = end;
-            while (start > 0 && std::isdigit(str[start - 1]))
-            {
-                --start;
-            }
-
-            if (start == end)
-                return std::nullopt;
-
-            int value;
-            auto result = std::from_chars(str.data() + start, str.data() + end, value);
-            if (result.ec == std::errc())
-            {
-                return value;
-            }
-            return std::nullopt;
-        };
-
-        bJet_count = extract_number_before("bJet");
-
-        // To avoid double-counting the same number for Jet and bJet
-        // We search for "Jet" only when it's NOT preceded by 'b'
-        size_t pos = 0;
-        while ((pos = str.find("Jet", pos)) != std::string_view::npos)
-        {
-            if (pos == 0 || str[pos - 1] != 'b')
-            {
-                // Found "Jet" not preceded by 'b'
-                size_t end = pos;
-                size_t start = end;
-                while (start > 0 && std::isdigit(str[start - 1]))
-                {
-                    --start;
-                }
-
-                if (start != end)
-                {
-                    int value;
-                    auto result = std::from_chars(str.data() + start, str.data() + end, value);
-                    if (result.ec == std::errc())
-                    {
-                        jet_count = value;
-                    }
-                }
-            }
-            ++pos;
-        }
-
-        auto extra_jets = 0;
-        if (bJet_count)
-        {
-            if (*bJet_count >= 2)
-            {
-                extra_jets += *bJet_count - 1;
-            }
-        }
-
-        if (jet_count)
-        {
-            if (*jet_count >= 4)
-            {
-                extra_jets += *jet_count - 3;
-            }
-        }
-
-        return extra_jets * 0.1;
-    };
+    // constexpr auto extra_jets_uncert = [](const std::string &str) -> double
+    // {
+    //     std::optional<int> bJet_count;
+    //     std::optional<int> jet_count;
+    //
+    //     auto extract_number_before = [&](std::string_view key) -> std::optional<int>
+    //     {
+    //         auto pos = str.find(key);
+    //         if (pos == std::string_view::npos || pos == 0)
+    //             return std::nullopt;
+    //
+    //         // Walk backwards to find the number
+    //         size_t end = pos;
+    //         size_t start = end;
+    //         while (start > 0 && std::isdigit(str[start - 1]))
+    //         {
+    //             --start;
+    //         }
+    //
+    //         if (start == end)
+    //             return std::nullopt;
+    //
+    //         int value;
+    //         auto result = std::from_chars(str.data() + start, str.data() + end, value);
+    //         if (result.ec == std::errc())
+    //         {
+    //             return value;
+    //         }
+    //         return std::nullopt;
+    //     };
+    //
+    //     bJet_count = extract_number_before("bJet");
+    //
+    //     // To avoid double-counting the same number for Jet and bJet
+    //     // We search for "Jet" only when it's NOT preceded by 'b'
+    //     size_t pos = 0;
+    //     while ((pos = str.find("Jet", pos)) != std::string_view::npos)
+    //     {
+    //         if (pos == 0 || str[pos - 1] != 'b')
+    //         {
+    //             // Found "Jet" not preceded by 'b'
+    //             size_t end = pos;
+    //             size_t start = end;
+    //             while (start > 0 && std::isdigit(str[start - 1]))
+    //             {
+    //                 --start;
+    //             }
+    //
+    //             if (start != end)
+    //             {
+    //                 int value;
+    //                 auto result = std::from_chars(str.data() + start, str.data() + end, value);
+    //                 if (result.ec == std::errc())
+    //                 {
+    //                     jet_count = value;
+    //                 }
+    //             }
+    //         }
+    //         ++pos;
+    //     }
+    //
+    //     auto extra_jets = 0;
+    //     if (bJet_count)
+    //     {
+    //         if (*bJet_count >= 2)
+    //         {
+    //             extra_jets += *bJet_count - 1;
+    //         }
+    //     }
+    //
+    //     if (jet_count)
+    //     {
+    //         if (*jet_count >= 4)
+    //         {
+    //             extra_jets += *jet_count - 3;
+    //         }
+    //     }
+    //
+    //     return extra_jets * 0.1;
+    // };
 
     m_systematics_uncertainties = {
         ////////////////////////////////////

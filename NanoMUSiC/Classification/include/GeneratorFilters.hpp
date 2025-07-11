@@ -125,9 +125,11 @@ auto wlnujets_mass_binned_sherpa_filter(const NanoAODGenInfo::LHEParticles &lhe_
 
 auto ww_2l2v_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, float mass_max, debugger_t &h_debug) -> bool;
 
-auto gamma_jet_cleanner_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
-                               float dr_max,
-                               debugger_t &h_debug) -> bool;
+auto gamma_jet_cleanner_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, float dr_max, debugger_t &h_debug)
+    -> bool;
+
+auto ew_boson_plus_gamma_filter(const NanoAODGenInfo::GenParticles &gen_particles, int max_photons, debugger_t &h_debug)
+    -> bool;
 
 constexpr float MAX_FLOAT = std::numeric_limits<float>::max();
 
@@ -149,9 +151,9 @@ const std::map<std::string, Filter_t> filters = {
         debugger_t &h_debug) -> bool
      {
          return ttbar_filter(lhe_particles, //
-                                            // gen_particles, //
-                             0.,   //
-                             700., //
+                                            /* gen_particles, */
+                             0.,            //
+                             700.,          //
                              h_debug);
      }},
 
@@ -162,7 +164,8 @@ const std::map<std::string, Filter_t> filters = {
         Year &year,
         debugger_t &h_debug) -> bool
      {
-         return dy_filter(lhe_particles, 0., MAX_FLOAT, 0., 50., FilterTaus::DoNotFilterTaus, h_debug);
+         return dy_filter(lhe_particles, 0., MAX_FLOAT, 0., 50., FilterTaus::DoNotFilterTaus, h_debug) and
+                ew_boson_plus_gamma_filter(gen_particles, 1, h_debug);
      }},
 
     //  DY Jets - pT binned

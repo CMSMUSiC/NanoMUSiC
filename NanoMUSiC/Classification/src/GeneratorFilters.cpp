@@ -1,4 +1,5 @@
 #include "GeneratorFilters.hpp"
+#include "Configs.hpp"
 
 #include "ROOT/RVec.hxx"
 #include <algorithm>
@@ -18,7 +19,7 @@ auto get_filter(const std::string &filter_name) -> Filter_t
     }
     else
     {
-        throw std::runtime_error( fmt::format("Could not find generator filter: {}", filter_name) );
+        throw std::runtime_error(fmt::format("Could not find generator filter: {}", filter_name));
     }
 }
 
@@ -424,32 +425,6 @@ auto ttbar_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
                                                   ROOT::VecOps::Take(lhe_particles.phi, -6),
                                                   ROOT::VecOps::Take(lhe_particles.mass, -6));
 
-    // fmt::print("-------\n");
-    // fmt::print("-------\n");
-    // fmt::print("-------\n");
-    // fmt::print("pT: {}\n", fmt::join(lhe_particles.pt, " == "));
-    // fmt::print("eta: {}\n", fmt::join(lhe_particles.eta, " == "));
-    // fmt::print("phi: {}\n", fmt::join(lhe_particles.phi, " == "));
-    // fmt::print("mass: {}\n", fmt::join(lhe_particles.mass, " == "));
-    // fmt::print("incomingpz: {}\n", fmt::join(lhe_particles.incomingpz, " == "));
-    // fmt::print("pdgId: {}\n", fmt::join(lhe_particles.pdgId, " == "));
-    // fmt::print("status: {}\n", fmt::join(lhe_particles.status, " == "));
-    // fmt::print("*************\n");
-    // fmt::print("*************\n");
-    // fmt::print("pT: {}\n", fmt::join(gen_particles.pt, " == "));
-    // fmt::print("eta: {}\n", fmt::join(gen_particles.eta, " == "));
-    // fmt::print("phi: {}\n", fmt::join(gen_particles.phi, " == "));
-    // fmt::print("mass: {}\n", fmt::join(gen_particles.mass, " == "));
-    // fmt::print("genPartIdxMother: {}\n", fmt::join(gen_particles.genPartIdxMother, " == "));
-    // fmt::print("pdgId: {}\n", fmt::join(gen_particles.pdgId, " == "));
-    // fmt::print("status: {}\n", fmt::join(gen_particles.status, " == "));
-    // fmt::print("------- TTBar Mass : {}\n", ttbar_mass);
-    // fmt::print("------- Alternative TTBar Mass : {}\n",
-    //            ROOT::VecOps::InvariantMass(ROOT::VecOps::Take(lhe_particles.pt, -7),
-    //                                        ROOT::VecOps::Take(lhe_particles.eta, -7),
-    //                                        ROOT::VecOps::Take(lhe_particles.phi, -7),
-    //                                        ROOT::VecOps::Take(lhe_particles.mass, -7)));
-
     bool filter_result = false;
     if (std::max(0.f, mass_min - .5f) <= ttbar_mass and ttbar_mass <= mass_max + .5f)
     {
@@ -586,6 +561,41 @@ auto gamma_jet_cleanner_filter(const NanoAODGenInfo::LHEParticles &lhe_particles
     }
 
     return filter_result;
+}
+
+// Ref: https://indico.cern.ch/event/953285/contributions/4075673/attachments/2127516/3597197/VGG_approval.pdf
+// Slide: 11
+auto ew_boson_plus_gamma_filter(const NanoAODGenInfo::GenParticles &gen_particles, int max_photons, debugger_t &h_debug)
+    -> bool
+{
+    constexpr double MIN_PT = 15.;
+    constexpr double MAX_ABS_ETA = 15.;
+    constexpr auto deltaR = [](double eta1, double phi1, double eta2, double phi2) -> double
+    {
+        double dEta = eta1 - eta2;
+        double dPhi = std::fmod(phi1 - phi2 + 3 * M_PI, 2 * M_PI) - M_PI; // wrap to [-π, π]
+        return std::sqrt(dEta * dEta + dPhi * dPhi);
+    };
+
+    for (std::size_t i = 0; i < gen_particles.nGenParticles; i++)
+    {
+        if (gen_particles.pdgId[i] == PDG::Photon::Id and gen_particles.pt[i] > MIN_PT and
+            std::fabs(gen_particles.eta[i]) < MAX_ABS_ETA and gen_particles.status[i] == 1 and
+            (gen_particles.statusFlags[i] & 1))
+        {
+            for (std::size_t j = 0; j < gen_particles.nGenParticles; j++)
+            {
+                if (std::abs(gen_particles.pdgId[i]) == PDG::Electron::Id and
+                    std::abs(gen_particles.pdgId[i]) == PDG::Muon::Id and
+                    std::abs(gen_particles.pdgId[i]) == PDG::Tau::Id and gen_particles.status[i] == 1)
+                {
+                }
+            }
+        }
+        return true;
+    }
+
+    return true;
 }
 
 } // namespace GeneratorFilters
