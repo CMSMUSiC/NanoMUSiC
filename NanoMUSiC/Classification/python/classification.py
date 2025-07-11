@@ -414,6 +414,7 @@ def launch_dev(
     process_name: Union[str, None] = None,
     year: Union[Years, None] = None,
     max_files: int = sys.maxsize,
+    generator_filter: Union[str, None] = None,
 ):
     if not process_name or not year:
         print(
@@ -424,6 +425,12 @@ def launch_dev(
 
     config_file = load_toml(config_file_path)
     process = Process(name=process_name, **config_file[process_name])
+
+    this_generator_filter = (
+        generator_filter
+        if generator_filter is not None
+        else process.generator_filter_key
+    )
 
     run_classification(
         output_file=f"{process.name}_{year}.root",
@@ -438,7 +445,7 @@ def launch_dev(
         process_group=process.ProcessGroup,
         sum_weights_json_filepath="sum_weights.json",
         input_files=process.get_files(year, max_files),
-        generator_filter=process.generator_filter_key,
+        generator_filter=this_generator_filter,
         first_event=None,
         last_event=None,
         debug=True,

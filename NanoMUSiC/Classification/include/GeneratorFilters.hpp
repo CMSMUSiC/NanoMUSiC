@@ -128,7 +128,7 @@ auto ww_2l2v_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, float mas
 auto gamma_jet_cleanner_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, float dr_max, debugger_t &h_debug)
     -> bool;
 
-auto ew_boson_plus_gamma_filter(const NanoAODGenInfo::GenParticles &gen_particles, int max_photons, debugger_t &h_debug)
+auto ew_boson_plus_gamma_filter(const NanoAODGenInfo::GenParticles &gen_particles, unsigned int n_photons, debugger_t &h_debug)
     -> bool;
 
 constexpr float MAX_FLOAT = std::numeric_limits<float>::max();
@@ -143,6 +143,16 @@ using Filter_t = std::function<bool(const NanoAODGenInfo::LHEParticles &lhe_part
 auto get_filter(const std::string &filter_name) -> Filter_t;
 
 const std::map<std::string, Filter_t> filters = {
+    // EW BOSON PLUS GAMMA FILTER
+    {"ew_boson_plus_gamma"s,
+     [](const NanoAODGenInfo::LHEParticles &lhe_particles,
+        const NanoAODGenInfo::GenParticles &gen_particles,
+        Year &year,
+        debugger_t &h_debug) -> bool
+     {
+         return ew_boson_plus_gamma_filter(gen_particles, 10, h_debug);
+     }},
+
     // TTBar Samples
     {"ttbar_mass_less_700"s,
      [](const NanoAODGenInfo::LHEParticles &lhe_particles,
@@ -164,8 +174,7 @@ const std::map<std::string, Filter_t> filters = {
         Year &year,
         debugger_t &h_debug) -> bool
      {
-         return dy_filter(lhe_particles, 0., MAX_FLOAT, 0., 50., FilterTaus::DoNotFilterTaus, h_debug) and
-                ew_boson_plus_gamma_filter(gen_particles, 1, h_debug);
+         return dy_filter(lhe_particles, 0., MAX_FLOAT, 0., 50., FilterTaus::DoNotFilterTaus, h_debug);
      }},
 
     //  DY Jets - pT binned

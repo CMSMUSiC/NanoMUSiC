@@ -1,10 +1,14 @@
 #ifndef VALIDATION_CONTAINER
 #define VALIDATION_CONTAINER
 
-#include "TTBarTo1Lep2Bjet2JetMET.hpp"
-#include "WToLepNuX.hpp"
-#include "ZToLepLepX.hpp"
 #include "GammaPlusJet.hpp"
+#include "TTBarTo1Lep2Bjet2JetMET.hpp"
+#include "WGamma.hpp"
+#include "WGammaGamma.hpp"
+#include "WToLepNuX.hpp"
+#include "ZGamma.hpp"
+#include "ZGammaGamma.hpp"
+#include "ZToLepLepX.hpp"
 #include <string>
 
 #define MERGE(analysis) analysis.merge_inplace(other->analysis)
@@ -29,6 +33,11 @@ class ValidationContainer
     TTBarTo1Lep2Bjet2JetMET ttbar_to_1tau_2bjet_2jet_met;
 
     GammaPlusJet gamma_plus_jets;
+
+    ZGamma z_gamma;
+    WGamma w_gamma;
+    ZGammaGamma z_gammagamma;
+    WGammaGamma w_gammagamma;
 
     ValidationContainer() = default;
 
@@ -57,9 +66,12 @@ class ValidationContainer
         ttbar_to_1tau_2bjet_2jet_met =
             TTBarTo1Lep2Bjet2JetMET(TTBarTo1Lep2Bjet2JetMET::Leptons::TAUS, process_group, xs_order, process, year);
 
-        gamma_plus_jets =
-            GammaPlusJet(process_group, xs_order, process, year);
+        gamma_plus_jets = GammaPlusJet(process_group, xs_order, process, year);
 
+        z_gamma = ZGamma(process_group, xs_order, process, year);
+        w_gamma = WGamma(process_group, xs_order, process, year);
+        z_gammagamma = ZGammaGamma(process_group, xs_order, process, year);
+        w_gammagamma = WGammaGamma(process_group, xs_order, process, year);
     }
 
     auto serialize_to_root(const std::string output_filepath) -> std::vector<std::string>
@@ -106,6 +118,18 @@ class ValidationContainer
         gamma_plus_jets.serialize_to_root(output_file);
         analysis_names.push_back(gamma_plus_jets.analysis_name);
 
+        z_gamma.serialize_to_root(output_file);
+        analysis_names.push_back(z_gamma.analysis_name);
+
+        w_gamma.serialize_to_root(output_file);
+        analysis_names.push_back(w_gamma.analysis_name);
+
+        z_gammagamma.serialize_to_root(output_file);
+        analysis_names.push_back(z_gammagamma.analysis_name);
+
+        w_gammagamma.serialize_to_root(output_file);
+        analysis_names.push_back(w_gammagamma.analysis_name);
+
         return analysis_names;
     }
 
@@ -124,6 +148,10 @@ class ValidationContainer
         MERGE(ttbar_to_1electron_2bjet_2jet_met);
         MERGE(ttbar_to_1tau_2bjet_2jet_met);
         MERGE(gamma_plus_jets);
+        MERGE(z_gamma);
+        MERGE(w_gamma);
+        MERGE(z_gammagamma);
+        MERGE(w_gammagamma);
     }
 };
 

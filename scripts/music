@@ -159,68 +159,13 @@ def launch(
     split_size: int = 1,
     dry_run: bool = False,
     num_cpus: int = 128,
+    generator_filter: Union[str, None] = None,
 ):
     """
     Launch the classification jobs for a given target.
     """
 
     # Read the file content and remove whitespace characters
-    def normalize_content(file_path):
-        with open(file_path, "r") as file:
-            content = file.read()
-            normalized_content = "".join(content.split())
-        return normalized_content
-
-    if not description:
-        description_template_file = (
-            "{}/NanoMUSiC/Classification/assets/description_template.txt".format(
-                os.getenv("MUSIC_BASE")
-            )
-        )
-
-        os.system("cp {} description.txt".format(description_template_file))
-        os.system("/usr/bin/vim +normal\\ G description.txt")
-
-        if normalize_content(description_template_file) == normalize_content(
-            "description.txt"
-        ):
-            print(
-                "ERROR: Could not set description. Description should not be empty.",
-                file=sys.stderr,
-            )
-            sys.exit(-1)
-    else:
-        if description.endswith(".txt"):
-            if os.path.isfile(description):
-                proc = subprocess.run(
-                    "cp {} description.txt".format(description),
-                    shell=True,
-                    capture_output=True,
-                    text=True,
-                )
-                if proc.returncode != 0:
-                    print(
-                        "ERROR: Could not copy description file.\n{}\n{}".format(
-                            proc.stdout, proc.stderr
-                        ),
-                        file=sys.stderr,
-                    )
-                    sys.exit(-1)
-            else:
-                print(
-                    "ERROR: Could not set description. File ({}) not found.".format(
-                        description
-                    ),
-                    file=sys.stderr,
-                )
-                sys.exit(-1)
-
-        else:
-            print(
-                "ERROR: Could not copy description file. Description file should end with .txt",
-                file=sys.stderr,
-            )
-            sys.exit(-1)
 
     import classification
 
@@ -240,8 +185,64 @@ def launch(
 
     match target:
         case ClassificationTarget.Dev:
-            classification.launch_dev(config_file, process, year, max_files)
+            classification.launch_dev(config_file, process, year, max_files, generator_filter)
         case ClassificationTarget.Parallel:
+            def normalize_content(file_path):
+                with open(file_path, "r") as file:
+                    content = file.read()
+                    normalized_content = "".join(content.split())
+                return normalized_content
+
+            if not description:
+                description_template_file = (
+                    "{}/NanoMUSiC/Classification/assets/description_template.txt".format(
+                        os.getenv("MUSIC_BASE")
+                    )
+                )
+
+                os.system("cp {} description.txt".format(description_template_file))
+                os.system("/usr/bin/vim +normal\\ G description.txt")
+
+                if normalize_content(description_template_file) == normalize_content(
+                    "description.txt"
+                ):
+                    print(
+                        "ERROR: Could not set description. Description should not be empty.",
+                        file=sys.stderr,
+                    )
+                    sys.exit(-1)
+            else:
+                if description.endswith(".txt"):
+                    if os.path.isfile(description):
+                        proc = subprocess.run(
+                            "cp {} description.txt".format(description),
+                            shell=True,
+                            capture_output=True,
+                            text=True,
+                        )
+                        if proc.returncode != 0:
+                            print(
+                                "ERROR: Could not copy description file.\n{}\n{}".format(
+                                    proc.stdout, proc.stderr
+                                ),
+                                file=sys.stderr,
+                            )
+                            sys.exit(-1)
+                    else:
+                        print(
+                            "ERROR: Could not set description. File ({}) not found.".format(
+                                description
+                            ),
+                            file=sys.stderr,
+                        )
+                        sys.exit(-1)
+
+                else:
+                    print(
+                        "ERROR: Could not copy description file. Description file should end with .txt",
+                        file=sys.stderr,
+                    )
+                    sys.exit(-1)
             classification.launch_parallel(
                 config_file, process, year, max_files, 1, num_cpus
             )

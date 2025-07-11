@@ -2,6 +2,7 @@
 #include "Configs.hpp"
 
 #include "ROOT/RVec.hxx"
+#include "fmt/core.h"
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
@@ -17,10 +18,8 @@ auto get_filter(const std::string &filter_name) -> Filter_t
     {
         return it->second;
     }
-    else
-    {
-        throw std::runtime_error(fmt::format("Could not find generator filter: {}", filter_name));
-    }
+
+    throw std::runtime_error(fmt::format("Could not find generator filter: {}", filter_name));
 }
 
 auto no_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, debugger_t &h_debug) -> bool
@@ -565,37 +564,94 @@ auto gamma_jet_cleanner_filter(const NanoAODGenInfo::LHEParticles &lhe_particles
 
 // Ref: https://indico.cern.ch/event/953285/contributions/4075673/attachments/2127516/3597197/VGG_approval.pdf
 // Slide: 11
-auto ew_boson_plus_gamma_filter(const NanoAODGenInfo::GenParticles &gen_particles, int max_photons, debugger_t &h_debug)
-    -> bool
+auto ew_boson_plus_gamma_filter(const NanoAODGenInfo::GenParticles &gen_particles,
+                                unsigned int n_photons,
+                                debugger_t &h_debug) -> bool
 {
     constexpr double MIN_PT = 15.;
-    constexpr double MAX_ABS_ETA = 15.;
+    constexpr double MAX_ABS_ETA = 5.;
+    constexpr double MAX_DR_LEPTONS = 0.4;
+    constexpr double MAX_DR_PHOTONS = 0.4;
+    constexpr double MAX_DR_STABLE_PART = 0.1;
+    constexpr auto PROMPT_FLAG = 1;
+
     constexpr auto deltaR = [](double eta1, double phi1, double eta2, double phi2) -> double
     {
         double dEta = eta1 - eta2;
-        double dPhi = std::fmod(phi1 - phi2 + 3 * M_PI, 2 * M_PI) - M_PI; // wrap to [-π, π]
+        double dPhi = std::fmod(phi1 - phi2 + 3 * M_PI, 2 * M_PI) - M_PI; // wrap to [-pi, +pi]
         return std::sqrt(dEta * dEta + dPhi * dPhi);
     };
 
+    unsigned int n_good_photons = 0;
+    // unsigned int total_photons = 0;
     for (std::size_t i = 0; i < gen_particles.nGenParticles; i++)
     {
-        if (gen_particles.pdgId[i] == PDG::Photon::Id and gen_particles.pt[i] > MIN_PT and
+        if (std::abs(gen_particles.pdgId[i]) == PDG::Photon::Id and gen_particles.pt[i] >= MIN_PT and
             std::fabs(gen_particles.eta[i]) < MAX_ABS_ETA and gen_particles.status[i] == 1 and
-            (gen_particles.statusFlags[i] & 1))
+            (gen_particles.statusFlags[i] & PROMPT_FLAG))
         {
+            // total_photons++;
+            auto good_photon_candidate = true;
             for (std::size_t j = 0; j < gen_particles.nGenParticles; j++)
             {
-                if (std::abs(gen_particles.pdgId[i]) == PDG::Electron::Id and
-                    std::abs(gen_particles.pdgId[i]) == PDG::Muon::Id and
-                    std::abs(gen_particles.pdgId[i]) == PDG::Tau::Id and gen_particles.status[i] == 1)
+                if (not(good_photon_candidate))
                 {
+                    break;
+                }
+
+                if (i == j)
+                {
+                    continue;
+                }
+
+                // check veto against leptons
+                if (std::abs(gen_particles.pdgId[j]) == PDG::Electron::Id or
+                    std::abs(gen_particles.pdgId[j]) == PDG::Muon::Id or
+                    std::abs(gen_particles.pdgId[j]) == PDG::Tau::Id)
+                {
+                    if (deltaR(gen_particles.eta[i], gen_particles.phi[i], gen_particles.eta[j], gen_particles.phi[j]) <
+                        MAX_DR_LEPTONS)
+                    {
+                        good_photon_candidate = false;
+                        continue;
+                    }
+                }
+
+                // check veto against stable particles
+                if (std::abs(gen_particles.pdgId[j]) != PDG::Photon::Id and
+                    std::abs(gen_particles.pdgId[j]) != PDG::ElectronNeutrino::Id and
+                    std::abs(gen_particles.pdgId[j]) != PDG::MuonNeutrino::Id and
+                    std::abs(gen_particles.pdgId[j]) != PDG::TauNeutrino::Id and gen_particles.status[j] == 1)
+                {
+                    if (deltaR(gen_particles.eta[i], gen_particles.phi[i], gen_particles.eta[j], gen_particles.phi[j]) <
+                        MAX_DR_STABLE_PART)
+                    {
+                        good_photon_candidate = false;
+                        continue;
+                    }
+                }
+
+                // check veto against photons
+                if (std::abs(gen_particles.pdgId[j]) == PDG::Photon::Id and gen_particles.status[j] == 1)
+                {
+                    if (deltaR(gen_particles.eta[i], gen_particles.phi[i], gen_particles.eta[j], gen_particles.phi[j]) <
+                        MAX_DR_PHOTONS)
+                    {
+                        good_photon_candidate = false;
+                        continue;
+                    }
                 }
             }
+
+            // check if photon was selected
+            if (good_photon_candidate)
+            {
+                n_good_photons += 1;
+            }
         }
-        return true;
     }
 
-    return true;
+    return n_good_photons == n_photons;
 }
 
 } // namespace GeneratorFilters
