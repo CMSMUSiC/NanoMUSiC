@@ -14,5 +14,9 @@
 #pragma link C++ class WToLepNuX + ;
 #pragma link C++ class TTBarTo1Lep2Bjet2JetMET + ;
 #pragma link C++ class GammaPlusJet + ;
+#pragma link C++ class ZGamma + ;
+#pragma link C++ class ZGammaGamma + ;
+#pragma link C++ class WGamma + ;
+#pragma link C++ class WGammaGamma + ;
 
 #endif
