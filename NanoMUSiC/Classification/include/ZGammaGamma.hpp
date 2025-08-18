@@ -24,9 +24,9 @@ class ZGammaGamma
     std::array<TH1F, total_variations> h_gamma_pt;
     std::array<TH1F, total_variations> h_deltaR_gamma_lepton;
 
-    ZGamma() = default;
+    ZGammaGamma() = default;
 
-    ZGamma(const std::string &process_group,
+    ZGammaGamma(const std::string &process_group,
            const std::string &xs_order,
            const std::string &sample,
            const std::string &year);
@@ -42,7 +42,7 @@ class ZGammaGamma
               Shifts::Variations shift) -> void;
 
     auto serialize_to_root(const std::unique_ptr<TFile> &output_file) -> void;
-    auto merge_inplace(const ZGamma &other) -> void;
+    auto merge_inplace(const ZGammaGamma &other) -> void;
 };
 
 #endif // !ZGAMMAGAMMA

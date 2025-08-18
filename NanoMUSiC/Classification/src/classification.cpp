@@ -1553,14 +1553,14 @@ auto classification(const std::string process,
                     trigger_matches.at("pass_photon_trigger"))
                 {
                     validation_container.z_gamma.fill(muons,
-                                                              electrons,
-                                                              taus,
-                                                              photons,
-                                                              bjets,
-                                                              jets,
-                                                              met,
-                                                              get_effective_weight(shift, 0, 0, 0, 1, 0, 1, 0),
-                                                              shift);
+                                                      electrons,
+                                                      taus,
+                                                      photons,
+                                                      bjets,
+                                                      jets,
+                                                      met,
+                                                      get_effective_weight(shift, 0, 0, 0, 1, 0, 1, 0),
+                                                      shift);
                 }
             }
             /// [END] Validation

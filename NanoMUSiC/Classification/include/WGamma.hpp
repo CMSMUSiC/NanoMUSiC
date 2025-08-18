@@ -1,5 +1,5 @@
-#ifndef ZGAMMA
-#define ZGAMMA
+#ifndef WGAMMA
+#define WGAMMA
 
 #include "ObjectFactories/music_objects.hpp"
 #include "Shifts.hpp"
@@ -13,7 +13,7 @@
 
 using namespace ROOT;
 
-class ZGamma
+class WGamma
 {
   private:
     static constexpr std::size_t total_variations = static_cast<std::size_t>(Shifts::Variations::kTotalVariations);
@@ -24,9 +24,9 @@ class ZGamma
     std::array<TH1F, total_variations> h_gamma_pt;
     std::array<TH1F, total_variations> h_deltaR_gamma_lepton;
 
-    ZGamma() = default;
+    WGamma() = default;
 
-    ZGamma(const std::string &process_group,
+    WGamma(const std::string &process_group,
            const std::string &xs_order,
            const std::string &sample,
            const std::string &year);
@@ -42,7 +42,7 @@ class ZGamma
               Shifts::Variations shift) -> void;
 
     auto serialize_to_root(const std::unique_ptr<TFile> &output_file) -> void;
-    auto merge_inplace(const ZGamma &other) -> void;
+    auto merge_inplace(const WGamma &other) -> void;
 };
 
-#endif // !ZGAMMA
+#endif // !WGAMMA

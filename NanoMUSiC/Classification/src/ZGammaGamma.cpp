@@ -1,4 +1,4 @@
-#include "ZGamma.hpp"
+#include "ZGammaGamma.hpp"
 #include <cstdlib>
 #include <fmt/format.h>
 #include <memory>
@@ -7,7 +7,7 @@
 #include "EventClass.hpp"
 #include "SerializationUtils.hpp"
 
-ZGamma::ZGamma(const std::string &process_group,
+ZGammaGamma::ZGammaGamma(const std::string &process_group,
                const std::string &xs_order,
                const std::string &sample,
                const std::string &year)
@@ -15,7 +15,7 @@ ZGamma::ZGamma(const std::string &process_group,
     TH1::AddDirectory(kFALSE);
 
     auto count_map = std::unordered_map<ObjectNames, int>{};
-    analysis_name = "zgamma";
+    analysis_name = "zgammagamma";
 
     count_map = std::unordered_map<ObjectNames, int>{{ObjectNames::Muon, 0},
                                                      {ObjectNames::Electron, 0},
@@ -56,7 +56,7 @@ ZGamma::ZGamma(const std::string &process_group,
     }
 }
 
-auto ZGamma::fill(const MUSiCObjects &muons,
+auto ZGammaGamma::fill(const MUSiCObjects &muons,
                   const MUSiCObjects &electrons,
                   const MUSiCObjects &taus,
                   const MUSiCObjects &photons,
@@ -90,7 +90,7 @@ auto ZGamma::fill(const MUSiCObjects &muons,
         }
         else
         {
-            throw std::runtime_error("ZGamma Validation: invalid number of leptons");
+            throw std::runtime_error("ZGammaGamma Validation: invalid number of leptons");
         }
 
         auto z_cand = dileptons[0] + dileptons[1];
@@ -102,7 +102,7 @@ auto ZGamma::fill(const MUSiCObjects &muons,
     }
 }
 
-auto ZGamma::serialize_to_root(const std::unique_ptr<TFile> &output_file) -> void
+auto ZGammaGamma::serialize_to_root(const std::unique_ptr<TFile> &output_file) -> void
 {
     for (auto &hist : {h_gamma_pt, h_deltaR_gamma_lepton})
     {
@@ -119,7 +119,7 @@ auto ZGamma::serialize_to_root(const std::unique_ptr<TFile> &output_file) -> voi
         h[idx_var].Add(&other.h[idx_var]);                                                                             \
     }
 
-auto ZGamma::merge_inplace(const ZGamma &other) -> void
+auto ZGammaGamma::merge_inplace(const ZGammaGamma &other) -> void
 {
     MERGE(h_gamma_pt)
     MERGE(h_deltaR_gamma_lepton)
