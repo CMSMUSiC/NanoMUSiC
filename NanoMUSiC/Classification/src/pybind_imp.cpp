@@ -95,19 +95,19 @@ PYBIND11_MODULE(classification_imp, m)
                bool is_data) -> std::vector<std::string>
             {
                 auto input_file = std::unique_ptr<TFile>(TFile::Open(input_file_path.c_str()));
-                auto cont = input_file->Get<EventClassContainer>(fmt::format("{}_{}", process_name, year).c_str());
-                if (not(cont))
+                auto container = input_file->Get<EventClassContainer>(fmt::format("{}_{}", process_name, year).c_str());
+                if (not(container))
                 {
                     throw std::runtime_error(fmt::format("Could not find the requested EventClassContainer: {}.\n",
                                                          fmt::format("{}_{}", process_name, year)));
                 }
 
                 EventClassContainer::serialize_to_root(
-                    *cont, ouput_file_path, process_name, process_group, xsec_order, year, is_data);
+                    *container, ouput_file_path, process_name, process_group, xsec_order, year, is_data);
 
                 std::vector<std::string> classes;
-                classes.reserve(cont->classes.size());
-                for (auto &&[class_name, _] : cont->classes)
+                classes.reserve(container->classes.size());
+                for (auto &&[class_name, _] : container->classes)
                 {
                     classes.push_back(class_name);
                 }
@@ -181,7 +181,8 @@ PYBIND11_MODULE(classification_imp, m)
                 auto cont = input_file->Get<ValidationContainer>("validation");
                 if (not(cont))
                 {
-                    throw std::runtime_error( fmt::format("Could not find the requested ValidationContainer: {}.\n", "validation") );
+                    throw std::runtime_error(
+                        fmt::format("Could not find the requested ValidationContainer: {}.\n", "validation"));
                 }
 
                 return cont->serialize_to_root(ouput_file_path);

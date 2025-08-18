@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <fmt/format.h>
 #include <memory>
+#include <stdexcept>
 
 #include "EventClass.hpp"
 #include "SerializationUtils.hpp"
@@ -67,14 +68,36 @@ auto ZGamma::fill(const MUSiCObjects &muons,
 {
     auto idx_var = static_cast<std::size_t>(shift);
 
-    if (photons.size() == 1 and (jets.size() + bjets.size()) == 1 and
-        (muons.size() + electrons.size() + taus.size()) == 0 and met.size() == 0)
+    if (photons.size() == 1
+        // and (jets.size() + bjets.size()) == 1                                     //
+        and (muons.size() >= 2 or electrons.size() >= 2 or taus.size() >= 2) == 0 //
+        and met.size() == 0                                                       //
+    )
     {
-        if (photons.p4.at(0).pt() > 220.)
+        RVec<Math::PtEtaPhiMVector> dileptons = {};
+
+        if (muons.size() >= 2)
         {
+            dileptons = {muons.p4.at(0), muons.p4.at(1)};
+        }
+        else if (electrons.size() >= 2)
+        {
+            dileptons = {electrons.p4.at(0), electrons.p4.at(1)};
+        }
+        else if (taus.size() >= 2)
+        {
+            dileptons = {taus.p4.at(0), taus.p4.at(1)};
+        }
+        else
+        {
+            throw std::runtime_error("ZGamma Validation: invalid number of leptons");
+        }
+
+        auto z_cand = dileptons[0] + dileptons[1];
+        if (70. <= z_cand.mass() and z_cand.mass() >= 110.)
+        {
+            h_deltaR_gamma_lepton[idx_var].Fill(Math::VectorUtil::DeltaR(photons.p4.at(0), dileptons[0]), weight);
             h_gamma_pt[idx_var].Fill(photons.p4.at(0).pt(), weight);
-            h_gamma_eta[idx_var].Fill(photons.p4.at(0).eta(), weight);
-            h_gamma_phi[idx_var].Fill(photons.p4.at(0).phi(), weight);
         }
     }
 }
