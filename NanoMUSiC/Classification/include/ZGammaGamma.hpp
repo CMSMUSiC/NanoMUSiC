@@ -27,9 +27,9 @@ class ZGammaGamma
     ZGammaGamma() = default;
 
     ZGammaGamma(const std::string &process_group,
-           const std::string &xs_order,
-           const std::string &sample,
-           const std::string &year);
+                const std::string &xs_order,
+                const std::string &sample,
+                const std::string &year);
 
     auto fill(const MUSiCObjects &muons,
               const MUSiCObjects &electrons,

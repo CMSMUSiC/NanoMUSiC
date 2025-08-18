@@ -56,6 +56,14 @@ ZGamma::ZGamma(const std::string &process_group,
     }
 }
 
+enum EWBosonChildren
+{
+    MUONS,
+    ELECTRONS,
+    TAUS,
+    UNDEFINED,
+};
+
 auto ZGamma::fill(const MUSiCObjects &muons,
                   const MUSiCObjects &electrons,
                   const MUSiCObjects &taus,
@@ -66,38 +74,97 @@ auto ZGamma::fill(const MUSiCObjects &muons,
                   double weight,
                   Shifts::Variations shift) -> void
 {
+    constexpr double Z_MASS = PDG::Z::Mass;
+
     auto idx_var = static_cast<std::size_t>(shift);
 
     if (photons.size() == 1
         // and (jets.size() + bjets.size()) == 1                                     //
-        and (muons.size() >= 2 or electrons.size() >= 2 or taus.size() >= 2) == 0 //
-        and met.size() == 0                                                       //
+        and (muons.size() >= 2 or electrons.size() >= 2 or taus.size() >= 2) //
+        and met.size() == 0                                                  //
     )
     {
-        RVec<Math::PtEtaPhiMVector> dileptons = {};
+        Math::PtEtaPhiMVector z_cand;
 
+        std::optional<double> dimuon_mass = std::nullopt;
         if (muons.size() >= 2)
         {
-            dileptons = {muons.p4.at(0), muons.p4.at(1)};
-        }
-        else if (electrons.size() >= 2)
-        {
-            dileptons = {electrons.p4.at(0), electrons.p4.at(1)};
-        }
-        else if (taus.size() >= 2)
-        {
-            dileptons = {taus.p4.at(0), taus.p4.at(1)};
-        }
-        else
-        {
-            throw std::runtime_error("ZGamma Validation: invalid number of leptons");
+            z_cand = muons.p4.at(0) + muons.p4.at(1);
+            if (70. <= z_cand.mass() and z_cand.mass() <= 110.)
+            {
+                dimuon_mass = z_cand.mass();
+            }
         }
 
-        auto z_cand = dileptons[0] + dileptons[1];
-        if (70. <= z_cand.mass() and z_cand.mass() >= 110.)
+        std::optional<double> dielectron_mass = std::nullopt;
+        if (electrons.size() >= 2)
         {
-            h_deltaR_gamma_lepton[idx_var].Fill(Math::VectorUtil::DeltaR(photons.p4.at(0), dileptons[0]), weight);
-            h_gamma_pt[idx_var].Fill(photons.p4.at(0).pt(), weight);
+            z_cand = electrons.p4.at(0) + electrons.p4.at(1);
+            if (70. <= z_cand.mass() and z_cand.mass() <= 110.)
+            {
+                dielectron_mass = z_cand.mass();
+            }
+        }
+
+        std::optional<double> ditau_mass = std::nullopt;
+        if (taus.size() >= 2)
+        {
+            z_cand = taus.p4.at(0) + taus.p4.at(1);
+            if (70. <= z_cand.mass() and z_cand.mass() <= 110.)
+            {
+                ditau_mass = z_cand.mass();
+            }
+        }
+
+        auto closest_to_Z = [](std::array<std::optional<double>, 3> values) -> std::optional<std::size_t>
+        {
+            double best_diff = std::numeric_limits<double>::infinity();
+            std::optional<std::size_t> best_index = std::nullopt;
+
+            std::size_t i = 0;
+            for (const auto &v : values)
+            {
+                if (v)
+                {
+                    double diff = std::abs(*v - Z_MASS);
+                    if (diff < best_diff)
+                    {
+                        best_diff = diff;
+                        best_index = i;
+                    }
+                }
+                ++i;
+            }
+
+            return best_index;
+        }({dimuon_mass, dielectron_mass, ditau_mass});
+
+        if (closest_to_Z)
+        {
+            if (closest_to_Z == EWBosonChildren::MUONS)
+            {
+                h_deltaR_gamma_lepton[idx_var].Fill(Math::VectorUtil::DeltaR(photons.p4.at(0), muons.p4[0]), weight);
+                h_gamma_pt[idx_var].Fill(photons.p4.at(0).pt(), weight);
+                return;
+            }
+            if (closest_to_Z == EWBosonChildren::ELECTRONS)
+            {
+                h_deltaR_gamma_lepton[idx_var].Fill(Math::VectorUtil::DeltaR(photons.p4.at(0), electrons.p4[0]),
+                                                    weight);
+                h_gamma_pt[idx_var].Fill(photons.p4.at(0).pt(), weight);
+                return;
+            }
+            if (closest_to_Z == EWBosonChildren::TAUS)
+            {
+                h_deltaR_gamma_lepton[idx_var].Fill(Math::VectorUtil::DeltaR(photons.p4.at(0), taus.p4[0]), weight);
+                h_gamma_pt[idx_var].Fill(photons.p4.at(0).pt(), weight);
+                return;
+            }
+
+            if (closest_to_Z >= EWBosonChildren::UNDEFINED)
+            {
+                throw std::runtime_error("Z+NGamma Validation: invalid index");
+            }
         }
     }
 }

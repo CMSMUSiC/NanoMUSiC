@@ -56,6 +56,19 @@ WGamma::WGamma(const std::string &process_group,
     }
 }
 
+enum EWBosonChildren
+{
+    MUONS,
+    ELECTRONS,
+    TAUS,
+    UNDEFINED,
+};
+
+inline auto transverse_mass(double et, double px, double py) -> double
+{
+    return std::sqrt(std::pow(et, 2) - std::pow(px, 2) - std::pow(py, 2));
+}
+
 auto WGamma::fill(const MUSiCObjects &muons,
                   const MUSiCObjects &electrons,
                   const MUSiCObjects &taus,
@@ -66,38 +79,102 @@ auto WGamma::fill(const MUSiCObjects &muons,
                   double weight,
                   Shifts::Variations shift) -> void
 {
+    constexpr double W_MASS = 75.; // approx. for typical tranverse mass
+
     auto idx_var = static_cast<std::size_t>(shift);
 
     if (photons.size() == 1
         // and (jets.size() + bjets.size()) == 1                                     //
-        and (muons.size() >= 2 or electrons.size() >= 2 or taus.size() >= 2) == 0 //
-        and met.size() == 0                                                       //
+        and (muons.size() >= 1 or electrons.size() >= 1 or taus.size() >= 1) //
+        and met.size() == 1                                                  //
     )
     {
-        RVec<Math::PtEtaPhiMVector> dileptons = {};
 
-        if (muons.size() >= 2)
+        std::optional<double> dimuon_mass = std::nullopt;
+        if (muons.size() >= 1)
         {
-            dileptons = {muons.p4.at(0), muons.p4.at(1)};
-        }
-        else if (electrons.size() >= 2)
-        {
-            dileptons = {electrons.p4.at(0), electrons.p4.at(1)};
-        }
-        else if (taus.size() >= 2)
-        {
-            dileptons = {taus.p4.at(0), taus.p4.at(1)};
-        }
-        else
-        {
-            throw std::runtime_error("WGamma Validation: invalid number of leptons");
+            auto transv_mass_lep_met = transverse_mass(muons.p4.at(0).Et() + met.p4.at(0).Et(),
+                                                       muons.p4.at(0).px() + met.p4.at(0).px(),
+                                                       muons.p4.at(0).py() + met.p4.at(0).py());
+            if (50. <= transv_mass_lep_met and transv_mass_lep_met <= 100.)
+            {
+                dimuon_mass = transv_mass_lep_met;
+            }
         }
 
-        auto z_cand = dileptons[0] + dileptons[1];
-        if (70. <= z_cand.mass() and z_cand.mass() >= 110.)
+        std::optional<double> dielectron_mass = std::nullopt;
+        if (electrons.size() >= 1)
         {
-            h_deltaR_gamma_lepton[idx_var].Fill(Math::VectorUtil::DeltaR(photons.p4.at(0), dileptons[0]), weight);
-            h_gamma_pt[idx_var].Fill(photons.p4.at(0).pt(), weight);
+            auto transv_mass_lep_met = transverse_mass(electrons.p4.at(0).Et() + met.p4.at(0).Et(),
+                                                       electrons.p4.at(0).px() + met.p4.at(0).px(),
+                                                       electrons.p4.at(0).py() + met.p4.at(0).py());
+            if (50. <= transv_mass_lep_met and transv_mass_lep_met <= 100.)
+            {
+                dielectron_mass = transv_mass_lep_met;
+            }
+        }
+
+        std::optional<double> ditau_mass = std::nullopt;
+        if (taus.size() >= 1)
+        {
+            auto transv_mass_lep_met = transverse_mass(taus.p4.at(0).Et() + met.p4.at(0).Et(),
+                                                       taus.p4.at(0).px() + met.p4.at(0).px(),
+                                                       taus.p4.at(0).py() + met.p4.at(0).py());
+            if (50. <= transv_mass_lep_met and transv_mass_lep_met <= 100.)
+            {
+                ditau_mass = transv_mass_lep_met;
+            }
+        }
+
+        auto closest_to_W = [](std::array<std::optional<double>, 3> values) -> std::optional<std::size_t>
+        {
+            double best_diff = std::numeric_limits<double>::infinity();
+            std::optional<std::size_t> best_index = std::nullopt;
+
+            std::size_t i = 0;
+            for (const auto &v : values)
+            {
+                if (v)
+                {
+                    double diff = std::abs(*v - W_MASS);
+                    if (diff < best_diff)
+                    {
+                        best_diff = diff;
+                        best_index = i;
+                    }
+                }
+                ++i;
+            }
+
+            return best_index;
+        }({dimuon_mass, dielectron_mass, ditau_mass});
+
+        if (closest_to_W)
+        {
+            if (closest_to_W == EWBosonChildren::MUONS)
+            {
+                h_deltaR_gamma_lepton[idx_var].Fill(Math::VectorUtil::DeltaR(photons.p4.at(0), muons.p4[0]), weight);
+                h_gamma_pt[idx_var].Fill(photons.p4.at(0).pt(), weight);
+                return;
+            }
+            if (closest_to_W == EWBosonChildren::ELECTRONS)
+            {
+                h_deltaR_gamma_lepton[idx_var].Fill(Math::VectorUtil::DeltaR(photons.p4.at(0), electrons.p4[0]),
+                                                    weight);
+                h_gamma_pt[idx_var].Fill(photons.p4.at(0).pt(), weight);
+                return;
+            }
+            if (closest_to_W == EWBosonChildren::TAUS)
+            {
+                h_deltaR_gamma_lepton[idx_var].Fill(Math::VectorUtil::DeltaR(photons.p4.at(0), taus.p4[0]), weight);
+                h_gamma_pt[idx_var].Fill(photons.p4.at(0).pt(), weight);
+                return;
+            }
+
+            if (closest_to_W >= EWBosonChildren::UNDEFINED)
+            {
+                throw std::runtime_error("Z+NGamma Validation: invalid index");
+            }
         }
     }
 }

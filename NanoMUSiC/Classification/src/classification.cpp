@@ -1559,8 +1559,74 @@ auto classification(const std::string process,
                                                       bjets,
                                                       jets,
                                                       met,
-                                                      get_effective_weight(shift, 0, 0, 0, 1, 0, 1, 0),
+                                                      get_effective_weight(shift,
+                                                                           muons.size(),
+                                                                           electrons.size(),
+                                                                           taus.size(),
+                                                                           1,
+                                                                           bjets.size(),
+                                                                           jets.size(),
+                                                                           met.size()),
                                                       shift);
+
+                    validation_container.w_gamma.fill(muons,
+                                                      electrons,
+                                                      taus,
+                                                      photons,
+                                                      bjets,
+                                                      jets,
+                                                      met,
+                                                      get_effective_weight(shift,
+                                                                           muons.size(),
+                                                                           electrons.size(),
+                                                                           taus.size(),
+                                                                           1,
+                                                                           bjets.size(),
+                                                                           jets.size(),
+                                                                           met.size()),
+                                                      shift);
+                }
+                if (trigger_matches.at("pass_high_pt_muon_trigger") or trigger_matches.at("pass_low_pt_muon_trigger") or
+                    trigger_matches.at("pass_double_muon_trigger") or
+                    trigger_matches.at("pass_high_pt_electron_trigger") or
+                    trigger_matches.at("pass_low_pt_electron_trigger") or
+                    trigger_matches.at("pass_double_electron_trigger") or
+                    trigger_matches.at("pass_high_pt_tau_trigger") or trigger_matches.at("pass_double_tau_trigger") or
+                    trigger_matches.at("pass_photon_trigger") or trigger_matches.at("pass_double_photon_trigger"))
+                {
+                    validation_container.z_gammagamma.fill(muons,
+                                                           electrons,
+                                                           taus,
+                                                           photons,
+                                                           bjets,
+                                                           jets,
+                                                           met,
+                                                           get_effective_weight(shift,
+                                                                                muons.size(),
+                                                                                electrons.size(),
+                                                                                taus.size(),
+                                                                                2,
+                                                                                bjets.size(),
+                                                                                jets.size(),
+                                                                                met.size()),
+                                                           shift);
+
+                    validation_container.w_gammagamma.fill(muons,
+                                                           electrons,
+                                                           taus,
+                                                           photons,
+                                                           bjets,
+                                                           jets,
+                                                           met,
+                                                           get_effective_weight(shift,
+                                                                                muons.size(),
+                                                                                electrons.size(),
+                                                                                taus.size(),
+                                                                                2,
+                                                                                bjets.size(),
+                                                                                jets.size(),
+                                                                                met.size()),
+                                                           shift);
                 }
             }
             /// [END] Validation
