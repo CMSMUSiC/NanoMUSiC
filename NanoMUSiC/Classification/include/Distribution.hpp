@@ -229,9 +229,14 @@ class Distribution
         {
             return {{"gamma_pt", true}, {"gamma_eta", false}, {"gamma_phi", false}};
         }
+        else if (analysis_name == "zgamma" or analysis_name == "zgammagamma" or analysis_name == "wgamma" or
+                 analysis_name == "wgammagamma")
+        {
+            return {{"h_deltaR_gamma_lepton", true}, {"h_gamma_pt", true}};
+        }
 
-        fmt::print(stderr, "ERROR: Could not find distribution props for given analysis name ({}).", analysis_name);
-        std::exit(EXIT_FAILURE);
+        throw std::runtime_error(
+            fmt::format("Could not find distribution props for given analysis name ({}).", analysis_name));
     }
 
     static auto fold(const std::vector<std::string> &input_files, const std::string &output_dir) -> bool;
