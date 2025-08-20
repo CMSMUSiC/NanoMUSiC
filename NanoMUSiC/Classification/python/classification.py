@@ -679,19 +679,15 @@ class MakeDistributionsInputs(BaseModel):
 
 
 def do_make_distributions(inputs: MakeDistributionsInputs) -> tuple[bool, str]:
-    try:
-        if clft.Distribution.make_distributions(
-            inputs.input_file,
-            inputs.output_dir,
-            inputs.class_name,
-            inputs.skip_per_year,
-        ):
-            return True, inputs.class_name
+    if clft.Distribution.make_distributions(
+        inputs.input_file,
+        inputs.output_dir,
+        inputs.class_name,
+        inputs.skip_per_year,
+    ):
+        return True, inputs.class_name
 
-        return False, inputs.class_name
-    except Exception as e:
-        print("Exception: {}".format(e))
-        return False, inputs.class_name
+    return False, inputs.class_name
 
 
 def do_fold(input_files: list[list[str]], output_dir: str):
@@ -782,7 +778,8 @@ def make_distributions(
         return fnmatch.fnmatch(analysis_name, pattern)
 
     def get_analysis_names(
-        analysis_to_files: dict[str, list[str]], patterns: str
+        analysis_to_files: dict[str, list[str]],
+        patterns: str,
     ) -> Union[list[str], None]:
         analysis_names = []
         for analysis in analysis_to_files:
@@ -835,14 +832,13 @@ def make_distributions(
                         do_make_distributions, distribution_jobs
                     ):
                         status, analysis_name = job
-                        if not status:
-                            print(
+
+                        if status == False:
+                            raise RuntimeError(
                                 "ERROR: Could not process event class: {}".format(
                                     analysis_name
-                                ),
-                                file=sys.stderr,
+                                )
                             )
-                            sys.exit(-1)
 
                         progress.console.print("Done: {}".format(analysis_name))
                         progress.advance(task)
@@ -879,13 +875,11 @@ def make_distributions(
                     ):
                         status, analysis_name = job
                         if not status:
-                            print(
+                            raise RuntimeError(
                                 "ERROR: Could not process validation analysis: {}".format(
                                     analysis_name
-                                ),
-                                file=sys.stderr,
+                                )
                             )
-                            sys.exit(-1)
 
                         progress.console.print("Done: {}".format(analysis_name))
                         progress.advance(task)

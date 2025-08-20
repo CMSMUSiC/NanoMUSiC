@@ -2,6 +2,7 @@
 #define DISTRIBUTION_HPP
 
 #include <cstdlib>
+#include <fmt/core.h>
 #include <memory>
 #include <optional>
 #include <stdexcept>
@@ -188,7 +189,12 @@ class Distribution
     {
         if (analysis_name.find("EC_") != std::string::npos)
         {
-            return {{"counts", false}, {"sum_pt", true}, {"invariant_mass", true}, {"met", true}};
+            return {
+                {"counts", false},
+                {"sum_pt", true},
+                {"invariant_mass", true},
+                {"met", true},
+            };
         }
         else if (analysis_name.find("z_to") != std::string::npos)
         {
@@ -222,17 +228,28 @@ class Distribution
 
         else if (analysis_name.find("ttbar_to") != std::string::npos)
         {
-            return {{"invariant_mass_jet0_jet1", true}, {"ht_had_lep", true}, {"transverse_mass_lep_MET", true}};
+            return {
+                {"invariant_mass_jet0_jet1", true},
+                {"ht_had_lep", true},
+                {"transverse_mass_lep_MET", true},
+            };
         }
 
         else if (analysis_name.find("gamma_plus_jets") != std::string::npos)
         {
-            return {{"gamma_pt", true}, {"gamma_eta", false}, {"gamma_phi", false}};
+            return {
+                {"gamma_pt", true},
+                {"gamma_eta", false},
+                {"gamma_phi", false},
+            };
         }
         else if (analysis_name == "zgamma" or analysis_name == "zgammagamma" or analysis_name == "wgamma" or
                  analysis_name == "wgammagamma")
         {
-            return {{"h_deltaR_gamma_lepton", true}, {"h_gamma_pt", true}};
+            return {
+                {"deltaR_gamma_lepton", false},
+                {"gamma_pt", true},
+            };
         }
 
         throw std::runtime_error(

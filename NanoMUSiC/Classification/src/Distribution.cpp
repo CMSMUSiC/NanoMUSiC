@@ -9,6 +9,7 @@
 #include <fmt/format.h>
 #include <fnmatch.h>
 #include <future>
+#include <iostream>
 #include <memory>
 #include <numeric>
 #include <string>
@@ -396,14 +397,16 @@ auto Distribution::make_distributions(const std::string &input_file,
                     .c_str());
             if (write_res <= 0)
             {
-                fmt::print(stderr,
-                           "ERROR: Could not write distribution to file: {} - {} - {}\n\n\n",
-                           dist.m_event_class_name,
-                           dist.m_distribution_name,
-                           dist.m_year_to_plot);
+                std::cerr << "ERROR: Could not write distribution to file: " << dist.m_event_class_name << " - "
+                          << dist.m_distribution_name << " - " << dist.m_year_to_plot << std::endl;
                 return false;
             }
         }
+    }
+    else
+    {
+        std::cerr << "No distributions found for " << analysis_to_plot << std::endl;
+        return false;
     }
 
     return true;
