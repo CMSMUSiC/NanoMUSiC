@@ -1920,6 +1920,7 @@ FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"
 ProcessGroup = "ZG"
+generator_filter_key = "zg_photon_cleaner"
 
 [ZGToLLG_01J_5f_13TeV_AM]
 # XSec = 123.8
@@ -1936,7 +1937,7 @@ FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"
 ProcessGroup = "ZG"
-
+generator_filter_key = "zg_photon_cleaner"
 
 [ZH_HToBB_ZToLL_M-125_13TeV_PH]
 XSec = 0.04865

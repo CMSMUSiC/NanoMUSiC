@@ -834,11 +834,13 @@ def make_distributions(
                         status, analysis_name = job
 
                         if status == False:
-                            raise RuntimeError(
-                                "ERROR: Could not process event class: {}".format(
-                                    analysis_name
-                                )
-                            )
+                            # raise RuntimeError(
+                            #     "ERROR: Could not process event class: {}".format(
+                            #         analysis_name
+                            #     )
+                            # )
+                            progress.console.print("Failed: {}".format(analysis_name))
+                            continue
 
                         progress.console.print("Done: {}".format(analysis_name))
                         progress.advance(task)

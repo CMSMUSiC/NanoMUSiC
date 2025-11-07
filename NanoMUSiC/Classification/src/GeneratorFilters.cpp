@@ -28,12 +28,14 @@ auto no_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, debugger_t &h_
 }
 
 auto wlnujets_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
+                     const NanoAODGenInfo::GenParticles &gen_particles,
                      float mass_min,
                      float mass_max,
                      float pt_min,
                      float pt_max,
                      debugger_t &h_debug) -> bool
 {
+    bool passes_lnu_mass_pt = false;
     bool filter_result = false;
     float mass = -999.;
     float pt = -999.;
@@ -94,11 +96,17 @@ auto wlnujets_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
 
             if ((mass_min - .5 <= mass and mass <= mass_max + .5) and (pt_min - .5 <= pt and pt <= pt_max + .5))
             {
-                filter_result = true;
+                passes_lnu_mass_pt = true;
                 break;
             }
         }
     }
+
+    // ---- Add photon multiplicity filter ----
+    bool passes_photon_filter = ew_boson_plus_gamma_filter(gen_particles, 0, h_debug);
+    // 0 photons -> for WG (no overlap with Wγ or Wγγ)
+
+    filter_result = passes_lnu_mass_pt && passes_photon_filter;
 
     if (h_debug)
     {
@@ -118,7 +126,7 @@ auto wlnujets_mass_binned_filter(const NanoAODGenInfo::LHEParticles &lhe_particl
                                  debugger_t &h_debug) -> bool
 {
     bool filter_result = false;
-
+    bool passes_lnu_mass_pt = false;
     float mass = -999.;
     float pt = -999.;
 
@@ -194,12 +202,18 @@ auto wlnujets_mass_binned_filter(const NanoAODGenInfo::LHEParticles &lhe_particl
 
                 if ((pt_min - .5 <= pt and pt <= pt_max + .5) and (mass_min - .5 <= mass and mass <= mass_max + .5))
                 {
-                    filter_result = true;
+                    passes_lnu_mass_pt = true;
                     break;
                 }
             }
         }
     }
+
+    // ---- Add photon multiplicity filter ----
+    bool passes_photon_filter = ew_boson_plus_gamma_filter(gen_particles, 0, h_debug);
+    // 0 photons -> for WG (no overlap with Wγ or Wγγ)
+
+    filter_result = passes_lnu_mass_pt && passes_photon_filter;
 
     if (h_debug)
     {
@@ -219,7 +233,7 @@ auto wlnujets_mass_binned_sherpa_filter(const NanoAODGenInfo::LHEParticles &lhe_
                                         debugger_t &h_debug) -> bool
 {
     bool filter_result = false;
-
+    bool passes_lnu_mass_pt = false;    
     float mass = -999.;
     float pt = -999.;
 
@@ -285,12 +299,19 @@ auto wlnujets_mass_binned_sherpa_filter(const NanoAODGenInfo::LHEParticles &lhe_
 
                 if ((pt_min - .5 <= pt and pt <= pt_max + .5) and (mass_min - .5 <= mass and mass <= mass_max + .5))
                 {
-                    filter_result = true;
+                    passes_lnu_mass_pt = true;
                     break;
                 }
             }
         }
     }
+
+    // ---- Add photon multiplicity filter ----
+    bool passes_photon_filter = ew_boson_plus_gamma_filter(gen_particles, 0, h_debug);
+    // 0 photons -> for WG (no overlap with Wγ or Wγγ)
+
+    filter_result = passes_lnu_mass_pt && passes_photon_filter;
+
 
     if (h_debug)
     {
@@ -301,6 +322,7 @@ auto wlnujets_mass_binned_sherpa_filter(const NanoAODGenInfo::LHEParticles &lhe_
 }
 
 auto dy_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
+               const NanoAODGenInfo::GenParticles &gen_particles,
                float mass_min,
                float mass_max,
                float pt_min,
@@ -315,6 +337,7 @@ auto dy_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
     }
 
     bool filter_result = false;
+    bool passes_dy_mass_pt = false;
     float mass = -999.;
     float pt = -999.;
 
@@ -394,11 +417,18 @@ auto dy_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
                 if ((mass_min - .5 <= mass and mass <= mass_max + .5) //
                     and (pt_min - .5 <= pt and pt <= pt_max + .5))
                 {
-                    filter_result = true;
+                    passes_dy_mass_pt = true;
                 }
             }
         }
     }
+
+    // ---- Add photon multiplicity filter ----
+    bool passes_photon_filter = ew_boson_plus_gamma_filter(gen_particles, 0, h_debug);
+    // 0 photons -> for DYJets (no overlap with Zγ or Zγγ)
+
+    filter_result = passes_dy_mass_pt && passes_photon_filter;
+
 
     if (h_debug)
     {
@@ -443,14 +473,25 @@ auto ttbar_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
     return filter_result;
 }
 
-auto wg_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, float pt_max, debugger_t &h_debug) -> bool
+auto wg_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
+               const NanoAODGenInfo::GenParticles &gen_particles,
+               float pt_max, 
+               debugger_t &h_debug) -> bool
 {
     bool filter_result = false;
+    bool passes_pt_filter = false;
     auto pt_filter = (lhe_particles.pdgId == 22) && (lhe_particles.status == 1);
     if (ROOT::VecOps::Any(lhe_particles.pt[pt_filter] <= pt_max))
     {
-        filter_result = true;
+        passes_pt_filter = true;
     }
+
+    // ---- Add photon multiplicity filter ----
+    bool passes_photon_filter = ew_boson_plus_gamma_filter(gen_particles, 1, h_debug);
+    // 1 photon -> for WG (no overlap with Wjets or Wγγ)
+
+    filter_result = passes_pt_filter && passes_photon_filter;
+
 
     if (h_debug)
     {
@@ -526,6 +567,64 @@ auto ww_2l2v_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, float mas
     return filter_result;
 }
 
+auto zg_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
+               const NanoAODGenInfo::GenParticles &gen_particles,
+               float pt_max, 
+               debugger_t &h_debug) -> bool
+
+{
+    bool filter_result = false;
+    bool passes_pt_filter = true;
+    // auto pt_filter = (lhe_particles.pdgId == 22) && (lhe_particles.status == 1);
+    // if (ROOT::VecOps::Any(lhe_particles.pt[pt_filter] <= pt_max))
+    // {
+    //     passes_pt_filter = true;
+    // }
+
+    // ---- Add photon multiplicity filter ----
+    bool passes_photon_filter = ew_boson_plus_gamma_filter(gen_particles, 1, h_debug);
+    // 1 photon -> for WG (no overlap with DY or Zγγ)
+
+    filter_result = passes_photon_filter;
+
+    return filter_result;
+
+}
+
+auto wgg_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
+               const NanoAODGenInfo::GenParticles &gen_particles,
+               float pt_max, 
+               debugger_t &h_debug) -> bool
+
+{
+    bool filter_result = false;
+     // ---- Add photon multiplicity filter ----
+    bool passes_photon_filter = ew_boson_plus_gamma_filter(gen_particles, 2, h_debug);
+    // 2 photon -> for WG (no overlap with Wjets or Wγ)
+
+    filter_result = passes_photon_filter;
+
+    return filter_result;
+
+}
+
+auto zgg_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
+               const NanoAODGenInfo::GenParticles &gen_particles,
+               float pt_max, 
+               debugger_t &h_debug) -> bool
+
+{
+    bool filter_result = false;
+     // ---- Add photon multiplicity filter ----
+    bool passes_photon_filter = ew_boson_plus_gamma_filter(gen_particles, 2, h_debug);
+    // 2 photon -> for WG (no overlap with DY or Zγ)
+
+    filter_result = passes_photon_filter;
+
+    return filter_result;
+
+}
+
 auto gamma_jet_cleanner_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, float dr_max, debugger_t &h_debug)
     -> bool
 {
@@ -568,8 +667,8 @@ auto ew_boson_plus_gamma_filter(const NanoAODGenInfo::GenParticles &gen_particle
                                 unsigned int n_photons,
                                 debugger_t &h_debug) -> bool
 {
-    constexpr double MIN_PT = 15.;
-    constexpr double MAX_ABS_ETA = 5.;
+    constexpr double MIN_PT = 20.;
+    constexpr double MAX_ABS_ETA = 2.4;
     constexpr double MAX_DR_LEPTONS = 0.4;
     constexpr double MAX_DR_PHOTONS = 0.4;
     constexpr double MAX_DR_STABLE_PART = 0.1;

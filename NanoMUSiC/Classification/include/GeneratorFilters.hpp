@@ -79,6 +79,7 @@ enum class FilterTaus
     DoNotFilterTaus
 };
 auto dy_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
+               const NanoAODGenInfo::GenParticles &gen_particles,
                float mass_min,
                float mass_max,
                float pt_min,
@@ -92,13 +93,31 @@ auto ttbar_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
                   float mass_max,
                   debugger_t &h_debug) -> bool;
 
-auto wg_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, float pt_max, debugger_t &h_debug) -> bool;
+auto wg_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, 
+               const NanoAODGenInfo::GenParticles &gen_particles, 
+               float pt_max, 
+               debugger_t &h_debug) -> bool;
 
-auto zg_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, float pt_max, debugger_t &h_debug) -> bool;
+auto zg_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
+               const NanoAODGenInfo::GenParticles &gen_particles,
+               float pt_max, 
+               debugger_t &h_debug) -> bool;
+
+auto wgg_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, 
+               const NanoAODGenInfo::GenParticles &gen_particles, 
+               float pt_max, 
+               debugger_t &h_debug) -> bool;
+
+auto zgg_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
+               const NanoAODGenInfo::GenParticles &gen_particles,
+               float pt_max, 
+               debugger_t &h_debug) -> bool;
+
 
 auto wwto2l2nu_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, float mass_max, debugger_t &h_debug) -> bool;
 
 auto wlnujets_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
+                     const NanoAODGenInfo::GenParticles &gen_particles,
                      float mass_min,
                      float mass_max,
                      float pt_min,
@@ -174,7 +193,7 @@ const std::map<std::string, Filter_t> filters = {
         Year &year,
         debugger_t &h_debug) -> bool
      {
-         return dy_filter(lhe_particles, 0., MAX_FLOAT, 0., 50., FilterTaus::DoNotFilterTaus, h_debug);
+         return dy_filter(lhe_particles, gen_particles, 0., MAX_FLOAT, 0., 50., FilterTaus::DoNotFilterTaus, h_debug);
      }},
 
     //  DY Jets - pT binned
@@ -184,7 +203,7 @@ const std::map<std::string, Filter_t> filters = {
         Year &year,
         debugger_t &h_debug) -> bool
      {
-         return dy_filter(lhe_particles, 50., 120., 0., MAX_FLOAT, FilterTaus::DoNotFilterTaus, h_debug);
+         return dy_filter(lhe_particles, gen_particles, 50., 120., 0., MAX_FLOAT, FilterTaus::DoNotFilterTaus, h_debug);
      }},
     {"dyjets_mass_less_120"s,
      [](const NanoAODGenInfo::LHEParticles &lhe_particles,
@@ -192,7 +211,7 @@ const std::map<std::string, Filter_t> filters = {
         Year &year,
         debugger_t &h_debug) -> bool
      {
-         return dy_filter(lhe_particles, 0., 120., 0., MAX_FLOAT, FilterTaus::DoNotFilterTaus, h_debug);
+         return dy_filter(lhe_particles, gen_particles, 0., 120., 0., MAX_FLOAT, FilterTaus::DoNotFilterTaus, h_debug);
      }},
 
     //  DY Jets - Very Low Mass
@@ -202,7 +221,7 @@ const std::map<std::string, Filter_t> filters = {
         Year &year,
         debugger_t &h_debug) -> bool
      {
-         return dy_filter(lhe_particles, 0., 10., 0., MAX_FLOAT, FilterTaus::DoNotFilterTaus, h_debug);
+         return dy_filter(lhe_particles, gen_particles, 0., 10., 0., MAX_FLOAT, FilterTaus::DoNotFilterTaus, h_debug);
      }},
 
     // DY Jets - Inclusive
@@ -212,7 +231,7 @@ const std::map<std::string, Filter_t> filters = {
         Year &year,
         debugger_t &h_debug) -> bool
      {
-         return dy_filter(lhe_particles, 0., 120., 0., 50., FilterTaus::DoNotFilterTaus, h_debug);
+         return dy_filter(lhe_particles, gen_particles, 0., 120., 0., 50., FilterTaus::DoNotFilterTaus, h_debug);
      }},
 
     // WW full-leptonic sample - inclusive
@@ -241,7 +260,7 @@ const std::map<std::string, Filter_t> filters = {
         Year &year,
         debugger_t &h_debug) -> bool
      {
-         return wg_filter(lhe_particles, 130., h_debug);
+         return wg_filter(lhe_particles, gen_particles, 130., h_debug);
      }},
     {"pt_gamma_less_300"s,
      [](const NanoAODGenInfo::LHEParticles &lhe_particles,
@@ -249,7 +268,7 @@ const std::map<std::string, Filter_t> filters = {
         Year &year,
         debugger_t &h_debug) -> bool
      {
-         return wg_filter(lhe_particles, 300., h_debug);
+         return wg_filter(lhe_particles, gen_particles, 300., h_debug);
      }},
     {"pt_gamma_less_500"s,
      [](const NanoAODGenInfo::LHEParticles &lhe_particles,
@@ -257,7 +276,7 @@ const std::map<std::string, Filter_t> filters = {
         Year &year,
         debugger_t &h_debug) -> bool
      {
-         return wg_filter(lhe_particles, 500., h_debug);
+         return wg_filter(lhe_particles, gen_particles, 500., h_debug);
      }},
 
     //  QCD gamma cleanner
@@ -277,7 +296,7 @@ const std::map<std::string, Filter_t> filters = {
         Year &year,
         debugger_t &h_debug) -> bool
      {
-         return wlnujets_filter(lhe_particles, 0., 200., 0., 100., h_debug);
+         return wlnujets_filter(lhe_particles, gen_particles, 0., 200., 0., 100., h_debug);
      }},
 
     // WJets - Inclusive - SHERPA
@@ -297,7 +316,7 @@ const std::map<std::string, Filter_t> filters = {
         Year &year,
         debugger_t &h_debug) -> bool
      {
-         return wlnujets_filter(lhe_particles, 0., 200., 0., MAX_FLOAT, h_debug);
+         return wlnujets_filter(lhe_particles, gen_particles, 0., 200., 0., MAX_FLOAT, h_debug);
      }},
 
     // WJets - Mass binned samples
@@ -345,6 +364,18 @@ const std::map<std::string, Filter_t> filters = {
      {
          return wlnujets_mass_binned_filter(lhe_particles, gen_particles, year, 0., 4000., 0, MAX_FLOAT, h_debug);
      }},
+
+     // ZGamma
+    {"zg_photon_cleaner"s,
+     [](const NanoAODGenInfo::LHEParticles &lhe_particles,
+        const NanoAODGenInfo::GenParticles &gen_particles,
+        Year &year,
+        debugger_t &h_debug) -> bool
+     {
+         return zg_filter(lhe_particles, gen_particles, 0., h_debug);
+     }},
+
+
 };
 
 inline auto pass_generator_filter(const std::string &generator_filter,
