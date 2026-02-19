@@ -443,8 +443,35 @@ auto dy_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
     return filter_result;
 }
 
+auto ttg_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
+                const NanoAODGenInfo::GenParticles &gen_particles,
+                debugger_t &h_debug) -> bool
+{
+    auto ttbar_mass = ROOT::VecOps::InvariantMass(ROOT::VecOps::Take(lhe_particles.pt, -6),
+                                                  ROOT::VecOps::Take(lhe_particles.eta, -6),
+                                                  ROOT::VecOps::Take(lhe_particles.phi, -6),
+                                                  ROOT::VecOps::Take(lhe_particles.mass, -6));
+
+    // ---- Add photon multiplicity filter ----
+    bool passes_photon_filter = ew_boson_plus_gamma_filter(gen_particles, 1, h_debug);
+    // 1 photon -> for ttγ (no overlap with ttbar)
+
+    bool filter_result = passes_photon_filter;
+    if (h_debug)
+    {
+        h_debug->h_total.Fill(ttbar_mass);
+        if (filter_result)
+        {
+            h_debug->h_pass.Fill(ttbar_mass);
+        }
+    }
+
+    return filter_result;
+
+}
+
 auto ttbar_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
-                  // const NanoAODGenInfo::GenParticles &gen_particles,
+                  const NanoAODGenInfo::GenParticles &gen_particles,
                   float mass_min,
                   float mass_max,
                   debugger_t &h_debug) -> bool
@@ -455,12 +482,19 @@ auto ttbar_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
                                                   ROOT::VecOps::Take(lhe_particles.mass, -6));
 
     bool filter_result = false;
+    bool tt_mass_filter = false;
+
     if (std::max(0.f, mass_min - .5f) <= ttbar_mass and ttbar_mass <= mass_max + .5f)
     {
         // fmt::print("[ Generator Filter ] Pass: TTBar Mass Cut. ... {}\n", ttbar_mass);
-        filter_result = true;
+        tt_mass_filter = true;
     }
 
+    // ---- Add photon multiplicity filter ----
+    bool passes_photon_filter = ew_boson_plus_gamma_filter(gen_particles, 0, h_debug);
+    // 0 photon -> for ttbar (no overlap with ttγ)
+
+    filter_result = tt_mass_filter && passes_photon_filter;
     if (h_debug)
     {
         h_debug->h_total.Fill(ttbar_mass);

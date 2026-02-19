@@ -438,7 +438,7 @@ XSecOrder = "LO"
 ProcessGroup = "GG"
 
 [DiPhotonJetsBox_MGG-200to500_13TeV_SP]
-XSec = 6.916	
+XSec = 6.916
 FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "LO"
@@ -942,6 +942,8 @@ FilterEff = 1.0
 kFactor = 1.0
 XSecOrder = "NLO"
 ProcessGroup = "TTG"
+generator_filter_key = "ttg_gamma_filter"
+
 
 [TTGJets_13TeV_ext1_AM]
 XSec = 3.697
@@ -1060,6 +1062,8 @@ FilterEff = 0.02474
 kFactor = 1.1394
 XSecOrder = "NNLO"
 ProcessGroup = "TTbar"
+generator_filter_key = "ttbar_gamma_filter"
+debug = true
 
 
 [TT_Mtt-700to1000_13TeV_PH]
@@ -1068,6 +1072,8 @@ FilterEff = 0.0921
 kFactor = 1.1394
 XSecOrder = "NNLO"
 ProcessGroup = "TTbar"
+generator_filter_key = "ttbar_gamma_filter"
+debug = true
 
 [TTbar_13TeV_P8]
 XSec = 730.0

@@ -88,10 +88,14 @@ auto dy_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
                debugger_t &h_debug) -> bool;
 
 auto ttbar_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
-                  // const NanoAODGenInfo::GenParticles &gen_particles,
+                  const NanoAODGenInfo::GenParticles &gen_particles,
                   float mass_min,
                   float mass_max,
                   debugger_t &h_debug) -> bool;
+
+auto ttg_filter(const NanoAODGenInfo::LHEParticles &lhe_particles,
+                const NanoAODGenInfo::GenParticles &gen_particles,
+                debugger_t &h_debug) -> bool;
 
 auto wg_filter(const NanoAODGenInfo::LHEParticles &lhe_particles, 
                const NanoAODGenInfo::GenParticles &gen_particles, 
@@ -180,10 +184,32 @@ const std::map<std::string, Filter_t> filters = {
         debugger_t &h_debug) -> bool
      {
          return ttbar_filter(lhe_particles, //
-                                            /* gen_particles, */
+                             gen_particles, //
                              0.,            //
                              700.,          //
                              h_debug);
+     }},
+    {"ttbar_gamma_filter"s,
+     [](const NanoAODGenInfo::LHEParticles &lhe_particles,
+        const NanoAODGenInfo::GenParticles &gen_particles,
+        Year &year,
+        debugger_t &h_debug) -> bool
+     {
+         return ttbar_filter(lhe_particles, //
+                             gen_particles, //
+                             0.,            //
+                             13000.,        // no mass filter
+                             h_debug);
+     }},
+    {"ttg_gamma_filter"s,
+     [](const NanoAODGenInfo::LHEParticles &lhe_particles,
+        const NanoAODGenInfo::GenParticles &gen_particles,
+        Year &year,
+        debugger_t &h_debug) -> bool
+     {
+         return ttg_filter(lhe_particles, //
+                           gen_particles, //
+                           h_debug);
      }},
 
     // DY Jets - Low Mass sample
